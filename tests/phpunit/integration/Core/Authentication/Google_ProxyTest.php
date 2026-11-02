@@ -774,7 +774,7 @@ class Google_ProxyTest extends TestCase {
 	public function test_send_benchmarking_insight_request() {
 		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
 
-		$expected_url              = $this->google_proxy->url( Google_Proxy::BENCHMARKING_INSIGHT_URI ) . '?hl=de-DE';
+		$expected_url              = $this->google_proxy->url( '/v1/ai/benchmarking?hl=de-DE' );
 		$expected_success_response = array(
 			'operation_id'   => 'operation-123',
 			'interaction_id' => 'interaction-456',
@@ -794,6 +794,8 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( 'POST', $this->request_args['method'], 'Benchmarking insight request method should be POST.' );
 		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Benchmarking insight Authorization header should match access token.' );
 		$this->assertEquals( 'application/json', $this->request_args['headers']['Content-Type'], 'Benchmarking insight request should be sent as JSON.' );
+		$this->assertTrue( $this->request_args['blocking'], 'Benchmarking insight request should wait for the response.' );
+		$this->assertTrue( json_decode( $this->request_args['body'], true )['async'], 'Benchmarking insight request body should have async set to the boolean true.' );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -822,7 +824,7 @@ class Google_ProxyTest extends TestCase {
 			'model_version'  => 'model-1',
 		);
 
-		$this->mock_http_request( $this->google_proxy->url( Google_Proxy::BENCHMARKING_INSIGHT_URI ) . '?hl=de-DE', $expected_response );
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/benchmarking?hl=de-DE' ), $expected_response );
 
 		$response = $this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de-DE' );
 
@@ -833,7 +835,7 @@ class Google_ProxyTest extends TestCase {
 		list ( $credentials ) = $this->get_credentials();
 
 		$this->mock_http_request(
-			$this->google_proxy->url( Google_Proxy::BENCHMARKING_INSIGHT_URI ) . '?hl=de-DE',
+			$this->google_proxy->url( '/v1/ai/benchmarking?hl=de-DE' ),
 			array( 'error' => 'Too many requests.' ),
 			429
 		);
@@ -848,7 +850,7 @@ class Google_ProxyTest extends TestCase {
 	public function test_get_benchmarking_insight_operation() {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
-		$expected_url              = $this->google_proxy->url( sprintf( Google_Proxy::BENCHMARKING_INSIGHT_OPERATION_URI, 'operation-123' ) ) . '?site_id=' . rawurlencode( $site_id );
+		$expected_url              = $this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id );
 		$expected_success_response = array(
 			'done'     => true,
 			'state'    => 'SUCCEEDED',
@@ -886,7 +888,7 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		$this->mock_http_request(
-			$this->google_proxy->url( sprintf( Google_Proxy::BENCHMARKING_INSIGHT_OPERATION_URI, 'operation-123' ) ) . '?site_id=' . rawurlencode( $site_id ),
+			$this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id ),
 			$expected_response
 		);
 
@@ -899,7 +901,7 @@ class Google_ProxyTest extends TestCase {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
 		$this->mock_http_request(
-			$this->google_proxy->url( sprintf( Google_Proxy::BENCHMARKING_INSIGHT_OPERATION_URI, 'operation-123' ) ) . '?site_id=' . rawurlencode( $site_id ),
+			$this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id ),
 			array(),
 			404
 		);

@@ -303,6 +303,7 @@ class Google_Proxy {
 			$creds                           = $credentials->get();
 			$request_args['body']['site_id'] = $creds['oauth2_client_id'];
 
+			// A GET request sends these values in the URL, so the site secret is only added to POST requests.
 			if ( 'POST' === $method ) {
 				$request_args['body']['site_secret'] = $creds['oauth2_client_secret'];
 			}
@@ -322,17 +323,13 @@ class Google_Proxy {
 		if ( 'GET' === $method ) {
 			$url = add_query_arg( urlencode_deep( $request_args['body'] ), $url );
 			unset( $request_args['body'] );
-
-			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
-			$response = wp_remote_get( $url, $request_args );
-		} else {
-			if ( ! empty( $args['json_request'] ) ) {
-				$request_args['headers']['Content-Type'] = 'application/json';
-				$request_args['body']                    = wp_json_encode( $request_args['body'] );
-			}
-
-			$response = wp_remote_post( $url, $request_args );
+		} elseif ( ! empty( $args['json_request'] ) ) {
+			$request_args['headers']['Content-Type'] = 'application/json';
+			$request_args['body']                    = wp_json_encode( $request_args['body'] );
 		}
+
+		$request_args['method'] = $method;
+		$response               = wp_remote_request( $url, $request_args );
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -760,7 +757,7 @@ class Google_Proxy {
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
 	 * @param array       $payload      Benchmarking insight request payload.
-	 * @param string      $language_tag Language tag for the generated insight.
+	 * @param string      $language_tag Language tag for the generated insight, such as `de-DE`.
 	 * @return array|WP_Error Operation, or generated insight when the proxy returns it from its cache, or WP_Error on failure.
 	 */
 	public function send_benchmarking_insight_request( Credentials $credentials, $access_token, array $payload, $language_tag ) {
