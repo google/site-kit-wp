@@ -141,7 +141,7 @@ trait RestTestTrait {
 	/**
 	 * Calls the callback of a route's endpoint directly, without WordPress's checks of the request.
 	 *
-	 * WordPress before 5.5 lets data with a missing or empty property through to the callback.
+	 * WordPress before 5.5 lets data with a missing or empty property through to the callback, and before 5.6 an empty object.
 	 * So a test reaches the callback's own check of such data this way on every version.
 	 *
 	 * @param string $method HTTP method of the endpoint.

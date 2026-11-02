@@ -259,7 +259,7 @@ class REST_RoutesTest extends TestCase {
 			}
 		}
 
-		$this->assertEmpty( $problems, 'Every argument schema should give each value a type WordPress knows, and each array its items.' );
+		$this->assertSame( array(), $problems, 'Every argument schema should give each value a type WordPress knows, and each array its items.' );
 	}
 
 	/**
