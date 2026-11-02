@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ChangeEvent, FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -26,24 +31,30 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Layout from '@/js/components/layout/Layout';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { trackEvent } from '@/js/util';
 
-export default function SettingsPlugin() {
-	const showAdminBar = useSelect( ( select ) =>
-		select( CORE_SITE ).getShowAdminBar()
+const SettingsPlugin: FC = () => {
+	const showAdminBar: boolean | undefined = useSelect(
+		( select: Select ) => select( CORE_SITE ).getShowAdminBar(),
+		[]
+	);
+	const showWPDashboardWidget: boolean | undefined = useSelect(
+		( select: Select ) => select( CORE_SITE ).getShowWPDashboardWidget(),
+		[]
 	);
 
-	const { setShowAdminBar } = useDispatch( CORE_SITE );
+	const { setShowAdminBar, setShowWPDashboardWidget } =
+		useDispatch( CORE_SITE );
 
 	const viewContext = useViewContext();
 
 	const onAdminBarToggle = useCallback(
-		( { target } ) => {
+		( { target }: ChangeEvent< HTMLInputElement > ) => {
 			const action = target.checked
 				? 'enable_admin_bar_menu'
 				: 'disable_admin_bar_menu';
@@ -51,6 +62,17 @@ export default function SettingsPlugin() {
 			trackEvent( viewContext, action );
 		},
 		[ setShowAdminBar, viewContext ]
+	);
+
+	const onWPDashboardWidgetToggle = useCallback(
+		( { target }: ChangeEvent< HTMLInputElement > ) => {
+			const action = target.checked
+				? 'enable_wp_dashboard_widget'
+				: 'disable_wp_dashboard_widget';
+			setShowWPDashboardWidget( !! target.checked );
+			trackEvent( viewContext, action );
+		},
+		[ setShowWPDashboardWidget, viewContext ]
 	);
 
 	return (
@@ -87,8 +109,38 @@ export default function SettingsPlugin() {
 							</div>
 						</Cell>
 					</Row>
+					<Row>
+						<Cell size={ 12 }>
+							<div className="googlesitekit-settings-module__meta-items">
+								<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--nomargin">
+									<Checkbox
+										id="wp-dashboard-widget-toggle"
+										name="wp-dashboard-widget-toggle"
+										value="1"
+										checked={ showWPDashboardWidget }
+										onChange={ onWPDashboardWidgetToggle }
+										disabled={
+											showWPDashboardWidget === undefined
+										}
+										loading={
+											showWPDashboardWidget === undefined
+										}
+									>
+										<span>
+											{ __(
+												'Display summary stats in the WordPress dashboard',
+												'google-site-kit'
+											) }
+										</span>
+									</Checkbox>
+								</div>
+							</div>
+						</Cell>
+					</Row>
 				</Grid>
 			</div>
 		</Layout>
 	);
-}
+};
+
+export default SettingsPlugin;
