@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests;
 
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use MockAction;
 use WP_REST_Request;
@@ -59,6 +60,82 @@ trait RestTestTrait {
 		if ( version_compare( get_bloginfo( 'version' ), $rejected_before_callback_from, '>=' ) ) {
 			$this->assertSame( 0, $dispatch_filter->get_call_count(), 'The request should be rejected before the route callback runs.' );
 		}
+	}
+
+	/**
+	 * Grants every user `Permissions::VIEW_DASHBOARD`, which otherwise needs a Google sign-in or a role a module is shared with.
+	 */
+	protected function grant_dashboard_permission() {
+		add_filter(
+			'map_meta_cap',
+			function ( $caps, $cap ) {
+				return Permissions::VIEW_DASHBOARD === $cap ? array() : $caps;
+			},
+			20,
+			2
+		);
+	}
+
+	/**
+	 * Gets a route's resource schema, as the REST index lists it.
+	 *
+	 * @param string $route Route path under the Site Kit REST root.
+	 * @return array Resource schema of the route.
+	 */
+	protected function get_route_resource_schema( $route ) {
+		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT );
+		$request->set_param( 'context', 'help' );
+
+		return rest_get_server()->dispatch( $request )->get_data()['routes'][ '/' . REST_Routes::REST_ROOT . '/' . $route ]['schema'];
+	}
+
+	/**
+	 * Asserts that response data matches the resource schema the REST index lists for its route.
+	 *
+	 * `rest_validate_value_from_schema()` accepts a key that the schema leaves out. So this also
+	 * asserts that the schema describes each key of the data, at any depth.
+	 *
+	 * @param mixed  $data    Response data.
+	 * @param string $route   Route path under the Site Kit REST root.
+	 * @param string $message Message for a failure.
+	 */
+	protected function assert_matches_route_resource_schema( $data, $route, $message ) {
+		$schema = $this->get_route_resource_schema( $route );
+
+		$this->assertTrue( rest_validate_value_from_schema( $data, $schema ), $message );
+		$this->assertSame( array(), $this->get_keys_outside_schema( $data, $schema, 'data' ), $message );
+	}
+
+	/**
+	 * Lists each key of a value, at any depth, that its schema does not describe.
+	 *
+	 * @param mixed  $value  Value to check.
+	 * @param array  $schema Schema of the value.
+	 * @param string $path   Where the value sits, for the message.
+	 * @return array List of the paths of the keys the schema does not describe.
+	 */
+	private function get_keys_outside_schema( $value, array $schema, $path ) {
+		if ( ! is_array( $value ) ) {
+			return array();
+		}
+
+		$keys = array();
+		foreach ( $value as $key => $item ) {
+			if ( wp_is_numeric_array( $value ) && isset( $schema['items'] ) ) {
+				$item_schema = $schema['items'];
+			} elseif ( isset( $schema['properties'][ $key ] ) ) {
+				$item_schema = $schema['properties'][ $key ];
+			} elseif ( isset( $schema['additionalProperties'] ) && is_array( $schema['additionalProperties'] ) ) {
+				$item_schema = $schema['additionalProperties'];
+			} else {
+				$keys[] = "$path.$key";
+				continue;
+			}
+
+			$keys = array_merge( $keys, $this->get_keys_outside_schema( $item, $item_schema, "$path.$key" ) );
+		}
+
+		return $keys;
 	}
 
 	/**
