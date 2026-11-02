@@ -18,7 +18,12 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
+use WP_REST_Request;
+use WP_REST_Server;
 
 /**
  * Class to handle all wp-admin Dashboard related functionality.
@@ -71,6 +76,14 @@ final class Dashboard {
 	private $dismissed_items;
 
 	/**
+	 * Dashboard_Widget_Enabled instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Dashboard_Widget_Enabled
+	 */
+	private $dashboard_widget_enabled;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -93,6 +106,9 @@ final class Dashboard {
 
 		$this->authentication  = new Authentication( $this->context );
 		$this->dismissed_items = $dismissed_items;
+
+		$options                        = new Options( $this->context );
+		$this->dashboard_widget_enabled = new Dashboard_Widget_Enabled( $options );
 	}
 
 	/**
@@ -107,6 +123,53 @@ final class Dashboard {
 				$this->add_widgets();
 			}
 		);
+
+		add_filter(
+			'googlesitekit_rest_routes',
+			function ( $routes ) {
+				return array_merge( $routes, $this->get_rest_routes() );
+			}
+		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $routes ) {
+				return array_merge(
+					$routes,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/site/data/wp-dashboard-widget-settings',
+					)
+				);
+			}
+		);
+
+		$this->dashboard_widget_enabled->register();
+	}
+
+	/**
+	 * Checks if the WordPress dashboard widget should be displayed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if the WordPress dashboard widget should display, false otherwise.
+	 */
+	private function is_widget_active() {
+		if ( ! current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
+			return false;
+		}
+
+		if ( ! $this->dashboard_widget_enabled->get() ) {
+			return false;
+		}
+
+		/**
+		 * Filters whether the Site Kit WordPress dashboard widget should be displayed.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param bool $display Whether to display the WordPress dashboard widget.
+		 */
+		return (bool) apply_filters( 'googlesitekit_show_wp_dashboard_widget', true );
 	}
 
 	/**
@@ -115,7 +178,7 @@ final class Dashboard {
 	 * @since 1.0.0
 	 */
 	private function add_widgets() {
-		if ( ! current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
+		if ( ! $this->is_widget_active() ) {
 			return;
 		}
 
@@ -219,5 +282,62 @@ final class Dashboard {
 			<div class="googlesitekit-preview-block__wrapper"></div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Gets related REST routes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of REST_Route objects.
+	 */
+	private function get_rest_routes() {
+		$can_authenticate = function () {
+			return current_user_can( Permissions::AUTHENTICATE );
+		};
+
+		$settings_callback = function () {
+			return array(
+				'enabled' => $this->dashboard_widget_enabled->get(),
+			);
+		};
+
+		return array(
+			new REST_Route(
+				'core/site/data/wp-dashboard-widget-settings',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => $settings_callback,
+						'permission_callback' => $can_authenticate,
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function ( WP_REST_Request $request ) use ( $settings_callback ) {
+							$data = $request->get_param( 'data' );
+
+							if ( isset( $data['enabled'] ) ) {
+								$this->dashboard_widget_enabled->set( ! empty( $data['enabled'] ) );
+							}
+
+							return $settings_callback();
+						},
+						'permission_callback' => $can_authenticate,
+						'args'                => array(
+							'data' => array(
+								'type'       => 'object',
+								'required'   => true,
+								'properties' => array(
+									'enabled' => array(
+										'type'     => 'boolean',
+										'required' => false,
+									),
+								),
+							),
+						),
+					),
+				)
+			),
+		);
 	}
 }
