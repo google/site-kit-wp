@@ -162,9 +162,10 @@ class Insight_Payload_BuilderTest extends TestCase {
 		$this->builder->build( 'lead', '', '2028-03-10' );
 
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the reports of the end date `2028-03-10` in one `batchRunReports` call.' );
+		$this->assertCount( 3, $this->batch_requests[0]['requests'], 'The `build()` method should ask for the year-ago report of the end date `2028-03-10` as the third report of the call.' );
 		$this->assertSame(
 			array( '2027-02-13 to 2027-03-12', '2027-01-16 to 2027-02-12' ),
-			$this->get_requested_periods()[2] ?? null,
+			$this->get_requested_periods()[2],
 			'The `build()` method should move the year-ago periods 364 days back when 29 February falls between them and the end date. Each year-ago day then keeps its weekday.'
 		);
 	}
@@ -269,9 +270,10 @@ class Insight_Payload_BuilderTest extends TestCase {
 
 		$entry = $this->builder->build( 'lead', '0', '2026-09-15' );
 
+		$this->assertIsArray( $entry, 'The `build()` method should build an entry for the form `0`.' );
 		$this->assertSame(
 			array( 7, 3 ),
-			array( $entry['current']['conversions'] ?? null, $entry['previous']['conversions'] ?? null ),
+			array( $entry['current']['conversions'], $entry['previous']['conversions'] ),
 			'The `build()` method should read the tab `0` as the form `0`, never as the whole widget.'
 		);
 	}
@@ -291,9 +293,10 @@ class Insight_Payload_BuilderTest extends TestCase {
 
 		$entry = $this->builder->build( 'ecommerce', 'woocommerce', '2026-09-15' );
 
+		$this->assertIsArray( $entry, 'The `build()` method should build an entry for the `woocommerce` provider tab.' );
 		$this->assertSame(
 			array( 12, 8 ),
-			array( $entry['current']['conversions'] ?? null, $entry['previous']['conversions'] ?? null ),
+			array( $entry['current']['conversions'], $entry['previous']['conversions'] ),
 			'The `build()` method should count the `woocommerce` provider alone on its tab.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the reports of a provider tab in one `batchRunReports` call.' );
@@ -311,9 +314,12 @@ class Insight_Payload_BuilderTest extends TestCase {
 	public function test_build__sends_purchase_when_analytics_has_found_it() {
 		$this->provide_store_rows();
 
+		$entry = $this->builder->build( 'ecommerce', '', '2026-09-15' );
+
+		$this->assertIsArray( $entry, 'The `build()` method should build an Online store entry when Analytics has found `purchase`.' );
 		$this->assertSame(
 			'purchase',
-			$this->builder->build( 'ecommerce', '', '2026-09-15' )['event_name'] ?? null,
+			$entry['event_name'],
 			'The `build()` method should send `purchase` as the event name when Analytics has found `purchase` on the site.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the Online store reports in one `batchRunReports` call.' );
@@ -328,9 +334,12 @@ class Insight_Payload_BuilderTest extends TestCase {
 		$this->analytics->get_settings()->merge( array( 'detectedEvents' => array( 'add_to_cart', 'contact' ) ) );
 		$this->provide_store_rows();
 
+		$entry = $this->builder->build( 'ecommerce', '', '2026-09-15' );
+
+		$this->assertIsArray( $entry, 'The `build()` method should build an Online store entry when Analytics has found no `purchase`.' );
 		$this->assertSame(
 			'add_to_cart',
-			$this->builder->build( 'ecommerce', '', '2026-09-15' )['event_name'] ?? null,
+			$entry['event_name'],
 			'The `build()` method should send `add_to_cart` as the event name when Analytics has found no `purchase` on the site.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the Online store reports in one `batchRunReports` call when Analytics has found no `purchase`.' );
@@ -355,6 +364,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 
 		$entry = $this->builder->build( 'lead', '', '2026-09-15' );
 
+		$this->assertIsArray( $entry, 'The `build()` method should build an entry for the 1000 and 2 key actions of the two periods.' );
 		$this->assertSame(
 			array(
 				'conversions'     => 1000,
@@ -362,7 +372,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 				'sessions'        => 3000,
 				'engagement_rate' => 0.6667,
 			),
-			$entry['current'] ?? null,
+			$entry['current'],
 			'The `build()` method should send 1000 of 3000 sessions as the rate `0.3333`, and the engagement rate `0.666666` as `0.6667`, with integer counts.'
 		);
 		$this->assertSame(
@@ -372,7 +382,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 				'sessions'        => 7,
 				'engagement_rate' => 0.1235,
 			),
-			$entry['previous'] ?? null,
+			$entry['previous'],
 			'The `build()` method should send 2 of 7 sessions as the rate `0.2857`, and the engagement rate `0.123456` as `0.1235`, with integer counts.'
 		);
 	}
@@ -388,6 +398,9 @@ class Insight_Payload_BuilderTest extends TestCase {
 			),
 		);
 
+		$entry = $this->builder->build( 'lead', '', '2026-09-15' );
+
+		$this->assertIsArray( $entry, 'The `build()` method should build an entry when Analytics returned no sessions for the previous period.' );
 		$this->assertSame(
 			array(
 				'conversions'     => 4,
@@ -395,7 +408,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 				'sessions'        => 0,
 				'engagement_rate' => 0.0,
 			),
-			$this->builder->build( 'lead', '', '2026-09-15' )['previous'] ?? null,
+			$entry['previous'],
 			'The `build()` method should send a conversion rate and an engagement rate of `0.0` for a period Analytics returned no sessions for.'
 		);
 	}
@@ -407,9 +420,10 @@ class Insight_Payload_BuilderTest extends TestCase {
 
 		$entry = $this->builder->build( 'lead', '', '2026-09-15' );
 
+		$this->assertIsArray( $entry, 'The `build()` method should still build an entry for a property created on `2025-07-23`.' );
 		$this->assertSame(
 			array( 'event_name', 'month_start_date', 'current', 'previous' ),
-			array_keys( $entry ?? array() ),
+			array_keys( $entry ),
 			'The `build()` method should leave out both year-ago counts when the property was created at 00:00 UTC on `2025-07-23`.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the reports of a property created on `2025-07-23` in one `batchRunReports` call.' );
@@ -422,9 +436,10 @@ class Insight_Payload_BuilderTest extends TestCase {
 
 		$entry = $this->builder->build( 'lead', '', '2026-09-15' );
 
+		$this->assertIsArray( $entry, 'The `build()` method should still build an entry while `propertyCreateTime` is `0`.' );
 		$this->assertSame(
 			array( 'event_name', 'month_start_date', 'current', 'previous' ),
-			array_keys( $entry ?? array() ),
+			array_keys( $entry ),
 			'The `build()` method should leave out both year-ago counts while `propertyCreateTime` is `0`, before Site Kit synchronizes it.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the reports in one `batchRunReports` call while `propertyCreateTime` is `0`.' );
@@ -456,9 +471,10 @@ class Insight_Payload_BuilderTest extends TestCase {
 
 		$entry = $this->builder->build( 'lead', '', '2026-09-15' );
 
+		$this->assertIsArray( $entry, 'The `build()` method should return the entry as an array when only the current period has key actions.' );
 		$this->assertSame(
 			array( 5, 0 ),
-			array( $entry['current']['conversions'] ?? null, $entry['previous']['conversions'] ?? null ),
+			array( $entry['current']['conversions'], $entry['previous']['conversions'] ),
 			'The `build()` method should build the entry when the current period has 5 key actions and the previous period has none.'
 		);
 	}
