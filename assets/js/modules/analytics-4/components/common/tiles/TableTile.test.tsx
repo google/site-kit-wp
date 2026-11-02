@@ -20,9 +20,10 @@
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ErrorObject } from '@/js/util/errors';
 import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
-import TableTile from './TableTile';
+import TableTile, { TableTileErrorProps } from './TableTile';
 
 describe( 'TableTile', () => {
 	it( 'renders title, header label, and rows', () => {
@@ -228,5 +229,36 @@ describe( 'TableTile', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
 
 		expect( onRetry ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( "should render `ErrorComponent` with the tile's error and `onRetry` in place of the report error", () => {
+		const onRetry = jest.fn();
+
+		const { getByRole, queryByText } = render(
+			<TableTile
+				title="Top channels by visitors"
+				error={ {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				} }
+				onRetry={ onRetry }
+				ErrorComponent={ ( {
+					error,
+					onRetry: retry,
+				}: TableTileErrorProps ) => (
+					<button onClick={ retry }>
+						{ ( error as ErrorObject ).message }
+					</button>
+				) }
+			/>
+		);
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Internal server error' } )
+		);
+
+		expect( onRetry ).toHaveBeenCalledTimes( 1 );
+		expect( queryByText( 'Get help' ) ).not.toBeInTheDocument();
 	} );
 } );

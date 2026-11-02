@@ -991,7 +991,7 @@ export const selectors = {
 	/**
 	 * Gets the path that the URL of every product starts with.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @return {(string|null|undefined)} The path, such as `/product/`, never a full URL, or `null` when product URLs share no such path, such as on plain permalinks. Returns `undefined` if not loaded.
 	 */
@@ -1000,7 +1000,7 @@ export const selectors = {
 	/**
 	 * Checks whether the site uses plain permalinks, where each URL names its post in its query string, such as `/?p=123`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @return {(boolean|undefined)} `true` when the site uses plain permalinks, `false` when it has a permalink structure. Returns `undefined` if not loaded.
 	 */

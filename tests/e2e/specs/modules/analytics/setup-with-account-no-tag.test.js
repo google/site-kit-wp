@@ -17,24 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import {
-	activatePlugin,
-	createURL,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 import {
+	activatePlugin,
+	createURL,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
 	step,
 	useRequestInterception,
+	visitAdminPage,
 	wpApiFetch,
 } from '../../../utils';
 

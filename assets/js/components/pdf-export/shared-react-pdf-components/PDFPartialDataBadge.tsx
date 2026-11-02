@@ -37,7 +37,7 @@ import PDFBadge from './PDFBadge';
  * The badge height, in Figma frame pixels: the label's line height plus the
  * vertical padding.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export const PDF_PARTIAL_DATA_BADGE_HEIGHT = 28;
 

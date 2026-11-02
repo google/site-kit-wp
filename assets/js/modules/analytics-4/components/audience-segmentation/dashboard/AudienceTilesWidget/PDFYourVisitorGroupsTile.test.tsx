@@ -100,7 +100,7 @@ function countPartialDataBadges( json: string ) {
 /**
  * Finds the first row that directly holds the given title text.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param node  The rendered tree, or a node within it.
  * @param title The title text the row holds.
@@ -133,7 +133,7 @@ function findTitleRow(
 /**
  * Finds the style of the row that holds the given title text.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param json  The rendered PDF content, serialized to a string.
  * @param title The title text the row holds.

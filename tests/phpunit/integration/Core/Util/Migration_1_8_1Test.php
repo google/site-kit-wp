@@ -74,7 +74,11 @@ class Migration_1_8_1Test extends TestCase {
 		remove_all_actions( 'admin_init' );
 		$this->migration->register();
 
-		$this->assertTrue( has_action( 'admin_init' ), 'Migration should register admin_init action.' );
+		$this->assertSame(
+			0,
+			has_action( 'admin_init', array( $this->migration, 'migrate' ) ),
+			'The migration should add `migrate()` to the `admin_init` action at priority 0, so it runs in `Plugin.php` registration order.'
+		);
 	}
 
 	public function test_migrate_without_using_proxy() {

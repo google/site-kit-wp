@@ -439,7 +439,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 *
 	 * @since 1.140.0
 	 * @since 1.185.0 Added the two-factor authentication error message.
-	 * @since n.e.x.t Added the duplicate email error message.
+	 * @since 1.191.0 Added the duplicate email error message.
 	 *
 	 * @param WP_Error $error WP_Error instance.
 	 * @return WP_Error $error WP_Error instance.

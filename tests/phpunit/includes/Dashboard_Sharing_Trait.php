@@ -27,7 +27,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 /**
  * Trait for testing a REST datapoint that a view-only user reads through Dashboard Sharing, with a fake Google API.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @access private
  * @ignore
  */
@@ -39,7 +39,7 @@ trait Dashboard_Sharing_Trait {
 	/**
 	 * The `Authorization` header of each request that a fake Google API of `fake_google_api()` answered, by the host of the API, such as `analyticsdata.googleapis.com`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @var array
 	 */
 	protected $google_api_authorizations = array();
@@ -47,7 +47,7 @@ trait Dashboard_Sharing_Trait {
 	/**
 	 * Connects Site Kit, and signs the given user in to Google with the token `valid-token` and the given scopes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param int      $user_id The ID of the user, such as the administrator who owns the shared modules.
 	 * @param string[] $scopes  The scopes the user granted besides the required ones, such as `Analytics_4::READONLY_SCOPE`.
@@ -69,7 +69,7 @@ trait Dashboard_Sharing_Trait {
 	/**
 	 * Shares the given modules with the Editor role.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param string[] $module_slugs The slugs of the modules, such as `analytics-4`.
 	 */
@@ -82,7 +82,7 @@ trait Dashboard_Sharing_Trait {
 	/**
 	 * Creates an editor who can view the shared dashboard without an account of their own.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @return int The editor's user ID.
 	 */
@@ -104,7 +104,7 @@ trait Dashboard_Sharing_Trait {
 	 * server. So a class that calls this unsets `$GLOBALS['wp_rest_server']` in
 	 * its `tear_down()` too.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param Modules $modules The modules the REST routes answer from.
 	 */
@@ -122,7 +122,7 @@ trait Dashboard_Sharing_Trait {
 	 * The fake API saves the `Authorization` header of each request it answers
 	 * in `$google_api_authorizations`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param Google_Client[] $clients The clients, such as a module's client and the client of its owner.
 	 * @param callable        $answer  Gets each request that has a token, and returns the response of the fake API.
@@ -150,7 +150,7 @@ trait Dashboard_Sharing_Trait {
 	 * it was built for, so a test that switches users needs its own.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t Moved from `Get_Benchmarking_DataTest`, and takes the modules the capabilities are checked against.
+	 * @since 1.191.0 Moved from `Get_Benchmarking_DataTest`, and takes the modules the capabilities are checked against.
 	 *
 	 * @param int     $user_id The user the capabilities are resolved for.
 	 * @param Modules $modules The modules the capabilities are checked against.

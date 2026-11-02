@@ -25,6 +25,7 @@ import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
  * Internal dependencies
  */
 import type { Registry, Select } from 'googlesitekit-data';
+import type { ErrorObject } from '@/js/util/errors';
 import type {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
@@ -93,14 +94,15 @@ export interface FeatureSetup {
 	resumeCTALabel?: string;
 	// The module to activate, for `setup-flow` features.
 	moduleSlug?: string;
-	// Target override for `setup-flow` features that are not module activation.
+	// The setup destination for `setup-flow` features. Where `moduleSlug` is also
+	// set, the module is activated first and this replaces its own setup URL.
 	getSetupURL?: ( select: Select ) => string | undefined;
 	// Target override for in-progress setups that can be resumed.
 	getResumeURL?: ( select: Select ) => string | undefined;
 	// In-progress check for setups that have started but are unfinished.
 	isInProgress?: ( select: Select ) => boolean | undefined;
 	// The enable routine for `background-toggle` features.
-	activate?: ( ...args: never[] ) => unknown;
+	activate?: ( registry: Registry ) => Promise< { error?: ErrorObject } >;
 	// Opens the existing surface over the hub, for `in-place-panel` features.
 	open?: ( registry: Registry ) => void;
 	// Completion check, overriding the default module-connected check.
@@ -124,6 +126,9 @@ export interface FeatureSettings {
 	goalCategories: FeatureCategorySlug[];
 	addedInVersion: string;
 	setup: FeatureSetup;
+	// Rendered once on the hub, for setup work that runs on load, such as
+	// resuming a setup after the user returns from granting permissions.
+	EffectComponent?: ComponentType;
 	// Hides the feature entirely when it returns false. Visible by default.
 	checkRequirements?: ( select: Select ) => boolean | undefined;
 	detail?: FeatureDetail;
@@ -153,4 +158,5 @@ export interface PendingSetup {
 export interface FeatureDiscoveryState {
 	features: Record< string, Feature >;
 	pendingSetup: PendingSetup | null;
+	setupInProgress: Record< string, boolean >;
 }

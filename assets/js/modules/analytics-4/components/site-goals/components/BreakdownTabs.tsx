@@ -93,6 +93,9 @@ const BreakdownTabs: FC< BreakdownTabsProps > = ( {
 					<Tab
 						key={ tab.id }
 						className="mdc-tab--min-width"
+						// Without `aria-label`, the tab takes its name from its content,
+						// which includes the info icon named by the tooltip text.
+						aria-label={ tab.label }
 						focusOnActivate={ false }
 					>
 						<span className="mdc-tab__text-label">

@@ -13,10 +13,12 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 /**
  * Encodes an assembled benchmarking response for the browser.
  *
- * Thirteen months of daily counts written as objects repeat a field name and a
- * date on every day, and the dashboard keeps one response per date range in
- * browser storage. The encoded response leaves out the repeated field names and
- * the date of every day but the first, and stores each string once.
+ * The response has one count for each day of the selected period, up to
+ * `Report_Options::MAXIMUM_PERIOD_DAYS` days. Written as objects, the counts
+ * repeat a field name and a date on every day. The dashboard keeps one
+ * response per date range in browser storage. The encoded response leaves out
+ * the repeated field names and the date of every day but the first, and
+ * stores each string once.
  *
  * @since 1.189.0
  * @access private
@@ -32,7 +34,7 @@ final class Response_Encoder {
 	 * cards and the list of their attributes stay the same length.
 	 *
 	 * @since 1.189.0
-	 * @since n.e.x.t Encodes the key factor cards in place of the dimension rows, and reads `visits` in place of `visitors`.
+	 * @since 1.191.0 Encodes the key factor cards in place of the dimension rows, and reads `visits` in place of `visitors`.
 	 *
 	 * @param array $response Assembled response, with `visits`, `dailyTraffic` and `keyFactors`.
 	 * @return array The encoded response.
@@ -97,7 +99,7 @@ final class Response_Encoder {
 	 * Encodes a key factor card or one of its attributes, which travel in the
 	 * same layout.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param int   $kind_index The position the card's or the attribute's kind travels as.
 	 * @param array $row        Card or attribute to encode, with `label`, `current`, `previous` and `sharePct`.
@@ -157,7 +159,7 @@ final class Response_Encoder {
 	 * Encodes a share of the site's change, the only number the format keeps
 	 * decimals for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param mixed $value Value to encode.
 	 * @return float|null The rounded value, or null when there is no value.

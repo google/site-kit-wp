@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import benchmarkingData from '@/js/modules/analytics-4/datastore/__fixtures__/benchmarking-data.json';
+import { provideTimezone } from '@tests/js/test-utils';
 import { decodeBenchmarkingResponse } from './decodeBenchmarkingResponse';
 
 describe( 'decodeBenchmarkingResponse', () => {
@@ -84,29 +85,47 @@ describe( 'decodeBenchmarkingResponse', () => {
 		} );
 	} );
 
-	it( 'should date a thirteen-month series from its first day, with no day missing', () => {
-		const dailyVisits = new Array( 395 ).fill( 1 );
-		dailyVisits[ 200 ] = 0;
+	// Sydney's clocks go back an hour on `2026-04-05`, so that day lasts 25
+	// hours, and a walk that adds 24 hours to its midnight stays on the same
+	// date.
+	describe( 'in the Australia/Sydney time zone', () => {
+		let originalTimezone: string | undefined;
 
-		const decoded = decodeBenchmarkingResponse( [
-			1,
-			[],
-			'2025-08-18',
-			dailyVisits,
-			[ 0, 0 ],
-			[],
-			[],
-		] );
-		const dates = decoded?.dailyTraffic.map( ( { date } ) => date ) ?? [];
+		beforeEach( () => {
+			originalTimezone = provideTimezone( 'Australia/Sydney' );
+		} );
 
-		expect( dates ).toHaveLength( 395 );
-		expect( new Set( dates ).size ).toBe( 395 );
-		expect( dates[ 0 ] ).toBe( '2025-08-18' );
-		expect( dates[ dates.length - 1 ] ).toBe( '2026-09-16' );
-		// The zero day keeps its own date rather than being skipped.
-		expect( decoded?.dailyTraffic[ 200 ] ).toEqual( {
-			date: '2026-03-06',
-			visits: 0,
+		afterEach( () => {
+			provideTimezone( originalTimezone );
+		} );
+
+		it( 'should date a 90-day series from its first day, with no day missing', () => {
+			// The longest series the server sends, over the clock change.
+			const dailyVisits = new Array( 90 ).fill( 1 );
+			dailyVisits[ 45 ] = 0;
+
+			const decoded = decodeBenchmarkingResponse( [
+				1,
+				[],
+				'2026-02-01',
+				dailyVisits,
+				[ 0, 0 ],
+				[],
+				[],
+			] );
+			const dates =
+				decoded?.dailyTraffic.map( ( { date } ) => date ) ?? [];
+
+			expect( dates ).toHaveLength( 90 );
+			expect( new Set( dates ).size ).toBe( 90 );
+			expect( dates[ 0 ] ).toBe( '2026-02-01' );
+			expect( dates[ 64 ] ).toBe( '2026-04-06' );
+			expect( dates[ dates.length - 1 ] ).toBe( '2026-05-01' );
+			// The zero day keeps its own date rather than being skipped.
+			expect( decoded?.dailyTraffic[ 45 ] ).toEqual( {
+				date: '2026-03-18',
+				visits: 0,
+			} );
 		} );
 	} );
 

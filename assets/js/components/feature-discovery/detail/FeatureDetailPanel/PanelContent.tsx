@@ -25,7 +25,7 @@ import { FC, Fragment } from 'react';
  * WordPress dependencies
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
-import { useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -67,6 +67,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 	const breakpoint = useBreakpoint();
 
 	const [ activeIndex, setActiveIndex ] = useState( initialActiveIndex );
+	const contentRef = useRef< HTMLDivElement >( null );
 
 	const baseID = useInstanceID(
 		PanelContent,
@@ -95,6 +96,10 @@ const PanelContent: FC< PanelContentProps > = ( {
 	];
 
 	const size = breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM;
+
+	useEffect( () => {
+		contentRef.current?.parentElement?.scrollTo( { top: 0 } );
+	}, [ activeIndex ] );
 
 	return (
 		<Fragment>
@@ -130,6 +135,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 							className="googlesitekit-feature-details-panel__content"
 							id={ tabPanelID }
 							key={ tabPanelID }
+							ref={ contentRef }
 							role="tabpanel"
 							tabIndex={ 0 }
 						>

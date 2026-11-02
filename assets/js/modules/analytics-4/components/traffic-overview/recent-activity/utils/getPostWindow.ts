@@ -37,7 +37,7 @@ export interface PostWindow {
  * in either time zone, and adds no traffic, since the post had none before it
  * was published.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {string} publishedAt   The publish time in ISO 8601 format, e.g. `2026-09-24T14:05:00Z`.
  * @param {string} referenceDate The reference date, e.g. `2026-10-08`.

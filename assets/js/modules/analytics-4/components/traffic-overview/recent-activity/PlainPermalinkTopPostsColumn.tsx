@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { usePlainPermalinkTopPostsColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePlainPermalinkTopPostsColumn';
+import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 
 const PlainPermalinkTopPostsColumn: FC = () => {
 	const { rows, loading, error, retry, zeroState } =
@@ -45,6 +46,7 @@ const PlainPermalinkTopPostsColumn: FC = () => {
 			error={ error }
 			onRetry={ retry }
 			zeroState={ zeroState }
+			ErrorComponent={ RecentActivityErrorNotice }
 		/>
 	);
 };

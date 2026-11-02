@@ -59,7 +59,7 @@ function readString( strings: string[], index: unknown ): string | null {
  * plotted day.
  *
  * @since 1.189.0
- * @since n.e.x.t Gives each row its count as `visits` in place of `visitors`.
+ * @since 1.191.0 Gives each row its count as `visits` in place of `visitors`.
  *
  * @param {*}     firstDate   The first plotted day, as `YYYY-MM-DD`. Read only when there are counts to date.
  * @param {Array} dailyVisits One visit count per day, from that day on.
@@ -91,7 +91,7 @@ function decodeDailyTraffic(
  * Decodes a key factor card or one of its attributes, which travel in the same
  * layout.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {*}     row     The encoded card or attribute.
  * @param {Array} kinds   The kinds in the order they travel as, from `BENCHMARKING_KEY_FACTOR_KINDS` or `BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS`.
@@ -130,7 +130,7 @@ function decodeKeyFactorRow< Kind extends string >(
 /**
  * Decodes the key factor cards, each with the attributes at its own position.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Array} cards      The encoded cards, in rank order.
  * @param {Array} attributes One list of encoded attributes per card, in the same order.
@@ -176,7 +176,7 @@ function decodeKeyFactors(
  * Decodes an encoded benchmarking response.
  *
  * @since 1.189.0
- * @since n.e.x.t Decodes the key factor cards in place of the dimension rows, and returns `visits` in place of `visitors`.
+ * @since 1.191.0 Decodes the key factor cards in place of the dimension rows, and returns `visits` in place of `visitors`.
  *
  * @param {*} encoded The encoded response.
  * @return {Object|null} The decoded response, or null when it cannot be read.

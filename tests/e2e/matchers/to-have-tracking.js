@@ -17,19 +17,18 @@
  */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import { getDefaultOptions } from 'expect-puppeteer';
-import { ElementHandle, Page } from 'puppeteer';
+import { getDefaultOptions } from './default-options';
 
 /**
  * Asserts that the given instance has tracking loaded or not.
  *
  * @since 1.11.0
  *
- * @param {(Page|ElementHandle)} instance          Page or element handle instance.
- * @param {Object}               [options]         Matcher options.
- * @param {number}               [options.timeout] Maximum time to wait for selector in milliseconds.
+ * @param {Object} instance          Page or element handle instance.
+ * @param {Object} [options]         Matcher options.
+ * @param {number} [options.timeout] Maximum time to wait for selector in milliseconds.
  * @return {Object} Object with `pass` and `message` keys.
  */
 export async function toHaveTracking(

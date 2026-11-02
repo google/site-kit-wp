@@ -20,12 +20,18 @@ exports[`TopTrafficSourceDrivingAddToCartWidget should render correctly with the
             Top traffic source driving add to cart
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Channel (e.g. social, paid, search) that brought in the most add to cart events to your site"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Channel (e.g. social, paid, search) that brought in the most add to cart events to your site
+            </span>
           </span>
         </div>
         <div
@@ -78,12 +84,18 @@ exports[`TopTrafficSourceDrivingAddToCartWidget should render the generic error 
           Top traffic source driving add to cart
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Channel (e.g. social, paid, search) that brought in the most add to cart events to your site"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Channel (e.g. social, paid, search) that brought in the most add to cart events to your site
+          </span>
         </span>
       </div>
       <div
@@ -153,12 +165,18 @@ exports[`TopTrafficSourceDrivingAddToCartWidget should render the insufficient p
           Top traffic source driving add to cart
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Channel (e.g. social, paid, search) that brought in the most add to cart events to your site"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Channel (e.g. social, paid, search) that brought in the most add to cart events to your site
+          </span>
         </span>
       </div>
       <div
@@ -224,12 +242,18 @@ exports[`TopTrafficSourceDrivingAddToCartWidget should render the loading state 
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Channel (e.g. social, paid, search) that brought in the most add to cart events to your site"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Channel (e.g. social, paid, search) that brought in the most add to cart events to your site
+              </span>
             </span>
           </span>
         </div>

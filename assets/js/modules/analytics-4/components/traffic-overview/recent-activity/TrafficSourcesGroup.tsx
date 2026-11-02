@@ -62,7 +62,7 @@ interface TrafficSourcesGroupProps {
  * Gets the dimension value of the first row of a report, which is the top
  * value of a report ordered by visitors.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} [report] The report, which is `undefined` while it loads.
  * @return {string} The dimension value, or `NO_VALUE` when the report has no rows.
@@ -114,12 +114,14 @@ const TrafficSourcesGroup: FC< TrafficSourcesGroupProps > = ( {
 				value={ getTopDimensionValue( topChannel.report ) }
 				loading={ topChannel.loading }
 				error={ topChannel.error }
+				onRetry={ topChannel.retry }
 			/>
 			<LatestPostMetricRow
 				label={ __( 'Top referring site', 'google-site-kit' ) }
 				value={ getTopDimensionValue( topReferrer.report ) }
 				loading={ topReferrer.loading }
 				error={ topReferrer.error }
+				onRetry={ topReferrer.retry }
 			/>
 			{ canViewSearchConsole && (
 				<LatestPostMetricRow
@@ -128,6 +130,7 @@ const TrafficSourcesGroup: FC< TrafficSourcesGroupProps > = ( {
 					loading={ topKeyword.loading }
 					error={ topKeyword.error }
 					moduleSlug={ MODULE_SLUG_SEARCH_CONSOLE }
+					onRetry={ topKeyword.retry }
 				/>
 			) }
 		</LatestPostTile>

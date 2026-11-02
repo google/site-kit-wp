@@ -278,6 +278,180 @@ describe( 'core/feature-discovery features', () => {
 				).toThrow( 'slug is required to set up a feature.' );
 			} );
 
+			it( 'should omit the detail panel from UI snapshots so that it does not reopen on return', async () => {
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+							activate: () => Promise.resolve( {} ),
+						},
+					} )
+				);
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue(
+						FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+						'test-feature'
+					);
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.setupFeature( 'test-feature' );
+
+				await registry.dispatch( CORE_UI ).createSnapshot();
+
+				const { value: snapshot } = await getItem(
+					`datastore::cache::${ CORE_UI }`
+				);
+
+				expect( snapshot ).not.toHaveProperty(
+					FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
+				);
+			} );
+
+			describe.each( [
+				FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+				FEATURE_SETUP_TYPES.SETUP_FLOW,
+			] )( '%s setup progress', ( setupType ) => {
+				it.each( [ 'success', 'error', 'rejection' ] )(
+					'should track progress for the feature and clear it on %s',
+					async ( outcome ) => {
+						const error = new Error( 'Setup failed' );
+
+						let resolveSetup!: ( result: {
+							error?: Error;
+						} ) => void;
+
+						let rejectSetup!: ( reason: Error ) => void;
+
+						const activation = new Promise< { error?: Error } >(
+							( resolve, reject ) => {
+								resolveSetup = resolve;
+								rejectSetup = reject;
+							}
+						);
+
+						function activate() {
+							return activation;
+						}
+
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.registerFeature(
+								'test-feature',
+								createSettings( {
+									setup: {
+										type: setupType,
+										moduleSlug: 'test-module',
+										activate,
+									},
+								} )
+							);
+
+						jest.spyOn(
+							registry.dispatch( CORE_MODULES ),
+							'activateModule'
+						).mockImplementation( activate );
+
+						const { isSetupInProgress } = registry.select(
+							CORE_FEATURE_DISCOVERY
+						);
+
+						expect( isSetupInProgress( 'test-feature' ) ).toBe(
+							false
+						);
+
+						const setup = registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' );
+
+						expect( isSetupInProgress( 'test-feature' ) ).toBe(
+							true
+						);
+
+						expect( isSetupInProgress( 'other-feature' ) ).toBe(
+							false
+						);
+
+						if ( outcome === 'rejection' ) {
+							rejectSetup( error );
+
+							await expect( setup ).resolves.toEqual( { error } );
+						} else {
+							const result = outcome === 'error' ? { error } : {};
+
+							resolveSetup( result );
+
+							await expect( setup ).resolves.toEqual( result );
+						}
+
+						expect( isSetupInProgress( 'test-feature' ) ).toBe(
+							false
+						);
+
+						expect(
+							registry
+								.select( CORE_FEATURE_DISCOVERY )
+								.getErrorForAction( 'setupFeature', [
+									'test-feature',
+								] )
+						).toEqual( outcome === 'success' ? undefined : error );
+					}
+				);
+			} );
+
+			it( 'should store a synchronous activation error and clear it after a successful retry', async () => {
+				const error = new Error( 'Activation failed' );
+
+				const activate = jest
+					.fn()
+					.mockResolvedValue( {} )
+					.mockImplementationOnce( () => {
+						throw error;
+					} );
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+							activate,
+						},
+					} )
+				);
+
+				const { setupFeature } = registry.dispatch(
+					CORE_FEATURE_DISCOVERY
+				);
+
+				const { getErrorForAction, isSetupInProgress } =
+					registry.select( CORE_FEATURE_DISCOVERY );
+
+				await expect( setupFeature( 'test-feature' ) ).resolves.toEqual(
+					{
+						error,
+					}
+				);
+
+				expect(
+					getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBe( error );
+
+				expect( isSetupInProgress( 'test-feature' ) ).toBe( false );
+
+				await expect( setupFeature( 'test-feature' ) ).resolves.toEqual(
+					{}
+				);
+
+				expect(
+					getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeUndefined();
+
+				expect( isSetupInProgress( 'test-feature' ) ).toBe( false );
+			} );
+
 			it( 'should resolve for a registered feature', async () => {
 				registry
 					.dispatch( CORE_FEATURE_DISCOVERY )
@@ -510,6 +684,237 @@ describe( 'core/feature-discovery features', () => {
 				expect( activateModuleSpy ).not.toHaveBeenCalled();
 				expect( navigateTo ).not.toHaveBeenCalled();
 				expect( await consumePendingSetup() ).toBeNull();
+			} );
+
+			describe( 'for a setup-flow feature with both a module and a setup URL', () => {
+				const overrideURL =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&expressSetup=true';
+				const reauthURL = 'http://example.com/reauth';
+
+				function registerFeatureWithOverride() {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+								moduleSlug: 'test-module',
+								getSetupURL: () => overrideURL,
+							},
+						} )
+					);
+				}
+
+				it( 'should activate the module first, then navigate to the override URL', async () => {
+					registerFeatureWithOverride();
+					global.history.replaceState( {}, '', '/#/whats-new' );
+
+					const activateModule = jest
+						.spyOn(
+							registry.dispatch( CORE_MODULES ),
+							'activateModule'
+						)
+						.mockResolvedValue( {
+							response: {
+								success: true,
+								moduleReauthURL: reauthURL,
+							},
+						} );
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( {} );
+
+					expect( activateModule ).toHaveBeenCalledWith(
+						'test-module'
+					);
+					expect( navigateTo ).toHaveBeenCalledTimes( 1 );
+					expect( navigateTo ).toHaveBeenCalledWith( overrideURL );
+					expect(
+						activateModule.mock.invocationCallOrder[ 0 ]
+					).toBeLessThan( navigateTo.mock.invocationCallOrder[ 0 ] );
+					expect( await consumePendingSetup() ).toEqual( {
+						featureSlug: 'test-feature',
+						returnTab: '/whats-new',
+					} );
+				} );
+
+				it( 'should navigate to the override URL even when the module has no setup component', async () => {
+					registerFeatureWithOverride();
+					jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					).mockResolvedValue( {
+						response: {
+							success: true,
+							moduleReauthURL: reauthURL,
+						},
+					} );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( navigateTo ).toHaveBeenCalledWith( overrideURL );
+				} );
+
+				it( 'should fall back to the module reauth URL when the override is undefined', async () => {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+								moduleSlug: 'test-module',
+								getSetupURL: () => undefined,
+							},
+						} )
+					);
+					registerSetupComponent();
+					jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					).mockResolvedValue( {
+						response: {
+							success: true,
+							moduleReauthURL: reauthURL,
+						},
+					} );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( navigateTo ).toHaveBeenCalledWith( reauthURL );
+				} );
+
+				it( 'should not record or navigate when activation fails', async () => {
+					registerFeatureWithOverride();
+
+					const error = {
+						code: 'activation_failed',
+						message: 'Could not activate.',
+						data: { status: 500 },
+					};
+					fetchMock.postOnce( activationEndpoint, {
+						body: error,
+						status: 500,
+					} );
+
+					const result = await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( result ).toEqual( { error } );
+					expect( console ).toHaveErrored();
+					expect( navigateTo ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+			} );
+
+			describe( 'for a background-toggle feature', () => {
+				const error = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				function registerBackgroundToggleFeature(
+					activate?: ( activateRegistry: Registry ) => Promise< {
+						error?: typeof error;
+					} >
+				) {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+								activate,
+							},
+						} )
+					);
+				}
+
+				it( 'should run the activate routine with the registry and keep the user on the hub', async () => {
+					const activate = jest.fn().mockResolvedValue( {} );
+					registerBackgroundToggleFeature( activate );
+
+					const activateModule = jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					);
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( {} );
+
+					expect( activate ).toHaveBeenCalledTimes( 1 );
+					expect( activate ).toHaveBeenCalledWith(
+						expect.objectContaining( {
+							select: expect.any( Function ),
+							dispatch: expect.any( Function ),
+						} )
+					);
+					expect( activateModule ).not.toHaveBeenCalled();
+					expect( navigateTo ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+
+				it( 'should return the error from the activate routine and store it for the setupFeature action', async () => {
+					registerBackgroundToggleFeature(
+						jest.fn().mockResolvedValue( { error } )
+					);
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( { error } );
+
+					expect(
+						registry
+							.select( CORE_FEATURE_DISCOVERY )
+							.getErrorForAction( 'setupFeature', [
+								'test-feature',
+							] )
+					).toEqual( error );
+				} );
+
+				it( 'should clear any stale setupFeature action error once the activate routine succeeds', async () => {
+					registerBackgroundToggleFeature(
+						jest.fn().mockResolvedValue( {} )
+					);
+
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setErrorForAction( error, 'setupFeature', [
+							'test-feature',
+						] );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect(
+						registry
+							.select( CORE_FEATURE_DISCOVERY )
+							.getErrorForAction( 'setupFeature', [
+								'test-feature',
+							] )
+					).toBeUndefined();
+				} );
+
+				it( 'should resolve to an empty object when the feature has no activate routine', async () => {
+					registerBackgroundToggleFeature();
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( {} );
+				} );
 			} );
 
 			describe( 'for an in-place-panel feature', () => {

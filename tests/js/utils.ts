@@ -203,7 +203,7 @@ export function provideUserAuthentication(
  * Provides site information data to the given registry.
  *
  * @since 1.17.0
- * @since n.e.x.t Sets `usingPlainPermalinks` to `false` by default.
+ * @since 1.191.0 Sets `usingPlainPermalinks` to `false` by default.
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
@@ -972,7 +972,7 @@ export const dragInput = {
 /**
  * Creates a library event with real closest-edge metadata.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} sourceData Source item data.
  * @param {Object} targetData Target item data, or null for a canceled drag.

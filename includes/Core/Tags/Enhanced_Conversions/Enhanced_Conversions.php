@@ -38,7 +38,7 @@ class Enhanced_Conversions {
 	/**
 	 * Developer ID for hits that carry user-provided data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 */
 	const USER_DATA_DEVELOPER_ID = 'dZjRkOT';
 
@@ -108,7 +108,7 @@ class Enhanced_Conversions {
 	 *
 	 * @since 1.159.0
 	 * @since 1.160.0 Add the hashed user data to the GTag if it exists.
-	 * @since n.e.x.t Set the user data developer ID along with the user data.
+	 * @since 1.191.0 Set the user data developer ID along with the user data.
 	 *
 	 * @param GTag $gtag GTag instance.
 	 */

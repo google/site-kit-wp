@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import GoogleChart from '@/js/components/GoogleChart';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -49,16 +50,13 @@ import KeyActionChartTile, {
 
 type ChartInputs = Partial< Omit< KeyActionChartReportArgs, 'dates' > >;
 
-const mockGoogleChart = jest.fn();
+jest.mock( '@/js/components/GoogleChart', () =>
+	jest
+		.requireActual( '@tests/js/mock-google-chart-utils' )
+		.mockGoogleChartModule()
+);
 
-// Google Charts draws nothing under Jest, so this stub records the props a
-// test reads.
-jest.mock( '@/js/components/GoogleChart', () => {
-	return function GoogleChartStub( props: Record< string, unknown > ) {
-		mockGoogleChart( props );
-		return <div className="googlesitekit-chart" />;
-	};
-} );
+const mockGoogleChart = jest.mocked( GoogleChart );
 
 const dates = { startDate: '2020-08-11', endDate: '2020-09-07' };
 
@@ -173,7 +171,7 @@ describe( 'KeyActionChartTile', () => {
 	}
 
 	/**
-	 * Waits for the tile to render `GoogleChartStub`, then reads what it passed.
+	 * Waits for the tile to render the chart, then reads what it passed.
 	 *
 	 * @since 1.188.0
 	 *

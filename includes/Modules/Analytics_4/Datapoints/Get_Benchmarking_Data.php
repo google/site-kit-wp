@@ -72,9 +72,10 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 * analysis is site-wide, so there is no per-page version of it to ask for.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t The longest period it accepts changed from 197 days to 90.
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date, or for a period longer than half of `Report_Options::DAILY_SERIES_DAYS`.
+	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date, for a `startDate` later than `endDate`, or for a period longer than `Report_Options::MAXIMUM_PERIOD_DAYS` days.
 	 * @throws Missing_Required_Param_Exception Thrown when `startDate` or `endDate` is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
@@ -112,18 +113,16 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 			);
 		}
 
-		// The compare period is as long as the selected period, and both have to fit
-		// in the daily series. Otherwise `Response_Builder` counts too few visitors
-		// for the compare period.
-		$maximum_period_days = intdiv( Report_Options::DAILY_SERIES_DAYS, 2 );
-		$period_days         = ( new DateTimeImmutable( $start_date ) )->diff( new DateTimeImmutable( $end_date ) )->days + 1;
+		// No preset date range is longer than `Report_Options::MAXIMUM_PERIOD_DAYS`,
+		// so refuse a longer period before any report runs.
+		$period_days = ( new DateTimeImmutable( $start_date ) )->diff( new DateTimeImmutable( $end_date ) )->days + 1;
 
-		if ( $period_days > $maximum_period_days ) {
+		if ( $period_days > Report_Options::MAXIMUM_PERIOD_DAYS ) {
 			return $this->invalid_param_error(
 				sprintf(
-					/* translators: %d: the most days the period can have, e.g. 197 */
+					/* translators: %d: the maximum number of days the period can have, e.g. 90 */
 					__( 'The period from startDate to endDate must not be longer than %d days.', 'google-site-kit' ),
-					$maximum_period_days
+					Report_Options::MAXIMUM_PERIOD_DAYS
 				)
 			);
 		}

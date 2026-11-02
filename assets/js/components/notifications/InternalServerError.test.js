@@ -98,4 +98,17 @@ describe( 'InternalServerError', () => {
 
 		expect( scrollToSpy ).not.toHaveBeenCalled();
 	} );
+
+	it( 'should render nothing and not scroll when the internal server error has `showGlobalNotification` set to `false`', () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: 'module-setup-error',
+			description: 'Error message',
+			showGlobalNotification: false,
+		} );
+
+		const { container } = render( <InternalServerError />, { registry } );
+
+		expect( container ).toBeEmptyDOMElement();
+		expect( scrollToSpy ).not.toHaveBeenCalled();
+	} );
 } );

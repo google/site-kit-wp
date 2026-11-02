@@ -848,7 +848,7 @@ final class Assets {
 	 * This should not include anything remotely expensive to compute.
 	 *
 	 * @since 1.2.0
-	 * @since n.e.x.t Adds `usingPlainPermalinks`.
+	 * @since 1.191.0 Adds `usingPlainPermalinks`.
 	 *
 	 * @return array The base inline data to be output.
 	 */
@@ -1256,7 +1256,7 @@ final class Assets {
 	 * every post of the type. The path starts with the path of the reference
 	 * site URL, which the dashboard builds its page links from.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param string|null $post_type The post type name, or `null` for none.
 	 * @return string|null The path, such as `/product/`, or `null` for no post type, no permalink structure, or a structure that starts with a rewrite tag.

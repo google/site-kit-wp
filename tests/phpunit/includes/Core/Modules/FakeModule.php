@@ -191,7 +191,7 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 	/**
 	 * Gets the Google client the latest request ran with.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @return Google_Site_Kit_Client|null The client, or null if no request has run yet.
 	 */

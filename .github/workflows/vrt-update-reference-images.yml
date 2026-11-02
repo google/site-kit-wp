@@ -41,6 +41,13 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - name: Remove the label
         if: github.event_name == 'pull_request'
         env:
@@ -56,6 +63,13 @@ jobs:
     outputs:
       playwright-version: ${{ steps.playwright.outputs.version }}
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       # For a PR, this is its merge commit: what the VRT check renders.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
         with:
@@ -153,6 +167,13 @@ jobs:
     needs: render
     timeout-minutes: 10
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - name: Download changed reference images
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
         with:
