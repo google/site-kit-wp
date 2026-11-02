@@ -188,6 +188,9 @@ new REST_Route(
             return new WP_REST_Response( $this->dismissed_prompts->get() );
         },
         'permission_callback' => $can_dismiss_prompt,
+    ),
+    array(
+        'schema' => array( Dismissed_Prompts_Schema::class, 'get' ),
     )
 );
 ```
@@ -209,9 +212,7 @@ new REST_Route(
 
 **POST `/wp-json/google-site-kit/v1/core/user/data/dismiss-prompt`**
 
-Dismiss a prompt with optional expiration. A missing/empty `slug` returns a
-`missing_required_param` `WP_Error` (HTTP 400). Only a positive integer `expiration` is
-used; otherwise the dismissal is permanent.
+Dismiss a prompt, with an optional `expiration` in seconds. A request without `data` gets a 400 `rest_missing_callback_param` error before the callback runs. A `slug` that is missing, empty or not a string, or an `expiration` that is not an integer, gets a 400 `rest_invalid_param` error. WordPress checks a required property and `minLength` only from 5.5. On an older version, the callback itself rejects a missing or empty `slug`, with the same error. With no `expiration`, or one of 0 or less, the dismissal is permanent.
 
 **Location**: `includes/Core/Prompts/REST_Prompts_Controller.php`
 
@@ -223,13 +224,10 @@ new REST_Route(
         'callback'            => function ( WP_REST_Request $request ) {
             $data = $request['data'];
 
+            // WordPress checks required properties and `minLength` only from 5.5.0,
+            // so an older version lets a request with no slug through to here.
             if ( empty( $data['slug'] ) ) {
-                return new WP_Error(
-                    'missing_required_param',
-                    /* translators: %s: Missing parameter name */
-                    sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
-                    array( 'status' => 400 )
-                );
+                return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
             }
 
             $expiration = Dismissed_Prompts::DISMISS_PROMPT_PERMANENTLY;
@@ -244,10 +242,26 @@ new REST_Route(
         'permission_callback' => $can_dismiss_prompt,
         'args'                => array(
             'data' => array(
-                'type'     => 'object',
-                'required' => true,
+                'type'        => 'object',
+                'description' => __( 'The prompt to dismiss.', 'google-site-kit' ),
+                'required'    => true,
+                'properties'  => array(
+                    'slug'       => array(
+                        'type'        => 'string',
+                        'description' => __( 'Slug of the prompt.', 'google-site-kit' ),
+                        'required'    => true,
+                        'minLength'   => 1,
+                    ),
+                    'expiration' => array(
+                        'type'        => 'integer',
+                        'description' => __( 'Seconds until the dismissal expires. Zero or less dismisses the prompt permanently.', 'google-site-kit' ),
+                    ),
+                ),
             ),
         ),
+    ),
+    array(
+        'schema' => array( Dismissed_Prompts_Schema::class, 'get' ),
     )
 );
 ```
