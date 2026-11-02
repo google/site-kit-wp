@@ -318,5 +318,8 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
   <div>
     PDFExportRoot
   </div>
+  <div>
+    SetupCTAOverlays
+  </div>
 </div>
 `;
