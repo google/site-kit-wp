@@ -70,7 +70,7 @@ on:
       - ready_for_review
 
 concurrency:
-  group: playwright-${{ github.ref }}
+  group: playwright-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
