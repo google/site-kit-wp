@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-// The Feature Discovery catalog's slug for the Key Metrics feature.
 export const KEY_METRICS_FEATURE_SLUG = 'key-metrics';
