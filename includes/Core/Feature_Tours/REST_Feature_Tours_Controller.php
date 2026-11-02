@@ -11,9 +11,10 @@
 namespace Google\Site_Kit\Core\Feature_Tours;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use WP_Error;
+use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -75,6 +76,7 @@ class REST_Feature_Tours_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.27.0
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -92,6 +94,9 @@ class REST_Feature_Tours_Controller {
 						return new WP_REST_Response( $this->dismissed_tours->get() );
 					},
 					'permission_callback' => $can_dismiss_tour,
+				),
+				array(
+					'schema' => array( Dismissed_Slugs_Schema::class, 'get' ),
 				)
 			),
 			new REST_Route(
@@ -101,13 +106,10 @@ class REST_Feature_Tours_Controller {
 					'callback'            => function ( WP_REST_Request $request ) {
 						$data = $request['data'];
 
+						// WordPress checks required properties and `minLength` only from 5.5.0,
+						// so an older version lets a request with no slug through to here.
 						if ( empty( $data['slug'] ) ) {
-							return new WP_Error(
-								'missing_required_param',
-								/* translators: %s: Missing parameter name */
-								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
-								array( 'status' => 400 )
-							);
+							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
 						}
 
 						$this->dismissed_tours->add( $data['slug'] );
@@ -117,10 +119,22 @@ class REST_Feature_Tours_Controller {
 					'permission_callback' => $can_dismiss_tour,
 					'args'                => array(
 						'data' => array(
-							'type'     => 'object',
-							'required' => true,
+							'type'        => 'object',
+							'description' => __( 'The feature tour to dismiss.', 'google-site-kit' ),
+							'required'    => true,
+							'properties'  => array(
+								'slug' => array(
+									'type'        => 'string',
+									'description' => __( 'Slug of the feature tour.', 'google-site-kit' ),
+									'required'    => true,
+									'minLength'   => 1,
+								),
+							),
 						),
 					),
+				),
+				array(
+					'schema' => array( Dismissed_Slugs_Schema::class, 'get' ),
 				)
 			),
 		);
