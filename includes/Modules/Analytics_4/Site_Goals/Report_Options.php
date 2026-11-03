@@ -94,7 +94,8 @@ class Report_Options {
 	/**
 	 * Gets the `eventName` filter that selects every lead event Analytics has found on the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
+	 * @since n.e.x.t Moved from `Email_Reporting\Report_Options::get_lead_event_filter()`, and made public.
 	 *
 	 * @return array Dimension filter array.
 	 */
@@ -151,7 +152,10 @@ class Report_Options {
 	/**
 	 * Gets the options of a report that counts the events an `eventName` filter selects.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
+	 * @since 1.188.0 Left the date range to the caller, so a discovery report can cover
+	 *                days of its own.
+	 * @since n.e.x.t Moved from `Email_Reporting\Report_Options::build_event_count_options()`, and made public.
 	 *
 	 * @param string|array $event_filter     Value for the `eventName` dimension filter. One event name,
 	 *                                       such as `purchase`, or a filter array, such as
@@ -180,7 +184,8 @@ class Report_Options {
 	/**
 	 * Gets the lead generation events Analytics has found on the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
+	 * @since n.e.x.t Moved from `Email_Reporting\Report_Options::get_detected_lead_events()`.
 	 *
 	 * @return array Lead event names, in the order
 	 *               `Conversion_Reporting_Events_Sync::LEAD_EVENT_NAMES` lists them.
@@ -192,7 +197,8 @@ class Report_Options {
 	/**
 	 * Adds a breakdown dimension to report options, and keeps the rows that have no data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
+	 * @since n.e.x.t Moved from `Email_Reporting\Report_Options::with_breakdown_dimension()`.
 	 *
 	 * @param array  $options          Report request options array.
 	 * @param string $custom_dimension Custom dimension slug to split the rows by, such as
