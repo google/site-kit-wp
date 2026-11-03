@@ -21,15 +21,12 @@
 	.googlesitekit-rrm-selected-questions-pane {
 		background: $c-site-kit-sk-10;
 		border-radius: $br-xs;
-		box-sizing: border-box;
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
 		padding-block: 16px 32px;
-		width: 100%;
 
 		@media (min-width: $bp-desktop) {
-			flex-shrink: 0;
 			width: 320px;
 		}
 	}
@@ -42,7 +39,6 @@
 	}
 
 	.googlesitekit-rrm-selected-questions-pane__title {
-		color: $c-surfaces-on-surface;
 		margin: 0;
 
 		&:focus {
@@ -51,12 +47,10 @@
 	}
 
 	.googlesitekit-rrm-selected-questions-pane__description {
-		color: $c-surfaces-on-surface;
 		margin: 0;
 	}
 
 	.googlesitekit-rrm-selected-questions-pane__list {
-
 		.googlesitekit-draggable-list__item {
 			display: block;
 		}
