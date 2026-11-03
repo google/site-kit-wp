@@ -61,7 +61,7 @@ export function useSiteGoalsBreakdownResultCopy(
 	if ( scope === GOAL_TYPES.ECOMMERCE ) {
 		return {
 			successTitle: __(
-				'Success! Event breakdown is now active',
+				'Success! Sales plugin breakdown is now active',
 				'google-site-kit'
 			),
 			successDescription: createInterpolateElement(
@@ -72,7 +72,7 @@ export function useSiteGoalsBreakdownResultCopy(
 				{ a: learnMoreLink }
 			),
 			permissionsErrorTitle: __(
-				'Event breakdown setup failed',
+				'Sales plugin breakdown setup failed',
 				'google-site-kit'
 			),
 		};
@@ -82,7 +82,7 @@ export function useSiteGoalsBreakdownResultCopy(
 	if ( scope === BREAKDOWN_SCOPE_BOTH ) {
 		return {
 			successTitle: __(
-				'Success! Breakdown is now active',
+				'Success! Event breakdown is now active',
 				'google-site-kit'
 			),
 			successDescription: createInterpolateElement(
@@ -93,7 +93,7 @@ export function useSiteGoalsBreakdownResultCopy(
 				{ a: learnMoreLink }
 			),
 			permissionsErrorTitle: __(
-				'Sales plugin breakdown setup failed',
+				'Event breakdown setup failed',
 				'google-site-kit'
 			),
 		};

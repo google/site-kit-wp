@@ -54,7 +54,7 @@ on:
         default: '1'
 
 concurrency:
-  group: visual-regression-${{ github.ref }}
+  group: visual-regression-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
