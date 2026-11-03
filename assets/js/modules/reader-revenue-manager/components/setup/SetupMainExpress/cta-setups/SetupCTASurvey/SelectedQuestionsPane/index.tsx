@@ -182,7 +182,12 @@ const SelectedQuestionsPane: FC< SelectedQuestionsPaneProps > = ( {
 				/>
 			) : (
 				<div className="googlesitekit-rrm-selected-questions-pane__empty">
-					<EmptyStateGraphic aria-hidden="true" focusable="false" />
+					<EmptyStateGraphic
+						aria-hidden="true"
+						focusable="false"
+						height={ 147 }
+						width={ 147 }
+					/>
 				</div>
 			) }
 		</section>
