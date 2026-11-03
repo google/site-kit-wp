@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, MouseEvent } from 'react';
 
 /**
  * WordPress dependencies
@@ -55,12 +55,29 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 		[ post.permalink ]
 	);
 
-	function trackPostLinkClick() {
-		trackEvent(
+	async function handlePostLinkClick(
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) {
+		// A Command or Control click opens the link in a new tab or window, so
+		// this page stays open to send the event, and the browser handles the
+		// click.
+		const opensInNewTab = event.metaKey || event.ctrlKey;
+
+		// The default must be prevented before the `await`, or the browser
+		// leaves the page before the event is sent.
+		if ( ! opensInNewTab ) {
+			event.preventDefault();
+		}
+
+		await trackEvent(
 			`${ viewContext }_recent-activity`,
 			'click_post_link',
 			'latest-post-header'
 		);
+
+		if ( ! opensInNewTab ) {
+			global.location.assign( entityDashboardURL );
+		}
 	}
 
 	// The site time has no time zone suffix, so reading it as UTC and
@@ -84,7 +101,7 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 				<Link
 					className="googlesitekit-traffic-overview__latest-post-title"
 					href={ entityDashboardURL }
-					onClick={ trackPostLinkClick }
+					onClick={ handlePostLinkClick }
 				>
 					{ post.title }
 				</Link>
