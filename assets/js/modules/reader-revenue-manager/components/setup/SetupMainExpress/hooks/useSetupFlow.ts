@@ -183,8 +183,8 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 		);
 
 		if ( nextStep ) {
-			// A stored error clears only when the same request runs again, so
-			// drop any the completed step left, or the next step shows them.
+			// A stored error clears only when the same request runs again, so drop
+			// any errors the completed step left, or the next step shows them.
 			const { clearActionErrors, clearSelectorErrors } =
 				registry.dispatch( MODULES_READER_REVENUE_MANAGER );
 

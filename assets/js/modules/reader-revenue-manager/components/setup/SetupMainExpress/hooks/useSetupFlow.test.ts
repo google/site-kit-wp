@@ -654,7 +654,8 @@ describe( 'useSetupFlow', () => {
 			);
 			expect( getErrors() ).toEqual( [] );
 
-			// As a failed request on the step just opened does.
+			// Simulate a request failing on the newly opened step, whose error
+			// should stay.
 			actHook( () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
