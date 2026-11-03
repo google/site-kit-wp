@@ -104,8 +104,9 @@ class Insight_Payload_Builder {
 	 *                                            `engagement_rate` of the 28 days that end on the end date.
 	 *     @type array  $previous                 The same fields for the 28 days before them.
 	 *     @type int    $yoy_current_conversions  Optional. Conversions of the current period, 364 days
-	 *                                            earlier. Sent only when the property was created before
-	 *                                            00:00 UTC on the first day of the year-ago previous period.
+	 *                                            earlier. Sent only for the whole widget, and only when the
+	 *                                            property was created before 00:00 UTC on the first day of
+	 *                                            the year-ago previous period.
 	 *     @type int    $yoy_previous_conversions Optional. Conversions of the previous period, 364 days
 	 *                                            earlier, sent with the other year-ago count.
 	 * }
@@ -126,14 +127,15 @@ class Insight_Payload_Builder {
 		$tab              = (string) $tab;
 		$custom_dimension = '' === $tab ? '' : $this->get_breakdown_dimension( $goal_type );
 		$group_dimension  = '' === $custom_dimension ? '' : Analytics_4::CUSTOM_EVENT_PREFIX . $custom_dimension;
-		$sends_year_ago   = $this->sends_year_ago_counts( $settings['propertyCreateTime'] ?? 0, $periods['year_ago_previous']['startDate'] );
+
+		$should_send_year_ago_counts = $this->should_send_year_ago_counts( $tab, $settings['propertyCreateTime'] ?? 0, $periods['year_ago_previous']['startDate'] );
 
 		$requests = array(
 			'engagement'  => $report_options->get_engagement_options(),
 			'key_actions' => $report_options->get_key_action_options( $goal_type, $custom_dimension ),
 		);
 
-		if ( $sends_year_ago ) {
+		if ( $should_send_year_ago_counts ) {
 			$year_ago_report_options          = new Report_Options( $periods['year_ago_current'], $periods['year_ago_previous'], $detected_events );
 			$requests['year_ago_key_actions'] = $year_ago_report_options->get_key_action_options( $goal_type, $custom_dimension );
 		}
@@ -161,7 +163,7 @@ class Insight_Payload_Builder {
 			'previous'         => $this->build_period( $conversions['previous'], $sessions['previous'], $engagement_rates['previous'] ),
 		);
 
-		if ( $sends_year_ago ) {
+		if ( $should_send_year_ago_counts ) {
 			$year_ago_conversions = $this->get_period_totals( $reports['year_ago_key_actions'], $group_dimension, $tab, 'eventCount' );
 
 			$entry['yoy_current_conversions']  = (int) $year_ago_conversions['current'];
@@ -211,15 +213,23 @@ class Insight_Payload_Builder {
 	}
 
 	/**
-	 * Checks whether the property was created before the year-ago periods start.
+	 * Checks whether the entry sends the year-ago counts.
+	 *
+	 * A form or provider tab counts by its breakdown dimension, which may have no data for the
+	 * year-ago periods yet. So only the whole widget sends them.
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param string $tab                  Group the tab shows, or an empty string for the whole widget.
 	 * @param int    $property_create_time When the property was created, in milliseconds.
 	 * @param string $year_ago_start_date  First day of the year-ago previous period, as `YYYY-MM-DD`.
-	 * @return bool True when the property was created before 00:00 UTC on that day, false otherwise.
+	 * @return bool True for the whole widget of a property created before 00:00 UTC on that day, false otherwise.
 	 */
-	private function sends_year_ago_counts( $property_create_time, $year_ago_start_date ) {
+	private function should_send_year_ago_counts( $tab, $property_create_time, $year_ago_start_date ) {
+		if ( '' !== $tab ) {
+			return false;
+		}
+
 		// The setting is `0` until Site Kit reads the creation time from Analytics, so the property's age is not known yet.
 		if ( empty( $property_create_time ) ) {
 			return false;
@@ -265,12 +275,11 @@ class Insight_Payload_Builder {
 		}
 
 		// The email report decodes the response the same way, into the arrays `extract_report_rows()` reads.
-		$decoded = json_decode( wp_json_encode( $response ), true );
-		$reports = is_array( $decoded ) ? ( $decoded['reports'] ?? array() ) : array();
+		$reports = json_decode( wp_json_encode( $response ), true )['reports'];
 		$rows    = array();
 
 		foreach ( array_keys( $requests ) as $index => $request_key ) {
-			$rows[ $request_key ] = $this->report_processor->extract_report_rows( $reports[ $index ] ?? array() );
+			$rows[ $request_key ] = $this->report_processor->extract_report_rows( $reports[ $index ] );
 		}
 
 		return $rows;
