@@ -35,6 +35,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
 import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -52,6 +53,8 @@ import FeatureDetailPanel from './';
 
 describe( 'FeatureDetailPanel', () => {
 	let registry: Registry;
+
+	mockBrowserScrolling();
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
@@ -339,21 +342,30 @@ describe( 'FeatureDetailPanel', () => {
 
 		fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 
-		let finishSetup: ( value: Record< string, never > ) => void;
+		let finishSetup!: ( value: Record< string, never > ) => void;
 
-		const setupFeature = jest
-			.spyOn(
-				registry.dispatch( CORE_FEATURE_DISCOVERY ),
-				'setupFeature'
-			)
-			.mockImplementation(
-				() =>
-					new Promise( ( resolve ) => {
-						finishSetup = resolve;
-					} )
-			);
+		const activation = new Promise< Record< string, never > >(
+			( resolve ) => {
+				finishSetup = resolve;
+			}
+		);
 
-		setFeature( 'first' );
+		provideFeatures( registry, [
+			{
+				slug: 'background',
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					activate: () => activation,
+				},
+			},
+		] );
+
+		const setupFeature = jest.spyOn(
+			registry.dispatch( CORE_FEATURE_DISCOVERY ),
+			'setupFeature'
+		);
+
+		setFeature( 'background' );
 
 		const { getByRole, queryByRole } = render( <FeatureDetailPanel />, {
 			registry,
@@ -361,7 +373,7 @@ describe( 'FeatureDetailPanel', () => {
 
 		fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
 
-		expect( setupFeature ).toHaveBeenCalledWith( 'first' );
+		expect( setupFeature ).toHaveBeenCalledWith( 'background' );
 		expect( getByRole( 'dialog' ) ).toBeInTheDocument();
 		expect( getByRole( 'button', { name: 'Set up now' } ) ).toBeDisabled();
 
@@ -369,12 +381,11 @@ describe( 'FeatureDetailPanel', () => {
 			registry
 				.select( CORE_UI )
 				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
-		).toBe( 'first' );
+		).toBe( 'background' );
 
-		await act( () => {
+		await act( async () => {
 			finishSetup( {} );
-
-			return Promise.resolve();
+			await setupFeature.mock.results[ 0 ].value;
 		} );
 
 		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
@@ -387,7 +398,7 @@ describe( 'FeatureDetailPanel', () => {
 
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: { data: { triggerID: 'setup:feature_setup_first' } },
+				body: { data: { triggerID: 'setup:feature_setup_background' } },
 			} )
 		);
 	} );

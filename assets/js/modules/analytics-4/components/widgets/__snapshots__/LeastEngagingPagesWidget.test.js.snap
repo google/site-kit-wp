@@ -20,12 +20,18 @@ exports[`LeastEngagingPagesWidget should render correctly with the expected metr
             Least engaging pages
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Percentage of visitors that left without engagement with your site"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Percentage of visitors that left without engagement with your site
+            </span>
           </span>
         </div>
         <div
@@ -146,12 +152,18 @@ exports[`LeastEngagingPagesWidget should render the generic error variant when t
           Least engaging pages
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Percentage of visitors that left without engagement with your site"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Percentage of visitors that left without engagement with your site
+          </span>
         </span>
       </div>
       <div
@@ -221,12 +233,18 @@ exports[`LeastEngagingPagesWidget should render the insufficient permissions err
           Least engaging pages
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Percentage of visitors that left without engagement with your site"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Percentage of visitors that left without engagement with your site
+          </span>
         </span>
       </div>
       <div
@@ -292,12 +310,18 @@ exports[`LeastEngagingPagesWidget should render the loading state while resolvin
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Percentage of visitors that left without engagement with your site"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Percentage of visitors that left without engagement with your site
+              </span>
             </span>
           </span>
         </div>

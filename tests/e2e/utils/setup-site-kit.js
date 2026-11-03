@@ -17,13 +17,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { activatePlugin } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
+import { activatePlugin } from './activate-plugin';
 import { setSearchConsoleProperty, setSiteVerification } from '.';
 
 export async function setupSiteKit( {

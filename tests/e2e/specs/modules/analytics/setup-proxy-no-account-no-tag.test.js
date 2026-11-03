@@ -17,22 +17,16 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
 import {
 	activatePlugin,
 	createURL,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
-
-/**
- * Internal dependencies
- */
-import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
 	useRequestInterception,
+	visitAdminPage,
 } from '../../../utils';
 
 describe( 'setting up the Analytics module with no existing account and no existing tag via proxy', () => {

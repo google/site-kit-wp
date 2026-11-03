@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import PreviewBlock from '@/js/components/PreviewBlock';
-import ReportError from '@/js/components/ReportError';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -44,6 +43,7 @@ import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data
 import EngagementOutcomesGroup from './EngagementOutcomesGroup';
 import LatestPostHeader from './LatestPostHeader';
 import { PostReportArgs, getPostReportArgs } from './postReportOptions';
+import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 import TrafficSourcesGroup from './TrafficSourcesGroup';
 import VisitorBreakdownGroup from './VisitorBreakdownGroup';
 
@@ -101,7 +101,7 @@ const LatestPostPerformance: FC = () => {
 			</Typography>
 
 			{ !! recentContentError && (
-				<ReportError
+				<RecentActivityErrorNotice
 					moduleSlug={ MODULE_SLUG_ANALYTICS_4 }
 					error={ recentContentError }
 				/>

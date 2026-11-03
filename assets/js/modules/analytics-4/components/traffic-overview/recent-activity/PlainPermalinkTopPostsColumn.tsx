@@ -33,6 +33,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { usePlainPermalinkTopPostsColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePlainPermalinkTopPostsColumn';
 import { trackEvent } from '@/js/util';
+import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 
 const PlainPermalinkTopPostsColumn: FC = () => {
 	const viewContext = useViewContext();
@@ -58,6 +59,7 @@ const PlainPermalinkTopPostsColumn: FC = () => {
 			onRetry={ retry }
 			zeroState={ zeroState }
 			onLinkClick={ trackPostLinkClick }
+			ErrorComponent={ RecentActivityErrorNotice }
 		/>
 	);
 };

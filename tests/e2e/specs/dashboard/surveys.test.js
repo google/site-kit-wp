@@ -17,15 +17,10 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createURL } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import surveyResponse from '../../../../assets/js/components/surveys/__fixtures__/survey-single-question.json';
-import { setupSiteKit, useRequestInterception } from '../../utils';
+import { createURL, setupSiteKit, useRequestInterception } from '../../utils';
 
 describe( 'dashboard surveys', () => {
 	beforeAll( async () => {

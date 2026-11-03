@@ -24,6 +24,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { deleteItem } from '@/js/googlesitekit/api/cache';
+import {
+	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	act,
@@ -192,5 +197,58 @@ describe( 'StepSetupComplete', () => {
 				dashboardURL
 			)
 		);
+	} );
+
+	describe( 'when set up from the hub', () => {
+		const hubURL =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-features';
+
+		afterEach( async () => {
+			await deleteItem( FEATURE_DISCOVERY_SETUP_CACHE_KEY );
+		} );
+
+		it( 'should return to the hub when the newsletter sign-up setup was started there', async () => {
+			global.location.href = 'http://example.com/?cta=newsletter-signup';
+			await setPendingSetup( 'newsletter-signup', '/whats-new' );
+
+			const { findByRole, queryByRole } = render(
+				<StepSetupComplete onComplete={ onComplete } />,
+				{ registry }
+			);
+
+			fireEvent.click(
+				await findByRole( 'button', {
+					name: /Return to features page/i,
+				} )
+			);
+
+			expect(
+				queryByRole( 'button', { name: /Return to Dashboard/i } )
+			).not.toBeInTheDocument();
+
+			await waitFor( () =>
+				expect( global.location.assign ).toHaveBeenCalledWith( hubURL )
+			);
+			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'should go to the dashboard when there is no pending setup', async () => {
+			global.location.href = 'http://example.com/?cta=newsletter-signup';
+
+			const { getByRole } = render(
+				<StepSetupComplete onComplete={ onComplete } />,
+				{ registry }
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: /Return to Dashboard/i } )
+			);
+
+			await waitFor( () =>
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					dashboardURL
+				)
+			);
+		} );
 	} );
 } );

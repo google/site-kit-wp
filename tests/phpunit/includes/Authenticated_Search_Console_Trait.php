@@ -67,7 +67,7 @@ trait Authenticated_Search_Console_Trait {
 	 * report has one `plant garlic` row: 300 clicks at position 3.4 for the
 	 * `current` report, and 210 clicks at position 4.8 for any other.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param RequestInterface $request The batch request.
 	 * @return Response The batch response.

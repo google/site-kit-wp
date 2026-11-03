@@ -25,7 +25,7 @@ import { Report } from '@/js/modules/analytics-4/datastore/types';
 /**
  * A recently published post or product with its Analytics metrics.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface LatestContentRow extends RecentContentItem {
 	/** The `screenPageViews` metric, or `0` when the report has no row for the path. */
@@ -44,7 +44,7 @@ export interface LatestContentRow extends RecentContentItem {
  * Analytics drops the query string from `pagePath`, so with plain permalinks
  * (`/?p=123`) every post has the path `/`, which is the homepage's.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} item The post or product.
  * @return {boolean} Whether the post's report row can be told apart from other pages'.
@@ -60,7 +60,7 @@ export function hasUniquePagePath( item: RecentContentItem ): boolean {
  * has no row for or whose path is not unique, and ignores report rows that
  * match no post.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object[]} recentContent The posts and products, newest first.
  * @param {Object}   [report]      The report with the `pagePath` dimension and the `screenPageViews`, `sessions`, `engagementRate` and `averageSessionDuration` metrics, in that order.

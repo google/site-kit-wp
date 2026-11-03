@@ -17,9 +17,9 @@
  */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import { getDefaultOptions } from 'expect-puppeteer';
+import { getDefaultOptions } from './default-options';
 
 /**
  * Asserts the given selector is checked.

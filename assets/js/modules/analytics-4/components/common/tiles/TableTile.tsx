@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
+import { ComponentType, FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
@@ -43,6 +43,13 @@ export interface TableTileRow {
 	pagePath?: string;
 }
 
+export interface TableTileErrorProps {
+	/** The tile's error. */
+	error: unknown;
+	/** The tile's `onRetry`, where it has one. */
+	onRetry?: () => void;
+}
+
 export interface TableTileProps {
 	/** Title shown at the top of the tile. */
 	title: string;
@@ -54,7 +61,7 @@ export interface TableTileProps {
 	rows?: TableTileRow[];
 	/** Whether to show loading placeholders in place of the rows. */
 	loading?: boolean;
-	/** Error to show in place of the rows, as a `ReportError`. */
+	/** Error to show in place of the rows, as a `ReportError` unless `ErrorComponent` is passed. */
 	error?: unknown;
 	/** Maximum number of rows to show, or every row when not set. */
 	limit?: number;
@@ -66,6 +73,8 @@ export interface TableTileProps {
 	onRetry?: () => void;
 	/** Called on a click on the link of a row. */
 	onLinkClick?: () => void;
+	/** Component that renders the error state, with `error` and `onRetry`, in place of a `ReportError`. */
+	ErrorComponent?: ComponentType< TableTileErrorProps >;
 }
 
 const TableTile: FC< TableTileProps > = ( {
@@ -80,6 +89,7 @@ const TableTile: FC< TableTileProps > = ( {
 	zeroState,
 	onRetry,
 	onLinkClick,
+	ErrorComponent,
 } ) => {
 	const visibleRows = rows.slice( 0, limit || rows.length );
 
@@ -100,11 +110,15 @@ const TableTile: FC< TableTileProps > = ( {
 
 			{ ! loading && !! error && (
 				<div className="googlesitekit-table-tile__error">
-					<ReportError
-						moduleSlug="analytics-4"
-						error={ error }
-						onRetry={ onRetry }
-					/>
+					{ ErrorComponent ? (
+						<ErrorComponent error={ error } onRetry={ onRetry } />
+					) : (
+						<ReportError
+							moduleSlug="analytics-4"
+							error={ error }
+							onRetry={ onRetry }
+						/>
+					) }
 				</div>
 			) }
 

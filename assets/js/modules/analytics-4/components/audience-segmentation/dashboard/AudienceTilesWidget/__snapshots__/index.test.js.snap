@@ -35,11 +35,34 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
                 >
                   All visitors
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-9"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-9"
+                    >
+                      <strong>
+                        All visitors
+                      </strong>
+                       is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span
@@ -397,11 +420,34 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                 >
                   New visitors
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-10"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-10"
+                    >
+                      <strong>
+                        New visitors
+                      </strong>
+                       are people who visited your site for the first time. Note that under some circumstances it's possible for a visitor to be counted in both the "new" and "returning" groups. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span
@@ -428,11 +474,34 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                 >
                   Returning visitors
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-11"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-11"
+                    >
+                      <strong>
+                        Returning visitors
+                      </strong>
+                       are people who have visited your site at least once before. Note that under some circumstances it's possible for a visitor to be counted in both the "new" and "returning" groups. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span
@@ -942,11 +1011,34 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                 >
                   All visitors
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-1"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-1"
+                    >
+                      <strong>
+                        All visitors
+                      </strong>
+                       is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span
@@ -973,11 +1065,34 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                 >
                   Purchasers
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-2"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-2"
+                    >
+                      <strong>
+                        Purchasers
+                      </strong>
+                       is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span
@@ -1334,11 +1449,34 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
                 >
                   All visitors
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-0"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-0"
+                    >
+                      <strong>
+                        All visitors
+                      </strong>
+                       is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span
@@ -1696,11 +1834,34 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                 >
                   All visitors
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-5"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-5"
+                    >
+                      <strong>
+                        All visitors
+                      </strong>
+                       is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span
@@ -1727,11 +1888,34 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                 >
                   Purchasers
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-6"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-6"
+                    >
+                      <strong>
+                        Purchasers
+                      </strong>
+                       is an audience that already exists in your Analytics property. Note that it's possible for a visitor to be counted in more than one group. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span
@@ -2064,11 +2248,34 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                 >
                   New visitors
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-7"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-7"
+                    >
+                      <strong>
+                        New visitors
+                      </strong>
+                       are people who visited your site for the first time. Note that under some circumstances it's possible for a visitor to be counted in both the "new" and "returning" groups. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span
@@ -2095,11 +2302,34 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                 >
                   Returning visitors
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-8"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-8"
+                    >
+                      <strong>
+                        Returning visitors
+                      </strong>
+                       are people who have visited your site at least once before. Note that under some circumstances it's possible for a visitor to be counted in both the "new" and "returning" groups. 
+                      <a
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="undefined?doc=visitor-group-insights"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                      </a>
+                    </span>
                   </span>
                 </span>
                 <span

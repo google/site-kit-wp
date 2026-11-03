@@ -1,7 +1,7 @@
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { createURL } from '@wordpress/e2e-test-utils';
+import { createURL } from '../utils/create-url';
 
 /**
  * Asserts the URL at the given path contains an AdSense tag.

@@ -47,22 +47,10 @@
 	}
 
 	.googlesitekit-draggable-list__handle {
-		background: none;
-		border: 0;
-		border-radius: $br-xxs;
-		color: inherit;
 		cursor: grab;
-		flex-shrink: 0;
-		padding: 0;
 
 		&:active {
 			cursor: grabbing;
-			outline: none;
-		}
-
-		svg {
-			display: block;
-			fill: currentcolor;
 		}
 	}
 
@@ -70,6 +58,7 @@
 		display: grid;
 		grid-auto-rows: max-content;
 		grid-template-columns: max-content auto;
+		padding-block: 4px;
 
 		.mdc-text-field-helper-line {
 			grid-column: 2;

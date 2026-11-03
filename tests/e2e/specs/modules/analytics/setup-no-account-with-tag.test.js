@@ -1,12 +1,8 @@
 /**
- * WordPress dependencies
- */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import {
+	activatePlugin,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAnalyticsExistingPropertyID,
@@ -15,6 +11,7 @@ import {
 	setSearchConsoleProperty,
 	setSiteVerification,
 	useRequestInterception,
+	visitAdminPage,
 } from '../../../utils';
 
 async function proceedToSetUpAnalytics() {

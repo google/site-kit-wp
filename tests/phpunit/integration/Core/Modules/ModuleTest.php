@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
@@ -594,7 +595,13 @@ class ModuleTest extends TestCase {
 		$data = $error->get_error_data();
 
 		$this->assertEquals( 401, $data['status'], 'Proxy code exception should report auth failure status.' );
-		$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v3/site-management/setup/', $data['reconnectURL'], 'Proxy code exception should include reconnect URL.' );
+
+		wp_parse_str( wp_parse_url( $data['reconnectURL'], PHP_URL_QUERY ), $query_args );
+
+		$this->assertStringStartsWith( admin_url( 'index.php' ), $data['reconnectURL'], 'The reconnect URL should point at the site.' );
+		$this->assertEquals( Google_Proxy::ACTION_SETUP_START, $query_args['action'], 'The reconnect URL should start a new setup from the site.' );
+		$this->assertNotEmpty( $query_args['nonce'], 'The reconnect URL should carry a nonce.' );
+		$this->assertArrayNotHasKey( 'code', $query_args, 'The reconnect URL should not reuse the access code.' );
 	}
 
 	public function test_parse_string_list() {

@@ -20,12 +20,18 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
             Top categories by pageviews
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Categories that your site visitors viewed the most"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Categories that your site visitors viewed the most
+            </span>
           </span>
         </div>
         <div
@@ -119,12 +125,18 @@ exports[`TopCategoriesWidget should render the custom dimension error when there
           Top categories by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-8"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Categories that your site visitors viewed the most"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-8"
+          >
+            Categories that your site visitors viewed the most
+          </span>
         </span>
       </div>
       <div
@@ -198,12 +210,18 @@ exports[`TopCategoriesWidget should render the generic error variant when the re
           Top categories by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Categories that your site visitors viewed the most"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Categories that your site visitors viewed the most
+          </span>
         </span>
       </div>
       <div
@@ -273,12 +291,18 @@ exports[`TopCategoriesWidget should render the insufficient permissions error va
           Top categories by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Categories that your site visitors viewed the most"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Categories that your site visitors viewed the most
+          </span>
         </span>
       </div>
       <div
@@ -344,12 +368,18 @@ exports[`TopCategoriesWidget should render the loading state while resolving the
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Categories that your site visitors viewed the most"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Categories that your site visitors viewed the most
+              </span>
             </span>
           </span>
         </div>
@@ -400,12 +430,18 @@ exports[`TopCategoriesWidget should render the missing custom dimension error wh
           Top categories by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-7"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Categories that your site visitors viewed the most"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-7"
+          >
+            Categories that your site visitors viewed the most
+          </span>
         </span>
       </div>
       <div

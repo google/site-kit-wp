@@ -166,7 +166,7 @@ export function renderPDFText( element: ReactElement ): string[] {
  * Flattens a `@react-pdf` style, given as one object or as an array of them,
  * into a single object.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param style The style a node renders with.
  * @return The flattened style.

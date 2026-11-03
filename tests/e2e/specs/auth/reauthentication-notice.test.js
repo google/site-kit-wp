@@ -17,22 +17,16 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
 import {
 	activatePlugin,
 	createURL,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
-
-/**
- * Internal dependencies
- */
-import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setupSiteKit,
 	useRequestInterception,
+	visitAdminPage,
 } from '../../utils';
 
 describe( 'Reauthentication needed admin notice', () => {

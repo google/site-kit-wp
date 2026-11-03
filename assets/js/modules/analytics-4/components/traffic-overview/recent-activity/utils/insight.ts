@@ -57,7 +57,7 @@ export interface ClassifyInsightOptions {
  * Gets the days of a date range as the `date` dimension values the report
  * returns for them, e.g. `20250203`.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
  * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
@@ -79,7 +79,7 @@ export function getDateDimensionValues(
 /**
  * Gets the comparison window a number of whole weeks before a date range.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} dateRange           The date range.
  * @param {string} dateRange.startDate The first day of the date range.
@@ -100,7 +100,7 @@ export function getComparisonDateRange(
 /**
  * Gets the median of a list of numbers.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Array<number>} values The numbers.
  * @return {number} The median.
@@ -121,7 +121,7 @@ function getMedian( values: number[] ): number {
  * The baseline is the median of the four comparison windows, so a single
  * unusual week does not move it.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object}        options           Options.
  * @param {Array<Object>} [options.rows]    The rows of a `totalUsers` by `date` report.

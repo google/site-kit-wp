@@ -20,12 +20,18 @@ exports[`TopRecentTrendingPagesWidget should render correctly with the expected 
             Top recent trending pages
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Pages with the most pageviews published in the last 3 days"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Pages with the most pageviews published in the last 3 days
+            </span>
           </span>
         </div>
         <div
@@ -146,12 +152,18 @@ exports[`TopRecentTrendingPagesWidget should render the custom dimension error w
           Top recent trending pages
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-8"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages with the most pageviews published in the last 3 days"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-8"
+          >
+            Pages with the most pageviews published in the last 3 days
+          </span>
         </span>
       </div>
       <div
@@ -225,12 +237,18 @@ exports[`TopRecentTrendingPagesWidget should render the generic error variant wh
           Top recent trending pages
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages with the most pageviews published in the last 3 days"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Pages with the most pageviews published in the last 3 days
+          </span>
         </span>
       </div>
       <div
@@ -300,12 +318,18 @@ exports[`TopRecentTrendingPagesWidget should render the insufficient permissions
           Top recent trending pages
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages with the most pageviews published in the last 3 days"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Pages with the most pageviews published in the last 3 days
+          </span>
         </span>
       </div>
       <div
@@ -371,12 +395,18 @@ exports[`TopRecentTrendingPagesWidget should render the loading state while reso
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Pages with the most pageviews published in the last 3 days"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Pages with the most pageviews published in the last 3 days
+              </span>
             </span>
           </span>
         </div>
@@ -427,12 +457,18 @@ exports[`TopRecentTrendingPagesWidget should render the missing custom dimension
           Top recent trending pages
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-7"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages with the most pageviews published in the last 3 days"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-7"
+          >
+            Pages with the most pageviews published in the last 3 days
+          </span>
         </span>
       </div>
       <div

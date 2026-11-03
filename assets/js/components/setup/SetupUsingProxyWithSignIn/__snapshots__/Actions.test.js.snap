@@ -97,11 +97,31 @@ exports[`Actions should render correctly 1`] = `
       Why is this required?
     </p>
     <span
+      aria-labelledby="googlesitekit-info-tooltip-label-0"
       class="googlesitekit-info-tooltip"
-      role="tooltip"
+      role="button"
       tabindex="0"
     >
       <svg />
+      <span
+        hidden=""
+        id="googlesitekit-info-tooltip-label-0"
+      >
+        Site Kit needs to connect to your Google account to access data from Google products like Search Console or Analytics and display it on your dashboard. 
+        <a
+          aria-label="Learn more (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="https://sitekit.withgoogle.com/support/?doc=why-connect-google-account"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Learn more
+          </span>
+        </a>
+      </span>
     </span>
   </div>
 </div>
@@ -214,10 +234,28 @@ exports[`Actions should render the reset button when the site is resettable 1`] 
     </p>
     <span
       class="googlesitekit-info-tooltip"
-      role="tooltip"
+      role="button"
       tabindex="0"
     >
       <svg />
+      <span
+        hidden=""
+      >
+        Site Kit needs to connect to your Google account to access data from Google products like Search Console or Analytics and display it on your dashboard. 
+        <a
+          aria-label="Learn more (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="https://sitekit.withgoogle.com/support/?doc=why-connect-google-account"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Learn more
+          </span>
+        </a>
+      </span>
     </span>
   </div>
 </div>
@@ -331,10 +369,28 @@ exports[`Actions view-only button should render the button for a second admin wh
     </p>
     <span
       class="googlesitekit-info-tooltip"
-      role="tooltip"
+      role="button"
       tabindex="0"
     >
       <svg />
+      <span
+        hidden=""
+      >
+        Site Kit needs to connect to your Google account to access data from Google products like Search Console or Analytics and display it on your dashboard. 
+        <a
+          aria-label="Learn more (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="https://sitekit.withgoogle.com/support/?doc=why-connect-google-account"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Learn more
+          </span>
+        </a>
+      </span>
     </span>
   </div>
 </div>

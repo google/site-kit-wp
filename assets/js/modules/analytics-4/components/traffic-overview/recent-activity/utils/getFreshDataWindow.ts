@@ -42,7 +42,7 @@ interface FreshDataWindow {
  * The window starts on a full hour, so it covers the current hour and the 23
  * hours before it, the same hours the reports group their data by.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {number} now The current time, in milliseconds since the epoch.
  * @return {number} The start of the window, in milliseconds since the epoch.
@@ -61,7 +61,7 @@ export function getFreshDataWindowStart( now: number ): number {
  * Search Console by the hours of Pacific Time, so the same window has
  * different days and hours in each report.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {number} windowStart The start of the window, from `getFreshDataWindowStart()`.
  * @param {string} timeZone    The time zone, e.g. `America/Los_Angeles`.

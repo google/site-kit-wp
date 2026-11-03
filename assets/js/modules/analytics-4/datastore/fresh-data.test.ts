@@ -1303,7 +1303,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 	} );
 
 	describe( 'getPlainPermalinkTopPosts', () => {
-		it( 'should return the posts with the most views and the total of the report for the dates and the limit of the options', async () => {
+		it( 'should return the posts with the most visitors and the total of the report for the dates and the limit of the options', async () => {
 			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
 				body: plainPermalinkTopPosts,
 				status: 200,

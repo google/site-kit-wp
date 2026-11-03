@@ -24,11 +24,15 @@ use Google\Site_Kit\Modules\Analytics_4;
 class Report_Options {
 
 	/**
-	 * Days in the daily series, the 13 months the Typical Traffic chart shows.
+	 * The maximum number of days in the selected period, the longest preset of
+	 * `DateRangeSelector`.
 	 *
-	 * @since 1.190.0
+	 * The `core/user` store accepts a longer `custom` date range, which only
+	 * `DateRangePicker` can set, and `Get_Benchmarking_Data` refuses it.
+	 *
+	 * @since n.e.x.t
 	 */
-	const DAILY_SERIES_DAYS = 395;
+	const MAXIMUM_PERIOD_DAYS = 90;
 
 	/**
 	 * The most rows a dimension report asks Analytics for in each of its periods.
@@ -85,18 +89,20 @@ class Report_Options {
 	}
 
 	/**
-	 * Gets the options of the report that counts visitors by day, over the
-	 * `DAILY_SERIES_DAYS` days that end on the last day of the selected period.
+	 * Gets the options of the report that counts visitors by day, from the
+	 * compare period's first day to the selected period's last day.
+	 *
+	 * `Response_Builder::build()` adds up the visitors of each period from this
+	 * report, and returns the days of the selected period alone as `dailyTraffic`.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t The report starts on the first day of the compare period, in place of the first of the 395 days that end on the last day of the selected period.
 	 *
 	 * @return array Report request options array.
 	 */
 	public function get_daily_series_options() {
-		$first_date = $this->create_date( $this->end_date )->modify( sprintf( '-%d days', self::DAILY_SERIES_DAYS - 1 ) );
-
 		return array(
-			'startDate'  => $first_date->format( 'Y-m-d' ),
+			'startDate'  => $this->get_compare_range()['startDate'],
 			'endDate'    => $this->end_date,
 			'metrics'    => array(
 				array( 'name' => 'totalUsers' ),
