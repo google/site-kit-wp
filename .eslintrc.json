@@ -15,7 +15,21 @@
 		"fetchMock": false
 	},
 	"rules": {
-		"import/no-extraneous-dependencies": "off",
+		"import/no-extraneous-dependencies": [
+			"error",
+			{
+				"peerDependencies": true,
+				"packageDir": [
+					"./",
+					"./assets",
+					"./storybook",
+					"./tests/e2e",
+					"./tests/js",
+					"./tests/playwright",
+					"./tests/vrt"
+				]
+			}
+		],
 		"import/no-unresolved": [
 			"error",
 			{
@@ -187,6 +201,7 @@
 			"@wordpress/i18n__non-shim",
 			"@wordpress/api-fetch__non-shim"
 		],
+		"import/internal-regex": "^(@wordpress/(?!(icons|interface|style-engine))|@/|@tests/)",
 		"import/parsers": {
 			"@typescript-eslint/parser": [
 				".ts",

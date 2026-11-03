@@ -99,6 +99,7 @@
 	"devDependencies": {
 		"@babel/preset-typescript": "^7.27.1",
 		"@shopify/jest-dom-mocks": "^5.2.0",
+		"@testing-library/dom": "^7.31.2",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^4.0.0",
@@ -134,7 +135,9 @@
 		"fs-extra": "^11.3.5",
 		"git-repo-info": "^2.1.1",
 		"glob-to-regexp": "^0.4.1",
+		"history": "^4.10.1",
 		"husky": "^3.1.0",
+		"jest-mock": "^29.7.0",
 		"lint-staged": "^17.0.5",
 		"node-fetch": "^2.7.0",
 		"patch-package": "^8.0.0",
