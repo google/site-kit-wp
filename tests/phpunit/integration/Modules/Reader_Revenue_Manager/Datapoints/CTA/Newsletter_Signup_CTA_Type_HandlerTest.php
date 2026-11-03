@@ -52,6 +52,7 @@ class Newsletter_Signup_CTA_Type_HandlerTest extends TestCase {
 				'title'             => 'Subscribe to our newsletter',
 				'customMessage'     => 'Join our mailing list.',
 				'nameRequired'      => true,
+				'optInRequired'     => true,
 				'customConsentText' => 'I agree to the terms.',
 			)
 		);
@@ -67,6 +68,7 @@ class Newsletter_Signup_CTA_Type_HandlerTest extends TestCase {
 		$this->assertSame( 'Subscribe to our newsletter', $config->getTitle(), 'The title should be applied.' );
 		$this->assertSame( 'Join our mailing list.', $config->getCustomMessage(), 'The custom message should be applied.' );
 		$this->assertTrue( $config->getNameRequired(), 'The name required flag should be applied.' );
+		$this->assertTrue( $config->getOptInRequired(), 'The opt-in required flag should be applied.' );
 		$this->assertSame( 'I agree to the terms.', $config->getCustomConsentText(), 'The custom consent text should be applied.' );
 	}
 
@@ -116,10 +118,22 @@ class Newsletter_Signup_CTA_Type_HandlerTest extends TestCase {
 		);
 	}
 
-	public function test_configure_cta__rejects_non_boolean_name_required() {
+	/**
+	 * @dataProvider data_invalid_boolean_fields
+	 *
+	 * @param string $field Name of the boolean configuration field to test.
+	 */
+	public function test_configure_cta__rejects_non_boolean_values( $field ) {
 		$this->expectException( Invalid_Param_Exception::class );
-		$this->expectExceptionMessage( 'Invalid parameter: config.nameRequired.' );
+		$this->expectExceptionMessage( "Invalid parameter: config.{$field}." );
 
-		$this->handler->configure_cta( new Cta(), array( 'nameRequired' => 'yes' ) );
+		$this->handler->configure_cta( new Cta(), array( $field => 'yes' ) );
+	}
+
+	public function data_invalid_boolean_fields() {
+		return array(
+			'nameRequired'  => array( 'nameRequired' ),
+			'optInRequired' => array( 'optInRequired' ),
+		);
 	}
 }
