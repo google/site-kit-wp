@@ -59,6 +59,7 @@
 	// This is the only way to have this style override the inline style.
 	height: fit-content !important;
 	width: fit-content !important;
+	z-index: 8;
 
 	// Google Charts gives its tooltips a z-index of 10000, which would show
 	// them over the sticky header and its date range picker panel. This
