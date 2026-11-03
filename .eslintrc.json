@@ -1,4 +1,5 @@
 {
+	"root": true,
 	"extends": [
 		"plugin:@wordpress/eslint-plugin/recommended",
 		"plugin:jest/recommended",
@@ -14,6 +15,7 @@
 		"fetchMock": false
 	},
 	"rules": {
+		"import/no-extraneous-dependencies": "off",
 		"import/no-unresolved": [
 			"error",
 			{
@@ -63,6 +65,10 @@
 		"lodash/import-scope": [
 			"error",
 			"member"
+		],
+		"react-hooks/exhaustive-deps": [
+			"warn",
+			{}
 		],
 		"require-await": "error",
 		"react/function-component-definition": [
@@ -239,7 +245,9 @@
 			},
 			"rules": {
 				"@typescript-eslint/ban-ts-comment": "off",
+				"@typescript-eslint/no-duplicate-imports": "off",
 				"@typescript-eslint/no-shadow": "error",
+				"no-duplicate-imports": "error",
 				"jsdoc/require-param-type": "off",
 				"jsdoc/require-returns-type": "off",
 				"no-shadow": "off",

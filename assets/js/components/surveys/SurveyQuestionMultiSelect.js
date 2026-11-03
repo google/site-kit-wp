@@ -63,6 +63,7 @@ function SurveyQuestionMultiSelect( {
 		const optionalKeys = write_in ? { answer_text: '' } : {}; // eslint-disable-line camelcase
 
 		return {
+			// eslint-disable-next-line camelcase
 			answer_ordinal,
 			selected: false,
 			...optionalKeys,
@@ -77,8 +78,11 @@ function SurveyQuestionMultiSelect( {
 	function handleCheck( answer_ordinal ) {
 		const newState = {
 			...selectedValues,
+			// eslint-disable-next-line camelcase
 			[ answer_ordinal ]: {
+				// eslint-disable-next-line camelcase
 				...selectedValues[ answer_ordinal ],
+				// eslint-disable-next-line camelcase
 				selected: ! selectedValues[ answer_ordinal ].selected,
 			},
 		};
@@ -90,7 +94,9 @@ function SurveyQuestionMultiSelect( {
 	function handleAnswerChange( event, answer_ordinal ) {
 		const newState = {
 			...selectedValues,
+			// eslint-disable-next-line camelcase
 			[ answer_ordinal ]: {
+				// eslint-disable-next-line camelcase
 				...selectedValues[ answer_ordinal ],
 				answer_text: event.target.value?.slice(
 					0,
@@ -109,8 +115,10 @@ function SurveyQuestionMultiSelect( {
 			.map( ( { answer_ordinal, answer_text } ) => {
 				// eslint-disable-next-line camelcase
 				if ( answer_text ) {
+					// eslint-disable-next-line camelcase
 					return { answer_ordinal, answer_text };
 				}
+				// eslint-disable-next-line camelcase
 				return { answer_ordinal };
 			} );
 		answerQuestion( {
@@ -125,7 +133,9 @@ function SurveyQuestionMultiSelect( {
 			if ( write_in ) {
 				// eslint-disable-next-line camelcase
 				const { selected, answer_text } =
+					// eslint-disable-next-line camelcase
 					selectedValues[ answer_ordinal ];
+				// eslint-disable-next-line camelcase
 				if ( selected && answer_text.length === 0 ) {
 					return true;
 				}
@@ -153,6 +163,7 @@ function SurveyQuestionMultiSelect( {
 				{
 					// eslint-disable-next-line camelcase
 					choices.map( ( { answer_ordinal, text, write_in } ) => {
+						// eslint-disable-next-line camelcase
 						const answer = selectedValues[ answer_ordinal ];
 						// eslint-disable-next-line camelcase
 						const id = `${ instanceID }-answer-${ answer_ordinal }`;

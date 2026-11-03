@@ -778,7 +778,6 @@
 		.querySelector( '.vrt-compare__close' )
 		.addEventListener( 'click', closeCompare );
 
-	// eslint-disable-next-line @wordpress/no-global-event-listener -- The report is a standalone page.
 	document.addEventListener( 'keydown', ( event ) => {
 		const typing = [ 'INPUT', 'SELECT', 'TEXTAREA' ].includes(
 			event.target.tagName

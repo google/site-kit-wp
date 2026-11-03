@@ -63,6 +63,7 @@ describe( 'global features badge', () => {
 
 	function loadEntry() {
 		jest.isolateModules( () => {
+			// eslint-disable-next-line @typescript-eslint/no-require-imports
 			require( './googlesitekit-features-badge' );
 		} );
 	}

@@ -43,7 +43,7 @@ export function reloadTestUtilsWithFeatures( features: Iterable< string > ) {
 	jest.resetModules();
 
 	const { enabledFeatures } =
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
 		require( '@/js/features' );
 	enabledFeatures.clear();
 
@@ -51,6 +51,7 @@ export function reloadTestUtilsWithFeatures( features: Iterable< string > ) {
 		enabledFeatures.add( feature );
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
 	return require( '@tests/js/utils' );
 }
 
