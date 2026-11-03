@@ -606,4 +606,77 @@ describe( 'useSetupFlow', () => {
 			expect( result.current.currentStep ).toBe( setupCompleteStep );
 		} );
 	} );
+
+	describe( 'errors', () => {
+		const actionError = {
+			code: 'internal_server_error',
+			message: 'Internal server error',
+			data: { status: 500 },
+		};
+
+		const selectorError = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { status: 400 },
+		};
+
+		function provideErrors() {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setErrorForAction( actionError, 'createPublication', [
+					{ displayName: 'Test' },
+				] );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setErrorForSelector( selectorError, 'getPublications' );
+		}
+
+		function getErrors() {
+			return registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getErrors();
+		}
+
+		it( 'should clear errors on completing a step, including when passing over completed steps', () => {
+			global.location.href =
+				'http://example.com/?step=connect-publication';
+			provideConnectedPublication( registry, publicationWithTerms );
+
+			const { result } = renderUseSetupFlow();
+
+			provideErrors();
+
+			actHook( () => result.current.advance() );
+
+			expect( result.current.currentStep ).toBe(
+				publicationPoliciesStep
+			);
+			expect( getErrors() ).toEqual( [] );
+
+			// As a failed request on the step just opened does.
+			actHook( () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setErrorForSelector( selectorError, 'getPublication' );
+			} );
+
+			expect( getErrors() ).toEqual( [ selectorError ] );
+		} );
+
+		it( 'should keep errors on mounting, rendering again, and completing the last step', () => {
+			global.location.href = 'http://example.com/?step=setup-complete';
+			provideConnectedPublication( registry, publicationWithPolicies );
+			provideErrors();
+
+			const { result, rerender } = renderUseSetupFlow();
+
+			rerender();
+
+			actHook( () => result.current.advance() );
+
+			expect( result.current.currentStep ).toBe( setupCompleteStep );
+			expect( getErrors() ).toEqual( [ selectorError, actionError ] );
+		} );
+	} );
 } );
