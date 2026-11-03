@@ -234,7 +234,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'publicationID'  => 'OLD_PUBLICATION',
 				'organizationID' => 'test-organization-id',
 				'configuredCTAs' => array(
-					'old-cta-id' => 'newsletter-signup',
+					'old-cta-id' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Newsletter sign-up',
+					),
 				),
 			)
 		);
@@ -310,7 +314,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'publicationID'  => 'SAME_PUBLICATION',
 				'organizationID' => 'test-organization-id',
 				'configuredCTAs' => array(
-					'existing-cta-id' => 'newsletter-signup',
+					'existing-cta-id' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Newsletter sign-up',
+					),
 				),
 			)
 		);
@@ -335,7 +343,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'existing-cta-id' => 'newsletter-signup',
+				'existing-cta-id' => array(
+					'type'        => 'newsletter-signup',
+					'state'       => 'ACTIVE',
+					'displayName' => 'Newsletter sign-up',
+				),
 			),
 			$this->reader_revenue_manager->get_settings()->get()['configuredCTAs'],
 			'configuredCTAs should be unchanged when confirming settings without changing the publication.'
@@ -754,8 +766,16 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'productID'      => 'test-publication-id:main-product',  // Main product in combined format.
 				'organizationID' => 'test-organization-id',
 				'configuredCTAs' => array(
-					'lower_left_cta' => 'lower_left',
-					'higher_cta'     => 'higher',
+					'9d2418415-ab3a' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Weekly newsletter',
+					),
+					'8j8152411-cd4b' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'DRAFT',
+						'displayName' => '',
+					),
 				),
 			)
 		);
@@ -799,7 +819,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'Organization ID should be redacted in debug output'
 		);
 
-		// Test configured CTAs are exposed as a comma-separated list of their keys (names).
+		// Test configured CTAs are exposed as a comma-separated list of their IDs, types and states.
 		$this->assertEquals(
 			'Reader Revenue Manager: Configured CTAs',
 			$debug_fields['reader_revenue_manager_configured_ctas']['label'],
@@ -807,13 +827,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			'lower_left_cta, higher_cta',
+			'9d2418415-ab3a (newsletter-signup, ACTIVE), 8j8152411-cd4b (newsletter-signup, DRAFT)',
 			$debug_fields['reader_revenue_manager_configured_ctas']['value'],
-			'Configured CTAs should list the configured CTA names'
+			'Configured CTAs should list the ID, type and state of each CTA, without display names'
 		);
 
 		$this->assertEquals(
-			'lower_left_cta, higher_cta',
+			'9d2418415-ab3a (newsletter-signup, ACTIVE), 8j8152411-cd4b (newsletter-signup, DRAFT)',
 			$debug_fields['reader_revenue_manager_configured_ctas']['debug'],
 			'Configured CTAs debug output should match the value'
 		);
@@ -1208,6 +1228,41 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
 	}
 
+	public function test_old_format_configured_ctas_are_skipped() {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->reader_revenue_manager->get_settings()->register();
+		$this->reader_revenue_manager->get_settings()->set( array( 'organizationID' => 'test-organization-id' ) );
+
+		// Return an entry saved before each CTA was stored as an array, bypassing sanitization.
+		add_filter(
+			'option_' . Settings::OPTION,
+			function ( $option ) {
+				$option['configuredCTAs'] = array(
+					'old-cta'        => 'newsletter-signup',
+					'9d2418415-ab3a' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Weekly newsletter',
+					),
+				);
+
+				return $option;
+			}
+		);
+
+		$this->assertSame(
+			array( 'newsletter-signup:ACTIVE' ),
+			$this->reader_revenue_manager->get_feature_metrics()['rrm_publication_configured_ctas'],
+			'The feature metric should skip configured CTAs saved in the old format.'
+		);
+
+		$this->assertSame(
+			'9d2418415-ab3a (newsletter-signup, ACTIVE)',
+			$this->reader_revenue_manager->get_debug_fields()['reader_revenue_manager_configured_ctas']['value'],
+			'The Site Health field should skip configured CTAs saved in the old format.'
+		);
+	}
+
 	public function data_feature_metrics_settings() {
 		return array(
 			'default values when RRM is active but not fully setup'                                     => array(
@@ -1229,7 +1284,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'when feature flag is off, configured CTAs metric is not reported'                          => array(
 				array(
 					'configuredCTAs' => array(
-						'cta-1' => 'newsletter-signup',
+						'cta-1' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'ACTIVE',
+							'displayName' => 'Newsletter sign-up',
+						),
 					),
 				),
 				array(
@@ -1248,46 +1307,48 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'When configuredCTAs is empty, the metric should be an empty array.',
 				true,
 			),
-			'when configuredCTAs contains one CTA type, the metric is an array with that type'          => array(
+			'when configuredCTAs contains one CTA, the metric lists its type and state'                => array(
 				array(
 					'configuredCTAs' => array(
-						'cta-1' => 'newsletter-signup',
+						'cta-1' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'ACTIVE',
+							'displayName' => 'Weekly newsletter',
+						),
 					),
 				),
 				array(
 					'rrm_publication_onboarding_state' => '',
-					'rrm_publication_configured_ctas'  => array( 'newsletter-signup' ),
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup:ACTIVE' ),
 				),
-				'When configuredCTAs contains one CTA type, the metric should be an array with that single type.',
+				'When configuredCTAs contains one CTA, the metric should list its type and state, without its display name.',
 				true, // Enable feature flag.
 			),
-			'when configuredCTAs contains multiple distinct CTA types, the metric is an array of those types' => array(
+			'when configuredCTAs contains CTAs of the same type, the metric has one entry per CTA'      => array(
 				array(
 					'configuredCTAs' => array(
-						'cta-1' => 'newsletter-signup',
-						'cta-2' => 'survey',
+						'cta-1' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'ACTIVE',
+							'displayName' => 'Newsletter sign-up',
+						),
+						'cta-2' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'ACTIVE',
+							'displayName' => 'Newsletter sign-up',
+						),
+						'cta-3' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'DRAFT',
+							'displayName' => 'Newsletter sign-up',
+						),
 					),
 				),
 				array(
 					'rrm_publication_onboarding_state' => '',
-					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup:ACTIVE', 'newsletter-signup:ACTIVE', 'newsletter-signup:DRAFT' ),
 				),
-				'When configuredCTAs contains multiple distinct types, the metric should be an array of those distinct types.',
-				true, // Enable feature flag.
-			),
-			'when configuredCTAs contains duplicates, the metric contains each type only once'         => array(
-				array(
-					'configuredCTAs' => array(
-						'cta-1' => 'newsletter-signup',
-						'cta-2' => 'newsletter-signup',
-						'cta-3' => 'survey',
-					),
-				),
-				array(
-					'rrm_publication_onboarding_state' => '',
-					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
-				),
-				'When configuredCTAs contains duplicate types, each type should appear only once in the metric.',
+				'When configuredCTAs contains several CTAs of the same type, the metric should have one entry per CTA.',
 				true, // Enable feature flag.
 			),
 		);
