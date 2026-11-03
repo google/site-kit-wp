@@ -380,7 +380,7 @@ export default function useDraggableList< Item >( {
 
 			// The dragged item takes the place of the row under the pointer, so
 			// the destination changes as soon as the pointer enters a
-			// neighboring row, rather than only past its midpoint.
+			// neighboring row.
 			return indexOfTarget;
 		}
 
