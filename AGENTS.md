@@ -20,6 +20,9 @@ workflow file. Do not add an entry to this file for a new skill either: every to
 file in full in every session, and it already finds skills by their `description`. Add a line here
 only for a rule that must hold even when the skill does not run.
 
+### Writing any text a person reads
+When asked to write any text a person reads, open **`docs/context/voice/README.md`**, then the page it lists for that type, and follow that page. That folder has a page for an issue, an implementation brief, a review and a pull request comment. It has one for a code comment, a commit subject, a file or folder name and a chat reply too. The `write-in-the-voice` skill opens the same pages, for a session that calls the skill by name.
+
 ## Architecture Essentials
 
 ### PHP Structure
