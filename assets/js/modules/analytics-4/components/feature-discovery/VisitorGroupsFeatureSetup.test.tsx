@@ -27,11 +27,13 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
 	getCurrentFeatureDiscoveryTabPath,
 } from '@/js/googlesitekit/feature-discovery/pending-setup';
+import { VISITOR_GROUPS_SETUP_FAILURE_KEY } from '@/js/modules/analytics-4/datastore/constants';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
 import {
 	act,
@@ -53,6 +55,7 @@ const API_ERROR = {
 };
 
 interface HookOptions {
+	initialFailedAudiences?: string[];
 	onOAuthNavigation?: () => Promise< void >;
 	onSuccess?: () => void;
 	redirectURL?: string;
@@ -287,62 +290,93 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 		} );
 	} );
 
-	it( 'retries through the hook, which retries only the audiences that failed', async () => {
-		hookState.failedAudiences = [ 'new-visitors' ];
-		hookState.isAudienceCreationError = true;
+	describe( 'when only some of the audiences could not be created', () => {
+		// Runs an attempt that ends with one audience having failed.
+		function renderFailedAttempt() {
+			hookState.isSaving = true;
 
-		const { getByText, getByRole } = render(
-			<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
-			{ registry }
-		);
+			const utils = render(
+				<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
+				{ registry }
+			);
 
-		await waitFor( () => {
+			hookState.isSaving = false;
+			hookState.failedAudiences = [ 'new-visitors' ];
+			hookState.isAudienceCreationError = true;
+
+			utils.rerender(
+				<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />
+			);
+
+			return utils;
+		}
+
+		it( 'keeps the outcome of the attempt and retries through the hook, which retries only the audiences that failed', async () => {
+			const { getByText, getByRole } = renderFailedAttempt();
+
+			await waitFor( () => {
+				expect(
+					getByText( 'Creating visitor groups failed' )
+				).toBeInTheDocument();
+			} );
+
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( VISITOR_GROUPS_SETUP_FAILURE_KEY )
+			).toEqual( {
+				failedAudiences: [ 'new-visitors' ],
+				isAudienceCreationError: true,
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+			expect( onEnableGroups ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'dismisses the failure with "Got it"', async () => {
+			const { getByText, getByRole, queryByText } = renderFailedAttempt();
+
+			await waitFor( () => {
+				expect(
+					getByText( 'Creating visitor groups failed' )
+				).toBeInTheDocument();
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+			expect(
+				queryByText( 'Creating visitor groups failed' )
+			).not.toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Enable visitor groups' } )
+			).toBeInTheDocument();
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( VISITOR_GROUPS_SETUP_FAILURE_KEY )
+			).toBeUndefined();
+		} );
+
+		it( 'shows the same failure once the component has been remounted, and hands the failed audiences to the hook', () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( VISITOR_GROUPS_SETUP_FAILURE_KEY, {
+					failedAudiences: [ 'new-visitors' ],
+					isAudienceCreationError: true,
+				} );
+
+			const { getByText } = render(
+				<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
+				{ registry }
+			);
+
 			expect(
 				getByText( 'Creating visitor groups failed' )
 			).toBeInTheDocument();
+			expect( hookOptions.initialFailedAudiences ).toEqual( [
+				'new-visitors',
+			] );
 		} );
-
-		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
-
-		expect( onEnableGroups ).toHaveBeenCalledTimes( 1 );
-		expect(
-			registry
-				.select( CORE_FEATURE_DISCOVERY )
-				.getErrorForAction( 'setupFeature', [ SLUG ] )
-		).toBeUndefined();
-	} );
-
-	it( 'dismisses a failure of some audiences with "Got it", until the setup is attempted again', () => {
-		hookState.failedAudiences = [ 'new-visitors' ];
-		hookState.isAudienceCreationError = true;
-
-		jest.spyOn(
-			registry.dispatch( CORE_USER ),
-			'triggerSurvey'
-		).mockResolvedValue( undefined );
-
-		const { getByText, getByRole, queryByText } = render(
-			<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
-			{ registry }
-		);
-
-		expect(
-			getByText( 'Creating visitor groups failed' )
-		).toBeInTheDocument();
-
-		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
-
-		expect(
-			queryByText( 'Creating visitor groups failed' )
-		).not.toBeInTheDocument();
-
-		fireEvent.click(
-			getByRole( 'button', { name: 'Enable visitor groups' } )
-		);
-
-		expect( onEnableGroups ).toHaveBeenCalledTimes( 1 );
-		expect(
-			getByText( 'Creating visitor groups failed' )
-		).toBeInTheDocument();
 	} );
 } );

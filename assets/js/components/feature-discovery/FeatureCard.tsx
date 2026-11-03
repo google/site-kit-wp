@@ -69,7 +69,7 @@ export interface FeatureCardProps {
 	hideUnreadDot?: boolean;
 	// Replaces the card's call to action, for features that bring their own
 	// setup.
-	renderCTA?: () => ReactNode;
+	ctaButton?: ReactNode;
 }
 
 const FeatureCard: FC< FeatureCardProps > = ( {
@@ -77,7 +77,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	isDismissible = false,
 	hideNewBadge = false,
 	hideUnreadDot = false,
-	renderCTA,
+	ctaButton,
 } ) => {
 	const [ showUnreadDot, setShowUnreadDot ] = useState( false );
 	const [ isFeedbackMenuOpen, setIsFeedbackMenuOpen ] = useState( false );
@@ -282,11 +282,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 				<FeatureServiceIdentity feature={ feature } />
 
 				<div className="googlesitekit-feature-card__actions">
-					{ renderCTA ? (
-						renderCTA()
-					) : (
-						<FeatureCTA slug={ slug } isTertiary />
-					) }
+					{ ctaButton ?? <FeatureCTA slug={ slug } isTertiary /> }
 
 					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button onClick={ onClickReadMore }>

@@ -347,4 +347,40 @@ describe( 'useEnableAudienceGroup', () => {
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
 	} );
+
+	it( 'should start with the `initialFailedAudiences` and retry only those when `onEnableGroups` is called', async () => {
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+			status: 200,
+			body: audiencesFixture,
+		} );
+
+		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+			body: [ 'googlesitekit_post_type' ],
+			status: 200,
+		} );
+
+		enableAudienceGroupSpy.mockResolvedValue( {} );
+
+		const { result, waitForRegistry } = renderHook(
+			() =>
+				useEnableAudienceGroup( {
+					initialFailedAudiences: [ 'new-visitors' ],
+				} ),
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( result.current.failedAudiences ).toEqual( [ 'new-visitors' ] );
+
+		await actHook( async () => {
+			await result.current.onEnableGroups();
+		} );
+
+		expect( enableAudienceGroupSpy ).toHaveBeenCalledWith( [
+			'new-visitors',
+		] );
+	} );
 } );

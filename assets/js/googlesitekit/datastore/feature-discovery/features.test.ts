@@ -27,7 +27,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { Registry } from 'googlesitekit-data';
 import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import {
+	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+	FEATURE_DISCOVERY_SETUP_REQUEST_KEY,
+} from '@/js/components/feature-discovery/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { getItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
@@ -914,6 +917,72 @@ describe( 'core/feature-discovery features', () => {
 							.dispatch( CORE_FEATURE_DISCOVERY )
 							.setupFeature( 'test-feature' )
 					).resolves.toEqual( {} );
+				} );
+
+				describe( 'with a setup component', () => {
+					let activate: jest.Mock;
+
+					beforeEach( () => {
+						activate = jest.fn().mockResolvedValue( {} );
+
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.registerFeature(
+								'test-feature',
+								createSettings( {
+									setup: {
+										type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+										activate,
+										SetupComponent: () => null,
+									},
+								} )
+							);
+					} );
+
+					it( 'should request the setup from the setup component and resolve to an empty object', async () => {
+						await expect(
+							registry
+								.dispatch( CORE_FEATURE_DISCOVERY )
+								.setupFeature( 'test-feature' )
+						).resolves.toEqual( {} );
+
+						expect(
+							registry
+								.select( CORE_UI )
+								.getValue( FEATURE_DISCOVERY_SETUP_REQUEST_KEY )
+						).toBe( 'test-feature' );
+					} );
+
+					it( 'should close the feature detail panel', async () => {
+						registry
+							.dispatch( CORE_UI )
+							.setValue(
+								FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+								'test-feature'
+							);
+
+						await registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' );
+
+						expect(
+							registry
+								.select( CORE_UI )
+								.getValue(
+									FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
+								)
+						).toBe( false );
+					} );
+
+					it( 'should not run the activate routine or navigate', async () => {
+						await registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' );
+
+						expect( activate ).not.toHaveBeenCalled();
+						expect( navigateTo ).not.toHaveBeenCalled();
+						expect( await consumePendingSetup() ).toBeNull();
+					} );
 				} );
 			} );
 

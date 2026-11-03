@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { ComponentProps } from 'react';
+
+/**
  * WordPress dependencies
  */
 import {
@@ -82,7 +87,12 @@ const LazyVisitorGroupsFeatureSetup = lazy(
 // The lazy component is wrapped in a function because the catalog is kept in
 // state that freezes what it stores, which would stop React from resolving it.
 function VisitorGroupsFeatureSetup( props: Record< string, unknown > ) {
-	return createElement( LazyVisitorGroupsFeatureSetup, props );
+	return createElement(
+		LazyVisitorGroupsFeatureSetup,
+		props as unknown as ComponentProps<
+			typeof LazyVisitorGroupsFeatureSetup
+		>
+	);
 }
 
 /**

@@ -301,7 +301,7 @@ describe( 'FeatureCard', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the CTA given by renderCTA in place of the default one', () => {
+	it( 'should render the CTA given by ctaButton in place of the default one', () => {
 		provideFeatures( registry, [
 			{
 				...TEST_FEATURE,
@@ -315,7 +315,7 @@ describe( 'FeatureCard', () => {
 		const { getByRole, queryByRole } = render(
 			<FeatureCard
 				slug="test-feature"
-				renderCTA={ () => <button>Custom CTA</button> }
+				ctaButton={ <button>Custom CTA</button> }
 			/>,
 			{ registry }
 		);

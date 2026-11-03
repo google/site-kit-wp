@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import type { ElementType, FC } from 'react';
+import type { FC } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,36 +38,35 @@ import FeatureCTAButton from '@/js/components/feature-discovery/FeatureCTAButton
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	getCurrentFeatureDiscoveryTabPath,
 	setPendingSetup,
 } from '@/js/googlesitekit/feature-discovery/pending-setup';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import AudienceSegmentationSetupErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupErrorWidget';
+import { VISITOR_GROUPS_SETUP_FAILURE_KEY } from '@/js/modules/analytics-4/datastore/constants';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
 import type { ErrorObject } from '@/js/util/errors';
 
+interface VisitorGroupsSetupFailure {
+	failedAudiences: string[];
+	isAudienceCreationError: boolean;
+}
+
 interface VisitorGroupsFeatureSetupProps extends FeatureCardProps {
-	Widget: ElementType;
 	isSetupRequested?: boolean;
 	onSetupRequestHandled?: () => void;
 }
 
 const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
-	Widget,
 	slug,
 	isSetupRequested = false,
 	onSetupRequestHandled,
 	...cardProps
 } ) => {
 	const handledRequestRef = useRef( false );
-
-	// Audiences that were not created are reported by the hook without an error
-	// of their own, so there is nothing to keep in the error store for them and
-	// their notice is dismissed here instead.
-	const [ isFailedAudiencesDismissed, setIsFailedAudiencesDismissed ] =
-		useState( false );
+	const wasSavingRef = useRef( false );
 
 	const feature = useSelect(
 		( select: Select ): Feature | null =>
@@ -84,6 +83,21 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		[ slug ]
 	);
 
+	// The outcome of the last attempt is kept in the UI store alongside the
+	// error, so the matching notice is shown again once this component has been
+	// unmounted and remounted.
+	const { failedAudiences = [], isAudienceCreationError = false } =
+		useSelect(
+			( select: Select ) =>
+				select( CORE_UI ).getValue(
+					VISITOR_GROUPS_SETUP_FAILURE_KEY
+				) as VisitorGroupsSetupFailure | undefined,
+			[]
+		) || {};
+
+	const { setValue } = useDispatch( CORE_UI ) as {
+		setValue: ( key: string, value: unknown ) => void;
+	};
 	const { clearActionError, setErrorForAction } = useDispatch(
 		CORE_FEATURE_DISCOVERY
 	) as {
@@ -109,8 +123,8 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 
 	const {
 		apiErrors,
-		failedAudiences,
-		isAudienceCreationError,
+		failedAudiences: hookFailedAudiences,
+		isAudienceCreationError: hookIsAudienceCreationError,
 		isSaving,
 		onEnableGroups,
 	} = useEnableAudienceGroup( {
@@ -118,6 +132,8 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		redirectURL: global.location.href,
 		onOAuthNavigation,
 		onSuccess,
+		// Lets a retry after a remount create only the audiences that failed.
+		initialFailedAudiences: failedAudiences,
 	} ) as {
 		apiErrors: ErrorObject[];
 		failedAudiences: string[];
@@ -134,26 +150,46 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		}
 	}, [ apiErrors, isSaving, setErrorForAction, slug ] );
 
+	// The hook's own state starts empty on every mount, so it is only copied to
+	// the UI store once an attempt has finished; copying it on mount would wipe
+	// the outcome kept from before.
+	useEffect( () => {
+		const wasSaving = wasSavingRef.current;
+		wasSavingRef.current = isSaving;
+
+		if ( ! wasSaving || isSaving ) {
+			return;
+		}
+
+		setValue( VISITOR_GROUPS_SETUP_FAILURE_KEY, {
+			failedAudiences: hookFailedAudiences,
+			isAudienceCreationError: hookIsAudienceCreationError,
+		} );
+	}, [
+		hookFailedAudiences,
+		hookIsAudienceCreationError,
+		isSaving,
+		setValue,
+	] );
+
 	const handleClick = useCallback( () => {
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
 
-		setIsFailedAudiencesDismissed( false );
 		onEnableGroups();
 	}, [ onEnableGroups, slug, triggerSurvey ] );
 
 	const handleRetry = useCallback( () => {
 		clearActionError( 'setupFeature', [ slug ] );
 
-		setIsFailedAudiencesDismissed( false );
 		onEnableGroups();
 	}, [ clearActionError, onEnableGroups, slug ] );
 
 	const handleDismiss = useCallback( () => {
 		clearActionError( 'setupFeature', [ slug ] );
 
-		setIsFailedAudiencesDismissed( true );
-	}, [ clearActionError, slug ] );
+		setValue( VISITOR_GROUPS_SETUP_FAILURE_KEY, undefined );
+	}, [ clearActionError, setValue, slug ] );
 
 	// Setup requested from the detail panel behaves as if the card's CTA had
 	// been clicked.
@@ -173,21 +209,7 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		handleClick();
 	}, [ handleClick, isSetupRequested, onSetupRequestHandled ] );
 
-	const renderCTA = useCallback(
-		() => (
-			<FeatureCTAButton
-				isBusy={ isSaving }
-				onClick={ handleClick }
-				isTertiary
-			>
-				{ feature?.setup?.ctaLabel }
-			</FeatureCTAButton>
-		),
-		[ feature?.setup?.ctaLabel, handleClick, isSaving ]
-	);
-
-	const hasFailedAudiences =
-		failedAudiences.length > 0 && ! isFailedAudiencesDismissed;
+	const hasFailedAudiences = failedAudiences.length > 0;
 
 	if ( ( setupError || hasFailedAudiences ) && ! isSaving ) {
 		// A failure kept in the error store outlives the hook's own state, so it
@@ -196,22 +218,34 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 			apiErrors.length || ! setupError ? apiErrors : [ setupError ];
 
 		return (
-			<AudienceSegmentationSetupErrorWidget
-				Widget={ Widget }
-				errors={ errors }
-				isAudienceCreationVariant={ isAudienceCreationError }
-				onRetry={ handleRetry }
-				onDismiss={ handleDismiss }
-				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-			/>
+			<article className="googlesitekit-feature-card googlesitekit-feature-card--custom">
+				<AudienceSegmentationSetupErrorWidget
+					Widget={ ( { children } ) => children }
+					errors={ errors }
+					isAudienceCreationVariant={ isAudienceCreationError }
+					onRetry={ handleRetry }
+					onDismiss={ handleDismiss }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+				/>
+			</article>
 		);
 	}
 
 	return (
-		<FeatureCard slug={ slug } { ...cardProps } renderCTA={ renderCTA } />
+		<FeatureCard
+			slug={ slug }
+			{ ...cardProps }
+			ctaButton={
+				<FeatureCTAButton
+					isBusy={ isSaving }
+					onClick={ handleClick }
+					isTertiary
+				>
+					{ feature?.setup?.ctaLabel }
+				</FeatureCTAButton>
+			}
+		/>
 	);
 };
 
-export default withWidgetComponentProps( 'visitorGroupsFeatureSetup' )(
-	VisitorGroupsFeatureSetup
-);
+export default VisitorGroupsFeatureSetup;

@@ -92,15 +92,6 @@ const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
 		setValue( FEATURE_DISCOVERY_SETUP_REQUEST_KEY, undefined );
 	}, [ setValue ] );
 
-	const renderBusyCTA = useCallback(
-		() => (
-			<FeatureCTAButton isBusy isTertiary>
-				{ feature?.setup?.ctaLabel }
-			</FeatureCTAButton>
-		),
-		[ feature?.setup?.ctaLabel ]
-	);
-
 	// A feature that brings its own setup UI owns the whole item, including
 	// how its setup errors are reported.
 	const SetupComponent = feature?.setup?.SetupComponent;
@@ -112,7 +103,11 @@ const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
 					<FeatureCard
 						slug={ slug }
 						{ ...props }
-						renderCTA={ renderBusyCTA }
+						ctaButton={
+							<FeatureCTAButton isBusy isTertiary>
+								{ feature?.setup?.ctaLabel }
+							</FeatureCTAButton>
+						}
 					/>
 				}
 			>
