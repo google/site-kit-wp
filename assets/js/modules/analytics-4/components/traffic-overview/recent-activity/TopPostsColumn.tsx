@@ -32,16 +32,19 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
 import { useReportPageTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportPageTitles';
-import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
 import { getTopPostsReportOptions } from './reportOptions';
 import { getPageURL } from './utils/getPageURL';
 
 const TopPostsColumn: FC = () => {
+	const viewContext = useViewContext();
+
 	const excludedProducts = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getExcludedProducts(),
@@ -81,7 +84,13 @@ const TopPostsColumn: FC = () => {
 		reportOptions
 	);
 
-	const trackPostLinkClick = useTrackPostLinkClick( 'top-posts' );
+	function trackPostLinkClick() {
+		trackEvent(
+			`${ viewContext }_recent-activity`,
+			'click_post_link',
+			'top-posts'
+		);
+	}
 
 	const rows = pathRows.map( ( row ) => ( {
 		...row,

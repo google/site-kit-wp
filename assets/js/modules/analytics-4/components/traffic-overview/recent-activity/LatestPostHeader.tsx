@@ -34,9 +34,9 @@ import Link from '@/js/components/Link';
 import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
+import useViewContext from '@/js/hooks/useViewContext';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
-import { formatDate } from '@/js/util';
+import { formatDate, trackEvent } from '@/js/util';
 import PushPinIcon from '@/svg/icons/push-pin.svg';
 
 interface LatestPostHeaderProps {
@@ -45,6 +45,8 @@ interface LatestPostHeaderProps {
 }
 
 const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
+	const viewContext = useViewContext();
+
 	const entityDashboardURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
@@ -53,7 +55,13 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 		[ post.permalink ]
 	);
 
-	const trackPostLinkClick = useTrackPostLinkClick( 'latest-post-header' );
+	function trackPostLinkClick() {
+		trackEvent(
+			`${ viewContext }_recent-activity`,
+			'click_post_link',
+			'latest-post-header'
+		);
+	}
 
 	// The site time has no time zone suffix, so reading it as UTC and
 	// formatting it in UTC shows it unchanged, as WordPress shows it. This
