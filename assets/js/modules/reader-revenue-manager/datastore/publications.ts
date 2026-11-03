@@ -769,12 +769,17 @@ const baseResolvers = {
 			return;
 		}
 
-		const hasParamOrganizationID = !! params?.organizationID;
-		const organizationID = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getOrganizationID();
+		// Legacy settings (saved before express setup) have a publication ID
+		// but no organization ID. The publications list synchronizes the
+		// connected publication's organization ID into settings, so resolve
+		// it first rather than requesting the publication without one.
+		const isExpressSetup = isFeatureEnabled( 'rrmExpressSetup' );
+		const organizationID =
+			params?.organizationID ||
+			registry.select( MODULES_READER_REVENUE_MANAGER ).getSettings()
+				?.organizationID;
 
-		if ( ! hasParamOrganizationID && ! organizationID ) {
+		if ( isExpressSetup && ! organizationID ) {
 			yield commonActions.await(
 				registry
 					.resolveSelect( MODULES_READER_REVENUE_MANAGER )
