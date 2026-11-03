@@ -35,6 +35,7 @@ export interface NewsletterConfig {
 	title?: string;
 	customMessage?: string;
 	nameRequired?: boolean;
+	optInRequired?: boolean;
 	customConsentText?: string;
 }
 
@@ -49,7 +50,7 @@ const STRING_FIELDS = [
 	'customConsentText',
 ] as const;
 
-const BOOLEAN_FIELDS = [ 'nameRequired' ] as const;
+const BOOLEAN_FIELDS = [ 'nameRequired', 'optInRequired' ] as const;
 
 const SUPPORTED_FIELDS: string[] = [ ...STRING_FIELDS, ...BOOLEAN_FIELDS ];
 
