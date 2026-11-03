@@ -99,7 +99,7 @@ export type MetricHeader = {
  * A complete Analytics 4 report response.
  *
  * @since 1.179.0
- * @since n.e.x.t Added the `timeZone` of the report `metadata`.
+ * @since 1.191.0 Added the `timeZone` of the report `metadata`.
  */
 export type Report = {
 	rowCount?: number;

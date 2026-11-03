@@ -234,7 +234,7 @@ The `db.php` drop-in registers PHP error handlers that capture all errors, warni
 2. **After the test:** The `WordPress.tearDown()` method queries `wp_e2e_error_log` and filters results against a version-aware ignore list (`wordpress/error-log-ignore-list.ts`).
 3. **If errors remain:** The error log is attached to the test result as a `php-error-log` JSON artifact, and the test is failed with a summary of all errors (format: `[LEVEL] message (file:line)`).
 
-**Ignore list:** Some PHP errors are expected on older WordPress versions. The ignore list in `wordpress/error-log-ignore-list.ts` is keyed by WordPress version, with a special `ALL` key for errors ignored across all versions. Each entry is a substring match against the error message. For example, `get_magic_quotes_gpc()` deprecation warnings are expected on WordPress 5.2.21 but not on newer versions.
+**Ignore list:** Some PHP errors are expected on older WordPress versions. The ignore list in `wordpress/error-log-ignore-list.ts` is keyed by WordPress version, with a special `ALL` key for errors ignored across all versions. Each entry is a substring match against the error message. For example, `get_magic_quotes_gpc()` deprecation warnings are expected on WordPress 5.2.30 but not on newer versions.
 
 ### Screencasts
 
@@ -308,8 +308,8 @@ The following environment variables configure how tests connect to the running e
 | `PLAYWRIGHT_DB_PASSWORD` | `example`               | MariaDB password                              |
 | `PLAYWRIGHT_MAILPIT_URL` | `http://localhost:8025` | Mailpit API base URL                          |
 | `PLUGIN_PATH`            | `../../`                | Path to the plugin directory to mount         |
-| `WP_VERSION`             | `5.2.21`                | WordPress version to use in Docker            |
-| `WP_IMAGE_TAG`           | `5.2.21-20261026`       | Docker image tag to pull for the `wp` service |
+| `WP_VERSION`             | `5.2.30`                | WordPress version to use in Docker            |
+| `WP_IMAGE_TAG`           | `5.2.30-20261026`       | Docker image tag to pull for the `wp` service |
 | `FORBID_ONLY`            | _(unset)_               | Fail if `test.only` is present (CI use)       |
 | `RETRIES`                | `0`                     | Number of retries per failing test            |
 | `WORKERS`                | _(Playwright default)_  | Number of parallel workers                    |
@@ -580,7 +580,7 @@ Mailpit automatically scopes queries to the current test's sender address (`<dat
 **`wp` (custom WordPress image — `docker/wordpress/Dockerfile`)**
 
 -   Port: `9002` → `80`
--   Based on `ghcr.io/google/site-kit-wp/playwright-wp`; the image pulled is controlled by `WP_IMAGE_TAG` (defaults to `5.2.21-20261026` — a WordPress 5.2.21 image with a build-date suffix that changes whenever the Dockerfile's bundled plugins, e.g. WooCommerce, are updated); the WordPress version baked into the image is controlled separately by the `WP_VERSION` build arg (defaults to `5.2.21`)
+-   Based on `ghcr.io/google/site-kit-wp/playwright-wp`; the image pulled is controlled by `WP_IMAGE_TAG` (defaults to `5.2.30-20261026` — a WordPress 5.2.30 image with a build-date suffix that changes whenever the Dockerfile's bundled plugins, e.g. WooCommerce, are updated); the WordPress version baked into the image is controlled separately by the `WP_VERSION` build arg (defaults to `5.2.30`)
 -   The plugin is mounted at `wp-content/plugins/google-site-kit` from `PLUGIN_PATH` (defaults to `../../` for local dev; CI uses a built artifact)
 -   Test helper plugins are mounted at `wp-content/plugins/google-site-kit-test-plugins`
 -   `WP_HTTP_BLOCK_EXTERNAL` is enabled (only `*.wordpress.org` is reachable from the browser; the fixtures service intercepts Google API calls at the network level)
@@ -679,7 +679,7 @@ npm run generate-backup
 **What the script does:**
 
 1. Tears down any existing containers and removes the current `backup.sql`.
-2. Starts Docker services with WordPress 5.2.21 (oldest supported version, for maximum forward-compatibility).
+2. Starts Docker services with WordPress 5.2.30 (oldest supported version, for maximum forward-compatibility).
 3. Installs WordPress via WP-CLI with test configuration (users, posts, theme, plugin, permalinks).
 4. Normalizes the database for deterministic output:
     - All dates set to `2025-01-01 00:00:00`
@@ -735,7 +735,7 @@ Runs in parallel across a matrix of WordPress versions:
 | ----------------- | ------------------------------------------- |
 | `latest`          | Current stable release                      |
 | `nightly`         | WordPress nightly build (no Docker caching) |
-| `5.2.21`          | Minimum supported version                   |
+| `5.2.30`          | Minimum supported version                   |
 
 Each matrix job:
 

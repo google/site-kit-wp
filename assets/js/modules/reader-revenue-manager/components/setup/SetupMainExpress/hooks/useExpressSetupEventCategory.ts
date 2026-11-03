@@ -26,7 +26,7 @@ import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastor
 /**
  * Returns the GA event category for the express setup of the current CTA.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return {(string|undefined)} The event category, or `undefined` outside a CTA setup flow, including for an unknown CTA.
  */

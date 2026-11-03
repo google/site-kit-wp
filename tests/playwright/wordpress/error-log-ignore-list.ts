@@ -23,7 +23,7 @@
  * @since 1.175.0
  */
 export const errorLogIgnoreList: Record< string, string[] > = {
-	'5.2.21': [
+	'5.2.30': [
 		// Deprecated syntax or function calls which are fixed in later WP versions.
 		'Function get_magic_quotes_gpc() is deprecated',
 		'Array and string offset access syntax with curly braces is deprecated',

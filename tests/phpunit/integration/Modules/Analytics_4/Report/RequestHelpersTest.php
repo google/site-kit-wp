@@ -91,7 +91,7 @@ class RequestHelpersTest extends TestCase {
 	 * The validation throws `Invalid_Report_Dimensions_Exception` when a shared
 	 * report may not ask for the dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param string $name The name of the dimension, such as `sessionSource`.
 	 */

@@ -40,7 +40,7 @@ import { numFmt } from '@/js/util';
  * A count below the total gets at most 999 tenths, so its share never reads
  * 100.0%.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {number} count The count of a row, above zero.
  * @param {number} total The total that the share is a percentage of, above zero.
@@ -61,7 +61,7 @@ function getTenthPercentage( count: number, total: number ): number {
  * percentage of the given total. A visitor can count in more than one row, so
  * the shares of a column can add up to more than 100%.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} [report] Optional. A report with one dimension and one metric.
  * @param {number} [total]  Optional. The total that each share is a percentage of, such as the site's visitors. Default `0`, which shows no share.

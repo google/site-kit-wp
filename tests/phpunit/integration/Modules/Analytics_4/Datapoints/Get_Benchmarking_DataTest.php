@@ -194,7 +194,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * administrator's account, gives every report a row, and shares the given
 	 * modules with the Editor role.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $shared_module_slugs The modules shared with the Editor role, such as `array( Analytics_4::MODULE_SLUG )`.
 	 */
@@ -257,7 +257,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * A module reads the token of the user it was built for, so the
 	 * administrator and the reader each need modules built for them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param int $user_id The user the modules are built for.
 	 */
@@ -312,7 +312,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * The encoded response doesn't carry these rows, so the test reads them
 	 * here, before they are ranked.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 */
 	private function record_contextual_data_keys() {
 		add_filter(

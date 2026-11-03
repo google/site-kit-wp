@@ -81,7 +81,7 @@ export const actions = {
 	 * @since 1.110.0 Extended to support an optional filterActiveWidgets function.
 	 * @since 1.128.0 Extended to make title optional, support an optional Footer component, and added support for an optional `hasNewBadge` parameter.
 	 * @since 1.184.0 Extended to support an optional pdfReportTitle - generated PDF section title.
-	 * @since n.e.x.t Removed the pdfReportTitle setting.
+	 * @since 1.191.0 Removed the pdfReportTitle setting.
 	 *
 	 * @param {string}      slug                           Widget Area's slug.
 	 * @param {Object}      settings                       Widget Area's settings.

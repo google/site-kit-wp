@@ -52,7 +52,7 @@ interface TrackedRequest extends InterceptedRequest {
  * URLs that WordPress redirects to, such as Google's OAuth URLs, so each
  * redirect target is offered to the handler too.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param handler Request handler.
  * @param url     Redirect target URL.
@@ -80,7 +80,7 @@ function resolveRedirectTarget( handler: RequestHandler, url: string ) {
 /**
  * Maps a mocked response to Playwright `route.fulfill()` options.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param response             Mocked response.
  * @param response.status      HTTP status. Defaults to 200.
@@ -102,7 +102,7 @@ function toFulfillOptions( {
  * Continues a navigation request, offering any redirect target to the
  * handler before the browser follows it.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param route   Playwright route.
  * @param handler Request handler.
@@ -127,7 +127,7 @@ async function continueNavigation( route: Route, handler: RequestHandler ) {
 /**
  * Wraps a Playwright route in the request object that handlers receive.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param route   Playwright route.
  * @param handler Request handler.
@@ -180,7 +180,7 @@ function toInterceptedRequest(
  * `page.setRequestInterception()` turns interception on and off. While it is
  * off, requests continue untouched.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param handler Receives the intercepted request.
  * @return Removes the route.
@@ -213,7 +213,7 @@ function routeRequests( handler: RequestHandler ) {
  *
  * @since 1.0.0
  * @since 1.154.0 Added support for path:response mapping object to simplify request handling.
- * @since n.e.x.t Runs on Playwright routing.
+ * @since 1.191.0 Runs on Playwright routing.
  *
  * @param config Either a callback function or a path:response mapping object.
  * @return Function that can be called to remove the added handler function from the page.
@@ -254,7 +254,7 @@ export function useRequestInterception( config: RequestInterceptionConfig ) {
  * handling/interception.
  *
  * @since 1.93.0
- * @since n.e.x.t Runs on Playwright routing.
+ * @since 1.191.0 Runs on Playwright routing.
  *
  * @param requestCases An array of request cases to add to the shared request interception.
  * @return Methods that can be called to remove the added handler function from the page and add new request cases.

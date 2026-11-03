@@ -25,7 +25,7 @@ import { getPostWindow } from './getPostWindow';
  * Gets a time in the browser's time zone in ISO 8601 format, so the tests pass
  * in any time zone.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {...number} args The `Date` constructor arguments, e.g. `2026, 9, 8, 14, 5`.
  * @return {string} The time in ISO 8601 format.

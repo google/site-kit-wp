@@ -50,7 +50,7 @@ type ResolvedOptions = ElementMatcherOptions & DefaultOptions;
  * A string matches as a substring of `textContent`. A regular expression is
  * tested against it.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param content Element text content.
  * @param text    Expected text.
@@ -68,7 +68,7 @@ function textMatches( content: string, text?: string | RegExp ) {
 /**
  * Finds the elements under `root` that match a selector and options.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param root            Page or element handle.
  * @param selector        CSS selector.
@@ -101,7 +101,7 @@ export async function findMatches(
 /**
  * Polls until `condition()` returns a truthy value or the timeout passes.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param condition       Async function to poll.
  * @param options         Timeout and polling interval.
@@ -128,7 +128,7 @@ export async function poll< T >(
 /**
  * Describes a selector and text for failure messages.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param selector     CSS selector.
  * @param options      Matcher options.
@@ -147,7 +147,7 @@ export function describeTarget(
 /**
  * Merges matcher options into the default options.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param options Matcher options.
  * @return Options with defaults applied.
@@ -161,7 +161,7 @@ export function withDefaultOptions(
 /**
  * Waits for an element to match, then returns its handle.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param root     Page or element handle.
  * @param selector CSS selector.

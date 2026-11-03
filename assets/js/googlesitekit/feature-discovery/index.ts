@@ -86,7 +86,7 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 		/**
 		 * Removes the dismissed-item mark for a feature's incomplete setup reminder.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.191.0
 		 *
 		 * @param {string} slug Feature's slug.
 		 * @return {Promise<void>} Promise that resolves once the reminder has been reset.

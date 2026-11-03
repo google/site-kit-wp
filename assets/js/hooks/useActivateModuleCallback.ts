@@ -57,7 +57,7 @@ interface ActivateModuleOptions {
  * Returns null if the module doesn't exist or the user can't manage options.
  *
  * @since 1.70.0
- * @since n.e.x.t Added the `internalServerErrorOptions` option.
+ * @since 1.191.0 Added the `internalServerErrorOptions` option.
  *
  * @param {string} moduleSlug                           Module slug.
  * @param {Object} [options]                            Optional. Activation options with `redirectQueryArgs` and `additionalScopes`.

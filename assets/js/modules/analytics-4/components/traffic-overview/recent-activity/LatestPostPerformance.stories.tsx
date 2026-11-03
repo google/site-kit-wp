@@ -58,7 +58,7 @@ interface LatestPostPerformanceStoryProps {
  * Connects Analytics and Search Console, sets a fixed reference date, and
  * stores the latest post, so every story starts from the same state.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object}        registry                 The registry to set up.
  * @param {Object}        [options]                Options.

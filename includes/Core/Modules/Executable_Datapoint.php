@@ -28,7 +28,7 @@ interface Executable_Datapoint {
 	 * call made with it returns the request instead of sending it.
 	 *
 	 * @since 1.160.0
-	 * @since n.e.x.t A returned closure is called with the Google client chosen for the datapoint.
+	 * @since 1.191.0 A returned closure is called with the Google client chosen for the datapoint.
 	 *
 	 * @param Data_Request $data Data request object.
 	 */

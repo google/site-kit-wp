@@ -51,7 +51,7 @@ export interface RecentTrafficBreakdownColumn {
  * Resolves the report of a column of the Recent activity tab's traffic
  * breakdown, and builds the column's rows from it.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Function} getReportOptions The function that builds the column's report options, such as `getTopPostsReportOptions()`. It takes the tab's date range and the product pages to leave out.
  * @return {Object} The column's report options, its rows, whether it is loading, its error, and a function that requests its report again.

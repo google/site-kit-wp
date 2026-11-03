@@ -29,7 +29,7 @@ import {
 /**
  * Waits for a field matching the selector, then replaces its value.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param root           Page or element handle to search in.
  * @param selector       CSS selector.

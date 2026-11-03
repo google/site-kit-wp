@@ -29,7 +29,7 @@ import { WP_BASE_URL } from './wp-config';
 /**
  * Creates a URL on the test site from a WordPress path and query string.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param WPPath Path relative to the site root.
  * @param query  Query string, without the leading `?`.
@@ -45,7 +45,7 @@ export function createURL( WPPath: string, query = '' ) {
 /**
  * Checks whether the current page is at the given WordPress path.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param WPPath Path relative to the site root.
  * @param query  Query string to compare, without the leading `?`.

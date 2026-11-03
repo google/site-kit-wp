@@ -41,7 +41,7 @@ export interface FeatureDiscoveryAPI {
 	/**
 	 * Removes a feature's dismissed incomplete-setup reminder marker.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {string} slug Feature's slug.
 	 * @return {Promise<void>}

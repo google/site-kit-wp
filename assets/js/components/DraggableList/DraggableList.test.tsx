@@ -89,7 +89,7 @@ function renderItem( {
 }: DraggableListRenderOptions< typeof items[ number ] > ) {
 	return (
 		<Fragment>
-			<Handle aria-label={ `Move ${ item.label }` } />
+			<Handle label={ `Move ${ item.label }` } />
 			<span>{ item.label }</span>
 		</Fragment>
 	);
@@ -188,7 +188,7 @@ describe( 'DraggableList', () => {
 			renderItem: ( { item, DragHandle: Handle } ) => (
 				<NestedRow
 					leadingElement={
-						<Handle aria-label={ `Move ${ item.label }` } />
+						<Handle label={ `Move ${ item.label }` } />
 					}
 				>
 					{ item.label }
@@ -202,7 +202,7 @@ describe( 'DraggableList', () => {
 		} );
 
 		expect( screen.getAllByRole( 'button' ) ).toHaveLength( items.length );
-		expect( handle.parentElement ).toBe( rows[ 1 ].firstChild );
+		expect( rows[ 1 ].firstChild ).toContainElement( handle );
 
 		handle.focus();
 		view.rerender( <DraggableList { ...view.props } /> );
@@ -236,7 +236,7 @@ describe( 'DraggableList', () => {
 		const view = setup( {
 			renderItem: ( { item, DragHandle: Handle } ) => (
 				<Fragment>
-					<Handle aria-label={ `Move ${ item.label }` } />
+					<Handle label={ `Move ${ item.label }` } />
 					<input
 						aria-label={ item.label }
 						defaultValue={ item.label }
@@ -358,7 +358,7 @@ describe( 'DraggableList', () => {
 
 			expect(
 				screen.getAllByRole( 'listitem' )[ index ].firstChild
-			).toBe( handle );
+			).toContainElement( handle );
 		} );
 
 		fireEvent.keyDown( handles[ 0 ], { key: 'ArrowDown' } );

@@ -33,7 +33,7 @@ import {
 /**
  * The `browser` global: opens more pages in the same browser context.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface E2EBrowser {
 	newPage(): Promise< CompatPage >;
@@ -52,7 +52,7 @@ export interface E2EBrowser {
  * - `E2E_DEVTOOLS=true` opens DevTools in each tab.
  * - `E2E_TRACE=<path>` records a Playwright trace to the given zip file.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export default class PlaywrightEnvironment extends NodeEnvironment {
 	private browser?: Browser;

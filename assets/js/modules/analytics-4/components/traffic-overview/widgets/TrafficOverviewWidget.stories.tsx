@@ -193,6 +193,7 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
  * request.
  *
  * @since 1.190.0
+ * @since 1.191.0 Puts the reports of the recent traffic breakdown in the store too.
  * @since n.e.x.t Puts the reports of the recent traffic breakdown and of the site's visitors in the store too.
  *
  * @param {Object} registry The registry to put the property, the post, and the reports in.

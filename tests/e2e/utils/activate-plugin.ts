@@ -25,7 +25,7 @@ import { visitAdminPage } from './visit-admin-page';
 /**
  * Activates an installed plugin, unless it is already active.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param slug Plugin slug, as in the `data-slug` attribute on the Plugins screen.
  * @return Resolves once the plugin is active.
@@ -45,7 +45,7 @@ export async function activatePlugin( slug: string ) {
 /**
  * Deactivates an active plugin, unless it is already inactive.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param slug Plugin slug, as in the `data-slug` attribute on the Plugins screen.
  * @return Resolves once the plugin is inactive.

@@ -58,7 +58,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 	/**
 	 * Gets the top posts of a report with the given visitors of each URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $visitors_by_url The visitors of each URL of the report, most visitors first, such as `array( '/?p=123' => 10 )`.
 	 * @param int   $limit        Optional. The maximum number of posts. Default 10.

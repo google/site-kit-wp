@@ -21,7 +21,7 @@ use WP_Post;
  * The class asks WordPress which published post each URL of an Analytics
  * report shows, and adds up the visitors of each post.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ final class Plain_Permalink_Top_Posts {
 	 * Each lookup can run a database query. The visitors of the other page paths
 	 * count for no post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @var int
 	 */
 	const MAX_PAGE_PATHS = 50;
@@ -41,7 +41,7 @@ final class Plain_Permalink_Top_Posts {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @var Context
 	 */
 	private $context;
@@ -49,7 +49,7 @@ final class Plain_Permalink_Top_Posts {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -63,7 +63,7 @@ final class Plain_Permalink_Top_Posts {
 	 * A post's visitors add up over all its URLs, such as `/?p=123` and
 	 * `/?p=123&utm_source=newsletter`, so a visitor who opened both counts twice.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $url_rows The report rows, each with a `url`, a path with its query string, and its `visitors`.
 	 * @param int   $limit    The maximum number of posts to return.
@@ -107,7 +107,7 @@ final class Plain_Permalink_Top_Posts {
 	/**
 	 * Gets the visitors of the page paths with the most visitors, at most `MAX_PAGE_PATHS` of them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $url_rows The report rows, as `get()` takes them.
 	 * @return array The visitors keyed by page path, such as `/?p=123`, most first.
@@ -133,7 +133,7 @@ final class Plain_Permalink_Top_Posts {
 	/**
 	 * Gets the page path that WordPress reads from a URL of the report, such as `/?p=123` for `/index.php?p=123&utm_source=newsletter`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param string   $url               The URL of the report, a path with its query string.
 	 * @param string   $home_path         The path of the site, with a trailing slash, such as `/blog/`.
@@ -177,7 +177,7 @@ final class Plain_Permalink_Top_Posts {
 	 * `uksort()` isn't stable before PHP 8.0, so the position of each key orders
 	 * keys with equal visitors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $visitors The visitors of each key, such as a page path or a post ID.
 	 * @return array The same visitors, most first, with their keys.
@@ -197,7 +197,7 @@ final class Plain_Permalink_Top_Posts {
 	/**
 	 * Gets the published single post that WordPress shows at a page path, such as the static homepage at `/`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param string $page_path The page path, such as `/?p=123`.
 	 * @return WP_Post|null The post, or `null` where the page path shows no single published post, such as the posts page.
@@ -247,7 +247,7 @@ final class Plain_Permalink_Top_Posts {
 	 * `get_the_title()` adds that prefix to a post with a password in a REST
 	 * request, so we run the `the_title` filters here.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param WP_Post $post The post.
 	 * @return string The title, or an empty string for a post with no title.

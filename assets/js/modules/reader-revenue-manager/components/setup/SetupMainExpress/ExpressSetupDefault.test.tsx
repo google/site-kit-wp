@@ -253,7 +253,7 @@ describe( 'ExpressSetupDefault', () => {
 		/**
 		 * Sets up a registry without resolved settings or publication.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.191.0
 		 * @private
 		 *
 		 * @param {Object}         [options]               Optional. Options.
@@ -287,7 +287,7 @@ describe( 'ExpressSetupDefault', () => {
 		/**
 		 * Resolves the settings with the given publication ID.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.191.0
 		 * @private
 		 *
 		 * @param {string} publicationID Publication ID.
@@ -306,7 +306,7 @@ describe( 'ExpressSetupDefault', () => {
 		/**
 		 * Asserts that only the progress bar is rendered.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.191.0
 		 * @private
 		 *
 		 * @param {Element} container Rendered container.

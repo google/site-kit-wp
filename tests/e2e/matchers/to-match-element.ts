@@ -33,7 +33,7 @@ import {
  * Asserts that an element matching the selector, and the text if given,
  * appears within the timeout. With `.not`, asserts that none does.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param this           Jest matcher context.
  * @param root           Page or element handle to search in.

@@ -257,7 +257,7 @@ class Authenticator implements Authenticator_Interface {
 	 *
 	 * @since 1.145.0
 	 * @since 1.185.0 Returns a WP_Error when the email-matched user uses two-factor authentication and isn't connected to the Google account.
-	 * @since n.e.x.t Returns a WP_Error when more than one user has the email address of the Google account.
+	 * @since 1.191.0 Returns a WP_Error when more than one user has the email address of the Google account.
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return WP_User|WP_Error|null User object when found, WP_Error when the matched user has to connect their Google account first or more than one user has the email address, null otherwise.

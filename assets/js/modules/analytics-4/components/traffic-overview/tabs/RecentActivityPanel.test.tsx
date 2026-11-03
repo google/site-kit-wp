@@ -109,7 +109,7 @@ describe( 'RecentActivityPanel', () => {
 	 * mocks are added after the existing ones, so a report response that the
 	 * test has already set up takes precedence.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @return {void}
 	 */
