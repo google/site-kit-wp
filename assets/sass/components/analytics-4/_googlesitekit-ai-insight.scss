@@ -27,7 +27,7 @@
 	}
 
 	.googlesitekit-ai-disclosure {
-		align-items: center;
+		align-items: flex-start;
 		display: flex;
 		gap: 4px;
 	}
@@ -35,5 +35,8 @@
 	.googlesitekit-ai-disclosure__text {
 		color: $c-surfaces-on-surface-variant;
 		margin: 0;
+
+		// Centres the first line of text on the 18px icon.
+		padding-top: 1px;
 	}
 }
