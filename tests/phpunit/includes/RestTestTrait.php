@@ -66,6 +66,8 @@ trait RestTestTrait {
 
 	/**
 	 * Grants every user `Permissions::VIEW_DASHBOARD`, which otherwise needs a Google sign-in or a role a module is shared with.
+	 *
+	 * @since n.e.x.t
 	 */
 	protected function grant_dashboard_permission() {
 		add_filter(
@@ -80,6 +82,8 @@ trait RestTestTrait {
 
 	/**
 	 * Gets a route's resource schema, as the REST index lists it.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string $route Route path under the Site Kit REST root.
 	 * @return array Resource schema of the route.
@@ -97,6 +101,8 @@ trait RestTestTrait {
 	 * `rest_validate_value_from_schema()` accepts a key that the schema leaves out. So this also
 	 * asserts that the schema describes each key of the data, at any depth.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param mixed  $data    Response data.
 	 * @param string $route   Route path under the Site Kit REST root.
 	 * @param string $message Message for a failure.
@@ -110,6 +116,8 @@ trait RestTestTrait {
 
 	/**
 	 * Lists each key of a value, at any depth, that its schema does not describe.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param mixed  $value  Value to check.
 	 * @param array  $schema Schema of the value.

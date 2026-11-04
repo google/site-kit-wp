@@ -226,6 +226,8 @@ class REST_RoutesTest extends TestCase {
 	/**
 	 * Lists each property inside a schema, at any depth, that has no description.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array  $schema Schema whose properties to check.
 	 * @param string $path   Where the schema sits, for the message.
 	 * @return array List of the paths of the properties with no description.
