@@ -1,3 +1,6 @@
+// The `es5` target leaves `Intl.DateTimeFormat.prototype.formatRange` untyped.
+/// <reference lib="es2021.intl" />
+
 /**
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -23,6 +26,10 @@ import { GATrackingEventArgs } from './GATrackingEventArgs';
 /* eslint-disable no-var */
 
 declare global {
+	var _googlesitekitFeaturesBadgeData: import('@/js/util/features-badge').FeatureCountFingerprint & {
+		resetSession: boolean;
+	};
+
 	interface Window {
 		gtag: ( ...args: unknown[] ) => void;
 		_googlesitekitAnalyticsTrackingData?: import('@/js/analytics-advanced-tracking/types').AdvancedTrackingEvent[];
@@ -43,7 +50,16 @@ declare global {
 	// yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekit:
 		| {
-				contentEvents?: ContentEventsConfig;
+				// A cached page still has the configuration an older release
+				// wrote, so any field can be missing.
+				contentEvents?: Partial< ContentEventsConfig >;
+				/**
+				 * Easy Digital Downloads plugin data, if the plugin is installed.
+				 */
+				edddata?: {
+					currency?: string;
+					purchase?: Record< string, unknown >;
+				};
 				gtagUserData?: boolean;
 				gtagEvent?: (
 					name: string,
@@ -62,19 +78,28 @@ declare global {
 
 	var googlesitekit: Record< string, unknown >;
 
+	// Replaced by Webpack's DefinePlugin at build time.
+	var GOOGLESITEKIT_VERSION: string;
+
+	var _googlesitekitTrackingData:
+		| Partial< import('@/js/util/tracking/createTracking').TrackingConfig >
+		| undefined;
+
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekitLegacyData: {
 		admin: {
 			siteURL: string;
 			resetSession: boolean | null;
 		};
-		local: string;
+		locale?: string;
 	};
 
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekitBaseData: {
 		assetsURL: string;
+		wpPrivacyURL?: string;
 		enabledFeatures?: string[];
+		wooCommerceActive?: boolean;
 	};
 
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.

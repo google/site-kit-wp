@@ -303,6 +303,13 @@ final class Modules implements Provides_Feature_Metrics {
 			2
 		);
 
+		add_filter(
+			'googlesitekit_connected_modules',
+			function () {
+				return $this->get_connected_modules();
+			}
+		);
+
 		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ) );
 		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ), 20 );
 
@@ -569,7 +576,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 		if ( ! isset( $modules[ $slug ] ) ) {
 			/* translators: %s: module slug */
-			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
+			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		return $modules[ $slug ];
@@ -607,7 +614,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 		if ( ! isset( $modules[ $slug ] ) ) {
 			/* translators: %s: module slug */
-			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
+			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		return $this->dependencies[ $slug ];
@@ -628,7 +635,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 		if ( ! isset( $modules[ $slug ] ) ) {
 			/* translators: %s: module slug */
-			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
+			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		return $this->dependants[ $slug ];

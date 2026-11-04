@@ -20,6 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -41,7 +42,6 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use ReflectionProperty;
 use WP_Error;
 
 /**
@@ -333,8 +333,8 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
 		$modules = $this->create_modules_with_fake_service_entity_access(
 			array(
-				Analytics_4::MODULE_SLUG    => false,
-				Search_Console::MODULE_SLUG => false,
+				'analytics-4'    => false,
+				'search-console' => false,
 			),
 			$owner_id
 		);
@@ -344,14 +344,129 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$secondary_admin_id,
 			$this->date_range,
 			array(
-				Analytics_4::MODULE_SLUG    => array( 'total_visitors' => array( 'value' => 10 ) ),
-				Search_Console::MODULE_SLUG => array( 'total_impressions' => array( 'value' => 10 ) ),
+				'analytics-4'    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				'search-console' => array( 'total_impressions' => array( 'value' => 10 ) ),
 			)
 		);
 
 		$this->assertWPError( $payload, 'Secondary admin denied access to every connected module should get a categorized error instead of a fatal error.' );
 		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'Denied service-entity access should be categorized as a permissions error.' );
-		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should carry the first denied module slug.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should name the first denied module slug.' );
+	}
+
+	public function test_get_user_payload__unverified_admin_with_denied_access_returns_permissions_error() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+
+		// A secondary admin who only connects their own Google account (rather than
+		// running Site Kit's full setup wizard) never completes site verification.
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id, false );
+
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				'analytics-4'    => false,
+				'search-console' => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				'analytics-4'    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				'search-console' => array( 'total_impressions' => array( 'value' => 10 ) ),
+			)
+		);
+
+		$this->assertWPError( $payload, 'An unverified secondary admin denied access should still get a categorized error instead of an empty payload.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'Site verification should not be required to detect denied service-entity access.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should name the first denied module slug.' );
+	}
+
+	public function test_get_user_payload__returns_the_permissions_error_when_pagespeed_insights_is_also_connected() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+
+		// PageSpeed Insights adds no section to the report, so it must not hide the
+		// permissions error for Analytics and Search Console.
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				'analytics-4'    => false,
+				'search-console' => false,
+			),
+			$owner_id,
+			array( 'pagespeed-insights' )
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				'analytics-4'    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				'search-console' => array( 'total_impressions' => array( 'value' => 10 ) ),
+			)
+		);
+
+		$this->assertWPError( $payload, 'get_user_payload() should return a WP_Error when the recipient cannot read either report module.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'get_user_payload() should categorize denied access as a permissions error.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'get_user_payload() should name `analytics-4`, the first module the recipient cannot read.' );
+	}
+
+	public function test_get_user_payload__returns_an_empty_array_when_only_adsense_is_denied() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				'analytics-4'    => true,
+				'search-console' => true,
+				'adsense'        => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				'analytics-4'    => array(),
+				'search-console' => array(),
+			)
+		);
+
+		$this->assertSame( array(), $payload, 'get_user_payload() should return an empty array when only AdSense is denied, because AdSense adds no section to the report.' );
+	}
+
+	public function test_get_user_payload__returns_the_permissions_error_when_search_console_is_denied_and_analytics_has_no_data() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				'analytics-4'    => true,
+				'search-console' => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				'analytics-4' => array(),
+			)
+		);
+
+		$this->assertWPError( $payload, 'get_user_payload() should return a WP_Error when Analytics returns no data and Search Console is denied.' );
+		$this->assertEquals( 'search-console', $payload->get_error_data()['module_slug'], 'get_user_payload() should name `search-console`, the module the recipient cannot read.' );
 	}
 
 	public function test_get_user_payload__service_entity_access_check_error_returns_empty_array() {
@@ -412,39 +527,28 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 
 		$data_requests = $this->create_data_requests();
 
-		$modules_property = new ReflectionProperty( Modules::class, 'modules' );
-		$modules_property->setAccessible( true );
-		$modules_property->setValue( $this->modules, array( 'sentinel' => new \stdClass() ) );
+		$this->force_set_property( $this->modules, 'modules', array( 'sentinel' => new \stdClass() ) );
+		$this->force_set_property( $this->modules, 'dependencies', array( 'sentinel' => array( 'dep' ) ) );
+		$this->force_set_property( $this->modules, 'dependants', array( 'dep' => array( 'sentinel' ) ) );
 
-		$dependencies_property = new ReflectionProperty( Modules::class, 'dependencies' );
-		$dependencies_property->setAccessible( true );
-		$dependencies_property->setValue( $this->modules, array( 'sentinel' => array( 'dep' ) ) );
+		$authentication_before = $this->force_get_property( $this->modules, 'authentication' );
 
-		$dependants_property = new ReflectionProperty( Modules::class, 'dependants' );
-		$dependants_property->setAccessible( true );
-		$dependants_property->setValue( $this->modules, array( 'dep' => array( 'sentinel' ) ) );
-
-		$authentication_property = new ReflectionProperty( Modules::class, 'authentication' );
-		$authentication_property->setAccessible( true );
-		$authentication_before = $authentication_property->getValue( $this->modules );
-
-		$method = new \ReflectionMethod( Email_Reporting_Data_Requests::class, 'maybe_reset_runtime_caches_for_user_change' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Email_Reporting_Data_Requests::class, 'maybe_reset_runtime_caches_for_user_change' );
 
 		$method->invoke( $data_requests, $first_user_id );
 		$method->invoke( $data_requests, $first_user_id );
 
-		$this->assertNotEmpty( $modules_property->getValue( $this->modules ), 'Runtime module cache should not reset when processing the same user repeatedly.' );
-		$this->assertNotEmpty( $dependencies_property->getValue( $this->modules ), 'Module dependency cache should not reset when processing the same user repeatedly.' );
-		$this->assertNotEmpty( $dependants_property->getValue( $this->modules ), 'Module dependant cache should not reset when processing the same user repeatedly.' );
-		$this->assertSame( $authentication_before, $authentication_property->getValue( $this->modules ), 'Authentication instance should not be recreated when user does not change.' );
+		$this->assertNotEmpty( $this->force_get_property( $this->modules, 'modules' ), 'Runtime module cache should not reset when processing the same user repeatedly.' );
+		$this->assertNotEmpty( $this->force_get_property( $this->modules, 'dependencies' ), 'Module dependency cache should not reset when processing the same user repeatedly.' );
+		$this->assertNotEmpty( $this->force_get_property( $this->modules, 'dependants' ), 'Module dependant cache should not reset when processing the same user repeatedly.' );
+		$this->assertSame( $authentication_before, $this->force_get_property( $this->modules, 'authentication' ), 'Authentication instance should not be recreated when user does not change.' );
 
 		$method->invoke( $data_requests, $second_user_id );
 
-		$this->assertSame( array(), $modules_property->getValue( $this->modules ), 'Runtime module cache should reset when switching to a different user.' );
-		$this->assertSame( array(), $dependencies_property->getValue( $this->modules ), 'Module dependency cache should reset when switching to a different user.' );
-		$this->assertSame( array(), $dependants_property->getValue( $this->modules ), 'Module dependant cache should reset when switching to a different user.' );
-		$this->assertNotSame( $authentication_before, $authentication_property->getValue( $this->modules ), 'Authentication instance should be recreated when switching users.' );
+		$this->assertSame( array(), $this->force_get_property( $this->modules, 'modules' ), 'Runtime module cache should reset when switching to a different user.' );
+		$this->assertSame( array(), $this->force_get_property( $this->modules, 'dependencies' ), 'Module dependency cache should reset when switching to a different user.' );
+		$this->assertSame( array(), $this->force_get_property( $this->modules, 'dependants' ), 'Module dependant cache should reset when switching to a different user.' );
+		$this->assertNotSame( $authentication_before, $this->force_get_property( $this->modules, 'authentication' ), 'Authentication instance should be recreated when switching users.' );
 	}
 
 	public function test_categorize_error() {
@@ -506,6 +610,51 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( 'total_visitors', $payload, 'get_user_payload() should still return the total visitors report when Analytics detected no conversion event.' );
 	}
 
+	public function test_get_user_payload__adds_no_site_goals_report_when_no_site_goals_widget_is_active() {
+		$payload = $this->get_analytics_payload_for_detected_events( array( 'purchase', 'contact' ), array() );
+
+		$this->assertArrayNotHasKey( 'site_goals_online_store_primary', $payload, '`get_user_payload()` should return no online store report when `activeWidgets` is empty, even though `detectedEvents` has `purchase`.' );
+		$this->assertArrayNotHasKey( 'site_goals_lead_primary', $payload, '`get_user_payload()` should return no lead generation report when `activeWidgets` is empty, even though `detectedEvents` has `contact`.' );
+		$this->assertArrayHasKey( 'total_visitors', $payload, '`get_user_payload()` should still return the total visitors report when `activeWidgets` is empty.' );
+	}
+
+	public function test_get_user_payload__adds_the_site_goals_reports_only_for_a_role_that_analytics_is_shared_with() {
+		$admin_id  = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$editor_id = self::factory()->user->create( array( 'role' => 'editor' ) );
+		$author_id = self::factory()->user->create( array( 'role' => 'author' ) );
+
+		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
+
+		$this->activate_modules( Analytics_4::MODULE_SLUG );
+		$this->set_analytics_settings_connected(
+			array(
+				'ownerID'        => $admin_id,
+				'detectedEvents' => array( 'purchase', 'contact' ),
+			)
+		);
+		$this->options->set( Site_Goals_Site_Settings::OPTION, array( 'activeWidgets' => array( 'ecommerce', 'lead' ) ) );
+		$this->options->set(
+			Module_Sharing_Settings::OPTION,
+			array(
+				Analytics_4::MODULE_SLUG => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+
+		$analytics = $this->modules->get_module( Analytics_4::MODULE_SLUG );
+		$analytics->register();
+		$this->fake_analytics_report( $analytics );
+
+		$editor_payload = $this->create_data_requests()->get_user_payload( $editor_id, $this->date_range );
+		$author_payload = $this->create_data_requests()->get_user_payload( $author_id, $this->date_range );
+
+		$this->assertArrayHasKey( 'site_goals_online_store_primary', $editor_payload['analytics-4'], '`get_user_payload()` should return the online store count to an editor, because Analytics is shared with the editor role.' );
+		$this->assertArrayHasKey( 'site_goals_lead_primary', $editor_payload['analytics-4'], '`get_user_payload()` should return the lead generation count to an editor, because Analytics is shared with the editor role.' );
+		$this->assertSame( array(), $author_payload, "`get_user_payload()` should return an empty payload to an author, because Analytics isn't shared with the author role." );
+	}
+
 	public function test_get_user_payload__adds_the_author_and_category_reports_when_the_post_dimensions_have_data() {
 		$custom_dimension_data = new Custom_Dimensions_Data_Available( $this->transients );
 		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR );
@@ -518,12 +667,13 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 	}
 
 	/**
-	 * Gets the Analytics payload for an owner whose Analytics settings hold the given detected events.
+	 * Gets the Analytics payload for an owner, with the given `detectedEvents` and `activeWidgets` settings.
 	 *
 	 * @param array $detected_events Detected event names to store in the Analytics settings.
+	 * @param array $active_widgets  Optional. Site Goals widget types to store in `activeWidgets`. Default `ecommerce` and `lead`.
 	 * @return array Analytics payload keyed by request key.
 	 */
-	private function get_analytics_payload_for_detected_events( array $detected_events ) {
+	private function get_analytics_payload_for_detected_events( array $detected_events, array $active_widgets = array( 'ecommerce', 'lead' ) ) {
 		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
 
@@ -534,6 +684,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 				'detectedEvents' => $detected_events,
 			)
 		);
+		$this->options->set( Site_Goals_Site_Settings::OPTION, array( 'activeWidgets' => $active_widgets ) );
 
 		$analytics = $this->modules->get_module( Analytics_4::MODULE_SLUG );
 		$analytics->register();
@@ -597,7 +748,44 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		};
 	}
 
-	private function create_modules_with_fake_service_entity_access( array $access_map, $owner_id ) {
+	/**
+	 * Creates a fake module with no service entity, so no access check runs on it.
+	 *
+	 * @param string $slug     Module slug.
+	 * @param int    $owner_id Module owner user ID.
+	 * @return FakeModule Fake module instance.
+	 */
+	private function create_module_without_service_entity( $slug, $owner_id ) {
+		return new class( $this->context, $this->options, $this->user_options, $this->authentication, $slug, $owner_id ) extends FakeModule {
+			private $module_slug;
+
+			public function __construct( Context $context, Options $options, User_Options $user_options, Authentication $authentication, $slug, $owner_id ) {
+				$this->module_slug = $slug;
+				parent::__construct( $context, $options, $user_options, $authentication );
+				$this->owner_id = (int) $owner_id;
+			}
+
+			protected function setup_info() {
+				return array(
+					'slug'        => $this->module_slug,
+					'name'        => 'Fake Module',
+					'description' => 'Fake Module',
+					'order'       => 0,
+					'homepage'    => 'https://example.com',
+				);
+			}
+		};
+	}
+
+	/**
+	 * Creates a Modules instance holding fake modules and activates them.
+	 *
+	 * @param array $access_map                   Service entity access, keyed by module slug.
+	 * @param int   $owner_id                     Module owner user ID.
+	 * @param array $slugs_without_service_entity Optional. Slugs to create with no service entity. Default empty.
+	 * @return Modules Modules instance.
+	 */
+	private function create_modules_with_fake_service_entity_access( array $access_map, $owner_id, array $slugs_without_service_entity = array() ) {
 		$modules_instance = new Modules(
 			$this->context,
 			$this->options,
@@ -611,11 +799,13 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$module_objects[ $slug ] = $this->create_service_entity_module( $slug, $owner_id, $access );
 		}
 
-		$modules_property = new ReflectionProperty( Modules::class, 'modules' );
-		$modules_property->setAccessible( true );
-		$modules_property->setValue( $modules_instance, $module_objects );
+		foreach ( $slugs_without_service_entity as $slug ) {
+			$module_objects[ $slug ] = $this->create_module_without_service_entity( $slug, $owner_id );
+		}
 
-		$this->set_active_modules( array_keys( $access_map ) );
+		$this->force_set_property( $modules_instance, 'modules', $module_objects );
+
+		$this->set_active_modules( array_keys( $module_objects ) );
 
 		return $modules_instance;
 	}
@@ -742,41 +932,10 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 
 			$path = $request->getUri()->getPath();
 			if ( false !== strpos( $path, '/batch' ) || false !== strpos( $request->getHeaderLine( 'Content-Type' ), 'multipart/mixed' ) ) {
-				$boundary = 'batch';
-				if ( preg_match( '/boundary=([^;]+)/', $request->getHeaderLine( 'Content-Type' ), $matches ) ) {
-					$boundary = trim( $matches[1] );
-				}
-
-				$body = (string) $request->getBody();
-				$ids  = array();
-
-				if ( preg_match_all( '/Content-ID:\\s*(.+)/i', $body, $matches ) && ! empty( $matches[1] ) ) {
-					$ids = array_map( 'trim', $matches[1] );
-				}
-
-				if ( empty( $ids ) ) {
-					$ids = array( 'response-0' );
-				}
-
-				$response_body = json_encode( $response );
-				$multipart     = '';
-
-				foreach ( $ids as $id ) {
-					$multipart .= "--{$boundary}\r\n";
-					$multipart .= "Content-Type: application/http\r\n";
-					$multipart .= "Content-ID: {$id}\r\n\r\n";
-					$multipart .= "HTTP/1.1 200 OK\r\n";
-					$multipart .= "Content-Type: application/json; charset=UTF-8\r\n\r\n";
-					$multipart .= $response_body . "\r\n";
-				}
-
-				$multipart .= "--{$boundary}--";
-
 				return new FulfilledPromise(
-					new Response(
-						200,
-						array( 'Content-Type' => "multipart/mixed; boundary={$boundary}" ),
-						$multipart
+					FakeHttp::create_batch_response(
+						$request,
+						fn() => new Response( 200, array(), json_encode( $response ) )
 					)
 				);
 			}
@@ -807,7 +966,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		};
 	}
 
-	private function authenticate_and_grant_required_scopes_for_user( $user_id ) {
+	private function authenticate_and_grant_required_scopes_for_user( $user_id, $verified = true ) {
 		$previous_user = get_current_user_id();
 		wp_set_current_user( $user_id );
 		$this->user_options->switch_user( $user_id );
@@ -825,7 +984,9 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			}
 		}
 
-		$this->authentication->verification()->set( true );
+		if ( $verified ) {
+			$this->authentication->verification()->set( true );
+		}
 
 		$scopes = array_values( array_unique( $scopes ) );
 		$oauth_client->set_token( array( 'access_token' => 'valid-auth-token' ) );

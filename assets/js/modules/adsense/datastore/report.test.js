@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { setUsingCache } from 'googlesitekit-api';
+import { get, setUsingCache } from 'googlesitekit-api';
 import { getAdSenseMockResponse } from '@/js/modules/adsense/util/data-mock';
 import {
 	createTestRegistry,
@@ -29,6 +29,11 @@ import {
 } from '@tests/js/utils';
 import { MODULES_ADSENSE } from './constants';
 
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
+jest.mock( 'googlesitekit-api', () =>
+	require( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
+
 describe( 'modules/adsense report', () => {
 	let registry;
 
@@ -37,6 +42,8 @@ describe( 'modules/adsense report', () => {
 	} );
 
 	beforeEach( () => {
+		get.mockClear();
+
 		registry = createTestRegistry();
 	} );
 
@@ -171,6 +178,40 @@ describe( 'modules/adsense report', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'passes cacheTTL from the fetch options to the report request', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
+					{ body: getAdSenseMockResponse( options ) }
+				);
+
+				await registry
+					.dispatch( MODULES_ADSENSE )
+					.fetchGetReport( options, { cacheTTL: 300 } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toStrictEqual( {
+					cacheTTL: 300,
+				} );
+			} );
+
+			it( 'sends no cacheTTL to the report request when the call has no fetch options', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
+					{ body: getAdSenseMockResponse( options ) }
+				);
+
+				await registry
+					.dispatch( MODULES_ADSENSE )
+					.fetchGetReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toBeUndefined();
 			} );
 
 			it( 'forwards the abort signal from a getReport call to the report request', async () => {

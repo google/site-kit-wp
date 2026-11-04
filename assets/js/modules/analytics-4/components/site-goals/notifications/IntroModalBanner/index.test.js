@@ -24,6 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	ACTIVE_CONTEXT_ID,
 	CORE_UI,
@@ -43,6 +44,7 @@ import {
 	getSiteGoalsTour,
 } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { seedSiteGoalsEventCountReport } from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -108,7 +110,6 @@ async function waitForIntroModalToShow( getByRole ) {
 }
 
 describe( 'IntroModal', () => {
-	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 	let trackEvents;
 
@@ -284,6 +285,58 @@ describe( 'IntroModal', () => {
 		expect(
 			queryByText( 'Track your most valuable goals' )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the "See what brings in new leads" modal when the Online store widget shows the removal notice', async () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase', 'contact' ] );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
+		appendTourTarget();
+
+		const { getByRole, getByText, queryByText } = render(
+			<IntroModalComponent />,
+			{ registry }
+		);
+
+		await waitForIntroModalToShow( getByRole );
+
+		expect(
+			getByText( 'See what brings in new leads' )
+		).toBeInTheDocument();
+		expect(
+			queryByText( 'Track your most valuable goals' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders nothing when both widgets show the removal notice', async () => {
+		jest.useFakeTimers();
+
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+			hasActiveLeadEventProviders: false,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase', 'contact' ] );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
+		appendTourTarget();
+
+		const { container } = render( <IntroModalComponent />, { registry } );
+
+		// A modal that ignored the removal notice would show before the
+		// 30-second wait in `waitForSiteGoalsSectionReady()` ends.
+		await act( async () => {
+			await jest.advanceTimersByTimeAsync( 30000 );
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+
+		jest.useRealTimers();
 	} );
 
 	it( 'renders nothing when no Site Goals widget is active', () => {
@@ -645,7 +698,157 @@ describe( 'IntroModal', () => {
 		await waitForIntroModalToShow( getByRole );
 	} );
 
+	describe( 'checkRequirements', () => {
+		const notification =
+			ANALYTICS_4_NOTIFICATIONS[ SITE_GOALS_INTRO_MODAL_BANNER ];
+		const reportEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/report'
+		);
+		const storeEventReportEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/report.*purchase'
+		);
+
+		/**
+		 * Creates an event count report whose total is the given count.
+		 *
+		 * @since 1.190.0
+		 *
+		 * @param {string} eventCount The total, as the string Analytics sends, e.g. `'12'`, not `12`.
+		 * @return {Object} The report.
+		 */
+		function buildEventCountReport( eventCount ) {
+			return {
+				rows: [ { metricValues: [ { value: eventCount } ] } ],
+				totals: [ { metricValues: [ { value: eventCount } ] } ],
+			};
+		}
+
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ 'purchase', 'contact' ] );
+		} );
+
+		it( 'returns `false` when both widgets show the removal notice', async () => {
+			provideSiteInfo( registry, {
+				hasActiveEcommerceEventProviders: false,
+				hasActiveLeadEventProviders: false,
+			} );
+			fetchMock.get( reportEndpoint, {
+				body: buildEventCountReport( '0' ),
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+			expect( fetchMock ).toHaveFetchedTimes( 2, reportEndpoint );
+		} );
+
+		it( 'returns `true` without requesting the lead event report when a form plugin is active', async () => {
+			provideSiteInfo( registry, {
+				hasActiveEcommerceEventProviders: false,
+				hasActiveLeadEventProviders: true,
+			} );
+			fetchMock.get( reportEndpoint, {
+				body: buildEventCountReport( '0' ),
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( true );
+			expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint );
+			expect( fetchMock ).toHaveFetchedTimes(
+				1,
+				storeEventReportEndpoint
+			);
+		} );
+
+		it( 'returns `true` when no plugin for either goal type is active but both event reports count at least one event', async () => {
+			provideSiteInfo( registry, {
+				hasActiveEcommerceEventProviders: false,
+				hasActiveLeadEventProviders: false,
+			} );
+			fetchMock.get( reportEndpoint, {
+				body: buildEventCountReport( '12' ),
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( true );
+		} );
+
+		describe( 'before the site info loads', () => {
+			let baseData;
+
+			beforeEach( () => {
+				baseData = global._googlesitekitBaseData;
+				global._googlesitekitBaseData = {
+					...baseData,
+					hasActiveEcommerceEventProviders: false,
+					hasActiveLeadEventProviders: false,
+				};
+
+				registry = createTestRegistry();
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+				provideUserAuthentication( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: true },
+						{ slug: MODULE_SLUG_ANALYTICS_4 }
+					);
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					detectedEvents: [ 'purchase', 'contact' ],
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+			} );
+
+			afterEach( () => {
+				global._googlesitekitBaseData = baseData;
+			} );
+
+			it( 'returns `false` when both widgets show the removal notice', async () => {
+				fetchMock.get( reportEndpoint, {
+					body: buildEventCountReport( '0' ),
+				} );
+
+				const isActive = await notification.checkRequirements(
+					registry,
+					VIEW_CONTEXT_MAIN_DASHBOARD
+				);
+
+				expect( isActive ).toBe( false );
+			} );
+		} );
+	} );
+
 	describe( 'view tracking', () => {
+		// The modal's content renders inside a fixed-position Dialog, so the
+		// `<Notification>` wrapper's own observer never sees it. `BannerModal`
+		// observes its own graphic with `withIntersectionObserver`, so
+		// simulating that observer's intersection fires the modal's `onView`
+		// and makes `<Notification>` send the `view_notification` event.
+		const { simulateAllIntersections } = mockIntersectionObserver();
+
 		it( 'sends the view_notification event once the modal comes into view', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -657,12 +860,12 @@ describe( 'IntroModal', () => {
 			} );
 
 			await waitForIntroModalToShow( getByRole );
-			act( () => simulateAllIntersections() );
 
-			// The modal's content renders inside a fixed-position Dialog, so the
-			// `<Notification>` wrapper's own observer never marks it viewed.
-			// `BannerModal`'s `onView` fills that gap, which makes the wrapper
-			// send the view event labelled with the modal variant.
+			// Simulate the modal's graphic coming into view.
+			act( () => {
+				simulateAllIntersections( true );
+			} );
+
 			await waitFor( () => {
 				expect( trackEvents.view ).toHaveBeenCalledWith(
 					INTRO_MODAL_VARIANTS.ECOMMERCE,

@@ -30,7 +30,7 @@ type FormSuccessHandler = (
 /**
  * Creates a form holding a single email field.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {HTMLFormElement} A form for the success handler to read.
  */
@@ -52,7 +52,7 @@ function createFormWithEmail() {
  * The script reads the globals as it loads, and only then, so each case has to
  * import the module again.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {Object} The `gtagEvent` mock and the form success handler the script registered.
  */

@@ -173,6 +173,23 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Expected API fetch preload paths filter to be registered' );
 	}
 
+	public function test_register__adds_only_the_email_reporting_and_email_reporting_errors_paths() {
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$this->controller->register();
+
+		$paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
+
+		$this->assertEqualSets(
+			array(
+				'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
+				'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
+			),
+			$paths,
+			'The preload paths should hold email-reporting and email-reporting-errors and nothing else.'
+		);
+	}
+
 	public function test_get_routes() {
 		$this->controller->register();
 
@@ -514,9 +531,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 				}
 			);
 
-		$reflection = new \ReflectionProperty( REST_Email_Reporting_Controller::class, 'email_log_batch_query' );
-		$reflection->setAccessible( true );
-		$reflection->setValue( $controller, $batch_query );
+		$this->force_set_property( $controller, 'email_log_batch_query', $batch_query );
 
 		$controller->register();
 		$this->register_rest_routes();
@@ -842,6 +857,34 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		);
 	}
 
+	public function test_get_subscribed_users__excludes_the_current_user() {
+		$other_subscriber_id = $this->create_admin_with_token( 'other-subscriber', 'Other Subscriber', 'other-subscriber@example.com' );
+		$this->subscribe_user( $other_subscriber_id );
+
+		// The viewing admin is subscribed too, but manages their own subscription
+		// elsewhere, so they should not show up in the list they use to manage
+		// everyone else's.
+		$this->subscribe_user( $this->primary_admin_id );
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-subscribed-users' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status(), 'Subscribed users request should succeed for admins.' );
+		$this->assertSame( 1, $data['total'], 'Total should not count the viewing admin.' );
+		$this->assertSame(
+			array( $other_subscriber_id ),
+			wp_list_pluck( $data['users'], 'id' ),
+			'Subscribed users should exclude the viewing admin.'
+		);
+	}
+
 	public function test_get_subscribed_users__respects_pagination() {
 		$user_ids = array();
 
@@ -1038,8 +1081,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 
 	private function register_email_log_dependencies() {
 		$email_log       = new Email_Log( $this->context );
-		$register_method = new \ReflectionMethod( Email_Log::class, 'register_email_log' );
-		$register_method->setAccessible( true );
+		$register_method = $this->get_accessible_method( Email_Log::class, 'register_email_log' );
 		$register_method->invoke( $email_log );
 	}
 

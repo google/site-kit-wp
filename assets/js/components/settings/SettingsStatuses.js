@@ -31,6 +31,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { ProgressBar } from 'googlesitekit-components';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 
 export default function SettingsStatuses( { statuses } ) {
 	if ( ! statuses || statuses.length === 0 ) {
@@ -46,11 +48,14 @@ export default function SettingsStatuses( { statuses } ) {
 			);
 		}
 		return (
-			<p className="googlesitekit-settings-module__meta-item-data">
+			<P
+				className="googlesitekit-settings-module__meta-item-data"
+				size={ SIZE_MEDIUM }
+			>
 				{ status
 					? __( 'Enabled', 'google-site-kit' )
 					: __( 'Disabled', 'google-site-kit' ) }
-			</p>
+			</P>
 		);
 	}
 

@@ -53,12 +53,11 @@ import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNoti
 import SettingsAdvancedDataBreakdowns from './SettingsAdvancedDataBreakdowns';
 import SettingsControls from './SettingsControls';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
+import SettingsIncludeWooCommerceProductsSwitch from './SettingsIncludeWooCommerceProductsSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const siteGoalsEnabled = useFeature( 'siteGoals' );
 	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
@@ -72,20 +71,22 @@ export default function SettingsForm( { hasModuleAccess } ) {
 	);
 
 	const onClickLearnMoreLink = useCallback( () => {
-		if ( setupFlowRefreshEnabled ) {
-			trackEvent(
-				viewContext,
-				'click_learn_more_link',
-				'plugin_conversion_tracking'
-			);
-		}
-	}, [ setupFlowRefreshEnabled, viewContext ] );
+		trackEvent(
+			viewContext,
+			'click_learn_more_link',
+			'plugin_conversion_tracking'
+		);
+	}, [ viewContext ] );
 
 	return (
 		<Fragment>
 			<SettingsControls hasModuleAccess={ hasModuleAccess } />
 
 			{ isValidAccountID( accountID ) && <TrackingExclusionSwitches /> }
+
+			<SettingsIncludeWooCommerceProductsSwitch
+				hasModuleAccess={ hasModuleAccess }
+			/>
 
 			{ hasModuleAccess && (
 				<EntityOwnershipChangeNotice
@@ -122,11 +123,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				<SettingsEnhancedMeasurementSwitch
 					hasModuleAccess={ hasModuleAccess }
 				/>
-				{ siteGoalsEnabled && (
-					<SettingsAdvancedDataBreakdowns
-						hasModuleAccess={ hasModuleAccess }
-					/>
-				) }
+				<SettingsAdvancedDataBreakdowns
+					hasModuleAccess={ hasModuleAccess }
+				/>
 				{ gtgEnabled && <GoogleTagGatewayToggle /> }
 				{ gtagUserDataEnabled && (
 					<EnhancedConversionsSettingsNotice

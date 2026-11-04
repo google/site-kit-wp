@@ -48,7 +48,7 @@ class BC_Functions {
 			return self::{ $function_name }( ...$arguments );
 		}
 
-		throw new BadMethodCallException( "$function_name does not exist." );
+		throw new BadMethodCallException( sprintf( '%s does not exist.', esc_html( $function_name ) ) );
 	}
 
 	/**

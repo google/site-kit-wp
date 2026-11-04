@@ -282,9 +282,9 @@ Modules register dashboard widgets with consistent patterns:
 export function registerWidgets( widgets ) {
     // Primary dashboard widget
     widgets.registerWidget(
-        'analyticsAllTrafficGA4',
+        TRAFFIC_OVERVIEW_WIDGET_SLUG,
         {
-            Component: DashboardAllTrafficWidgetGA4,
+            Component: TrafficOverviewWidget,
             width: widgets.WIDGET_WIDTHS.FULL,
             priority: 1,
             wrapWidget: false,

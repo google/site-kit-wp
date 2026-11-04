@@ -26,6 +26,16 @@ import { FC } from 'react';
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_TITLE,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+
 interface TopAuthorsZeroStateProps {
 	hasMissingCustomDimensions: boolean;
 	isGatheringData: boolean | null | undefined;
@@ -42,16 +52,24 @@ const TopAuthorsZeroState: FC< TopAuthorsZeroStateProps > = ( {
 	if ( hasMissingCustomDimensions ) {
 		return (
 			<div className="googlesitekit-table-tile__custom-dimensions-missing">
-				<p className="googlesitekit-table-tile__custom-dimensions-missing-title">
+				<P
+					className="googlesitekit-table-tile__custom-dimensions-missing-title"
+					size={ SIZE_MEDIUM }
+					type={ TYPE_TITLE }
+				>
 					{ __( 'No data to show', 'google-site-kit' ) }
-				</p>
+				</P>
 
-				<p className="googlesitekit-table-tile__custom-dimensions-missing-description">
+				<P
+					className="googlesitekit-table-tile__custom-dimensions-missing-description"
+					size={ SIZE_SMALL }
+					type={ TYPE_TITLE }
+				>
 					{ __(
 						'Update Analytics to track metric',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 
 				<div className="googlesitekit-table-tile__custom-dimensions-missing-actions">
 					<button

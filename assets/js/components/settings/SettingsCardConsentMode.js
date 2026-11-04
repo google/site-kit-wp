@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import ConsentModeSwitch from '@/js/components/consent-mode/ConsentModeSwitch';
 import WPConsentAPIRequirements from '@/js/components/consent-mode/WPConsentAPIRequirements';
 import Layout from '@/js/components/layout/Layout';
@@ -103,8 +104,8 @@ export default function SettingsCardConsentMode() {
 			badge={
 				isAdsConnected ? (
 					<Badge
-						className="googlesitekit-badge--primary"
 						label={ __( 'Recommended', 'google-site-kit' ) }
+						variant={ BADGE_VARIANTS.RECOMMENDATION }
 					/>
 				) : null
 			}

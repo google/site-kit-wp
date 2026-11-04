@@ -26,12 +26,14 @@ import advancedDataBreakdowns from './advanced-data-breakdowns';
 import audienceSettings from './audience-settings';
 import audiences from './audiences';
 import baseModuleStore from './base';
+import benchmarking from './benchmarking';
 import { MODULES_ANALYTICS_4 } from './constants';
 import containers from './containers';
 import conversionReporting from './conversion-reporting';
 import customDimensions from './custom-dimensions';
 import customDimensionsGatheringData from './custom-dimensions-gathering-data';
 import enhancedMeasurement from './enhanced-measurement';
+import freshData from './fresh-data';
 import keyEvents from './key-events';
 import moduleData from './module-data';
 import partialData from './partial-data';
@@ -42,6 +44,7 @@ import settings from './settings';
 import siteGoalsBreakdown from './site-goals-breakdown';
 import siteGoalsSettings from './site-goals-settings';
 import tags from './tags';
+import ui from './ui';
 import webdatastreams from './webdatastreams';
 
 const store = combineStores(
@@ -50,6 +53,7 @@ const store = combineStores(
 	audiences,
 	audienceSettings,
 	baseModuleStore,
+	benchmarking,
 	moduleData,
 	containers,
 	keyEvents,
@@ -58,6 +62,7 @@ const store = combineStores(
 	customDimensions,
 	customDimensionsGatheringData,
 	enhancedMeasurement,
+	freshData,
 	partialData,
 	properties,
 	report,
@@ -66,6 +71,7 @@ const store = combineStores(
 	siteGoalsBreakdown,
 	siteGoalsSettings,
 	tags,
+	ui,
 	webdatastreams
 );
 

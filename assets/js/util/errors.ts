@@ -1,0 +1,264 @@
+/**
+ * Error Utilities.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { isPlainObject } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
+
+// Error codes and reasons.
+export const ERROR_CODE_MISSING_REQUIRED_SCOPE = 'missing_required_scopes'; // When scopes are missing.
+export const ERROR_REASON_INSUFFICIENT_PERMISSIONS = 'insufficientPermissions';
+export const ERROR_REASON_FORBIDDEN = 'forbidden';
+export const ERROR_INTERNAL_SERVER_ERROR = 'internal_server_error';
+export const ERROR_INVALID_JSON = 'invalid_json';
+export const ERROR_REASON_BAD_REQUEST = 'bad_request';
+export const ERROR_REASON_RATE_LIMIT_EXCEEDED = 'rateLimitExceeded';
+export const ERROR_REASON_USER_RATE_LIMIT_EXCEEDED = 'userRateLimitExceeded';
+export const ERROR_REASON_QUOTA_EXCEEDED = 'quotaExceeded';
+export const ERROR_STATUS_RATE_LIMIT = 429;
+
+export interface ErrorObject {
+	code?: string | number;
+	message?: string;
+	data?: {
+		status?: number;
+		reason?: string;
+		reconnectURL?: string;
+		[ key: string ]: unknown;
+	};
+}
+
+interface SelectorData {
+	storeName?: string;
+	name?: string;
+}
+
+interface ErrorNoticeMessageOptions {
+	noPrefix?: boolean;
+	skipRetryMessage?: boolean;
+}
+
+/**
+ * Checks if the provided object is an instance of WP_Error class.
+ *
+ * @since 1.13.0
+ *
+ * @param {Object} obj The object to check.
+ * @return {boolean} TRUE if the object has "code", "data" and "message" properties, otherwise FALSE.
+ */
+export function isWPError( obj: unknown ): obj is ErrorObject {
+	const candidate = obj as ErrorObject;
+
+	return (
+		isPlainObject( obj ) &&
+		candidate.hasOwnProperty( 'code' ) &&
+		( typeof candidate.code === 'string' ||
+			typeof candidate.code === 'number' ) &&
+		candidate.hasOwnProperty( 'message' ) &&
+		typeof candidate.message === 'string' &&
+		candidate.hasOwnProperty( 'data' )
+	); // We don't check "obj.data" type because it can be anything.
+}
+
+/**
+ * Checks if the given error is a permission scope error.
+ *
+ * @since 1.9.0
+ * @private
+ *
+ * @param {Object} error Input to test as a possible permission scope error.
+ * @return {boolean} TRUE if permission scope error, otherwise FALSE.
+ */
+export function isPermissionScopeError( error: unknown ): boolean {
+	return ( error as ErrorObject )?.code === ERROR_CODE_MISSING_REQUIRED_SCOPE;
+}
+
+/**
+ * Checks if the given error has insufficient permissions reason.
+ *
+ * @since 1.16.0
+ * @since 1.70.0 Add support for "forbidden" reason.
+ *
+ * @param {Object} error The error object to check.
+ * @return {boolean} TRUE if it's insufficient permissions error, otherwise FALSE.
+ */
+export function isInsufficientPermissionsError( error: unknown ): boolean {
+	return [
+		ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+		ERROR_REASON_FORBIDDEN,
+	].includes( ( error as ErrorObject )?.data?.reason as string );
+}
+
+/**
+ * Checks if the given error is an auth error.
+ *
+ * @since 1.78.0
+ *
+ * @param {Object} error The error object to check.
+ * @return {boolean} TRUE if it's an auth error, otherwise FALSE.
+ */
+export function isAuthError( error: unknown ): boolean {
+	return !! ( error as ErrorObject )?.data?.reconnectURL;
+}
+
+/**
+ * Checks if the given error is a rate limit error.
+ *
+ * Matches `Module::RATE_LIMIT_STATUS` and `Module::RATE_LIMIT_REASONS`, which are what
+ * send the `cacheTTL` that holds the request back until the quota has recovered. The
+ * newer Google APIs report a rate limit through the status alone, with no reason.
+ *
+ * @since 1.190.0
+ *
+ * @param {Object} error The error object to check.
+ * @return {boolean} TRUE if it's a rate limit error, otherwise FALSE.
+ */
+export function isRateLimitError( error: unknown ): boolean {
+	const data = ( error as ErrorObject )?.data;
+
+	return (
+		data?.status === ERROR_STATUS_RATE_LIMIT ||
+		[
+			ERROR_REASON_RATE_LIMIT_EXCEEDED,
+			ERROR_REASON_USER_RATE_LIMIT_EXCEEDED,
+			ERROR_REASON_QUOTA_EXCEEDED,
+		].includes( data?.reason as string )
+	);
+}
+
+/**
+ * Checks if the given error type can be retried.
+ *
+ * @since 1.191.0
+ *
+ * @param {Object} error The error object to check.
+ * @return {boolean} TRUE if the error type is retryable, otherwise FALSE.
+ */
+export function isRetryableErrorType( error: unknown ): boolean {
+	return (
+		! isInsufficientPermissionsError( error ) &&
+		! isPermissionScopeError( error ) &&
+		! isAuthError( error ) &&
+		! isRateLimitError( error )
+	);
+}
+
+/**
+ * Checks if the given error can be retried.
+ *
+ * @since 1.86.0
+ * @since 1.190.0 Rate limit errors are no longer retryable.
+ *
+ * @param {Object} error          The error object to check.
+ * @param {Object} [selectorData] The error's associated selector data object.
+ * @return {boolean} TRUE if the error is retryable, otherwise FALSE.
+ */
+export function isErrorRetryable(
+	error: unknown,
+	selectorData?: SelectorData
+): boolean {
+	return !! selectorData?.storeName && isRetryableErrorType( error );
+}
+
+/**
+ * Formats an error message for display in UI notices.
+ *
+ * @since 1.191.0
+ *
+ * @param {(string|undefined)} message                    Error message to format.
+ * @param {Object}             error                      Error object.
+ * @param {Object}             options                    Formatting options.
+ * @param {boolean}            [options.noPrefix]         Whether to omit the "Error:" prefix.
+ * @param {boolean}            [options.skipRetryMessage] Whether to omit the "Please try again" suffix.
+ * @return {string} Formatted error message.
+ */
+export function getErrorNoticeMessage(
+	message: string | undefined,
+	error: unknown,
+	{
+		noPrefix = false,
+		skipRetryMessage = false,
+	}: ErrorNoticeMessageOptions = {}
+): string {
+	let errorMessage = message || '';
+
+	if ( ! skipRetryMessage ) {
+		errorMessage = sprintf(
+			/* translators: %s: Error message from Google API. */
+			__( '%s (Please try again.)', 'google-site-kit' ),
+			errorMessage
+		);
+	}
+
+	if ( ! noPrefix ) {
+		errorMessage = sprintf(
+			/* translators: %s: Error message. */
+			__( 'Error: %s', 'google-site-kit' ),
+			errorMessage
+		);
+	}
+
+	const reconnectURL = ( error as ErrorObject )?.data?.reconnectURL;
+
+	if ( reconnectURL && isURL( reconnectURL ) ) {
+		errorMessage = sprintf(
+			/* translators: 1: Original error message 2: Reconnect URL. */
+			__(
+				'%1$s To fix this, <a href="%2$s">redo the plugin setup</a>.',
+				'google-site-kit'
+			),
+			errorMessage,
+			reconnectURL
+		);
+	}
+
+	return errorMessage;
+}
+
+/**
+ * Sets the error message for specific error codes.
+ *
+ * @since 1.92.0
+ *
+ * @param {Object} error The error object to check.
+ * @return {Object} The updated error object.
+ */
+export function getReportErrorMessage( error: unknown ): string | undefined {
+	const errorObject = error as ErrorObject;
+
+	if ( errorObject?.code === ERROR_INTERNAL_SERVER_ERROR ) {
+		return __(
+			'There was a critical error on this website while fetching data',
+			'google-site-kit'
+		);
+	} else if ( errorObject?.code === ERROR_INVALID_JSON ) {
+		return __(
+			'The server provided an invalid response',
+			'google-site-kit'
+		);
+	}
+
+	return errorObject?.message;
+}

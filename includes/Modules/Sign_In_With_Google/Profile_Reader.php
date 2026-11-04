@@ -55,6 +55,11 @@ class Profile_Reader implements Profile_Reader_Interface {
 			$settings      = $this->settings->get();
 			$google_client = new Google_Client( array( 'client_id' => $settings['clientID'] ) );
 
+			// In order for verifyIdToken to work correctly, client_id must be non-empty.
+			if ( ! $google_client->getClientId() ) {
+				return new WP_Error( 'googlesitekit_siwg_no_client_id' );
+			}
+
 			$payload = $google_client->verifyIdToken( $id_token );
 			if ( empty( $payload['sub'] ) || empty( $payload['email'] ) || empty( $payload['email_verified'] ) ) {
 				return new WP_Error( 'googlesitekit_siwg_bad_payload' );

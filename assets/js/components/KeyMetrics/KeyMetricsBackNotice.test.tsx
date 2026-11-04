@@ -46,8 +46,9 @@ import KeyMetricsBackNotice from './KeyMetricsBackNotice';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
+const { simulateAllIntersections } = mockIntersectionObserver();
+
 describe( 'KeyMetricsBackNotice', () => {
-	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry: WPDataRegistry;
 
 	const viewContext = VIEW_CONTEXT_MAIN_DASHBOARD;
@@ -157,7 +158,7 @@ describe( 'KeyMetricsBackNotice', () => {
 
 		// Simulate the notice coming into view.
 		act( () => {
-			simulateAllIntersections();
+			simulateAllIntersections( true );
 		} );
 
 		await waitFor( () => {

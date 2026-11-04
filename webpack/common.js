@@ -159,7 +159,9 @@ exports.manifestArgs = ( mode ) => ( {
 const siteKitExternals = {
 	'googlesitekit-api': [ 'googlesitekit', 'api' ],
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
+	'googlesitekit-feature-discovery': [ 'googlesitekit', 'featureDiscovery' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
+	'googlesitekit-intents': [ 'googlesitekit', 'intents' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
 	'googlesitekit-notifications': [ 'googlesitekit', 'notifications' ],
 	'googlesitekit-components': [ 'googlesitekit', 'components' ],
@@ -251,6 +253,13 @@ const svgRule = {
 					},
 				},
 			],
+		},
+		{
+			resourceQuery: /path/,
+			type: 'asset/resource',
+			generator: {
+				filename: 'images/[name]-[contenthash][ext]',
+			},
 		},
 		{
 			use: [

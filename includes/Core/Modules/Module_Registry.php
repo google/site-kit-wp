@@ -42,7 +42,7 @@ class Module_Registry {
 		}
 
 		if ( ! class_exists( $module_classname ) ) {
-			throw new InvalidArgumentException( "No class exists for '$module_classname'" );
+			throw new InvalidArgumentException( sprintf( "No class exists for '%s'", esc_html( $module_classname ) ) );
 		}
 
 		if ( ! is_subclass_of( $module_classname, Module::class ) ) {

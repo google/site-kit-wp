@@ -24,6 +24,7 @@ import { FC, ReactNode, Ref } from 'react';
  */
 import {
 	Fragment,
+	createInterpolateElement,
 	forwardRef,
 	useCallback,
 	useEffect,
@@ -42,13 +43,16 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
+import { TilesGroup } from '@/js/modules/analytics-4/components/common/tiles';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
+import EventProviderDeactivatedNotice from '@/js/modules/analytics-4/components/site-goals/components/EventProviderDeactivatedNotice';
 import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
 import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/components/KeyActionTiles';
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
 import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/components/PartialDataBadge';
-import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
+import SiteGoalsRemovalNotice from '@/js/modules/analytics-4/components/site-goals/components/SiteGoalsRemovalNotice';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
@@ -67,9 +71,11 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { useShouldShowSiteGoalsRemovalNotice } from '@/js/modules/analytics-4/components/site-goals/hooks/useShouldShowSiteGoalsRemovalNotice';
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	VisitorEngagementTiles,
@@ -82,7 +88,6 @@ import {
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -99,19 +104,48 @@ interface DateRange {
 	compareEndDate?: string;
 }
 
-const EVENT_RATE_LABELS = {
-	purchase: __( 'Sales rate', 'google-site-kit' ),
-	add_to_cart: __( 'Add to cart rate', 'google-site-kit' ),
-};
-
 const EVENT_TOTAL_LABELS = {
 	purchase: __( 'Total sales', 'google-site-kit' ),
 	add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
 };
 
+/**
+ * Builds the chart tile's title from the primary event and the date range.
+ *
+ * An event added to `EVENT_TOTAL_LABELS` needs a branch here too, or its chart
+ * tile falls back to the sales title.
+ *
+ * @since 1.188.0
+ *
+ * @param {string} primaryEvent  The Key action's event, a key of `EVENT_TOTAL_LABELS`.
+ * @param {number} dateRangeDays The number of days the selected date range covers.
+ * @return {string} The chart tile's title.
+ */
+function getChartTitle(
+	primaryEvent: keyof typeof EVENT_TOTAL_LABELS,
+	dateRangeDays: number
+) {
+	if ( primaryEvent === 'add_to_cart' ) {
+		return sprintf(
+			/* translators: %d: number of days in the selected date range, e.g. 28. */
+			__(
+				'Products added to cart in the last %d days',
+				'google-site-kit'
+			),
+			dateRangeDays
+		);
+	}
+
+	return sprintf(
+		/* translators: %d: number of days in the selected date range, e.g. 28. */
+		__( 'Total sales in the last %d days', 'google-site-kit' ),
+		dateRangeDays
+	);
+}
+
 function getWidgetReportOptions(
 	dates: DateRange,
-	primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined,
+	primaryEvent: EcommerceKeyActionEvent | undefined,
 	breakdownFilter?: Record< string, unknown >
 ) {
 	const primaryEventReportOptions: ReportOptions | null = primaryEvent
@@ -163,6 +197,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 	HTMLDivElement,
 	OnlineStorePerformanceWidgetProps
 >(
+	// eslint-disable-next-line complexity
 	(
 		{
 			Widget,
@@ -178,6 +213,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			children?: ReactNode;
 			Header?: unknown;
 			headerContents?: ReactNode;
+			headerBadge?: ReactNode;
 			collapsible?: boolean;
 			onToggleCollapsed?: ( isCollapsed: boolean ) => void;
 		} >;
@@ -235,12 +271,15 @@ const OnlineStorePerformanceWidget = forwardRef<
 			[]
 		);
 
-		const primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined =
-			useSelect(
-				( select: Select ) =>
-					select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
-				[]
-			);
+		const primaryEvent: EcommerceKeyActionEvent | undefined = useSelect(
+			( select: Select ) =>
+				select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
+			[]
+		);
+
+		const shouldShowRemovalNotice = useShouldShowSiteGoalsRemovalNotice(
+			GOAL_TYPES.ECOMMERCE
+		);
 
 		const effectiveSelectedDrivers = useSelect(
 			( select: Select ) =>
@@ -264,20 +303,19 @@ const OnlineStorePerformanceWidget = forwardRef<
 		const selectedVisitorEngagementEvents =
 			resolvedVisitorEngagement[ GOAL_TYPES.ECOMMERCE ];
 
-		const secondaryEcommerceEvents: ( keyof typeof EVENT_TOTAL_LABELS )[] =
-			useSelect(
-				( select: Select ) =>
-					primaryEvent
-						? select(
-								MODULES_ANALYTICS_4
-						  ).getSecondaryEcommerceEvents( primaryEvent )
-						: [],
-				[ primaryEvent ]
-			);
+		const secondaryEcommerceEvents: EcommerceKeyActionEvent[] = useSelect(
+			( select: Select ) =>
+				primaryEvent
+					? select( MODULES_ANALYTICS_4 ).getSecondaryEcommerceEvents(
+							primaryEvent
+					  )
+					: [],
+			[ primaryEvent ]
+		);
 		const enabledSecondaryEvents = selectedVisitorEngagementEvents.filter(
 			( eventName ) =>
 				secondaryEcommerceEvents.includes(
-					eventName as keyof typeof EVENT_TOTAL_LABELS
+					eventName as EcommerceKeyActionEvent
 				)
 		);
 
@@ -297,9 +335,16 @@ const OnlineStorePerformanceWidget = forwardRef<
 			[]
 		) as DateRange;
 
-		// The "Other sources" metric mirrors the Key action's primary event, so detect
-		// unattributed events for that event only.
-		const detectionEventNames = useMemo(
+		const dateRangeDays = useSelect(
+			( select: Select ) =>
+				select( CORE_USER ).getDateRangeNumberOfDays(),
+			[]
+		) as number;
+
+		// `useSiteGoalsBreakdown` and `KeyActionChartTile` both hold
+		// `keyActionEventNames` in a dependency array, so it has to stay the
+		// same array between renders.
+		const keyActionEventNames = useMemo(
 			() => ( primaryEvent ? [ primaryEvent ] : [] ),
 			[ primaryEvent ]
 		);
@@ -319,7 +364,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			// Discovery is scoped to the known ecommerce events. The allowlist
 			// then restricts the tabs to supported ecommerce plugins.
 			eventNames: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
-			detectionEventNames,
+			detectionEventNames: keyActionEventNames,
 			supportedValues: SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
 		} );
 
@@ -422,6 +467,30 @@ const OnlineStorePerformanceWidget = forwardRef<
 			return <WidgetNullComponent />;
 		}
 
+		if ( shouldShowRemovalNotice === true ) {
+			return <SiteGoalsRemovalNotice goalType={ GOAL_TYPES.ECOMMERCE } />;
+		}
+
+		if ( shouldShowRemovalNotice === undefined ) {
+			return (
+				<WidgetComponent
+					onToggleCollapsed={ handleToggleCollapsed }
+					Header={ WidgetHeaderTitle }
+					headerContents={
+						<span>
+							{ __(
+								'Online store performance',
+								'google-site-kit'
+							) }
+						</span>
+					}
+					collapsible
+				>
+					<PreviewBlock width="100%" height="130px" />
+				</WidgetComponent>
+			);
+		}
+
 		if ( error ) {
 			return (
 				<WidgetComponent>
@@ -449,18 +518,15 @@ const OnlineStorePerformanceWidget = forwardRef<
 				onToggleCollapsed={ handleToggleCollapsed }
 				Header={ WidgetHeaderTitle }
 				headerContents={
-					<Fragment>
-						<span>
-							{ __(
-								'Online store performance',
-								'google-site-kit'
-							) }
-						</span>
-						<GatheringBreakdownDataBadge
-							goalType={ GOAL_TYPES.ECOMMERCE }
-							variant="widget"
-						/>
-					</Fragment>
+					<span>
+						{ __( 'Online store performance', 'google-site-kit' ) }
+					</span>
+				}
+				headerBadge={
+					<GatheringBreakdownDataBadge
+						goalType={ GOAL_TYPES.ECOMMERCE }
+						variant="widget"
+					/>
 				}
 				collapsible
 			>
@@ -483,6 +549,11 @@ const OnlineStorePerformanceWidget = forwardRef<
 					/>
 				) }
 
+				<EventProviderDeactivatedNotice
+					goalType={ GOAL_TYPES.ECOMMERCE }
+					providerSlug={ activeTabID }
+				/>
+
 				{ isOtherSourcesTab && (
 					<OtherSourcesNotice
 						learnMoreURL={ otherSourcesDocumentationURL }
@@ -503,13 +574,55 @@ const OnlineStorePerformanceWidget = forwardRef<
 					>
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
-							supportURL={ keyActionDocumentationURL }
-							rateTitle={ EVENT_RATE_LABELS[ primaryEvent ] }
-							totalTitle={ EVENT_TOTAL_LABELS[ primaryEvent ] }
+							rateInfoTooltip={ createInterpolateElement(
+								__(
+									'The percentage of total visitors who successfully completed a key action (like making a purchase). <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										// Content is added via createInterpolateElement.
+										// eslint-disable-next-line jsx-a11y/anchor-has-content
+										<a
+											href={ keyActionDocumentationURL }
+											target="_blank"
+											rel="noreferrer noopener"
+										/>
+									),
+								}
+							) }
+							rateTitle={
+								{
+									purchase: __(
+										'Sales rate',
+										'google-site-kit'
+									),
+									add_to_cart: __(
+										'Add to cart rate',
+										'google-site-kit'
+									),
+								}[ primaryEvent ]
+							}
+							totalTitle={
+								{
+									purchase: __(
+										'Total sales',
+										'google-site-kit'
+									),
+									add_to_cart: __(
+										'Products added to cart',
+										'google-site-kit'
+									),
+								}[ primaryEvent ]
+							}
 							totalSubtitle={ sprintf(
 								/* translators: %s: GA4 event name */
 								__( '“%s” events', 'google-site-kit' ),
 								primaryEvent
+							) }
+							chartTitle={ getChartTitle(
+								primaryEvent,
+								dateRangeDays
 							) }
 							currentRate={ currentRate }
 							previousRate={ previousRate }
@@ -520,6 +633,10 @@ const OnlineStorePerformanceWidget = forwardRef<
 							otherSourcesPreviousCount={
 								otherSourcesPreviousCount
 							}
+							dates={ dates }
+							eventNames={ keyActionEventNames }
+							goalType={ GOAL_TYPES.ECOMMERCE }
+							breakdownFilter={ breakdownFilter }
 						/>
 					</TilesGroup>
 				) }
@@ -571,9 +688,12 @@ const OnlineStorePerformanceWidget = forwardRef<
 					</Fragment>
 				) }
 
-				<WidgetFeedbackPrompt
+				<FeedbackPrompt
 					voteID={ SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE }
-					goalType={ GOAL_TYPES.ECOMMERCE }
+					gaTrackingEventArgs={ {
+						category: `${ viewContext }_site-goals-widget-survey`,
+						label: GOAL_TYPES.ECOMMERCE,
+					} }
 				/>
 			</WidgetComponent>
 		);

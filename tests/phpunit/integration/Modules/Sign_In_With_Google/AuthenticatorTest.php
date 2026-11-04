@@ -48,37 +48,43 @@ class AuthenticatorTest extends TestCase {
 		'family_name' => 'Last',
 	);
 
-	/**
-	 * The original $_COOKIE data.
-	 *
-	 * @var array
-	 */
-	private $cookie_data;
-
-	/**
-	 * The original $_POST data.
-	 *
-	 * @var array
-	 */
-	private $post_data;
-
 	public function set_up() {
 		parent::set_up();
 
-		// Store the original $_COOKIE and $_POST data.
-		$this->cookie_data = $_COOKIE;
-		$this->post_data   = $_POST;
+		// `WP_UnitTestCase_Base::set_up()` empties `$_GET`, `$_POST` and
+		// `$_REQUEST`, but not `$_COOKIE`, so clear it here to keep cookies
+		// from leaking between tests.
+		$_COOKIE = array();
 	}
 
-	public function tear_down() {
-		parent::tear_down();
-
-		// Restore the original $_COOKIE and $_POST data.
-		$_COOKIE = $this->cookie_data;
-		$_POST   = $this->post_data;
-	}
-
+	/**
+	 * Authenticates with a nonce cookie and token claim which match.
+	 *
+	 * The value is generated per call, so a test can only pass the nonce check
+	 * because the cookie reached the comparison, not because it happened to
+	 * reuse a value shared across the suite.
+	 *
+	 * @param array|WP_Error $profile_reader_data Payload the profile reader returns.
+	 * @return string Redirect URL.
+	 */
 	private function do_authenticate_user( $profile_reader_data = array() ) {
+		if ( is_array( $profile_reader_data ) ) {
+			$nonce = wp_generate_password( 32, false );
+
+			$profile_reader_data['nonce']           = $nonce;
+			$_COOKIE[ Authenticator::COOKIE_NONCE ] = $nonce;
+		}
+
+		return $this->authenticate( $profile_reader_data );
+	}
+
+	/**
+	 * Authenticates with whatever nonce state the caller has already set up.
+	 *
+	 * @param array|WP_Error $profile_reader_data Payload the profile reader returns.
+	 * @return string Redirect URL.
+	 */
+	private function authenticate( $profile_reader_data ) {
 		$user_options        = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$mock_profile_reader = $this->getMockBuilder( Profile_Reader_Interface::class )
 									->setMethods( array( 'get_profile_data' ) )
@@ -89,11 +95,88 @@ class AuthenticatorTest extends TestCase {
 		return $authenticator->authenticate_user( new MutableInput() );
 	}
 
+	/**
+	 * Creates two users who share an email address.
+	 *
+	 * @param string $email Email address both users share.
+	 * @return int[] IDs of the two users.
+	 */
+	private function create_users_sharing_email( $email ) {
+		global $wpdb;
+
+		$first_user_id  = $this->factory()->user->create( array( 'user_email' => $email ) );
+		$second_user_id = $this->factory()->user->create( array( 'user_email' => 'duplicate-' . $email ) );
+
+		// WordPress only blocks duplicate emails in `wp_insert_user()`; the `user_email`
+		// column has no unique index. Two users can share an email in practice, e.g. after
+		// an import that defines `WP_IMPORTING`, or after a plugin or migration writes to
+		// the users table directly.
+		$wpdb->update(
+			$wpdb->users,
+			array( 'user_email' => $email ),
+			array( 'ID' => $second_user_id )
+		);
+
+		clean_user_cache( $second_user_id );
+
+		return array( $first_user_id, $second_user_id );
+	}
+
+	/**
+	 * Checks whether the given user is connected to any Google account.
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool True when the user is connected, false otherwise.
+	 */
+	private function is_connected_to_google_account( $user_id ) {
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user_id );
+
+		return metadata_exists( 'user', $user_id, $user_options->get_meta_key( Hashed_User_ID::OPTION ) );
+	}
+
 	public function test_authenticate_user_fails_when_profile_reader_returns_error() {
 		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
 		$actual   = $this->do_authenticate_user( new WP_Error( 'test_error' ) );
 
 		$this->assertEquals( $expected, $actual, 'Should redirect to login with invalid request error when profile reader returns error.' );
+	}
+
+	public function test_authenticate_user_fails_when_the_nonce_cookie_is_missing() {
+		// The token carries a nonce, but this browser never started a sign-in,
+		// so it holds no cookie to compare against.
+		$payload          = self::$existing_user_payload;
+		$payload['nonce'] = 'nonce-from-the-token';
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
+		$actual   = $this->authenticate( $payload );
+
+		$this->assertEquals( $expected, $actual, 'Should reject a token when no nonce was stored for this browser.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should not sign anyone in without a stored nonce.' );
+	}
+
+	public function test_authenticate_user_fails_when_the_nonce_does_not_match() {
+		// A token issued for some other sign-in attempt.
+		$payload          = self::$existing_user_payload;
+		$payload['nonce'] = 'nonce-from-the-token';
+
+		$_COOKIE[ Authenticator::COOKIE_NONCE ] = 'a-different-nonce';
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
+		$actual   = $this->authenticate( $payload );
+
+		$this->assertEquals( $expected, $actual, 'Should reject a token issued for a different sign-in attempt.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should not sign anyone in when the nonce does not match.' );
+	}
+
+	public function test_authenticate_user_fails_when_the_payload_has_no_nonce() {
+		// A cookie was stored, but the token carries no nonce claim at all.
+		$_COOKIE[ Authenticator::COOKIE_NONCE ] = 'nonce-we-issued';
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
+		$actual   = $this->authenticate( self::$existing_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should reject a token which carries no nonce claim.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should not sign anyone in for a token without a nonce claim.' );
 	}
 
 	public function test_authenticate_user_fails_when_find_user_returns_error() {
@@ -442,6 +525,69 @@ class AuthenticatorTest extends TestCase {
 			$this->two_factor_challenges_user( $other_user_id ),
 			'Should keep the two-factor challenge for every other user.'
 		);
+	}
+
+	public function test_authenticate_user__blocks_users_sharing_the_email_address() {
+		list( $first_user_id, $second_user_id ) = $this->create_users_sharing_email( self::$existing_user_payload['email'] );
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_DUPLICATE_EMAIL, wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to the login page with the duplicate email error.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should leave both users signed out.' );
+		$this->assertFalse( $this->is_connected_to_google_account( $first_user_id ), 'Should leave the first user unconnected.' );
+		$this->assertFalse( $this->is_connected_to_google_account( $second_user_id ), 'Should leave the second user unconnected.' );
+	}
+
+	public function test_authenticate_user__blocks_users_sharing_the_email_address_when_registration_is_open() {
+		add_filter( 'option_users_can_register', '__return_true' );
+
+		$this->create_users_sharing_email( self::$new_user_payload['email'] );
+
+		// Count users across the whole network, so a user added to any site would be counted on multisite.
+		$all_users_query = array(
+			'blog_id' => 0,
+			'fields'  => 'ID',
+		);
+		$user_count      = count( get_users( $all_users_query ) );
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_DUPLICATE_EMAIL, wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$new_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to the login page with the duplicate email error.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should not sign anyone in.' );
+		$this->assertCount( $user_count, get_users( $all_users_query ), 'Should not create a new user.' );
+	}
+
+	public function test_authenticate_user__signs_in_connected_user_sharing_the_email_address() {
+		list( $first_user_id, $second_user_id ) = $this->create_users_sharing_email( self::$existing_user_payload['email'] );
+
+		// Connecting from the profile page stores the hashed Google user ID.
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $second_user_id );
+		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
+
+		$actual = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( admin_url( '/profile.php' ), $actual, 'Should redirect to the profile page after signing in.' );
+		$this->assertEquals( $second_user_id, get_current_user_id(), 'Should sign the connected user in.' );
+		$this->assertFalse( $this->is_connected_to_google_account( $first_user_id ), 'Should leave the other user unconnected.' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user__blocks_users_sharing_the_email_address_when_one_uses_two_factor() {
+		$this->activate_two_factor_plugin();
+
+		list( $first_user_id, $second_user_id ) = $this->create_users_sharing_email( self::$existing_user_payload['email'] );
+		$this->enable_two_factor_for_user( $first_user_id );
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_DUPLICATE_EMAIL, wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect with the duplicate email error, not the two-factor error.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should leave both users signed out.' );
+		$this->assertFalse( $this->is_connected_to_google_account( $second_user_id ), 'Should leave the user without two-factor unconnected.' );
 	}
 
 	/**

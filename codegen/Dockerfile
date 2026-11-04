@@ -11,5 +11,6 @@ RUN mkdir library \
 FROM python:3.14-alpine
 WORKDIR /usr/src/app
 COPY --from=googleapis-repo /tmp/library/generator /usr/src/app/
-RUN python3 -m pip install -e ./ --user --use-pep517
+RUN python3 -m pip install --upgrade 'pip>=26.2.2' \
+	&& python3 -m pip install -e ./ --user --use-pep517
 ENTRYPOINT ["python3", "-m", "googleapis.codegen"]

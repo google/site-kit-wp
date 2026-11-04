@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import SelectionBox from '@/js/components/SelectionBox';
 
 export default function SelectionPanelItem( {
@@ -66,7 +67,10 @@ export default function SelectionPanelItem( {
 				{ children }
 			</SelectionBox>
 			{ isNewlyDetected && (
-				<Badge label={ __( 'New', 'google-site-kit' ) } />
+				<Badge
+					label={ __( 'New', 'google-site-kit' ) }
+					variant={ BADGE_VARIANTS.ANNOUNCEMENT }
+				/>
 			) }
 			{ suffix && (
 				<span className="googlesitekit-selection-panel-item__suffix">

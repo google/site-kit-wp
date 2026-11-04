@@ -25,6 +25,8 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { MODULES_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/datastore/constants';
 import { sanitizeHTML } from '@/js/util';
 
@@ -43,11 +45,12 @@ export default function SettingsView() {
 	);
 
 	return (
-		<p
+		<P
 			dangerouslySetInnerHTML={ sanitizeHTML( content, {
 				ALLOWED_TAGS: [ 'a' ],
 				ALLOWED_ATTR: [ 'href' ],
 			} ) }
+			size={ SIZE_MEDIUM }
 		/>
 	);
 }

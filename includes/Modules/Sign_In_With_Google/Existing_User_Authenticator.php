@@ -76,10 +76,18 @@ class Existing_User_Authenticator extends Authenticator {
 			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
 		}
 
+		// Read and clear the nonce before anything else, so a given value can
+		// only ever be used for one sign-in attempt.
+		$expected_nonce = $this->consume_nonce_cookie( $input );
+
 		$credential = $input->filter( INPUT_POST, 'credential' );
 		$payload    = $this->profile_reader->get_profile_data( $credential );
 
 		if ( is_wp_error( $payload ) ) {
+			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
+		}
+
+		if ( ! $this->nonce_matches( $expected_nonce, $payload ) ) {
 			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
 		}
 

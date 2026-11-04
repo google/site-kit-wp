@@ -42,9 +42,7 @@ class WooCommerceTest extends TestCase {
 	}
 
 	public function test_events_to_track() {
-		$reflection = new \ReflectionClass( $this->woocommerce );
-		$method     = $reflection->getMethod( 'events_to_track' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( $this->woocommerce, 'events_to_track' );
 
 		$events = $method->invoke( $this->woocommerce );
 
@@ -54,9 +52,7 @@ class WooCommerceTest extends TestCase {
 	}
 
 	public function test_events_to_track__when_analytics_integration_addon_is_active() {
-		$reflection = new \ReflectionClass( $this->woocommerce );
-		$method     = $reflection->getMethod( 'events_to_track' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( $this->woocommerce, 'events_to_track' );
 
 		class_alias( __CLASS__, 'WC_Google_Analytics_Integration' );
 
@@ -180,9 +176,7 @@ class WooCommerceTest extends TestCase {
 	 * @dataProvider wgai_data_settings
 	 */
 	public function test_get_wgai_event_names( $settings, $expectedEvents ) {
-		$reflection = new \ReflectionClass( $this->woocommerce );
-		$method     = $reflection->getMethod( 'get_wgai_event_names' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( $this->woocommerce, 'get_wgai_event_names' );
 
 		update_option( 'woocommerce_google_analytics_settings', $settings );
 
@@ -395,9 +389,7 @@ class WooCommerceTest extends TestCase {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- Using fake class property.
 		\WC_Countries::$test_calling_code = $country_calling_code;
 
-		$reflection = new \ReflectionClass( $this->woocommerce );
-		$method     = $reflection->getMethod( 'get_normalized_phone' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( $this->woocommerce, 'get_normalized_phone' );
 
 		$result = $method->invoke( $this->woocommerce, $phone, $country );
 
@@ -538,9 +530,7 @@ class WooCommerceTest extends TestCase {
 	 * Test fallback to Enhanced_Conversions normalization when WooCommerce is unavailable.
 	 */
 	public function test_get_normalized_phone_fallback() {
-		$reflection = new \ReflectionClass( $this->woocommerce );
-		$method     = $reflection->getMethod( 'get_normalized_phone' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( $this->woocommerce, 'get_normalized_phone' );
 
 		// Test with empty country (WooCommerce unavailable scenario).
 		$result = $method->invoke( $this->woocommerce, '+94771770589', '' );

@@ -118,7 +118,7 @@ exports[`ConfirmDisconnect should render the Ads Disconnect ModalDialog with a d
               class="mdc-dialog__notes"
             >
               <p
-                class="mdc-dialog__note"
+                class="googlesitekit-typography mdc-dialog__note googlesitekit-typography--body googlesitekit-typography--small"
               >
                 <strong>
                   Note:

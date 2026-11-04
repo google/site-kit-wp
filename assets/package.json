@@ -13,6 +13,8 @@
 		"extends @wordpress/browserslist-config"
 	],
 	"dependencies": {
+		"@atlaskit/pragmatic-drag-and-drop": "4.0.0",
+		"@atlaskit/pragmatic-drag-and-drop-hitbox": "3.0.0",
 		"@material-ui/core": "^4.11.4",
 		"@material/button": "^2.3.0",
 		"@material/checkbox": "^2.3.0",
@@ -39,7 +41,7 @@
 		"classnames": "^2.2.6",
 		"clipboard-copy": "^3.1.0",
 		"compare-versions": "^3.6.0",
-		"dompurify": "^2.5.8",
+		"dompurify": "^3.4.17",
 		"equivalent-key-map": "^0.2.2",
 		"focus-trap-react": "^10.0.0",
 		"immer": "^9.0.15",
@@ -52,11 +54,10 @@
 		"prop-types": "^15.7.2",
 		"psl": "^1.8.0",
 		"punycode": "^2.1.1",
-		"query-string": "^7.0.1",
 		"react-google-charts": "^3.0.15",
 		"react-joyride": "^2.9.3",
 		"react-router-dom": "^5.2.0",
-		"react-use": "^15.3.4",
+		"react-use": "^17.6.1",
 		"react-use-observer": "^2.2.4",
 		"use-memo-one": "^1.1.2"
 	},
@@ -79,7 +80,7 @@
 		"mini-css-extract-plugin": "^2.9.2",
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^8.1.1",
-		"postcss-preset-env": "^9.5.11",
+		"postcss-preset-env": "^10.6.1",
 		"rimraf": "^6.0.1",
 		"rxjs": "^6.6.7",
 		"sass": "^1.30.0",
@@ -87,6 +88,7 @@
 		"terser-webpack-plugin": "^5.3.14",
 		"url-loader": "^4.1.1",
 		"webpack": "^5.99.7",
+		"webpack-bundle-analyzer": "^5.3.2",
 		"webpack-cli": "^7.0.2",
 		"webpack-manifest-plugin": "^6.0.1",
 		"@types/react-router-dom": "^5.2.0"

@@ -15,9 +15,9 @@ use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\DomainProperty;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\RrmProduct;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\DomainProperty;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\RrmProduct;
 
 /**
  * Class for the publication creation datapoint.
@@ -86,7 +86,7 @@ class Create_Publication extends Datapoint implements Executable_Datapoint {
 		$publication->setRrmProduct( $rrm_product );
 
 		return $this->get_service()->organizations_publications->create(
-			'organizations/*',
+			'organizations/-',
 			$publication
 		);
 	}

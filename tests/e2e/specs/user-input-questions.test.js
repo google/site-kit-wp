@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import {
@@ -40,6 +35,7 @@ import {
 	setupSiteKit,
 	step,
 	useRequestInterception,
+	visitAdminPage,
 } from '../utils';
 import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-object-from-params';
 
@@ -180,7 +176,8 @@ describe( 'User Input Settings', () => {
 			) {
 				request.continue();
 			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
-				request.respond( { status: 200 } );
+				// Leave other module requests unanswered. These tests do not
+				// need their data, and an empty response would fail JSON parsing.
 			} else {
 				request.continue();
 			}
@@ -216,12 +213,13 @@ describe( 'User Input Settings', () => {
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 
-		await step(
-			'visit admin dashboard',
-			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
-		);
-
+		// Listen for the data-available responses while the dashboard loads. They can
+		// arrive before `visitAdminPage()` resolves on the page `load` event.
 		await Promise.all( [
+			step(
+				'visit admin dashboard',
+				visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
+			),
 			page.waitForResponse( ( res ) =>
 				res
 					.url()
@@ -250,6 +248,19 @@ describe( 'User Input Settings', () => {
 				await expect( page ).toClick( '.mdc-chip', {
 					text: /key metrics/i,
 				} );
+
+				// The chip scrolls the page smoothly. Wait until the page stops
+				// moving, so that the next click lands on its target.
+				await page.waitForFunction(
+					() =>
+						new Promise( ( resolve ) => {
+							const { scrollY } = window;
+							setTimeout(
+								() => resolve( window.scrollY === scrollY ),
+								100
+							);
+						} )
+				);
 			}
 		);
 

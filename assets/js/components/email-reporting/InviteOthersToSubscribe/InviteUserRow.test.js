@@ -96,9 +96,9 @@ describe( 'InviteUserRow', () => {
 			{ registry }
 		);
 
-		expect( getByText( 'Invitation sent' ) ).toBeInTheDocument();
+		expect( getByText( /invitation sent/i ) ).toBeInTheDocument();
 		expect(
-			document.querySelector( '.googlesitekit-invite-user-row__success' )
+			document.querySelector( '.googlesitekit-user-row__success' )
 		).toBeInTheDocument();
 	} );
 
@@ -116,7 +116,7 @@ describe( 'InviteUserRow', () => {
 		);
 
 		expect(
-			document.querySelector( '.googlesitekit-invite-user-row__error' )
+			document.querySelector( '.googlesitekit-user-row__error' )
 		).toBeInTheDocument();
 		expect( getByText( 'Retry' ) ).toBeInTheDocument();
 	} );

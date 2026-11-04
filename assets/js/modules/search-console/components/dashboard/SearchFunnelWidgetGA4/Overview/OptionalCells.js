@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -69,12 +68,7 @@ export default function OptionalCells( {
 				( ! ga4ModuleConnected || ! ga4ModuleActive ) && (
 					<Cell { ...halfCellProps }>
 						{ BREAKPOINT_SMALL !== breakpoint && (
-							<ActivateAnalyticsCTA
-								title={ __(
-									'Key Events completed',
-									'google-site-kit'
-								) }
-							/>
+							<ActivateAnalyticsCTA />
 						) }
 					</Cell>
 				) }

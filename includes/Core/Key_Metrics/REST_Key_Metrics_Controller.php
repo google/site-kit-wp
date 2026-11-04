@@ -129,7 +129,7 @@ class REST_Key_Metrics_Controller {
 									array( 'status' => 400 )
 								);
 							}
-							// Additional check is needed to ensure that we have no more than 4 widget
+							// Additional check is needed to ensure that we have no more than $max_num_widgets
 							// slugs provided. This is required until we drop support for WP versions below 5.5.0, after
 							// which we can solely rely on `maxItems` in the schema validation (see below).
 							// See https://github.com/WordPress/WordPress/blob/965fcddcf68cf4fd122ae24b992e242dfea1d773/wp-includes/rest-api.php#L1922-L1925.
@@ -137,7 +137,11 @@ class REST_Key_Metrics_Controller {
 							if ( $num_widgets > $max_num_widgets ) {
 								return new WP_Error(
 									'rest_invalid_param',
-									__( 'No more than 4 key metrics can be selected.', 'google-site-kit' ),
+									sprintf(
+										/* translators: %d: maximum number of key metrics that can be selected. */
+										__( 'No more than %d key metrics can be selected.', 'google-site-kit' ),
+										$max_num_widgets
+									),
 									array( 'status' => 400 )
 								);
 							}

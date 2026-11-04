@@ -49,10 +49,37 @@
 		flex-wrap: nowrap;
 		justify-content: space-between;
 		margin-top: 8px;
+		padding: 0 8px;
+
+		@media (min-width: $bp-desktop) {
+			padding: 0 16px;
+		}
 
 		> div {
-			min-width: 50px;
-			overflow: visible;
+			flex: 0 0 50px;
+		}
+	}
+
+	.googlesitekit-survey__choices-labels {
+		column-gap: 8px;
+		display: flex;
+		justify-content: space-between;
+		margin-top: 6px;
+		padding: 0 $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			padding: 0 $grid-gap-desktop;
+		}
+
+		> * {
+			color: $c-surfaces-on-surface-variant;
+			margin: 0;
+			max-width: 50%;
+			overflow-wrap: anywhere;
+		}
+
+		> :last-child {
+			text-align: right;
 		}
 	}
 
@@ -91,51 +118,6 @@
 	}
 
 	.googlesitekit-survey__choice {
-
-		p {
-			color: $c-surfaces-on-surface-variant;
-			font-family: $f-primary;
-			font-size: $fs-body-sm;
-			letter-spacing: $ls-xs;
-			line-height: $lh-body-sm;
-			margin: 6px 0 0;
-		}
-
-		/**
-		 * Manually position the first and last items so that
-		 * they are centered within the container since some
-		 * content is right aligned and others left aligned.
-		 */
-		&:first-child {
-			margin-left: 8px;
-
-			@media (min-width: $bp-desktop) {
-				margin-left: 15px;
-			}
-
-			p {
-				transform: translateX(9px);
-			}
-		}
-
-		&:last-child {
-			margin-right: 7px;
-
-			@media (min-width: $bp-desktop) {
-				margin-right: 17px;
-			}
-
-			p {
-				transform: translateX(-9px);
-			}
-		}
-
-		&:not(:first-child, :last-child) {
-
-			p {
-				display: none;
-			}
-		}
 
 		.mdc-button:not(:disabled) {
 			background-color: transparent;

@@ -24,17 +24,23 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
-import { isURL } from '@wordpress/url';
+import { useCallback, useEffect, useRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 import { sanitizeHTML } from '@/js/util';
-import { isErrorRetryable, isPermissionScopeError } from '@/js/util/errors';
+import {
+	getErrorNoticeMessage,
+	isErrorRetryable,
+	isPermissionScopeError,
+} from '@/js/util/errors';
 import Notice from './Notice';
 
 export interface ErrorNoticeProps {
@@ -52,6 +58,8 @@ export interface ErrorNoticeProps {
 	noPrefix?: boolean;
 	skipRetryMessage?: boolean;
 	hideIcon?: boolean;
+	variant?: NOTICE_VARIANTS;
+	scrollIntoView?: boolean;
 }
 
 const ErrorNotice: FC< ErrorNoticeProps > = ( {
@@ -64,8 +72,11 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 	noPrefix = false,
 	skipRetryMessage,
 	hideIcon = false,
+	variant,
+	scrollIntoView = false,
 } ) => {
 	const dispatch = useDispatch();
+	const noticeRef = useRef< HTMLDivElement >( null );
 
 	const selectorData = useSelect(
 		( select: Select ) => {
@@ -89,6 +100,15 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 		);
 	}, [ dispatch, selectorData ] );
 
+	useEffect( () => {
+		if ( scrollIntoView ) {
+			noticeRef.current?.scrollIntoView( {
+				behavior: 'smooth',
+				block: 'nearest',
+			} );
+		}
+	}, [ scrollIntoView, message ] );
+
 	// Do not display if there is no error and no direct message text is passed as a direct prop.
 	// Also do not display if the error is for missing scopes as these are handled by a popup modal.
 	if ( ! message || isPermissionScopeError( error ) ) {
@@ -98,52 +118,14 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 	const shouldDisplayRetry =
 		hasButton && isErrorRetryable( error, selectorData );
 
-	/**
-	 * Error message to display to the user. Sometimes we append a retry message
-	 * or a reconnect URL, so we create a new variable for the message to display.
-	 */
-	let errorMessageWithModifications = message;
-
-	// Append "Try again" messaging if no retry button is present.
-	if ( ! hasButton && ! skipRetryMessage ) {
-		errorMessageWithModifications = sprintf(
-			/* translators: %s: Error message from Google API. */
-			__( '%s (Please try again.)', 'google-site-kit' ),
-			errorMessageWithModifications
-		);
-	}
-
-	if ( ! noPrefix ) {
-		errorMessageWithModifications = sprintf(
-			/* translators: $%s: Error message */
-			__( 'Error: %s', 'google-site-kit' ),
-			errorMessageWithModifications
-		);
-	}
-
-	const reconnectURL = error.data?.reconnectURL;
-
-	if ( reconnectURL && isURL( reconnectURL ) ) {
-		/**
-		 * This error message uses HTML tags without using
-		 * `createInterpolateElement` because the error messages
-		 * that come from the server/API can also contain HTML (eg. links)
-		 * we want to render.
-		 *
-		 * Instead of creating a React node using `createInterpolateElement`,
-		 * we use `dangerouslySetInnerHTML` to allow the HTML we create and from
-		 * the server/API to be rendered as-intended.
-		 */
-		errorMessageWithModifications = sprintf(
-			/* translators: 1: Original error message 2: Reconnect URL */
-			__(
-				'%1$s To fix this, <a href="%2$s">redo the plugin setup</a>.',
-				'google-site-kit'
-			),
-			errorMessageWithModifications,
-			reconnectURL
-		);
-	}
+	const errorMessageWithModifications = getErrorNoticeMessage(
+		message,
+		error,
+		{
+			noPrefix,
+			skipRetryMessage: hasButton || skipRetryMessage,
+		}
+	);
 
 	const sanitizeArgs = {
 		ALLOWED_TAGS: [ 'a' ],
@@ -152,9 +134,16 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 
 	return (
 		<Notice
+			ref={ noticeRef }
 			className={ className }
-			type={ NOTICE_TYPES.ERROR }
-			title={ title }
+			ctaButton={
+				shouldDisplayRetry
+					? {
+							label: __( 'Retry', 'google-site-kit' ),
+							onClick: handleRetry,
+					  }
+					: undefined
+			}
 			description={
 				// The error messages that come from the server/API can contain
 				// HTML (eg. links), so we use `dangerouslySetInnerHTML` and sanitize
@@ -169,15 +158,10 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 					) }
 				/>
 			}
-			ctaButton={
-				shouldDisplayRetry
-					? {
-							label: __( 'Retry', 'google-site-kit' ),
-							onClick: handleRetry,
-					  }
-					: undefined
-			}
 			hideIcon={ hideIcon }
+			title={ title }
+			type={ NOTICE_TYPES.ERROR }
+			variant={ variant }
 		/>
 	);
 };

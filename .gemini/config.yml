@@ -26,5 +26,5 @@ ignore_patterns:
   - '**/*.lock'
   - 'package-lock.json'
   - 'codegen/apis/*.json' # API discovery documents
-  - 'tests/backstop/reference/**' # Visual regression reference images
+  - 'tests/vrt/__screenshots__/**' # Visual regression reference images
   - '**/*.snap' # Jest snapshot

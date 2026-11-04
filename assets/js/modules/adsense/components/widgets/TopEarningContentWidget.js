@@ -43,7 +43,7 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { AdSenseLinkCTA } from '@/js/modules/adsense/components/common';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import ZeroDataMessage from '@/js/modules/analytics-4/components/common/ZeroDataMessage';
 import ConnectGA4CTATileWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTATileWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -58,7 +58,7 @@ import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
  * this widget and the metric's PDF tile import this, so the dashboard tile and
  * the report request the same data.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} dates                     The date range.
  * @param {Object} [params]                  Extra report options.

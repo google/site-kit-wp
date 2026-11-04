@@ -30,6 +30,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	BREAKDOWN_ORIGIN_FORM_KEY,
@@ -42,10 +43,10 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { ALL_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import { Story } from '@/js/types/Story';
 import {
@@ -69,6 +70,10 @@ function baseSetup(
 ) {
 	provideSiteInfo( registry );
 	provideUserAuthentication( registry );
+	// The notice waits on this setting, and its wording depends on it.
+	registry
+		.dispatch( CORE_SITE )
+		.receiveGetConversionTrackingSettings( { enabled: true } );
 	provideUserCapabilities( registry );
 	provideModules( registry, [
 		{ slug: 'analytics-4', active: true, connected: true },
@@ -85,6 +90,13 @@ function baseSetup(
 		propertyID: '12345',
 		availableCustomDimensions,
 	} );
+}
+
+function noConversionTrackingSetup( registry: WPDataRegistry ) {
+	baseSetup( registry, [] );
+	registry
+		.dispatch( CORE_SITE )
+		.receiveGetConversionTrackingSettings( { enabled: false } );
 }
 
 function Template( {
@@ -131,9 +143,7 @@ Loading.args = {
 			),
 			() => new Promise( () => {} )
 		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.createCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+		registry.dispatch( MODULES_ANALYTICS_4 ).createCustomDimensions();
 	},
 };
 
@@ -230,6 +240,37 @@ CombinedSuccess.args = {
 				[ BREAKDOWN_SCOPE_FORM_KEY ]: BREAKDOWN_SCOPE_BOTH,
 			} );
 	},
+};
+
+export const NewWithoutConversionTracking = Template.bind(
+	{}
+) as Story< BreakdownNoticeAreaStoryProps >;
+NewWithoutConversionTracking.storyName =
+	'New without conversion tracking (Lead generation)';
+NewWithoutConversionTracking.args = {
+	goalTypes: [ GOAL_TYPES.LEAD ],
+	setupRegistry: noConversionTrackingSetup,
+};
+
+export const NewWithoutConversionTrackingEcommerce = Template.bind(
+	{}
+) as Story< BreakdownNoticeAreaStoryProps >;
+NewWithoutConversionTrackingEcommerce.storyName =
+	'New without conversion tracking (Online store)';
+NewWithoutConversionTrackingEcommerce.args = {
+	goalTypes: [ GOAL_TYPES.ECOMMERCE ],
+	setupRegistry: noConversionTrackingSetup,
+};
+
+export const CombinedNewWithoutConversionTracking = Template.bind(
+	{}
+) as Story< BreakdownNoticeAreaStoryProps >;
+CombinedNewWithoutConversionTracking.storyName =
+	'New without conversion tracking (Side Panel)';
+CombinedNewWithoutConversionTracking.args = {
+	origin: BREAKDOWN_ORIGIN_PANEL,
+	goalTypes: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
+	setupRegistry: noConversionTrackingSetup,
 };
 
 export default {

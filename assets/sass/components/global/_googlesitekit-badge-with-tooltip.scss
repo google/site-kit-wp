@@ -17,8 +17,6 @@
  */
 
 .googlesitekit-badge-with-tooltip {
-	background-color: $c-utility-warning-container;
-	color: $c-yellow-y-600;
 	display: inline-flex;
 	line-height: 16px;
 	padding: 6px 10px;
@@ -28,7 +26,10 @@
 		margin-left: 4px;
 
 		svg path {
-			fill: $c-utility-on-warning-container;
+			// A custom property rather than `currentColor`: the audience tiles
+			// and site goals tiles set their own `color` on this tooltip, which
+			// `currentColor` would inherit in place of the badge's text colour.
+			fill: var(--googlesitekit-badge-text-color, currentColor);
 		}
 	}
 }

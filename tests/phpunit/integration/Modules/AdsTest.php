@@ -14,11 +14,15 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client_Base;
+use Google\Site_Kit\Core\Intents\Intents;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Modules\Ads\Ads_Conversion_Tracking_Intent;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -28,6 +32,7 @@ use Google\Site_Kit\Tests\TestCase;
 class AdsTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Settings_ContractTests;
+	use ModulesHelperTrait;
 
 	/**
 	 * Ads object.
@@ -72,10 +77,76 @@ class AdsTest extends TestCase {
 
 	public function test_register_persistent() {
 		remove_all_filters( 'googlesitekit_inline_modules_data' );
+		remove_all_actions( 'googlesitekit_intents_register' );
 
 		$this->ads->register_persistent();
 
 		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ), 'inline_modules_data filter should be registered.' );
+		$this->assertTrue( has_action( 'googlesitekit_intents_register' ), 'intents_register action should be registered.' );
+	}
+
+	public function test_register_persistent__ads_intent_is_registered_while_the_ads_module_is_active() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->activate_modules( Ads::MODULE_SLUG );
+
+		remove_all_actions( 'googlesitekit_intents_register' );
+
+		$modules = new Modules( $this->context );
+		$modules->register();
+
+		$this->assertArrayHasKey( Ads::MODULE_SLUG, $modules->get_active_modules(), 'The Ads module should be active for this test.' );
+
+		$intents = new Intents();
+		$intents->register();
+
+		$this->assertInstanceOf(
+			Ads_Conversion_Tracking_Intent::class,
+			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
+			'The Ads intent should be registered while the Ads module is active.'
+		);
+	}
+
+	public function test_register_persistent__ads_intent_is_registered_while_the_ads_module_is_not_active() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+
+		remove_all_actions( 'googlesitekit_intents_register' );
+
+		$modules = new Modules( $this->context );
+		$modules->register();
+
+		$this->assertArrayNotHasKey( Ads::MODULE_SLUG, $modules->get_active_modules(), 'The Ads module should not be active for this test.' );
+
+		$intents = new Intents();
+		$intents->register();
+
+		$this->assertInstanceOf(
+			Ads_Conversion_Tracking_Intent::class,
+			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
+			'The Ads intent should be registered even though the Ads module is not active.'
+		);
+	}
+
+	public function test_register_persistent__ads_intent_is_withheld_while_the_feature_flag_is_off() {
+		remove_all_actions( 'googlesitekit_intents_register' );
+
+		$modules = new Modules( $this->context );
+		$modules->register();
+
+		$intents = new Intents();
+		$intents->register();
+
+		$this->assertNull(
+			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
+			'The Ads intent should not be returned while adsConversionTrackingIntent is disabled.'
+		);
+
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+
+		$this->assertInstanceOf(
+			Ads_Conversion_Tracking_Intent::class,
+			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
+			'The registry already held the intent, so the null above came from the flag.'
+		);
 	}
 
 	public function test_register__googlesitekit_ads_measurement_connection_checks() {
@@ -89,6 +160,31 @@ class AdsTest extends TestCase {
 			),
 			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() ),
 			'Ads measurement connection check should be registered.'
+		);
+	}
+
+	public function test_get_assets() {
+		$script = $this->ads->get_assets()[0];
+		$script->register( $this->context );
+
+		$dependency = wp_scripts()->registered['googlesitekit-modules-ads'];
+
+		$this->assertEquals( $this->context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-ads.js', $dependency->src, 'Ads script should have the correct source URL.' );
+		$this->assertEqualSets(
+			array(
+				'googlesitekit-vendor',
+				'googlesitekit-api',
+				'googlesitekit-data',
+				'googlesitekit-feature-discovery',
+				'googlesitekit-modules',
+				'googlesitekit-notifications',
+				'googlesitekit-intents',
+				'googlesitekit-datastore-site',
+				'googlesitekit-datastore-user',
+				'googlesitekit-components',
+			),
+			$dependency->deps,
+			'Ads script should have the correct dependencies.'
 		);
 	}
 
@@ -122,38 +218,39 @@ class AdsTest extends TestCase {
 		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected with extCustomerID.' );
 	}
 
-	public function test_inline_modules_data__module_not_connected() {
-		$this->ads->register();
+	public function test_inline_modules_data__module_not_active() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 
-		$inline_module_data = $this->ads->get_inline_data();
+		$modules = new Modules( $this->context );
+		$modules->register();
+
+		$this->assertArrayNotHasKey( Ads::MODULE_SLUG, $modules->get_active_modules(), 'The Ads module should not be active for this test.' );
 
 		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
-			$inline_module_data,
-			'Inline modules data for Ads should include supportedConversionEvents when module not connected.'
+			apply_filters( 'googlesitekit_inline_modules_data', array() )[ Ads::MODULE_SLUG ],
+			'Inline modules data for Ads should include supportedConversionEvents even though the module is not active.'
 		);
 	}
 
-	public function test_inline_modules_data__module_connected() {
-		$this->ads->register();
+	public function test_inline_modules_data__module_active() {
+		$this->activate_modules( Ads::MODULE_SLUG );
 
-		// Ensure the module is connected.
-		$this->ads->get_settings()->merge(
-			array( 'conversionID' => 'AW-123456789' )
-		);
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 
-		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected after setting conversionID.' );
+		$modules = new Modules( $this->context );
+		$modules->register();
 
-		$inline_module_data = $this->ads->get_inline_data();
+		$this->assertArrayHasKey( Ads::MODULE_SLUG, $modules->get_active_modules(), 'The Ads module should be active for this test.' );
 
 		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
-			$inline_module_data,
-			'Inline modules data for Ads should include supportedConversionEvents when module connected.'
+			apply_filters( 'googlesitekit_inline_modules_data', array() )[ Ads::MODULE_SLUG ],
+			'Inline modules data for Ads should include supportedConversionEvents while the module is active.'
 		);
 	}
 

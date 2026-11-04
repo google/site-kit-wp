@@ -20,10 +20,12 @@ use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -110,6 +112,65 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
+	/**
+	 * @dataProvider data_auth_scopes
+	 */
+	public function test_auth_scopes( $enabled, $authenticated, $connected, $granted_scopes, $expected_scopes ) {
+		if ( $enabled ) {
+			$this->enable_feature( 'rrmExpressSetup' );
+		}
+		remove_all_filters( 'googlesitekit_auth_scopes' );
+		$this->reader_revenue_manager->register();
+		if ( $authenticated ) {
+			$this->authentication->token()->set( array( 'access_token' => 'test-access-token' ) );
+		}
+		if ( $connected ) {
+			$this->reader_revenue_manager->get_settings()->merge( array( 'publicationID' => 'test-publication' ) );
+		}
+		$base_scopes = array( 'https://www.googleapis.com/auth/subscribewithgoogle.publications.readonly' );
+		$this->authentication->get_oauth_client()->set_granted_scopes( array_merge( $base_scopes, $granted_scopes ) );
+		$this->assertEqualSets(
+			array_merge( $base_scopes, $expected_scopes ),
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Only new setups and previously granted scopes should require the new RRM scopes.'
+		);
+	}
+
+	public function data_auth_scopes() {
+		$readonly = Reader_Revenue_Manager::READONLY_SCOPE;
+		$manage   = Reader_Revenue_Manager::MANAGE_SCOPE;
+		return array(
+			'unauthenticated'       => array( true, false, false, array(), array( $readonly ) ),
+			'new setup'             => array( true, true, false, array(), array( $readonly ) ),
+			'legacy connected user' => array( true, true, true, array(), array() ),
+			'readonly granted'      => array( true, true, true, array( $readonly ), array( $readonly ) ),
+			'manage granted'        => array( true, true, true, array( $manage ), array( $manage ) ),
+			'both granted'          => array( true, true, true, array( $readonly, $manage ), array( $readonly, $manage ) ),
+			'flag off during setup' => array( false, false, false, array(), array() ),
+			'flag off with grants'  => array( false, true, true, array( $readonly, $manage ), array() ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_express_write_datapoints
+	 */
+	public function test_express_write_datapoints_require_manage_scope( $datapoint ) {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->authentication->get_oauth_client()->set_granted_scopes( $this->reader_revenue_manager->get_scopes() );
+		$result = $this->reader_revenue_manager->set_data( $datapoint, array() );
+		$this->assertWPError( $result, 'Write requests without the manage scope should fail.' );
+		$this->assertSame( 'missing_required_scopes', $result->get_error_code(), 'The error should identify insufficient scopes.' );
+		$this->assertSame( array( Reader_Revenue_Manager::MANAGE_SCOPE ), $result->get_error_data()['scopes'], 'The error should request the manage scope.' );
+	}
+
+	public function data_express_write_datapoints() {
+		return array(
+			'create publication' => array( 'create-publication' ),
+			'update publication' => array( 'publication' ),
+			'create CTA'         => array( 'create-cta' ),
+		);
+	}
+
 	public function test_register__reset_product_id_dismissals_on_publication_change() {
 		$this->reader_revenue_manager->register();
 		$this->reader_revenue_manager->get_settings()->register();
@@ -160,6 +221,127 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		}
 	}
 
+	/**
+	 * @dataProvider data_triggers_cta_sync_on_publication_change
+	 */
+	public function test_register__triggers_cta_sync_on_publication_change( $new_publication_id, $new_organization_id, $expected_sync_count ) {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		// Establish the existing settings before the on_change listener is registered,
+		// so setting up this initial state does not itself trigger the reset below.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'  => 'OLD_PUBLICATION',
+				'organizationID' => 'test-organization-id',
+				'configuredCTAs' => array(
+					'old-cta-id' => 'newsletter-signup',
+				),
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID'  => $new_publication_id,
+				'organizationID' => $new_organization_id,
+			)
+		);
+
+		$this->assertSame(
+			$expected_sync_count,
+			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA synchronization should only be triggered when both the publication and organization IDs are set.'
+		);
+
+		$this->assertEquals(
+			(object) array(),
+			$this->reader_revenue_manager->get_settings()->get()['configuredCTAs'],
+			'configuredCTAs should be cleared immediately when the publication ID changes, regardless of whether the sync runs.'
+		);
+	}
+
+	public function data_triggers_cta_sync_on_publication_change() {
+		return array(
+			'both publication and organization IDs set' => array( 'NEW_PUBLICATION', 'test-organization-id', 1 ),
+			'organization ID cleared'                   => array( 'NEW_PUBLICATION', '', 0 ),
+			'publication ID cleared'                    => array( '', 'test-organization-id', 0 ),
+		);
+	}
+
+	public function test_register__triggers_cta_sync_on_fresh_setup() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		// Register before any settings exist, so the first write below goes through
+		// the `add_option_{option}` hook rather than `update_option_{option}`. This is
+		// the path taken when connecting Reader Revenue Manager for the first time,
+		// e.g. after disconnecting and setting up again from "Connect More Services".
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		$this->assertFalse( $this->reader_revenue_manager->get_settings()->has(), 'Settings should not exist yet for a fresh setup.' );
+
+		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID'  => 'NEW_PUBLICATION',
+				'organizationID' => 'test-organization-id',
+			)
+		);
+
+		$this->assertSame(
+			1,
+			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA synchronization should be triggered immediately when connecting to a publication for the first time.'
+		);
+	}
+
+	public function test_register__does_not_trigger_cta_sync_when_publication_unchanged() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'  => 'SAME_PUBLICATION',
+				'organizationID' => 'test-organization-id',
+				'configuredCTAs' => array(
+					'existing-cta-id' => 'newsletter-signup',
+				),
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => 'SAME_PUBLICATION',
+			)
+		);
+
+		$this->assertSame(
+			0,
+			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA synchronization should not be triggered when the publication ID is unchanged.'
+		);
+
+		$this->assertSame(
+			array(
+				'existing-cta-id' => 'newsletter-signup',
+			),
+			$this->reader_revenue_manager->get_settings()->get()['configuredCTAs'],
+			'configuredCTAs should be unchanged when confirming settings without changing the publication.'
+		);
+	}
+
 	public function test_magic_methods() {
 		$this->assertEquals( 'reader-revenue-manager', $this->reader_revenue_manager->slug, 'Reader Revenue Manager module slug should be correct.' );
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name, 'Reader Revenue Manager module name should be correct.' );
@@ -184,8 +366,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'SubscribewithGoogle service class should exist.'
 		);
 		$this->assertTrue(
-			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher' ),
-			'Webcontentpublisher service class should exist.'
+			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher' ),
+			'WebContentPublisher service class should exist.'
 		);
 	}
 
@@ -211,9 +393,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'sync-publication-onboarding-state',
 				'terms-of-service',
 				'user-settings',
+				'ctas',
+				'create-cta',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
-			'Reader Revenue Manager module should include the user settings datapoints when the express setup flag is enabled.'
+			'Reader Revenue Manager module should include the express setup datapoints when the express setup flag is enabled.'
 		);
 	}
 
@@ -554,18 +738,25 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_get_debug_fields() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
 		$this->reader_revenue_manager->get_settings()->register();
 
 		// Set up product IDs in different formats for testing extraction and redaction.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
-				'publicationID' => 'test-publication-id',
-				'productIDs'    => array(
+				'publicationID'  => 'test-publication-id',
+				'productIDs'     => array(
 					'test-publication-id:product1',  // Combined format.
 					'standalone-product',           // Standalone format.
 					'test-publication-id:product2',  // Another combined format.
 				),
-				'productID'     => 'test-publication-id:main-product',  // Main product in combined format.
+				'productID'      => 'test-publication-id:main-product',  // Main product in combined format.
+				'organizationID' => 'test-organization-id',
+				'configuredCTAs' => array(
+					'lower_left_cta' => 'lower_left',
+					'higher_cta'     => 'higher',
+				),
 			)
 		);
 
@@ -573,6 +764,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'reader_revenue_manager_publication_id',
+				'reader_revenue_manager_organization_id',
+				'reader_revenue_manager_configured_ctas',
 				'reader_revenue_manager_publication_onboarding_state',
 				'reader_revenue_manager_snippet_mode',
 				'reader_revenue_manager_post_types',
@@ -586,6 +779,44 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+
+		// Test organization ID is exposed raw, but redacted in debug output.
+		$this->assertEquals(
+			'Reader Revenue Manager: Organization ID',
+			$debug_fields['reader_revenue_manager_organization_id']['label'],
+			'Organization ID field should have correct label'
+		);
+
+		$this->assertEquals(
+			'test-organization-id',
+			$debug_fields['reader_revenue_manager_organization_id']['value'],
+			'Organization ID should be exposed as the raw setting value'
+		);
+
+		$this->assertEquals(
+			Debug_Data::redact_debug_value( 'test-organization-id' ),
+			$debug_fields['reader_revenue_manager_organization_id']['debug'],
+			'Organization ID should be redacted in debug output'
+		);
+
+		// Test configured CTAs are exposed as a comma-separated list of their keys (names).
+		$this->assertEquals(
+			'Reader Revenue Manager: Configured CTAs',
+			$debug_fields['reader_revenue_manager_configured_ctas']['label'],
+			'Configured CTAs field should have correct label'
+		);
+
+		$this->assertEquals(
+			'lower_left_cta, higher_cta',
+			$debug_fields['reader_revenue_manager_configured_ctas']['value'],
+			'Configured CTAs should list the configured CTA names'
+		);
+
+		$this->assertEquals(
+			'lower_left_cta, higher_cta',
+			$debug_fields['reader_revenue_manager_configured_ctas']['debug'],
+			'Configured CTAs debug output should match the value'
+		);
 
 		// Test product IDs extraction - should only show the product ID part.
 		$this->assertEquals(
@@ -638,6 +869,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'reader_revenue_manager_publication_id',
+				'reader_revenue_manager_organization_id',
+				'reader_revenue_manager_configured_ctas',
 				'reader_revenue_manager_publication_onboarding_state',
 				'reader_revenue_manager_snippet_mode',
 				'reader_revenue_manager_product_id',
@@ -665,6 +898,19 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'reader_revenue_manager_content_policy_state',
 			$debug_fields,
 			'Content policy state debug field should be included.'
+		);
+
+		// Verify the express setup fields are omitted while the feature flag is off.
+		$this->assertArrayNotHasKey(
+			'reader_revenue_manager_organization_id',
+			$debug_fields,
+			'Organization ID debug field should be omitted when rrmExpressSetup is disabled.'
+		);
+
+		$this->assertArrayNotHasKey(
+			'reader_revenue_manager_configured_ctas',
+			$debug_fields,
+			'Configured CTAs debug field should be omitted when rrmExpressSetup is disabled.'
 		);
 
 		$this->assertEquals(
@@ -756,6 +1002,31 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
 
 		$this->assertFalse( $registered, 'Product ID meta key should not be registered when publication ID is empty.' );
+	}
+
+	public function test_get_assets() {
+		$script = $this->reader_revenue_manager->get_assets()[0];
+		$script->register( $this->context );
+
+		$dependency = wp_scripts()->registered['googlesitekit-modules-reader-revenue-manager'];
+
+		$this->assertEqualSets(
+			array(
+				'googlesitekit-vendor',
+				'googlesitekit-api',
+				'googlesitekit-data',
+				'googlesitekit-feature-discovery',
+				'googlesitekit-modules',
+				'googlesitekit-notifications',
+				'googlesitekit-datastore-site',
+				'googlesitekit-datastore-user',
+				'googlesitekit-components',
+				// Needed in the block editor too, where nothing else loads it.
+				'googlesitekit-widgets',
+			),
+			$dependency->deps,
+			'Reader Revenue Manager script should have the correct dependencies.'
+		);
 	}
 
 	public function test_block_editor_assets_set_up() {
@@ -923,13 +1194,18 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	 * @param array $settings               Settings to set.
 	 * @param array $expected_feature_metrics Expected feature metrics.
 	 * @param string $message                Message for the assertion.
+	 * @param bool $enable_feature_flag      Optional. Whether to enable the rrmExpressSetup feature flag. Default false.
 	 */
-	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
+	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message, $enable_feature_flag = false ) {
+		if ( $enable_feature_flag ) {
+			$this->enable_feature( 'rrmExpressSetup' );
+		}
+
 		$this->reader_revenue_manager->get_settings()->set( $settings );
 
 		$feature_metrics = $this->reader_revenue_manager->get_feature_metrics();
 
-		$this->assertEqualSets( $expected_feature_metrics, $feature_metrics, $message );
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
 	}
 
 	public function data_feature_metrics_settings() {
@@ -949,6 +1225,70 @@ class Reader_Revenue_ManagerTest extends TestCase {
 					'rrm_publication_onboarding_state' => 'PENDING_VERIFICATION',
 				),
 				'When publication onboarding state is set to PENDING_VERIFICATION or some state, the feature metric should reflect that.',
+			),
+			'when feature flag is off, configured CTAs metric is not reported'                          => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+				),
+				'When rrmExpressSetup feature flag is off, the `rrm_publication_configured_ctas` metric should not be reported.',
+			),
+			'when configuredCTAs is empty, the metric is an empty array'                                => array(
+				array(
+					'configuredCTAs' => array(),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array(),
+				),
+				'When configuredCTAs is empty, the metric should be an empty array.',
+				true,
+			),
+			'when configuredCTAs contains one CTA type, the metric is an array with that type'          => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup' ),
+				),
+				'When configuredCTAs contains one CTA type, the metric should be an array with that single type.',
+				true, // Enable feature flag.
+			),
+			'when configuredCTAs contains multiple distinct CTA types, the metric is an array of those types' => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+						'cta-2' => 'survey',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
+				),
+				'When configuredCTAs contains multiple distinct types, the metric should be an array of those distinct types.',
+				true, // Enable feature flag.
+			),
+			'when configuredCTAs contains duplicates, the metric contains each type only once'         => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+						'cta-2' => 'newsletter-signup',
+						'cta-3' => 'survey',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
+				),
+				'When configuredCTAs contains duplicate types, each type should appear only once in the metric.',
+				true, // Enable feature flag.
 			),
 		);
 	}

@@ -1,0 +1,289 @@
+/**
+ * Ads SetupMain component tests.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
+ * Internal dependencies
+ */
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	consumePendingSetup,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
+import {
+	ADWORDS_SCOPE,
+	MODULES_ADS,
+	PLUGINS,
+} from '@/js/modules/ads/datastore/constants';
+import {
+	PAX_PARAM_SETUP_STEP,
+	PAX_SETUP_STEP,
+	PAX_SETUP_SUCCESS_NOTIFICATION,
+} from '@/js/modules/ads/pax/constants';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+} from '@tests/js/test-utils';
+import SetupMain from './SetupMain';
+
+jest.mock( '@/js/modules/ads/components/common/PAXEmbeddedApp', () => {
+	return function MockPAXEmbeddedApp( {
+		onFinishAndCloseSignUpFlow,
+	}: {
+		onFinishAndCloseSignUpFlow: () => void;
+	} ) {
+		return (
+			<button onClick={ onFinishAndCloseSignUpFlow }>
+				Complete PAX setup
+			</button>
+		);
+	};
+} );
+
+describe( 'SetupMain', () => {
+	mockLocation();
+
+	let registry: ReturnType< typeof createTestRegistry >;
+
+	const WOO_MODAL_SELECTOR = '.googlesitekit-dialog-woocommerce-redirect';
+
+	function providePluginState( {
+		wooCommerceActive = false,
+		googleForWooCommerceActive = false,
+		adsConnected = false,
+	} = {} ) {
+		provideSiteInfo( registry, { usingProxy: false, wooCommerceActive } );
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: googleForWooCommerceActive,
+					adsConnected,
+				},
+			},
+		} );
+	}
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		// `usingProxy: false` prevents survey triggers from making requests.
+		provideSiteInfo( registry, { usingProxy: false } );
+		provideModules( registry );
+		provideModuleRegistrations( registry );
+		// Without the Ads scope, continuing with Site Kit navigates to the
+		// OAuth URL, which is the observable side effect asserted below.
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( MODULES_ADS ).receiveGetSettings( {} );
+
+		providePluginState();
+	} );
+
+	afterEach( async () => {
+		await consumePendingSetup();
+	} );
+
+	it( 'should not open the WooCommerce modal when WooCommerce is not active', async () => {
+		const { container, getByRole, waitForRegistry } = render(
+			<SetupMain />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /start setup/i } )
+			);
+		} );
+
+		expect(
+			container.querySelector( WOO_MODAL_SELECTOR )
+		).not.toBeInTheDocument();
+		expect( global.location.assign ).toHaveBeenCalled();
+	} );
+
+	it( 'should open the WooCommerce modal when WooCommerce is active', async () => {
+		providePluginState( { wooCommerceActive: true } );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<SetupMain />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /start setup/i } )
+			);
+		} );
+
+		expect(
+			container.querySelector( WOO_MODAL_SELECTOR )
+		).toBeInTheDocument();
+		expect( global.location.assign ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should close the modal and continue account creation when "Continue with Site Kit" is clicked', async () => {
+		providePluginState( { wooCommerceActive: true } );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<SetupMain />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /start setup/i } )
+			);
+		} );
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /continue with site kit/i } )
+			);
+		} );
+
+		expect(
+			container.querySelector( WOO_MODAL_SELECTOR )
+		).not.toBeInTheDocument();
+		expect( global.location.assign ).toHaveBeenCalled();
+	} );
+
+	it( 'should close the modal and continue account creation when "Create another account" is clicked', async () => {
+		providePluginState( {
+			wooCommerceActive: true,
+			googleForWooCommerceActive: true,
+			adsConnected: true,
+		} );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<SetupMain />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /start setup/i } )
+			);
+		} );
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /create another account/i } )
+			);
+		} );
+
+		expect(
+			container.querySelector( WOO_MODAL_SELECTOR )
+		).not.toBeInTheDocument();
+		expect( global.location.assign ).toHaveBeenCalled();
+	} );
+
+	it( 'should finish setup on the Feature Discovery Hub when pending setup matches Ads', async () => {
+		await setPendingSetup( 'ads', ALL_SERVICES_TAB_PATH );
+
+		const featuresURL = registry
+			.select( CORE_SITE )
+			.getAdminURL( 'googlesitekit-features' );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ ADWORDS_SCOPE ],
+		} );
+		global.history.replaceState(
+			{},
+			'',
+			addQueryArgs( 'http://example.com/wp-admin/', {
+				[ PAX_PARAM_SETUP_STEP ]: PAX_SETUP_STEP.LAUNCH,
+			} )
+		);
+
+		const finishSetup = jest.fn();
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupMain finishSetup={ finishSetup } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /complete pax setup/i } )
+			);
+		} );
+
+		expect( finishSetup ).toHaveBeenCalledWith( featuresURL );
+	} );
+
+	it( 'should finish setup on the dashboard success URL when pending setup does not match Ads', async () => {
+		await setPendingSetup( 'analytics', ALL_SERVICES_TAB_PATH );
+
+		provideUserAuthentication( registry, {
+			grantedScopes: [ ADWORDS_SCOPE ],
+		} );
+		global.history.replaceState(
+			{},
+			'',
+			addQueryArgs( 'http://example.com/wp-admin/', {
+				[ PAX_PARAM_SETUP_STEP ]: PAX_SETUP_STEP.LAUNCH,
+			} )
+		);
+
+		const finishSetup = jest.fn();
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupMain finishSetup={ finishSetup } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /complete pax setup/i } )
+			);
+		} );
+
+		const dashboardSuccessURL = registry
+			.select( CORE_SITE )
+			.getAdminURL( 'googlesitekit-dashboard', {
+				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+			} );
+
+		expect( finishSetup ).toHaveBeenCalledWith( dashboardSuccessURL );
+	} );
+} );

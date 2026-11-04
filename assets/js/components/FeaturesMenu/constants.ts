@@ -22,6 +22,27 @@
  * The email reports setup tooltip anchors to this button on mobile and
  * tablet, so the class is shared rather than repeated as a selector string.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const FEATURES_MENU_BUTTON_CLASS = 'googlesitekit-features-menu__button';
+
+/**
+ * Window width at or below which the main dashboard header feature actions
+ * collapse into the features menu when the "Add features" button is shown.
+ *
+ * The "Add features" button widens the header actions enough to overlap the
+ * logo above the tablet breakpoint (`960px`) when the WordPress admin menu is
+ * expanded. The main dashboard also shows the PDF download button, so it needs
+ * a wider threshold than the entity dashboard.
+ *
+ * @since 1.189.0
+ */
+export const MAIN_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH = 1060;
+
+/**
+ * Window width at or below which the entity dashboard header feature actions
+ * collapse into the features menu when the "Add features" button is shown.
+ *
+ * @since 1.189.0
+ */
+export const ENTITY_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH = 1000;

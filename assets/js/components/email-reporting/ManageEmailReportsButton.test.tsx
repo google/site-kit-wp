@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import { SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION } from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -93,47 +92,6 @@ describe( 'ManageEmailReportsButton', () => {
 		).toBe( true );
 	} );
 
-	it( 'clears the setup tooltip when opening the panel', () => {
-		registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
-			isTooltipVisible: true,
-			tooltipSlug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
-		} );
-
-		const { getByLabelText } = render( <ManageEmailReportsButton />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		fireEvent.click( getByLabelText( label ) );
-
-		// The tooltip renders above the panel, so it must not survive the click
-		// that opens it.
-		expect(
-			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
-		).toBeUndefined();
-	} );
-
-	it( 'leaves an unrelated tooltip alone when opening the panel', () => {
-		const otherTooltip = {
-			isTooltipVisible: true,
-			tooltipSlug: 'some-other-tooltip',
-		};
-		registry
-			.dispatch( CORE_UI )
-			.setValue( 'admin-screen-tooltip', otherTooltip );
-
-		const { getByLabelText } = render( <ManageEmailReportsButton />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		fireEvent.click( getByLabelText( label ) );
-
-		expect(
-			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
-		).toEqual( otherTooltip );
-	} );
-
 	it( 'does not render during the initial setup flow', () => {
 		global.location.href =
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true';
@@ -141,22 +99,9 @@ describe( 'ManageEmailReportsButton', () => {
 		const { queryByLabelText } = render( <ManageEmailReportsButton />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			features: [ 'setupFlowRefresh' ],
 		} );
 
 		expect( queryByLabelText( label ) ).not.toBeInTheDocument();
-	} );
-
-	it( 'renders during the initial setup flow when `setupFlowRefresh` is disabled', () => {
-		global.location.href =
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true';
-
-		const { getByLabelText } = render( <ManageEmailReportsButton />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		expect( getByLabelText( label ) ).toBeInTheDocument();
 	} );
 
 	it.each( [ [ 'analytics-4' ], [ 'search-console' ] ] )(

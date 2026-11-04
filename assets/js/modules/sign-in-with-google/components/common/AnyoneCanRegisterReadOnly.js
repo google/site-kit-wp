@@ -41,7 +41,7 @@ import {
  * sentence stays grammatically whole per locale (see the two call sites
  * below for the actual translator strings).
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @private
  *
  * @param {Object}  args             Arguments.

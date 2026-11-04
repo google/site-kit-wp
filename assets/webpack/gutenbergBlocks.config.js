@@ -22,6 +22,7 @@
 const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
@@ -36,7 +37,7 @@ const {
 } = require( '../../webpack/common' );
 const { createMinimizerRules } = require( './common' );
 
-module.exports = ( mode ) => ( {
+module.exports = ( mode, ANALYZE ) => ( {
 	name: 'Gutenberg Blocks Entry Points',
 	entry: {
 		// Reader Revenue Manager
@@ -88,6 +89,11 @@ module.exports = ( mode ) => ( {
 							implementation: require( 'sass' ),
 							sassOptions: {
 								includePaths: [ 'node_modules' ],
+								quietDeps: true,
+								fatalDeprecations: [
+									'slash-div',
+									'global-builtin',
+								],
 							},
 						},
 					},
@@ -123,6 +129,17 @@ module.exports = ( mode ) => ( {
 			emitWarning: true,
 			failOnError: true,
 		} ),
+		...( ANALYZE
+			? [
+					new BundleAnalyzerPlugin( {
+						analyzerMode: 'static',
+						analyzerPort: 'auto',
+						openAnalyzer: true,
+						reportFilename: 'gutenberg-blocks-report.html',
+						reportTitle: 'Gutenberg Blocks Entry Points',
+					} ),
+			  ]
+			: [] ),
 	],
 	optimization: {
 		minimizer: createMinimizerRules(),

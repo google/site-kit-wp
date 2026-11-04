@@ -169,6 +169,7 @@ class Email_Template_Formatter {
 	 * Prepares section payload for the template renderer.
 	 *
 	 * @since 1.170.0
+	 * @since 1.187.0 Added the `groups` and the `prompt` to the section payload.
 	 *
 	 * @param array $sections   Section instances.
 	 * @param array $date_range Date range used for the report.
@@ -207,6 +208,8 @@ class Email_Template_Formatter {
 				'dimension'        => isset( $dimensions[0] ) ? $dimensions[0] : '',
 				'dimension_value'  => $first_dimension_value,
 				'dimension_values' => $dimension_values ?? array(),
+				'groups'           => $section->get_groups(),
+				'prompt'           => $section->get_prompt(),
 				'change'           => $change,
 				'changes'          => $changes,
 				'change_context'   => $change_context,

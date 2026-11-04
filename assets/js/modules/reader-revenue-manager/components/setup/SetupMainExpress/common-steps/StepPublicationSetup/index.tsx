@@ -1,0 +1,198 @@
+/**
+ * Reader Revenue Manager publication setup component.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { ProgressBar } from 'googlesitekit-components';
+import { Select, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
+import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { CREATE_PUBLICATION_EVENT_LABEL } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
+import {
+	SetupStep,
+	SetupStepProps,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import {
+	EXPRESS_SETUP_STEPS,
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
+import PlusIcon from '@/svg/icons/plus.svg';
+import ConnectPublication from './ConnectPublication';
+import CreatePublication from './CreatePublication';
+
+interface StepPublicationSetupProps extends SetupStepProps {
+	connectDescription?: string;
+	createDescription?: string;
+}
+
+const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
+	connectDescription,
+	createDescription,
+	onComplete,
+} ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
+	const [ showPublicationCreate, setShowPublicationCreate ] =
+		useFormValue< boolean >(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			SHOW_PUBLICATION_CREATE
+		);
+
+	const getPublicationsError: object | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getErrorForSelector(
+				'getPublications',
+				[]
+			),
+		[]
+	);
+
+	const hasResolvedPublications: boolean = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getPublications'
+			),
+		[]
+	);
+
+	const publications: Publication[] | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPublications(),
+		[]
+	);
+
+	const hasPublications = hasResolvedPublications && publications?.length;
+	const hasNoPublications = hasResolvedPublications && ! publications?.length;
+
+	// Show the publication create form if no publications exist.
+	useEffect( () => {
+		if (
+			! showPublicationCreate &&
+			! getPublicationsError &&
+			hasNoPublications
+		) {
+			setShowPublicationCreate( true );
+		}
+	}, [
+		getPublicationsError,
+		hasNoPublications,
+		setShowPublicationCreate,
+		showPublicationCreate,
+	] );
+
+	function onTogglePublicationCreate() {
+		if ( showPublicationCreate ) {
+			trackEvent(
+				'click_use_existing_publication_link',
+				CREATE_PUBLICATION_EVENT_LABEL
+			);
+		} else {
+			trackEvent(
+				'click_create_new_publication_link',
+				EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION
+			);
+		}
+
+		setShowPublicationCreate( ! showPublicationCreate );
+	}
+
+	if ( ! hasResolvedPublications ) {
+		return <ProgressBar />;
+	}
+
+	return (
+		<div className="googlesitekit-rrm-express-setup-step">
+			{ showPublicationCreate ? (
+				<CreatePublication
+					description={ createDescription }
+					onComplete={ onComplete }
+				/>
+			) : (
+				<ConnectPublication
+					description={ connectDescription }
+					onComplete={ onComplete }
+				/>
+			) }
+
+			{ hasPublications || getPublicationsError ? (
+				<Typography
+					as="div"
+					className=""
+					size={ SIZE_SMALL }
+					type={ TYPE_LABEL }
+				>
+					<Link
+						className="googlesitekit-rrm-express-setup-step__cta-link"
+						leadingIcon={
+							showPublicationCreate ? undefined : (
+								<PlusIcon width={ 12 } height={ 12 } />
+							)
+						}
+						onClick={ onTogglePublicationCreate }
+						type="button"
+					>
+						{ showPublicationCreate
+							? __(
+									'Use existing publication',
+									'google-site-kit'
+							  )
+							: __(
+									'Create new publication',
+									'google-site-kit'
+							  ) }
+					</Link>
+				</Typography>
+			) : null }
+		</div>
+	);
+};
+
+export const publicationSetupStep: SetupStep = {
+	slug: EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION,
+	label: ( select: Select ) =>
+		select( CORE_FORMS ).getValue(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			SHOW_PUBLICATION_CREATE
+		)
+			? __( 'Create publication', 'google-site-kit' )
+			: __( 'Connect publication', 'google-site-kit' ),
+	Component: StepPublicationSetup,
+	isComplete: ( select: Select ) =>
+		!! select( MODULES_READER_REVENUE_MANAGER ).getPublicationID(),
+};
+
+export default StepPublicationSetup;

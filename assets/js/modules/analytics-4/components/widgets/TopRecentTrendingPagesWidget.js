@@ -83,7 +83,7 @@ export function getDateRange( referenceDate ) {
  *
  * @since 1.113.0
  * @since 1.132.0 Update the function to receive the reference date instead of the select function.
- * @since n.e.x.t Renamed to `getTopRecentTrendingPagesReportOptions`.
+ * @since 1.186.0 Renamed to `getTopRecentTrendingPagesReportOptions`.
  *
  * @param {string} referenceDate The reference date.
  * @return {Object} The report options containing dimensions, filters,

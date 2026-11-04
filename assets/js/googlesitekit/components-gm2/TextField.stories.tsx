@@ -80,13 +80,37 @@ function Template() {
 					/>
 				</div>
 
-				<div>
+				<div style={ { marginBottom: '50px' } }>
+					<TextField
+						label="With Character Counter"
+						maxLength={ 40 }
+						name="textfield"
+						value="Weekly newsletter"
+						outlined
+						showCharacterCounter
+					/>
+				</div>
+
+				<div style={ { marginBottom: '50px' } }>
 					<TextField
 						label="Textarea"
 						name="textfield"
 						value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl"
 						outlined
 						textarea
+					/>
+				</div>
+
+				<div>
+					<TextField
+						inputType="textarea"
+						label="With Character Counter Textarea"
+						maxLength={ 140 }
+						name="textfield"
+						value="Sign up for updates from this publication."
+						outlined
+						textarea
+						showCharacterCounter
 					/>
 				</div>
 			</div>

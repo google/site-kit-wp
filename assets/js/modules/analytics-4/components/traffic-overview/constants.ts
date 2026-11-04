@@ -1,0 +1,63 @@
+/**
+ * Traffic Overview constants.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * The DOM `id` of the Traffic Overview tab. The panel points its
+ * `aria-labelledby` at this `id`, so the tab names the panel.
+ */
+export const TRAFFIC_OVERVIEW_TAB_ID = 'googlesitekit-traffic-overview-tab';
+
+/**
+ * The DOM `id` of the Typical Traffic tab. The panel points its
+ * `aria-labelledby` at this `id`, so the tab names the panel.
+ */
+export const TYPICAL_TRAFFIC_TAB_ID = 'googlesitekit-typical-traffic-tab';
+
+/**
+ * The DOM `id` of the Recent activity tab. The Recent activity panel points
+ * its `aria-labelledby` at the tab's `id`, so the tab names the panel.
+ */
+export const RECENT_ACTIVITY_TAB_ID = 'googlesitekit-recent-activity-tab';
+
+/** The dismissed item slug of the Analytics setup CTA in the Recent activity tab. */
+export const RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG =
+	'analytics-setup-cta-recent-activity';
+
+/** The vote ID of the feedback thumbs in the Recent activity tab. */
+export const FRESH_DATA_VOTE_ID_RECENT_ACTIVITY =
+	'fresh_data_recent_activity_widget';
+
+/**
+ * How long the Recent activity tab stays shown, in milliseconds, before the
+ * `view_all_recent_posts` event fires.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_MINIMUM_VIEW_TIME_MILLISECONDS = 3000;
+
+/** The slug the Traffic Overview widget registers under. */
+export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
+
+/** The most rows a breakdown column shows, counting the trailing "Others" row. */
+export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;
+
+/** The most rows a column of the Recent activity tab's traffic breakdown shows. */
+export const RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS = 3;
+
+/** The `getRecentContent` options that select the most recently published post. */
+export const LATEST_POST_RECENT_CONTENT_OPTIONS = { count: 1 };

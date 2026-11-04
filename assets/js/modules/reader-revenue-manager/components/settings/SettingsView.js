@@ -27,8 +27,11 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import DisplaySetting from '@/js/components/DisplaySetting';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
 	PolicyViolationSettingsNotice,
 	PublicationOnboardingStateNotice,
@@ -39,14 +42,29 @@ import {
 } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
+	getConfiguredCTAList,
 	getPostTypesString,
 	getProductIDLabel,
 } from '@/js/modules/reader-revenue-manager/utils/settings';
 
 export default function SettingsView() {
+	const rrmExpressSetupEnabled = useFeature( 'rrmExpressSetup' );
+
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
+
+	const configuredCTAs = useSelect( ( select ) => {
+		if ( ! rrmExpressSetupEnabled ) {
+			return '';
+		}
+
+		return getConfiguredCTAList(
+			select( MODULES_READER_REVENUE_MANAGER ).getConfiguredCTAs()
+		)
+			.map( ( { label } ) => label )
+			.join( ', ' );
+	} );
 
 	const productID = useSelect( ( select ) => {
 		const id = select( MODULES_READER_REVENUE_MANAGER ).getProductID();
@@ -114,9 +132,12 @@ export default function SettingsView() {
 					>
 						{ __( 'Publication', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting value={ publicationID } />
-					</p>
+					</P>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
@@ -128,9 +149,12 @@ export default function SettingsView() {
 					>
 						{ __( 'Default Product ID', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting value={ productID } />
-					</p>
+					</P>
 				</div>
 			</div>
 
@@ -147,13 +171,16 @@ export default function SettingsView() {
 					>
 						{ __( 'Display CTAs', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting
 							value={
 								SNIPPET_MODES[ snippetMode ] || snippetMode
 							}
 						/>
-					</p>
+					</P>
 				</div>
 
 				{ 'post_types' === snippetMode && (
@@ -169,12 +196,33 @@ export default function SettingsView() {
 								'google-site-kit'
 							) }
 						</Typography>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<P
+							className="googlesitekit-settings-module__meta-item-data"
+							size={ SIZE_MEDIUM }
+						>
 							<DisplaySetting value={ postTypes } />
-						</p>
+						</P>
 					</div>
 				) }
 			</div>
+
+			{ !! configuredCTAs && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
+							{ __( 'CTAs', 'google-site-kit' ) }
+						</Typography>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting value={ configuredCTAs } />
+						</p>
+					</div>
+				</div>
+			) }
 		</div>
 	);
 }

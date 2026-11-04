@@ -31,11 +31,32 @@ class Authenticator implements Authenticator_Interface {
 	const COOKIE_REDIRECT_TO = 'googlesitekit_auth_redirect_to';
 
 	/**
+	 * Cookie name to store the nonce passed to Google Identity Services.
+	 *
+	 * The module's script generates a random value before initializing the
+	 * library, stores it here, and passes it to Google, which embeds it as the
+	 * `nonce` claim of the signed ID token it returns. Comparing the claim with
+	 * this cookie establishes that the token was issued for a sign-in this
+	 * browser started.
+	 */
+	const COOKIE_NONCE = 'googlesitekit_auth_nonce';
+
+	/**
+	 * Lifetime of the nonce cookie, in seconds.
+	 *
+	 * Long enough for a user to choose an account and complete any Google
+	 * sign-in prompts, and short enough to limit how long an unused value
+	 * remains valid.
+	 */
+	const NONCE_TTL = 900;
+
+	/**
 	 * Error codes.
 	 */
 	const ERROR_INVALID_REQUEST    = 'googlesitekit_auth_invalid_request';
 	const ERROR_SIGNIN_FAILED      = 'googlesitekit_auth_failed';
 	const ERROR_TWO_FACTOR_ENABLED = 'googlesitekit_auth_two_factor_enabled';
+	const ERROR_DUPLICATE_EMAIL    = 'googlesitekit_auth_duplicate_email';
 
 	/**
 	 * User meta key marking users created via Sign in with Google.
@@ -93,9 +114,17 @@ class Authenticator implements Authenticator_Interface {
 	public function authenticate_user( Input $input ) {
 		$credential = $input->filter( INPUT_POST, 'credential' );
 
+		// Read and clear the nonce before anything else, so a given value can
+		// only ever be used for one sign-in attempt.
+		$expected_nonce = $this->consume_nonce_cookie( $input );
+
 		$user    = null;
 		$payload = $this->profile_reader->get_profile_data( $credential );
 		if ( ! is_wp_error( $payload ) ) {
+			if ( ! $this->nonce_matches( $expected_nonce, $payload ) ) {
+				return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
+			}
+
 			$user = $this->find_user( $payload );
 			if ( null === $user ) {
 				// We haven't found the user using their Google user id and email. Thus we need to create
@@ -228,11 +257,14 @@ class Authenticator implements Authenticator_Interface {
 	 *
 	 * @since 1.145.0
 	 * @since 1.185.0 Returns a WP_Error when the email-matched user uses two-factor authentication and isn't connected to the Google account.
+	 * @since 1.191.0 Returns a WP_Error when more than one user has the email address of the Google account.
 	 *
 	 * @param array $payload Google auth payload.
-	 * @return WP_User|WP_Error|null User object when found, WP_Error when the matched user has to connect their Google account first, null otherwise.
+	 * @return WP_User|WP_Error|null User object when found, WP_Error when the matched user has to connect their Google account first or more than one user has the email address, null otherwise.
 	 */
 	protected function find_user( $payload ) {
+		global $wpdb;
+
 		// Check if there are any existing WordPress users connected to this Google account.
 		// The user ID is used as the unique identifier because users can change the email on their Google account.
 		$google_user_hashed_id = $this->get_hashed_google_user_id( $payload );
@@ -251,7 +283,26 @@ class Authenticator implements Authenticator_Interface {
 		}
 
 		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
-		$user = get_user_by( 'email', $payload['email'] );
+		// WordPress only blocks duplicate emails in `wp_insert_user()`, so more than one user can have the
+		// same email. Fetch up to two matches, using the same comparison as `get_user_by( 'email', ... )`,
+		// so that a Google account is never linked to one of several users that share its email.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$user_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT ID FROM $wpdb->users WHERE user_email = %s LIMIT 2",
+				$payload['email']
+			)
+		);
+
+		if ( empty( $user_ids ) ) {
+			return null;
+		}
+
+		if ( count( $user_ids ) > 1 ) {
+			return new WP_Error( self::ERROR_DUPLICATE_EMAIL );
+		}
+
+		$user = get_user_by( 'id', $user_ids[0] );
 		if ( ! $user ) {
 			return null;
 		}
@@ -453,5 +504,54 @@ class Authenticator implements Authenticator_Interface {
 		}
 
 		return $cookie_redirect_to;
+	}
+
+	/**
+	 * Reads the nonce cookie and asks the browser to drop it.
+	 *
+	 * Clearing happens here rather than after a successful sign-in, so an
+	 * abandoned attempt does not leave the value sitting in the browser.
+	 *
+	 * Note this is not single-use enforcement: only the browser is asked to
+	 * forget the value, and nothing is recorded server side. The cookie also
+	 * carries no secrecy, since the same value travels in the token as a
+	 * readable claim. What the pair establishes is that the request came from
+	 * a context able to set a cookie on this site.
+	 *
+	 * @since 1.188.0.t
+	 *
+	 * @param Input $input Input instance.
+	 * @return string Nonce from the cookie, or an empty string when not set.
+	 */
+	protected function consume_nonce_cookie( Input $input ) {
+		$nonce = $input->filter( INPUT_COOKIE, self::COOKIE_NONCE );
+
+		if ( ! empty( $nonce ) && ! headers_sent() ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+			setcookie( self::COOKIE_NONCE, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
+		}
+
+		return is_string( $nonce ) ? $nonce : '';
+	}
+
+	/**
+	 * Checks the nonce claim of the Google auth payload against the expected value.
+	 *
+	 * Both must be present. A token carrying no `nonce` claim was not issued
+	 * for a sign-in started here, so an absent claim is a mismatch rather than
+	 * a check which does not apply.
+	 *
+	 * @since 1.188.0.t
+	 *
+	 * @param string $expected_nonce Nonce read from the cookie.
+	 * @param array  $payload        Google auth payload.
+	 * @return bool TRUE when the nonce matches, FALSE otherwise.
+	 */
+	protected function nonce_matches( $expected_nonce, $payload ) {
+		if ( empty( $expected_nonce ) || empty( $payload['nonce'] ) ) {
+			return false;
+		}
+
+		return hash_equals( $expected_nonce, (string) $payload['nonce'] );
 	}
 }

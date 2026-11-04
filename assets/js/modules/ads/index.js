@@ -38,6 +38,8 @@ import { MODULES_ADS } from './datastore/constants';
 export { registerStore } from './datastore';
 export { registerWidgets } from './widgets';
 export { registerNotifications } from './notifications';
+export { registerIntents } from './intents';
+export { registerFeatures } from './feature-discovery';
 
 export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_ADS, {

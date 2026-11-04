@@ -20,12 +20,13 @@
  * Internal dependencies
  */
 import { combineStores } from 'googlesitekit-data';
+import activeTab from './active-tab';
 import baseModuleStore from './base';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 import report from './report';
 import service from './service';
 
-const store = combineStores( baseModuleStore, report, service );
+const store = combineStores( baseModuleStore, report, service, activeTab );
 
 export function registerStore( registry ) {
 	registry.registerStore( MODULES_PAGESPEED_INSIGHTS, store );

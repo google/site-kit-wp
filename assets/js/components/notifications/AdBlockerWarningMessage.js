@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -33,7 +32,10 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 import ExternalIcon from '@/svg/icons/external-rounded.svg';
 
 export default function AdBlockerWarningMessage( {
@@ -47,15 +49,11 @@ export default function AdBlockerWarningMessage( {
 
 	return (
 		<Notice
-			className={ classnames( 'googlesitekit-notice--small', className ) }
-			type={ NOTICE_TYPES.WARNING }
+			className={ className }
 			description={ createInterpolateElement(
 				sprintf(
 					/* translators: 1: The warning message. 2: "Get help" text. */
-					__(
-						'%1$s. <Link><Strong>%2$s</Strong></Link>',
-						'google-site-kit'
-					),
+					__( '%1$s. <Link>%2$s</Link>', 'google-site-kit' ),
 					warningMessage,
 					__( 'Get help', 'google-site-kit' )
 				),
@@ -64,15 +62,16 @@ export default function AdBlockerWarningMessage( {
 						<Link
 							href={ getHelpLink }
 							trailingIcon={
-								<ExternalIcon width={ 15 } height={ 15 } />
+								<ExternalIcon width={ 13 } height={ 13 } />
 							}
 							external
 							hideExternalIndicator
 						/>
 					),
-					Strong: <strong />,
 				}
 			) }
+			type={ NOTICE_TYPES.WARNING }
+			variant={ NOTICE_VARIANTS.SMALL }
 			hideIcon
 		/>
 	);

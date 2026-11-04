@@ -69,6 +69,12 @@ interface OverlayNotificationProps {
 	GraphicMobile?: ComponentType;
 	newBadge?: boolean;
 	className?: string;
+	anchoredOffset?: number;
+	/**
+	 * Selector for the element to anchor to. Accepts a selector list, so an
+	 * overlay whose trigger collapses into another control at narrower
+	 * breakpoints can name each candidate and anchor to whichever exists.
+	 */
 	anchorID?: string;
 	gaTrackingEventArgs?: GATrackingEventArgs & {
 		confirmAction?: string;
@@ -82,6 +88,7 @@ const OverlayNotification: FC< OverlayNotificationProps > = ( {
 	dismissButton,
 	gaTrackingEventArgs,
 	className,
+	anchoredOffset = 12,
 	anchorID,
 	...props
 } ) => {
@@ -107,7 +114,7 @@ const OverlayNotification: FC< OverlayNotificationProps > = ( {
 			// eslint-disable-next-line sitekit/acronym-case
 			anchorID ? document.querySelector< HTMLElement >( anchorID ) : null
 		);
-	}, [ anchorID ] );
+	}, [ anchorID, breakpoint ] );
 
 	const isAnchored =
 		Boolean( anchorElement ) && breakpoint !== BREAKPOINT_SMALL;
@@ -176,7 +183,7 @@ const OverlayNotification: FC< OverlayNotificationProps > = ( {
 			onClose={ () => {} }
 			placement="bottom"
 			autoDismissMs={ 0 }
-			offset={ 12 }
+			offset={ anchoredOffset }
 			skidding={ isRTL() ? ANCHORED_SKIDDING_PX : -ANCHORED_SKIDDING_PX }
 			className="googlesitekit-popper--overlay-notification"
 			rootClassName="googlesitekit-popper-root--overlay-notification"

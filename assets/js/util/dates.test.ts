@@ -1,0 +1,646 @@
+/**
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { provideTimezone } from '@tests/js/utils';
+import {
+	DAY_IN_SECONDS,
+	DateRangeSelection,
+	INVALID_DATE_INSTANCE_ERROR,
+	INVALID_DATE_STRING_ERROR,
+	addDays,
+	addMonths,
+	dateSub,
+	formatDate,
+	getDateString,
+	getDayCount,
+	getMonthEnd,
+	getMonthStart,
+	getMonthsInRange,
+	getPreviousDate,
+	isValidDateRange,
+	isValidDateString,
+	resolveDateRangeSelection,
+	stringToDate,
+} from './dates';
+
+describe( 'getDateString', () => {
+	it( 'should throw error if no param is passed', () => {
+		try {
+			getDateString();
+		} catch ( error ) {
+			expect( error.message ).toEqual( INVALID_DATE_INSTANCE_ERROR );
+		}
+	} );
+
+	it( 'should throw error if date param is not a valid date constructor value', () => {
+		try {
+			getDateString( 'invalid-date' );
+		} catch ( error ) {
+			expect( error.message ).toEqual( INVALID_DATE_INSTANCE_ERROR );
+		}
+	} );
+
+	it( 'should return "2020-01-01" for date instance of the same date', () => {
+		const JANUARY = 0; // month is 0 indexed
+		const date = new Date( 2020, JANUARY, 1 );
+
+		expect( getDateString( date ) ).toEqual( '2020-01-01' );
+	} );
+} );
+
+describe( 'getPreviousDate', () => {
+	it.each( [
+		// [ testName, relativeDate, daysBefore, expectedReturnError ]
+		[
+			'no param is passed',
+			undefined,
+			undefined,
+			INVALID_DATE_STRING_ERROR,
+		],
+		[
+			'date supplied is invalid',
+			'invalid-date',
+			1,
+			INVALID_DATE_STRING_ERROR,
+		],
+		[
+			'date supplied is invalid date',
+			'2020-99-99',
+			1,
+			INVALID_DATE_STRING_ERROR,
+		],
+	] )(
+		'should throw error if %s',
+		( _testName, relativeDate, daysBefore, expected ) => {
+			try {
+				getPreviousDate( relativeDate, daysBefore );
+			} catch ( error ) {
+				expect( error.message ).toEqual( expected );
+			}
+		}
+	);
+
+	it.each( [
+		// [ relativeDate, daysBefore, expectedReturnDate ]
+		[ '2020-01-01', 0, '2020-01-01' ],
+		[ '2020-01-02', 1, '2020-01-01' ],
+		[ '2020-01-08', 7, '2020-01-01' ],
+		[ '2020-02-01', 31, '2020-01-01' ],
+		[ '2021-01-01', 366, '2020-01-01' ],
+		[ '2020-01-01', 1, '2019-12-31' ],
+	] )(
+		'with date of %s and days before value of %s should return %s',
+		( relativeDate, daysBefore, expected ) => {
+			expect( getPreviousDate( relativeDate, daysBefore ) ).toEqual(
+				expected
+			);
+		}
+	);
+
+	describe.each( [
+		[
+			'New York spring forward, 1 day',
+			'America/New_York',
+			'2026-03-09',
+			1,
+			'2026-03-08',
+			240,
+			300,
+		],
+		[
+			'New York spring forward, 28 days',
+			'America/New_York',
+			'2026-03-09',
+			28,
+			'2026-02-09',
+			240,
+			300,
+		],
+		[
+			'Sydney spring forward, 1 day',
+			'Australia/Sydney',
+			'2026-10-05',
+			1,
+			'2026-10-04',
+			-660,
+			-600,
+		],
+		[
+			'Sydney spring forward, 28 days',
+			'Australia/Sydney',
+			'2026-10-05',
+			28,
+			'2026-09-07',
+			-660,
+			-600,
+		],
+		[
+			'New York fall back, 1 day',
+			'America/New_York',
+			'2026-11-02',
+			1,
+			'2026-11-01',
+			300,
+			240,
+		],
+		[
+			'New York fall back, 28 days',
+			'America/New_York',
+			'2026-11-02',
+			28,
+			'2026-10-05',
+			300,
+			240,
+		],
+		[ 'UTC, 1 day', 'UTC', '2026-03-09', 1, '2026-03-08', 0, 0 ],
+		[ 'UTC, 28 days', 'UTC', '2026-03-09', 28, '2026-02-09', 0, 0 ],
+	] )(
+		'%s',
+		(
+			_label,
+			timezone,
+			relativeDate,
+			daysBefore,
+			expected,
+			relativeDateOffset,
+			previousDateOffset
+		) => {
+			let originalTimezone: string | undefined;
+
+			beforeEach( () => {
+				originalTimezone = provideTimezone( timezone );
+			} );
+
+			afterEach( () => {
+				provideTimezone( originalTimezone );
+			} );
+
+			it( 'should count calendar days', () => {
+				// Check both offsets, so each row tests the case its label indicates.
+				expect(
+					stringToDate( relativeDate as string ).getTimezoneOffset()
+				).toBe( relativeDateOffset );
+
+				expect( stringToDate( expected ).getTimezoneOffset() ).toBe(
+					previousDateOffset
+				);
+
+				expect( getPreviousDate( relativeDate, daysBefore ) ).toBe(
+					expected
+				);
+			} );
+		}
+	);
+} );
+
+describe( 'stringToDate', () => {
+	it.each( [ null, NaN, '', '12345', '1900-00-00', 'not a date string' ] )(
+		'throws an error when given the invalid date string: %s',
+		( invalidDateString ) => {
+			expect( () => stringToDate( invalidDateString ) ).toThrow(
+				INVALID_DATE_STRING_ERROR
+			);
+		}
+	);
+
+	it( 'uses a zero-indexed month', () => {
+		const date = stringToDate( '2019-01-31' );
+
+		expect( date.getFullYear() ).toBe( 2019 );
+		expect( date.getMonth() ).toBe( 0 );
+		expect( date.getDate() ).toBe( 31 );
+	} );
+
+	it( 'returns a valid date instance for the given date string', () => {
+		const date = stringToDate( '2019-10-31' );
+
+		expect( date.getFullYear() ).toBe( 2019 );
+		expect( date.getMonth() ).toBe( 10 - 1 ); // 0-based month
+		expect( date.getDate() ).toBe( 31 );
+	} );
+} );
+
+describe( 'isValidDateString', () => {
+	it.each( [
+		// [ testName, dateString, expectedReturnValue ]
+		[ 'true for valid date', '2020-09-24', true ],
+		[ 'false for empty param', undefined, false ],
+		[ 'false for invalid date', 'invalid-date', false ],
+		[ 'false for incorrect date: "2020-99-99"', '2020-99-99', false ],
+		[ 'false for `undefined`', undefined, false ],
+		[ 'false for `null`', null, false ],
+		[ 'false for Boolean', true, false ],
+		[ 'false for Number', 100000, false ],
+		[ 'false for Object', {}, false ],
+		[ 'false for Array', [], false ],
+		[ 'false for Function', () => {}, false ],
+	] )( 'should return %s', ( _, dateString, expected ) => {
+		expect( isValidDateString( dateString ) ).toEqual( expected );
+	} );
+} );
+
+describe( 'isValidDateRange', () => {
+	it.each( [
+		// [ dateRange, expectedReturnValue ]
+		[ 'last-1-days', true ],
+		[ 'last-7-days', true ],
+		[ 'last-28-days', true ],
+		[ 'last-1-day', false ],
+		[ 'invalid-range', false ],
+		[ 'invalid-date-range', false ],
+	] )( 'with date range of %s should return %s', ( dateRange, expected ) => {
+		expect( isValidDateRange( dateRange ) ).toEqual( expected );
+	} );
+} );
+
+describe( 'dateSub', () => {
+	it.each( [
+		// [ testName, initialDate, duration, expectedDate ]
+		[
+			'properly subtract one day from the date provided as a string',
+			'2021-01-02',
+			DAY_IN_SECONDS,
+			stringToDate( '2021-01-01' ),
+		],
+		[
+			'properly subtract one day from the date provided as a Date object',
+			stringToDate( '2021-01-02' ),
+			DAY_IN_SECONDS,
+			stringToDate( '2021-01-01' ),
+		],
+	] )( 'should %s', ( _, from, duration, want ) => {
+		const got = dateSub( from, duration );
+		expect( got.toISOString() ).toBe( want.toISOString() );
+	} );
+
+	it.each( [
+		// [ testName, invalidDate ]
+		[ 'isValidDateString returns FALSE', 'not a date' ],
+		[ '{from} is neither a string nor a Date', 150 ],
+		[ '{from} is an invalid Date', new Date( '202-201-01' ) ],
+	] )( 'should throw an error when %s', ( _, invalidDate ) => {
+		expect( () => dateSub( invalidDate, DAY_IN_SECONDS ) ).toThrow(
+			INVALID_DATE_STRING_ERROR
+		);
+	} );
+} );
+
+describe( 'month helpers', () => {
+	it.each( [
+		[ 'a date at month end', '2026-01-31', '2026-01-01', '2026-01-31' ],
+		[
+			'February in a common year',
+			'2026-02-10',
+			'2026-02-01',
+			'2026-02-28',
+		],
+		[ 'February in a leap year', '2024-02-10', '2024-02-01', '2024-02-29' ],
+		[
+			'the last month of a year',
+			'2026-12-01',
+			'2026-12-01',
+			'2026-12-31',
+		],
+	] )(
+		'should resolve the month bounds for %s',
+		( _label, date, start, end ) => {
+			expect( getMonthStart( date ) ).toBe( start );
+			expect( getMonthEnd( date ) ).toBe( end );
+		}
+	);
+
+	it.each( [
+		[ 'forward clamping to February 28', '2026-01-31', 1, '2026-02-28' ],
+		[ 'forward clamping to February 29', '2024-01-31', 1, '2024-02-29' ],
+		[ 'backward clamping to February 28', '2026-03-31', -1, '2026-02-28' ],
+		[ 'a forward year boundary', '2026-12-15', 2, '2027-02-15' ],
+		[ 'a backward year boundary', '2026-01-15', -2, '2025-11-15' ],
+		[ 'a leap day moved to a common year', '2024-02-29', 12, '2025-02-28' ],
+		[ 'a zero-month offset', '2026-01-31', 0, '2026-01-31' ],
+	] )( 'should shift months for %s', ( _label, date, months, expected ) => {
+		expect( addMonths( date as string, months as number ) ).toBe(
+			expected
+		);
+	} );
+} );
+
+describe( 'getDayCount', () => {
+	it.each( [
+		[ 'a single day', '2026-09-07', '2026-09-07', 1 ],
+		[
+			'adjacent dates across a month boundary',
+			'2026-01-31',
+			'2026-02-01',
+			2,
+		],
+		[ 'a leap-year February', '2024-02-01', '2024-02-29', 29 ],
+		[ 'a common-year February', '2026-02-01', '2026-02-28', 28 ],
+		[
+			'adjacent dates across a year boundary',
+			'2025-12-31',
+			'2026-01-01',
+			2,
+		],
+		[ 'a full March', '2026-03-01', '2026-03-31', 31 ],
+		[ 'October through November', '2026-10-01', '2026-11-30', 61 ],
+		[ 'a range spanning several months', '2026-04-04', '2026-08-04', 123 ],
+	] )(
+		'should count days inclusively for %s',
+		( _label, start, end, expected ) => {
+			expect( getDayCount( start as string, end as string ) ).toBe(
+				expected
+			);
+		}
+	);
+} );
+
+describe( 'getMonthsInRange', () => {
+	it( 'should include partial months across a year boundary', () => {
+		expect( getMonthsInRange( '2025-11-20', '2026-02-01' ) ).toEqual( [
+			'2025-11',
+			'2025-12',
+			'2026-01',
+			'2026-02',
+		] );
+	} );
+	it( 'should include a single month', () => {
+		expect( getMonthsInRange( '2026-09-07', '2026-09-07' ) ).toEqual( [
+			'2026-09',
+		] );
+	} );
+} );
+
+describe( 'resolveDateRangeSelection', () => {
+	it.each( [
+		[ 'a 7-day preset', 'last-7-days', '2026-09-01' ],
+		[ 'the legacy 14-day preset', 'last-14-days', '2026-08-25' ],
+		[ 'a 28-day preset', 'last-28-days', '2026-08-11' ],
+		[ 'a 90-day preset', 'last-90-days', '2026-06-10' ],
+	] )( 'should resolve %s', ( _label, slug, startDate ) => {
+		expect(
+			resolveDateRangeSelection( { type: 'preset', slug }, '2026-09-07' )
+		).toEqual( { startDate, endDate: '2026-09-07' } );
+	} );
+
+	it.each( [
+		[
+			'a completed calendar month',
+			'2026-08',
+			'2026-09-07',
+			'2026-08-01',
+			'2026-08-31',
+		],
+		[
+			'the current partial month',
+			'2026-09',
+			'2026-09-07',
+			'2026-09-01',
+			'2026-09-07',
+		],
+		[
+			'the first day of the current month',
+			'2026-09',
+			'2026-09-01',
+			'2026-09-01',
+			'2026-09-01',
+		],
+		[
+			'February in a leap year',
+			'2024-02',
+			'2024-03-07',
+			'2024-02-01',
+			'2024-02-29',
+		],
+		[
+			'February in a common year',
+			'2026-02',
+			'2026-03-07',
+			'2026-02-01',
+			'2026-02-28',
+		],
+	] )(
+		'should resolve %s',
+		( _label, month, referenceDate, startDate, endDate ) => {
+			expect(
+				resolveDateRangeSelection(
+					{ type: 'calendarMonth', month },
+					referenceDate
+				)
+			).toEqual( { startDate, endDate } );
+			expect( console ).not.toHaveWarned();
+		}
+	);
+
+	it.each( [
+		[ 'a reference date in the preceding month', '2026-08-31' ],
+		[ 'a reference date in the preceding year', '2025-12-31' ],
+	] )(
+		'should clamp both calendar-month endpoints for %s',
+		( _label, referenceDate ) => {
+			expect(
+				resolveDateRangeSelection(
+					{ type: 'calendarMonth', month: '2026-09' },
+					referenceDate
+				)
+			).toEqual( { startDate: referenceDate, endDate: referenceDate } );
+		}
+	);
+
+	it( 'should return custom dates unchanged without mutating the selection', () => {
+		const selection: DateRangeSelection = Object.freeze( {
+			type: 'custom',
+			startDate: '2026-08-04',
+			endDate: '2026-08-10',
+		} );
+		expect( resolveDateRangeSelection( selection, '2026-09-07' ) ).toEqual(
+			{ startDate: '2026-08-04', endDate: '2026-08-10' }
+		);
+	} );
+
+	it.each( [
+		[
+			'a reference date inside the range',
+			'2026-08-07',
+			'2026-08-04',
+			'2026-08-07',
+		],
+		[
+			'a reference date at the start',
+			'2026-08-04',
+			'2026-08-04',
+			'2026-08-04',
+		],
+		[
+			'a reference date before the range',
+			'2026-08-01',
+			'2026-08-01',
+			'2026-08-01',
+		],
+		[
+			'a reference date at the end',
+			'2026-08-10',
+			'2026-08-04',
+			'2026-08-10',
+		],
+	] )(
+		'should resolve custom endpoints for %s',
+		( _label, referenceDate, startDate, endDate ) => {
+			const selection: DateRangeSelection = Object.freeze( {
+				type: 'custom',
+				startDate: '2026-08-04',
+				endDate: '2026-08-10',
+			} );
+
+			expect(
+				resolveDateRangeSelection( selection, referenceDate )
+			).toEqual( { startDate, endDate } );
+		}
+	);
+
+	it( 'should return the reference date for an unknown selection type', () => {
+		const selection = { type: 'unknown' } as unknown as DateRangeSelection;
+
+		expect( resolveDateRangeSelection( selection, '2026-09-07' ) ).toEqual(
+			{ startDate: '2026-09-07', endDate: '2026-09-07' }
+		);
+	} );
+} );
+
+describe( 'formatDate', () => {
+	// The test environment runs in American English, the `en-US` locale.
+	it.each( [
+		[ 'a date string (YYYY-MM-DD)', '2026-07-28' ],
+		[ 'a Date instance', stringToDate( '2026-07-28' ) ],
+	] )( 'should format %s as a short date in the site locale', ( _, date ) => {
+		expect( formatDate( date ) ).toBe( 'Jul 28, 2026' );
+	} );
+
+	it( 'should apply the given `Intl.DateTimeFormat` options over the defaults', () => {
+		expect( formatDate( '2026-07-28', { month: 'long' } ) ).toBe(
+			'July 28, 2026'
+		);
+	} );
+
+	it.each( [
+		[ 'a missing value', undefined ],
+		[ 'an empty value', '' ],
+		[ 'a date in the `MM/DD/YYYY` format', '07/28/2026' ],
+		[ 'a date with an out-of-range month and day', '2026-13-45' ],
+		[ 'an invalid Date instance', new Date( '202-201-01' ) ],
+		[ 'a value that is neither a string nor a Date', 20260728 ],
+	] )( 'should return an empty string for %s', ( _, date ) => {
+		expect( formatDate( date ) ).toBe( '' );
+	} );
+
+	it( 'should format dates using the user locale', () => {
+		Object.assign( global._googlesitekitLegacyData, { locale: 'en_US' } );
+		expect( formatDate( '2026-08-04' ) ).toBe( 'Aug 4, 2026' );
+		Object.assign( global._googlesitekitLegacyData, { locale: 'de_DE' } );
+		expect( formatDate( '2026-08-04' ) ).toBe( '4. Aug. 2026' );
+	} );
+} );
+
+describe( 'addDays', () => {
+	describe.each( [
+		[
+			'Sydney spring forward',
+			'Australia/Sydney',
+			'2026-10-07',
+			-6,
+			'2026-10-01',
+			-660,
+			-600,
+		],
+		[
+			'New York spring forward',
+			'America/New_York',
+			'2026-03-10',
+			-7,
+			'2026-03-03',
+			240,
+			300,
+		],
+		[
+			'Sydney fall back',
+			'Australia/Sydney',
+			'2026-04-07',
+			-7,
+			'2026-03-31',
+			-600,
+			-660,
+		],
+		[
+			'New York fall back',
+			'America/New_York',
+			'2026-11-03',
+			-7,
+			'2026-10-27',
+			300,
+			240,
+		],
+	] )(
+		'%s',
+		(
+			_label,
+			timezone,
+			date,
+			days,
+			expected,
+			dateOffset,
+			expectedOffset
+		) => {
+			let originalTimezone: string | undefined;
+
+			beforeEach( () => {
+				originalTimezone = provideTimezone( timezone as string );
+			} );
+
+			afterEach( () => {
+				provideTimezone( originalTimezone );
+			} );
+
+			it( 'should shift calendar days', () => {
+				// Ensure this case actually crosses the expected DST transition.
+				expect(
+					stringToDate( date as string ).getTimezoneOffset()
+				).toBe( dateOffset );
+
+				expect(
+					stringToDate( expected as string ).getTimezoneOffset()
+				).toBe( expectedOffset );
+
+				expect( addDays( date as string, days as number ) ).toBe(
+					expected
+				);
+			} );
+		}
+	);
+
+	it.each( [
+		[ 'a leap-day boundary', '2024-02-28', 1, '2024-02-29' ],
+		[ 'a year boundary', '2026-12-31', 1, '2027-01-01' ],
+	] )(
+		'should shift calendar days for %s',
+		( _label, date, days, expected ) => {
+			expect( addDays( date as string, days as number ) ).toBe(
+				expected
+			);
+		}
+	);
+} );

@@ -63,6 +63,7 @@ class Uninstallation {
 		Email_Reporting_Scheduler::ACTION_MONITOR,
 		Email_Reporting_Scheduler::ACTION_CLEANUP,
 		OAuth_Client::CRON_REFRESH_PROFILE_DATA,
+		Plugin_Update::CRON_ACTION,
 		Remote_Features_Cron::CRON_ACTION,
 		Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED,
 		Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED,

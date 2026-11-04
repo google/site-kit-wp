@@ -17,47 +17,15 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import AnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
-import PreviewGraph from '@/js/components/PreviewGraph';
-import { useFeature } from '@/js/hooks/useFeature';
-import GoalsGraph from '@/svg/graphics/cta-graph-goals.svg';
-import VisitorsGraph from '@/svg/graphics/cta-graph-visitors.svg';
 
-export default function ActivateAnalyticsCTA( { title } ) {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
-	if ( setupFlowRefreshEnabled ) {
-		return (
-			<AnalyticsCTA
-				analyticsEventLabel="search_funnel"
-				dismissedItemSlug="analytics-setup-cta-search-funnel"
-			/>
-		);
-	}
-
+export default function ActivateAnalyticsCTA() {
 	return (
-		<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-search-funnel">
-			<PreviewGraph
-				title={ __( 'Unique visitors from Search', 'google-site-kit' ) }
-				GraphSVG={ VisitorsGraph }
-			/>
-			<PreviewGraph title={ title } GraphSVG={ GoalsGraph } />
-		</AnalyticsCTA>
+		<AnalyticsCTA
+			analyticsEventLabel="search_funnel"
+			dismissedItemSlug="analytics-setup-cta-search-funnel"
+		/>
 	);
 }
-
-ActivateAnalyticsCTA.propTypes = {
-	title: PropTypes.string.isRequired,
-};

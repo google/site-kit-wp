@@ -30,7 +30,7 @@ if ( ! function_exists( 'wc_get_price_decimals' ) ) {
 	 * option and runs the `wc_get_price_decimals` filter. A test can set either
 	 * one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return int The store's decimal places, `2` until a test changes them.
 	 */
@@ -48,7 +48,7 @@ if ( ! function_exists( 'wc_format_decimal' ) ) {
 	 * such as `12.3456`. The real function also removes the thousand separator
 	 * and rewrites the decimal separator for the store's locale.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param mixed $number The price, as a float or a string, such as `12.3456` or `'20.00'`.
 	 * @return string The same price, as a string.
@@ -66,7 +66,7 @@ if ( ! function_exists( 'get_woocommerce_currency' ) ) {
 	 * Like the real function, it reads the `woocommerce_currency` option and runs
 	 * the `woocommerce_currency` filter. A test can set either one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return string The store's currency code, `USD` until a test changes it.
 	 */
@@ -85,7 +85,7 @@ if ( ! function_exists( 'is_wc_endpoint_url' ) ) {
 	 * of them here, so this fake reports every page as no endpoint. A test that
 	 * needs one of those pages has to replace this fake.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string|false $endpoint The endpoint to look for, such as `order-received`. This fake ignores it.
 	 * @return bool Always `false`.
@@ -93,5 +93,26 @@ if ( ! function_exists( 'is_wc_endpoint_url' ) ) {
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- The argument matches the WooCommerce signature, and the fake never reads it.
 	function is_wc_endpoint_url( $endpoint = false ) {
 		return false;
+	}
+}
+
+if ( ! function_exists( 'wc_get_page_id' ) ) {
+	/**
+	 * Fakes `wc_get_page_id()` for a test that runs WooCommerce-aware code
+	 * with the WooCommerce plugin inactive.
+	 *
+	 * Like the real function, it reads the `woocommerce_<page>_page_id` option
+	 * and runs the `woocommerce_get_<page>_page_id` filter. A test can set either
+	 * one, such as the shop page through the `woocommerce_shop_page_id` option.
+	 *
+	 * @since 1.191.0
+	 *
+	 * @param string $page The WooCommerce page, such as `shop` or `checkout`.
+	 * @return int The page's ID, or `-1` where the store has no such page.
+	 */
+	function wc_get_page_id( $page ) {
+		$page_id = apply_filters( 'woocommerce_get_' . $page . '_page_id', get_option( 'woocommerce_' . $page . '_page_id' ) );
+
+		return $page_id ? absint( $page_id ) : -1;
 	}
 }

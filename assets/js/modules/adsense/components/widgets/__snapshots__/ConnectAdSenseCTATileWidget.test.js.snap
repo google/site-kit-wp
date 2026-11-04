@@ -20,12 +20,18 @@ exports[`ConnectAdSenseCTATileWidget should render a title when only a single Co
             Top earning pages
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-0"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Pages that generated the most AdSense revenue"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-0"
+            >
+              Pages that generated the most AdSense revenue
+            </span>
           </span>
         </div>
         <div
@@ -38,7 +44,7 @@ exports[`ConnectAdSenseCTATileWidget should render a title when only a single Co
               class="googlesitekit-km-connect-module-cta-tile__content"
             >
               <p
-                class="googlesitekit-km-connect-module-cta-tile__text"
+                class="googlesitekit-typography googlesitekit-km-connect-module-cta-tile__text googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 AdSense is disconnected, metric can’t be displayed
               </p>
@@ -81,7 +87,7 @@ exports[`ConnectAdSenseCTATileWidget should render the Connect AdSense CTA tile 
               class="googlesitekit-km-connect-module-cta-tile__content"
             >
               <p
-                class="googlesitekit-km-connect-module-cta-tile__text"
+                class="googlesitekit-typography googlesitekit-km-connect-module-cta-tile__text googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 AdSense is disconnected, some of your metrics can’t be displayed
               </p>

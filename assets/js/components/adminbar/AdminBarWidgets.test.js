@@ -45,6 +45,11 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import AdminBarWidgets from './AdminBarWidgets';
+import {
+	setupAnalytics4MockReports,
+	setupBaseRegistry,
+	setupSearchConsoleMockReports,
+} from './common-GA4-stories';
 
 const dismissItemEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -124,7 +129,46 @@ describe( 'AdminBarWidgets', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect( getByText( /Set up Google Analytics/ ) ).toBeInTheDocument();
+		expect( getByText( /Set up Analytics/ ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the Set up Analytics CTA in a cell without `.mdc-layout-grid__cell--span-2-phone`', async () => {
+		const { getByText, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		const cta = getByText( /Set up Analytics/ );
+
+		expect( cta.closest( '.mdc-layout-grid__cell' ) ).not.toHaveClass(
+			'mdc-layout-grid__cell--span-2-phone'
+		);
+	} );
+
+	it( 'should render each data block widget in a `.mdc-layout-grid__cell--span-2-phone` cell, with Analytics connected', async () => {
+		setupBaseRegistry( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+
+		const { getByText, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		const dataBlockTitles = [
+			'Total Impressions',
+			'Total Clicks',
+			'Total Users',
+			'Total Sessions',
+		];
+
+		dataBlockTitles.forEach( ( title ) => {
+			expect(
+				getByText( title ).closest( '.mdc-layout-grid__cell' )
+			).toHaveClass( 'mdc-layout-grid__cell--span-2-phone' );
+		} );
 	} );
 
 	it( 'should not render the Activate Analytics CTA when the Analytics module is not available', async () => {
@@ -147,9 +191,7 @@ describe( 'AdminBarWidgets', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect(
-			queryByText( /Set up Google Analytics/ )
-		).not.toBeInTheDocument();
+		expect( queryByText( /Set up Analytics/ ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should render the Admin Bar Widgets for the view only user if the module is shared', async () => {
@@ -193,7 +235,6 @@ describe( 'AdminBarWidgets', () => {
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
 		const { waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -228,7 +269,6 @@ describe( 'AdminBarWidgets', () => {
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
 		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -250,7 +290,6 @@ describe( 'AdminBarWidgets', () => {
 	it( 'should track the `confirm_cta` event when the "Set up Analytics" button is clicked in the Activate Analytics CTA', async () => {
 		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -272,7 +311,6 @@ describe( 'AdminBarWidgets', () => {
 	it( 'should track the `click_learn_more_link` event when the "Learn more" link is clicked in the Activate Analytics CTA', async () => {
 		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -301,7 +339,6 @@ describe( 'AdminBarWidgets', () => {
 			<AdminBarWidgets />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -345,7 +382,6 @@ describe( 'AdminBarWidgets', () => {
 
 		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 		} );
 
 		await waitForRegistry();

@@ -23,6 +23,8 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Typography from '@/js/components/Typography';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 
 export default function WPConsentAPIRequirement( {
 	title,
@@ -31,12 +33,20 @@ export default function WPConsentAPIRequirement( {
 } ) {
 	return (
 		<div className="googlesitekit-settings-consent-mode-requirement">
-			<Typography as="h4" size="large" type="title">
+			<Typography
+				as="h4"
+				className="googlesitekit-settings-consent-mode-requirement__title"
+				size="medium"
+				type="title"
+			>
 				{ title }
 			</Typography>
-			<p className="googlesitekit-settings-consent-mode-requirement__description">
+			<P
+				className="googlesitekit-settings-consent-mode-requirement__description"
+				size={ SIZE_SMALL }
+			>
 				{ description }
-			</p>
+			</P>
 			<footer className="googlesitekit-settings-consent-mode-requirement__footer">
 				{ footer }
 			</footer>

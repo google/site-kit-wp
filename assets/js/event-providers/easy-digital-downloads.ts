@@ -21,7 +21,8 @@
 	}
 
 	const body = jQuery( 'body' );
-	const currency = global._googlesitekit?.easyDigitalDownloadsCurrency;
+	const edddata = global._googlesitekit?.edddata;
+	const currency = edddata?.currency;
 
 	body.on(
 		'edd_cart_item_added',
@@ -45,17 +46,10 @@
 		}
 	);
 
-	if (
-		( global._googlesitekit?.edddata as { purchase?: unknown } | undefined )
-			?.purchase
-	) {
+	if ( edddata?.purchase ) {
 		global._googlesitekit?.gtagEvent?.( 'purchase', {
 			currency,
-			...(
-				global._googlesitekit?.edddata as {
-					purchase: Record< string, unknown >;
-				}
-			 ).purchase,
+			...edddata.purchase,
 			googlesitekit_event_provider: 'easy-digital-downloads',
 		} );
 	}

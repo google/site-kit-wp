@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { type Select, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
@@ -66,9 +67,8 @@ const SettingsStatus: FC< SettingsStatusProps > = ( { slug } ) => {
 	if ( isConnected && hasPolicyViolation ) {
 		return (
 			<Badge
-				// @ts-expect-error - The `Badge` component is not typed yet.
 				label={ __( 'Action needed', 'google-site-kit' ) }
-				className="googlesitekit-badge--warning"
+				variant={ BADGE_VARIANTS.WARNING }
 			/>
 		);
 	}

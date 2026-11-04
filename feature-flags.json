@@ -1,10 +1,13 @@
 [
+	"adsConversionTrackingIntent",
+	"datePicker",
+	"featureDiscoveryHub",
+	"freshData",
 	"googleTagGateway",
 	"gtagUserData",
-	"featureDiscoveryHub",
-	"pdfGeneration",
 	"rrmExpressSetup",
-	"setupFlowRefresh",
-	"setupFlowRefreshPhase4",
-	"siteGoals"
+	"rrmSurveyCTA",
+	"siteGoalsInsights",
+	"trafficInsights",
+	"typicalTraffic"
 ]

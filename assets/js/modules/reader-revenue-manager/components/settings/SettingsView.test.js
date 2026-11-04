@@ -28,6 +28,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	createTestRegistry,
+	createTestRegistryWithFeatures,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
@@ -47,9 +48,13 @@ describe( 'SettingsView', () => {
 		publicationId: publicationID,
 	} = publication;
 
-	beforeEach( () => {
-		registry = createTestRegistry();
-
+	/**
+	 * Gives the registry the connected module, its publications, and the user
+	 * every test starts from.
+	 *
+	 * @since 1.189.0
+	 */
+	function setupRegistry() {
 		const moduleData = [
 			{
 				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -64,6 +69,11 @@ describe( 'SettingsView', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
+	}
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		setupRegistry();
 	} );
 
 	it( 'should render the "SettingsView" component', async () => {
@@ -172,6 +182,101 @@ describe( 'SettingsView', () => {
 		expect(
 			getByText( 'Content type to display CTAs' )
 		).toBeInTheDocument();
+	} );
+
+	describe( 'configured CTAs', () => {
+		const settings = {
+			ownerID: 1,
+			publicationID,
+			publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
+			productID: 'openaccess',
+			snippetMode: 'post_types',
+			postTypes: [ 'post' ],
+			configuredCTAs: {
+				'cta-1': 'newsletter-signup',
+			},
+		};
+
+		beforeEach( () => {
+			registry = createTestRegistryWithFeatures( [ 'rrmExpressSetup' ] );
+			setupRegistry();
+		} );
+
+		it( 'should display the configured CTAs when the `rrmExpressSetup` feature flag is enabled', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( settings );
+
+			const { getByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( getByText( 'CTAs' ) ).toBeInTheDocument();
+			expect(
+				getByText( 'Newsletter sign-up form' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should display the configured CTAs as a comma-separated list', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...settings,
+					configuredCTAs: {
+						'cta-1': 'newsletter-signup',
+						'cta-2': 'newsletter-signup',
+					},
+				} );
+
+			const { getByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'Newsletter sign-up form, Newsletter sign-up form' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not display the CTAs item when there are no configured CTAs', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { ...settings, configuredCTAs: {} } );
+
+			const { queryByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( queryByText( 'CTAs' ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'should not display the CTAs item when the `rrmExpressSetup` feature flag is disabled', async () => {
+			registry = createTestRegistry();
+			setupRegistry();
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( settings );
+
+			const { queryByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect( queryByText( 'CTAs' ) ).not.toBeInTheDocument();
+			expect(
+				queryByText( 'Newsletter sign-up form' )
+			).not.toBeInTheDocument();
+		} );
 	} );
 
 	it( 'should not display setting for post types if snippet placement is set otherwise', async () => {

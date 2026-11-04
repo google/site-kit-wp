@@ -30,12 +30,22 @@ import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecover
 import SetUpEmailReportingOverlayNotification, {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 } from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
+import {
+	ALL_SERVICES_TAB_PATH,
+	WHATS_NEW_TAB_PATH,
+} from '@/js/components/feature-discovery/constants';
+import FeatureDiscoveryCallout, {
+	FEATURE_DISCOVERY_CALLOUT_NOTIFICATION,
+} from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
+import FeatureDiscoverySetupSuccessNotification from '@/js/components/feature-discovery/FeatureDiscoverySetupSuccessNotification';
 import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
 import AuthError from '@/js/components/notifications/AuthError';
 import ConnectMoreServicesNotification from '@/js/components/notifications/ConnectMoreServicesNotification';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+	FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
 } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
+import createFeatureTourNotification from '@/js/components/notifications/FeatureTourNotification';
 import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
 import GatheringDataNotification from '@/js/components/notifications/GatheringDataNotification';
 import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
@@ -52,10 +62,11 @@ import SplashSetupErrorMessageNotification from '@/js/components/setup/SetupUsin
 import WelcomeModal, {
 	WELCOME_MODAL_NOTIFICATION,
 } from '@/js/components/WelcomeModal';
-import { isFeatureEnabled } from '@/js/features';
+import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_FEATURE_DISCOVERY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
@@ -93,11 +104,13 @@ import {
 	requireUnsatisfiedScopesCount,
 	requireViewOnlyContext,
 } from '@/js/googlesitekit/data-requirements';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+	PERMISSION_MANAGE_OPTIONS,
 	PERMISSION_UPDATE_PLUGINS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -117,6 +130,10 @@ import {
 } from '@/js/util/async';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
+	ACTIVATE_ANALYTICS_NOTIFICATION,
+	CONNECT_MORE_SERVICES_NOTIFICATION,
+	FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION,
+	FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION,
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_AREAS,
@@ -125,6 +142,7 @@ import {
 	SITE_KIT_SETUP_SUCCESS_NOTIFICATION,
 } from './constants';
 import { CORE_NOTIFICATIONS } from './datastore/constants';
+import { requireSetupCTAsNotHidden } from './util/setup-cta-visibility';
 
 /**
  * Requires the current page load to be the one directly following the initial
@@ -134,7 +152,7 @@ import { CORE_NOTIFICATIONS } from './datastore/constants';
  * argument plus a module `slug`, so the absence of a `slug` is what makes this
  * check specific to the initial Site Kit setup.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(): Promise<boolean>} Whether this page load follows the initial setup or not.
  */
@@ -152,7 +170,7 @@ function requireInitialSetupSuccess() {
  * dashboard already gates access. In view-only contexts the module must be
  * shared with the current user and must not be in the recovering state.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(): Promise<boolean>} Whether the module's data is viewable or not.
@@ -171,7 +189,7 @@ function requireModuleDataViewable( slug ) {
  * Requires the given module to be connected and its data to be viewable in the
  * current view context.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(): Promise<boolean>} Whether the module's data is available or not.
@@ -183,14 +201,84 @@ function requireModuleDataAvailable( slug ) {
 	);
 }
 
+/**
+ * Requires the hub visit to be a return from a feature setup that has
+ * completed, to the given tab.
+ *
+ * Both tabs' notification areas share a single queue, which only shows its
+ * first notification in the area it belongs to, so each placement is limited
+ * to the tab the user is returned to.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} returnTab Path of the hub tab the notification is shown on.
+ * @return {function(): Promise<boolean>} Whether the user has returned to the tab from a completed feature setup or not.
+ */
+function requireFeatureDiscoverySetupSuccess( returnTab ) {
+	return async ( { select, resolveSelect } ) => {
+		const pendingSetup = select( CORE_FEATURE_DISCOVERY ).getPendingSetup();
+
+		if ( ! pendingSetup || pendingSetup.returnTab !== returnTab ) {
+			return false;
+		}
+
+		const { featureSlug } = pendingSetup;
+		const feature = select( CORE_FEATURE_DISCOVERY ).getFeature(
+			featureSlug
+		);
+
+		if ( ! feature?.successNotice ) {
+			return false;
+		}
+
+		// Wait for the state the feature's connection check may depend on.
+		await resolveSelect( CORE_MODULES ).getModules();
+
+		// A feature's completion can depend on the settings of the module it
+		// sets up, or of a prerequisite module it configures, as for ad
+		// blocking recovery in AdSense.
+		const moduleSlugs = [
+			feature.setup?.moduleSlug,
+			...( feature.prerequisiteModules || [] ),
+		].filter( Boolean );
+
+		for ( const moduleSlug of moduleSlugs ) {
+			const module = select( CORE_MODULES ).getModule( moduleSlug );
+
+			if (
+				module?.storeName &&
+				typeof resolveSelect( module.storeName )?.getSettings ===
+					'function'
+			) {
+				await resolveSelect( module.storeName ).getSettings();
+			}
+		}
+
+		await resolveSelect( CORE_SITE ).getSiteInfo();
+
+		// Confirm the feature is actually set up, so we don't show the notice for an abandoned setup.
+		return (
+			select( CORE_FEATURE_DISCOVERY ).isFeatureConnected(
+				featureSlug
+			) === true
+		);
+	};
+}
+
 export const DEFAULT_NOTIFICATIONS = {
-	'connect-more-services-notification': {
+	[ CONNECT_MORE_SERVICES_NOTIFICATION ]: {
 		Component: ConnectMoreServicesNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			// The notification is only for sites with Analytics connected.
+			// Checking the connection first also keeps
+			// `requireModuleGatheringData()` from requesting a report for an
+			// inactive module, which fails with "Module must be active to
+			// request data."
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			asyncRequire(
 				false,
 				requireModuleGatheringData( MODULES_ANALYTICS_4 )
@@ -201,9 +289,8 @@ export const DEFAULT_NOTIFICATIONS = {
 			),
 			requireIsAuthenticated()
 		),
-		featureFlag: 'setupFlowRefresh',
 	},
-	'activate-analytics-notification': {
+	[ ACTIVATE_ANALYTICS_NOTIFICATION ]: {
 		Component: ActivateAnalyticsNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
@@ -222,7 +309,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			requireIsAuthenticated(),
 			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
 		),
-		featureFlag: 'setupFlowRefresh',
 	},
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
@@ -283,9 +369,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
-			...( isFeatureEnabled( 'setupFlowRefreshPhase4' )
-				? []
-				: [ VIEW_CONTEXT_SPLASH ] ),
 		],
 		checkRequirements: asyncRequireAll(
 			// A temporarily persisted permissions error can opt out of the
@@ -307,7 +390,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: requireSetupError(),
 		isDismissible: false,
-		featureFlag: 'setupFlowRefreshPhase4',
 	},
 	'auth-error': {
 		Component: AuthError,
@@ -459,6 +541,42 @@ export const DEFAULT_NOTIFICATIONS = {
 		),
 		isDismissible: true,
 	},
+	[ FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION ]: {
+		Component: FeatureDiscoverySetupSuccessNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements:
+			requireFeatureDiscoverySetupSuccess( WHATS_NEW_TAB_PATH ),
+		isDismissible: false,
+	},
+	[ FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION ]: {
+		Component: FeatureDiscoverySetupSuccessNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_ALL_SERVICES_TOP,
+		// Use the DEFAULT group so the notification doesn't block the auto-updates banner
+		// from being shown on the "What's new" tab.
+		groupID: NOTIFICATION_GROUPS.DEFAULT,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements: requireFeatureDiscoverySetupSuccess(
+			ALL_SERVICES_TAB_PATH
+		),
+		isDismissible: false,
+	},
+	[ FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG ]: {
+		Component: EnableAutoUpdateBannerNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements: asyncRequireAll(
+			requireCapability( PERMISSION_UPDATE_PLUGINS ),
+			requireCanChangePluginAutoUpdates(),
+			asyncRequire( false, requireSiteKitAutoUpdatesEnabled() )
+		),
+		isDismissible: true,
+	},
 	'gathering-data-notification': {
 		Component: GatheringDataNotification,
 		priority: PRIORITY.INFO,
@@ -602,6 +720,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotHidden(),
 			// Check if email reporting is enabled at site level.
 			requireSiteEmailReportingNotDisabled(),
 			// The user's own email reporting settings need to have loaded
@@ -622,6 +741,22 @@ export const DEFAULT_NOTIFICATIONS = {
 			)
 		),
 	},
+	[ FEATURE_DISCOVERY_CALLOUT_NOTIFICATION ]: {
+		Component: FeatureDiscoveryCallout,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+		],
+		isDismissible: true,
+		featureFlag: 'featureDiscoveryHub',
+		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotHidden(),
+			requireCapability( PERMISSION_MANAGE_OPTIONS )
+		),
+	},
 	[ PDF_INTRODUCTION_OVERLAY_NOTIFICATION ]: {
 		Component: PDFIntroductionOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
@@ -632,7 +767,55 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		featureFlag: 'pdfGeneration',
+		checkRequirements: requireSetupCTAsNotHidden(),
+	},
+	[ sharedKeyMetrics.slug ]: {
+		Component: createFeatureTourNotification( sharedKeyMetrics ),
+		priority: PRIORITY.FEATURE_TOUR,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: sharedKeyMetrics.contexts,
+		// `TourTooltips` records the dismissal itself through `dismissTour`, so
+		// this stays false to avoid writing a second dismissal record.
+		isDismissible: false,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			if ( isInitialWelcomeModalActive() ) {
+				return false;
+			}
+
+			await Promise.all( [
+				resolveSelect( CORE_USER ).getDismissedFeatureTourSlugs(),
+				// These two back `getKeyMetrics()`, which returns before its own
+				// data arrives and would drop the tour for an eligible user.
+				resolveSelect( CORE_USER ).getKeyMetricsSettings(),
+				resolveSelect( CORE_USER ).getUserInputSettings(),
+				resolveSelect( CORE_USER ).getUser(),
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+			] );
+
+			if (
+				select( CORE_USER ).isTourDismissed( sharedKeyMetrics.slug )
+			) {
+				return false;
+			}
+
+			const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+			if ( ! Array.isArray( keyMetrics ) || keyMetrics.length === 0 ) {
+				return false;
+			}
+
+			const keyMetricsSetupCompletedBy =
+				select( CORE_SITE ).getKeyMetricsSetupCompletedBy();
+			const currentUserID = select( CORE_USER ).getID();
+
+			return (
+				Number.isInteger( keyMetricsSetupCompletedBy ) &&
+				keyMetricsSetupCompletedBy > 0 &&
+				Number.isInteger( currentUserID ) &&
+				currentUserID !== keyMetricsSetupCompletedBy
+			);
+		},
 	},
 	[ WELCOME_MODAL_NOTIFICATION ]: {
 		Component: WelcomeModal,
@@ -643,7 +826,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		featureFlag: 'setupFlowRefresh',
 		checkRequirements: asyncRequireAll(
 			requireAccessToFeatureTour(),
 			asyncRequireAny( requireDataGatheringCompleteModalActive(), () =>

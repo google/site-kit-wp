@@ -153,5 +153,64 @@ describe( 'modules/reader-revenue-manager service store', () => {
 				).toEqual( new URL( decodeServiceURL( expectedURL ) ) );
 			} );
 		} );
+
+		describe( 'getPublisherCenterOverviewURL', () => {
+			it( 'should return the service URL that navigates to the content access overview screen of the publication', () => {
+				const publicationID = 'ABCDEFG';
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID,
+					} );
+
+				const publisherCenterOverviewURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublisherCenterOverviewURL();
+
+				const expectedURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getServiceURL( {
+						path: 'reader-revenue-manager/content-access/overview',
+						query: {
+							publication: publicationID,
+						},
+					} );
+
+				expect(
+					new URL( decodeServiceURL( publisherCenterOverviewURL ) )
+				).toEqual( new URL( decodeServiceURL( expectedURL ) ) );
+			} );
+		} );
+
+		describe( 'getCTAEditLinkURL', () => {
+			it( 'should return the service URL that navigates to the CTA edit screen for the given CTA ID', () => {
+				const publicationID = 'ABCDEFG';
+				const ctaID = '123456789';
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID,
+					} );
+
+				const ctaEditLinkURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCTAEditLinkURL( ctaID );
+
+				const expectedURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getServiceURL( {
+						path: `reader-revenue-manager/content-access/ctas/newsletter/${ ctaID }`,
+						query: {
+							publication: publicationID,
+						},
+					} );
+
+				expect( new URL( decodeServiceURL( ctaEditLinkURL ) ) ).toEqual(
+					new URL( decodeServiceURL( expectedURL ) )
+				);
+			} );
+		} );
 	} );
 } );

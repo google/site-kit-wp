@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
@@ -40,6 +45,7 @@ export default function SelectionPanelHeader( {
 					{ title }
 				</Typography>
 				<Link
+					aria-label={ __( 'Close', 'google-site-kit' ) }
 					className="googlesitekit-selection-panel-header__close"
 					onClick={ onCloseClick }
 					linkButton

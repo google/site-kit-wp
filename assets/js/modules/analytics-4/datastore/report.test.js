@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { setUsingCache } from 'googlesitekit-api';
+import { get, setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import { DAY_IN_SECONDS } from '@/js/util';
@@ -36,6 +36,11 @@ import {
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from './constants';
 
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
+jest.mock( 'googlesitekit-api', () =>
+	require( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
+
 describe( 'modules/analytics-4 report', () => {
 	let registry;
 	let waitForRegistry;
@@ -45,6 +50,8 @@ describe( 'modules/analytics-4 report', () => {
 	} );
 
 	beforeEach( () => {
+		get.mockClear();
+
 		registry = createTestRegistry();
 		waitForRegistry = createWaitForRegistry( registry );
 	} );
@@ -183,6 +190,89 @@ describe( 'modules/analytics-4 report', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'passes cacheTTL from the fetch options to the report request', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.fetchGetReport( options, { cacheTTL: 300 } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toStrictEqual( {
+					cacheTTL: 300,
+				} );
+			} );
+
+			it( 'sends no cacheTTL to the report request when the call has no fetch options', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.fetchGetReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toBeUndefined();
+			} );
+
+			it( 'sends one request when two getReport calls differ only in cacheTTL', async () => {
+				// Hold the response open so both calls share one running request.
+				const deferredResolvers = [];
+				fetchMock.getOnce(
+					analytics4ReportRegexp,
+					() =>
+						new Promise( ( resolve ) => {
+							deferredResolvers.push( () =>
+								resolve( {
+									body: fixtures.report,
+									status: 200,
+								} )
+							);
+						} )
+				);
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( options, { cacheTTL: 300 } );
+				while ( deferredResolvers.length < 1 ) {
+					await waitForDefaultTimeouts();
+				}
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( options, { cacheTTL: 600 } );
+				await waitForDefaultTimeouts();
+
+				const firstResolution = untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getReport( options, { cacheTTL: 300 } );
+				const secondResolution = untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getReport( options, { cacheTTL: 600 } );
+
+				deferredResolvers.forEach( ( resolve ) => resolve() );
+
+				await Promise.all( [ firstResolution, secondResolution ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getReport( options, { cacheTTL: 300 } )
+				).toBe(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getReport( options, { cacheTTL: 600 } )
+				);
 			} );
 
 			it( 'forwards the abort signal from a getReport call to the report request', async () => {
@@ -1015,6 +1105,90 @@ describe( 'modules/analytics-4 report', () => {
 					.areReportsLoading( reportOptions1, reportOptions2 );
 
 				expect( result ).toBe( true );
+			} );
+		} );
+
+		describe( 'getReportErrors', () => {
+			const reportOptions1 = {
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				metrics: [ 'sessions' ],
+			};
+
+			const reportOptions2 = {
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				metrics: [ 'pageViews' ],
+			};
+
+			const error1 = {
+				code: 'error_code_1',
+				message: 'Error message 1',
+				data: { status: 500 },
+			};
+
+			const error2 = {
+				code: 'error_code_2',
+				message: 'Error message 2',
+				data: { status: 400 },
+			};
+
+			it( 'should return an empty array when no report options are provided', () => {
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportErrors();
+
+				expect( result ).toEqual( [] );
+			} );
+
+			it( 'should return an empty array when no reports have errors', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions1,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions1 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportErrors( reportOptions1 );
+
+				expect( result ).toEqual( [] );
+			} );
+
+			it( 'should return every error, in the order the report options were given', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error1, 'getReport', [
+						reportOptions1,
+					] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportErrors( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( [ error1, error2 ] );
+			} );
+
+			it( 'should leave out the reports that have no error', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportErrors( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( [ error2 ] );
 			} );
 		} );
 

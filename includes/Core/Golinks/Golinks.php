@@ -80,7 +80,7 @@ class Golinks {
 		$key = sanitize_key( $key );
 
 		if ( isset( $this->handlers[ $key ] ) ) {
-			throw new InvalidArgumentException( sprintf( 'A handler is already registered for golink key "%s".', $key ) );
+			throw new InvalidArgumentException( sprintf( 'A handler is already registered for golink key "%s".', esc_html( $key ) ) );
 		}
 
 		$this->handlers[ $key ] = $handler;

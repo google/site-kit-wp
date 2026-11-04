@@ -30,7 +30,7 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import { ENHANCED_MEASUREMENT_ENABLED } from '@/js/modules/analytics-4/datastore/constants';
-import { countryCodesByTimezone } from './countries-timezones';
+import { countryCodesByTimezone } from '@/js/util/countries-timezones';
 
 /**
  * Gets default values for a new account.

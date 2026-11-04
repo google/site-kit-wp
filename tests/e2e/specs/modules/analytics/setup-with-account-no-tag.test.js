@@ -17,24 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import {
-	activatePlugin,
-	createURL,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 import {
+	activatePlugin,
+	createURL,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
 	step,
 	useRequestInterception,
+	visitAdminPage,
 	wpApiFetch,
 } from '../../../utils';
 
@@ -103,7 +97,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					body: JSON.stringify( {} ),
 				} );
 			} else if (
-				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
+				[
+					'analytics-4/data/sync-custom-dimensions',
+					'analytics-4/data/sync-audiences',
+				].some( ( datapoint ) => request.url().match( datapoint ) )
 			) {
 				request.respond( {
 					status: 200,
@@ -326,7 +323,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await step( 'wait and click configure button', async () => {
 				await page.waitForNetworkIdle();
 				await expect( page ).toClick( 'button', {
-					text: /complete setup/i,
+					text: /^set up$/i,
 				} );
 			} );
 
@@ -338,7 +335,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				await expect( page ).toMatchElement(
 					'.googlesitekit-notice__title',
 					{
-						text: /Congrats on completing the setup for Analytics!/i,
+						text: /Google Analytics was successfully set up/i,
 					}
 				);
 			} );
@@ -357,7 +354,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			);
 
 			await expect( page ).toMatchElement( 'button[disabled]', {
-				text: /complete setup/i,
+				text: /^set up$/i,
 			} );
 
 			// Select Test Account A

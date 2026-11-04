@@ -108,16 +108,21 @@ describe( 'SettingsEdit', () => {
 				{ propertyID, webDataStreamID }
 			);
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( [], { propertyID } );
 
 		muteFetch( analyticsSettingsEndpoint );
 	} );
 
-	it( 'should render AccountCreate with the error notice when accountCreationErrorCode is present and setupFlowRefresh is enabled', async () => {
+	it( 'should render AccountCreate with the error notice when accountCreationErrorCode is present', async () => {
 		global.location.href = SETTINGS_EDIT_URL_WITH_ERROR;
 
 		const { getByText, waitForRegistry } = render( <SettingsEdit />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
@@ -134,28 +139,6 @@ describe( 'SettingsEdit', () => {
 		);
 	} );
 
-	it( 'should render SettingsForm when setupFlowRefresh is disabled even with an error code present', async () => {
-		global.location.href = SETTINGS_EDIT_URL_WITH_ERROR;
-
-		const { getByText, queryByText, waitForRegistry } = render(
-			<SettingsEdit />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_SETTINGS,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( getByText( 'Account' ) ).toBeInTheDocument();
-		expect(
-			queryByText( 'Create your Analytics account' )
-		).not.toBeInTheDocument();
-		expect(
-			queryByText( 'Analytics account creation failed' )
-		).not.toBeInTheDocument();
-	} );
-
 	it( 'should render SettingsForm when there is no error code', async () => {
 		global.location.href = SETTINGS_EDIT_URL;
 
@@ -163,7 +146,6 @@ describe( 'SettingsEdit', () => {
 			<SettingsEdit />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_SETTINGS,
 			}
 		);
@@ -183,7 +165,6 @@ describe( 'SettingsEdit', () => {
 			<SettingsEdit />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_SETTINGS,
 			}
 		);

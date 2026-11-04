@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        1.186.0
+Stable tag:        1.191.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -112,34 +112,45 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.186.0 =
+= 1.191.0 =
 
 **Enhanced**
 
-* Add new "content events" event provider in conversion event tracking to all sites. See [#13281](https://github.com/google/site-kit-wp/issues/13281).
-* Add the initial datastore for the Feature Discovery Hub. See [#13245](https://github.com/google/site-kit-wp/issues/13245).
-* Add the `featureDiscoveryHub` feature flag. See [#13243](https://github.com/google/site-kit-wp/issues/13243).
-* Align PDF export survey triggers with the survey audience segments. See [#13241](https://github.com/google/site-kit-wp/issues/13241).
-* Update PDF report titles in download options panel. See [#13214](https://github.com/google/site-kit-wp/issues/13214).
-* Show the title of Ninja Form's content in Site Goals. See [#13156](https://github.com/google/site-kit-wp/issues/13156).
-* Add the newsletter CTA preview with pop-up and inline views for the Reader Revenue Manager express setup. See [#13026](https://github.com/google/site-kit-wp/issues/13026).
-* Add features menu for mobile and tablet viewports. See [#13013](https://github.com/google/site-kit-wp/issues/13013).
-* Add Email Reporting icon to the header. See [#13010](https://github.com/google/site-kit-wp/issues/13010).
-* Add a dashboard notification prompting users to resume an abandoned Reader Revenue Manager express setup. See [#13009](https://github.com/google/site-kit-wp/issues/13009).
-* Update the Reader Revenue Manager setup CTA banner for the upcoming sign-up form express setup. See [#12946](https://github.com/google/site-kit-wp/issues/12946).
-* Fix the email report section builder leaking the recipient's locale on the success path. See [#12883](https://github.com/google/site-kit-wp/issues/12883).
-* Fix visual issues with email reports when viewed in Outlook 365 on Windows 11. See [#12428](https://github.com/google/site-kit-wp/issues/12428).
-* Fix various issues with email reports UI/layout. See [#12427](https://github.com/google/site-kit-wp/issues/12427).
-* Include site URL from PageSpeed Insights links. Props Solaris-star, giri256. See [#10870](https://github.com/google/site-kit-wp/issues/10870).
-* Update Sign in with Google to allow usage with sites using WooCommerce's "open registration". See [#9942](https://github.com/google/site-kit-wp/issues/9942).
+* Add support for plain permalinks to the "Top posts by visitors" column in the "Recent activity" tab. See [#13894](https://github.com/google/site-kit-wp/issues/13894).
+* Add `landingPage` and `sessionCampaignName` to shared Analytics report dimensions. See [#13843](https://github.com/google/site-kit-wp/issues/13843).
+* Remove the dashboard notification to resume a Reader Revenue Manager newsletter express setup, to be replaced by the generic resumption notification provided by the Feature Discovery Hub. See [#13794](https://github.com/google/site-kit-wp/issues/13794).
+* Improve handling of Sign in with Google on sites with shared email addresses. See [#13792](https://github.com/google/site-kit-wp/issues/13792).
+* Add support for tracking in-progress feature setups in the Feature Discovery Hub. See [#13784](https://github.com/google/site-kit-wp/issues/13784).
+* Add the `DraggableList` component that shows a list of items which can be dragged to reorder them. See [#13725](https://github.com/google/site-kit-wp/issues/13725).
+* Scaffold the Reader Revenue Manager survey CTA's setup flow. See [#13720](https://github.com/google/site-kit-wp/issues/13720).
+* Add a "Latest content" tab listing recently published posts and their early performance. See [#13696](https://github.com/google/site-kit-wp/issues/13696).
+* Add a feedback prompt to the "Recent activity" tab. See [#13693](https://github.com/google/site-kit-wp/issues/13693).
+* Add link to see Recent Posts to Fresh Data UI. See [#13692](https://github.com/google/site-kit-wp/issues/13692).
+* Add a section to the "Recent activity" tab that shows how the most recently published post is performing. See [#13686](https://github.com/google/site-kit-wp/issues/13686).
+* Show the top posts, channels and referrals driving recent traffic in the "Recent activity" tab. See [#13685](https://github.com/google/site-kit-wp/issues/13685).
+* Show an insight notice comparing recent traffic to the site's typical performance. See [#13684](https://github.com/google/site-kit-wp/issues/13684).
+* Show fresh visitor, clicks, and impression totals in the "Recent activity" tab. See [#13683](https://github.com/google/site-kit-wp/issues/13683).
+* Add the new date picker's trigger button and panel, and apply the draft date selection. See [#13611](https://github.com/google/site-kit-wp/issues/13611).
+* Add GA event tracking for the links on the Reader Revenue Manager express setup complete step. See [#13574](https://github.com/google/site-kit-wp/issues/13574).
+* Add GA event tracking for the Reader Revenue Manager express setup flow. See [#13573](https://github.com/google/site-kit-wp/issues/13573).
+* Add GA event tracking for the Reader Revenue Manager setup banner and express setup banner on the dashboard. See [#13571](https://github.com/google/site-kit-wp/issues/13571).
+* Remove the `setupFlowRefreshPhase4` feature flag, now that the refreshed setup flow is available to all users. See [#13530](https://github.com/google/site-kit-wp/issues/13530).
+* Show a progress bar and error notices on the initial Reader Revenue Manager express setup screen. See [#13506](https://github.com/google/site-kit-wp/issues/13506).
+* Enable setting up dashboard sharing, email reports, and downloading the PDF report from the Feature Discovery Hub. See [#13347](https://github.com/google/site-kit-wp/issues/13347).
+* Enable setting up the enhanced measurement feature on the Feature Discovery Hub. See [#13341](https://github.com/google/site-kit-wp/issues/13341).
+* Return the user to the Feature Discovery Hub when initiating setup there for the Analytics, Ads (PAX flow), and ad blocking recovery features. See [#13340](https://github.com/google/site-kit-wp/issues/13340).
+* Show an error notice in the Feature Discovery Hub when a feature’s setup fails. See [#13339](https://github.com/google/site-kit-wp/issues/13339).
+* Flesh out the Description, Requirements and Screenshots tabs for the Feature Discovery Hub's detail panel. See [#13331](https://github.com/google/site-kit-wp/issues/13331).
+* Add category filter chips to the Feature Discovery Hub's "All services and features" tab. See [#13329](https://github.com/google/site-kit-wp/issues/13329).
+* Update the PDF export panel to label the AdSense section "Monetization", matching the dashboard navigation. See [#13318](https://github.com/google/site-kit-wp/issues/13318).
+* Show only one error when Analytics setup fails. See [#13267](https://github.com/google/site-kit-wp/issues/13267).
+* Update the PDF progress message text. See [#13226](https://github.com/google/site-kit-wp/issues/13226).
 
 **Fixed**
 
-* Fix key metrics click target in PDF report. See [#13370](https://github.com/google/site-kit-wp/issues/13370).
-* Prevent WooCommerce conversion tracking event provider from erroring when an order ID doesn't resolve to a `WC_Order`, for example when the order is a refund. Props mikejb37-byte. See [#13270](https://github.com/google/site-kit-wp/issues/13270).
-* Fix issues with long titles in "Top performing keyboards" section in PDF reports. See [#13213](https://github.com/google/site-kit-wp/issues/13213).
-* Fix click targets in PDF report. See [#13212](https://github.com/google/site-kit-wp/issues/13212).
-* Fix bug that could cause the PDF Report generation notice to disappear when the download panel is closed and opened again. Props jibin7jose. See [#13175](https://github.com/google/site-kit-wp/issues/13175).
-* Fix bug that could cause badges to show 0% in some locales. Props Grvilla71, gunjanjaswal. See [#12867](https://github.com/google/site-kit-wp/issues/12867).
+* Prevent unnecessary notifications from appearing after completing a newsletter setup. See [#13885](https://github.com/google/site-kit-wp/issues/13885).
+* Scroll Reader Revenue Manager express setup error notices into view. See [#13874](https://github.com/google/site-kit-wp/issues/13874).
+* Fix an issue displaying CTAs from the previously connected publication in Reader Revenue Manager settings. See [#13872](https://github.com/google/site-kit-wp/issues/13872).
+* Fix the Partial data badge pushing its card's rows out of line with the other card in the Your visitor groups section of the PDF report. See [#13221](https://github.com/google/site-kit-wp/issues/13221).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

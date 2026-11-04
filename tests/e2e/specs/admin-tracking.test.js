@@ -17,21 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import { DATA_LAYER } from '@/js/util/tracking/constants';
 import {
+	activatePlugin,
 	deactivateUtilityPlugins,
 	pageWait,
 	resetSiteKit,
 	setSearchConsoleProperty,
 	setupSiteKit,
 	useRequestInterception,
+	visitAdminPage,
 } from '../utils';
 
 async function toggleOptIn() {

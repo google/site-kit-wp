@@ -26,39 +26,8 @@ import TestRenderer from 'react-test-renderer';
  * Internal dependencies
  */
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
+import { findTextStrings } from '@/js/components/pdf-export/test-utils';
 import PDFMetricTile from './PDFMetricTile';
-
-function findTextStrings( tree: TestRenderer.ReactTestRendererJSON ): string[] {
-	const textOutput: string[] = [];
-
-	function visit(
-		node:
-			| string
-			| number
-			| TestRenderer.ReactTestRendererJSON
-			| null
-			| undefined
-	) {
-		if ( node === null || node === undefined ) {
-			return;
-		}
-		if ( typeof node === 'string' ) {
-			textOutput.push( node );
-			return;
-		}
-		if ( typeof node === 'number' ) {
-			textOutput.push( String( node ) );
-			return;
-		}
-		const children = node.children;
-		if ( Array.isArray( children ) ) {
-			children.forEach( visit );
-		}
-	}
-
-	visit( tree );
-	return textOutput;
-}
 
 function renderTile(
 	props: ComponentProps< typeof PDFMetricTile >

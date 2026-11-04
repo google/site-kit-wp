@@ -33,12 +33,15 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import Link from '@/js/components/Link';
 import ModuleIcon from '@/js/components/ModuleIcon';
 import NewBadge from '@/js/components/NewBadge.js';
 import ModuleSettingsWarning from '@/js/components/notifications/ModuleSettingsWarning.js';
 import Spinner from '@/js/components/Spinner';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -67,7 +70,11 @@ export default function SetupModule( { slug, name, description } ) {
 				slug
 			);
 
-			await setItem( 'module_setup', slug, { ttl: 300 } );
+			await setItem(
+				'module_setup',
+				{ slug, options: {} },
+				{ ttl: 300 }
+			);
 
 			navigateTo( response.moduleReauthURL );
 		} else {
@@ -119,12 +126,13 @@ export default function SetupModule( { slug, name, description } ) {
 					{ EXPERIMENTAL_MODULES.includes( slug ) && (
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
+							variant={ BADGE_VARIANTS.EXPERIMENTAL }
 						/>
 					) }
 					{ BETA_MODULES.includes( slug ) && (
 						<Badge
-							className="googlesitekit-badge--beta"
 							label={ __( 'Beta', 'google-site-kit' ) }
+							variant={ BADGE_VARIANTS.ANNOUNCEMENT }
 						/>
 					) }
 					{ NEW_MODULES.includes( slug ) && (
@@ -132,11 +140,17 @@ export default function SetupModule( { slug, name, description } ) {
 					) }
 				</div>
 			</div>
-			<p className="googlesitekit-settings-connect-module__text">
+			<P
+				className="googlesitekit-settings-connect-module__text"
+				size={ SIZE_MEDIUM }
+			>
 				{ description }
-			</p>
+			</P>
 
-			<p className="googlesitekit-settings-connect-module__cta">
+			<P
+				className="googlesitekit-settings-connect-module__cta"
+				size={ SIZE_MEDIUM }
+			>
 				<Link
 					onClick={ onSetup }
 					href=""
@@ -149,7 +163,7 @@ export default function SetupModule( { slug, name, description } ) {
 						name
 					) }
 				</Link>
-			</p>
+			</P>
 
 			<ModuleSettingsWarning slug={ slug } />
 		</div>

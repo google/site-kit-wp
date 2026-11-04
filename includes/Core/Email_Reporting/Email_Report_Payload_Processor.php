@@ -364,15 +364,18 @@ class Email_Report_Payload_Processor {
 	}
 
 	/**
-	 * Computes the trend percentage between two numeric values.
+	 * Computes the percentage change from the comparison value to the current one.
 	 *
 	 * @since 1.167.0
+	 * @since 1.187.0 Method changed from private to public.
 	 *
 	 * @param mixed $current    Current value.
 	 * @param mixed $comparison Comparison value.
-	 * @return float|null Trend percentage.
+	 * @return float|null Percentage change, such as `7.2` for a rise from `100` to `107.2`. Null when
+	 *                    either value is not a number. Null too when the comparison value is zero,
+	 *                    because a change from zero has no percentage.
 	 */
-	private function compute_trend( $current, $comparison ) {
+	public function compute_trend( $current, $comparison ) {
 		if ( ! is_numeric( $current ) || ! is_numeric( $comparison ) ) {
 			return null;
 		}

@@ -13,16 +13,14 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\ContentPolicyStatus;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\ListPublicationsResponse;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\ContentPolicyStatus;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\ListPublicationsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
 
 /**
  * @group Modules
@@ -30,6 +28,12 @@ use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
  * @group Datapoints
  */
 class Get_PublicationsTest extends TestCase {
+
+	public function set_up() {
+		parent::set_up();
+
+		$this->enable_feature( 'rrmExpressSetup' );
+	}
 
 	public function test_create_request() {
 		$module    = $this->get_module();
@@ -42,75 +46,65 @@ class Get_PublicationsTest extends TestCase {
 			'The Web Content Publisher list publications endpoint should be used.'
 		);
 		$this->assertSame(
-			'filter=site_url = "https://example.com" OR site_url = "http://example.com" OR site_url = "https://www.example.com" OR site_url = "http://www.example.com"',
+			'filter=canonical_domain = "example.com" OR canonical_domain = "www.example.com" OR canonical_domain = "https://example.com" OR canonical_domain = "http://example.com" OR canonical_domain = "https://www.example.com" OR canonical_domain = "http://www.example.com" OR canonical_domain = "https://example.com/" OR canonical_domain = "http://example.com/" OR canonical_domain = "https://www.example.com/" OR canonical_domain = "http://www.example.com/"',
 			urldecode( $request->getUri()->getQuery() ),
-			'The Web Content Publisher request should filter publications for the current site.'
+			'The Web Content Publisher request should filter publications for the current site by canonical domain.'
 		);
-	}
-
-	public function test_get_publications__url() {
-		$module    = $this->get_module();
-		$datapoint = $this->get_datapoint( $module, 'http://test.com' );
-		$request   = $datapoint->create_request( $this->get_data_request() );
-		$result    = $datapoint->parse_response( $this->get_publications_list_response(), $this->get_data_request() );
-
-		$this->assertIsArray( $result[0], 'Publications result should contain only publication arrays for URL-based property.' );
-
-		$publication = $result[0];
-
-		$this->assertEquals( 'Test Property', $publication['displayName'], 'Publication display name should be correct.' );
-		$this->assertEquals( 'ABCDEFGH', $publication['publicationId'], 'Publication ID should be correct.' );
-
-		$expected_filter = 'filter=' . join(
-			' OR ',
-			array_map(
-				function ( $url ) {
-					return sprintf( 'site_url = "%s"', $url );
-				},
-				URL::permute_site_url( 'http://test.com' )
-			)
-		);
-
-		$this->assertEquals( $expected_filter, urldecode( $request->getUri()->getQuery() ), 'URL filter should match expected format.' );
 	}
 
 	public function test_get_publications__domain() {
-		$module    = $this->get_module();
-		$datapoint = $this->get_datapoint( $module, 'sc-domain:example.com' );
+		$datapoint = $this->get_datapoint( $this->get_module(), 'sc-domain:example.com' );
 		$request   = $datapoint->create_request( $this->get_data_request() );
-		$result    = $datapoint->parse_response( $this->get_publications_list_response(), $this->get_data_request() );
 
-		$this->assertIsArray( $result[0], 'Publications result should contain only publication arrays for domain-based property.' );
-
-		$publication = $result[0];
-
-		$this->assertEquals( 'Test Property', $publication['displayName'], 'Publication display name should be correct for domain test.' );
-		$this->assertEquals( 'ABCDEFGH', $publication['publicationId'], 'Publication ID should be correct for domain test.' );
-
-		$expected_filter = 'filter=' . join(
-			' OR ',
-			array_map(
-				function ( $domain ) {
-					return sprintf( 'domain = "%s"', $domain );
-				},
-				URL::permute_site_hosts( 'example.com' )
-			)
+		$this->assertSame(
+			array(
+				'example.com',
+				'www.example.com',
+				'https://example.com',
+				'http://example.com',
+				'https://www.example.com',
+				'http://www.example.com',
+				'https://example.com/',
+				'http://example.com/',
+				'https://www.example.com/',
+				'http://www.example.com/',
+			),
+			$this->get_filter_domains( $request ),
+			'A domain property should be matched by its hostnames and by the URLs derived from them.'
 		);
-
-		$this->assertEquals( $expected_filter, urldecode( $request->getUri()->getQuery() ), 'Domain filter should match expected format.' );
 	}
 
-	public function test_get_publications_synchronizes_settings() {
+	public function test_create_request__url_property_with_trailing_slash() {
+		$datapoint = $this->get_datapoint( $this->get_module(), 'https://example.com/' );
+		$request   = $datapoint->create_request( $this->get_data_request() );
+
+		$this->assertSame(
+			array(
+				'example.com',
+				'www.example.com',
+				'https://example.com/',
+				'http://example.com/',
+				'https://www.example.com/',
+				'http://www.example.com/',
+				'https://example.com',
+				'http://example.com',
+				'https://www.example.com',
+				'http://www.example.com',
+			),
+			$this->get_filter_domains( $request ),
+			'A URL property with a trailing slash should be matched both with and without the trailing slash.'
+		);
+	}
+
+	public function test_parse_response__synchronizes_matching_publication() {
 		$publication_id = 'ABCDEFGH';
 		$module         = $this->get_module();
 
 		$module->get_settings()->register();
 		$module->get_settings()->set(
 			array(
-				'publicationID'              => $publication_id,
-				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
-				'productIDs'                 => array(),
-				'paymentOption'              => '',
+				'organizationID' => 'old-organization',
+				'publicationID'  => $publication_id,
 			)
 		);
 
@@ -121,89 +115,21 @@ class Get_PublicationsTest extends TestCase {
 
 		$this->assertIsArray( $result[0], 'Publication lookup used to synchronize settings should return publication arrays.' );
 
-		$settings = $module->get_settings()->get();
-
-		$this->assertEquals(
-			'ONBOARDING_COMPLETE',
-			$settings['publicationOnboardingState'],
-			'Onboarding state should be updated after fetching publications.'
-		);
-		$this->assertTrue(
-			$settings['publicationOnboardingStateChanged'],
-			'Onboarding state changed flag should be true when state changes.'
-		);
-		$this->assertEquals(
-			array( 'testpubID:basic', 'testpubID:advanced' ),
-			$settings['productIDs'],
-			'Product IDs should be updated after fetching publications.'
-		);
-		$this->assertEquals(
-			'subscriptions',
-			$settings['paymentOption'],
-			'Payment option should be updated after fetching publications.'
-		);
-		$this->assertEquals(
-			'CONTENT_POLICY_VIOLATION_ACTIVE',
-			$settings['contentPolicyState'],
-			'Content policy state should be synchronized after fetching publications.'
-		);
-		$this->assertEquals(
-			'https://example.com/policy-info',
-			$settings['policyInfoLink'],
-			'Policy info link should be synchronized after fetching publications.'
+		$this->assertSame(
+			'organization-1',
+			$module->get_settings()->get()['organizationID'],
+			'The matching publication should be passed to publication synchronization.'
 		);
 	}
 
-	public function test_get_publications_reschedules_cron() {
-		$publication_id = 'ABCDEFGH';
-		$module         = $this->get_module();
-
-		$module->get_settings()->register();
-		$module->get_settings()->set(
-			array(
-				'publicationID'              => $publication_id,
-				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
-			)
-		);
-
-		wp_schedule_single_event(
-			time() + 600,
-			Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION
-		);
-
-		$original_schedule = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
-		$this->assertNotFalse( $original_schedule, 'Cron should be scheduled before fetching publications.' );
-
-		$this->get_datapoint( $module )->parse_response(
-			$this->get_publications_list_response_with_details( $publication_id ),
-			$this->get_data_request()
-		);
-
-		$new_schedule = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
-
-		$this->assertNotFalse( $new_schedule, 'Cron should be rescheduled after fetching publications.' );
-		$this->assertNotEquals(
-			$original_schedule,
-			$new_schedule,
-			'Cron schedule should be updated to a new time.'
-		);
-		$this->assertGreaterThanOrEqual(
-			time() + HOUR_IN_SECONDS - 1,
-			$new_schedule,
-			'Cron should be rescheduled approximately one hour from now.'
-		);
-	}
-
-	public function test_get_publications_does_not_synchronize_for_non_matching_publication() {
+	public function test_parse_response__does_not_synchronize_non_matching_publication() {
 		$module = $this->get_module();
 
 		$module->get_settings()->register();
 		$module->get_settings()->set(
 			array(
-				'publicationID'              => 'NON_EXISTENT',
-				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
-				'productIDs'                 => array(),
-				'paymentOption'              => '',
+				'organizationID' => 'old-organization',
+				'publicationID'  => 'NON_EXISTENT',
 			)
 		);
 
@@ -212,32 +138,15 @@ class Get_PublicationsTest extends TestCase {
 			$this->get_data_request()
 		);
 
-		$settings = $module->get_settings()->get();
-
-		$this->assertEquals(
-			'ONBOARDING_ACTION_REQUIRED',
-			$settings['publicationOnboardingState'],
-			'Onboarding state should remain unchanged for non-matching publication.'
-		);
-		$this->assertEmpty(
-			$settings['productIDs'],
-			'Product IDs should remain empty for non-matching publication.'
-		);
-		$this->assertEmpty(
-			$settings['paymentOption'],
-			'Payment option should remain empty for non-matching publication.'
+		$this->assertSame(
+			'old-organization',
+			$module->get_settings()->get()['organizationID'],
+			'A non-matching publication should not be passed to publication synchronization.'
 		);
 	}
 
 	public function test_parse_response__normalizes_publications() {
 		$module = $this->get_module();
-		$module->get_settings()->register();
-		$module->get_settings()->set(
-			array(
-				'publicationID'              => 'publication-1',
-				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
-			)
-		);
 
 		$content_policy_status = new ContentPolicyStatus();
 		$content_policy_status->setPolicyInfoUrl( 'https://example.com/policy-info' );
@@ -254,7 +163,6 @@ class Get_PublicationsTest extends TestCase {
 		$response->setPublications( array( $publication ) );
 
 		$publications = $this->get_datapoint( $module )->parse_response( $response, $this->get_data_request() );
-		$settings     = $module->get_settings()->get();
 
 		$this->assertIsArray( $publications[0], 'Publication resources should be returned as plain arrays.' );
 		$this->assertSame( 'publication-1', $publications[0]['publicationId'], 'The publication ID should be preserved.' );
@@ -263,10 +171,6 @@ class Get_PublicationsTest extends TestCase {
 		$this->assertTrue( $publications[0]['paymentOptions']['subscriptions'], 'The payment option should be normalized.' );
 		$this->assertSame( 'CONTENT_POLICY_VIOLATION_ACTIVE', $publications[0]['contentPolicyStatus']['contentPolicyState'], 'The content policy state should be normalized.' );
 		$this->assertSame( 'https://example.com/policy-info', $publications[0]['contentPolicyStatus']['policyInfoLink'], 'The policy info URL should be normalized.' );
-		$this->assertSame( 'ONBOARDING_COMPLETE', $settings['publicationOnboardingState'], 'The normalized publication onboarding state should be synchronized.' );
-		$this->assertSame( array( 'publication-1:basic', 'publication-1:advanced' ), $settings['productIDs'], 'The normalized publication products should be synchronized.' );
-		$this->assertSame( 'subscriptions', $settings['paymentOption'], 'The normalized publication payment option should be synchronized.' );
-		$this->assertSame( 'CONTENT_POLICY_VIOLATION_ACTIVE', $settings['contentPolicyState'], 'The normalized publication policy state should be synchronized.' );
 	}
 
 	public function test_parse_response__handles_empty_publications_response() {
@@ -278,22 +182,10 @@ class Get_PublicationsTest extends TestCase {
 		$this->assertSame( array(), $publications, 'An empty API response should return an empty publications array.' );
 	}
 
-	private function get_publications_list_response( $publication_id = 'ABCDEFGH', $onboarding_state = 'PENDING_VERIFICATION' ) {
-		$publication = new Publication();
-
-		$publication->setPublicationId( $publication_id );
-		$publication->setDisplayName( 'Test Property' );
-		$publication->setOnboardingState( $onboarding_state );
-
-		$response = new ListPublicationsResponse();
-		$response->setPublications( array( $publication ) );
-
-		return $response;
-	}
-
 	private function get_publications_list_response_with_details( $publication_id = 'ABCDEFGH' ) {
 		$publication = new Publication();
 		$publication->setPublicationId( $publication_id );
+		$publication->setOrganizationId( 'organization-1' );
 		$publication->setDisplayName( 'Test Property' );
 		$publication->setOnboardingState( 'COMPLETE' );
 		$publication->setProducts( array( 'testpubID:basic', 'testpubID:advanced' ) );
@@ -325,7 +217,7 @@ class Get_PublicationsTest extends TestCase {
 		return new Get_Publications(
 			array(
 				'options'  => $options,
-				'service'  => fn () => new Webcontentpublisher( $client ),
+				'service'  => fn () => new WebContentPublisher( $client ),
 				'settings' => $module->get_settings(),
 			)
 		);
@@ -333,5 +225,21 @@ class Get_PublicationsTest extends TestCase {
 
 	private function get_data_request() {
 		return new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'publications', array() );
+	}
+
+	/**
+	 * Extracts the canonical domains compared in a request's publication filter.
+	 *
+	 * @param mixed $request Request object.
+	 * @return string[] Canonical domains, in the order they appear in the filter.
+	 */
+	private function get_filter_domains( $request ) {
+		preg_match_all(
+			'/canonical_domain = "([^"]*)"/',
+			urldecode( $request->getUri()->getQuery() ),
+			$matches
+		);
+
+		return $matches[1];
 	}
 }

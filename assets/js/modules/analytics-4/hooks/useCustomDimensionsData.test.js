@@ -21,13 +21,14 @@
  */
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { renderHook } from '@tests/js/test-utils';
+import { actHook as act, renderHook } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -267,6 +268,67 @@ describe( 'useCustomDimensionsData', () => {
 
 		expect( reportOptionsFunc ).toHaveBeenCalled();
 		expect( result.current.reportOptions ).toEqual( mockReportOptions );
+	} );
+
+	it( 'should keep returning the same report options object while its values are unchanged', () => {
+		// Builds a new object on every call, like a widget's report options
+		// selector, including a nested array that a shallow comparison misses.
+		function reportOptionsFunc( select ) {
+			return {
+				...select( CORE_USER ).getDateRangeDates(),
+				metrics: [ { name: 'eventCount' } ],
+			};
+		}
+
+		const { result } = renderHook(
+			() =>
+				useCustomDimensionsData( {
+					dimensions: mockDimensions,
+					widgetSlug: mockWidgetSlug,
+					reportOptions: reportOptionsFunc,
+				} ),
+			{ registry }
+		);
+		const initialReportOptions = result.current.reportOptions;
+
+		// Updates the store the selector reads, without changing its result.
+		act( () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [ 'item' ] );
+		} );
+
+		expect( result.current.reportOptions ).toBe( initialReportOptions );
+	} );
+
+	it( 'should return the new report options when their values change', () => {
+		function reportOptionsFunc( select ) {
+			return {
+				...select( CORE_USER ).getDateRangeDates(),
+				metrics: [ { name: 'eventCount' } ],
+			};
+		}
+
+		const { result } = renderHook(
+			() =>
+				useCustomDimensionsData( {
+					dimensions: mockDimensions,
+					widgetSlug: mockWidgetSlug,
+					reportOptions: reportOptionsFunc,
+				} ),
+			{ registry }
+		);
+		const initialReportOptions = result.current.reportOptions;
+
+		act( () => {
+			registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
+		} );
+
+		expect( result.current.reportOptions ).not.toBe( initialReportOptions );
+		expect( result.current.reportOptions ).toEqual( {
+			...registry.select( CORE_USER ).getDateRangeDates(),
+			metrics: [ { name: 'eventCount' } ],
+		} );
 	} );
 
 	it( 'should handle the gathering data state', () => {

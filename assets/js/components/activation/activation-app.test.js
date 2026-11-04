@@ -49,11 +49,10 @@ describe( 'ActivationApp', () => {
 		return registry;
 	}
 
-	it( 'renders auto-updates checkbox when setupFlowRefreshPhase4 is enabled and auto-updates are disabled', () => {
+	it( 'renders auto-updates checkbox when auto-updates are disabled', () => {
 		const registry = setupRegistry( { siteKitAutoUpdatesEnabled: false } );
 
 		const { getByLabelText } = render( <ActivationApp />, {
-			features: [ 'setupFlowRefreshPhase4' ],
 			registry,
 			viewContext: 'activation',
 		} );
@@ -66,8 +65,8 @@ describe( 'ActivationApp', () => {
 		expect( checkbox ).not.toBeChecked();
 	} );
 
-	it( 'does not render auto-updates checkbox when setupFlowRefreshPhase4 is disabled', () => {
-		const registry = setupRegistry( { siteKitAutoUpdatesEnabled: false } );
+	it( 'does not render auto-updates checkbox when auto-updates are already enabled', () => {
+		const registry = setupRegistry( { siteKitAutoUpdatesEnabled: true } );
 
 		const { queryByLabelText } = render( <ActivationApp />, {
 			registry,
@@ -85,7 +84,6 @@ describe( 'ActivationApp', () => {
 		const registry = setupRegistry( { siteKitAutoUpdatesEnabled: false } );
 
 		const { getByLabelText } = render( <ActivationApp />, {
-			features: [ 'setupFlowRefreshPhase4' ],
 			registry,
 			viewContext: 'activation',
 		} );
@@ -108,7 +106,6 @@ describe( 'ActivationApp', () => {
 			.mockResolvedValue();
 
 		const { getByLabelText, getByRole } = render( <ActivationApp />, {
-			features: [ 'setupFlowRefreshPhase4' ],
 			registry,
 			viewContext: 'activation',
 		} );

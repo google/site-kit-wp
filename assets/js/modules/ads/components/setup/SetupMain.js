@@ -40,18 +40,23 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import { MODULE_SLUG_TO_FEATURE_SLUG } from '@/js/components/feature-discovery/constants';
 import Link from '@/js/components/Link';
 import NewBadge from '@/js/components/NewBadge';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPendingSetupReturnURL } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Row } from '@/js/material-components';
 import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
 import PAXEmbeddedApp from '@/js/modules/ads/components/common/PAXEmbeddedApp';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
@@ -176,12 +181,16 @@ export default function SetupMain( { finishSetup } ) {
 		// Encapsulate dependencies to avoid function changing after launch.
 		const { select, resolveSelect } = registry;
 		await resolveSelect( CORE_SITE ).getSiteInfo();
-		const redirectURL = select( CORE_SITE ).getAdminURL(
-			'googlesitekit-dashboard',
-			{
-				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
-			}
+		const pendingSetupURL = await getPendingSetupReturnURL(
+			select,
+			MODULE_SLUG_TO_FEATURE_SLUG[ MODULE_SLUG_ADS ]
 		);
+
+		const redirectURL =
+			pendingSetupURL ||
+			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+			} );
 		await Promise.all( [
 			trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' ),
 			triggerSurvey( 'pax_setup_completed' ),
@@ -194,7 +203,7 @@ export default function SetupMain( { finishSetup } ) {
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
 	);
 	const isWooCommerceActivated = useSelect( ( select ) =>
-		select( MODULES_ADS ).isWooCommerceActivated()
+		select( CORE_SITE ).isWooCommerceActivated()
 	);
 
 	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
@@ -218,6 +227,17 @@ export default function SetupMain( { finishSetup } ) {
 
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
+
+	const closeDialog = useCallback( () => {
+		setOpenDialog( false );
+	}, [ setOpenDialog ] );
+
+	// Choosing Site Kit from the WooCommerce modal closes it and continues with
+	// the Ads account creation flow.
+	const onContinueWithSiteKit = useCallback( () => {
+		closeDialog();
+		createAccount();
+	}, [ closeDialog, createAccount ] );
 
 	const onLaunch = useCallback(
 		( app ) => {
@@ -328,7 +348,10 @@ export default function SetupMain( { finishSetup } ) {
 									) }
 									<NewBadge hasLeftSpacing />
 								</Typography>
-								<p className="instructions">
+								<P
+									className="instructions"
+									size={ SIZE_MEDIUM }
+								>
 									{ createInterpolateElement(
 										__(
 											'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process. <a>Learn more</a>',
@@ -345,7 +368,7 @@ export default function SetupMain( { finishSetup } ) {
 											),
 										}
 									) }
-								</p>
+								</P>
 								<SpinnerButton
 									onClick={ onSetupCallback }
 									disabled={ isNavigatingToOAuthURL }
@@ -376,7 +399,10 @@ export default function SetupMain( { finishSetup } ) {
 										'google-site-kit'
 									) }
 								</Typography>
-								<p className="instructions">
+								<P
+									className="instructions"
+									size={ SIZE_MEDIUM }
+								>
 									{ createInterpolateElement(
 										__(
 											'To track conversions for your Ads campaign, you need to add your Conversion ID to Site Kit. You can always change the Conversion ID later in Site Kit Settings. <a>Learn more</a>',
@@ -394,7 +420,7 @@ export default function SetupMain( { finishSetup } ) {
 											br: <br />,
 										}
 									) }
-								</p>
+								</P>
 								<SetupForm
 									finishSetup={ finishSetup }
 									isNavigatingToOAuthURL={
@@ -407,12 +433,15 @@ export default function SetupMain( { finishSetup } ) {
 			</div>
 			{ openDialog && (
 				<WooCommerceRedirectModal
+					// The modal cannot be dismissed when an Ads account is
+					// already connected via Google for WooCommerce; the user
+					// has to choose one of the two CTAs.
 					onClose={
 						isGoogleForWooCommerceAdsConnected
-							? null
-							: () => setOpenDialog( false )
+							? undefined
+							: closeDialog
 					}
-					onContinue={ createAccount }
+					onContinueWithSiteKit={ onContinueWithSiteKit }
 					dialogActive
 				/>
 			) }

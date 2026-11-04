@@ -22,14 +22,17 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { buildTopTrafficChannelsSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -50,6 +53,8 @@ import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
+	provideUserCapabilities,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
@@ -202,18 +207,40 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
+
+	// Add the chart tile's report for both ecommerce events, once with no tab
+	// filter and once per provider tab.
+	[
+		ENUM_CONVERSION_EVENTS.PURCHASE,
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+	].forEach( ( eventName ) => {
+		[
+			{},
+			...[ 'woocommerce', 'easy-digital-downloads' ].map(
+				( provider ) => ( { [ PROVIDER_DIMENSION ]: provider } )
+			),
+		].forEach( ( breakdownFilter ) => {
+			provideAnalytics4MockReport(
+				registry,
+				getKeyActionChartReportOptions( {
+					dates,
+					eventNames: [ eventName ],
+					goalType: GOAL_TYPES.ECOMMERCE,
+					breakdownFilter,
+				} )
+			);
+		} );
+	} );
 }
 
 function seedGoalDriverReports(
 	registry: WPDataRegistry,
 	eventNames: string[],
 	{
-		goalType = GOAL_TYPES.ECOMMERCE,
 		empty = false,
 		loading = false,
-		breakdownFilter = {},
+		breakdownFilter,
 	}: {
-		goalType?: string;
 		empty?: boolean;
 		loading?: boolean;
 		breakdownFilter?: Record< string, unknown >;
@@ -240,14 +267,16 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-traffic-channels_${ goalType }`,
+		reportID:
+			'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
 	};
 
 	const topTrafficTotalOptions = {
 		...goalDriverDates,
 		dimensionFilters,
 		metrics: [ { name: 'eventCount' } ],
-		reportID: `analytics-4_site-goals_top-traffic-channels-total_${ goalType }`,
+		reportID:
+			'analytics-4_goal-driver-reports_top-traffic-channels-total_ecommerce',
 	};
 
 	const topTrafficRateOptions = {
@@ -258,8 +287,18 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
+		reportID:
+			'analytics-4_goal-driver-reports_top-traffic-channels-rate_ecommerce',
 	};
+
+	const topTrafficSessionsOptions =
+		buildTopTrafficChannelsSessionsReportOptions( {
+			dates: goalDriverDates,
+			primaryEvent: eventNames,
+			breakdownFilter,
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			context: GOAL_TYPES.ECOMMERCE,
+		} );
 
 	const topPagesOptions = {
 		...goalDriverDates,
@@ -269,7 +308,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-pages_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_top-pages_ecommerce',
 	};
 
 	const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -293,7 +332,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_visitor-type_ecommerce',
 	};
 
 	const citiesOptions = {
@@ -310,7 +349,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_cities_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_cities_ecommerce',
 	};
 
 	const countriesOptions = {
@@ -327,7 +366,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_countries_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_countries_ecommerce',
 	};
 
 	const deviceTypeOptions = {
@@ -338,7 +377,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_device-type_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_device-type_ecommerce',
 	};
 
 	if ( loading ) {
@@ -346,6 +385,7 @@ function seedGoalDriverReports(
 			topTrafficChannelsOptions,
 			topTrafficTotalOptions,
 			topTrafficRateOptions,
+			topTrafficSessionsOptions,
 			topPagesOptions,
 			pageTitlesOptions,
 			visitorTypeOptions,
@@ -454,15 +494,15 @@ function seedGoalDriverReports(
 			rows: maybeEmptyRows( empty, [
 				{
 					dimensionValues: [ { value: 'Direct' } ],
-					metricValues: [ { value: '75' }, { value: '1000' } ],
+					metricValues: [ { value: '75' }, { value: '75' } ],
 				},
 				{
 					dimensionValues: [ { value: 'Organic search' } ],
-					metricValues: [ { value: '47' }, { value: '1000' } ],
+					metricValues: [ { value: '47' }, { value: '47' } ],
 				},
 				{
 					dimensionValues: [ { value: 'Organic social' } ],
-					metricValues: [ { value: '12' }, { value: '1000' } ],
+					metricValues: [ { value: '12' }, { value: '12' } ],
 				},
 			] ),
 		},
@@ -471,6 +511,26 @@ function seedGoalDriverReports(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+	// Every channel has 1,000 sessions, so the rates above read 7.5%, 4.7%
+	// and 1.2%.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: maybeEmptyRows(
+				empty,
+				[ 'Direct', 'Organic search', 'Organic social' ].map(
+					( channel ) => ( {
+						dimensionValues: [ { value: channel } ],
+						metricValues: [ { value: '1000' } ],
+					} )
+				)
+			),
+		},
+		{ options: topTrafficSessionsOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ topTrafficSessionsOptions ] );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
@@ -664,6 +724,13 @@ function seedTabbedBreakdown(
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
 
+	// The breakdown also needs plugin conversion tracking to be on for a user
+	// who can manage options.
+	provideUserCapabilities( registry );
+	registry
+		.dispatch( CORE_SITE )
+		.receiveGetConversionTrackingSettings( { enabled: true } );
+
 	// The breakdown custom dimensions exist and are done gathering, so neither
 	// the "enable breakdown" notice nor the gathering badge renders.
 	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
@@ -811,7 +878,10 @@ Ready.args = {
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	},
 };
-Ready.scenario = {};
+Ready.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const GatheringBreakdownData = Template.bind( {} ) as Story;
 GatheringBreakdownData.storyName = 'Gathering Breakdown Data';
@@ -822,6 +892,13 @@ GatheringBreakdownData.args = {
 		provideAnalytics4MockReport( registry, purchaseReportOptions );
 		provideAnalytics4MockReport( registry, engagementReportOptions );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		// The badge needs plugin conversion tracking to be on for a user who
+		// can manage options.
+		provideUserCapabilities( registry );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
@@ -836,6 +913,10 @@ GatheringBreakdownData.args = {
 		} );
 	},
 };
+GatheringBreakdownData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const TabbedBreakdown = Template.bind( {} ) as Story;
 TabbedBreakdown.storyName = 'Tabbed Breakdown';
@@ -845,6 +926,24 @@ TabbedBreakdown.args = {
 		commonSetup( registry );
 		seedTabbedBreakdown( registry );
 	},
+};
+
+export const TabbedBreakdownDeactivatedPlugin = Template.bind( {} ) as Story;
+TabbedBreakdownDeactivatedPlugin.storyName =
+	'Tabbed Breakdown (Deactivated Plugin)';
+TabbedBreakdownDeactivatedPlugin.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
+	setupRegistry: ( registry ) => {
+		commonSetup( registry );
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		seedTabbedBreakdown( registry );
+	},
+};
+TabbedBreakdownDeactivatedPlugin.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
 };
 
 export const TabbedBreakdownPartialData = Template.bind( {} ) as Story;
@@ -869,7 +968,10 @@ TabbedBreakdownOtherSources.args = {
 		seedTabbedBreakdown( registry, { unattributedCount: 12 } );
 	},
 };
-TabbedBreakdownOtherSources.scenario = {};
+TabbedBreakdownOtherSources.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const ReadyAddToCart = Template.bind( {} ) as Story;
 ReadyAddToCart.storyName = 'Ready (Add to Cart)';
@@ -963,6 +1065,17 @@ ZeroData.args = {
 			.receiveGetReport( zeroSessionsReport, {
 				options: engagementReportOptions,
 			} );
+
+		// An empty chart report makes the tile show its zero data message.
+		const chartReportOptions = getKeyActionChartReportOptions( {
+			dates,
+			eventNames: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+			goalType: GOAL_TYPES.ECOMMERCE,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( { rows: [] }, { options: chartReportOptions } );
+
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
 			empty: true,
 		} );

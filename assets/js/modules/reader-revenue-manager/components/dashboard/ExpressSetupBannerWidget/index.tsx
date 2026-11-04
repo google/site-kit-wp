@@ -31,6 +31,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import ExpressSetupBanner from '@/js/modules/reader-revenue-manager/components/dashboard/ExpressSetupBannerWidget/ExpressSetupBanner';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 	RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY,
@@ -46,6 +47,7 @@ export default function ExpressSetupBannerWidget( {
 				expressSetup: 'true',
 				cta: 'newsletter-signup',
 			},
+			additionalScopes: EXPRESS_SETUP_SCOPES,
 		}
 	);
 

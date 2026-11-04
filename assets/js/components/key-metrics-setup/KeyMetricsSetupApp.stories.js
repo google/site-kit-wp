@@ -100,7 +100,6 @@ WithProgress.args = {
 	},
 };
 WithProgress.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
 	query: {
 		showProgress: true,
 	},
@@ -121,7 +120,6 @@ WithProgressWithoutAnalytics.args = {
 	},
 };
 WithProgressWithoutAnalytics.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
 	query: {
 		showProgress: true,
 	},

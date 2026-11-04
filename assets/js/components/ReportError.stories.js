@@ -190,6 +190,34 @@ ReportErrorWithRetryButton.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
+export const ReportErrorWithRateLimit = Template.bind( {} );
+ReportErrorWithRateLimit.storyName = 'ReportError with Rate Limit';
+ReportErrorWithRateLimit.args = {
+	setupRegistry: async ( registry ) => {
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 429,
+				message: 'Quota exceeded for quota metric.',
+				data: {
+					status: 429,
+					reason: 'rateLimitExceeded',
+					cacheTTL: 600,
+				},
+			},
+			'getReport',
+			[
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			]
+		);
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
 export const MultipleReportErrorsWithRetryButton = Template.bind( {} );
 MultipleReportErrorsWithRetryButton.storyName =
 	'Multiple Report Errors with Retry Button';

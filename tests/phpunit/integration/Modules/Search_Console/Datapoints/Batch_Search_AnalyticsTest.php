@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Search_Console\Datapoints;
 use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Storage\Options;
@@ -26,6 +27,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDataRow;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQueryResponse;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Error;
 
@@ -114,15 +116,36 @@ class Batch_Search_AnalyticsTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__adds_every_valid_entry_to_the_batch() {
-		$service   = $this->get_recording_service_double();
-		$datapoint = $this->create_datapoint(
-			function () use ( $service ) {
-				return $service;
+	public function test_create_request__sends_every_valid_entry_in_one_batch_with_the_client_it_is_called_with() {
+		$module_client_bodies = array();
+		$given_client_bodies  = array();
+
+		FakeHttp::fake_google_http_handler(
+			$this->search_console->get_client(),
+			function ( Request $request ) use ( &$module_client_bodies ) {
+				$module_client_bodies[] = (string) $request->getBody();
+
+				return new FulfilledPromise( new Response( 200, array(), '{}' ) );
 			}
 		);
 
-		$request = $datapoint->create_request(
+		// For a reader of a shared dashboard, this is the module owner's client.
+		$given_client = new Google_Site_Kit_Client();
+		FakeHttp::fake_google_http_handler(
+			$given_client,
+			function ( Request $request ) use ( &$given_client_bodies ) {
+				$given_client_bodies[] = (string) $request->getBody();
+
+				return new FulfilledPromise(
+					FakeHttp::create_batch_response(
+						$request,
+						fn( $identifier ) => new Response( 200, array(), wp_json_encode( $this->get_query_response( 'first' === $identifier ? 5 : 7 ) ) )
+					)
+				);
+			}
+		);
+
+		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
 					'requests' => array(
@@ -141,16 +164,19 @@ class Batch_Search_AnalyticsTest extends TestCase {
 			)
 		);
 
-		$this->assertIsCallable( $request, 'A batch of valid requests should return an executable callable.' );
-		$this->assertEquals(
-			array( 'first', 'second' ),
-			array_keys( $service->batch->added ),
-			'Every valid entry should be added to the batch keyed by its identifier, supporting both `identifier` and `id`.'
-		);
-		$this->assertEquals(
-			array( 'executed' => true ),
-			$request(),
-			'Invoking the returned callable should execute the batch rather than short-circuiting to an empty result.'
+		$response = $request( $given_client );
+
+		$this->assertSame( array(), $module_client_bodies, "The batch should not be sent with the client of the module's service." );
+		$this->assertCount( 1, $given_client_bodies, 'The batch should be sent once, with the client the request is called with.' );
+		$this->assertStringContainsString( 'Content-ID: first', $given_client_bodies[0], 'The batch should contain the entry identified by `identifier`.' );
+		$this->assertStringContainsString( 'Content-ID: second', $given_client_bodies[0], 'The batch should contain the entry identified by `id`.' );
+		$this->assertSame(
+			array(
+				'first'  => 5,
+				'second' => 7,
+			),
+			array_map( fn( $query_response ) => $query_response->getRows()[0]->getClicks(), $response ),
+			'The request should return the response to each entry, keyed by its identifier.'
 		);
 	}
 
@@ -246,91 +272,10 @@ class Batch_Search_AnalyticsTest extends TestCase {
 	}
 
 	/**
-	 * Gets a Search Console service double that records everything added to its batch.
-	 *
-	 * @return object Service double exposing the created batch via `$batch`.
-	 */
-	private function get_recording_service_double() {
-		return new class() {
-
-			/**
-			 * Search analytics resource double.
-			 *
-			 * @var object
-			 */
-			public $searchanalytics;
-
-			/**
-			 * Batch double, populated on first use.
-			 *
-			 * @var object
-			 */
-			public $batch;
-
-			/**
-			 * Constructor.
-			 */
-			public function __construct() {
-				$this->searchanalytics = new class() {
-
-					/**
-					 * Returns a stand-in request object.
-					 *
-					 * @param string $property_id Property ID.
-					 * @param mixed  $request     Query request.
-					 * @return object Stand-in request.
-					 */
-					public function query( $property_id, $request ) {
-						return (object) array( 'property_id' => $property_id );
-					}
-				};
-
-				$this->batch = new class() {
-
-					/**
-					 * Requests added to the batch, keyed by identifier.
-					 *
-					 * @var array
-					 */
-					public $added = array();
-
-					/**
-					 * Records an added request.
-					 *
-					 * @param mixed  $request    Request instance.
-					 * @param string $identifier Request identifier.
-					 */
-					public function add( $request, $identifier ) {
-						$this->added[ $identifier ] = $request;
-					}
-
-					/**
-					 * Executes the batch.
-					 *
-					 * @return array Marker result.
-					 */
-					public function execute() {
-						return array( 'executed' => true );
-					}
-				};
-			}
-
-			/**
-			 * Returns the recording batch double.
-			 *
-			 * @return object Batch double.
-			 */
-			public function createBatch() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Mirrors the Google client API.
-				return $this->batch;
-			}
-		};
-	}
-
-	/**
 	 * Gets a Search Console service double whose every search analytics query fails.
 	 *
-	 * Mirrors the surface the datapoint relies on: `createBatch()` for the batch
-	 * container and `searchanalytics->query()` for each individual request.
+	 * Mirrors the surface the datapoint relies on: `searchanalytics->query()` for
+	 * each individual request.
 	 *
 	 * @return object Service double.
 	 */
@@ -359,33 +304,6 @@ class Batch_Search_AnalyticsTest extends TestCase {
 					 */
 					public function query( $property_id, $request ) {
 						throw new Exception( 'Search Console query failed.', 400 );
-					}
-				};
-			}
-
-			/**
-			 * Creates a batch double.
-			 *
-			 * @return object Batch double.
-			 */
-			public function createBatch() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Mirrors the Google client API.
-				return new class() {
-
-					/**
-					 * Collects a request, never called in this scenario.
-					 *
-					 * @param mixed  $request    Request instance.
-					 * @param string $identifier Request identifier.
-					 */
-					public function add( $request, $identifier ) {} // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedFunction,Generic.CodeAnalysis.UnusedFunctionParameter.Found
-
-					/**
-					 * Executes the batch.
-					 *
-					 * @return array Empty result.
-					 */
-					public function execute() {
-						return array();
 					}
 				};
 			}

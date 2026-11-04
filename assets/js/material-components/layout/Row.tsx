@@ -45,4 +45,6 @@ const Row: FC< RowProps > = forwardRef< HTMLDivElement, RowProps >(
 	}
 );
 
+Row.displayName = 'Row';
+
 export default Row;

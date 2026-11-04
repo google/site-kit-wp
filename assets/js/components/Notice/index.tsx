@@ -28,7 +28,13 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { NOTICE_TYPES } from './constants';
+import Typography from '@/js/components/Typography';
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_BODY,
+} from '@/js/components/Typography/constants';
+import { NOTICE_TYPES, NOTICE_VARIANTS } from './constants';
 import CTAButton from './CTAButton';
 import Description from './Description';
 import DismissButton, { DismissButtonProps } from './DismissButton';
@@ -60,6 +66,7 @@ export interface NoticeProps {
 	type?: NOTICE_TYPES;
 	hideIcon?: boolean;
 	children?: ReactNode;
+	variant?: NOTICE_VARIANTS;
 }
 
 const Notice = forwardRef< HTMLDivElement, NoticeProps >(
@@ -74,6 +81,7 @@ const Notice = forwardRef< HTMLDivElement, NoticeProps >(
 			type = NOTICE_TYPES.INFO,
 			children,
 			hideIcon,
+			variant = NOTICE_VARIANTS.DEFAULT,
 		},
 		ref
 	) => {
@@ -83,12 +91,20 @@ const Notice = forwardRef< HTMLDivElement, NoticeProps >(
 		const hasActionContent =
 			!! actionContent || hasDismissAction || hasCTAAction;
 
+		const isSmall = [
+			NOTICE_VARIANTS.SIDE_PANEL,
+			NOTICE_VARIANTS.SMALL,
+		].includes( variant );
+
+		const size = isSmall ? SIZE_SMALL : SIZE_MEDIUM;
+
 		return (
 			<div className="googlesitekit-notice-container" ref={ ref }>
 				<div
 					className={ classnames(
 						'googlesitekit-notice',
 						`googlesitekit-notice--${ type }`,
+						`googlesitekit-notice--${ variant }`,
 						className
 					) }
 					role="status"
@@ -99,13 +115,20 @@ const Notice = forwardRef< HTMLDivElement, NoticeProps >(
 						</div>
 					) }
 
-					<div className="googlesitekit-notice__content">
-						{ title && <Title>{ title }</Title> }
+					<Typography
+						as="div"
+						className="googlesitekit-notice__content"
+						size={ size }
+						type={ TYPE_BODY }
+					>
+						{ title && <Title size={ size }>{ title }</Title> }
 						{ description && (
-							<Description>{ description }</Description>
+							<Description size={ size }>
+								{ description }
+							</Description>
 						) }
 						{ children }
-					</div>
+					</Typography>
 
 					{ hasActionContent && (
 						<div className="googlesitekit-notice__action">

@@ -39,8 +39,9 @@ import AudienceTileError from '.';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
+const { simulateAllIntersections } = mockIntersectionObserver();
+
 describe( 'AudienceTileError', () => {
-	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 
 	const audienceSlug = 'new-visitors';
@@ -169,7 +170,7 @@ describe( 'AudienceTileError', () => {
 
 		// Simulate the CTA becoming visible.
 		act( () => {
-			simulateAllIntersections();
+			simulateAllIntersections( true );
 		} );
 
 		await waitForRegistry();
@@ -235,7 +236,7 @@ describe( 'AudienceTileError', () => {
 
 		// Simulate the CTA becoming visible.
 		act( () => {
-			simulateAllIntersections();
+			simulateAllIntersections( true );
 		} );
 
 		await waitForRegistry();

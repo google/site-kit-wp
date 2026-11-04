@@ -163,32 +163,6 @@ export const selectors = {
 	getPluginsData: getModuleDataProperty( 'plugins' ),
 
 	/**
-	 * Determines whether the WooCommerce plugin is installed or not.
-	 *
-	 * @since 1.148.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} True if the plugin is installed, false if it is not, and undefined if data is being resolved.
-	 */
-	isWooCommerceInstalled: getPluginStatusProperty(
-		'installed',
-		PLUGINS.WOOCOMMERCE
-	),
-
-	/**
-	 * Determines whether the WooCommerce plugin is activated or not.
-	 *
-	 * @since 1.148.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} True if the plugin is activated, false if it is not, and undefined if data is being resolved.
-	 */
-	isWooCommerceActivated: getPluginStatusProperty(
-		'active',
-		PLUGINS.WOOCOMMERCE
-	),
-
-	/**
 	 * Determines whether the Google for WooCommerce plugin is installed or not.
 	 *
 	 * @since 1.148.0

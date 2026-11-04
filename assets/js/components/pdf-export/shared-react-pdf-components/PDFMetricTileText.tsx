@@ -79,7 +79,7 @@ export interface PDFMetricTileTextProps {
  * `PDFNumericMetricTile`, but its value is a text label (e.g. a traffic source
  * name) rather than a large formatted number.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} props            Component props.
  * @param {string} props.title      Title.

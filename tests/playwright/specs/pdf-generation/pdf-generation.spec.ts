@@ -27,7 +27,6 @@ import {
 	asUser,
 	withAudiences,
 	withConnectedModules,
-	withFeatureFlags,
 	withFixtures,
 	withKeyMetrics,
 	withPlugins,
@@ -36,7 +35,6 @@ import {
 import { PDFGenerationPage } from './pdf-generation-page';
 
 const user = asUser( 'admin' );
-const featureFlags = withFeatureFlags( 'pdfGeneration' );
 const plugins = withPlugins( 'proxy-auth.php' );
 
 // Connect AdSense so the export includes the Monetization section. The admin's
@@ -68,7 +66,7 @@ const adsenseConnected = withConnectedModules( adsenseModule );
 
 test.describe(
 	'PDF Generation',
-	{ annotation: [ user, featureFlags, plugins, adsenseConnected ] },
+	{ annotation: [ user, plugins, adsenseConnected ] },
 	() => {
 		// Generating the PDF (rendering charts to images, then assembling the
 		// document) is heavy, and on slower CI runners it pushes past the default
@@ -291,7 +289,6 @@ test.describe(
 	{
 		annotation: [
 			user,
-			featureFlags,
 			plugins,
 			withConnectedModules( adsenseModule, analytics4Module ),
 		],
@@ -424,15 +421,19 @@ test.describe(
 // credentials (no `proxy-auth.php`), so the dashboard is view-only. Search
 // Console is connected (owned by the admin, ID 1) and shared with the editor
 // role, while PageSpeed stays unshared. The editor has the shared-dashboard
-// splash pre-dismissed so it lands on the view-only dashboard directly.
+// splash pre-dismissed so it lands on the view-only dashboard directly, and the
+// introduction overlays pre-dismissed so they do not cover the features menu.
 test.describe(
 	'PDF Generation (view-only)',
 	{
 		annotation: [
 			asUser( 'editor', {
-				dismissedItems: [ 'shared_dashboard_splash' ],
+				dismissedItems: [
+					'shared_dashboard_splash',
+					'email_reports_setup_overlay_notification',
+					'pdf_introduction_overlay_notification',
+				],
 			} ),
-			featureFlags,
 			withPlugins( 'proxy-credentials.php' ),
 			withConnectedModules( {
 				slug: 'search-console',

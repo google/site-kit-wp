@@ -97,7 +97,7 @@ function getQueryLinkMap(
  * report document skips this widget.
  *
  * @since 1.183.0
- * @since n.e.x.t Leaves out the query links on a view-only dashboard.
+ * @since 1.186.0 Leaves out the query links on a view-only dashboard.
  *
  * @param {Object}      params          Loader parameters.
  * @param {Object}      params.registry WordPress data registry.

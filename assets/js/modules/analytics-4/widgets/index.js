@@ -25,10 +25,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
-import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_LEADS_BY_COUNTRIES,
+	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -37,6 +41,12 @@ import {
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_SALES_BY_COUNTRIES,
+	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -46,12 +56,17 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+	KM_ANALYTICS_TOTAL_SALES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 } from '@/js/googlesitekit/datastore/user/constants';
@@ -76,11 +91,7 @@ import {
 import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
 import { AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import getAudienceTilesPDFData from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
-import {
-	DashboardAllTrafficWidgetGA4,
-	DashboardOverallPageMetricsWidgetGA4,
-} from '@/js/modules/analytics-4/components/dashboard';
-import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
+import { DashboardOverallPageMetricsWidgetGA4 } from '@/js/modules/analytics-4/components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import getModulePopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
@@ -88,8 +99,18 @@ import {
 	LeadGenerationPerformanceWidget,
 	OnlineStorePerformanceWidget,
 } from '@/js/modules/analytics-4/components/site-goals/widgets';
+import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getLeadGenerationPerformancePDFData';
+import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
+import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import getTrafficOverviewPDFData from '@/js/modules/analytics-4/components/traffic-overview/pdf/getPDFData';
+import { TrafficOverviewWidget } from '@/js/modules/analytics-4/components/traffic-overview/widgets';
 import {
 	EngagedTrafficSourceWidget,
+	FormCompletionEngagementRateWidget,
+	FormCompletionRateWidget,
+	LeadsByCountriesWidget,
+	LeadsByDeviceTypeWidget,
+	LeadsByVisitorTypeWidget,
 	LeastEngagingPagesWidget,
 	MostEngagingPagesWidget,
 	NewVisitorsWidget,
@@ -98,6 +119,12 @@ import {
 	PopularContentWidget,
 	PopularProductsWidget,
 	ReturningVisitorsWidget,
+	SalesByCountriesWidget,
+	SalesByVisitorTypeWidget,
+	SalesEngagementRateWidget,
+	SalesRateWidget,
+	TopAuthorsDrivingLeadsWidget,
+	TopAuthorsDrivingSalesWidget,
 	TopCategoriesWidget,
 	TopCitiesDrivingAddToCartWidget,
 	TopCitiesDrivingLeadsWidget,
@@ -107,12 +134,17 @@ import {
 	TopCountriesWidget,
 	TopDeviceDrivingPurchasesWidget,
 	TopPagesDrivingLeadsWidget,
+	TopPagesDrivingSalesWidget,
 	TopRecentTrendingPagesWidget,
 	TopReturningVisitorPages,
+	TopTrafficChannelsDrivingFormCompletionRateWidget,
+	TopTrafficChannelsDrivingSalesRateWidget,
 	TopTrafficSourceDrivingAddToCartWidget,
 	TopTrafficSourceDrivingLeadsWidget,
 	TopTrafficSourceDrivingPurchasesWidget,
 	TopTrafficSourceWidget,
+	TotalFormCompletionsWidget,
+	TotalSalesWidget,
 	VisitLengthWidget,
 	VisitsPerVisitorWidget,
 } from '@/js/modules/analytics-4/components/widgets';
@@ -130,10 +162,13 @@ const PDFYourVisitorGroups = lazyWithPreload( () =>
 	)
 );
 
-const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
+/**
+ * Lazy-loaded PDF component for the Traffic Overview widget.
+ */
+const TrafficOverviewPDF = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
-		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
+		'@/js/modules/analytics-4/components/traffic-overview/pdf/indexPDF'
 	)
 );
 
@@ -147,19 +182,64 @@ const ModulePopularPagesWidgetGA4PDF = lazyWithPreload( () =>
 	)
 );
 
+/**
+ * Lazy-loaded PDF component for the Online store performance widget.
+ */
+const OnlineStorePerformanceWidgetPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/site-goals/widgets/OnlineStorePerformanceWidgetPDF'
+	)
+);
+
+/**
+ * Lazy-loaded PDF component for the Lead generation performance widget.
+ */
+const LeadGenerationPerformanceWidgetPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/site-goals/widgets/LeadGenerationPerformanceWidgetPDF'
+	)
+);
+
+/**
+ * Builds the `isActive` condition for a Site Goals widget.
+ *
+ * The dashboard and the PDF export decide visibility separately: the dashboard
+ * reads a widget's own `isActive`, while `isActivePDFWidget()` reads only the
+ * `isActive` inside that widget's `pdf` block. Setting one alone would let the
+ * export offer a section for a widget the dashboard is not showing, so both are
+ * given the condition this returns.
+ *
+ * The condition compares against `true` because `isSiteGoalsWidgetRenderable()`
+ * returns `undefined` until the Site Goals settings and the detected events
+ * have loaded.
+ *
+ * @since 1.188.0
+ *
+ * @param {string} goalType The widget's goal type, one of `GOAL_TYPES`.
+ * @return {Function} Condition that takes the registry `select` and returns whether the widget renders.
+ */
+function isSiteGoalsWidgetActive( goalType ) {
+	return ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+			goalType
+		) === true;
+}
+
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
 	widgets.registerWidget(
-		'analyticsAllTrafficGA4',
+		TRAFFIC_OVERVIEW_WIDGET_SLUG,
 		{
-			Component: DashboardAllTrafficWidgetGA4,
+			Component: TrafficOverviewWidget,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			pdf: {
-				Component: DashboardAllTrafficWidgetGA4PDF,
-				getData: getAllTrafficPDFData,
+				Component: TrafficOverviewPDF,
+				getData: getTrafficOverviewPDFData,
 				label: __( 'Site traffic over time', 'google-site-kit' ),
 			},
 		},
@@ -169,30 +249,28 @@ export function registerWidgets( widgets ) {
 		]
 	);
 
-	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
-		widgets.registerWidget(
-			'analyticsAudienceSegmentationBackNotice',
-			{
-				Component: AudienceSegmentationBackNotice,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 0,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				isActive: ( select ) => {
-					const isWidgetHidden =
-						select(
-							CORE_USER
-						).getRawAudienceSegmentationWidgetHidden();
-					const isDismissed = select( CORE_USER ).isItemDismissed(
-						AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG
-					);
+	widgets.registerWidget(
+		'analyticsAudienceSegmentationBackNotice',
+		{
+			Component: AudienceSegmentationBackNotice,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 0,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) => {
+				const isWidgetHidden =
+					select(
+						CORE_USER
+					).getRawAudienceSegmentationWidgetHidden();
+				const isDismissed = select( CORE_USER ).isItemDismissed(
+					AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG
+				);
 
-					return isWidgetHidden === true && isDismissed === false;
-				},
+				return isWidgetHidden === true && isDismissed === false;
 			},
-			[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
-		);
-	}
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
 
 	widgets.registerWidget(
 		'analyticsAudienceTiles',
@@ -293,10 +371,6 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
-				if ( ! isFeatureEnabled( 'setupFlowRefresh' ) ) {
-					return false;
-				}
-
 				const hasAccessToShareableModule = select(
 					CORE_USER
 				).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
@@ -360,13 +434,9 @@ export function registerWidgets( widgets ) {
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
-				const isAudienceSegmentationWidgetHidden =
-					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
 				return (
-					configuredAudiences?.length > 0 &&
-					isAudienceSegmentationWidgetHidden === false &&
-					! isAnalyticsConnected
+					configuredAudiences?.length > 0 && ! isAnalyticsConnected
 				);
 			},
 		},
@@ -817,6 +887,87 @@ export function registerWidgets( widgets ) {
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 
+	[
+		{
+			slug: KM_ANALYTICS_TOTAL_SALES,
+			Component: TotalSalesWidget,
+		},
+		{
+			slug: KM_ANALYTICS_SALES_RATE,
+			Component: SalesRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+			Component: SalesEngagementRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
+			Component: TopTrafficChannelsDrivingSalesRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+			Component: SalesByVisitorTypeWidget,
+		},
+		{
+			slug: KM_ANALYTICS_SALES_BY_COUNTRIES,
+			Component: SalesByCountriesWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
+			Component: TopAuthorsDrivingSalesWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+			Component: TopPagesDrivingSalesWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+			Component: TotalFormCompletionsWidget,
+		},
+		{
+			slug: KM_ANALYTICS_FORM_COMPLETION_RATE,
+			Component: FormCompletionRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+			Component: FormCompletionEngagementRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
+			Component: TopTrafficChannelsDrivingFormCompletionRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
+			Component: LeadsByVisitorTypeWidget,
+		},
+		{
+			slug: KM_ANALYTICS_LEADS_BY_COUNTRIES,
+			Component: LeadsByCountriesWidget,
+		},
+		{
+			slug: KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+			Component: LeadsByDeviceTypeWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
+			Component: TopAuthorsDrivingLeadsWidget,
+		},
+	].forEach( ( { slug, Component } ) => {
+		widgets.registerWidget(
+			slug,
+			{
+				Component,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				isActive: ( select ) =>
+					select( CORE_USER ).isKeyMetricActive( slug ),
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	} );
+
 	widgets.registerWidget(
 		KM_ANALYTICS_TOP_COUNTRIES,
 		{
@@ -844,44 +995,42 @@ export function registerWidgets( widgets ) {
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 
-	/*
-	 * Site Goals widgets.
-	 *
-	 * Not registering these widgets when the feature flag is disabled will
-	 * ensure that the new Widget Area and Widget Context for Site Goals, including
-	 * the Navigation chip, will not be rendered when the feature is disabled.
-	 */
-	if ( isFeatureEnabled( 'siteGoals' ) ) {
-		widgets.registerWidget(
-			'analyticsOnlineStorePerformance',
-			{
-				Component: OnlineStorePerformanceWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				isActive: ( select ) =>
-					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-						GOAL_TYPES.ECOMMERCE
-					) === true,
+	// Site Goals widgets.
+	widgets.registerWidget(
+		'analyticsOnlineStorePerformance',
+		{
+			Component: OnlineStorePerformanceWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: isSiteGoalsWidgetActive( GOAL_TYPES.ECOMMERCE ),
+			pdf: {
+				Component: OnlineStorePerformanceWidgetPDF,
+				getData: getOnlineStorePerformancePDFData,
+				label: __( 'Online store performance', 'google-site-kit' ),
+				isActive: isSiteGoalsWidgetActive( GOAL_TYPES.ECOMMERCE ),
 			},
-			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
-		);
+		},
+		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
+	);
 
-		widgets.registerWidget(
-			'analyticsLeadGenerationPerformance',
-			{
-				Component: LeadGenerationPerformanceWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 2,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				isActive: ( select ) =>
-					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-						GOAL_TYPES.LEAD
-					) === true,
+	widgets.registerWidget(
+		'analyticsLeadGenerationPerformance',
+		{
+			Component: LeadGenerationPerformanceWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: isSiteGoalsWidgetActive( GOAL_TYPES.LEAD ),
+			pdf: {
+				Component: LeadGenerationPerformanceWidgetPDF,
+				getData: getLeadGenerationPerformancePDFData,
+				label: __( 'Lead generation performance', 'google-site-kit' ),
+				isActive: isSiteGoalsWidgetActive( GOAL_TYPES.LEAD ),
 			},
-			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
-		);
-	}
+		},
+		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
+	);
 }

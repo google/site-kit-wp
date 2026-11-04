@@ -22,6 +22,33 @@
 import { __ } from '@wordpress/i18n';
 
 /**
+ * Internal dependencies
+ */
+import { CTA_TYPE_LABELS } from '@/js/modules/reader-revenue-manager/constants';
+
+/**
+ * Gets the configured CTAs as a list of CTA IDs, types, and display labels.
+ *
+ * @since 1.188.0
+ *
+ * @param {Object} configuredCTAs The `configuredCTAs` setting value, keyed by CTA ID with the CTA type as the value.
+ * @return {Array.<Object>} List of objects with `ctaID`, `ctaType`, and `label` properties.
+ */
+export function getConfiguredCTAList( configuredCTAs ) {
+	if ( ! configuredCTAs ) {
+		return [];
+	}
+
+	return Object.entries( configuredCTAs )
+		.filter( ( [ , ctaType ] ) => !! CTA_TYPE_LABELS[ ctaType ] )
+		.map( ( [ ctaID, ctaType ] ) => ( {
+			ctaID,
+			ctaType,
+			label: CTA_TYPE_LABELS[ ctaType ],
+		} ) );
+}
+
+/**
  * Gets the formatted list of post types based on the `postTypes` slugs
  * stored in settings.
  *

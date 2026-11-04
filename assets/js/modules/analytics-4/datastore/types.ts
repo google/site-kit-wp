@@ -28,7 +28,20 @@ export type ReportOptions = {
 	dimensions?: Array< string | { name: string } >;
 	dimensionFilters?: Record<
 		string,
-		string | string[] | { filterType?: string; value?: string | string[] }
+		| string
+		| string[]
+		| {
+				filterType?: string;
+				matchType?:
+					| 'EXACT'
+					| 'BEGINS_WITH'
+					| 'ENDS_WITH'
+					| 'CONTAINS'
+					| 'FULL_REGEXP'
+					| 'PARTIAL_REGEXP';
+				value?: string | string[];
+				notExpression?: boolean;
+		  }
 	>;
 	metricFilters?: Record<
 		string,
@@ -86,6 +99,7 @@ export type MetricHeader = {
  * A complete Analytics 4 report response.
  *
  * @since 1.179.0
+ * @since 1.191.0 Added the `timeZone` of the report `metadata`.
  */
 export type Report = {
 	rowCount?: number;
@@ -97,5 +111,6 @@ export type Report = {
 	minimums?: ReportRow[];
 	metadata?: {
 		currencyCode?: string;
+		timeZone?: string;
 	};
 };

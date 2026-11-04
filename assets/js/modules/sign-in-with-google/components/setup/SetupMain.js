@@ -26,6 +26,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import HTTPSWarning from '@/js/components/notifications/HTTPSWarning';
 import Typography from '@/js/components/Typography';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -55,8 +56,8 @@ export default function SetupMain() {
 						'google-site-kit'
 					) }
 					<Badge
-						className="googlesitekit-badge--beta"
 						label={ __( 'Beta', 'google-site-kit' ) }
+						variant={ BADGE_VARIANTS.ANNOUNCEMENT }
 					/>
 				</Typography>
 			</div>

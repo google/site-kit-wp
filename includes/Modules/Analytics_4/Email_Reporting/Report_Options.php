@@ -13,6 +13,7 @@
 namespace Google\Site_Kit\Modules\Analytics_4\Email_Reporting;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options as Base_Report_Options;
 use Google\Site_Kit\Core\Storage\Options as Core_Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -20,6 +21,7 @@ use Google\Site_Kit\Core\User\Audience_Settings as User_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals\Report_Options as Site_Goals_Report_Options;
 
 /**
  * Builds Analytics 4 report option payloads for email reporting.
@@ -29,6 +31,16 @@ use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reportin
  * @ignore
  */
 class Report_Options extends Base_Report_Options {
+
+	/**
+	 * Days a Site Goals discovery report covers, ending on the report period's last day.
+	 *
+	 * The dashboard names a Site Goals widget's tabs over 90 days too, so the report period
+	 * never adds or removes a group.
+	 *
+	 * @since 1.188.0
+	 */
+	const SITE_GOALS_DISCOVERY_DAYS = 90;
 
 	/**
 	 * Cached custom dimension availability flags.
@@ -41,10 +53,18 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Conversion event names Analytics has detected on the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var array
 	 */
 	private $detected_events = array();
+
+	/**
+	 * Site Goals widget types in the site-wide `activeWidgets` setting.
+	 *
+	 * @since 1.188.0
+	 * @var array
+	 */
+	private $active_site_goals_widgets = array();
 
 	/**
 	 * Whether audience segmentation is enabled.
@@ -103,7 +123,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Sets the conversion event names Analytics has detected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $detected_events Detected event names, such as `purchase` or `submit_lead_form`.
 	 */
@@ -114,35 +134,48 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Whether Analytics has detected any ecommerce event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
+	 * @since n.e.x.t Checks the events with `Site_Goals\Report_Options::has_detected_events()`.
 	 *
 	 * @return bool True when the detected events hold an ecommerce event, false otherwise.
 	 */
 	public function has_ecommerce_events() {
-		return ! empty( array_intersect( Conversion_Reporting_Events_Sync::ECOMMERCE_EVENT_NAMES, $this->detected_events ) );
+		return $this->get_site_goals_report_options()->has_detected_events( Conversion_Events_Provider::CATEGORY_ECOMMERCE );
 	}
 
 	/**
 	 * Whether Analytics has detected any lead generation event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
+	 * @since n.e.x.t Checks the events with `Site_Goals\Report_Options::has_detected_events()`.
 	 *
 	 * @return bool True when the detected events hold a lead event, false otherwise.
 	 */
 	public function has_lead_events() {
-		return ! empty( $this->get_detected_lead_events() );
+		return $this->get_site_goals_report_options()->has_detected_events( Conversion_Events_Provider::CATEGORY_LEAD );
 	}
 
 	/**
-	 * Gets the lead generation events among the detected events.
+	 * Sets the Site Goals widget types from the site-wide `activeWidgets` setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
-	 * @return array Detected lead event names, in the order
-	 *               `Conversion_Reporting_Events_Sync::LEAD_EVENT_NAMES` lists them.
+	 * @param array $active_widgets Widget types, such as `ecommerce` or `lead`.
 	 */
-	private function get_detected_lead_events() {
-		return array_values( array_intersect( Conversion_Reporting_Events_Sync::LEAD_EVENT_NAMES, $this->detected_events ) );
+	public function set_active_site_goals_widgets( array $active_widgets ) {
+		$this->active_site_goals_widgets = $active_widgets;
+	}
+
+	/**
+	 * Checks whether the site-wide `activeWidgets` setting lists a Site Goals widget type.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @param string $widget_type Widget type, `ecommerce` or `lead`.
+	 * @return bool True when the setting lists the widget type, false otherwise.
+	 */
+	public function is_site_goals_widget_active( $widget_type ) {
+		return in_array( $widget_type, $this->active_site_goals_widgets, true );
 	}
 
 	/**
@@ -419,7 +452,8 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * The options count `purchase` when the detected events hold it, and `add_to_cart` otherwise.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
+	 * @since n.e.x.t Builds the options with `Site_Goals\Report_Options::get_key_action_options()`.
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the count by, such as
 	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
@@ -427,15 +461,17 @@ class Report_Options extends Base_Report_Options {
 	 * @return array Report request options array.
 	 */
 	public function get_online_store_primary_options( $custom_dimension = '' ) {
-		$primary_store_event = in_array( 'purchase', $this->detected_events, true ) ? 'purchase' : 'add_to_cart';
-
-		return $this->build_event_count_options( $primary_store_event, $custom_dimension );
+		return $this->get_site_goals_report_options()->get_key_action_options(
+			Conversion_Events_Provider::CATEGORY_ECOMMERCE,
+			$custom_dimension
+		);
 	}
 
 	/**
 	 * Gets report options for the lead generation key action count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
+	 * @since n.e.x.t Builds the options with `Site_Goals\Report_Options::get_key_action_options()`.
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the count by, such as
 	 *                                 `googlesitekit_form_id`. Default empty, which returns one row per
@@ -443,13 +479,84 @@ class Report_Options extends Base_Report_Options {
 	 * @return array Report request options array.
 	 */
 	public function get_lead_primary_options( $custom_dimension = '' ) {
-		return $this->build_event_count_options(
-			array(
-				'filterType' => 'inListFilter',
-				'value'      => $this->get_detected_lead_events(),
-			),
+		return $this->get_site_goals_report_options()->get_key_action_options(
+			Conversion_Events_Provider::CATEGORY_LEAD,
 			$custom_dimension
 		);
+	}
+
+	/**
+	 * Gets report options that name the groups the online store card shows.
+	 *
+	 * The card counts one store event, but a plugin belongs on it when it sends either
+	 * store event.
+	 *
+	 * @since 1.188.0
+	 * @since n.e.x.t Counts the events with `Site_Goals\Report_Options::get_event_count_options()`.
+	 *
+	 * @param string $custom_dimension Optional. Custom dimension slug the card groups by, such as
+	 *                                 `googlesitekit_event_provider`. Default empty, which returns
+	 *                                 one row per store event for the whole site.
+	 * @return array Report request options array.
+	 */
+	public function get_online_store_discovery_options( $custom_dimension = '' ) {
+		return $this->with_discovery_range(
+			$this->get_site_goals_report_options()->get_event_count_options(
+				array(
+					'filterType' => 'inListFilter',
+					'value'      => Conversion_Reporting_Events_Sync::ECOMMERCE_EVENT_NAMES,
+				),
+				$custom_dimension
+			)
+		);
+	}
+
+	/**
+	 * Gets report options that name the groups the lead generation card shows.
+	 *
+	 * @since 1.188.0
+	 * @since n.e.x.t Counts the events with `Site_Goals\Report_Options::get_event_count_options()`.
+	 *
+	 * @param string $custom_dimension Optional. Custom dimension slug the card groups by, such as
+	 *                                 `googlesitekit_form_id`. Default empty, which returns one row
+	 *                                 per detected lead event for the whole site.
+	 * @return array Report request options array.
+	 */
+	public function get_lead_discovery_options( $custom_dimension = '' ) {
+		$site_goals_report_options = $this->get_site_goals_report_options();
+
+		return $this->with_discovery_range(
+			$site_goals_report_options->get_event_count_options( $site_goals_report_options->get_lead_event_filter(), $custom_dimension )
+		);
+	}
+
+	/**
+	 * Sets the report to the discovery days, whatever the report period's length.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @param array $options Report request options array.
+	 * @return array Report request options array, covering the discovery days and ordered
+	 *               by the biggest event count first.
+	 */
+	private function with_discovery_range( $options ) {
+		$end_date = $this->get_current_range_values()['endDate'];
+
+		// `gmdate()` formats in UTC, so the subtraction has to happen there too. Without
+		// the timezone the site's own would shift the start date back a day.
+		$options['startDate'] = gmdate(
+			'Y-m-d',
+			strtotime( sprintf( '%s -%d days UTC', $end_date, self::SITE_GOALS_DISCOVERY_DAYS ) )
+		);
+		$options['endDate']   = $end_date;
+		$options['orderby']   = array(
+			array(
+				'metric' => array( 'metricName' => 'eventCount' ),
+				'desc'   => true,
+			),
+		);
+
+		return $options;
 	}
 
 	/**
@@ -457,7 +564,8 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * The key action rate divides the key action count by the session count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
+	 * @since n.e.x.t Builds the options with `Site_Goals\Report_Options::get_engagement_options()`.
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the rows by, such as
 	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
@@ -465,69 +573,24 @@ class Report_Options extends Base_Report_Options {
 	 * @return array Report request options array.
 	 */
 	public function get_engagement_options( $custom_dimension = '' ) {
-		$options = array(
-			'metrics' => array(
-				array( 'name' => 'engagementRate' ),
-				array( 'name' => 'sessions' ),
-			),
-		);
-
-		$options = $this->with_breakdown_dimension( $options, $custom_dimension );
-
-		return $this->with_current_range( $options, true );
+		return $this->get_site_goals_report_options()->get_engagement_options( $custom_dimension );
 	}
 
 	/**
-	 * Adds a breakdown dimension to report options, and keeps the rows that hold no data.
+	 * Gets the Site Goals report options of the report period and the period before it.
+	 *
+	 * The options are made on each call, because `set_detected_events()` runs after the constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array  $options          Report request options array.
-	 * @param string $custom_dimension Custom dimension slug to split the rows by, such as
-	 *                                 `googlesitekit_form_id`. The method adds the `customEvent:`
-	 *                                 prefix. Empty returns the options unchanged.
-	 * @return array Report request options array.
+	 * @return Site_Goals_Report_Options Site Goals report options for the email's two periods.
 	 */
-	private function with_breakdown_dimension( $options, $custom_dimension ) {
-		if ( ! $custom_dimension ) {
-			return $options;
-		}
-
-		$options['dimensions'][]  = array( 'name' => Analytics_4::CUSTOM_EVENT_PREFIX . $custom_dimension );
-		$options['keepEmptyRows'] = true;
-
-		return $options;
-	}
-
-	/**
-	 * Builds report options that count the events an `eventName` filter selects.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string|array $event_filter     Value for the `eventName` dimension filter. One event name,
-	 *                                       such as `purchase`, or a filter array, such as
-	 *                                       `array( 'filterType' => 'inListFilter', 'value' => array( 'contact' ) )`.
-	 * @param string       $custom_dimension Optional. Custom dimension slug to split the count by, such
-	 *                                       as `googlesitekit_form_id`. Default empty, which returns one
-	 *                                       row per event name the filter selects.
-	 * @return array Report request options array.
-	 */
-	private function build_event_count_options( $event_filter, $custom_dimension = '' ) {
-		$options = array(
-			'metrics'          => array(
-				array( 'name' => 'eventCount' ),
-			),
-			'dimensions'       => array(
-				array( 'name' => 'eventName' ),
-			),
-			'dimensionFilters' => array(
-				'eventName' => $event_filter,
-			),
+	private function get_site_goals_report_options() {
+		return new Site_Goals_Report_Options(
+			$this->get_current_range_values(),
+			$this->get_compare_range_values(),
+			$this->detected_events
 		);
-
-		$options = $this->with_breakdown_dimension( $options, $custom_dimension );
-
-		return $this->with_current_range( $options, true );
 	}
 
 	/**

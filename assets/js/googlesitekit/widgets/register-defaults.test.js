@@ -20,14 +20,16 @@
  * Internal dependencies
  */
 import getKeyMetricsPDFData from '@/js/components/KeyMetrics/getPDFData';
-import { enabledFeatures } from '@/js/features';
 import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetNull from '@/js/googlesitekit/widgets/components/WidgetNull';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from './default-areas';
+import {
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+} from './default-areas';
 import { registerDefaults } from './register-defaults';
 
 /**
@@ -95,13 +97,7 @@ function selectWithKeyMetrics( keyMetrics ) {
 }
 
 describe( 'registerDefaults - keyMetricsPDFSection', () => {
-	afterEach( () => {
-		enabledFeatures.delete( 'pdfGeneration' );
-	} );
-
-	it( 'registers the aggregate widget in the Key Metrics area when pdfGeneration is enabled', () => {
-		enabledFeatures.add( 'pdfGeneration' );
-
+	it( 'registers the widget in the Key Metrics area', () => {
 		const widgetsAPI = createWidgetsAPI();
 		registerDefaults( widgetsAPI );
 
@@ -147,18 +143,7 @@ describe( 'registerDefaults - keyMetricsPDFSection', () => {
 		expect( area.settings.pdfTitle ).toBe( 'Key metrics' );
 	} );
 
-	it( 'does not register the aggregate widget when pdfGeneration is disabled', () => {
-		const widgetsAPI = createWidgetsAPI();
-		registerDefaults( widgetsAPI );
-
-		expect(
-			findWidgetRegistration( widgetsAPI, 'keyMetricsPDFSection' )
-		).toBeUndefined();
-	} );
-
 	it( 'pdf.isActive is true only when a configured metric has a PDF tile config', () => {
-		enabledFeatures.add( 'pdfGeneration' );
-
 		const widgetsAPI = createWidgetsAPI();
 		registerDefaults( widgetsAPI );
 
@@ -190,5 +175,20 @@ describe( 'registerDefaults - keyMetricsPDFSection', () => {
 		expect(
 			settings.pdf.isActive( selectWithKeyMetrics( undefined ) )
 		).toBe( false );
+	} );
+} );
+
+describe( 'registerDefaults - Monetization area', () => {
+	it( 'should register the Monetization area with "Monetization" as its pdfTitle', () => {
+		const widgetsAPI = createWidgetsAPI();
+		registerDefaults( widgetsAPI );
+
+		const area = findWidgetAreaRegistration(
+			widgetsAPI,
+			AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY
+		);
+
+		expect( area ).toBeDefined();
+		expect( area.settings.pdfTitle ).toBe( 'Monetization' );
 	} );
 } );

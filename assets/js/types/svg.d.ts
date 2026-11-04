@@ -25,6 +25,11 @@ declare module '*.svg?url' {
 	export default content;
 }
 
+declare module '*.svg?path' {
+	const content: string;
+	export default content;
+}
+
 declare module '*.svg?pdf' {
 	import type { PDFSvgFileProps } from '@/js/components/pdf-export/types';
 	// The build renders the file with `@react-pdf/renderer` primitives, and

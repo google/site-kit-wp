@@ -28,7 +28,10 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	CUSTOM_DIMENSION_DEFINITIONS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
@@ -54,6 +57,10 @@ function excludeAudienceFromReport( report, audienceResourceName ) {
 		rows: newRows,
 	};
 }
+
+const propertyID = '12345';
+const postTypeDimension =
+	CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
 
 const totalPageviewsReportOptions = {
 	endDate: '2024-03-27',
@@ -242,8 +249,8 @@ DefaultWithZeroTile.args = {
 					'properties/12345/audiences/3': audienceDate,
 					'properties/12345/audiences/4': audienceDate,
 				},
-				customDimension: {},
-				property: {},
+				customDimension: { [ postTypeDimension ]: 20200101 },
+				property: { [ propertyID ]: 20200101 },
 			},
 		} );
 	},
@@ -360,8 +367,8 @@ TwoTilesWithZeroTile.args = {
 					'properties/12345/audiences/1': dataAvailabilityDate,
 					'properties/12345/audiences/4': audienceDate,
 				},
-				customDimension: {},
-				property: {},
+				customDimension: { [ postTypeDimension ]: 20200101 },
+				property: { [ propertyID ]: 20200101 },
 			},
 		} );
 	},
@@ -417,8 +424,8 @@ ZeroTileWithPlaceholder.args = {
 				audience: {
 					'properties/12345/audiences/1': dataAvailabilityDate,
 				},
-				customDimension: {},
-				property: {},
+				customDimension: { [ postTypeDimension ]: 20200101 },
+				property: { [ propertyID ]: 20200101 },
 			},
 		} );
 	},
@@ -452,10 +459,8 @@ DefaultAudiencesPartialData.args = {
 					'properties/12345/audiences/1': dataAvailabilityDate,
 					'properties/12345/audiences/2': dataAvailabilityDate,
 				},
-				customDimension: {},
-				property: {
-					12345: 20200101,
-				},
+				customDimension: { [ postTypeDimension ]: 20200101 },
+				property: { [ propertyID ]: 20200101 },
 			},
 		} );
 	},
@@ -490,10 +495,8 @@ SiteKitAudiencesPartialData.args = {
 					'properties/12345/audiences/3': dataAvailabilityDate,
 					'properties/12345/audiences/4': dataAvailabilityDate,
 				},
-				customDimension: {},
-				property: {
-					12345: 20200101,
-				},
+				customDimension: { [ postTypeDimension ]: 20200101 },
+				property: { [ propertyID ]: 20200101 },
 			},
 		} );
 
@@ -838,12 +841,17 @@ export default {
 					} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableCustomDimensions: [ 'googlesitekit_post_type' ],
+					availableCustomDimensions: [ postTypeDimension ],
 				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
+
+				// The badges read the property, so the tiles wait until it is known.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { propertyID } );
 
 				const { startDate } = registry
 					.select( CORE_USER )
@@ -858,8 +866,10 @@ export default {
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
 					resourceAvailabilityDates: {
 						audience: audienceResourceData,
-						customDimension: {},
-						property: {},
+						// The property and the post type dimension both finished collecting
+						// long ago, so neither shows a badge of its own.
+						customDimension: { [ postTypeDimension ]: 20200101 },
+						property: { [ propertyID ]: 20200101 },
 					},
 				} );
 

@@ -30,7 +30,6 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import P from '@/js/components/Typography/P';
 import IconSurveyDelighted from '@/svg/icons/survey-delighted.svg';
 import IconSurveyDissatisfied from '@/svg/icons/survey-dissatisfied.svg';
 import IconSurveyNeutral from '@/svg/icons/survey-neutral.svg';
@@ -67,8 +66,6 @@ function SurveyQuestionRatingChoice( { choice, answerQuestion } ) {
 				aria-label={ choice.text }
 				onClick={ handleButtonClick }
 			/>
-
-			<P>{ choice.text }</P>
 		</div>
 	);
 }

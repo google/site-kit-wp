@@ -91,8 +91,6 @@ const mockWelcomeTour = getWelcomeTour( {
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
 
 describe( 'WelcomeModal', () => {
-	const { getObservedElements, simulateAllIntersections } =
-		mockIntersectionObserver();
 	let registry: WPDataRegistry;
 
 	const dismissItemEndpoint = new RegExp(
@@ -100,6 +98,7 @@ describe( 'WelcomeModal', () => {
 	);
 
 	mockBrowserScrolling();
+	const { simulateAllIntersections } = mockIntersectionObserver();
 
 	function provideDataAvailableVariantData() {
 		provideModules( registry, [
@@ -321,13 +320,12 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show the view-only data available description when setupFlowRefreshPhase4 is enabled', async () => {
+	it( 'should show the view-only data available description', async () => {
 		provideDataAvailableVariantData();
 
 		const { getByText, waitForRegistry } = render(
 			<WelcomeModalComponent />,
 			{
-				features: [ 'setupFlowRefreshPhase4' ],
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
@@ -669,13 +667,12 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show the view-only gathering data description when setupFlowRefreshPhase4 is enabled', async () => {
+	it( 'should show the view-only gathering data description', async () => {
 		provideGatheringDataVariantData();
 
 		const { getByText, queryByText, waitForRegistry } = render(
 			<WelcomeModalComponent />,
 			{
-				features: [ 'setupFlowRefreshPhase4' ],
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
@@ -1149,15 +1146,15 @@ describe( 'WelcomeModal', () => {
 				} );
 
 				await waitForRegistry();
-				await waitFor( () => {
-					expect( getObservedElements() ).not.toHaveLength( 0 );
+
+				act( () => {
+					simulateAllIntersections( true );
 				} );
-				act( () => simulateAllIntersections() );
+
+				await waitForRegistry();
 
 				// The `view_notice` event is also tracked on view.
-				await waitFor( () => {
-					expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
-				} );
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
 					'test-context_setup',
 					'setup_flow_v3_complete_site_setup'
@@ -1173,15 +1170,15 @@ describe( 'WelcomeModal', () => {
 					registry,
 					viewContext: 'test-context',
 				} );
-				await waitFor( () => {
-					expect( getObservedElements() ).not.toHaveLength( 0 );
+
+				act( () => {
+					simulateAllIntersections( true );
 				} );
-				act( () => simulateAllIntersections() );
+
+				await waitForRegistry();
 
 				// Only the `view_notice` event should be tracked the second time the modal is shown.
-				await waitFor( () => {
-					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-				} );
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
 					'test-context_welcome-modal',
 					'view_notice',

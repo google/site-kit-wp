@@ -115,7 +115,7 @@ export interface KeyMetricsPDFData {
  * omits the whole section.
  *
  * @since 1.184.0
- * @since n.e.x.t Passes `viewOnly` through to each tile's `getTileData`.
+ * @since 1.186.0 Passes `viewOnly` through to each tile's `getTileData`.
  *
  * @param params                 Loader parameters.
  * @param params.registry        WordPress data registry.

@@ -26,6 +26,8 @@ import { FC, ReactNode } from 'react';
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import CheckMark from '@/svg/icons/check-2.svg';
 import StarFill from '@/svg/icons/star-fill.svg';
 
@@ -71,9 +73,12 @@ const MeasurementSettingRow: FC< MeasurementSettingRowProps > = ( {
 					<p className="googlesitekit-settings-measurement-row__title">
 						{ title }
 					</p>
-					<p className="googlesitekit-module-settings-group__helper-text">
+					<P
+						className="googlesitekit-module-settings-group__helper-text"
+						size={ SIZE_SMALL }
+					>
 						{ description }
-					</p>
+					</P>
 				</div>
 
 				{ ! isEnabled && action && (

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import queryString from 'query-string';
 
 /**
  * WordPress dependencies
@@ -190,6 +189,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productPostType,
+				productPathPrefix,
+				usingPlainPermalinks,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -200,6 +201,10 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
 				hasMultipleActiveEcommerceEventProviders,
+				activeConversionEventProviders,
+				wpPrivacyURL,
+				wooCommerceActive,
+				wooCommerceInstalled,
 			} = payload.siteInfo;
 
 			state.siteInfo = {
@@ -231,6 +236,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productPostType,
+				productPathPrefix,
+				usingPlainPermalinks,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -241,6 +248,10 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
 				hasMultipleActiveEcommerceEventProviders,
+				activeConversionEventProviders,
+				wpPrivacyURL,
+				wooCommerceActive,
+				wooCommerceInstalled,
 			};
 			break;
 
@@ -328,6 +339,8 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productPostType,
+			productPathPrefix,
+			usingPlainPermalinks,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -338,6 +351,10 @@ export const resolvers = {
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
 			hasMultipleActiveEcommerceEventProviders,
+			activeConversionEventProviders,
+			wpPrivacyURL,
+			wooCommerceActive,
+			wooCommerceInstalled,
 		} = baseData;
 
 		const {
@@ -376,6 +393,8 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productPostType,
+			productPathPrefix,
+			usingPlainPermalinks,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -386,6 +405,10 @@ export const resolvers = {
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
 			hasMultipleActiveEcommerceEventProviders,
+			activeConversionEventProviders,
+			wpPrivacyURL,
+			wooCommerceActive,
+			wooCommerceInstalled,
 		} );
 	},
 };
@@ -449,7 +472,7 @@ export const selectors = {
 				// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
 				if ( page.indexOf( '.php?' ) !== -1 ) {
 					const splitPage = page.split( '?' );
-					pageArg = queryString.parse( splitPage.pop() ).page;
+					pageArg = getQueryArg( page, 'page' );
 
 					if ( ! pageArg ) {
 						return adminURL;
@@ -966,6 +989,24 @@ export const selectors = {
 	getProductPostType: getSiteInfoProperty( 'productPostType' ),
 
 	/**
+	 * Gets the path that the URL of every product starts with.
+	 *
+	 * @since 1.191.0
+	 *
+	 * @return {(string|null|undefined)} The path, such as `/product/`, never a full URL, or `null` when product URLs share no such path, such as on plain permalinks. Returns `undefined` if not loaded.
+	 */
+	getProductPathPrefix: getSiteInfoProperty( 'productPathPrefix' ),
+
+	/**
+	 * Checks whether the site uses plain permalinks, where each URL names its post in its query string, such as `/?p=123`.
+	 *
+	 * @since 1.191.0
+	 *
+	 * @return {(boolean|undefined)} `true` when the site uses plain permalinks, `false` when it has a permalink structure. Returns `undefined` if not loaded.
+	 */
+	isUsingPlainPermalinks: getSiteInfoProperty( 'usingPlainPermalinks' ),
+
+	/**
 	 * Checks if the Key Metrics widget has been setup either if at least one user
 	 * has answered the User Input questionnaire or picked their own metrics.
 	 *
@@ -1010,7 +1051,7 @@ export const selectors = {
 	 *  - WooCommerce is active but account-creation in WooCommerce is
 	 *    disabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if WooCommerce registration is open; `false` if not. Returns `undefined` if not yet loaded.
@@ -1024,7 +1065,7 @@ export const selectors = {
 	 * "Anyone can register" setting or WooCommerce's own account-creation
 	 * setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {boolean|undefined} `true` if registration is open via either path; `false` if neither is open. Returns `undefined` if not yet loaded.
 	 */
@@ -1090,6 +1131,18 @@ export const selectors = {
 	),
 
 	/**
+	 * Gets the slug of every active conversion event provider plugin.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<string>|undefined)} One slug for each active provider, such as `woocommerce`. Returns `undefined` if not yet loaded.
+	 */
+	getActiveConversionEventProviders: getSiteInfoProperty(
+		'activeConversionEventProviders'
+	),
+
+	/**
 	 * Gets value of the setting for whether the key metrics widget area is
 	 * hidden.
 	 *
@@ -1112,6 +1165,36 @@ export const selectors = {
 	isKeyMetricsWidgetAreaHidden: ( state ) => {
 		return !! selectors.getKeyMetricsSetupIsWidgetAreaHidden( state );
 	},
+
+	/**
+	 * Gets a site's privacy policy URL.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The privacy policy URL.
+	 */
+	getPrivacyPolicyURL: getSiteInfoProperty( 'wpPrivacyURL' ),
+
+	/**
+	 * Determines whether the WooCommerce plugin is active.
+	 *
+	 * @since 1.190.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if WooCommerce is active, `false` if not. Returns `undefined` if not loaded.
+	 */
+	isWooCommerceActivated: getSiteInfoProperty( 'wooCommerceActive' ),
+
+	/**
+	 * Determines whether the WooCommerce plugin is installed.
+	 *
+	 * @since 1.190.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if WooCommerce is installed, `false` if not. Returns `undefined` if not loaded.
+	 */
+	isWooCommerceInstalled: getSiteInfoProperty( 'wooCommerceInstalled' ),
 };
 
 export default {

@@ -45,8 +45,9 @@ import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/co
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
+const { simulateAllIntersections } = mockIntersectionObserver();
+
 describe( 'AudienceSegmentationBackNotice', () => {
-	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry: WPDataRegistry;
 
 	const dismissItemEndpoint = new RegExp(
@@ -166,7 +167,7 @@ describe( 'AudienceSegmentationBackNotice', () => {
 
 		// Simulate the notice coming into view.
 		act( () => {
-			simulateAllIntersections();
+			simulateAllIntersections( true );
 		} );
 
 		await waitFor( () => {

@@ -180,6 +180,35 @@ function getTopSearchQueriesStep() {
 }
 
 /**
+ * Gets the traffic step, which highlights the Traffic Overview card and points
+ * its tooltip at the card's chart.
+ *
+ * @since 1.189.0
+ *
+ * @return {WelcomeTourStep} The traffic step.
+ */
+function getTrafficStep(): WelcomeTourStep {
+	return {
+		target: '.googlesitekit-widget--analyticsTrafficOverview',
+		floaterProps: {
+			target: '.googlesitekit-traffic-overview__chart',
+		},
+		title: __(
+			'Track traffic trends, identify baselines',
+			'google-site-kit'
+		),
+		content: __(
+			'Know what’s normal for your site. This is how you spot trends and measure real growth.',
+			'google-site-kit'
+		),
+		offset: 35,
+		spotlightPadding: 0,
+		placement: 'top',
+		isResponsive: true,
+	};
+}
+
+/**
  * Gets the welcome tour configuration based on the current user context.
  *
  * @since 1.173.0
@@ -294,24 +323,7 @@ export function getWelcomeTour( {
 				placement: 'top-end',
 				isResponsive: true,
 			},
-			{
-				target: '.googlesitekit-widget--analyticsAllTrafficGA4',
-				floaterProps: {
-					target: '.googlesitekit-widget--analyticsAllTraffic__user-count-chart',
-				},
-				title: __(
-					'Track traffic trends, identify baselines',
-					'google-site-kit'
-				),
-				content: __(
-					'Know what’s normal for your site. This is how you spot trends and measure real growth.',
-					'google-site-kit'
-				),
-				offset: 35,
-				spotlightPadding: 0,
-				placement: 'top',
-				isResponsive: true,
-			},
+			getTrafficStep(),
 			isAudienceSegmentationWidgetPresent && {
 				target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
 				floaterProps: {

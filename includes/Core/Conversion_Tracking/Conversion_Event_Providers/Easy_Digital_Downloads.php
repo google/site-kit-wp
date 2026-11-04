@@ -101,40 +101,137 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * Registers hooks for the Easy Digital Downloads provider.
 	 *
 	 * @since 1.164.0
+	 * @since 1.188.0 The footer callback adds the store currency as well as the purchase data.
 	 */
 	public function register_hooks() {
 		add_action(
 			'wp_footer',
-			$this->get_method_proxy( 'maybe_add_purchase_data_from_session' )
+			$this->get_method_proxy( 'add_inline_data' )
 		);
 	}
 
 	/**
-	 * Prints the purchase data.
+	 * Adds the data the provider script needs to the page.
 	 *
-	 * @since 1.164.0
+	 * @since 1.188.0
 	 */
-	protected function maybe_add_purchase_data_from_session() {
-		if ( ! function_exists( 'edd_get_purchase_session' ) || ! function_exists( 'edd_is_success_page' ) || ! edd_is_success_page() ) {
+	protected function add_inline_data() {
+		$inline_script = array();
+
+		$currency = $this->get_currency();
+
+		if ( $currency ) {
+			$inline_script[] = sprintf( 'window._googlesitekit.edddata.currency = %s;', wp_json_encode( $currency ) );
+		}
+
+		$purchase_data = $this->get_purchase_data_from_session();
+
+		if ( null !== $purchase_data ) {
+			$inline_script[] = sprintf( 'window._googlesitekit.edddata.purchase = %s;', wp_json_encode( $purchase_data ) );
+		}
+
+		if ( empty( $inline_script ) ) {
 			return;
 		}
 
-		$purchase_session = edd_get_purchase_session();
-		$purchase_data    = $this->get_enhanced_conversions_data_from_session( $purchase_session );
+		array_unshift( $inline_script, 'window._googlesitekit.edddata = window._googlesitekit.edddata || {};' );
 
 		wp_add_inline_script(
 			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
-			join(
-				"\n",
-				array(
-					'window._googlesitekit.edddata = window._googlesitekit.edddata || {};',
-					sprintf( 'window._googlesitekit.edddata.purchase = %s;', wp_json_encode( $purchase_data ) ),
-				)
-			),
+			join( "\n", $inline_script ),
 			'before'
 		);
 	}
 
+	/**
+	 * Gets the store's currency.
+	 *
+	 * Only a currency in ISO 4217 format is one gtag accepts, so a code of any
+	 * other shape is discarded rather than reported. A lowercase code is
+	 * uppercased, as ISO 4217 codes are uppercase.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @return string The store's three-letter currency code, or an empty string if there isn't a usable one.
+	 */
+	protected function get_currency() {
+		$currency = $this->read_store_currency();
+
+		if ( ! is_string( $currency ) || ! preg_match( '/^[A-Za-z]{3}$/', $currency ) ) {
+			return '';
+		}
+
+		return strtoupper( $currency );
+	}
+
+	/**
+	 * Gets the purchase data for the current request.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @return array|null The purchase data, or null when the current request isn't a completed purchase.
+	 */
+	protected function get_purchase_data_from_session() {
+		if ( ! $this->is_success_page() ) {
+			return null;
+		}
+
+		$purchase_session = $this->read_purchase_session();
+
+		// A session is missing or expired on a success page reached without a
+		// purchase. Reporting it as a purchase of nothing would have the provider
+		// script send an empty purchase event.
+		if ( ! is_array( $purchase_session ) ) {
+			return null;
+		}
+
+		return $this->get_enhanced_conversions_data_from_session( $purchase_session );
+	}
+
+	/**
+	 * Reads the store's configured currency from Easy Digital Downloads.
+	 *
+	 * This is one of the seams where the provider talks to Easy Digital Downloads.
+	 * It holds no logic of its own, so the code around it stays testable without
+	 * the plugin installed.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @return mixed Whatever Easy Digital Downloads reports, or null when it isn't there to ask.
+	 */
+	protected function read_store_currency() {
+		return function_exists( 'edd_get_currency' ) ? edd_get_currency() : null;
+	}
+
+	/**
+	 * Reads the current purchase from the Easy Digital Downloads session.
+	 *
+	 * This is one of the seams where the provider talks to Easy Digital Downloads.
+	 * It holds no logic of its own, so the code around it stays testable without
+	 * the plugin installed.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @return mixed Whatever Easy Digital Downloads reports, or null when it isn't there to ask.
+	 */
+	protected function read_purchase_session() {
+		return function_exists( 'edd_get_purchase_session' ) ? edd_get_purchase_session() : null;
+	}
+
+	/**
+	 * Determines whether the current request is the Easy Digital Downloads purchase success page.
+	 *
+	 * This is one of the seams where the provider talks to Easy Digital Downloads.
+	 * It holds no logic of its own, so the code around it stays testable without
+	 * the plugin installed.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @return bool Whether the current request is the purchase success page, false when Easy Digital Downloads isn't there to ask.
+	 */
+	protected function is_success_page() {
+		return function_exists( 'edd_is_success_page' ) && edd_is_success_page();
+	}
 
 	/**
 	 * Extracts Enhanced Conversions data from an EDD session.

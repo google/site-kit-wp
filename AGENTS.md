@@ -3,25 +3,22 @@
 ## Project Overview
 WordPress plugin providing Google services integration. PHP backend (`includes/`) + React frontend (`assets/js/`) with modular architecture for each Google service (Analytics, AdSense, Search Console, etc.).
 
-## Implementing a GitHub issue
-When asked to implement, build, or work on a GitHub issue by number, follow the shared,
-tool-agnostic playbook **`docs/context/workflow/implement-issue.md`** (the single source of
-truth) and review against **`docs/context/workflow/review-checklist.md`**. Read only the
-`docs/context/{js,php}` convention docs the issue touches. Co-locate tests and Storybook
-stories; run lint, the specific test files touched, and `npm run build:dev`; and
-**never commit, push, or open a PR unless explicitly asked**. (Claude Code exposes this as
-the `implement-issue` skill; Gemini as `/implement`; Antigravity as the `/implement-issue`
-workflow.)
+## Skills
+Project workflows, such as writing issues and implementation briefs, implementing issues and
+reviewing pull requests, are skills in `.agents/skills/`. Each tool finds a skill by its
+`description` and reads the full instructions only when the skill runs.
 
-## Reviewing a pull request
-When asked to review a pull request by number, follow the shared, tool-agnostic playbook
-**`docs/context/workflow/review-pr.md`** (the single source of truth) and grade against
-**`docs/context/workflow/review-checklist.md`**. Read the issue the PR links under "Addresses
-issue:" and check the diff against its acceptance criteria and Implementation Brief first, then
-read only the `docs/context/{js,php}` convention docs the PR touches. Stay **read-only** — do
-not post comments, approve, or change the PR state unless explicitly asked. (Claude Code
-exposes this as the `review-pr` skill; Gemini as `/review-pr`; Antigravity as the `/review-pr`
-workflow.)
+These rules apply whether or not a skill runs:
+- **Never commit, push, or open a PR** unless explicitly asked.
+- **Never write to GitHub** unless explicitly asked: do not create or edit issues, post comments,
+  approve a pull request, or change its state.
+
+### Adding a skill
+Put the whole procedure in `.agents/skills/<name>/SKILL.md`, with any supporting files next to it,
+and add a symlink to it at `.claude/skills/<name>/SKILL.md`. Do not add a separate playbook or
+workflow file. Do not add an entry to this file for a new skill either: every tool loads this
+file in full in every session, and it already finds skills by their `description`. Add a line here
+only for a rule that must hold even when the skill does not run.
 
 ## Architecture Essentials
 
@@ -67,8 +64,8 @@ workflow.)
 **Comprehensive multi-layer testing:**
 - **PHP**: PHPUnit with WordPress test suite (`tests/phpunit/`)
 - **JS**: Jest with React Testing Library (`tests/js/`)
-- **E2E**: Puppeteer browser automation (`tests/e2e/`)
-- **Visual**: Backstop.js for regression (`tests/backstop/`)
+- **E2E**: Playwright browser automation (`tests/playwright/`, plus the legacy Jest suite in `tests/e2e/`)
+- **Visual**: Playwright screenshots of Storybook stories (`tests/vrt/`)
 
 **Key test utilities**: `tests/js/test-utils.js` (JS), `tests/phpunit/includes/TestCase.php` (PHP)
 
@@ -114,15 +111,16 @@ ComponentName.stories.js
 ```
 
 ### Visual Regression Testing (VRT)
-**Automated visual testing via BackstopJS + Storybook:**
-- **Reference Images**: `tests/backstop/reference/` - Golden master screenshots
-- **Config**: `tests/backstop/config.js` + `scenarios.js` - BackstopJS setup
-- **VRT Styles**: `storybook/preview-head-vrt.html` - Animation/transition disabling
+**Automated visual testing via Playwright + Storybook, in Docker** (guide: `tests/vrt/README.md`):
+- **Reference Images**: `tests/vrt/__screenshots__/<story path>/<viewport>.png`
+- **Config**: `tests/vrt/playwright.config.js` + `scenarios.js` (reads each story's `.scenario`)
+- **VRT Mode**: `storybook/preview-head-vrt.html` (animations off) + `storybook/utils/vrt.js` (fonts, render state)
 
 **VRT workflow:**
-- `npm run test:visualtest` - Run VRT tests (compare vs reference)
-- `npm run test:visualapprove` - Accept new screenshots as reference
-- **Auto-generated**: Scenarios created from all `*.stories.js` files
-- **Special classes**: `.googlesitekit-vrt-animation-none`, `.googlesitekit-vrt-animation-paused`
+- `npm run test:visualtest -- --grep "<story label>"` - Compare stories against reference images
+- `npm run test:visualapprove -- --grep "<story label>"` - Write new reference images to commit
+- Or add the `VRT: Update reference images` label to a PR to have CI commit them
+- **Auto-generated**: One test per story with a `.scenario`, at three viewports
+- **Special class**: `.googlesitekit-vrt-animation-paused` keeps animations paused at their first frame
 
 **When in doubt**: Check existing similar modules, refer to config files, or search the codebase for patterns.

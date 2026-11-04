@@ -31,12 +31,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import InViewProvider from '@/js/components/InViewProvider';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import WPDashboardWidgets from './WPDashboardWidgets';
 
 function WPDashboardApp() {
+	useFeatureCountCache();
+
 	const trackingRef = useRef();
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.

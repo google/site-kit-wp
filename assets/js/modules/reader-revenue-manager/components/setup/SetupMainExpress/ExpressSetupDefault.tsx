@@ -19,37 +19,67 @@
 /**
  * External dependencies
  */
-import type { FC, ReactNode } from 'react';
+import type { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import useQueryArg from '@/js/hooks/useQueryArg';
 import {
-	StepPublicationPolicies,
-	StepPublicationSetup,
-	StepSetupComplete,
-	StepTermsOfService,
+	publicationPoliciesStep,
+	publicationSetupStep,
+	setupCompleteStep,
+	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	useExpressSetupScopes,
+	useSetupFlow,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import ExpressSetupFallback from './ExpressSetupFallback';
 import ExpressSetupLayout from './ExpressSetupLayout';
 import ExpressSetupSteps from './ExpressSetupSteps';
 
-const ExpressSetupDefault: FC = () => {
-	const [ step ] = useQueryArg( 'step' );
+const STEPS: SetupStep[] = [
+	publicationSetupStep,
+	termsOfServiceStep,
+	publicationPoliciesStep,
+	setupCompleteStep,
+];
 
-	const stepContent: Record< string, ReactNode > = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: <StepPublicationSetup />,
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
-		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
-			<StepPublicationPolicies />
-		),
-		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: <StepSetupComplete />,
-	};
+const ExpressSetupDefault: FC = () => {
+	const hasRequiredScopes = useExpressSetupScopes();
+
+	const { currentStep, advance } = useSetupFlow( STEPS );
+
+	if ( hasRequiredScopes !== true || ! currentStep ) {
+		return (
+			<ExpressSetupFallback
+				showErrors={ hasRequiredScopes === true }
+				errorTitle={ __(
+					'We couldn’t set up Reader Revenue Manager',
+					'google-site-kit'
+				) }
+			/>
+		);
+	}
+
+	const StepComponent = currentStep.Component;
 
 	return (
-		<ExpressSetupLayout sidebar={ <ExpressSetupSteps /> }>
-			{ step ? stepContent[ step ] : null }
+		<ExpressSetupLayout
+			sidebar={
+				<ExpressSetupSteps
+					steps={ STEPS }
+					activeSlug={ currentStep.slug }
+				/>
+			}
+		>
+			<StepComponent onComplete={ advance } />
 		</ExpressSetupLayout>
 	);
 };

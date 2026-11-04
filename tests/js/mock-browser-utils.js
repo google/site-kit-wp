@@ -137,20 +137,24 @@ export function mockElementOffsets() {
  * @since 1.179.0
  */
 export function mockBrowserScrolling() {
-	let oldScrollIntoView;
+	let oldScrollIntoView, oldScrollTo;
 
 	beforeAll( () => {
 		oldScrollIntoView = Element.prototype.scrollIntoView;
+		oldScrollTo = Element.prototype.scrollTo;
 
 		Element.prototype.scrollIntoView = jest.fn();
+		Element.prototype.scrollTo = jest.fn();
 	} );
 
 	afterAll( () => {
 		Element.prototype.scrollIntoView = oldScrollIntoView;
+		Element.prototype.scrollTo = oldScrollTo;
 	} );
 
 	beforeEach( () => {
 		Element.prototype.scrollIntoView.mockReset();
+		Element.prototype.scrollTo.mockReset();
 	} );
 }
 
@@ -161,7 +165,7 @@ export function mockBrowserScrolling() {
  * Sets up in beforeAll, resets observer state in beforeEach, and restores in
  * afterAll.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @return {{
  *   getObservedElements: function(): Element[],
@@ -187,11 +191,27 @@ export function mockIntersectionObserver() {
 		global.IntersectionObserver = function MockIntersectionObserver(
 			callback
 		) {
+			// Identifies this observer instance's own entries below, since a
+			// single suite can have multiple observer instances (e.g. across
+			// remounts) whose stale entries must not linger and fire once
+			// disconnected/unobserved, as real `IntersectionObserver`s would.
+			const instance = this;
+
 			this.observe = function observe( target ) {
-				observers.push( { callback, target } );
+				observers.push( { callback, target, instance } );
 			};
-			this.disconnect = jest.fn();
-			this.unobserve = jest.fn();
+			this.unobserve = function unobserve( target ) {
+				observers = observers.filter(
+					( observer ) =>
+						observer.instance !== instance ||
+						observer.target !== target
+				);
+			};
+			this.disconnect = function disconnect() {
+				observers = observers.filter(
+					( observer ) => observer.instance !== instance
+				);
+			};
 			this.takeRecords = jest.fn().mockReturnValue( [] );
 		};
 	} );

@@ -301,7 +301,7 @@ class Email_Log_Batch_Query {
 	 * surface an error for another administrator whose own report succeeded.
 	 *
 	 * @since 1.172.0
-	 * @since n.e.x.t Scoped the read to the requesting user's own log instead of the
+	 * @since 1.187.0 Scoped the read to the requesting user's own log instead of the
 	 *                site-level first post in the batch.
 	 *
 	 * @param int $user_id User ID to read the error for.
@@ -335,7 +335,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Finds the post ID within a batch authored by the given user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array<int> $post_ids Batch post IDs.
 	 * @param int        $user_id  User ID to match against `post_author`.

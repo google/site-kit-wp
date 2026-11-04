@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import Link from '@/js/components/Link';
 import {
 	ANALYTICS_NOTICE_CHECKBOX,
@@ -78,9 +79,9 @@ export default function AnalyticsOptIn() {
 					{ __( 'Analytics', 'google-site-kit' ) }
 				</Typography>
 				<Badge
-					// @ts-expect-error The `Badge` component is not typed yet.
 					className="googlesitekit-splash__analytics-recommended-badge"
 					label={ __( 'Recommended', 'google-site-kit' ) }
+					variant={ BADGE_VARIANTS.RECOMMENDATION }
 				/>
 			</div>
 			<Checkbox

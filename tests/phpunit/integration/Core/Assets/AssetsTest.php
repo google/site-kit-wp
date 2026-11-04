@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -28,6 +29,7 @@ use Google\Site_Kit\Tests\TestCase;
 class AssetsTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use FakeInstalledPlugins;
 
 	/**
 	 * @var Assets
@@ -62,6 +64,9 @@ class AssetsTest extends TestCase {
 		// Ensure registered post types are cleaned up.
 		if ( post_type_exists( 'product' ) ) {
 			unregister_post_type( 'product' );
+		}
+		if ( post_type_exists( 'digital_product' ) ) {
+			unregister_post_type( 'digital_product' );
 		}
 	}
 
@@ -168,6 +173,56 @@ class AssetsTest extends TestCase {
 		}
 	}
 
+	/**
+	 * @dataProvider data_dashboard_sharing_settings
+	 *
+	 * @param array     $sharing_settings  Sharing settings option value.
+	 * @param \stdClass $expected_settings Expected `settings` value in the inline data.
+	 */
+	public function test_get_inline_dashboard_sharing_data__settings( $sharing_settings, $expected_settings ) {
+		remove_all_actions( 'wp_print_scripts' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		// Remove the filter that adds default sharing settings for PageSpeed Insights, which is active in tests.
+		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
+
+		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->set( $sharing_settings );
+
+		$this->assets->register();
+		$this->assets->enqueue_asset( 'googlesitekit-dashboard-sharing-data' );
+		do_action( 'wp_print_scripts' );
+
+		$script = wp_scripts()->get_data( 'googlesitekit-dashboard-sharing-data', 'data' );
+		$data   = json_decode( substr( $script, strlen( 'var _googlesitekitDashboardSharingData = ' ), -1 ) );
+
+		$this->assertEquals( $expected_settings, $data->settings, 'Dashboard sharing inline data should output `settings` as a JSON object.' );
+	}
+
+	public function data_dashboard_sharing_settings() {
+		return array(
+			'no sharing settings'   => array(
+				array(),
+				new \stdClass(),
+			),
+			'with sharing settings' => array(
+				array(
+					'search-console' => array(
+						'sharedRoles' => array( 'editor' ),
+						'management'  => 'owner',
+					),
+				),
+				(object) array(
+					'search-console' => (object) array(
+						'sharedRoles' => array( 'editor' ),
+						'management'  => 'owner',
+					),
+				),
+			),
+		);
+	}
+
 	public function test_has_registered_assets_prevents_duplicate_registration() {
 		// Ensure the current user can authenticate.
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -175,8 +230,7 @@ class AssetsTest extends TestCase {
 		set_current_screen( 'dashboard' );
 
 		// Use reflection to access the private `has_registered_assets()` method.
-		$reflection = new \ReflectionMethod( $this->assets, 'has_registered_assets' );
-		$reflection->setAccessible( true );
+		$reflection = $this->get_accessible_method( $this->assets, 'has_registered_assets' );
 
 		// Initially, `has_registered_assets()` should return false.
 		$this->assertFalse( $reflection->invoke( $this->assets ), '`has_registered_assets()` should return false before registration.' );
@@ -247,6 +301,114 @@ class AssetsTest extends TestCase {
 		$this->assertStringContainsString( 'var _googlesitekitLegacyData = ', $localized_script, 'Legacy data should be localized in commons script.' );
 	}
 
+	/**
+	 * @dataProvider features_badge_data_provider
+	 */
+	public function test_get_inline_features_badge_data( $reset_session ) {
+		$this->enable_feature( 'featureDiscoveryHub' );
+
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $admin_id );
+
+		$this->fake_proxy_site_connection();
+
+		remove_all_filters( 'googlesitekit_setup_complete' );
+
+		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
+
+		$input = new \Google\Site_Kit\Tests\MutableInput();
+
+		$_GET['googlesitekit_reset_session'] = $reset_session;
+
+		$this->assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $input ) );
+
+		add_filter(
+			'googlesitekit_connected_modules',
+			function () {
+				return array(
+					'search-console' => new \stdClass(),
+					'analytics-4'    => new \stdClass(),
+				);
+			}
+		);
+		$this->assets->register();
+		$this->assets->enqueue_asset( 'googlesitekit-features-badge-data' );
+
+		do_action( 'wp_print_scripts' );
+
+		$script = wp_scripts()->get_data( 'googlesitekit-features-badge-data', 'data' );
+		$data   = json_decode( substr( $script, strlen( 'var _googlesitekitFeaturesBadgeData = ' ), -1 ), true );
+
+		unset( $_GET['googlesitekit_reset_session'] );
+
+		$this->assertSame(
+			array(
+				'connectedModules' => array( 'search-console', 'analytics-4' ),
+				'pluginVersion'    => GOOGLESITEKIT_VERSION,
+				'resetSession'     => (bool) $reset_session,
+				'userID'           => $admin_id,
+			),
+			$data,
+			'Badge data should contain the current fingerprint and session reset state.'
+		);
+	}
+
+	public function features_badge_data_provider() {
+		return array(
+			'normal session' => array( null ),
+			'reset session'  => array( '1' ),
+		);
+	}
+
+	/**
+	 * @dataProvider features_badge_assets_provider
+	 */
+	public function test_features_badge_assets( $role, $enabled, $expected ) {
+		if ( $enabled ) {
+			$this->enable_feature( 'featureDiscoveryHub' );
+		}
+
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => $role ) ) );
+
+		$this->fake_proxy_site_connection();
+
+		remove_all_filters( 'googlesitekit_setup_complete' );
+
+		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
+
+		set_current_screen( 'edit.php' );
+		remove_all_actions( 'admin_enqueue_scripts' );
+
+		$this->assets->register();
+
+		do_action( 'admin_enqueue_scripts' );
+
+		$this->assertSame( $expected, wp_script_is( 'googlesitekit-features-badge', 'enqueued' ), 'Badge should only load for administrators with the feature enabled.' );
+		$this->assertSame( $expected, wp_script_is( 'googlesitekit-features-badge-data', 'registered' ), 'Badge data should only be registered for eligible users.' );
+
+		if ( $expected ) {
+			$this->assertSame(
+				array( 'googlesitekit-i18n', 'googlesitekit-features-badge-data' ),
+				wp_scripts()->registered['googlesitekit-features-badge']->deps,
+				'Global badge must not depend on React or Site Kit data stores.'
+			);
+		}
+	}
+
+	public function features_badge_assets_provider() {
+		return array(
+			'admin enabled'  => array( 'administrator', true, true ),
+			'admin disabled' => array( 'administrator', false, false ),
+			'editor enabled' => array( 'editor', true, false ),
+		);
+	}
+
 	private function get_inline_base_data() {
 		remove_all_actions( 'wp_print_scripts' );
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -286,48 +448,156 @@ class AssetsTest extends TestCase {
 		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty when no products exist.' );
 	}
 
-	public function test_base_data__product_post_type__hidden_post_type() {
-		$this->set_permalink_structure( '/%postname%/' );
-
-		register_post_type( 'product', array( 'public' => false ) );
-		$data = $this->get_inline_base_data();
-
-		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty for hidden post types.' );
-	}
-
-	public function test_base_data__product_post_type__filter_change_product_post() {
-		register_post_type( 'digital_product', array( 'public' => true ) );
-
-		add_filter(
-			'googlesitekit_product_post_type',
-			function () {
-				return 'digital_product';
-			}
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertEquals( 'digital_product', $data['productPostType'], 'Product post type should match filter value.' );
-	}
-
-	public function test_base_data__product_post_type__invalid_post_type() {
-		add_filter(
-			'googlesitekit_product_post_type',
-			function () {
-				return 'invalid_post_type';
-			}
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty for invalid post types.' );
-	}
-
 	public function test_base_data__product_post_type() {
 		register_post_type( 'product', array( 'public' => true ) );
 
 		$data = $this->get_inline_base_data();
 
 		$this->assertEquals( 'product', $data['productPostType'], 'Product post type should be set to default product type.' );
+	}
+
+	public function test_base_data__product_post_type__filtered_to_digital_product() {
+		register_post_type( 'digital_product', array( 'public' => true ) );
+
+		add_filter( 'googlesitekit_product_post_type', fn() => 'digital_product' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( 'digital_product', $data['productPostType'], '`productPostType` should be `digital_product`, the post type that the `googlesitekit_product_post_type` filter returns.' );
+	}
+
+	public function test_base_data__product_path_prefix__no_product_post_type() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertNull( $data['productPathPrefix'], '`productPathPrefix` should be `null` when the site has no product post type.' );
+	}
+
+	public function test_base_data__product_path_prefix__plain_permalinks() {
+		$this->set_permalink_structure( '' );
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertNull( $data['productPathPrefix'], '`productPathPrefix` should be `null` when the site uses plain permalinks.' );
+	}
+
+	public function test_base_data__product_path_prefix() {
+		$this->set_permalink_structure( '/%postname%/' );
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( '/product/', $data['productPathPrefix'], '`productPathPrefix` should be the path before the product slug in a product URL.' );
+	}
+
+	public function test_base_data__product_path_prefix__rewrite_tag_in_slug() {
+		$this->set_permalink_structure( '/%postname%/' );
+		register_post_type(
+			'product',
+			array(
+				'public'  => true,
+				'rewrite' => array(
+					'slug'       => 'shop/%product_cat%',
+					'with_front' => false,
+				),
+			)
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( '/shop/', $data['productPathPrefix'], '`productPathPrefix` should end before `%product_cat%`, the first rewrite tag of the product permalink structure.' );
+	}
+
+	public function test_base_data__product_path_prefix__rewrite_tag_at_start_of_slug() {
+		$this->set_permalink_structure( '/%postname%/' );
+		register_post_type(
+			'product',
+			array(
+				'public'  => true,
+				'rewrite' => array(
+					'slug'       => '%product_cat%',
+					'with_front' => false,
+				),
+			)
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertNull( $data['productPathPrefix'], '`productPathPrefix` should be `null` when the product permalink structure starts with a rewrite tag, such as `%product_cat%`.' );
+	}
+
+	public function test_base_data__product_path_prefix__home_in_subdirectory() {
+		$this->set_permalink_structure( '/%postname%/' );
+		add_filter( 'pre_option_home', fn() => 'http://example.org/blog' );
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( '/blog/product/', $data['productPathPrefix'], '`productPathPrefix` should start with the path of the home URL.' );
+	}
+
+	public function test_base_data__product_path_prefix__reference_site_url() {
+		$this->set_permalink_structure( '/%postname%/' );
+		add_filter( 'googlesitekit_site_url', fn() => 'https://example.com/shop-site' );
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( '/shop-site/product/', $data['productPathPrefix'], '`productPathPrefix` should start with the path of the reference site URL.' );
+	}
+
+	public function test_base_data__using_plain_permalinks() {
+		$this->set_permalink_structure( '' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( $data['usingPlainPermalinks'], '`usingPlainPermalinks` should be `true` when the site uses plain permalinks.' );
+	}
+
+	public function test_base_data__using_plain_permalinks__permalink_structure() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['usingPlainPermalinks'], '`usingPlainPermalinks` should be `false` when the site has a permalink structure.' );
+	}
+
+	public function test_base_data__woocommerce_not_installed() {
+		$this->set_installed_plugins( array() );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['wooCommerceActive'], 'wooCommerceActive should be false when WooCommerce is not installed.' );
+		$this->assertFalse( $data['wooCommerceInstalled'], 'wooCommerceInstalled should be false when WooCommerce is not installed.' );
+	}
+
+	public function test_base_data__woocommerce_installed_but_not_active() {
+		$this->set_installed_plugins(
+			array( 'woocommerce/woocommerce.php' => array( 'Name' => 'WooCommerce' ) )
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['wooCommerceActive'], 'wooCommerceActive should be false when WooCommerce is installed but not active.' );
+		$this->assertTrue( $data['wooCommerceInstalled'], 'wooCommerceInstalled should be true when WooCommerce is installed but not active.' );
+	}
+
+	/**
+	 * `class_alias()` cannot be undone within a process, so this must run in isolation
+	 * to avoid making `WooCommerce` exist for every other test in the suite.
+	 *
+	 * @runInSeparateProcess
+	 */
+	public function test_base_data__woocommerce_active() {
+		// Fake the existence of the `WooCommerce` class.
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( $data['wooCommerceActive'], 'wooCommerceActive should be true when the WooCommerce class exists.' );
 	}
 }

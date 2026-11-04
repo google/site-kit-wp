@@ -79,6 +79,8 @@
 
 // Global
 @import "components/global/googlesitekit-accordion";
+@import "components/global/googlesitekit-action-button";
+@import "components/global/googlesitekit-add-features-button";
 @import "components/global/googlesitekit-analytics-cta";
 @import "components/global/googlesitekit-autocomplete";
 @import "components/global/googlesitekit-badge";
@@ -97,6 +99,7 @@
 @import "components/global/googlesitekit-data-block";
 @import "components/global/googlesitekit-dialog";
 @import "components/global/googlesitekit-DeviceSizeTabBar";
+@import "components/global/googlesitekit-draggable-list";
 @import "components/global/googlesitekit-dropdown-menu";
 @import "components/global/googlesitekit-entity-header";
 @import "components/global/googlesitekit-entity-search";
@@ -125,7 +128,6 @@
 @import "components/global/googlesitekit-pagespeed-dashboard-widget";
 @import "components/global/googlesitekit-page-footer";
 @import "components/global/googlesitekit-page-header";
-@import "components/global/googlesitekit-percent-circle";
 @import "components/global/googlesitekit-popper";
 @import "components/global/googlesitekit-post-searcher";
 @import "components/global/googlesitekit-powered-by-module";
@@ -133,6 +135,7 @@
 @import "components/global/googlesitekit-preview-table";
 @import "components/global/googlesitekit-progress-segments";
 @import "components/global/googlesitekit-progress-indicator";
+@import "components/global/googlesitekit-repeater";
 @import "components/global/googlesitekit-scrollable-tabs";
 @import "components/global/googlesitekit-selection-box";
 @import "components/global/googlesitekit-selection-panel";
@@ -145,9 +148,9 @@
 @import "components/global/googlesitekit-table-overflow";
 @import "components/global/googlesitekit-text-field-icon";
 @import "components/global/googlesitekit-tooltip";
-@import "components/global/googlesitekit-use-snippet-switch";
 @import "components/global/googlesitekit-user-menu";
 @import "components/global/googlesitekit-view-only-menu";
+@import "components/global/googlesitekit-widget-tab-bar";
 @import "components/global/googlesitekit-typography";
 
 // Dashboard
@@ -183,7 +186,9 @@
 // Email Reporting
 @import "components/email-reporting/googlesitekit-user-settings-selection-panel";
 @import "components/email-reporting/googlesitekit-frequency-selector";
+@import "components/email-reporting/googlesitekit-user-list";
 @import "components/email-reporting/googlesitekit-invite-others-to-subscribe";
+@import "components/email-reporting/googlesitekit-subscriber-management";
 
 // PDF Generation
 @import "components/pdf-export/googlesitekit-pdf-download-panel";
@@ -203,7 +208,6 @@
 @import "components/settings/googlesitekit-settings-meta";
 @import "components/settings/googlesitekit-settings-module";
 @import "components/settings/googlesitekit-settings-user-input";
-@import "components/settings/googlesitekit-settings-visitor-groups";
 
 // User Input
 @import "components/user-input/googlesitekit-user-input-module";
@@ -215,8 +219,22 @@
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
 
+// Feature Discovery
+@import "components/feature-discovery/googlesitekit-feature-discovery";
+@import "components/feature-discovery/googlesitekit-feature-discovery-callout";
+
 // Feature Tours
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
+
+// Feature Discovery
+@import "components/feature-discovery/googlesitekit-all-services-tab";
+@import "components/feature-discovery/googlesitekit-category-filter-chips";
+@import "components/feature-discovery/googlesitekit-effort-indicator";
+@import "components/feature-discovery/googlesitekit-feature-card";
+@import "components/feature-discovery/googlesitekit-feature-details-panel";
+@import "components/feature-discovery/googlesitekit-feature-error-notice";
+@import "components/feature-discovery/googlesitekit-feature-service-identity";
+@import "components/feature-discovery/googlesitekit-whats-new";
 
 // Modules
 @import "components/ads";
@@ -242,6 +260,9 @@
 // Notice
 @import "components/notice/googlesitekit-notice";
 
+// Email reporting
+@import "components/email-reporting/googlesitekit-email-reporting-introduction-overlay";
+
 // PDF export
 @import "components/pdf-export/googlesitekit-pdf-introduction-overlay";
 @import "components/pdf-export/googlesitekit-pdf-report-error-snackbar";
@@ -262,7 +283,7 @@
 @import "widgets/widget-context";
 @import "widgets/widgets";
 @import "widgets/googlesitekit-widget-adsense-performance";
-@import "widgets/googlesitekit-widget-analyticsAllTraffic";
+@import "widgets/googlesitekit-widget-analyticsTrafficOverview";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
 @import "widgets/googlesitekit-widget-analyticsPopularPages";
 @import "widgets/googlesitekit-widget-error-handler";

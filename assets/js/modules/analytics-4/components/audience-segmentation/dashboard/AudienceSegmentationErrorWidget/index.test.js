@@ -42,8 +42,9 @@ import AudienceSegmentationErrorWidget from '.';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
+const { simulateAllIntersections } = mockIntersectionObserver();
+
 describe( 'AudienceSegmentationErrorWidget', () => {
-	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 	let originalViewportWidth;
 
@@ -143,7 +144,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				simulateAllIntersections();
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -246,7 +247,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				simulateAllIntersections();
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

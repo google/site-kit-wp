@@ -33,7 +33,6 @@ import { ProgressBar } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import Description from '@/js/components/Notice/Description';
 import CompatibilityErrors from '@/js/modules/sign-in-with-google/components/common/CompatibilityErrors';
 import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/types';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
@@ -77,9 +76,7 @@ const CompatibilityChecks: FC = () => {
 					'google-site-kit'
 				) }
 			>
-				<Description as="div">
-					<CompatibilityErrors errors={ errors } />
-				</Description>
+				<CompatibilityErrors errors={ errors } />
 			</Notice>
 		);
 	}

@@ -62,4 +62,6 @@ const Grid: FC< GridProps > = forwardRef< HTMLDivElement, GridProps >(
 	}
 );
 
+Grid.displayName = 'Grid';
+
 export default Grid;

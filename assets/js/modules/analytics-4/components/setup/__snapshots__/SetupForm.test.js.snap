@@ -6,7 +6,7 @@ exports[`SetupForm renders the form correctly 1`] = `
     class="googlesitekit-analytics-setup__form"
   >
     <p
-      class="googlesitekit-setup-module__select_account"
+      class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--large"
     >
       Please select the account information below. You can change this later in your settings.
     </p>
@@ -100,6 +100,42 @@ exports[`SetupForm renders the form correctly 1`] = `
             />
           </div>
         </div>
+        <div
+          class="googlesitekit-setup__step-hint"
+        >
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+          >
+            What is an Analytics property?
+          </p>
+          <span
+            aria-labelledby="googlesitekit-info-tooltip-label-0"
+            class="googlesitekit-info-tooltip"
+            role="button"
+            tabindex="0"
+          >
+            <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-0"
+            >
+              An Analytics property is a container for data collected from a website. It represents a specific website, and within a property, you can view reports, manage data collection, attribution, privacy settings, and product links. 
+              <a
+                aria-label="Learn more (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href="https://sitekit.withgoogle.com/support/?doc=what-is-ga4-property"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Learn more
+                </span>
+              </a>
+            </span>
+          </span>
+        </div>
       </div>
       <div
         class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream"
@@ -144,6 +180,42 @@ exports[`SetupForm renders the form correctly 1`] = `
             />
           </div>
         </div>
+        <div
+          class="googlesitekit-setup__step-hint"
+        >
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+          >
+            What is a web data stream?
+          </p>
+          <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
+            class="googlesitekit-info-tooltip"
+            role="button"
+            tabindex="0"
+          >
+            <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              A data stream is a flow of data from your visitors to Analytics. When a data stream is created, Analytics generates a snippet of code that is added to your site to collect that data. 
+              <a
+                aria-label="Learn more (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href="https://sitekit.withgoogle.com/support/?doc=what-is-ga4-data-stream"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Learn more
+                </span>
+              </a>
+            </span>
+          </span>
+        </div>
       </div>
     </div>
     <div
@@ -184,7 +256,7 @@ exports[`SetupForm renders the form correctly 1`] = `
         Enable enhanced measurement
       </label>
       <p
-        class="googlesitekit-module-settings-group__helper-text"
+        class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--small"
       >
         This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
         <a
@@ -218,7 +290,7 @@ exports[`SetupForm renders the form correctly 1`] = `
         <span
           class="mdc-button__label"
         >
-          Complete setup
+          Set up
         </span>
       </button>
     </div>
@@ -226,13 +298,13 @@ exports[`SetupForm renders the form correctly 1`] = `
 </div>
 `;
 
-exports[`SetupForm renders the form correctly with setupFlowRefresh enabled 1`] = `
+exports[`SetupForm renders the form correctly with the "Set up" CTA 1`] = `
 <div>
   <form
     class="googlesitekit-analytics-setup__form"
   >
     <p
-      class="googlesitekit-setup-module__select_account"
+      class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--large"
     >
       Please select the account information below. You can change this later in your settings.
     </p>
@@ -329,15 +401,37 @@ exports[`SetupForm renders the form correctly with setupFlowRefresh enabled 1`] 
         <div
           class="googlesitekit-setup__step-hint"
         >
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+          >
             What is an Analytics property?
           </p>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-2"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-2"
+            >
+              An Analytics property is a container for data collected from a website. It represents a specific website, and within a property, you can view reports, manage data collection, attribution, privacy settings, and product links. 
+              <a
+                aria-label="Learn more (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href="https://sitekit.withgoogle.com/support/?doc=what-is-ga4-property"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Learn more
+                </span>
+              </a>
+            </span>
           </span>
         </div>
       </div>
@@ -387,15 +481,37 @@ exports[`SetupForm renders the form correctly with setupFlowRefresh enabled 1`] 
         <div
           class="googlesitekit-setup__step-hint"
         >
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+          >
             What is a web data stream?
           </p>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-3"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-3"
+            >
+              A data stream is a flow of data from your visitors to Analytics. When a data stream is created, Analytics generates a snippet of code that is added to your site to collect that data. 
+              <a
+                aria-label="Learn more (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href="https://sitekit.withgoogle.com/support/?doc=what-is-ga4-data-stream"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Learn more
+                </span>
+              </a>
+            </span>
           </span>
         </div>
       </div>
@@ -438,7 +554,7 @@ exports[`SetupForm renders the form correctly with setupFlowRefresh enabled 1`] 
         Enable enhanced measurement
       </label>
       <p
-        class="googlesitekit-module-settings-group__helper-text"
+        class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--small"
       >
         This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
         <a

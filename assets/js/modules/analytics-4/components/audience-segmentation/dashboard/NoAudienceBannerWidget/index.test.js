@@ -50,8 +50,9 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'NoAudienceBannerWidget', () => {
-	const { simulateAllIntersections } = mockIntersectionObserver();
 	mockLocation();
+
+	const { simulateAllIntersections } = mockIntersectionObserver();
 
 	let registry;
 
@@ -219,25 +220,12 @@ describe( 'NoAudienceBannerWidget', () => {
 			).toBe( true );
 		} );
 
-		it( 'should redirect to the settings page when clicking on "Settings"', async () => {
-			expect( global.location.assign ).not.toHaveBeenCalled();
-
-			fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
-
-			// Allow the `trackEvent()` promise to resolve.
-			await waitForDefaultTimeouts();
-
-			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings&scrollTo=visitor-groups#/admin-settings'
-			);
-		} );
-
 		it( 'should track an event when the banner is viewed', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				simulateAllIntersections();
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -258,20 +246,6 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-no-audiences',
 				'select_groups',
-				'none-selected'
-			);
-		} );
-
-		it( 'should track an event when clicking on "Settings"', async () => {
-			fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
-
-			// Allow the `trackEvent()` promise to resolve.
-			await waitForDefaultTimeouts();
-
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_audiences-no-audiences',
-				'change_settings',
 				'none-selected'
 			);
 		} );
@@ -332,25 +306,12 @@ describe( 'NoAudienceBannerWidget', () => {
 			).toBe( true );
 		} );
 
-		it( 'should redirect to the settings page when clicking on "Settings"', async () => {
-			expect( global.location.assign ).not.toHaveBeenCalled();
-
-			fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
-
-			// Allow the `trackEvent()` promise to resolve.
-			await waitForDefaultTimeouts();
-
-			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings&scrollTo=visitor-groups#/admin-settings'
-			);
-		} );
-
 		it( 'should track an event when the banner is viewed', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				simulateAllIntersections();
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -373,20 +334,6 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-no-audiences',
 				'select_groups',
-				'no-longer-available'
-			);
-		} );
-
-		it( 'should track an event when clicking on "Settings"', async () => {
-			fireEvent.click( getByRole( 'button', { name: 'Settings' } ) );
-
-			// Allow the `trackEvent()` promise to resolve.
-			await waitForDefaultTimeouts();
-
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_audiences-no-audiences',
-				'change_settings',
 				'no-longer-available'
 			);
 		} );
@@ -446,7 +393,7 @@ describe( 'NoAudienceBannerWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				simulateAllIntersections();
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -530,7 +477,7 @@ describe( 'NoAudienceBannerWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				simulateAllIntersections();
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

@@ -34,7 +34,7 @@ import PDFBadge from './PDFBadge';
 /**
  * Renders the badge and returns the rendered tree as a JSON string.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param props Props for the badge.
  * @return JSON string of the rendered tree.
@@ -65,7 +65,7 @@ describe( 'PDFBadge', () => {
 			color: '#684500',
 		} );
 
-		expect( badgeJSON ).toContain( `"borderRadius":${ 100 * PDF_SCALE }` );
+		expect( badgeJSON ).toContain( `"borderRadius":${ 4 * PDF_SCALE }` );
 		expect( badgeJSON ).toContain( `"paddingVertical":${ 4 * PDF_SCALE }` );
 		expect( badgeJSON ).toContain(
 			`"paddingHorizontal":${ 8 * PDF_SCALE }`
@@ -90,6 +90,6 @@ describe( 'PDFBadge', () => {
 		expect( badgeJSON ).toContain(
 			`"paddingHorizontal":${ 10 * PDF_SCALE }`
 		);
-		expect( badgeJSON ).toContain( `"borderRadius":${ 100 * PDF_SCALE }` );
+		expect( badgeJSON ).toContain( `"borderRadius":${ 4 * PDF_SCALE }` );
 	} );
 } );

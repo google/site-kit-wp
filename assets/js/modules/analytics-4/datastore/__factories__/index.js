@@ -16,4 +16,5 @@
  * limitations under the License.
  */
 
+export * from './benchmarking';
 export * from './html-with-tag';

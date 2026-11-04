@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+// Unscoped: keeps cells as direct grid items even where #wpadminbar is absent (e.g. Storybook).
+.googlesitekit-adminbar__widgets-pair {
+	display: contents;
+}
+
 #wpadminbar {
 
 	&.nojs {
@@ -88,6 +93,36 @@
 		.googlesitekit-data-block__datapoint--resize {
 			font-size: inherit;
 		}
+
+		@include mdc-layout-grid-media-query_("phone") {
+
+			.mdc-layout-grid__cell--span-2-phone {
+				display: flex;
+
+				// Fill the cell whether it holds a data block, or its loading/error state.
+				> * {
+					flex: 1;
+				}
+
+				.googlesitekit-data-block {
+					display: flex;
+					flex-direction: column;
+				}
+
+				.googlesitekit-data-block__title {
+					// Keep a long title wrapping within its own column instead of overlapping the next one.
+					overflow-wrap: anywhere;
+				}
+			}
+
+			// Collapse zero-change space when neither pair widget has a real value.
+			.googlesitekit-adminbar__widgets-pair:not(:has(.googlesitekit-data-block__change:not(.googlesitekit-data-block__change--no-change))) {
+
+				.googlesitekit-data-block__change--no-change {
+					display: none;
+				}
+			}
+		}
 	}
 
 	// Handle links on mobile.
@@ -102,6 +137,7 @@
 	}
 
 	&.mobile .googlesitekit-plugin .googlesitekit-adminbar .googlesitekit-adminbar__link {
+		display: none;
 
 		@media (min-width: $bp-desktop) {
 			display: inline-block;

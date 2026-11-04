@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render } from '@tests/js/test-utils';
+import { act, render } from '@tests/js/test-utils';
 import TextField from './TextField';
 
 describe( 'TextField', () => {
@@ -197,6 +197,40 @@ describe( 'TextField', () => {
 		}
 	);
 
+	it( 'shows the character counter when `showCharacterCounter` is set', () => {
+		const { container } = render(
+			<TextField
+				{ ...defaultProps }
+				maxLength={ 40 }
+				value="Hello"
+				showCharacterCounter
+			/>
+		);
+
+		expect(
+			container.querySelector( '.mdc-text-field-character-counter' )
+		).toHaveTextContent( '5 / 40' );
+	} );
+
+	it.each( [
+		{
+			caseName: 'without `showCharacterCounter`',
+			props: { maxLength: 40 },
+		},
+		{
+			caseName: 'without `maxLength`',
+			props: { showCharacterCounter: true },
+		},
+	] )( 'does not show the character counter $caseName', ( { props } ) => {
+		const { container } = render(
+			<TextField { ...defaultProps } { ...props } value="Hello" />
+		);
+
+		expect(
+			container.querySelector( '.mdc-text-field-character-counter' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'shows `trailingIcon` when neither error prop is set', () => {
 		const { container } = render(
 			<TextField
@@ -212,4 +246,134 @@ describe( 'TextField', () => {
 			container.querySelector( '.googlesitekit-text-field-icon--error' )
 		).not.toBeInTheDocument();
 	} );
+
+	it.each( [ 'input', 'textarea' ] as const )(
+		'should float the label when the %s receives focus during mounting',
+		( inputType ) => {
+			const { container, getByRole } = render(
+				<TextField
+					{ ...defaultProps }
+					inputRef={ ( element ) => element?.focus() }
+					inputType={ inputType }
+					textarea={ inputType === 'textarea' }
+					value=""
+					outlined
+				/>
+			);
+
+			const input = getByRole( 'textbox' );
+			const label = container.querySelector( '.mdc-floating-label' );
+
+			expect( input ).toHaveFocus();
+			expect( label ).toHaveClass( 'mdc-floating-label--float-above' );
+
+			expect(
+				container.querySelector( '.mdc-notched-outline' )
+			).toHaveClass( 'mdc-notched-outline--notched' );
+
+			act( () => input.blur() );
+
+			expect( label ).not.toHaveClass(
+				'mdc-floating-label--float-above'
+			);
+			expect(
+				container.querySelector( '.mdc-notched-outline' )
+			).not.toHaveClass( 'mdc-notched-outline--notched' );
+		}
+	);
+
+	it( 'should leave an empty, unfocused field label in place', () => {
+		const { container, getByRole } = render(
+			<TextField { ...defaultProps } value="" outlined />
+		);
+
+		expect( getByRole( 'textbox' ) ).not.toHaveFocus();
+
+		expect(
+			container.querySelector( '.mdc-floating-label' )
+		).not.toHaveClass( 'mdc-floating-label--float-above' );
+	} );
+
+	it.each( [ 'input', 'textarea' ] as const )(
+		'should expose the native %s through inputRef and release it on unmount',
+		( inputType ) => {
+			const inputRef = jest.fn();
+
+			const { getByRole, rerender, unmount } = render(
+				<TextField
+					{ ...defaultProps }
+					inputType={ inputType }
+					textarea={ inputType === 'textarea' }
+					inputRef={ inputRef }
+				/>
+			);
+
+			const input = getByRole( 'textbox' );
+
+			expect( input.tagName.toLowerCase() ).toBe( inputType );
+			expect( inputRef ).toHaveBeenCalledTimes( 1 );
+			expect( inputRef ).toHaveBeenLastCalledWith( input );
+
+			rerender(
+				<TextField
+					{ ...defaultProps }
+					inputType={ inputType }
+					textarea={ inputType === 'textarea' }
+					inputRef={ inputRef }
+					value="Updated"
+				/>
+			);
+
+			expect( inputRef ).toHaveBeenCalledTimes( 1 );
+
+			unmount();
+
+			expect( inputRef ).toHaveBeenLastCalledWith( null );
+		}
+	);
+
+	it.each( [ 'input', 'textarea' ] as const )(
+		'should update inputRef when replacing a native %s',
+		( inputType ) => {
+			const inputRef = jest.fn();
+			const replacementType =
+				inputType === 'input' ? 'textarea' : 'input';
+
+			const { getByRole, rerender, unmount } = render(
+				<TextField
+					{ ...defaultProps }
+					inputRef={ inputRef }
+					inputType={ inputType }
+					textarea={ inputType === 'textarea' }
+				/>
+			);
+
+			const originalInput = getByRole( 'textbox' );
+
+			rerender(
+				<TextField
+					{ ...defaultProps }
+					inputRef={ inputRef }
+					inputType={ replacementType }
+					textarea={ replacementType === 'textarea' }
+				/>
+			);
+
+			const replacementInput = getByRole( 'textbox' );
+
+			expect( originalInput ).not.toBeInTheDocument();
+			expect( replacementInput.tagName.toLowerCase() ).toBe(
+				replacementType
+			);
+			expect( inputRef.mock.calls ).toEqual( [
+				[ originalInput ],
+				[ null ],
+				[ replacementInput ],
+			] );
+
+			unmount();
+
+			expect( inputRef ).toHaveBeenLastCalledWith( null );
+		}
+	);
 } );

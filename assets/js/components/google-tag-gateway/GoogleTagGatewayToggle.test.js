@@ -36,8 +36,9 @@ import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
+const { simulateAllIntersections } = mockIntersectionObserver();
+
 describe( 'GoogleTagGatewayToggle', () => {
-	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 
 	const serverRequirementStatusEndpoint = new RegExp(
@@ -175,7 +176,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		// Simulate the warning notice becoming visible if it were present.
 		act( () => {
-			simulateAllIntersections();
+			simulateAllIntersections( true );
 		} );
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
@@ -213,7 +214,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		// Simulate the warning notice becoming visible.
 		act( () => {
-			simulateAllIntersections();
+			simulateAllIntersections( true );
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

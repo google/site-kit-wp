@@ -151,7 +151,6 @@ describe( 'Analytics SetupLayout', () => {
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_MODULE_SETUP,
-						features: [ 'setupFlowRefresh' ],
 					}
 				);
 
@@ -188,7 +187,6 @@ describe( 'Analytics SetupLayout', () => {
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MODULE_SETUP,
-					features: [ 'setupFlowRefresh' ],
 				}
 			);
 

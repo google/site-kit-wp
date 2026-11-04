@@ -48,7 +48,7 @@ import { numFmt } from '@/js/util';
 /**
  * Builds the report options for the Popular Keywords widget.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} dates The date range dates, e.g. `startDate` and `endDate`.
  * @return {Object} The Search Console report options.
@@ -70,7 +70,7 @@ export function getPopularKeywordsReportOptions( dates ) {
  * The exclamation mark at the beginning of the query specifies that the term
  * should be treated as an exact match on the SC search results page.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object}   params                     Link parameters.
  * @param {Function} params.getServiceReportURL The Search Console store's `getServiceReportURL` selector.

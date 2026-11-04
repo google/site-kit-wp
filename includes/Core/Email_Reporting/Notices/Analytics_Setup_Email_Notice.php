@@ -103,17 +103,6 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	}
 
 	/**
-	 * Gets the target section key.
-	 *
-	 * @since 1.175.0
-	 *
-	 * @return string Empty for header notices.
-	 */
-	public function get_section_key() {
-		return '';
-	}
-
-	/**
 	 * Gets dismissal key for prompt storage.
 	 *
 	 * @since 1.175.0

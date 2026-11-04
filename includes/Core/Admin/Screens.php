@@ -13,7 +13,9 @@ namespace Google\Site_Kit\Core\Admin;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Intents\Intents;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
@@ -67,6 +69,14 @@ final class Screens {
 	private $authentication;
 
 	/**
+	 * Intents instance.
+	 *
+	 * @since 1.189.0
+	 * @var Intents
+	 */
+	private $intents;
+
+	/**
 	 * User_Options instance.
 	 *
 	 * @since 1.167.0
@@ -91,6 +101,7 @@ final class Screens {
 	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
 	 * @param Modules        $modules Optional. Modules instance. Default is a new instance.
 	 * @param Authentication $authentication  Optional. Authentication instance. Default is a new instance.
+	 * @param Intents        $intents  Optional. Intents instance. Default is a new instance.
 	 * @param User_Options   $user_options  Optional. User_Options instance. Default is a new instance.
 	 */
 	public function __construct(
@@ -98,12 +109,14 @@ final class Screens {
 		?Assets $assets = null,
 		?Modules $modules = null,
 		?Authentication $authentication = null,
+		?Intents $intents = null,
 		?User_Options $user_options = null
 	) {
 		$this->context        = $context;
 		$this->assets         = $assets ?: new Assets( $this->context );
 		$this->modules        = $modules ?: new Modules( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->intents        = $intents ?: new Intents();
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 	}
 
@@ -141,6 +154,8 @@ final class Screens {
 			function () {
 				// Redirect dashboard to splash if no dashboard access (yet).
 				$this->no_access_redirect_dashboard_to_splash();
+				// Explain why a user who can't sign in can't continue the intent the splash was opened for.
+				$this->no_access_explain_intent_on_splash();
 				// Redirect splash to (shared) dashboard if splash is dismissed.
 				$this->no_access_redirect_splash_to_dashboard();
 
@@ -279,6 +294,7 @@ final class Screens {
 	 * not eligible for accessing Site Kit entirely, i.e. if they are not allowed to authenticate.
 	 *
 	 * @since 1.12.0
+	 * @since 1.190.0 Added the `purpose=intent` argument when the request has an intent.
 	 */
 	private function no_access_redirect_dashboard_to_splash() {
 		global $plugin_page;
@@ -293,13 +309,18 @@ final class Screens {
 			$notification = $this->context->input()->filter( INPUT_GET, 'notification' );
 			$panel        = $this->context->input()->filter( INPUT_GET, 'panel' );
 
+			// The splash only needs the purpose to sign the user in for the intent:
+			// the service adds the intent arguments back when it returns the user.
+			$purpose = '' !== $this->get_intent_attributes( $this->context )['slug'] ? Google_Proxy::PURPOSE_INTENT : null;
+
 			wp_safe_redirect(
 				$this->context->admin_url(
 					'splash',
 					array_filter(
 						array(
-							'notification' => $notification,
-							'panel'        => $panel,
+							'notification'              => $notification,
+							'panel'                     => $panel,
+							Google_Proxy::PARAM_PURPOSE => $purpose,
 						),
 						function ( $value ) {
 							return null !== $value && '' !== $value;
@@ -309,6 +330,53 @@ final class Screens {
 			);
 			exit;
 		}
+	}
+
+	/**
+	 * Explains to a user who can't sign in to Site Kit that only administrators can continue an intent.
+	 *
+	 * The Site Kit Service sends a user who hasn't signed in to Site Kit with their Google account to the splash
+	 * screen with `purpose=intent`. A user who can't sign in can only open the splash screen as a view-only user
+	 * who hasn't dismissed it yet, which the splash screen handles itself. Everyone else would get the generic
+	 * WordPress permissions error, or be redirected to the dashboard without being told why.
+	 *
+	 * The splash screen URL doesn't say which intent it was opened for, so the message doesn't name it.
+	 *
+	 * @since 1.190.0
+	 */
+	private function no_access_explain_intent_on_splash() {
+		global $plugin_page;
+
+		if ( ! isset( $plugin_page ) || self::PREFIX . 'splash' !== $plugin_page ) {
+			return;
+		}
+
+		if ( Google_Proxy::PURPOSE_INTENT !== $this->context->input()->filter( INPUT_GET, Google_Proxy::PARAM_PURPOSE ) ) {
+			return;
+		}
+
+		// A site can give the capability to sign in to other roles, and the message would be wrong for them.
+		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
+			return;
+		}
+
+		$title   = __( 'You need administrator access to continue', 'google-site-kit' );
+		$message = sprintf(
+			'<h1>%s</h1><p>%s</p>',
+			esc_html( $title ),
+			esc_html__( 'Only administrators of this site can sign in to Site Kit and finish this setup. Ask one of them to give you administrator access, then go back to where you started and try again.', 'google-site-kit' )
+		);
+
+		// A view-only user can still use the dashboard, which the splash screen would otherwise have redirected them to.
+		if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+			$message .= sprintf(
+				'<p><a href="%s">%s</a></p>',
+				esc_url( $this->context->admin_url( 'dashboard' ) ),
+				esc_html__( 'Go to dashboard', 'google-site-kit' )
+			);
+		}
+
+		wp_die( $message, esc_html( $title ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every part of the message is escaped above.
 	}
 
 	/**
@@ -385,6 +453,36 @@ final class Screens {
 	}
 
 	/**
+	 * Redirects the dashboard to the setup step the current user has not finished yet,
+	 * unless the request has an intent, which takes priority.
+	 *
+	 * @since 1.183.0
+	 * @since 1.190.0 Moved from the dashboard screen's `initialize_callback` and skipped for requests with an intent.
+	 */
+	private function redirect_dashboard_to_unfinished_setup_step() {
+		if ( ! $this->authentication->is_authenticated() ) {
+			return;
+		}
+
+		if ( '' !== $this->get_intent_attributes( $this->context )['slug'] ) {
+			return;
+		}
+
+		$initial_setup_settings      = ( new Initial_Setup_Settings( $this->user_options ) )->get();
+		$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'] ?? null;
+		$has_site_purpose_answer     = $initial_setup_settings['hasSitePurposeAnswer'] ?? null;
+
+		if ( false === $is_analytics_setup_complete ) {
+			$this->analytics_setup_incomplete_redirect_dashboard_to_setup();
+			return;
+		}
+
+		if ( false === $has_site_purpose_answer ) {
+			$this->no_site_purpose_answer_redirect_dashboard_to_setup();
+		}
+	}
+
+	/**
 	 * Redirects dashboard to provide a site purpose answer.
 	 *
 	 * @since 1.183.0
@@ -437,6 +535,40 @@ final class Screens {
 	}
 
 	/**
+	 * Gets the intent slug and code to render on the main dashboard.
+	 *
+	 * Both are empty unless the request names an intent that is registered and available and the
+	 * current user may set up Site Kit.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @param Context $context Plugin context.
+	 * @return string[] Intent slug from the `intent` argument under `slug`, and one-time code from
+	 *                  the `intent_code` argument under `code`.
+	 */
+	private function get_intent_attributes( Context $context ) {
+		$intent = $context->input()->filter( INPUT_GET, 'intent' ) ?: '';
+		$code   = $context->input()->filter( INPUT_GET, 'intent_code' ) ?: '';
+
+		if (
+			! $intent
+			|| ! $code
+			|| ! current_user_can( Permissions::SETUP )
+			|| null === $this->intents->get_intent( $intent )
+		) {
+			return array(
+				'slug' => '',
+				'code' => '',
+			);
+		}
+
+		return array(
+			'slug' => $intent,
+			'code' => $code,
+		);
+	}
+
+	/**
 	 * Gets available admin screens.
 	 *
 	 * @since 1.0.0
@@ -460,32 +592,12 @@ final class Screens {
 						}
 					},
 					'initialize_callback' => function () {
-						if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-							return;
-						}
-
-						$is_view_only = ! $this->authentication->is_authenticated();
-
-						if ( ! $is_view_only ) {
-							$initial_setup_settings      = ( new Initial_Setup_Settings( $this->user_options ) )->get();
-							$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'] ?? null;
-							$has_site_purpose_answer     = $initial_setup_settings['hasSitePurposeAnswer'] ?? null;
-
-							if ( false === $is_analytics_setup_complete ) {
-								$this->analytics_setup_incomplete_redirect_dashboard_to_setup();
-								return;
-							}
-
-							if ( false === $has_site_purpose_answer ) {
-								$this->no_site_purpose_answer_redirect_dashboard_to_setup();
-								return;
-							}
-						}
+						$this->redirect_dashboard_to_unfinished_setup_step();
 					},
 					'render_callback'     => function ( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
 
-						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '' );
+						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 						if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							?>
@@ -509,8 +621,10 @@ final class Screens {
 									wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( $message ) ), 403 );
 								}
 							}
+
+							$intent_attributes = $this->get_intent_attributes( $context );
 							?>
-							<div id="js-googlesitekit-main-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
+							<div id="js-googlesitekit-main-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" data-intent-slug="<?php echo esc_attr( $intent_attributes['slug'] ); ?>" data-intent-code="<?php echo esc_attr( $intent_attributes['code'] ); ?>" class="googlesitekit-page"></div>
 							<?php
 						}
 					},
@@ -593,7 +707,11 @@ final class Screens {
 						self::PREFIX . 'features',
 						array(
 							'title'            => __( 'Add Features', 'google-site-kit' ),
-							'menu_title'       => __( 'Add Features', 'google-site-kit' ),
+							'menu_title'       => sprintf(
+								/* translators: %s: New features count badge. */
+								__( 'Add Features %s', 'google-site-kit' ),
+								'<span class="menu-counter googlesitekit-features-badge count-0"><span aria-hidden="true" class="count"></span><span class="screen-reader-text"></span></span>'
+							),
 							'capability'       => Permissions::MANAGE_OPTIONS,
 							'enqueue_callback' => function ( Assets $assets ) {
 								$assets->enqueue_asset( 'googlesitekit-features' );

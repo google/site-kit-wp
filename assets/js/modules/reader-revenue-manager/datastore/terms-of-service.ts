@@ -113,7 +113,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Terms of Service HTML.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state         Data store's state.
 	 * @param {Object} params        Terms of Service parameters.

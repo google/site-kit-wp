@@ -1,0 +1,116 @@
+/**
+ * Public Feature Discovery API entrypoint.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
+import { Registry } from 'googlesitekit-data';
+import { isFeatureEnabled } from '@/js/features';
+import {
+	CORE_FEATURE_DISCOVERY,
+	actions,
+	registerStore,
+	selectors,
+} from '@/js/googlesitekit/datastore/feature-discovery';
+import type { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+
+export { actions, registerStore, selectors };
+
+/**
+ * Creates a new instance of Feature Discovery.
+ *
+ * @since 1.188.0
+ *
+ * @param {Object}   registry          Datastore registry.
+ * @param {Function} registry.dispatch Registry dispatch function.
+ * @return {Object} Feature Discovery instance.
+ */
+export function createFeatureDiscovery( registry: WPDataRegistry ) {
+	const { dispatch } = registry;
+
+	const FeatureDiscovery = {
+		/**
+		 * Registers a feature in the catalog.
+		 *
+		 * @since 1.188.0
+		 *
+		 * @param {string}         slug                               Feature's slug.
+		 * @param {Object}         settings                           Feature's settings.
+		 * @param {string}         settings.title                     Feature's card title.
+		 * @param {string}         settings.shortDescription          Feature's card description.
+		 * @param {number}         settings.effort                    Effort level: `1`, `2` or `3`.
+		 * @param {Array.<string>} settings.goalCategories            Goal categories the feature belongs to, in order. The first is its primary category.
+		 * @param {string}         settings.addedInVersion            Site Kit version the feature was released in.
+		 * @param {Object}         settings.setup                     Setup descriptor driving the feature's CTA and activation.
+		 * @param {Function}       [settings.setup.isInProgress]      Optional. Returns whether setup has started but not completed.
+		 * @param {Function}       [settings.setup.getResumeURL]      Optional. Returns a URL to resume an unfinished setup.
+		 * @param {string}         [settings.setup.resumeCTALabel]    Optional. Label for the detail panel CTA while setup is in progress.
+		 * @param {Array.<string>} [settings.prerequisiteModules]     Optional. Modules the feature depends on but does not itself set up. Default is: `[]`.
+		 * @param {Function}       [settings.checkRequirements]       Optional. Hides the feature when it returns false. Default is visible.
+		 * @param {Object}         [settings.detail]                  Optional. Detail panel content.
+		 * @param {Array.<string>} [settings.badges]                  Optional. Static badges. Default is: `[]`.
+		 * @param {Object}         [settings.successNotice]           Optional. Copy for the notice shown once the feature is set up.
+		 * @param {Object}         [settings.incompleteSetupReminder] Optional. Copy for incomplete setup reminder surfaces.
+		 * @param {Function}       [settings.EffectComponent]         Optional. Component rendered once on the hub, for setup work that runs on load.
+		 * @return {Object} Feature registration action result.
+		 */
+		registerFeature: ( slug: string, settings: FeatureSettings ) => {
+			return dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+				slug,
+				settings
+			);
+		},
+
+		/**
+		 * Removes the dismissed-item mark for a feature's incomplete setup reminder.
+		 *
+		 * @since 1.191.0
+		 *
+		 * @param {string} slug Feature's slug.
+		 * @return {Promise<void>} Promise that resolves once the reminder has been reset.
+		 */
+		resetIncompleteSetupReminder: async ( slug: string ) => {
+			if ( ! isFeatureEnabled( 'featureDiscoveryHub' ) ) {
+				return;
+			}
+
+			const dataRegistry = registry as unknown as Registry;
+			await dataRegistry.resolveSelect( CORE_USER ).getDismissedItems();
+
+			const key = getFeatureIncompleteSetupReminderKey( slug );
+			const dismissed = dataRegistry
+				.select( CORE_USER )
+				.isItemDismissed( key );
+
+			if ( dismissed !== true ) {
+				return;
+			}
+
+			await dispatch( CORE_USER ).removeDismissedItems( key );
+		},
+	};
+
+	return FeatureDiscovery;
+}

@@ -45,6 +45,7 @@ import {
 } from '@tests/js/test-utils';
 import {
 	requireAccessToFeatureTour,
+	requireAccessToShareableModule,
 	requireAdsConnected,
 	requireAnyGoogleTagGatewayModuleConnected,
 	requireAuthError,
@@ -57,9 +58,12 @@ import {
 	requireGTGScriptAccessEnabled,
 	requireGoogleTagGatewayEnabled,
 	requireHasRecoverableModules,
+	requireHomeURLUsingHTTPS,
+	requireModuleNotConnected,
 	requireModuleRecoverable,
 	requireModuleViewable,
 	requireModuleZeroData,
+	requirePromptDismissed,
 	requireQueryArg,
 	requireSetupError,
 	requireSiteEmailReportingNotDisabled,
@@ -559,6 +563,50 @@ describe( 'data requirements', () => {
 		} );
 	} );
 
+	describe( 'requireModuleNotConnected', () => {
+		it( 'should return true when the module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: false,
+				},
+			] );
+
+			expect(
+				await requireModuleNotConnected( MODULE_SLUG_ANALYTICS_4 )(
+					registry
+				)
+			).toBe( true );
+		} );
+
+		it( 'should return false when the module is connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			expect(
+				await requireModuleNotConnected( MODULE_SLUG_ANALYTICS_4 )(
+					registry
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return false when the connection state is not available', async () => {
+			provideModules( registry );
+
+			expect(
+				await requireModuleNotConnected( 'non-existent-module' )(
+					registry
+				)
+			).toBe( false );
+		} );
+	} );
+
 	describe( 'requireModuleViewable', () => {
 		it( 'should return true when the module is shared with the user', async () => {
 			provideModules( registry, [
@@ -586,6 +634,63 @@ describe( 'data requirements', () => {
 
 			expect(
 				await requireModuleViewable( MODULE_SLUG_SEARCH_CONSOLE )(
+					registry
+				)
+			).toBe( false );
+		} );
+	} );
+
+	describe( 'requireAccessToShareableModule', () => {
+		it( 'should return true when the user is authenticated', async () => {
+			provideUserAuthentication( registry );
+			provideModules( registry );
+
+			expect(
+				await requireAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
+				)( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return true when the module is shared with the user', async () => {
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideModules( registry, [
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE, shareable: true },
+			] );
+			provideUserCapabilities( registry, {
+				[ getMetaCapabilityPropertyName(
+					PERMISSION_READ_SHARED_MODULE_DATA,
+					MODULE_SLUG_SEARCH_CONSOLE
+				) ]: true,
+			} );
+
+			expect(
+				await requireAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
+				)( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return false when the module is not shared with the user', async () => {
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideModules( registry, [
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE, shareable: true },
+			] );
+			provideUserCapabilities( registry );
+
+			expect(
+				await requireAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
+				)( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return false when the module is not available', async () => {
+			provideUserAuthentication( registry );
+			provideModules( registry );
+
+			expect(
+				await requireAccessToShareableModule( 'non-existent-module' )(
 					registry
 				)
 			).toBe( false );
@@ -690,6 +795,55 @@ describe( 'data requirements', () => {
 					registry
 				)
 			).toBe( false );
+		} );
+	} );
+
+	describe( 'requirePromptDismissed', () => {
+		it( 'should return true when the prompt is dismissed', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				'test-prompt': { expires: 0, count: 1 },
+			} );
+
+			expect(
+				await requirePromptDismissed( 'test-prompt' )( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return false when the prompt is not dismissed', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+			expect(
+				await requirePromptDismissed( 'test-prompt' )( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return false when the prompt dismissal has expired', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				'test-prompt': {
+					expires: Math.floor( Date.now() / 1000 ) - 1,
+					count: 1,
+				},
+			} );
+
+			expect(
+				await requirePromptDismissed( 'test-prompt' )( registry )
+			).toBe( false );
+		} );
+	} );
+
+	describe( 'requireHomeURLUsingHTTPS', () => {
+		it( 'should return true when the home URL uses HTTPS', async () => {
+			provideSiteInfo( registry, { homeURL: 'https://example.com' } );
+
+			expect( await requireHomeURLUsingHTTPS()( registry ) ).toBe( true );
+		} );
+
+		it( 'should return false when the home URL does not use HTTPS', async () => {
+			provideSiteInfo( registry, { homeURL: 'http://example.com' } );
+
+			expect( await requireHomeURLUsingHTTPS()( registry ) ).toBe(
+				false
+			);
 		} );
 	} );
 

@@ -18,7 +18,7 @@ exports[`ProductIDContributionsNotification should render correctly 1`] = `
             class="googlesitekit-notice-container"
           >
             <div
-              class="googlesitekit-notice googlesitekit-notice--new"
+              class="googlesitekit-notice googlesitekit-notice--new googlesitekit-notice--default"
               role="status"
             >
               <div
@@ -27,10 +27,10 @@ exports[`ProductIDContributionsNotification should render correctly 1`] = `
                 <svg />
               </div>
               <div
-                class="googlesitekit-notice__content"
+                class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 <p
-                  class="googlesitekit-notice__description"
+                  class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   New! You can now select product IDs to use with your Reader Revenue Manager snippet
                 </p>

@@ -20,13 +20,27 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isObject, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { createReducer } from 'googlesitekit-data';
+import { Registry, commonActions, createReducer } from 'googlesitekit-data';
 import {
+	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+	FEATURE_DISCOVERY_SETUP_REQUEST_KEY,
+} from '@/js/components/feature-discovery/constants';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	getCurrentFeatureDiscoveryTabPath,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
 	FEATURE_CATEGORY_ORDER,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
@@ -36,41 +50,104 @@ import type {
 	FeatureCategorySlug,
 	FeatureDiscoveryState,
 	FeatureSettings,
+	PendingSetup,
 } from './types';
 
 const REGISTER_FEATURE = 'REGISTER_FEATURE' as const;
+const RECEIVE_PENDING_SETUP = 'RECEIVE_PENDING_SETUP' as const;
+const START_FEATURE_SETUP = 'START_FEATURE_SETUP' as const;
+const FINISH_FEATURE_SETUP = 'FINISH_FEATURE_SETUP' as const;
 
-type Action = {
-	type: typeof REGISTER_FEATURE;
-	payload: { slug: string; settings: Omit< Feature, 'slug' > };
-};
+type Action =
+	| {
+			type: typeof REGISTER_FEATURE;
+			payload: { slug: string; settings: Omit< Feature, 'slug' > };
+	  }
+	| {
+			type: typeof RECEIVE_PENDING_SETUP;
+			payload: { pendingSetup: PendingSetup | null };
+	  }
+	| {
+			type: typeof START_FEATURE_SETUP | typeof FINISH_FEATURE_SETUP;
+			payload: { slug: string };
+	  };
 
 export const initialState: FeatureDiscoveryState = {
 	features: {},
+	pendingSetup: null,
+	setupInProgress: {},
 };
 
 const effortLevels = Object.values( FEATURE_EFFORTS );
 const setupTypes = Object.values( FEATURE_SETUP_TYPES );
+const { clearActionError, setErrorForAction } = errorStoreActions;
+
+type SetupFeatureResult = { error?: unknown };
+
+// Sets up a `background-toggle` feature, either by handing the setup over to
+// the feature's own setup component or by running its enable routine.
+async function setupBackgroundToggleFeature(
+	registry: Registry,
+	feature: Feature,
+	slug: string
+): Promise< SetupFeatureResult > {
+	// A feature with its own setup component runs its setup in the list, so the
+	// request is handed over and the detail panel this was triggered from is
+	// closed.
+	if ( feature.setup.SetupComponent ) {
+		const { setValue } = registry.dispatch( CORE_UI );
+
+		setValue( FEATURE_DISCOVERY_SETUP_REQUEST_KEY, slug );
+		setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, false );
+
+		return {};
+	}
+
+	if ( ! feature.setup.activate ) {
+		return {};
+	}
+
+	const { error } = await feature.setup.activate( registry );
+
+	if ( error ) {
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.setErrorForAction( error, 'setupFeature', [ slug ] );
+		return { error };
+	}
+
+	registry
+		.dispatch( CORE_FEATURE_DISCOVERY )
+		.clearActionError( 'setupFeature', [ slug ] );
+
+	return {};
+}
 
 export const actions = {
 	/**
 	 * Registers a feature in the catalog with a given slug and settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
-	 * @param {string}         slug                           Feature's slug.
-	 * @param {Object}         settings                       Feature's settings.
-	 * @param {string}         settings.title                 Feature's card title.
-	 * @param {string}         settings.shortDescription      Feature's card description.
-	 * @param {number}         settings.effort                Effort level: `1`, `2` or `3`.
-	 * @param {Array.<string>} settings.goalCategories        Goal categories the feature belongs to, in order. The first is its primary category.
-	 * @param {string}         settings.addedInVersion        Site Kit version the feature was released in.
-	 * @param {Object}         settings.setup                 Setup descriptor driving the feature's CTA and activation.
-	 * @param {Array.<string>} [settings.prerequisiteModules] Optional. Modules the feature depends on but does not itself set up. Default is: `[]`.
-	 * @param {Function}       [settings.checkRequirements]   Optional. Hides the feature when it returns false. Default is visible.
-	 * @param {Object}         [settings.detail]              Optional. Detail panel content.
-	 * @param {Array.<string>} [settings.badges]              Optional. Static badges. Default is: `[]`.
-	 * @param {Object}         [settings.successNotice]       Optional. Copy for the notice shown once the feature is set up.
+	 * @param {string}         slug                               Feature's slug.
+	 * @param {Object}         settings                           Feature's settings.
+	 * @param {string}         settings.title                     Feature's card title.
+	 * @param {string}         settings.shortDescription          Feature's card description.
+	 * @param {number}         settings.effort                    Effort level: `1`, `2` or `3`.
+	 * @param {string}         [settings.moduleSlug]              Optional. Module whose service identity is shown on the feature card.
+	 * @param {Array.<string>} settings.goalCategories            Goal categories the feature belongs to, in order. The first is its primary category.
+	 * @param {string}         settings.addedInVersion            Site Kit version the feature was released in.
+	 * @param {Object}         settings.setup                     Setup descriptor driving the feature's CTA and activation.
+	 * @param {Function}       [settings.setup.isInProgress]      Optional. Returns whether setup has started but not completed.
+	 * @param {Function}       [settings.setup.getResumeURL]      Optional. Returns a URL to resume an unfinished setup.
+	 * @param {string}         [settings.setup.resumeCTALabel]    Optional. Label for the detail panel CTA while setup is in progress.
+	 * @param {Array.<string>} [settings.prerequisiteModules]     Optional. Modules the feature depends on but does not itself set up. Default is: `[]`.
+	 * @param {Function}       [settings.checkRequirements]       Optional. Hides the feature when it returns false. Default is visible.
+	 * @param {Object}         [settings.detail]                  Optional. Detail panel content.
+	 * @param {Array.<string>} [settings.badges]                  Optional. Static badges. Default is: `[]`.
+	 * @param {Object}         [settings.successNotice]           Optional. Copy for the notice shown once the feature is set up.
+	 * @param {Object}         [settings.incompleteSetupReminder] Optional. Copy for incomplete setup reminder surfaces.
+	 * @param {Function}       [settings.EffectComponent]         Optional. Component rendered once on the hub, for setup work that runs on load.
 	 * @return {Object} Redux-style action.
 	 */
 	registerFeature( slug: string, settings: FeatureSettings ) {
@@ -142,6 +219,202 @@ export const actions = {
 			type: REGISTER_FEATURE,
 		};
 	},
+
+	/**
+	 * Starts the setup for the feature registered under a given slug.
+	 *
+	 * For `setup-flow` features that activate a module, this activates the
+	 * module, records that the user left the hub to set it up, and takes them
+	 * into the module's setup, or to the descriptor's own `getSetupURL()`
+	 * target where it provides one. Where the module has no setup screen, it is
+	 * simply activated and the user stays on the hub. Features with only a
+	 * `getSetupURL()` go straight to that target.
+	 *
+	 * For `in-place-panel` features, this closes the feature detail panel and
+	 * opens the feature's existing panel over the hub.
+	 *
+	 * For `background-toggle` features, this runs the feature's own enable
+	 * routine, and the user stays on the hub. Where the feature brings its own
+	 * setup component, this instead requests that component to run the setup
+	 * and closes the feature detail panel.
+	 *
+	 * @since 1.189.0
+	 * @since 1.190.0 Implemented the `setup-flow` setup type.
+	 * @since 1.191.0 Implemented the `in-place-panel` and `background-toggle` setup types.
+	 * @since n.e.x.t Allowed `setup-flow` features to activate a module and also override its setup URL.
+	 *
+	 * @param {string} slug Feature's slug.
+	 * @return {Object} Empty object, or an object with an `error` if the module could not be activated or the feature could not be enabled.
+	 */
+	setupFeature: createValidatedAction(
+		( slug: string ) => {
+			invariant( slug, 'slug is required to set up a feature.' );
+		},
+		function* (
+			slug: string
+		): Generator< unknown, SetupFeatureResult, unknown > {
+			const registry = ( yield commonActions.getRegistry() ) as Registry;
+
+			const feature = registry
+				.select( CORE_FEATURE_DISCOVERY )
+				.getFeature( slug );
+
+			if ( ! feature ) {
+				return {};
+			}
+
+			// A setup can take the user away from the hub, such as to grant
+			// extra scopes, and the detail panel must not reopen on their
+			// return, whether or not it has closed by the time the snapshot
+			// is taken.
+			registry
+				.dispatch( CORE_UI )
+				.omitKeysFromSnapshot( [
+					FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+				] );
+
+			yield { type: START_FEATURE_SETUP, payload: { slug } };
+
+			try {
+				// In-place features open their existing panel over the hub,
+				// which does its own saving, so the user never leaves the hub.
+				if (
+					feature.setup.type === FEATURE_SETUP_TYPES.IN_PLACE_PANEL
+				) {
+					// The detail panel is closed first so that the feature's
+					// own panel opens on its own over the hub.
+					registry
+						.dispatch( CORE_UI )
+						.setValue(
+							FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+							false
+						);
+
+					feature.setup.open?.( registry );
+					return {};
+				}
+
+				if (
+					feature.setup.type === FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE
+				) {
+					return ( yield commonActions.await(
+						setupBackgroundToggleFeature( registry, feature, slug )
+					) ) as SetupFeatureResult;
+				}
+
+				if ( feature.setup.type !== FEATURE_SETUP_TYPES.SETUP_FLOW ) {
+					return {};
+				}
+
+				const { moduleSlug, getSetupURL } = feature.setup;
+
+				// A flow with no module to activate goes straight to its own URL.
+				if ( ! moduleSlug ) {
+					const setupURL = getSetupURL?.( registry.select );
+
+					if ( ! setupURL ) {
+						return {};
+					}
+
+					yield commonActions.await(
+						setPendingSetup(
+							slug,
+							getCurrentFeatureDiscoveryTabPath()
+						)
+					);
+
+					yield commonActions.await(
+						registry
+							.dispatch( CORE_LOCATION )
+							.navigateTo( setupURL )
+					);
+
+					return {};
+				}
+
+				const { response, error } = ( yield commonActions.await(
+					registry
+						.dispatch( CORE_MODULES )
+						.activateModule( moduleSlug )
+				) ) as {
+					response?: { moduleReauthURL: string };
+					error?: unknown;
+				};
+
+				if ( error ) {
+					yield setErrorForAction( error, 'setupFeature', [ slug ] );
+					return { error };
+				}
+
+				yield clearActionError( 'setupFeature', [ slug ] );
+
+				// The descriptor's target takes precedence over the module's own
+				// reauth URL, once the module has been activated.
+				const overrideURL = getSetupURL?.( registry.select );
+
+				// Modules with no setup screen, such as PageSpeed Insights, are
+				// connected as soon as they are activated, so the user stays on
+				// the hub.
+				if (
+					! overrideURL &&
+					! registry.select( CORE_MODULES ).getModule( moduleSlug )
+						?.SetupComponent
+				) {
+					return {};
+				}
+
+				// The record must be written before navigating so that it survives
+				// the OAuth round trip.
+				yield commonActions.await(
+					setPendingSetup( slug, getCurrentFeatureDiscoveryTabPath() )
+				);
+
+				yield commonActions.await(
+					registry
+						.dispatch( CORE_LOCATION )
+						.navigateTo(
+							overrideURL ??
+								( response?.moduleReauthURL as string )
+						)
+				);
+
+				return {};
+			} catch ( caughtError: unknown ) {
+				const error = isObject( caughtError )
+					? caughtError
+					: new Error( String( caughtError ) );
+
+				yield setErrorForAction( error, 'setupFeature', [ slug ] );
+
+				return { error };
+			} finally {
+				yield { type: FINISH_FEATURE_SETUP, payload: { slug } };
+			}
+		}
+	),
+
+	/**
+	 * Stores the setup the user left the hub to complete, as consumed from
+	 * the cache when the hub mounted.
+	 *
+	 * @since 1.190.0
+	 *
+	 * @param {(Object|null)} pendingSetup             The pending setup, or `null` if there is none.
+	 * @param {string}        pendingSetup.featureSlug Slug of the feature being set up.
+	 * @param {string}        pendingSetup.returnTab   Path of the tab the user set out from.
+	 * @return {Object} Redux-style action.
+	 */
+	receivePendingSetup( pendingSetup: PendingSetup | null ) {
+		invariant(
+			pendingSetup === null || isPlainObject( pendingSetup ),
+			'pendingSetup must be an object or null.'
+		);
+
+		return {
+			payload: { pendingSetup },
+			type: RECEIVE_PENDING_SETUP,
+		};
+	},
 };
 
 export const reducer = createReducer(
@@ -159,6 +432,20 @@ export const reducer = createReducer(
 				}
 
 				state.features[ slug ] = { ...settings, slug };
+
+				return state;
+			}
+
+			case RECEIVE_PENDING_SETUP: {
+				state.pendingSetup = payload.pendingSetup;
+
+				return state;
+			}
+
+			case START_FEATURE_SETUP:
+			case FINISH_FEATURE_SETUP: {
+				state.setupInProgress[ payload.slug ] =
+					type === START_FEATURE_SETUP;
 
 				return state;
 			}

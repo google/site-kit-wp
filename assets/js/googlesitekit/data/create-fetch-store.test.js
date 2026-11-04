@@ -36,6 +36,11 @@ import { subscribeUntil } from '@tests/js/utils';
 import { createErrorStore } from './create-error-store';
 import { createFetchStore } from './create-fetch-store';
 
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
+jest.mock( 'googlesitekit-api', () =>
+	require( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
+
 const TEST_STORE = 'test/some-data';
 const STORE_PARAMS = {
 	baseName: 'getSomeData',
@@ -49,12 +54,18 @@ const STORE_PARAMS = {
 		invariant( isPlainObject( objParam ), 'objParam is required.' );
 		invariant( aParam !== undefined, 'aParam is required.' );
 	},
-	controlCallback: ( params ) => {
+	controlCallback: ( params, fetchOptions ) => {
 		const { aParam, objParam } = params;
-		return get( 'core', 'test', 'some-data', {
-			aParam,
-			objParam,
-		} );
+		return get(
+			'core',
+			'test',
+			'some-data',
+			{
+				aParam,
+				objParam,
+			},
+			fetchOptions
+		);
 	},
 	reducerCallback: ( state, response, params ) => {
 		const { aParam } = params;
@@ -80,6 +91,8 @@ describe( 'createFetchStore store', () => {
 	} );
 
 	beforeEach( () => {
+		get.mockClear();
+
 		registry = createRegistry();
 
 		storeDefinition = createFetchStore( STORE_PARAMS );
@@ -225,6 +238,41 @@ describe( 'createFetchStore store', () => {
 				expect( store.getState().data ).toEqual( {
 					'value-to-key-response-by': expectedResponse,
 				} );
+			} );
+
+			it( 'passes cacheTTL from the fetch options to the request', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/test/data/some-data'
+					),
+					{ body: JSON.stringify( 'response-value' ), status: 200 }
+				);
+
+				await dispatch.fetchGetSomeData( {}, 'aValue', {
+					cacheTTL: 300,
+				} );
+
+				expect( get ).toHaveBeenCalledWith(
+					'core',
+					'test',
+					'some-data',
+					{ aParam: 'aValue', objParam: {} },
+					{ cacheTTL: 300 }
+				);
+			} );
+
+			it( 'sends no cacheTTL to the request when the call has no fetch options', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/test/data/some-data'
+					),
+					{ body: JSON.stringify( 'response-value' ), status: 200 }
+				);
+
+				await dispatch.fetchGetSomeData( {}, 'aValue' );
+
+				expect( get ).toHaveBeenCalledTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toBeUndefined();
 			} );
 
 			describe( 'error handling', () => {

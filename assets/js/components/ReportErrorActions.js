@@ -83,10 +83,14 @@ export default function ReportErrorActions( props ) {
 		} )
 	);
 
+	// Invalidating the resolution of `getReport` requests the report again, but
+	// not for a report with fetch options, which needs `onRetry`. The error of
+	// another selector shows "Retry" only with `onRetry`, because this
+	// component can't tell whether invalidating requests the data again.
 	const retryableErrors = errorsWithSelectorData?.filter(
 		( err ) =>
 			isErrorRetryable( err, err.selectorData ) &&
-			err.selectorData.name === 'getReport'
+			( err.selectorData.name === 'getReport' || !! onRetry )
 	);
 
 	const showRetry = !! retryableErrors.length;

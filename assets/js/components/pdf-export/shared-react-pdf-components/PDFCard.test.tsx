@@ -27,21 +27,8 @@ import TestRenderer from 'react-test-renderer';
  */
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { flattenPDFStyle } from '@/js/components/pdf-export/test-utils';
 import PDFCard from './PDFCard';
-
-/**
- * Merges a style array into one object, so assertions read one flat style.
- *
- * @since 1.183.0
- *
- * @param style A style object, or the style array `@react-pdf` renders.
- * @return One object holding every style property.
- */
-function flattenStyle(
-	style: Record< string, unknown > | Array< Record< string, unknown > >
-): Record< string, unknown > {
-	return Array.isArray( style ) ? Object.assign( {}, ...style ) : style;
-}
 
 /**
  * Renders the card and returns the test renderer's JSON tree.
@@ -80,11 +67,7 @@ describe( 'PDFCard', () => {
 			children: 'card content',
 		} );
 
-		const style = flattenStyle(
-			tree.props.style as
-				| Record< string, unknown >
-				| Array< Record< string, unknown > >
-		);
+		const style = flattenPDFStyle( tree.props.style );
 
 		// The card keeps its surface color and radius. The `style` prop adds
 		// `flexGrow`, and its padding replaces the default. That padding stays

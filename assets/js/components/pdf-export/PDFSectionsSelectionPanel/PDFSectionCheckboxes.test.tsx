@@ -28,10 +28,10 @@ const TRAFFIC_SECTION: PDFSection = {
 	label: 'Traffic',
 	contextSlug: 'mainDashboardTraffic',
 	widgets: [
-		{ slug: 'analyticsAllTrafficGA4', label: 'Site traffic over time' },
+		{ slug: 'analyticsTrafficOverview', label: 'Site traffic over time' },
 		{ slug: 'searchFunnelGA4', label: 'Search traffic' },
 	],
-	widgetSlugs: [ 'analyticsAllTrafficGA4', 'searchFunnelGA4' ],
+	widgetSlugs: [ 'analyticsTrafficOverview', 'searchFunnelGA4' ],
 };
 
 describe( 'PDFSectionCheckboxes', () => {
@@ -68,7 +68,7 @@ describe( 'PDFSectionCheckboxes', () => {
 			<PDFSectionCheckboxes
 				sections={ [ TRAFFIC_SECTION ] }
 				selectedWidgetSlugs={ [
-					'analyticsAllTrafficGA4',
+					'analyticsTrafficOverview',
 					'searchFunnelGA4',
 				] }
 				toggleSection={ () => {} }
@@ -88,7 +88,7 @@ describe( 'PDFSectionCheckboxes', () => {
 		const { getByRole } = render(
 			<PDFSectionCheckboxes
 				sections={ [ TRAFFIC_SECTION ] }
-				selectedWidgetSlugs={ [ 'analyticsAllTrafficGA4' ] }
+				selectedWidgetSlugs={ [ 'analyticsTrafficOverview' ] }
 				toggleSection={ () => {} }
 				toggleWidget={ () => {} }
 			/>,
@@ -137,7 +137,9 @@ describe( 'PDFSectionCheckboxes', () => {
 			getByRole( 'checkbox', { name: /^Site traffic over time$/ } )
 		);
 
-		expect( toggleWidget ).toHaveBeenCalledWith( 'analyticsAllTrafficGA4' );
+		expect( toggleWidget ).toHaveBeenCalledWith(
+			'analyticsTrafficOverview'
+		);
 	} );
 
 	it( 'renders a collapsed section (no children) when no widgets are labelled', () => {

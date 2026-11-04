@@ -369,7 +369,7 @@ function generateDateRange( startDate, endDate ) {
  *
  * @param {Object} options        Report options.
  * @param {Object} [extraOptions] Extra options for report generation.
- * @return {Array.<Object>} An array with generated report.
+ * @return {Object.<string, *>} The generated report.
  */
 export function getAnalytics4MockResponse(
 	options,

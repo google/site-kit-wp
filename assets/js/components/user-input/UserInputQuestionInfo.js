@@ -31,15 +31,23 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { SIZE_MEDIUM, SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	BREAKPOINT_DESKTOP,
+	BREAKPOINT_XLARGE,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
 import { Cell } from '@/js/material-components';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputQuestions } from './util/constants';
 
 export default function UserInputQuestionInfo( { slug, questionNumber } ) {
+	const breakpoint = useBreakpoint();
+
 	const hasMultipleUser = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
@@ -53,6 +61,11 @@ export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 	const questions = getUserInputQuestions();
 	const description = questions[ questionNumber - 1 ]?.description || '';
 
+	const descriptionSize =
+		BREAKPOINT_XLARGE === breakpoint || BREAKPOINT_DESKTOP === breakpoint
+			? SIZE_MEDIUM
+			: SIZE_SMALL;
+
 	return (
 		<Fragment>
 			<Cell
@@ -62,9 +75,12 @@ export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 				smSize={ 4 }
 			>
 				{ description && (
-					<p className="googlesitekit-user-input__question-instructions--description">
+					<P
+						className="googlesitekit-user-input__question-instructions--description"
+						size={ descriptionSize }
+					>
 						{ description }
-					</p>
+					</P>
 				) }
 
 				<UserInputQuestionNotice className="googlesitekit-non-desktop-display-none" />
@@ -79,7 +95,7 @@ export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 				<UserInputQuestionNotice className="googlesitekit-desktop-display-none " />
 
 				{ scope === 'site' && hasMultipleUser && (
-					<P>
+					<P size={ SIZE_SMALL }>
 						{ author
 							? __(
 									'This answer can be edited by all Site Kit admins',

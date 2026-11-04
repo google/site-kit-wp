@@ -220,10 +220,6 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
 		[]
 	);
-	const dateRange = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRange(),
-		[]
-	);
 	const dashboardURL = useSelect(
 		( select: Select ) => select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
 		[]
@@ -324,10 +320,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		global.addEventListener( 'beforeunload', beforeUnloadHandler );
 
 		const reportSiteName = typeof siteName === 'string' ? siteName : '';
-		const referenceName =
-			reportSiteName.length > 0 ? reportSiteName : referenceSiteURL || '';
-		const resolvedDateRange =
-			typeof dateRange === 'string' ? dateRange : undefined;
+		const reportSiteURL = referenceSiteURL || '';
 
 		// Resolve the lazy component chunk up-front and fetch widget data.
 		// @react-pdf does not honour Suspense, so the document tree must hold
@@ -368,7 +361,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		/**
 		 * Saves the `pdf-export-downloaded` slug to WordPress user meta.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.186.0
 		 *
 		 * @return {Promise<void>} A promise that resolves after the save.
 		 */
@@ -470,11 +463,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 						discoveredAreas.push( {
 							areaSlug: area.slug,
 							areaContextSlug: contextSlug,
-							areaTitle:
-								area.pdfReportTitle ||
-								area.pdfTitle ||
-								area.title ||
-								'',
+							areaTitle: area.pdfTitle || area.title || '',
 							widgets: pdfWidgets,
 						} );
 					} );
@@ -598,14 +587,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					} )
 				);
 
-				const filename = getPDFFilename(
-					referenceName,
-					resolvedDateRange
-				);
+				const filename = getPDFFilename( reportSiteURL, dates );
 
 				const reportProps = {
 					siteName: reportSiteName,
-					siteURL: referenceSiteURL || '',
+					siteURL: reportSiteURL,
 					dashboardURL: dashboardURL || '',
 					dateRange: {
 						startDate: dates.startDate,

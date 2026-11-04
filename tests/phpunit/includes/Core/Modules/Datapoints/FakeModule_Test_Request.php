@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Core\Modules\Datapoints;
 
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -29,7 +30,9 @@ class FakeModule_Test_Request extends Shareable_Datapoint implements Executable_
 
 		do_action( 'googlesitekit_fake_module_data_request', $data );
 
-		return function () use ( $method, $datapoint, $data ) {
+		return function ( Google_Site_Kit_Client $client ) use ( $method, $datapoint, $data ) {
+			do_action( 'googlesitekit_fake_module_request_client', $client );
+
 			$data = $data->data;
 			return json_encode( compact( 'method', 'datapoint', 'data' ) );
 		};

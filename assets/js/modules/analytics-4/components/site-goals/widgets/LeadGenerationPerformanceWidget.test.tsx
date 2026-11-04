@@ -28,10 +28,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
 import {
 	BREAKDOWN_ORIGIN_FORM_KEY,
 	BREAKDOWN_ORIGIN_WIDGET,
@@ -44,6 +47,10 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import {
+	buildSiteGoalsEventCountReportOptions,
+	seedSiteGoalsEventCountReport,
+} from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -53,6 +60,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -62,6 +70,7 @@ import {
 	provideUserAuthentication,
 	render,
 	waitFor,
+	within,
 } from '@tests/js/test-utils';
 import { provideUserCapabilities } from '@tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
@@ -69,9 +78,13 @@ import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'LeadGenerationPerformanceWidget', () => {
-	const { getObservedElements } = mockIntersectionObserver();
 	let registry: WPDataRegistry;
+
+	const { getObservedElements } = mockIntersectionObserver();
 
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
 		'analyticsLeadGenerationPerformance'
@@ -108,6 +121,30 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			...( breakdownFilter ? { dimensionFilters: breakdownFilter } : {} ),
 			reportID: 'analytics-4_site-goals_engagementReportOptions',
 		};
+	}
+
+	/**
+	 * Adds the chart tile's report for one set of lead events.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @param {Array}  leadEvents        The lead events the test detects.
+	 * @param {Object} [breakdownFilter] The form tab's filter, empty for no tab.
+	 * @return {void}
+	 */
+	function receiveKeyActionChartReport(
+		leadEvents: string[],
+		breakdownFilter: Record< string, unknown > = {}
+	) {
+		provideAnalytics4MockReport(
+			registry,
+			getKeyActionChartReportOptions( {
+				dates: registry.select( CORE_USER ).getDateRangeDates(),
+				eventNames: leadEvents,
+				goalType: GOAL_TYPES.LEAD,
+				breakdownFilter,
+			} )
+		);
 	}
 
 	// A metrics-only compare report whose totals carry one row per date range.
@@ -161,14 +198,16 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.LEAD }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_lead',
 		};
 
 		const topTrafficTotalOptions = {
 			...dates,
 			dimensionFilters,
 			metrics: [ { name: 'eventCount' } ],
-			reportID: `analytics-4_site-goals_top-traffic-channels-total_${ GOAL_TYPES.LEAD }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-total_lead',
 		};
 
 		const topTrafficRateOptions = {
@@ -184,7 +223,16 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ GOAL_TYPES.LEAD }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-rate_lead',
+		};
+
+		const topTrafficSessionsOptions = {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [ { name: 'sessions' } ],
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-sessions_lead',
 		};
 
 		const topPagesOptions = {
@@ -200,7 +248,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-pages_${ GOAL_TYPES.LEAD }`,
+			reportID: 'analytics-4_goal-driver-reports_top-pages_lead',
 		};
 
 		const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -232,7 +280,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_visitor-type_${ GOAL_TYPES.LEAD }`,
+			reportID: 'analytics-4_goal-driver-reports_visitor-type_lead',
 		};
 
 		const citiesOptions = {
@@ -254,7 +302,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_cities_${ GOAL_TYPES.LEAD }`,
+			reportID: 'analytics-4_goal-driver-reports_cities_lead',
 		};
 
 		const countriesOptions = {
@@ -276,7 +324,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_countries_${ GOAL_TYPES.LEAD }`,
+			reportID: 'analytics-4_goal-driver-reports_countries_lead',
 		};
 
 		if ( loading ) {
@@ -284,6 +332,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				topTrafficChannelsOptions,
 				topTrafficTotalOptions,
 				topTrafficRateOptions,
+				topTrafficSessionsOptions,
 				topPagesOptions,
 				pageTitlesOptions,
 				visitorTypeOptions,
@@ -374,6 +423,23 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [ 'Direct', 'Organic Search', 'Organic Social' ].map(
+							( channel ) => ( {
+								dimensionValues: [ { value: channel } ],
+								metricValues: [ { value: '2000' } ],
+							} )
+					  ),
+			},
+			{ options: topTrafficSessionsOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ topTrafficSessionsOptions ] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -709,6 +775,11 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 	beforeEach( async () => {
 		registry = createTestRegistry();
+		// The breakdown notice reads this setting; `true` keeps these tests on
+		// the existing notice, without the conversion tracking disclosure.
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
@@ -724,13 +795,16 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				connected: true,
 			},
 		] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSettings( { availableCustomDimensions: [] } );
+		// The widget won't request a breakdown report until the breakdown
+		// dimensions exist on the property, so these tests start from the
+		// "created" state.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSiteGoalsSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ 'ecommerce', 'lead' ],
+		} );
 		// Default to the breakdown notice being hidden (intro modal not yet
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -738,6 +812,23 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		// Default to aggregated mode (no breakdown form values yet); tabbed tests
 		// re-seed with form IDs.
 		seedBreakdown();
+		// Default to lead events in the selected date range, so the removal
+		// notice does not render.
+		seedSiteGoalsEventCountReport( registry, 'lead', '5' );
+
+		// Add the chart tile's report for all four sets of lead events, so no
+		// test leaves the tile in its loading placeholder.
+		[
+			[ ENUM_CONVERSION_EVENTS.CONTACT ],
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			[ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
+			[
+				ENUM_CONVERSION_EVENTS.CONTACT,
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			],
+		].forEach( ( leadEvents ) =>
+			receiveKeyActionChartReport( leadEvents )
+		);
 	} );
 
 	it( 'renders WidgetNull when no lead events are detected', async () => {
@@ -770,8 +861,11 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
-		// Aggregated state: intro modal dismissed, breakdown dimensions not yet
-		// created (availableCustomDimensions seeded as [] in beforeEach).
+		// Aggregated state: intro modal dismissed and the breakdown dimensions
+		// not yet created, so the notice offers the breakdown instead.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setSettings( { availableCustomDimensions: [] } );
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
@@ -835,15 +929,25 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
+		const keyActionRow = container.querySelector(
+			'.googlesitekit-site-goals-primary-action'
+		);
+
+		expect( keyActionRow ).toBeInTheDocument();
+		// The row holds Form completion rate, Total form completions, and
+		// Total form completions in the last 28 days.
 		expect(
-			container.querySelector(
-				'.googlesitekit-site-goals-primary-action'
-			)
-		).toBeInTheDocument();
+			keyActionRow?.querySelectorAll( '.googlesitekit-site-goals-tile' )
+		).toHaveLength( 3 );
+		// The widget holds the Key action row's three tiles and the Engagement
+		// rate tile.
 		expect(
 			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
-		).toHaveLength( 3 ); // Form completion rate + Total form completions + Engagement rate
+		).toHaveLength( 4 );
 		expect( getByText( 'Form completion rate' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Total form completions in the last 28 days' )
+		).toBeInTheDocument();
 		expect( getByText( 'Total form completions' ) ).toBeInTheDocument();
 		expect( getByText( '“generate_lead” events' ) ).toBeInTheDocument();
 		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
@@ -851,18 +955,124 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by total form completions' )
+			getByText( 'Top traffic channels by form completion' )
 		).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by form completion rate' )
 		).toBeInTheDocument();
 		expect( getByText( 'Leads by visitor type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
+		// The site-wide total (100) is larger than the sum of the ranked
+		// rows above (54 + 23 + 16 = 93), so these percentages only match if
+		// "Top traffic channels" divides by that total rather than by the
+		// visible rows.
+		expect( getByText( '54%' ) ).toBeInTheDocument();
+		expect( getByText( '23%' ) ).toBeInTheDocument();
+		expect( getByText( '16%' ) ).toBeInTheDocument();
 		expect(
 			container.querySelectorAll(
 				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
 			)
 		).toHaveLength( 3 );
+	} );
+
+	it( 'shows the Key action rate tile\'s tooltip text and a working "Learn more" link', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { container, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const keyActionRow = container.querySelector(
+			'.googlesitekit-site-goals-primary-action'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		const infoTooltip = keyActionRow.querySelector(
+			'.googlesitekit-info-tooltip'
+		);
+		expect( infoTooltip ).toBeInTheDocument();
+
+		fireEvent.mouseOver( infoTooltip as Element );
+
+		await waitFor( () => {
+			expect(
+				document.querySelector( '.googlesitekit-info-tooltip__content' )
+			).toBeInTheDocument();
+		} );
+
+		const tooltipContent = document.querySelector(
+			'.googlesitekit-info-tooltip__content'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		expect(
+			within( tooltipContent ).getByText( 'like filling out a form', {
+				exact: false,
+			} )
+		).toBeInTheDocument();
+
+		const learnMoreLink = within( tooltipContent ).getByRole( 'link', {
+			name: /Learn more/,
+		} );
+
+		expect( learnMoreLink.getAttribute( 'href' ) ).toEqual(
+			expect.stringContaining(
+				'doc=site-goals-lead-generation-key-action'
+			)
+		);
+	} );
+
+	it( 'shows 90 days in the chart tile title when the date range is the last 90 days', async () => {
+		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions( dates, [
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '5' );
+		receiveKeyActionChartReport( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Total form completions in the last 90 days' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'renders a collapsible widget', async () => {
@@ -891,7 +1101,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		expect(
 			getByRole( 'button', {
-				name: 'Hide section',
+				name: 'Lead generation performance Hide section',
 			} )
 		).toBeInTheDocument();
 	} );
@@ -994,7 +1204,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by total form completions' )
+			getByText( 'Top traffic channels by form completion' )
 		).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by form completion rate' )
@@ -1173,7 +1383,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.LEAD }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_lead',
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
@@ -1280,7 +1491,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'dispatches an up vote on thumbs-up click', async () => {
+	it( 'should track and dispatch an up vote on thumbs-up click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1302,12 +1513,21 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_up',
+			'lead'
 		);
 
 		await waitFor( () =>
@@ -1321,7 +1541,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 	} );
 
-	it( 'dispatches a down vote on thumbs-down click', async () => {
+	it( 'should track and dispatch a down vote on thumbs-down click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1343,12 +1563,21 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'No, this was not helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_down',
+			'lead'
 		);
 
 		await waitFor( () =>
@@ -1402,13 +1631,17 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedReadyReports();
 		seedBreakdownDimensions( true );
 
-		const { getByText, waitForRegistry } = render(
+		const { getByRole, getByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'button', {
+				name: 'Lead generation performance Hide section',
+			} )
+		).not.toContainElement( getByText( 'Gathering breakdown data' ) );
 	} );
 
 	it( 'does not render the gathering breakdown data badge when the dimensions have data available', async () => {
@@ -1457,8 +1690,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	// Seeds the Key action, engagement and goal driver reports for a breakdown
-	// tab whose section reports carry the given form filter.
+	// Seeds the Key action, engagement, and goal driver reports for a breakdown
+	// tab whose section reports use the given form filter.
 	function seedTabbedReports( breakdownFilter: Record< string, unknown > ) {
 		const dates = registry
 			.select( CORE_USER )
@@ -1479,16 +1712,23 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ], {
 			breakdownFilter,
 		} );
+		receiveKeyActionChartReport(
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			breakdownFilter
+		);
 	}
 
-	it( 'does not render breakdown tabs in aggregated mode (no form values)', async () => {
+	it( 'stays in aggregated mode with no tabs and no deactivated plugin notice when no form values exist', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 		// beforeEach seeds an empty breakdown discovery report (no form values).
 		seedReadyReports();
 
-		const { queryByRole, waitForRegistry } = render(
+		const { queryByRole, queryByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -1496,6 +1736,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		// An empty value set must not render a lone "Other sources" tab.
 		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'renders form tabs with resolved titles and a Form #id fallback', async () => {
@@ -1679,9 +1922,13 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		await waitFor( () => {
 			expect( getByText( 'Key action' ) ).toBeInTheDocument();
 		} );
-		// Only the aggregate total renders — no rate tile, engagement or drivers.
+		// Only the aggregate total renders: no rate tile, no chart tile, no
+		// engagement section, and no drivers.
 		expect( getByText( 'Total form completions' ) ).toBeInTheDocument();
 		expect( queryByText( 'Form completion rate' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Total form completions in the last 28 days' )
+		).not.toBeInTheDocument();
 		expect(
 			queryByText( 'How are your visitors engaging?' )
 		).not.toBeInTheDocument();
@@ -1715,6 +1962,334 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			queryByRole( 'tab', { name: 'Other form completions' } )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the deactivated plugin notice on a form tab whose plugin is not active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'contact-form-7' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Form plugin no longer found' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders no deactivated plugin notice when the form tab plugin is still active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'wpforms' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders no deactivated plugin notice when the form tab has no plugin slug', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( { formIDs: [ '5' ] } );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'shows the deactivated plugin notice on the form tab whose plugin is not active and hides it after a click on the tab whose plugin is active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'ninja-forms' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5', '12' ],
+			formProviders: { 5: 'wpforms', 12: 'ninja-forms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' }, 12: { title: 'Newsletter' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '12' } );
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Form plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'tab', { name: /Newsletter/ } ) );
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Form plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'hides the deactivated plugin notice after a click on the Other form completions tab', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+		const otherTabDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions( otherTabDates, [
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( otherTabDates )
+		);
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Form plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click(
+			getByRole( 'tab', { name: 'Other form completions' } )
+		);
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Form plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'replaces the widget without tabs with the removal notice when no form plugin is active and the selected date range has no lead events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: false,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
+
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions( dates, [ 'generate_lead' ] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+
+		const {
+			container,
+			getByRole,
+			getByText,
+			queryByText,
+			waitForRegistry,
+		} = render( <LeadGenerationPerformanceWidget { ...widgetProps } />, {
+			registry,
+		} );
+		await waitForRegistry();
+
+		expect(
+			getByText( /Lead generation performance was removed/ )
+		).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /Got it/ } ) ).toBeInTheDocument();
+		expect( queryByText( 'Key action' ) ).not.toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsLeadGenerationPerformance'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'replaces the tabs and the "Form plugin no longer found" notice with the removal notice when no form plugin is active and the selected date range has no lead events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: false,
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
+
+		const { getByText, queryByRole, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( /Lead generation performance was removed/ )
+		).toBeInTheDocument();
+		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the widget when a form plugin is active and the selected date range has no lead events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: true,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
+		seedReadyReports();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Key action' ) ).toBeInTheDocument();
+		expect(
+			queryByText( /Lead generation performance was removed/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the widget when no form plugin is active and the selected date range has lead events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: false,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '4' );
+		seedReadyReports();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Key action' ) ).toBeInTheDocument();
+		expect(
+			queryByText( /Lead generation performance was removed/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'shows the widget title and a loading block when no form plugin is active and the report of lead events is loading', () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: false,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+
+		seedReadyReports();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildSiteGoalsEventCountReportOptions( registry, 'lead' ),
+			] );
+
+		const { container, getByText, queryByText, unmount } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		expect(
+			getByText( 'Lead generation performance' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsLeadGenerationPerformance .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		expect( queryByText( 'Key action' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( /Lead generation performance was removed/ )
+		).not.toBeInTheDocument();
+		unmount();
 	} );
 
 	it( 'keeps the same widget element across re-renders', async () => {

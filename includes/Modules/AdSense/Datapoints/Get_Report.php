@@ -291,7 +291,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 				$invalid_metrics[0]
 			);
 
-			throw new Invalid_Report_Metrics_Exception( $message );
+			throw new Invalid_Report_Metrics_Exception( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 	}
 
@@ -334,7 +334,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 				$invalid_dimensions[0]
 			);
 
-			throw new Invalid_Report_Dimensions_Exception( $message );
+			throw new Invalid_Report_Dimensions_Exception( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 	}
 }

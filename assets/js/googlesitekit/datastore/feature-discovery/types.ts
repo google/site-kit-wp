@@ -19,13 +19,15 @@
 /**
  * External dependencies
  */
-import type { ComponentType, LazyExoticComponent } from 'react';
+import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
 
 /**
  * Internal dependencies
  */
-import type { Select } from 'googlesitekit-data';
+import type { Registry, Select } from 'googlesitekit-data';
+import type { ErrorObject } from '@/js/util/errors';
 import type {
+	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
@@ -33,6 +35,8 @@ import type {
 
 export type FeatureCategorySlug =
 	typeof FEATURE_CATEGORIES[ keyof typeof FEATURE_CATEGORIES ];
+
+export type FeatureBadge = typeof FEATURE_BADGES[ keyof typeof FEATURE_BADGES ];
 
 export type FeatureEffort =
 	typeof FEATURE_EFFORTS[ keyof typeof FEATURE_EFFORTS ];
@@ -49,17 +53,17 @@ export interface FeatureScreenshot {
 
 export interface FeatureDetail {
 	description?: {
-		whatIs?: string;
-		whyUseHeading?: string;
+		whatIs?: ReactNode;
+		whyUseHeading?: ReactNode;
 		whyUseList?: {
-			term: string;
-			description: string;
+			term: ReactNode;
+			description: ReactNode;
 		}[];
 	};
 	requirements?: {
-		serviceRequirements?: string;
-		setupList?: string[];
-		setupComplete?: string;
+		serviceRequirements?: ReactNode;
+		setupList?: ReactNode[];
+		documentationURL?: string;
 	};
 	screenshots?: FeatureScreenshot[];
 }
@@ -78,17 +82,29 @@ export interface FeatureSuccessNotice {
 	dismissLabel?: string;
 }
 
+export interface FeatureIncompleteSetupReminder {
+	title: string;
+	description: string;
+	tooltip: string;
+}
+
 export interface FeatureSetup {
 	type: FeatureSetupType;
 	ctaLabel?: string;
+	resumeCTALabel?: string;
 	// The module to activate, for `setup-flow` features.
 	moduleSlug?: string;
-	// Target override for `setup-flow` features that are not module activation.
+	// The setup destination for `setup-flow` features. Where `moduleSlug` is also
+	// set, the module is activated first and this replaces its own setup URL.
 	getSetupURL?: ( select: Select ) => string | undefined;
+	// Target override for in-progress setups that can be resumed.
+	getResumeURL?: ( select: Select ) => string | undefined;
+	// In-progress check for setups that have started but are unfinished.
+	isInProgress?: ( select: Select ) => boolean | undefined;
 	// The enable routine for `background-toggle` features.
-	activate?: ( ...args: never[] ) => unknown;
+	activate?: ( registry: Registry ) => Promise< { error?: ErrorObject } >;
 	// Opens the existing surface over the hub, for `in-place-panel` features.
-	open?: ( ...args: never[] ) => unknown;
+	open?: ( registry: Registry ) => void;
 	// Completion check, overriding the default module-connected check.
 	isEnabled?: ( select: Select ) => boolean | undefined;
 	// A `React.lazy()` reference, where setup can't be expressed as a thunk.
@@ -98,34 +114,49 @@ export interface FeatureSetup {
 }
 
 export interface FeatureSettings {
+	name?: string;
 	title: string;
 	shortDescription: string;
 	effort: FeatureEffort;
+	// The module whose service identity is presented on the feature card.
+	moduleSlug?: string;
 	// The modules the feature depends on but does not itself set up.
 	prerequisiteModules?: string[];
 	// In order, the first being the feature's primary category.
 	goalCategories: FeatureCategorySlug[];
 	addedInVersion: string;
 	setup: FeatureSetup;
+	// Rendered once on the hub, for setup work that runs on load, such as
+	// resuming a setup after the user returns from granting permissions.
+	EffectComponent?: ComponentType;
 	// Hides the feature entirely when it returns false. Visible by default.
 	checkRequirements?: ( select: Select ) => boolean | undefined;
 	detail?: FeatureDetail;
 	// Static badges only. The "New" badge is derived per user.
-	badges?: string[];
+	badges?: FeatureBadge[];
 	successNotice?: FeatureSuccessNotice;
+	incompleteSetupReminder?: FeatureIncompleteSetupReminder;
 }
 
 export interface Feature extends FeatureSettings {
 	slug: string;
 	prerequisiteModules: string[];
-	badges: string[];
+	badges: FeatureBadge[];
 }
 
 export interface FeatureCategory {
 	slug: FeatureCategorySlug;
 	title: string;
+	chipLabel: string;
+}
+
+export interface PendingSetup {
+	featureSlug: string;
+	returnTab: string;
 }
 
 export interface FeatureDiscoveryState {
 	features: Record< string, Feature >;
+	pendingSetup: PendingSetup | null;
+	setupInProgress: Record< string, boolean >;
 }

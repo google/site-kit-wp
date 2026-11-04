@@ -22,53 +22,36 @@
 import { FC } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
 import Stepper from '@/js/components/Stepper';
 import Step from '@/js/components/Stepper/Step';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 
 interface ExpressSetupStepsProps {
-	extraSteps?: Record< string, string >;
+	steps: SetupStep[];
+	activeSlug?: string;
 }
 
 const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
-	extraSteps = {},
+	steps,
+	activeSlug,
 } ) => {
-	const [ step ] = useQueryArg( 'step' );
+	const labels: string[] = useSelect(
+		( select: Select ) =>
+			steps.map( ( { label } ) =>
+				typeof label === 'function' ? label( select ) : label
+			),
+		[ steps ]
+	);
 
-	const steps = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: __(
-			'Connect publication',
-			'google-site-kit'
-		),
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: __(
-			'Accept terms of service',
-			'google-site-kit'
-		),
-		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: __(
-			'Add publication policies',
-			'google-site-kit'
-		),
-		...extraSteps,
-		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: __(
-			'Setup complete',
-			'google-site-kit'
-		),
-	};
-
-	const activeStep = step ? Object.keys( steps ).indexOf( step ) : -1;
+	const activeStep = steps.findIndex( ( { slug } ) => slug === activeSlug );
 
 	return (
 		<Stepper activeStep={ activeStep } variant="rail">
-			{ Object.entries( steps ).map( ( [ stepID, stepTitle ] ) => (
-				<Step key={ stepID } title={ stepTitle } />
+			{ steps.map( ( { slug }, index ) => (
+				<Step key={ slug } title={ labels[ index ] } />
 			) ) }
 		</Stepper>
 	);

@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication as Publication_Synchronization;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
@@ -229,14 +229,14 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 
 		$this->settings->merge( $new_settings );
 
-		$cron_event = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		$cron_event = wp_next_scheduled( Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 		if ( $cron_event ) {
-			wp_unschedule_event( $cron_event, Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+			wp_unschedule_event( $cron_event, Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 		}
 
 		wp_schedule_single_event(
 			time() + HOUR_IN_SECONDS,
-			Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION
+			Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION
 		);
 	}
 }

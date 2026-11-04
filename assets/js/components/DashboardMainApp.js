@@ -31,6 +31,7 @@ import { Fragment, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import { WELCOME_TOUR } from '@/js/feature-tours/constants';
 import {
 	ANCHOR_ID_CONTENT,
@@ -44,13 +45,12 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { shouldHideSetupCTAs } from '@/js/googlesitekit/notifications/util/setup-cta-visibility';
 import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
@@ -61,11 +61,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '@/js/hooks/useBreakpoint';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
@@ -81,12 +77,16 @@ import { getNavigationalScrollTop } from '@/js/util/scroll';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import DateRangePicker from './DateRangePicker';
 import DateRangeSelector from './DateRangeSelector';
 import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
+import AddFeaturesButton from './feature-discovery/AddFeaturesButton';
 import FeaturesMenu from './FeaturesMenu';
+import { MAIN_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH } from './FeaturesMenu/constants';
+import useShouldCollapseFeatureActions from './FeaturesMenu/useShouldCollapseFeatureActions';
 import Header from './Header';
 import HelpMenu from './help/HelpMenu';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
@@ -94,6 +94,7 @@ import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import Notifications from './notifications/Notifications';
 import OfflineNotification from './notifications/OfflineNotification';
+import SetupCTAOverlays from './notifications/SetupCTAOverlays';
 import PDFDownloadButton from './pdf-export/PDFDownloadButton';
 import PDFExportRoot from './pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from './pdf-export/PDFSectionsSelectionPanel';
@@ -137,12 +138,20 @@ function getLastWidgetAnchor( {
 // complexity for this component.
 // eslint-disable-next-line complexity
 export default function DashboardMainApp() {
-	const siteGoalsEnabled = useFeature( 'siteGoals' );
+	useFeatureCountCache();
+
+	const datePickerEnabled = useFeature( 'datePicker' );
 
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
+	// On mobile and tablet, or when the "Add features" button would otherwise
+	// overlap the logo, the individual feature action icons collapse into the
+	// single three-dots features menu.
+	const shouldCollapseFeatureActions = useShouldCollapseFeatureActions(
+		MAIN_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH
+	);
 	const breakpoint = useBreakpoint();
 
 	const [ widgetArea, setWidgetArea ] = useQueryArg( 'widgetArea' );
@@ -252,12 +261,10 @@ export default function DashboardMainApp() {
 	);
 
 	const isSiteGoalsActive = useSelect( ( select ) =>
-		siteGoalsEnabled
-			? select( CORE_WIDGETS ).isWidgetContextActive(
-					CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
-					widgetContextOptions
-			  )
-			: false
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+			widgetContextOptions
+		)
 	);
 
 	const isContentActive = useSelect( ( select ) =>
@@ -302,33 +309,13 @@ export default function DashboardMainApp() {
 		);
 	} );
 
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
-
 	const hasAccessToFeatureTour = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToFeatureTour()
 	);
 
-	const hideSetupCTAs = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return false;
-		}
-
-		const initialSetupNotificationTimeoutDismissed = select(
-			CORE_USER
-		).isItemDismissed( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG );
-		const queuedHeaderNotifications = select(
-			CORE_NOTIFICATIONS
-		).getQueuedNotifications( viewContext, NOTIFICATION_GROUPS.DEFAULT );
-		const firstHeaderNotificationID =
-			queuedHeaderNotifications?.[ 0 ]?.id || null;
-
-		return (
-			initialSetupNotificationTimeoutDismissed ||
-			firstHeaderNotificationID === 'activate-analytics-notification' ||
-			firstHeaderNotificationID === 'connect-more-services-notification'
-		);
-	} );
+	const hideSetupCTAs = useSelect( ( select ) =>
+		shouldHideSetupCTAs( select, viewContext )
+	);
 
 	useMonitorInternetConnection();
 
@@ -349,16 +336,6 @@ export default function DashboardMainApp() {
 	// Welcome modal shows). They're only hidden while the welcome tour runs.
 	const showSetupModals = ! isWelcomeTourActive;
 
-	// The feature-introduction overlays (PDF, email reporting, audience
-	// segmentation) stay suppressed on the first dashboard landing to avoid
-	// stacking with the setup CTAs.
-	const showSetupOverlays = ! hideSetupCTAs && ! isWelcomeTourActive;
-
-	// On mobile and tablet the individual feature action icons collapse into
-	// the single three-dots features menu.
-	const isMobileOrTabletBreakpoint =
-		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
-
 	const lastWidgetAnchor = getLastWidgetAnchor( {
 		isMonetizationActive,
 		isSpeedActive,
@@ -377,8 +354,12 @@ export default function DashboardMainApp() {
 
 			<Header showNavigation>
 				<EntitySearchInput />
-				<DateRangeSelector />
-				{ isMobileOrTabletBreakpoint ? (
+				{ datePickerEnabled ? (
+					<DateRangePicker />
+				) : (
+					<DateRangeSelector />
+				) }
+				{ shouldCollapseFeatureActions ? (
 					<Fragment>
 						<HelpMenu
 							showFeatureTour={ !! hasAccessToFeatureTour }
@@ -387,8 +368,9 @@ export default function DashboardMainApp() {
 					</Fragment>
 				) : (
 					<Fragment>
+						<AddFeaturesButton />
 						<ManageEmailReportsButton />
-						{ pdfGenerationEnabled && <PDFDownloadButton /> }
+						<PDFDownloadButton />
 						{ ! viewOnlyDashboard && (
 							<DashboardSharingSettingsButton />
 						) }
@@ -421,12 +403,7 @@ export default function DashboardMainApp() {
 					/>
 				) }
 
-				{ showSetupOverlays && (
-					<Notifications
-						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-					/>
-				) }
+				{ ! hideSetupCTAs && <SetupCTAOverlays /> }
 
 				{ isKeyMetricsWidgetHidden !== true && (
 					<WidgetContextRenderer
@@ -446,16 +423,14 @@ export default function DashboardMainApp() {
 							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
 					} ) }
 				/>
-				{ siteGoalsEnabled && (
-					<WidgetContextRenderer
-						id={ ANCHOR_ID_SITE_GOALS }
-						slug={ CONTEXT_MAIN_DASHBOARD_SITE_GOALS }
-						className={ classnames( {
-							'googlesitekit-widget-context--last':
-								lastWidgetAnchor === ANCHOR_ID_SITE_GOALS,
-						} ) }
-					/>
-				) }
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_SITE_GOALS }
+					slug={ CONTEXT_MAIN_DASHBOARD_SITE_GOALS }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_SITE_GOALS,
+					} ) }
+				/>
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_CONTENT }
 					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
@@ -491,19 +466,15 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ pdfGenerationEnabled && (
-				<Fragment>
-					<PDFSectionsSelectionPanel />
-					<PDFExportRoot />
-				</Fragment>
-			) }
+			<PDFSectionsSelectionPanel />
+			<PDFExportRoot />
 
 			<UserSettingsSelectionPanel />
 			<PUESurveyTriggers />
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 
-			{ siteGoalsEnabled && hasAnalyticsAccess && (
+			{ hasAnalyticsAccess && (
 				<Fragment>
 					<SiteGoalsSelectionPanel />
 					<SiteGoalsSurveyTriggers />

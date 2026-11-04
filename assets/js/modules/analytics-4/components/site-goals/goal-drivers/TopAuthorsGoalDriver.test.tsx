@@ -28,6 +28,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
@@ -43,6 +44,7 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/utils';
+import { GOAL_DRIVER_ROW_LIMIT_EXPANDED } from './constants';
 import TopAuthorsGoalDriver from './TopAuthorsGoalDriver';
 
 describe( 'TopAuthorsGoalDriver', () => {
@@ -58,6 +60,9 @@ describe( 'TopAuthorsGoalDriver', () => {
 			},
 		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
@@ -110,7 +115,7 @@ describe( 'TopAuthorsGoalDriver', () => {
 		} );
 	} );
 
-	it( 'creates the author custom dimension when update is clicked with edit scope', async () => {
+	it( 'creates every custom dimension when update is clicked with edit scope', async () => {
 		const registry = createTestRegistry();
 
 		provideUserAuthentication( registry, {
@@ -124,15 +129,6 @@ describe( 'TopAuthorsGoalDriver', () => {
 			},
 		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			widgetSlugs: [],
-			isWidgetHidden: false,
-		} );
-		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
-			purpose: { values: [], scope: 'site' },
-			postFrequency: { values: [], scope: 'user' },
-			goals: { values: [], scope: 'user' },
-		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
@@ -153,29 +149,32 @@ describe( 'TopAuthorsGoalDriver', () => {
 			{ propertyID: '12345' }
 		);
 
-		fetchMock.postOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-			),
-			{
-				body: {
-					parameterName: 'googlesitekit_post_author',
-					displayName: 'Post author',
-					description: 'Post author',
-					scope: 'EVENT',
-					disallowAdsPersonalization: true,
-				},
-				status: 200,
-			}
+		const createEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 		);
+		// Respond to each create request with the dimension it was sent.
+		fetchMock.post( createEndpoint, ( _url, { body } ) => ( {
+			body: JSON.parse( body as string ).data.customDimension,
+			status: 200,
+		} ) );
 		fetchMock.postOnce(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 			),
 			{
-				body: [ 'googlesitekit_post_author' ],
+				body: ALL_CUSTOM_DIMENSIONS,
 				status: 200,
 			}
+		);
+		// Once the custom dimension is created, the driver becomes able to
+		// load its reports (the ranked list and the site-wide total) - their
+		// content isn't checked here, so an empty response is enough to
+		// avoid a console error.
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/report'
+			),
+			{ body: {}, status: 200 }
 		);
 
 		const { getByRole } = render(
@@ -192,13 +191,14 @@ describe( 'TopAuthorsGoalDriver', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Update' } ) );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes(
+				ALL_CUSTOM_DIMENSIONS.length + 1
+			);
 		} );
 
-		expect( fetchMock ).toHaveFetched(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-			)
+		expect( fetchMock ).toHaveFetchedTimes(
+			ALL_CUSTOM_DIMENSIONS.length,
+			createEndpoint
 		);
 		expect(
 			registry.select( CORE_USER ).getPermissionScopeError()
@@ -207,11 +207,146 @@ describe( 'TopAuthorsGoalDriver', () => {
 			registry
 				.select( MODULES_ANALYTICS_4 )
 				.getAvailableCustomDimensions()
-		).toEqual( [ 'googlesitekit_post_author' ] );
-		expect(
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.isCustomDimensionGatheringData( 'googlesitekit_post_author' )
-		).toBe( true );
+		).toEqual( ALL_CUSTOM_DIMENSIONS );
+		ALL_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.isCustomDimensionGatheringData( customDimension )
+			).toBe( true );
+		} );
+	} );
+
+	it( "renders each author's share of the site-wide total as a percentage", async () => {
+		const registry = createTestRegistry();
+
+		provideUserAuthentication( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [ 'googlesitekit_post_author' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension: 'googlesitekit_post_author',
+				gatheringData: false,
+			} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+			{
+				createTime: '2014-10-02T15:01:23Z',
+			},
+			{ propertyID: '12345' }
+		);
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [
+							{ value: 'AuthorName1' },
+							{ value: 'purchase' },
+						],
+						metricValues: [ { value: '305' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: 'AuthorName2' },
+							{ value: 'purchase' },
+						],
+						metricValues: [ { value: '247' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: 'AuthorName3' },
+							{ value: 'purchase' },
+						],
+						metricValues: [ { value: '162' } ],
+					},
+				],
+			},
+			{
+				options: {
+					...dates,
+					dimensions: [
+						'customEvent:googlesitekit_post_author',
+						'eventName',
+					],
+					dimensionFilters: {
+						eventName: {
+							filterType: 'inListFilter',
+							value: [ 'purchase' ],
+						},
+						'customEvent:googlesitekit_post_author': {
+							filterType: 'emptyFilter',
+							notExpression: true,
+						},
+					},
+					metrics: [ { name: 'eventCount' } ],
+					orderby: [
+						{
+							metric: { metricName: 'eventCount' },
+							desc: true,
+						},
+					],
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+					keepEmptyRows: false,
+					reportID:
+						'analytics-4_goal-driver-reports_top-authors_ecommerce',
+				},
+			}
+		);
+		// The site-wide total (1,000) is larger than the sum of the ranked
+		// rows above (714), so the percentages below only match if the
+		// driver divides by this total rather than by the visible rows.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [ { metricValues: [ { value: '1000' } ] } ],
+			},
+			{
+				options: {
+					...dates,
+					dimensionFilters: {
+						eventName: {
+							filterType: 'inListFilter',
+							value: [ 'purchase' ],
+						},
+					},
+					metrics: [ { name: 'eventCount' } ],
+					reportID:
+						'analytics-4_goal-driver-reports_top-authors-total_ecommerce',
+				},
+			}
+		);
+
+		const { getByText, waitForRegistry } = render(
+			<TopAuthorsGoalDriver
+				goalType="ecommerce"
+				title="Top authors driving sales"
+				primaryEvent="purchase"
+			/>,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( 'AuthorName1' ) ).toBeInTheDocument();
+		expect( getByText( '30.5%' ) ).toBeInTheDocument();
+		expect( getByText( 'AuthorName2' ) ).toBeInTheDocument();
+		expect( getByText( '24.7%' ) ).toBeInTheDocument();
+		expect( getByText( 'AuthorName3' ) ).toBeInTheDocument();
+		expect( getByText( '16.2%' ) ).toBeInTheDocument();
 	} );
 } );

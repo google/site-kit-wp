@@ -71,12 +71,11 @@ describe( 'UserInputPreviewGroup', () => {
 		onChange: jest.fn(),
 	};
 
-	it( 'should show the "Answer question" button and hide the Edit link for an unanswered question when the `setupFlowRefresh` feature flag is enabled', () => {
+	it( 'should show the "Answer question" button and hide the Edit link for an unanswered question', () => {
 		const { container, getByRole, queryByRole } = render(
 			<UserInputPreviewGroup { ...baseProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			}
 		);
 
@@ -96,7 +95,6 @@ describe( 'UserInputPreviewGroup', () => {
 			<UserInputPreviewGroup { ...baseProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			}
 		);
 
@@ -118,7 +116,6 @@ describe( 'UserInputPreviewGroup', () => {
 			<UserInputPreviewGroup { ...baseProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: 'test-context',
 			}
 		);

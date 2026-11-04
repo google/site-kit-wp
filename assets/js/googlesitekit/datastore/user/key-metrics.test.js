@@ -19,8 +19,8 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
-import { enabledFeatures } from '@/js/features';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
@@ -31,6 +31,7 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	muteFetch,
+	provideKeyMetrics,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -967,40 +968,6 @@ describe( 'core/user key metrics', () => {
 				provideUserAuthentication( registry );
 			} );
 
-			it( 'should return undefined while settings are loading', async () => {
-				freezeFetch( coreKeyMetricsEndpointRegExp );
-
-				const { isKeyMetricsWidgetHidden } =
-					registry.select( CORE_USER );
-
-				expect( isKeyMetricsWidgetHidden() ).toBeUndefined();
-
-				await waitForDefaultTimeouts();
-			} );
-
-			it( 'uses a resolver to make a network request if settings are not available', async () => {
-				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
-					body: coreKeyMetricsExpectedResponse,
-					status: 200,
-				} );
-
-				const { isKeyMetricsWidgetHidden } =
-					registry.select( CORE_USER );
-
-				expect( isKeyMetricsWidgetHidden() ).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					CORE_USER
-				).getKeyMetricsSettings();
-
-				expect(
-					registry.select( CORE_USER ).isKeyMetricsWidgetHidden()
-				).toEqual( coreKeyMetricsExpectedResponse.isWidgetHidden );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-
 			it( 'should return true when the key metrics widget area is hidden, regardless of user settings', () => {
 				provideSiteInfo( registry, {
 					keyMetricsSetupIsWidgetAreaHidden: true,
@@ -1016,20 +983,7 @@ describe( 'core/user key metrics', () => {
 				).toBe( true );
 			} );
 
-			it( 'should return the stored value when the `setupFlowRefresh` feature flag is disabled', () => {
-				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					...coreKeyMetricsExpectedResponse,
-					isWidgetHidden: true,
-				} );
-
-				expect(
-					registry.select( CORE_USER ).isKeyMetricsWidgetHidden()
-				).toBe( true );
-			} );
-
-			it( 'should return false when the `setupFlowRefresh` feature flag is enabled, regardless of the stored value', () => {
-				enabledFeatures.add( 'setupFlowRefresh' );
-
+			it( 'should return false regardless of the stored value', () => {
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					...coreKeyMetricsExpectedResponse,
 					isWidgetHidden: true,
@@ -1038,8 +992,6 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_USER ).isKeyMetricsWidgetHidden()
 				).toBe( false );
-
-				enabledFeatures.delete( 'setupFlowRefresh' );
 			} );
 		} );
 
@@ -1058,9 +1010,7 @@ describe( 'core/user key metrics', () => {
 				await waitForDefaultTimeouts();
 			} );
 
-			it( 'should return the stored value regardless of the `setupFlowRefresh` feature flag', () => {
-				enabledFeatures.add( 'setupFlowRefresh' );
-
+			it( 'should return the stored value', () => {
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					...coreKeyMetricsExpectedResponse,
 					isWidgetHidden: true,
@@ -1069,8 +1019,6 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_USER ).getRawKeyMetricsWidgetHidden()
 				).toBe( true );
-
-				enabledFeatures.delete( 'setupFlowRefresh' );
 			} );
 		} );
 
@@ -1200,6 +1148,127 @@ describe( 'core/user key metrics', () => {
 						.isKeyMetricAvailable( 'metricA' )
 				).toBe( true );
 				await waitForDefaultTimeouts();
+			} );
+		} );
+
+		describe( 'getSavedViewableMetrics', () => {
+			const SAVED_WIDGET_SLUGS = [
+				KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+				KM_ANALYTICS_RETURNING_VISITORS,
+			];
+
+			beforeEach( () => {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+					{
+						slug: MODULE_SLUG_ADSENSE,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+				] );
+				provideKeyMetricsWidgetRegistrations( registry, {
+					[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+						modules: [ MODULE_SLUG_ADSENSE ],
+					},
+					[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+						modules: [ MODULE_SLUG_ANALYTICS_4 ],
+					},
+				} );
+			} );
+
+			it( 'should return an empty array while getKeyMetrics() has not resolved', () => {
+				muteFetch( coreKeyMetricsEndpointRegExp );
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toBeUndefined();
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: false,
+					} )
+				).toEqual( [] );
+			} );
+
+			it( 'should drop a saved slug whose module is not shared with a view-only visitor', () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+					'googlesitekit_read_shared_module_data::["adsense"]': false,
+				} );
+				provideKeyMetrics( registry, {
+					widgetSlugs: SAVED_WIDGET_SLUGS,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: true,
+					} )
+				).toEqual( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+			} );
+
+			it( 'should keep saved slugs on a non-view-only dashboard, whether or not their widget has a displayInSelectionPanel gate', () => {
+				provideUserAuthentication( registry );
+				provideKeyMetrics( registry, {
+					widgetSlugs: SAVED_WIDGET_SLUGS,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: false,
+					} )
+				).toEqual( SAVED_WIDGET_SLUGS );
+			} );
+
+			it( 'should drop a saved slug hidden by its displayInSelectionPanel gate on a view-only dashboard, even though its module is shared', () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+					'googlesitekit_read_shared_module_data::["adsense"]': true,
+				} );
+				provideKeyMetrics( registry, {
+					widgetSlugs: SAVED_WIDGET_SLUGS,
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { adSenseLinked: false } );
+
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: true,
+					} )
+				).toEqual( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+			} );
+
+			it( 'should keep a saved slug whose displayInSelectionPanel gate passes on a view-only dashboard', () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+					'googlesitekit_read_shared_module_data::["adsense"]': true,
+				} );
+				provideKeyMetrics( registry, {
+					widgetSlugs: SAVED_WIDGET_SLUGS,
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { adSenseLinked: true } );
+
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: true,
+					} )
+				).toEqual( SAVED_WIDGET_SLUGS );
 			} );
 		} );
 	} );

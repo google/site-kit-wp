@@ -20,11 +20,36 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_HEADLINE,
+	TYPE_TITLE,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
+
 export default function Title( { className, children } ) {
+	const breakpoint = useBreakpoint();
+
+	const type = breakpoint === BREAKPOINT_SMALL ? TYPE_TITLE : TYPE_HEADLINE;
+	const size = breakpoint === BREAKPOINT_TABLET ? SIZE_SMALL : SIZE_MEDIUM;
+
 	return (
-		<p className={ classnames( 'googlesitekit-banner__title', className ) }>
+		<P
+			className={ classnames( 'googlesitekit-banner__title', className ) }
+			size={ size }
+			type={ type }
+		>
 			{ children }
-		</p>
+		</P>
 	);
 }
 

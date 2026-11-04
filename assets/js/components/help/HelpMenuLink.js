@@ -30,26 +30,21 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 
 function HelpMenuLink( { children, href, gaEventLabel, onClick, icon } ) {
 	const viewContext = useViewContext();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	const handleClick = useCallback( async () => {
 		onClick?.();
 		if ( gaEventLabel ) {
 			await trackEvent(
 				`${ viewContext }_headerbar_helpmenu`,
-				setupFlowRefreshEnabled
-					? 'click_menu_item'
-					: 'click_outgoing_link',
+				'click_menu_item',
 				gaEventLabel
 			);
 		}
-	}, [ onClick, gaEventLabel, viewContext, setupFlowRefreshEnabled ] );
+	}, [ onClick, gaEventLabel, viewContext ] );
 
 	return (
 		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">

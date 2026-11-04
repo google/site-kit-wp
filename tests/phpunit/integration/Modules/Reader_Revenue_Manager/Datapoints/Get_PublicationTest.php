@@ -16,8 +16,8 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publication;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
 
 /**
  * @group Modules
@@ -55,7 +55,7 @@ class Get_PublicationTest extends TestCase {
 		);
 		$this->module->get_client()->withDefer( true );
 
-		$service         = new Webcontentpublisher( $this->module->get_client() );
+		$service         = new WebContentPublisher( $this->module->get_client() );
 		$this->datapoint = new Get_Publication(
 			array(
 				'service'  => function () use ( $service ) {
@@ -133,6 +133,20 @@ class Get_PublicationTest extends TestCase {
 
 		$this->assertSame( 'publication-1', $publication['publicationId'], 'The response should contain the requested publication.' );
 		$this->assertSame( 'organization-1', $publication['organizationId'], 'WCP fields should be preserved.' );
+	}
+
+	public function test_parse_response__synchronizes_publication() {
+		$response = new Publication();
+		$response->setOrganizationId( 'organization-1' );
+		$response->setPublicationId( 'publication-setting' );
+
+		$this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+
+		$this->assertSame(
+			'organization-1',
+			$this->module->get_settings()->get()['organizationID'],
+			'The publication response should be passed to publication synchronization.'
+		);
 	}
 
 	private function get_data_request( array $data ) {

@@ -21,10 +21,15 @@
  */
 import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
-import { provideSiteInfo } from '@tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '@tests/js/utils';
 import SettingsForm from './SettingsForm';
 
 jest.mock( './SettingsControls', () => () => null );
@@ -39,36 +44,35 @@ describe( 'SettingsForm', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
 			enabled: false,
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: null,
 		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 	} );
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
 	} );
 
-	it( 'should not track the learn more link when setupFlowRefresh is disabled', () => {
-		const { getByRole } = render( <SettingsForm />, {
+	it( 'should render the advanced data breakdowns setting', () => {
+		const { container } = render( <SettingsForm />, {
 			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
-		const link = getByRole( 'link', {
-			name: /learn more/i,
-		} );
-
-		fireEvent.click( link );
-
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
+		expect(
+			container.querySelector( '.googlesitekit-settings-measurement-row' )
+		).toBeInTheDocument();
 	} );
 
-	it( 'should track the learn more link when setupFlowRefresh is enabled', () => {
+	it( 'should track the learn more link', () => {
 		const { getByRole } = render( <SettingsForm />, {
-			features: [ 'setupFlowRefresh' ],
 			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
@@ -84,5 +88,40 @@ describe( 'SettingsForm', () => {
 			'click_learn_more_link',
 			'plugin_conversion_tracking'
 		);
+	} );
+
+	it( 'should not render the WooCommerce products row by default (no flag)', () => {
+		const { queryByLabelText } = render( <SettingsForm />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		expect(
+			queryByLabelText( 'Include products in Recent activity' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the WooCommerce products row when freshData is enabled and WooCommerce is installed', () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+		provideSiteInfo( registry, {
+			wooCommerceInstalled: true,
+			wooCommerceActive: true,
+		} );
+
+		const { getByLabelText } = render( <SettingsForm />, {
+			registry,
+			features: [ 'freshData' ],
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		expect(
+			getByLabelText( 'Include products in Recent activity' )
+		).toBeInTheDocument();
 	} );
 } );

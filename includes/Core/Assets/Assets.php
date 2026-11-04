@@ -18,8 +18,10 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Core\Util\Product_Post_Type;
+use Google\Site_Kit\Core\Util\URL;
 use WP_Dependencies;
-use WP_Post_Type;
 
 /**
  * Class managing assets.
@@ -119,6 +121,17 @@ final class Assets {
 						}
 					}
 				);
+			}
+		);
+
+		add_action(
+			'admin_enqueue_scripts',
+			function () {
+				foreach ( $this->get_assets() as $asset ) {
+					if ( $asset->has_context( Asset::CONTEXT_ADMIN_GLOBAL ) ) {
+						$this->enqueue_asset( $asset->get_handle() );
+					}
+				}
 			}
 		);
 
@@ -331,14 +344,11 @@ final class Assets {
 			'googlesitekit-datastore-ui',
 			'googlesitekit-widgets',
 			'googlesitekit-notifications',
+			'googlesitekit-intents',
 		);
 
-		if ( Feature_Flags::enabled( 'pdfGeneration' ) ) {
-			array_push( $dependencies, 'googlesitekit-datastore-pdf' );
-		}
-
 		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
-			array_push( $dependencies, 'googlesitekit-components' );
+			array_push( $dependencies, 'googlesitekit-components', 'googlesitekit-datastore-pdf' );
 		}
 
 		if ( 'dashboard-sharing' === $context ) {
@@ -603,6 +613,16 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-intents',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-intents.js',
+					'dependencies' => array(
+						'googlesitekit-api',
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-widgets',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-widgets.js',
@@ -621,6 +641,16 @@ final class Assets {
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-components',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-feature-discovery',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-feature-discovery.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
 					),
 				)
 			),
@@ -671,7 +701,10 @@ final class Assets {
 				'googlesitekit-features',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-features.js',
-					'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
+					'dependencies' => array_merge(
+						$this->get_asset_dependencies( 'dashboard-sharing' ),
+						array( 'googlesitekit-feature-discovery' )
+					),
 				)
 			),
 			new Script(
@@ -769,6 +802,27 @@ final class Assets {
 			),
 		);
 
+		if ( current_user_can( Permissions::MANAGE_OPTIONS ) && Feature_Flags::enabled( 'featureDiscoveryHub' ) ) {
+			$assets[] = new Script_Data(
+				'googlesitekit-features-badge-data',
+				array(
+					'global'        => '_googlesitekitFeaturesBadgeData',
+					'data_callback' => function () {
+						return $this->get_inline_features_badge_data();
+					},
+				)
+			);
+
+			$assets[] = new Script(
+				'googlesitekit-features-badge',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-features-badge.js',
+					'dependencies'  => array( 'googlesitekit-i18n', 'googlesitekit-features-badge-data' ),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_GLOBAL ),
+				)
+			);
+		}
+
 		/**
 		 * Filters the list of assets that Site Kit should register.
 		 *
@@ -794,32 +848,41 @@ final class Assets {
 	 * This should not include anything remotely expensive to compute.
 	 *
 	 * @since 1.2.0
+	 * @since 1.191.0 Adds `usingPlainPermalinks`.
 	 *
 	 * @return array The base inline data to be output.
 	 */
 	private function get_inline_base_data() {
-		global $wpdb;
-		$site_url = $this->context->get_reference_site_url();
+		global $wpdb, $wp_rewrite;
+		$site_url           = $this->context->get_reference_site_url();
+		$product_type       = Product_Post_Type::get();
+		$product_post_type  = $product_type ? $product_type->name : null;
+		$woocommerce_active = class_exists( 'WooCommerce' );
 
 		$inline_data = array(
-			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
-			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
-			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
-			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'widgetsAdminURL'  => esc_url_raw( $this->get_widgets_admin_url() ),
-			'blogPrefix'       => $wpdb->get_blog_prefix(),
-			'ampMode'          => $this->context->get_amp_mode(),
-			'isNetworkMode'    => $this->context->is_network_mode(),
-			'timezone'         => get_option( 'timezone_string' ),
-			'startOfWeek'      => (int) get_option( 'start_of_week' ),
-			'siteName'         => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
-			'siteLocale'       => $this->context->get_locale(),
-			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
-			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
-			'postTypes'        => $this->get_post_types(),
-			'storagePrefix'    => $this->get_storage_prefix(),
-			'referenceDate'    => Date::reference_date(),
-			'productPostType'  => $this->get_product_post_type(),
+			'homeURL'              => trailingslashit( $this->context->get_canonical_home_url() ),
+			'referenceSiteURL'     => esc_url_raw( trailingslashit( $site_url ) ),
+			'adminURL'             => esc_url_raw( trailingslashit( admin_url() ) ),
+			'assetsURL'            => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'widgetsAdminURL'      => esc_url_raw( $this->get_widgets_admin_url() ),
+			'blogPrefix'           => $wpdb->get_blog_prefix(),
+			'ampMode'              => $this->context->get_amp_mode(),
+			'isNetworkMode'        => $this->context->is_network_mode(),
+			'timezone'             => get_option( 'timezone_string' ),
+			'startOfWeek'          => (int) get_option( 'start_of_week' ),
+			'siteName'             => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+			'siteLocale'           => $this->context->get_locale(),
+			'enabledFeatures'      => Feature_Flags::get_enabled_features(),
+			'webStoriesActive'     => defined( 'WEBSTORIES_VERSION' ),
+			'postTypes'            => $this->get_post_types(),
+			'storagePrefix'        => $this->get_storage_prefix(),
+			'wpPrivacyURL'         => get_privacy_policy_url(),
+			'referenceDate'        => Date::reference_date(),
+			'productPostType'      => $product_post_type,
+			'productPathPrefix'    => $this->get_post_type_path_prefix( $product_post_type ),
+			'usingPlainPermalinks' => ! $wp_rewrite->using_permalinks(),
+			'wooCommerceActive'    => $woocommerce_active,
+			'wooCommerceInstalled' => $woocommerce_active || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
 		);
 
 		/**
@@ -932,6 +995,7 @@ final class Assets {
 	 * Gets the inline dashboard sharing data.
 	 *
 	 * @since 1.49.0
+	 * @since n.e.x.t Outputs `settings` as an object, also when no module has sharing settings.
 	 *
 	 * @return array The dashboard sharing inline data to be output.
 	 */
@@ -951,8 +1015,10 @@ final class Assets {
 			}
 		}
 
-		$settings                = new Module_Sharing_Settings( new Options( $this->context ) );
-		$inline_data['settings'] = $settings->get();
+		$settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		// Cast to an object so that empty settings are output as `{}` and not `[]`,
+		// because JS adds module keys to this value when sharing settings change.
+		$inline_data['settings'] = (object) $settings->get();
 
 		/**
 		 * Filters the dashboard sharing inline data to pass to JS.
@@ -1029,6 +1095,31 @@ final class Assets {
 			 * @param array $data Authentication Data.
 			 */
 			'setup'  => apply_filters( 'googlesitekit_setup_data', array() ),
+		);
+	}
+
+	/**
+	 * Gets the fingerprint used to validate the remembered features count.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @return array Features badge data.
+	 */
+	private function get_inline_features_badge_data() {
+		/**
+		 * Filters the connected modules.
+		 *
+		 * @since 1.189.0
+		 *
+		 * @param array $modules Connected modules as slug => module pairs.
+		 */
+		$connected_modules = apply_filters( 'googlesitekit_connected_modules', array() );
+
+		return array(
+			'connectedModules' => array_keys( $connected_modules ),
+			'pluginVersion'    => GOOGLESITEKIT_VERSION,
+			'resetSession'     => (bool) $this->context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
+			'userID'           => get_current_user_id(),
 		);
 	}
 
@@ -1161,27 +1252,44 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the product post type.
+	 * Gets the path that the URL of every post of a post type starts with.
 	 *
-	 * @since 1.116.0
+	 * The part of the post type's permalink structure before its first rewrite
+	 * tag, such as `product/` in `product/%product%`, is the same in the URL of
+	 * every post of the type. The path starts with the path of the reference
+	 * site URL, which the dashboard builds its page links from.
 	 *
-	 * @return string|null The product post type name or null if not present on the website.
+	 * @since 1.191.0
+	 *
+	 * @param string|null $post_type The post type name, or `null` for none.
+	 * @return string|null The path, such as `/product/`, or `null` for no post type, no permalink structure, or a structure that starts with a rewrite tag.
 	 */
-	protected function get_product_post_type() {
-		/**
-		 * Filters the product post type.
-		 *
-		 * @since 1.116.0
-		 *
-		 * @param string $product_post_type The product post type name.
-		 */
-		$product_post_type = apply_filters( 'googlesitekit_product_post_type', 'product' );
-		$product_type      = get_post_type_object( $product_post_type );
+	protected function get_post_type_path_prefix( $post_type ) {
+		global $wp_rewrite;
 
-		if ( $product_type instanceof WP_Post_Type && $product_type->public ) {
-			return $product_post_type;
+		// `get_extra_permastruct()` reads the name as an array key, and PHP 8.5
+		// deprecates `null` as an array key.
+		if ( ! $post_type ) {
+			return null;
 		}
 
-		return null;
+		// On plain permalinks, `get_extra_permastruct()` returns `false` for
+		// every post type.
+		$permastruct = $wp_rewrite->get_extra_permastruct( $post_type );
+
+		if ( ! $permastruct ) {
+			return null;
+		}
+
+		$path = (string) strstr( $permastruct, '%', true );
+
+		if ( '' === trim( $path, '/' ) ) {
+			return null;
+		}
+
+		return URL::parse(
+			trailingslashit( $this->context->get_reference_site_url() ) . ltrim( $path, '/' ),
+			PHP_URL_PATH
+		);
 	}
 }

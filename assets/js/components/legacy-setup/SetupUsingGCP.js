@@ -38,6 +38,8 @@ import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { clearCache } from '@/js/googlesitekit/api/cache';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -338,12 +340,17 @@ class SetupUsingGCP extends Component {
 																	'google-site-kit'
 																) }
 															</Typography>
-															<p className="googlesitekit-setup__description">
+															<P
+																className="googlesitekit-setup__description"
+																size={
+																	SIZE_MEDIUM
+																}
+															>
 																{ __(
 																	'Please sign into your Google account to begin.',
 																	'google-site-kit'
 																) }
-															</p>
+															</P>
 															<Button
 																href="#"
 																onClick={

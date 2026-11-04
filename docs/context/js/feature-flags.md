@@ -11,12 +11,8 @@ Feature flags are defined in `/feature-flags.json` at the project root:
 [
   "googleTagGateway",
   "gtagUserData",
-  "pdfGeneration",
   "proactiveUserEngagement",
-  "rrmExpressSetup",
-  "setupFlowRefresh",
-  "setupFlowRefreshPhase4",
-  "siteGoals"
+  "rrmExpressSetup"
 ]
 ```
 
@@ -87,12 +83,12 @@ import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SettingsView() {
     const gtgEnabled = useFeature( 'googleTagGateway' );
-    const siteGoalsEnabled = useFeature( 'siteGoals' );
+    const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 
     return (
         <div>
             {gtgEnabled && <GoogleTagGatewaySettings />}
-            {siteGoalsEnabled && <SiteGoalsSettings />}
+            {gtagUserDataEnabled && <EnhancedConversionsSettings />}
         </div>
     );
 }
@@ -156,8 +152,8 @@ Feature flags support testing through several mechanisms:
   import { renderHook } from '@tests/js/test-utils';
   import { useFeature } from '@/js/hooks/useFeature';
 
-  const { result } = renderHook( () => useFeature( 'siteGoals' ), {
-      features: [ 'siteGoals' ],
+  const { result } = renderHook( () => useFeature( 'setupFlowRefresh' ), {
+      features: [ 'setupFlowRefresh' ],
   } );
   ```
 

@@ -128,7 +128,7 @@ abstract class Report_Options {
 	private function normalize_range( $range, $label ) {
 		if ( empty( $range['startDate'] ) || empty( $range['endDate'] ) ) {
 			throw new \InvalidArgumentException(
-				sprintf( 'Email reporting %s must include startDate and endDate.', $label )
+				sprintf( 'Email reporting %s must include startDate and endDate.', esc_html( $label ) )
 			);
 		}
 

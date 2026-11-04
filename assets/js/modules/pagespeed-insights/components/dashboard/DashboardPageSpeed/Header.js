@@ -33,25 +33,24 @@ import {
 	DATA_SRC_FIELD,
 	DATA_SRC_LAB,
 	DATA_SRC_RECOMMENDATIONS,
+	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_DESKTOP,
 	STRATEGY_MOBILE,
 	UI_DATA_SOURCE,
-	UI_STRATEGY,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
 
 const Header = forwardRef(
 	( { isFetching, updateActiveTab, recommendations = [] }, ref ) => {
-		const strategy =
-			useSelect( ( select ) =>
-				select( CORE_UI ).getValue( UI_STRATEGY )
-			) || STRATEGY_MOBILE;
+		const strategy = useSelect( ( select ) =>
+			select( MODULES_PAGESPEED_INSIGHTS ).getActiveTab()
+		);
 
 		const dataSrc =
 			useSelect( ( select ) =>
 				select( CORE_UI ).getValue( UI_DATA_SOURCE )
 			) || DATA_SRC_LAB;
 
-		const { setValues } = useDispatch( CORE_UI );
+		const { setActiveTab } = useDispatch( MODULES_PAGESPEED_INSIGHTS );
 
 		// Tabs configuration.
 		const tabs = [
@@ -84,12 +83,12 @@ const Header = forwardRef(
 		const updateActiveDeviceSize = useCallback(
 			( { slug } ) => {
 				if ( slug === STRATEGY_DESKTOP ) {
-					setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } );
+					setActiveTab( STRATEGY_DESKTOP );
 				} else {
-					setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } );
+					setActiveTab( STRATEGY_MOBILE );
 				}
 			},
-			[ setValues ]
+			[ setActiveTab ]
 		);
 
 		return (

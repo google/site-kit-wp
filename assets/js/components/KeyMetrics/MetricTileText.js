@@ -25,6 +25,13 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import ChangeBadge from '@/js/components/ChangeBadge';
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_LABEL,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { expandNumFmtOptions } from '@/js/util';
 import MetricTileWrapper from './MetricTileWrapper';
 
@@ -36,6 +43,8 @@ export default function MetricTileText( {
 	currentValue,
 	...props
 } ) {
+	const breakpoint = useBreakpoint();
+
 	const formatOptions = expandNumFmtOptions( metricValueFormat );
 
 	return (
@@ -47,9 +56,17 @@ export default function MetricTileText( {
 				<div className="googlesitekit-km-widget-tile__metric">
 					{ metricValue }
 				</div>
-				<p className="googlesitekit-km-widget-tile__subtext">
+				<P
+					className="googlesitekit-km-widget-tile__subtext"
+					size={
+						breakpoint === BREAKPOINT_SMALL
+							? SIZE_SMALL
+							: SIZE_MEDIUM
+					}
+					type={ TYPE_LABEL }
+				>
 					{ subText }
-				</p>
+				</P>
 			</div>
 			<div className="googlesitekit-km-widget-tile__metric-change-container">
 				<ChangeBadge

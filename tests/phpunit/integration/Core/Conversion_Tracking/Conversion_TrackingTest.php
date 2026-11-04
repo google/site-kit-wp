@@ -19,10 +19,13 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeContentEventProvider_Active;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active;
+use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active_Overlapping;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active_Two;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeLeadEventProvider_Active;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Tests\TestCase;
 
 class Conversion_TrackingTest extends TestCase {
@@ -130,6 +133,23 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertTrue( has_action( 'fake_provider_action' ), 'Provider hook should be registered after snippet.' );
 	}
 
+	public function test_gtag_event__adds_user_data_developer_id_only_for_events_with_user_data() {
+		wp_register_script( GTag::HANDLE, 'https://www.googletagmanager.com/gtag/js', array(), null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+
+		$this->conversion_tracking->register();
+
+		do_action( 'googlesitekit_analytics-4_init_tag' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$inline_script = implode( '', wp_scripts()->registered[ GTag::HANDLE ]->extra['after'] );
+
+		$this->assertStringContainsString(
+			'data && data.user_data ? {"developer_id.' . Enhanced_Conversions::USER_DATA_DEVELOPER_ID . '":true} : {}',
+			$inline_script,
+			'The gtagEvent wrapper should add the user data developer ID to the event params only when the event has user data.'
+		);
+	}
+
 	public function data_modules() {
 		return array(
 			'ads_module'        => array( 'ads' ),
@@ -223,6 +243,23 @@ class Conversion_TrackingTest extends TestCase {
 		);
 	}
 
+	public function test_get_supported_conversion_events__reindexes_events_after_removing_duplicates() {
+		Conversion_Tracking::$providers[ FakeConversionEventProvider_Active_Overlapping::CONVERSION_EVENT_PROVIDER_SLUG ] = FakeConversionEventProvider_Active_Overlapping::class;
+
+		$events = $this->conversion_tracking->get_supported_conversion_events();
+
+		// A gap in the keys would JSON-encode the events as an object rather than an array.
+		$this->assertSame(
+			array(
+				'fake_event_active_1',
+				'fake_event_active_2',
+				'fake_event_active_3',
+			),
+			$events,
+			'Supported conversion events should be a list without duplicates.'
+		);
+	}
+
 	public function test_get_enhanced_conversion_events() {
 		$events = $this->conversion_tracking->get_enhanced_conversion_events();
 
@@ -291,9 +328,23 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertArrayHasKey( 'hasActiveLeadEventProviders', $data, 'Inline base data should include active lead provider flag.' );
 		$this->assertArrayHasKey( 'hasActiveEcommerceEventProviders', $data, 'Inline base data should include active ecommerce provider flag.' );
 		$this->assertArrayHasKey( 'hasMultipleActiveEcommerceEventProviders', $data, 'Inline base data should include multiple ecommerce provider flag.' );
+		$this->assertArrayHasKey( 'activeConversionEventProviders', $data, 'Inline base data should include the list of active provider slugs.' );
 		$this->assertFalse( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be false with no active providers.' );
 		$this->assertFalse( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be false with no active providers.' );
 		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be false with no active providers.' );
+		$this->assertEquals( array(), $data['activeConversionEventProviders'], 'The list of active provider slugs should be empty when no provider is active.' );
+	}
+
+	public function test_inline_js_base_data__with_one_active_and_one_inactive_provider() {
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertEquals(
+			array( 'fake-conversion-event-provider-active' ),
+			$data['activeConversionEventProviders'],
+			'The list of active provider slugs should skip the inactive provider.'
+		);
 	}
 
 	public function test_inline_js_base_data__with_active_lead_provider() {
@@ -307,6 +358,7 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertTrue( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be true with active lead provider.' );
 		$this->assertFalse( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be false with only lead provider.' );
+		$this->assertEquals( array( 'contact-form-7' ), $data['activeConversionEventProviders'], 'The list of active provider slugs should hold the lead provider slug.' );
 	}
 
 	public function test_inline_js_base_data__with_active_ecommerce_provider() {
@@ -322,6 +374,7 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertTrue( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be true with active provider.' );
 		// A single active ecommerce provider is not "multiple".
 		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be false with one provider.' );
+		$this->assertEquals( array( 'woocommerce' ), $data['activeConversionEventProviders'], 'The list of active provider slugs should hold the ecommerce provider slug.' );
 	}
 
 	public function test_inline_js_base_data__with_multiple_active_ecommerce_providers() {
@@ -336,6 +389,11 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertTrue( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be true with active providers.' );
 		$this->assertTrue( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be true with multiple providers.' );
+		$this->assertEquals(
+			array( 'woocommerce', 'easy-digital-downloads' ),
+			$data['activeConversionEventProviders'],
+			'The list of active provider slugs should hold one slug for each active ecommerce provider.'
+		);
 	}
 
 	public function test_inline_js_base_data__with_both_active_providers() {
@@ -350,6 +408,11 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertTrue( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be true with both provider types.' );
 		$this->assertTrue( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be true with both provider types.' );
+		$this->assertEquals(
+			array( 'contact-form-7', 'woocommerce' ),
+			$data['activeConversionEventProviders'],
+			'The list of active provider slugs should hold one slug from each provider category.'
+		);
 	}
 
 	public function test_get_active_provider_categories__no_active_providers() {
@@ -416,6 +479,7 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertTrue( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be true with active lead provider.' );
 		$this->assertFalse( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be false with only lead provider.' );
 		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be false with only lead provider.' );
+		$this->assertEquals( array( 'contact-form-7' ), $data['activeConversionEventProviders'], 'Turning conversion tracking off should not empty the list of active provider slugs.' );
 	}
 
 	public function test_content_event_provider__does_not_affect_conversion_event_getters_and_categories() {

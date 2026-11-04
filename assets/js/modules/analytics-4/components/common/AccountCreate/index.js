@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -42,14 +41,12 @@ import { ProgressBar } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
 import Link from '@/js/components/Link';
-import Null from '@/js/components/Null';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import P from '@/js/components/Typography/P';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -76,11 +73,6 @@ import WebDataStreamField from './WebDataStreamField';
 export default function AccountCreate( { className } ) {
 	const { accountCreationErrorCode, showProgress } = getQueryArgs(
 		location.href
-	);
-
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
 	);
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -132,9 +124,6 @@ export default function AccountCreate( { className } ) {
 			'plugin-conversion-tracking'
 		);
 	} );
-	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
 	const sitePurposeSetupURL = useSelect( ( select ) => {
 		const url = select( CORE_SITE ).getAdminURL(
 			'googlesitekit-key-metrics-setup'
@@ -187,10 +176,9 @@ export default function AccountCreate( { className } ) {
 		}
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
-	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
+	const isInitialSetupFlow = !! showProgress;
 
-	const hasAccountCreationError =
-		setupFlowRefreshEnabled && !! accountCreationErrorCode;
+	const hasAccountCreationError = !! accountCreationErrorCode;
 
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
@@ -283,21 +271,15 @@ export default function AccountCreate( { className } ) {
 	// initial-setup-flow redirect (in `Screens.php`) doesn't bounce the user
 	// back to the Analytics setup screen.
 	const handleContinueWithoutAnalytics = useCallback( async () => {
-		const nextURL = setupFlowRefreshPhase4Enabled
-			? sitePurposeSetupURL
-			: dashboardURL;
-
 		setIsAnalyticsSetupComplete( true );
 		setIsNavigating( true );
 		await saveInitialSetupSettings();
-		navigateTo( nextURL );
+		navigateTo( sitePurposeSetupURL );
 	}, [
 		navigateTo,
-		dashboardURL,
 		sitePurposeSetupURL,
 		saveInitialSetupSettings,
 		setIsAnalyticsSetupComplete,
-		setupFlowRefreshPhase4Enabled,
 	] );
 
 	if (
@@ -367,24 +349,19 @@ export default function AccountCreate( { className } ) {
 				/>
 
 				<SetupPluginConversionTrackingNotice
-					className={ classnames( {
-						'googlesitekit-margin-top-0': ! setupFlowRefreshEnabled,
-					} ) }
 					message={ createInterpolateElement(
 						__(
 							'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. <LearnMoreLink />',
 							'google-site-kit'
 						),
 						{
-							LearnMoreLink: setupFlowRefreshEnabled ? (
+							LearnMoreLink: (
 								<Link
 									href={ pluginConversionsDocumentationURL }
 									external
 								>
 									{ __( 'Learn more', 'google-site-kit' ) }
 								</Link>
-							) : (
-								<Null />
 							),
 						}
 					) }
@@ -393,7 +370,7 @@ export default function AccountCreate( { className } ) {
 
 			<P
 				className="googlesitekit-analytics-setup__analytics-create-account-info"
-				size={ setupFlowRefreshEnabled ? 'small' : undefined }
+				size="small"
 			>
 				{ hasRequiredScope && (
 					<span>

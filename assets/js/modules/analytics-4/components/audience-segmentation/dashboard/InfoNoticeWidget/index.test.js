@@ -17,7 +17,7 @@
  */
 
 /**
- * Internal dependencies
+ * Internal dependencies.
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -43,8 +43,9 @@ import InfoNoticeWidget from '.';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
+const { simulateAllIntersections } = mockIntersectionObserver();
+
 describe( 'InfoNoticeWidget', () => {
-	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 
 	let dismissPromptSpy;
@@ -403,7 +404,7 @@ describe( 'InfoNoticeWidget', () => {
 
 				// Simulate the notice coming into view.
 				act( () => {
-					simulateAllIntersections();
+					simulateAllIntersections( true );
 				} );
 
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

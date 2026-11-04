@@ -42,7 +42,7 @@ import type {
 /**
  * Checks whether a source uses the bare tests alias.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param source Import source.
  * @return True if the source uses the bare tests alias.
@@ -54,7 +54,7 @@ export function isBareTestsAlias( source: string ): boolean {
 /**
  * Canonicalizes a bare tests alias.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param source Import source.
  * @return The canonicalized import source.
@@ -371,7 +371,7 @@ export function unwrapRequireCall(
 /**
  * Gets the source literal from an import or require node.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param node Import/require node.
  * @return Import source literal, or null when unavailable.

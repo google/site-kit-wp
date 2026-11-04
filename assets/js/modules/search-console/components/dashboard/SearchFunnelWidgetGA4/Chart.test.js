@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	withActive,
 	withConnected,
@@ -63,6 +64,7 @@ describe( 'SearchFunnelWidgetGA4 Chart', () => {
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
 		props = {
@@ -196,7 +198,7 @@ describe( 'SearchFunnelWidgetGA4 Chart', () => {
 	} );
 
 	describe.each( [
-		[ 'Set up Google Analytics', false ],
+		[ 'Set up Analytics', false ],
 		[ 'Complete setup', true ],
 	] )(
 		'Activate Analytics CTA with button "%s"',
@@ -223,7 +225,9 @@ describe( 'SearchFunnelWidgetGA4 Chart', () => {
 				);
 
 				expect(
-					container.querySelector( '.googlesitekit-analytics-cta' )
+					container.querySelector(
+						'.googlesitekit-activate-analytics-cta'
+					)
 				).toBeInTheDocument();
 
 				expect( getByText( buttonLabel ) ).toBeInTheDocument();
@@ -240,7 +244,9 @@ describe( 'SearchFunnelWidgetGA4 Chart', () => {
 				);
 
 				expect(
-					container.querySelector( '.googlesitekit-analytics-cta' )
+					container.querySelector(
+						'.googlesitekit-activate-analytics-cta'
+					)
 				).not.toBeInTheDocument();
 
 				expect( queryByText( buttonLabel ) ).not.toBeInTheDocument();
@@ -257,7 +263,9 @@ describe( 'SearchFunnelWidgetGA4 Chart', () => {
 				);
 
 				expect(
-					container.querySelector( '.googlesitekit-analytics-cta' )
+					container.querySelector(
+						'.googlesitekit-activate-analytics-cta'
+					)
 				).not.toBeInTheDocument();
 
 				expect( queryByText( buttonLabel ) ).not.toBeInTheDocument();

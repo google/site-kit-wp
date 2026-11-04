@@ -27,6 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 
 type TrackEvents = {
@@ -62,7 +64,10 @@ const NormalCTAContent = forwardRef< HTMLDivElement, NormalCTAContentProps >(
 				<div className="googlesitekit-activate-analytics-cta__icon">
 					<AnalyticsIcon width={ 28 } height={ 31 } />
 				</div>
-				<p className="googlesitekit-activate-analytics-cta__description">
+				<P
+					className="googlesitekit-activate-analytics-cta__description"
+					size={ SIZE_MEDIUM }
+				>
 					{ createInterpolateElement(
 						__(
 							'See how many people visit your site from Search and track how you’re achieving your goals. <a>Learn more</a>',
@@ -82,7 +87,7 @@ const NormalCTAContent = forwardRef< HTMLDivElement, NormalCTAContentProps >(
 							),
 						}
 					) }
-				</p>
+				</P>
 			</div>
 			<div className="googlesitekit-activate-analytics-cta__actions">
 				{ /* @ts-expect-error `Button` component is not yet typed. */ }

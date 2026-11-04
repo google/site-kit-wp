@@ -28,10 +28,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
 import {
 	BREAKDOWN_ORIGIN_FORM_KEY,
 	BREAKDOWN_ORIGIN_WIDGET,
@@ -44,6 +47,10 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import {
+	buildSiteGoalsEventCountReportOptions,
+	seedSiteGoalsEventCountReport,
+} from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -52,8 +59,9 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
-import { fireEvent, render, waitFor } from '@tests/js/test-utils';
+import { fireEvent, render, waitFor, within } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -66,12 +74,19 @@ import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'OnlineStorePerformanceWidget', () => {
-	const { getObservedElements } = mockIntersectionObserver();
 	let registry: WPDataRegistry;
+
+	const { getObservedElements } = mockIntersectionObserver();
+
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
 		'analyticsOnlineStorePerformance'
 	);
+
+	const PROVIDER_DIMENSION = 'customEvent:googlesitekit_event_provider';
 
 	function buildPrimaryEventReportOptions(
 		dates: Record< string, unknown >,
@@ -120,6 +135,40 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		};
 	}
 
+	/**
+	 * Adds the chart tile's report for every ecommerce event and provider tab,
+	 * so no test leaves the tile in its loading placeholder.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @return {void}
+	 */
+	function receiveKeyActionChartReports() {
+		const breakdownFilters: Record< string, unknown >[] = [
+			{},
+			...[ 'woocommerce', 'easy-digital-downloads' ].map(
+				( provider ) => ( { [ PROVIDER_DIMENSION ]: provider } )
+			),
+		];
+
+		[
+			ENUM_CONVERSION_EVENTS.PURCHASE,
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+		].forEach( ( eventName ) => {
+			breakdownFilters.forEach( ( breakdownFilter ) => {
+				provideAnalytics4MockReport(
+					registry,
+					getKeyActionChartReportOptions( {
+						dates: registry.select( CORE_USER ).getDateRangeDates(),
+						eventNames: [ eventName ],
+						goalType: GOAL_TYPES.ECOMMERCE,
+						breakdownFilter,
+					} )
+				);
+			} );
+		} );
+	}
+
 	function seedGoalDriverReports(
 		eventNames: string[],
 		{
@@ -155,14 +204,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
 		};
 
 		const topTrafficTotalOptions = {
 			...dates,
 			dimensionFilters,
 			metrics: [ { name: 'eventCount' } ],
-			reportID: `analytics-4_site-goals_top-traffic-channels-total_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-total_ecommerce',
 		};
 
 		const topTrafficRateOptions = {
@@ -178,7 +229,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-rate_ecommerce',
+		};
+
+		const topTrafficSessionsOptions = {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [ { name: 'sessions' } ],
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-sessions_ecommerce',
 		};
 
 		const topPagesOptions = {
@@ -194,7 +254,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-pages_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_top-pages_ecommerce',
 		};
 
 		const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -226,7 +286,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_visitor-type_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_visitor-type_ecommerce',
 		};
 
 		const citiesOptions = {
@@ -248,7 +308,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_cities_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_cities_ecommerce',
 		};
 
 		const countriesOptions = {
@@ -270,7 +330,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_countries_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_countries_ecommerce',
 		};
 
 		const deviceTypeOptions = {
@@ -286,7 +346,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_device-type_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_device-type_ecommerce',
 		};
 
 		if ( loading ) {
@@ -294,6 +354,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				topTrafficChannelsOptions,
 				topTrafficTotalOptions,
 				topTrafficRateOptions,
+				topTrafficSessionsOptions,
 				topPagesOptions,
 				pageTitlesOptions,
 				visitorTypeOptions,
@@ -385,6 +446,23 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [ 'Direct', 'Organic Search', 'Organic Social' ].map(
+							( channel ) => ( {
+								dimensionValues: [ { value: channel } ],
+								metricValues: [ { value: '2000' } ],
+							} )
+					  ),
+			},
+			{ options: topTrafficSessionsOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ topTrafficSessionsOptions ] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -685,6 +763,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 	beforeEach( async () => {
 		registry = createTestRegistry();
+		// The breakdown notice reads this setting; `true` keeps these tests on
+		// the existing notice, without the conversion tracking disclosure.
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
@@ -700,13 +783,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				connected: true,
 			},
 		] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSettings( { availableCustomDimensions: [] } );
+		// The widget won't request a breakdown report until the breakdown
+		// dimensions exist on the property, so these tests start from the
+		// "created" state.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSiteGoalsSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ 'ecommerce', 'lead' ],
+		} );
 		// Default to the breakdown notice being hidden (intro modal not yet
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -714,6 +800,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		// Default to aggregated mode (no breakdown provider values yet); tabbed
 		// tests re-seed with provider values.
 		seedBreakdown();
+		// Default to ecommerce events in the selected date range, so the removal
+		// notice does not render.
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '5' );
+
+		receiveKeyActionChartReports();
 	} );
 
 	it( 'renders WidgetNull when no ecommerce events are detected', async () => {
@@ -767,17 +858,27 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
+		const keyActionRow = container.querySelector(
+			'.googlesitekit-site-goals-primary-action'
+		);
+
+		expect( keyActionRow ).toBeInTheDocument();
+		// The row holds Sales rate, Total sales, and Total sales in the last
+		// 28 days.
 		expect(
-			container.querySelector(
-				'.googlesitekit-site-goals-primary-action'
-			)
-		).toBeInTheDocument();
+			keyActionRow?.querySelectorAll( '.googlesitekit-site-goals-tile' )
+		).toHaveLength( 3 );
+		// The widget holds the Key action row's three tiles and the Engagement
+		// rate tile.
 		expect(
 			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
-		).toHaveLength( 3 ); // Sales rate + Total sales + Engagement rate
+		).toHaveLength( 4 );
 		expect( getByText( 'Sales rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Total sales' ) ).toBeInTheDocument();
 		expect( getByText( '“purchase” events' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Total sales in the last 28 days' )
+		).toBeInTheDocument();
 		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
 		expect(
 			getByText( 'What’s helping you reach your goals?' )
@@ -790,11 +891,117 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
+		// The site-wide total (100) is larger than the sum of the ranked
+		// rows above (54 + 23 + 16 = 93), so these percentages only match if
+		// "Top traffic channels" divides by that total rather than by the
+		// visible rows.
+		expect( getByText( '54%' ) ).toBeInTheDocument();
+		expect( getByText( '23%' ) ).toBeInTheDocument();
+		expect( getByText( '16%' ) ).toBeInTheDocument();
 		expect(
 			container.querySelectorAll(
 				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
 			)
 		).toHaveLength( 3 );
+	} );
+
+	it( 'shows the Key action rate tile\'s tooltip text and a working "Learn more" link', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { container, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const keyActionRow = container.querySelector(
+			'.googlesitekit-site-goals-primary-action'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		const infoTooltip = keyActionRow.querySelector(
+			'.googlesitekit-info-tooltip'
+		);
+		expect( infoTooltip ).toBeInTheDocument();
+
+		fireEvent.mouseOver( infoTooltip as Element );
+
+		await waitFor( () => {
+			expect(
+				document.querySelector( '.googlesitekit-info-tooltip__content' )
+			).toBeInTheDocument();
+		} );
+
+		const tooltipContent = document.querySelector(
+			'.googlesitekit-info-tooltip__content'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		expect(
+			within( tooltipContent ).getByText( 'like making a purchase', {
+				exact: false,
+			} )
+		).toBeInTheDocument();
+
+		const learnMoreLink = within( tooltipContent ).getByRole( 'link', {
+			name: /Learn more/,
+		} );
+
+		expect( learnMoreLink.getAttribute( 'href' ) ).toEqual(
+			expect.stringContaining( 'doc=site-goals-online-store-key-action' )
+		);
+	} );
+
+	it( 'shows 90 days in the chart tile title when the date range is the last 90 days', async () => {
+		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '5' );
+		receiveKeyActionChartReports();
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Total sales in the last 90 days' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'renders a collapsible widget', async () => {
@@ -824,7 +1031,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 		expect(
 			getByRole( 'button', {
-				name: 'Hide section',
+				name: 'Online store performance Hide section',
 			} )
 		).toBeInTheDocument();
 	} );
@@ -857,6 +1064,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect( getByText( 'Add to cart rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
 		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Products added to cart in the last 28 days' )
+		).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by total sales' )
 		).toBeInTheDocument();
@@ -1008,8 +1218,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		provideSiteInfo( registry, {
 			hasMultipleActiveEcommerceEventProviders: true,
 		} );
-		// Aggregated state: intro modal dismissed, breakdown dimensions not yet
-		// created (availableCustomDimensions seeded as [] in beforeEach).
+		// Aggregated state: intro modal dismissed and the breakdown dimensions
+		// not yet created, so the notice offers the breakdown instead.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setSettings( { availableCustomDimensions: [] } );
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
@@ -1141,7 +1354,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
@@ -1382,6 +1596,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 			] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ 'ecommerce', 'lead' ],
 			visitorEngagement: {
 				[ GOAL_TYPES.ECOMMERCE ]: [],
 				[ GOAL_TYPES.LEAD ]: [],
@@ -1451,7 +1666,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'dispatches an up vote on thumbs-up click', async () => {
+	it( 'should track and dispatch an up vote on thumbs-up click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1474,12 +1689,21 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_up',
+			'ecommerce'
 		);
 
 		await waitFor( () =>
@@ -1493,7 +1717,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 	} );
 
-	it( 'dispatches a down vote on thumbs-down click', async () => {
+	it( 'should track and dispatch a down vote on thumbs-down click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1516,12 +1740,21 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'No, this was not helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_down',
+			'ecommerce'
 		);
 
 		await waitFor( () =>
@@ -1575,13 +1808,17 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		seedReadyReports();
 		seedBreakdownDimensions( true );
 
-		const { getByText, waitForRegistry } = render(
+		const { getByRole, getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'button', {
+				name: 'Online store performance Hide section',
+			} )
+		).not.toContainElement( getByText( 'Gathering breakdown data' ) );
 	} );
 
 	it( 'does not render the gathering breakdown data badge when the dimensions have data available', async () => {
@@ -1626,14 +1863,12 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
 		expect(
-			getByText( /Event breakdown is now active/i )
+			getByText( /Sales plugin breakdown is now active/i )
 		).toBeInTheDocument();
 	} );
 
-	const PROVIDER_DIMENSION = 'customEvent:googlesitekit_event_provider';
-
-	// Seeds the Key action, visitor engagement and goal driver reports for a
-	// breakdown tab whose section reports carry the given provider filter.
+	// Seeds the Key action, visitor engagement, and goal driver reports for a
+	// breakdown tab whose section reports use the given provider filter.
 	function seedTabbedReports( breakdownFilter: Record< string, unknown > ) {
 		const dates = registry
 			.select( CORE_USER )
@@ -1664,7 +1899,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		} );
 	}
 
-	it( 'stays in aggregated mode without tabs when no provider values exist', async () => {
+	it( 'stays in aggregated mode with no tabs and no deactivated plugin notice when no provider values exist', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
@@ -1685,13 +1923,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		const { queryByRole, waitForRegistry } = render(
+		const { queryByRole, queryByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
 		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Online store plugin no longer found' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'renders breakdown tabs with provider labels and an Other sources tab', async () => {
@@ -1804,12 +2045,289 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		await waitFor( () => {
 			expect( getByText( 'Key action' ) ).toBeInTheDocument();
 		} );
+		// Only the aggregate total renders: no chart tile, no engagement
+		// section, and no drivers.
+		expect( getByText( 'Total sales' ) ).toBeInTheDocument();
+		expect(
+			queryByText( 'Total sales in the last 28 days' )
+		).not.toBeInTheDocument();
 		expect(
 			queryByText( 'How are your visitors engaging?' )
 		).not.toBeInTheDocument();
 		expect(
 			queryByText( 'What’s helping you reach your goals?' )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the deactivated plugin notice on a store tab whose plugin is not active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'easy-digital-downloads' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( { providerValues: [ 'woocommerce' ] } );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Online store plugin no longer found' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders no deactivated plugin notice when the store tab plugin is still active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'woocommerce' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( { providerValues: [ 'woocommerce' ] } );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+
+		const { queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Online store plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'shows the deactivated plugin notice on the WooCommerce tab and hides it after a click on the Easy Digital Downloads tab', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'easy-digital-downloads' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( {
+			providerValues: [ 'woocommerce', 'easy-digital-downloads' ],
+		} );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+		seedTabbedReports( {
+			[ PROVIDER_DIMENSION ]: 'easy-digital-downloads',
+		} );
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Online store plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click(
+			getByRole( 'tab', { name: 'Easy Digital Downloads' } )
+		);
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Online store plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'hides the deactivated plugin notice after a click on the Other sources tab', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( { providerValues: [ 'woocommerce' ] } );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Online store plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'tab', { name: 'Other sources' } ) );
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Online store plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'replaces the widget without tabs with the removal notice when no ecommerce plugin is active and the selected date range has no ecommerce events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase' ] );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
+
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions( dates, 'purchase' )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+
+		const {
+			container,
+			getByRole,
+			getByText,
+			queryByText,
+			waitForRegistry,
+		} = render( <OnlineStorePerformanceWidget { ...widgetProps } />, {
+			registry,
+		} );
+		await waitForRegistry();
+
+		expect(
+			getByText( /Online store performance was removed/ )
+		).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /Got it/ } ) ).toBeInTheDocument();
+		expect( queryByText( 'Key action' ) ).not.toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsOnlineStorePerformance'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'replaces the tabs and the "Online store plugin no longer found" notice with the removal notice when no ecommerce plugin is active and the selected date range has no ecommerce events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase' ] );
+		seedBreakdown( { providerValues: [ 'woocommerce' ] } );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
+
+		const { getByText, queryByRole, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( /Online store performance was removed/ )
+		).toBeInTheDocument();
+		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Online store plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the widget when an ecommerce plugin is active and the selected date range has no ecommerce events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: true,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase' ] );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
+		seedReadyReports();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Key action' ) ).toBeInTheDocument();
+		expect(
+			queryByText( /Online store performance was removed/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the widget when no ecommerce plugin is active and the selected date range has ecommerce events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase' ] );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '4' );
+		seedReadyReports();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Key action' ) ).toBeInTheDocument();
+		expect(
+			queryByText( /Online store performance was removed/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'shows the widget title and a loading block when no ecommerce plugin is active and the report of ecommerce events is loading', () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase' ] );
+
+		seedReadyReports();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
+			] );
+
+		const { container, getByText, queryByText, unmount } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		expect( getByText( 'Online store performance' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsOnlineStorePerformance .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		expect( queryByText( 'Key action' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( /Online store performance was removed/ )
+		).not.toBeInTheDocument();
+		unmount();
 	} );
 
 	it( 'keeps the same widget element across re-renders', async () => {

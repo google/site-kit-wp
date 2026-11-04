@@ -1,0 +1,65 @@
+/**
+ * What’s new? tab styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-whats-new {
+		display: block;
+		padding-block: 10px;
+
+		.googlesitekit-whats-new__empty-state {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			margin-inline: auto;
+			max-inline-size: 662px;
+			padding-block-start: 8px;
+			text-align: center;
+			text-wrap: balance;
+
+			img {
+				display: block;
+				max-width: 179px;
+			}
+		}
+
+		.googlesitekit-whats-new__empty-state-heading {
+			margin: 18px 0 8px;
+		}
+
+		.googlesitekit-whats-new__empty-state-description {
+			margin: 0 0 24px;
+		}
+	}
+
+	.googlesitekit-whats-new__notifications {
+		&:not(:empty) {
+			margin-top: 20px;
+		}
+
+		.mdc-layout-grid,
+		.mdc-layout-grid__inner,
+		.mdc-layout-grid__cell {
+			padding: 0;
+		}
+
+		.mdc-layout-grid {
+			margin: 0;
+		}
+	}
+}

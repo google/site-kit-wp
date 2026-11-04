@@ -13,12 +13,26 @@ on:
     paths:
       - '.github/workflows/compressed-size.yml'
       - 'assets/**/*.js'
+      - 'assets/**/*.jsx'
+      - 'assets/**/*.ts'
+      - 'assets/**/*.tsx'
+      - 'assets/**/*.json'
       - '!assets/**/*.test.js'
+      - '!assets/**/*.test.jsx'
+      - '!assets/**/*.test.ts'
+      - '!assets/**/*.test.tsx'
+      - '!assets/**/*.stories.js'
+      - '!assets/**/*.stories.jsx'
+      - '!assets/**/*.stories.ts'
+      - '!assets/**/*.stories.tsx'
       - '!assets/**/test/**'
       - 'assets/**/*.scss'
       - 'assets/svg/**/*.svg'
       - '**/*.config.js'
+      - 'webpack/**/*.js'
+      - 'package.json'
       - 'package-lock.json'
+      - 'patches/**/*.patch'
 
 concurrency:
   group: compressed-size-${{ github.ref }}
@@ -33,6 +47,13 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Setup Node.js (.nvmrc)

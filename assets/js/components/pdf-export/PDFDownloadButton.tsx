@@ -32,7 +32,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import {
+	PDF_DOWNLOAD_BUTTON_CLASS,
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
+} from '@/js/components/pdf-export/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
@@ -62,7 +65,7 @@ const PDFDownloadButton: FC = () => {
 		<Button
 			aria-label={ __( 'Download PDF report', 'google-site-kit' ) }
 			// @ts-expect-error - The `Button` component is not typed yet.
-			className="googlesitekit-pdf-download__button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon"
+			className={ `${ PDF_DOWNLOAD_BUTTON_CLASS } googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon` }
 			onClick={ togglePanel }
 			icon={ <DownloadIcon width={ 20 } height={ 20 } /> }
 			tooltipEnterDelayInMS={ 500 }

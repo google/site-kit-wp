@@ -19,55 +19,168 @@
 /**
  * External dependencies
  */
-import type { FC, ReactNode } from 'react';
+import type { FC } from 'react';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import useQueryArg from '@/js/hooks/useQueryArg';
 import {
-	StepPublicationPolicies,
-	StepPublicationSetup,
-	StepSetupComplete,
-	StepTermsOfService,
+	publicationPoliciesStep,
+	publicationSetupStep,
+	setupCompleteStep,
+	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
+import ExpressSetupFallback from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupFallback';
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import StepSignupForm from './StepSignupForm';
+import {
+	useExpressSetupScopes,
+	useExpressSetupStepEventLabel,
+	useExpressSetupTrackEvent,
+	useRecordExpressSetupProgress,
+	useSetupFlow,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import ObservedStep from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ObservedStep';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import {
+	EXPRESS_SETUP_CTAS,
+	EXPRESS_SETUP_STEPS,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import StepSetupCompleteNewsletterSignup from './StepSetupCompleteNewsletterSignup';
+import { signupFormStep } from './StepSignupForm';
+import ViewOnSiteCTANewsletterSignup from './ViewOnSiteCTANewsletterSignup';
+
+const STEPS: SetupStep[] = [
+	publicationSetupStep,
+	termsOfServiceStep,
+	publicationPoliciesStep,
+	signupFormStep,
+	setupCompleteStep,
+];
 
 const SetupCTANewsletterSignup: FC = () => {
-	const [ step ] = useQueryArg( 'step' );
+	const hasRequiredScopes = useExpressSetupScopes();
 
-	const stepContent: Record< string, ReactNode > = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: <StepPublicationSetup />,
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
-		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
-			<StepPublicationPolicies />
-		),
-		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: <StepSignupForm />,
-		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: <StepSetupComplete />,
+	const { currentStep, advance } = useSetupFlow( STEPS );
+
+	useRecordExpressSetupProgress(
+		EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+		currentStep?.slug
+	);
+
+	const trackEvent = useExpressSetupTrackEvent();
+	const stepEventLabel = useExpressSetupStepEventLabel( currentStep?.slug );
+
+	// Each step's start is tracked once, when it is first in view.
+	const [ stepInView, setStepInView ] = useState< string >();
+	const trackedStartStepRef = useRef< string >();
+
+	useMount( () => {
+		trackEvent( 'start_setup' );
+	} );
+
+	// Waits for the label as well as the step being in view, as the publication
+	// setup step only knows its label once its publications have loaded.
+	useEffect( () => {
+		const slug = currentStep?.slug;
+
+		if (
+			! slug ||
+			! stepEventLabel ||
+			stepInView !== slug ||
+			trackedStartStepRef.current === slug
+		) {
+			return;
+		}
+
+		trackedStartStepRef.current = slug;
+
+		trackEvent( 'start_step', stepEventLabel );
+
+		if ( slug === EXPRESS_SETUP_STEPS.SETUP_COMPLETE ) {
+			trackEvent( 'complete_setup' );
+		}
+	}, [ currentStep?.slug, stepEventLabel, stepInView, trackEvent ] );
+
+	const onStepInView = useCallback( () => {
+		setStepInView( currentStep?.slug );
+	}, [ currentStep?.slug ] );
+
+	// Returns the tracking promise for the setup complete step, which leaves
+	// the page once it settles. Other steps advance without waiting for it.
+	const onStepComplete = useCallback( () => {
+		const tracking = trackEvent( 'complete_step', stepEventLabel );
+
+		advance();
+
+		return tracking;
+	}, [ advance, stepEventLabel, trackEvent ] );
+
+	// Copy this flow overrides on the shared steps, keyed by step slug.
+	const stepProps: Record< string, object > = {
+		[ publicationSetupStep.slug ]: {
+			connectDescription: __(
+				'To set up a newsletter sign-up form using Reader Revenue Manager, connect your publication or create a new one.',
+				'google-site-kit'
+			),
+			createDescription: __(
+				'To set up a newsletter sign-up form using Reader Revenue Manager, you will need to create a publication.',
+				'google-site-kit'
+			),
+		},
+		[ publicationPoliciesStep.slug ]: {
+			description: __(
+				'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
+				'google-site-kit'
+			),
+		},
+		[ setupCompleteStep.slug ]: {
+			title: __(
+				'Your newsletter signup form is ready!',
+				'google-site-kit'
+			),
+			secondaryCTA: <ViewOnSiteCTANewsletterSignup />,
+			children: <StepSetupCompleteNewsletterSignup />,
+		},
 	};
+
+	if ( hasRequiredScopes !== true || ! currentStep ) {
+		return (
+			<ExpressSetupFallback
+				showErrors={ hasRequiredScopes === true }
+				errorTitle={ __(
+					'We couldn’t set up your sign-up form',
+					'google-site-kit'
+				) }
+			/>
+		);
+	}
+
+	const StepComponent = currentStep.Component;
 
 	return (
 		<ExpressSetupLayout
 			sidebar={
 				<ExpressSetupSteps
-					extraSteps={ {
-						[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: __(
-							'Set up a sign-up form',
-							'google-site-kit'
-						),
-					} }
+					steps={ STEPS }
+					activeSlug={ currentStep.slug }
 				/>
 			}
 		>
-			{ step ? stepContent[ step ] : null }
+			{ /* Keyed by step, so each step is observed from when it renders. */ }
+			<ObservedStep key={ currentStep.slug } onInView={ onStepInView }>
+				<StepComponent
+					{ ...stepProps[ currentStep.slug ] }
+					onComplete={ onStepComplete }
+				/>
+			</ObservedStep>
 		</ExpressSetupLayout>
 	);
 };

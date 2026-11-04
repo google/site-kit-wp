@@ -55,6 +55,7 @@ describe( 'all modules', () => {
 			( component ) =>
 				component !== 'audience-segmentation' &&
 				component !== 'site-goals' &&
+				component !== 'traffic-overview' &&
 				component !== 'custom-dimensions-report-options'
 		);
 
@@ -72,11 +73,15 @@ describe( 'all modules', () => {
 					componentDir
 				);
 
+				const indexPath = [ 'index.js', 'index.ts' ]
+					.map( ( file ) => path.join( componentDirPath, file ) )
+					.find( ( file ) => fs.existsSync( file ) );
+
 				const {
 					// eslint-disable-next-line no-unused-vars
 					default: _,
 					...indexExports
-				} = require( `${ componentDirPath }/index.js` );
+				} = require( indexPath );
 				const indexExportNames = Object.keys( indexExports ).sort();
 
 				const componentNames =

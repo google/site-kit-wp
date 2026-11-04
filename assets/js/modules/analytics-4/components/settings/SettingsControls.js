@@ -22,16 +22,10 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import { useFeature } from '@/js/hooks/useFeature';
 import {
 	AccountSelect,
 	PropertySelect,
@@ -47,8 +41,6 @@ import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamN
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 
 export default function SettingsControls( props ) {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	const { hasModuleAccess } = props;
 
 	const propertyID = useSelect( ( select ) =>
@@ -70,52 +62,28 @@ export default function SettingsControls( props ) {
 				isDisabled={ ! propertyID }
 			/>
 
-			{ setupFlowRefreshEnabled && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout">
-					<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account">
-						<AccountSelect hasModuleAccess={ hasModuleAccess } />
-					</div>
-					<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property">
-						<PropertySelect
-							hasModuleAccess={ hasModuleAccess }
-							isDisabled={ ! propertyID }
-						/>
-					</div>
-					<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream">
-						<WebDataStreamSelect
-							hasModuleAccess={ hasModuleAccess }
-							isDisabled={ ! propertyID }
-						/>
-					</div>
-					{ webDataStreamID === WEBDATASTREAM_CREATE && (
-						<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream-name">
-							<WebDataStreamNameInput />
-						</div>
-					) }
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout">
+				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account">
+					<AccountSelect hasModuleAccess={ hasModuleAccess } />
 				</div>
-			) }
-
-			{ ! setupFlowRefreshEnabled && (
-				<Fragment>
-					<div className="googlesitekit-setup-module__inputs">
-						<AccountSelect hasModuleAccess={ hasModuleAccess } />
-						<PropertySelect
-							hasModuleAccess={ hasModuleAccess }
-							isDisabled={ ! propertyID }
-						/>
-						<WebDataStreamSelect
-							hasModuleAccess={ hasModuleAccess }
-							isDisabled={ ! propertyID }
-						/>
+				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property">
+					<PropertySelect
+						hasModuleAccess={ hasModuleAccess }
+						isDisabled={ ! propertyID }
+					/>
+				</div>
+				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream">
+					<WebDataStreamSelect
+						hasModuleAccess={ hasModuleAccess }
+						isDisabled={ ! propertyID }
+					/>
+				</div>
+				{ webDataStreamID === WEBDATASTREAM_CREATE && (
+					<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream-name">
+						<WebDataStreamNameInput />
 					</div>
-
-					{ webDataStreamID === WEBDATASTREAM_CREATE && (
-						<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-							<WebDataStreamNameInput />
-						</div>
-					) }
-				</Fragment>
-			) }
+				) }
+			</div>
 
 			<AnalyticsSettingsNotice
 				hasModuleAccess={ hasModuleAccess }

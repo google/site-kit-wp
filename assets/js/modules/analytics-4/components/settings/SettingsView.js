@@ -31,6 +31,8 @@ import Link from '@/js/components/Link';
 import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useFeature } from '@/js/hooks/useFeature';
@@ -49,6 +51,7 @@ import OptionalSettingsView from './OptionalSettingsView';
 export default function SettingsView() {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
+	const freshDataEnabled = useFeature( 'freshData' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -102,6 +105,14 @@ export default function SettingsView() {
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
 
+	const isWooCommerceInstalled = useSelect( ( select ) =>
+		select( CORE_SITE ).isWooCommerceInstalled()
+	);
+
+	const includesWooCommerceProducts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getFreshDataIncludesWooCommerceProducts()
+	);
+
 	const isGTGEnabled = useSelect( ( select ) => {
 		if ( ! gtgEnabled ) {
 			return false;
@@ -141,12 +152,18 @@ export default function SettingsView() {
 					>
 						{ __( 'Account', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting value={ accountID } />
-					</p>
+					</P>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_SMALL }
+					>
 						<Link href={ editAccountSettingsURL } external>
 							{ createInterpolateElement(
 								__(
@@ -158,7 +175,7 @@ export default function SettingsView() {
 								}
 							) }
 						</Link>
-					</p>
+					</P>
 				</div>
 			</div>
 
@@ -172,9 +189,12 @@ export default function SettingsView() {
 					>
 						{ __( 'Property', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting value={ propertyID } />
-					</p>
+					</P>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
 					<Typography
@@ -193,9 +213,12 @@ export default function SettingsView() {
 							}
 						) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting value={ measurementID } />
-					</p>
+					</P>
 				</div>
 				{ googleTagID && (
 					<div className="googlesitekit-settings-module__meta-item">
@@ -207,13 +230,19 @@ export default function SettingsView() {
 						>
 							{ __( 'Google Tag ID', 'google-site-kit' ) }
 						</Typography>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<P
+							className="googlesitekit-settings-module__meta-item-data"
+							size={ SIZE_MEDIUM }
+						>
 							<DisplaySetting value={ googleTagID } />
-						</p>
+						</P>
 					</div>
 				) }
 				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_SMALL }
+					>
 						<Link href={ editDataStreamSettingsURL } external>
 							{ createInterpolateElement(
 								__(
@@ -225,7 +254,7 @@ export default function SettingsView() {
 								}
 							) }
 						</Link>
-					</p>
+					</P>
 				</div>
 			</div>
 
@@ -239,7 +268,10 @@ export default function SettingsView() {
 					>
 						{ __( 'Code Snippet', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						{ useSnippet && (
 							<span>
 								{ __(
@@ -257,7 +289,7 @@ export default function SettingsView() {
 							</span>
 						) }
 						{ useSnippet === undefined && BLANK_SPACE }
-					</p>
+					</P>
 				</div>
 			</div>
 
@@ -284,6 +316,17 @@ export default function SettingsView() {
 										'google-site-kit'
 									),
 									status: isGTGEnabled,
+								},
+						  ]
+						: [] ),
+					...( freshDataEnabled && isWooCommerceInstalled
+						? [
+								{
+									label: __(
+										'Include products in Recent activity',
+										'google-site-kit'
+									),
+									status: includesWooCommerceProducts,
 								},
 						  ]
 						: [] ),

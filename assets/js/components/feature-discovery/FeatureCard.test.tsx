@@ -1,0 +1,463 @@
+/**
+ * FeatureCard component tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { Registry } from '@/js/googlesitekit-data';
+import {
+	FEATURE_BADGES,
+	FEATURE_CATEGORIES,
+	FEATURE_EFFORTS,
+	FEATURE_SETUP_TYPES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideModules,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
+import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from './constants';
+import FeatureCard from './FeatureCard';
+
+const TEST_OLD_VERSION = '1.84.0';
+const TEST_INITIAL_VERSION = '1.86.0';
+const TEST_NEW_VERSION = '1.87.0';
+
+const TEST_FEATURE: Feature = {
+	slug: 'test-feature',
+	title: 'Test feature title',
+	shortDescription: 'Test feature description.',
+	effort: FEATURE_EFFORTS.LOW,
+	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+	addedInVersion: TEST_OLD_VERSION,
+	prerequisiteModules: [],
+	badges: [],
+	setup: {
+		type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+	},
+};
+
+const TEST_SITE_KIT_FEATURE: Feature = {
+	...TEST_FEATURE,
+	slug: 'key-metrics',
+};
+
+const TEST_NEW_FEATURE: Feature = {
+	...TEST_FEATURE,
+	addedInVersion: TEST_NEW_VERSION,
+};
+
+const TEST_MODULE_FEATURE: Feature = {
+	...TEST_FEATURE,
+	slug: 'enhanced-measurement',
+	title: 'Measure even more visitor interactions',
+	shortDescription: 'Collect enhanced measurement events.',
+	effort: FEATURE_EFFORTS.MEDIUM,
+	moduleSlug: MODULE_SLUG_ANALYTICS_4,
+};
+
+const TEST_BADGED_FEATURE: Feature = {
+	...TEST_FEATURE,
+	slug: 'paid-feature',
+	badges: [ FEATURE_BADGES.PAID_SERVICE ],
+};
+
+describe( 'FeatureCard', () => {
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveInitialSiteKitVersion( TEST_INITIAL_VERSION );
+	} );
+
+	afterEach( () => {
+		jest.useRealTimers();
+	} );
+
+	it( 'should resolve its copy, effort, and service from the catalog entry', () => {
+		const AnalyticsIconSpy = jest.fn( AnalyticsIcon );
+
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, name: 'Analytics' },
+		] );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.registerModule( MODULE_SLUG_ANALYTICS_4, {
+				Icon: AnalyticsIconSpy,
+			} );
+
+		provideFeatures( registry, [ TEST_MODULE_FEATURE ] );
+
+		const { getByRole, getByText } = render(
+			<FeatureCard slug="enhanced-measurement" />,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'heading', {
+				name: 'Measure even more visitor interactions',
+			} )
+		).toBeInTheDocument();
+
+		expect(
+			getByText( 'Collect enhanced measurement events.' )
+		).toBeInTheDocument();
+
+		expect( getByText( 'Guided setup' ) ).toBeInTheDocument();
+		expect( getByText( 'Analytics' ) ).toBeInTheDocument();
+
+		expect( AnalyticsIconSpy ).toHaveBeenCalled();
+	} );
+
+	it( 'should render the Site Kit service identity by default', () => {
+		provideFeatures( registry, [ TEST_SITE_KIT_FEATURE ] );
+
+		const { getByText } = render( <FeatureCard slug="key-metrics" />, {
+			registry,
+		} );
+
+		expect( getByText( 'Site Kit feature' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the unread dot and New badge for new features', async () => {
+		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
+
+		const { container, getByText } = render(
+			<FeatureCard slug="test-feature" />,
+			{ registry }
+		);
+
+		expect( getByText( 'New' ) ).toBeInTheDocument();
+
+		await waitFor( () => {
+			expect(
+				container.querySelector(
+					'.googlesitekit-feature-card__dot--visible'
+				)
+			).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should not render the unread dot or New badge for non-new features', () => {
+		provideFeatures( registry, [ TEST_FEATURE ] );
+
+		const { container, queryByText } = render(
+			<FeatureCard slug="test-feature" />,
+			{ registry }
+		);
+
+		expect( queryByText( 'New' ) ).not.toBeInTheDocument();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-feature-card__dot--visible'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should hide the New badge for a new feature when hideNewBadge is set', async () => {
+		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
+
+		const { container, queryByText } = render(
+			<FeatureCard slug="test-feature" hideNewBadge />,
+			{ registry }
+		);
+
+		await waitFor( () => {
+			expect(
+				container.querySelector(
+					'.googlesitekit-feature-card__dot--visible'
+				)
+			).toBeInTheDocument();
+		} );
+
+		expect( queryByText( 'New' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should hide the unread dot for a new feature when hideUnreadDot is set', async () => {
+		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
+
+		const { container, getByText, rerender } = render(
+			<FeatureCard slug="test-feature" />,
+			{ registry }
+		);
+
+		await waitFor( () => {
+			expect(
+				container.querySelector(
+					'.googlesitekit-feature-card__dot--visible'
+				)
+			).toBeInTheDocument();
+		} );
+
+		rerender( <FeatureCard slug="test-feature" hideUnreadDot /> );
+
+		expect( getByText( 'New' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-feature-card__dot--visible'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should keep the unread dot visible for three seconds after it is marked seen', () => {
+		jest.useFakeTimers();
+
+		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
+
+		const { container } = render( <FeatureCard slug="test-feature" />, {
+			registry,
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-feature-card__dot' )
+		).toHaveClass( 'googlesitekit-feature-card__dot--visible' );
+
+		act( () => {
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+				[ getFeatureNewnessKey( 'test-feature' ) ]:
+					Number.MAX_SAFE_INTEGER,
+			} );
+		} );
+
+		act( () => {
+			jest.advanceTimersByTime( 2999 );
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-feature-card__dot' )
+		).toHaveClass( 'googlesitekit-feature-card__dot--visible' );
+
+		act( () => {
+			jest.advanceTimersByTime( 1 );
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-feature-card__dot' )
+		).not.toHaveClass( 'googlesitekit-feature-card__dot--visible' );
+	} );
+
+	it( 'should render badges carried by the catalog entry', () => {
+		provideFeatures( registry, [ TEST_BADGED_FEATURE ] );
+
+		const { getByText } = render( <FeatureCard slug="paid-feature" />, {
+			registry,
+		} );
+
+		expect( getByText( 'Paid service' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the feature’s own CTA in the slot the card provides', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Try it now',
+				},
+			},
+		] );
+
+		const { getByRole } = render( <FeatureCard slug="test-feature" />, {
+			registry,
+		} );
+
+		// How the CTA itself looks and behaves is `FeatureCTA`'s own test.
+		expect(
+			getByRole( 'button', { name: 'Try it now' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render the CTA given by ctaButton in place of the default one', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Try it now',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard
+				slug="test-feature"
+				ctaButton={ <button>Custom CTA</button> }
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Custom CTA' } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Try it now' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the dismiss control only when the card is dismissible', () => {
+		provideFeatures( registry, [ TEST_FEATURE ] );
+
+		const { getByRole, queryByRole, rerender } = render(
+			<FeatureCard slug="test-feature" />,
+			{ registry }
+		);
+
+		expect(
+			queryByRole( 'button', {
+				name: 'Dismiss Test feature title',
+			} )
+		).not.toBeInTheDocument();
+
+		rerender( <FeatureCard slug="test-feature" isDismissible /> );
+
+		expect(
+			getByRole( 'button', {
+				name: 'Dismiss Test feature title',
+			} )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should toggle the menu without dismissing and close on Escape', () => {
+		provideFeatures( registry, [ TEST_FEATURE ] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard slug="test-feature" isDismissible />,
+			{ registry }
+		);
+
+		const button = getByRole( 'button', {
+			name: 'Dismiss Test feature title',
+		} );
+
+		expect( button ).toHaveAttribute( 'aria-expanded', 'false' );
+
+		fireEvent.click( button );
+
+		expect( button ).toHaveAttribute( 'aria-expanded', 'true' );
+		expect( button ).toHaveAttribute(
+			'aria-controls',
+			getByRole( 'menu' ).id
+		);
+
+		fireEvent.click( button );
+
+		expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
+
+		fireEvent.click( button );
+
+		fireEvent.keyDown( getByRole( 'menu' ), {
+			key: 'Escape',
+		} );
+
+		expect( button ).toHaveFocus();
+		expect( button ).toHaveAttribute( 'aria-expanded', 'false' );
+		expect( fetchMock ).not.toHaveFetched();
+	} );
+
+	it.each( [
+		[ 'Just hide this suggestion', undefined ],
+		[ 'It’s not relevant to my site goals', 'not_relevant' ],
+		[ 'I’m already using another tool', 'already_using' ],
+		[ 'Setup seems complex', 'too_complicated' ],
+	] )(
+		'should dismiss the feature and send only the feedback chosen with "%s"',
+		async ( label, reason ) => {
+			provideFeatures( registry, [ TEST_FEATURE ] );
+
+			const triggerSurvey = jest
+				.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+				.mockResolvedValue( {} );
+
+			const endpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-item'
+			);
+
+			fetchMock.postOnce( endpoint, [
+				'feature-discovery-dismissed-test-feature',
+			] );
+
+			const { getByRole, queryByRole, waitForRegistry } = render(
+				<FeatureCard slug="test-feature" isDismissible />,
+				{ registry }
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Dismiss Test feature title' } )
+			);
+
+			fireEvent.click( getByRole( 'menuitem', { name: label } ) );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched( endpoint, {
+				body: {
+					data: {
+						slug: 'feature-discovery-dismissed-test-feature',
+						expiration: 0,
+					},
+				},
+			} );
+
+			if ( reason ) {
+				expect( triggerSurvey ).toHaveBeenCalledWith(
+					`feedback:feature_relevancy_test-feature:${ reason }`
+				);
+			} else {
+				expect( triggerSurvey ).not.toHaveBeenCalled();
+			}
+
+			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
+		}
+	);
+
+	it( 'should open the detail panel for its feature when Read more is clicked', () => {
+		provideFeatures( registry, [ TEST_FEATURE ] );
+
+		const { getByRole } = render(
+			<FeatureCard slug={ TEST_FEATURE.slug } />,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Read more' } ) );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
+		).toBe( TEST_FEATURE.slug );
+	} );
+} );

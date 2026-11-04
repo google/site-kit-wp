@@ -32,7 +32,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { ProgressBar } from 'googlesitekit-components';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 
 interface PDFReportProgressSnackbarProps {
 	progress?: number;
@@ -50,7 +53,7 @@ const PDFReportProgressSnackbar: FC< PDFReportProgressSnackbarProps > = ( {
 	onCancel,
 	title = __( 'Generating your PDF report', 'google-site-kit' ),
 	description = __(
-		'Please keep this tab open until the download starts automatically',
+		'Please keep this page open until the download starts automatically',
 		'google-site-kit'
 	),
 	cancelLabel = __( 'Cancel', 'google-site-kit' ),
@@ -60,18 +63,16 @@ const PDFReportProgressSnackbar: FC< PDFReportProgressSnackbarProps > = ( {
 		<Notice
 			className={ classnames(
 				'googlesitekit-pdf-report-progress-snackbar',
-				'googlesitekit-notice-snackbar',
-				'googlesitekit-notice-snackbar--bottom-right',
-				'googlesitekit-notice-snackbar--content--small',
 				className
 			) }
-			type={ NOTICE_TYPES.INFO_ALT_2 }
-			title={ title }
 			description={ description }
 			dismissButton={ {
 				label: cancelLabel,
 				onClick: onCancel,
 			} }
+			title={ title }
+			type={ NOTICE_TYPES.INFO_ALT_2 }
+			variant={ NOTICE_VARIANTS.SNACKBAR }
 			hideIcon
 		>
 			<ProgressBar

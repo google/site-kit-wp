@@ -97,7 +97,7 @@ const MOCKED_MEASURED_HEIGHT = 500;
  * Builds a `pdf()` implementation whose `toBlob()` fires the document's
  * `onRender` callback with the given layout, overriding the mock's fixture.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param layout The layout to pass to `onRender`.
  * @return The `pdf()` implementation.
@@ -238,7 +238,7 @@ describe( 'PDFExportOrchestrator', () => {
 	 * Renders the orchestrator under a dashboard view context.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Added the `viewContext` parameter.
+	 * @since 1.186.0 Added the `viewContext` parameter.
 	 *
 	 * @param {string} viewContext The dashboard view context to render under.
 	 * @return {Object} The render result for the orchestrator.
@@ -355,6 +355,18 @@ describe( 'PDFExportOrchestrator', () => {
 
 		// A measurement pass and a final pass.
 		expect( pdf ).toHaveBeenCalledTimes( 2 );
+	} );
+
+	it( 'should download the PDF with a filename naming the site and the reporting period', async () => {
+		await renderAndCaptureReport();
+
+		await waitFor( () => expect( triggerDownload ).toHaveBeenCalled() );
+
+		// The last 28 days, ending the day before the `2021-01-10` reference date.
+		expect( triggerDownload ).toHaveBeenCalledWith(
+			'blob:mock-url',
+			'Site Kit Dashboard - example.com - Dec 13, 2020 – Jan 9, 2021.pdf'
+		);
 	} );
 
 	it( 'sizes the final page to the measured content height plus the bottom padding', async () => {
@@ -667,45 +679,6 @@ describe( 'PDFExportOrchestrator', () => {
 		] );
 	} );
 
-	it( 'titles the report section from pdfReportTitle when set, overriding pdfTitle', async () => {
-		const getData: jest.Mock = jest.fn( () =>
-			Promise.resolve( { data: { totalUsers: 100 } } )
-		);
-		const dispatch = registry.dispatch( CORE_WIDGETS );
-		dispatch.registerWidgetArea( 'monetizationArea', {
-			title: 'Area',
-			pdfTitle: 'Revenue',
-			pdfReportTitle: 'Monetization',
-			style: 'boxes',
-			priority: 1,
-		} );
-		dispatch.assignWidgetArea(
-			'monetizationArea',
-			CONTEXT_MAIN_DASHBOARD_TRAFFIC
-		);
-		dispatch.registerWidget( 'monetizationWidget', {
-			Component: NullComponent,
-			pdf: { Component: NullComponent, getData },
-		} );
-		dispatch.assignWidget( 'monetizationWidget', 'monetizationArea' );
-		registry.dispatch( CORE_PDF ).setSelection( {
-			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [ 'monetizationWidget' ],
-		} );
-
-		renderOrchestrator();
-
-		await waitFor( () => {
-			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
-		} );
-
-		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
-
-		// The header chip and the body section title both read the report title.
-		expect( props.sections[ 0 ].label ).toBe( 'Monetization' );
-		expect( props.areas[ 0 ].areaTitle ).toBe( 'Monetization' );
-	} );
-
 	it( 'derives a single section for an area shared across multiple selected contexts', async () => {
 		const getData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
@@ -999,7 +972,7 @@ describe( 'PDFExportOrchestrator', () => {
 	 *
 	 * The orchestrator then has one report to export.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {jest.Mock} getData The mock behind the widget's `pdf.getData`.
 	 * @return {void}

@@ -51,12 +51,14 @@ module.exports = {
 				'<rootDir>/packages/**/__tests__/**/*.{js,jsx,ts,tsx}',
 				'<rootDir>/packages/**/test/*.{js,jsx,ts,tsx}',
 				'<rootDir>/packages/**/?(*.)test.{js,jsx,ts,tsx}',
+				'<rootDir>/storybook/**/?(*.)test.{js,jsx,ts,tsx}',
 				'<rootDir>/tests/js/**/?(*.)test.{js,jsx,ts,tsx}',
 			],
 			testPathIgnorePatterns: [
 				'<rootDir>/.git',
 				'<rootDir>/node_modules',
 				'<rootDir>/assets/node_modules',
+				'<rootDir>/storybook/node_modules',
 				'<rootDir>/build',
 				'<rootDir>/packages/eslint-plugin',
 			],
@@ -74,6 +76,7 @@ module.exports = {
 				// Necessary mock to prevent test failures caused by SVGR.
 				'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
 				'\\.svg\\?url$': '<rootDir>/tests/js/svgStringMock.js',
+				'\\.svg\\?path$': '<rootDir>/tests/js/svgStringMock.js',
 				'\\.svg\\?pdf$': '<rootDir>/tests/js/svgPdfMock.js',
 				'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
 					'<rootDir>/tests/js/fileMock.js',

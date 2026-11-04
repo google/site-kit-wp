@@ -31,7 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
-import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
+import { Tile } from '@/js/modules/analytics-4/components/common/tiles';
 import { NUMBER_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {

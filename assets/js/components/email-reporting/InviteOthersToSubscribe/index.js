@@ -31,7 +31,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import {
+	SEARCH_THRESHOLD,
+	USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+} from '@/js/components/email-reporting/constants';
+import UserSearchInput from '@/js/components/email-reporting/UserList/UserSearchInput';
 import InfoTooltip from '@/js/components/InfoTooltip';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -41,10 +45,7 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { useDebounce } from '@/js/hooks/useDebounce';
-import InviteSearchInput from './InviteSearchInput';
 import InviteUserList from './InviteUserList';
-
-const SEARCH_THRESHOLD = 6;
 
 export default function InviteOthersToSubscribe() {
 	const hasManageOptionsCapability = useSelect( ( select ) =>
@@ -184,15 +185,8 @@ export default function InviteOthersToSubscribe() {
 
 	return (
 		<div className="googlesitekit-invite-others-to-subscribe">
-			<div className="googlesitekit-invite-others-to-subscribe__header">
-				<span className="googlesitekit-invite-others-to-subscribe__title">
-					{ __( 'Invite others to subscribe', 'google-site-kit' ) }
-				</span>
-				<InfoTooltip title={ tooltipContent } />
-			</div>
-
 			{ showSearch && (
-				<InviteSearchInput
+				<UserSearchInput
 					value={ searchTerm }
 					onChange={ setSearchTerm }
 				/>
@@ -204,6 +198,7 @@ export default function InviteOthersToSubscribe() {
 				inviteResults={ inviteResults }
 				onInviteResult={ handleInviteResult }
 				isLoading={ isLoading }
+				noEligibleUsersIcon={ <InfoTooltip title={ tooltipContent } /> }
 			/>
 		</div>
 	);

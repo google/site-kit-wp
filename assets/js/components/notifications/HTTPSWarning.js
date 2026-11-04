@@ -31,7 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
@@ -53,8 +56,6 @@ export default function HTTPSWarning( { moduleSlug } ) {
 
 	return (
 		<Notice
-			className="googlesitekit-notice--small"
-			type={ NOTICE_TYPES.WARNING }
 			description={ sprintf(
 				/* translators: %s: Module name. */
 				__(
@@ -63,6 +64,8 @@ export default function HTTPSWarning( { moduleSlug } ) {
 				),
 				moduleName
 			) }
+			type={ NOTICE_TYPES.WARNING }
+			variant={ NOTICE_VARIANTS.SMALL }
 			hideIcon
 		/>
 	);

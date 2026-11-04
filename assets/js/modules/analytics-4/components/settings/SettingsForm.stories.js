@@ -33,7 +33,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { provideModules } from '@tests/js/utils';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SettingsForm from './SettingsForm';
 
@@ -314,11 +314,34 @@ WithEnhancedConversionsNotice.parameters = {
 	features: [ 'gtagUserData' ],
 };
 
+export const WithWooCommerceProductsToggle = Template.bind( null );
+WithWooCommerceProductsToggle.storyName = 'With WooCommerce products toggle';
+WithWooCommerceProductsToggle.parameters = {
+	features: [ 'freshData' ],
+};
+WithWooCommerceProductsToggle.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			provideSiteInfo( registry, {
+				wooCommerceInstalled: true,
+				wooCommerceActive: true,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setFreshDataIncludesWooCommerceProducts( true );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithWooCommerceProductsToggle.scenario = {};
+
 export const WithSiteGoalsBreakdownsRow = Template.bind( null );
 WithSiteGoalsBreakdownsRow.storyName = 'With Site Goals custom dimensions row';
-WithSiteGoalsBreakdownsRow.parameters = {
-	features: [ 'siteGoals' ],
-};
 WithSiteGoalsBreakdownsRow.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
@@ -344,9 +367,6 @@ WithSiteGoalsBreakdownsRow.scenario = {};
 export const WithSiteGoalsBreakdownsRowEnabled = Template.bind( null );
 WithSiteGoalsBreakdownsRowEnabled.storyName =
 	'With Site Goals custom dimensions row enabled';
-WithSiteGoalsBreakdownsRowEnabled.parameters = {
-	features: [ 'siteGoals' ],
-};
 WithSiteGoalsBreakdownsRowEnabled.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
@@ -382,9 +402,6 @@ WithSiteGoalsBreakdownsRowEnabled.scenario = {};
 export const WithSiteGoalsBreakdownsRowNewProperty = Template.bind( null );
 WithSiteGoalsBreakdownsRowNewProperty.storyName =
 	'With Site Goals custom dimensions row and a new property';
-WithSiteGoalsBreakdownsRowNewProperty.parameters = {
-	features: [ 'siteGoals' ],
-};
 WithSiteGoalsBreakdownsRowNewProperty.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
