@@ -42,6 +42,8 @@ trait RestTestTrait {
 	 * From the given WordPress version on, it also asserts that the route's callback never ran.
 	 * An older version lets some invalid data through to the callback's own check.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param WP_REST_Request $request                       Request to dispatch.
 	 * @param string          $expected_code                 Expected error code.
 	 * @param string          $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
@@ -66,6 +68,8 @@ trait RestTestTrait {
 	 *
 	 * WordPress before 5.5 lets data with a missing or empty property through to the callback, and before 5.6 an empty object.
 	 * So a test reaches the callback's own check of such data this way on every version.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string $method HTTP method of the endpoint.
 	 * @param string $route  Route path under the Site Kit REST root.
