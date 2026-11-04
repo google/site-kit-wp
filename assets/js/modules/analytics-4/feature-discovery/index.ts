@@ -613,7 +613,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				setupList: [
 					__(
-						'Enable visitor groups using the button at the bottom of this screen.',
+						'Enable visitor groups using the button at the bottom of this screen',
 						'google-site-kit'
 					),
 					__(
