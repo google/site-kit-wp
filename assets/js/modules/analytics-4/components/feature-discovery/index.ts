@@ -17,3 +17,4 @@
  */
 
 export { default as EnhancedMeasurementSetupEffect } from './EnhancedMeasurementSetupEffect';
+export { default as VisitorGroupsFeatureSetup } from './VisitorGroupsFeatureSetup';
