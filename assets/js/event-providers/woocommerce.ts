@@ -205,15 +205,17 @@
 		}
 
 		// Shipping can be 0, if only check if shipping is not empty value
-		// this will be omitted.
+		// this will be omitted. The PHP provider writes shipping and tax in
+		// the same minor units as the order total, so divide them back out
+		// the same way `value` and item prices are.
 		if ( typeof shipping === 'number' ) {
-			formattedData.shipping = shipping;
+			formattedData.shipping = formatPrice( String( shipping ) );
 		}
 
 		// Tax can be 0, if only check if shipping is not empty value
 		// this will be omitted.
 		if ( typeof tax === 'number' ) {
-			formattedData.tax = tax;
+			formattedData.tax = formatPrice( String( tax ) );
 		}
 
 		if ( Array.isArray( products ) ) {
