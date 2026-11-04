@@ -28,7 +28,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @group Authentication
  */
 class Google_ProxyTest extends TestCase {
-
 	use Fake_Site_Connection_Trait;
 
 	/**
@@ -83,7 +82,7 @@ class Google_ProxyTest extends TestCase {
 				'foo'     => 'foo-789',
 			)
 		);
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should match expected format with query parameters.' );
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789&service_version=v3&steps=5&verification_evidence=none', 'Setup URL should match expected format with query parameters, including the service_version and steps query parameters.' );
 
 		$url = $this->google_proxy->setup_url(
 			array(
@@ -91,7 +90,7 @@ class Google_ProxyTest extends TestCase {
 				'site_code' => 'site_code-456',
 			)
 		);
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_code=site_code-456', 'Setup URL should match expected format with site code parameter.' );
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_code=site_code-456&service_version=v3&steps=5&verification_evidence=none', 'Setup URL should match expected format with site code parameter.' );
 
 		// Check an exception is thrown when `code` query param is not passed.
 		try {
@@ -110,43 +109,7 @@ class Google_ProxyTest extends TestCase {
 		}
 	}
 
-	public function test_setup_url__with_setup_flow_refresh_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
-
-		$url = $this->google_proxy->setup_url(
-			array(
-				'code'    => 'code-123',
-				'site_id' => 'site_id-456',
-				'foo'     => 'foo-789',
-			)
-		);
-
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should use the v3 route and  match the expected format with query parameters.' );
-	}
-
-	public function test_setup_url__with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
-		$this->enable_feature( 'setupFlowRefreshPhase4' );
-
-		$url = $this->google_proxy->setup_url(
-			array(
-				'code'    => 'code-123',
-				'site_id' => 'site_id-456',
-				'foo'     => 'foo-789',
-			)
-		);
-
-		$this->assertEquals(
-			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789&service_version=v3&steps=5&verification_evidence=none',
-			'Setup URL should include the service_version and steps query parameters.'
-		);
-	}
-
-	public function test_setup_url__applies_params_filter_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
-		$this->enable_feature( 'setupFlowRefreshPhase4' );
-
+	public function test_setup_url__applies_params_filter() {
 		add_filter(
 			'googlesitekit_proxy_setup_url_params',
 			function ( $params ) {
@@ -225,24 +188,6 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_get_site_fields() {
-		$this->assertEqualSetsWithIndex(
-			array(
-				'url'                    => home_url(),
-				'action_uri'             => admin_url( 'index.php' ),
-				'name'                   => get_bloginfo( 'name' ),
-				'return_uri'             => $this->context->admin_url( 'splash' ),
-				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
-				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
-				'intent_uri'             => $this->context->admin_url( 'dashboard' ),
-			),
-			$this->google_proxy->get_site_fields(),
-			'Site fields should contain all required site information.'
-		);
-	}
-
-	public function test_get_site_fields__with_setup_flow_refresh_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
-
 		$this->assertEqualSetsWithIndex(
 			array(
 				'url'                    => home_url(),
@@ -519,9 +464,6 @@ class Google_ProxyTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		( new User_Options( $this->context, $user_id ) )->set( Verification_Meta::OPTION, 'meta-token' );
-
-		$this->enable_feature( 'setupFlowRefresh' );
-		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
 		$url = $this->google_proxy->setup_url(
 			array(
@@ -827,6 +769,147 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Survey event should return expected response data.' );
+	}
+
+	public function test_send_benchmarking_insight_request() {
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( '/v1/ai/benchmarking?hl=de-DE' );
+		$expected_success_response = array(
+			'operation_id'   => 'operation-123',
+			'interaction_id' => 'interaction-456',
+			'model_version'  => 'model-1',
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'abcd';
+		$payload      = array(
+			'metric' => 'sessions',
+			'value'  => 1200,
+		);
+		$response     = $this->google_proxy->send_benchmarking_insight_request( $credentials, $access_token, $payload, 'de-DE' );
+
+		$this->assertEquals( $expected_url, $this->request_url, 'Benchmarking insight request URL should have the language tag as the hl query parameter.' );
+		$this->assertEquals( 'POST', $this->request_args['method'], 'Benchmarking insight request method should be POST.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Benchmarking insight Authorization header should match access token.' );
+		$this->assertEquals( 'application/json', $this->request_args['headers']['Content-Type'], 'Benchmarking insight request should be sent as JSON.' );
+		$this->assertTrue( $this->request_args['blocking'], 'Benchmarking insight request should wait for the response.' );
+		$this->assertTrue( json_decode( $this->request_args['body'], true )['async'], 'Benchmarking insight request body should have async set to the boolean true.' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'     => $site_id,
+				'site_secret' => $site_secret,
+				'metric'      => 'sessions',
+				'value'       => 1200,
+				'async'       => true,
+			),
+			json_decode( $this->request_args['body'], true ),
+			'Benchmarking insight request body should contain site credentials, the payload, and async set to true.'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Benchmarking insight request should return the operation from the response.' );
+	}
+
+	public function test_send_benchmarking_insight_request__cached_insight() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$expected_response = array(
+			'scenario'       => 'above_benchmark',
+			'teaser'         => 'Your site is doing well.',
+			'text'           => 'Your site had more sessions than similar sites.',
+			'driver'         => 'organic_search',
+			'interaction_id' => 'interaction-456',
+			'model_version'  => 'model-1',
+		);
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/benchmarking?hl=de-DE' ), $expected_response );
+
+		$response = $this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de-DE' );
+
+		$this->assertEqualSetsWithIndex( $expected_response, $response, 'Benchmarking insight request should return the generated insight from the response.' );
+	}
+
+	public function test_send_benchmarking_insight_request__error_response() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/benchmarking?hl=de-DE' ),
+			array( 'error' => 'Too many requests.' ),
+			429
+		);
+
+		$response = $this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de-DE' );
+
+		$this->assertWPError( $response, 'A 429 response to the benchmarking insight request should return a WP_Error.' );
+		$this->assertEquals( 'Too many requests.', $response->get_error_message(), 'The benchmarking insight error should have the error message from the response.' );
+		$this->assertEquals( 429, $response->get_error_data()['status'], 'The benchmarking insight error should have status 429.' );
+	}
+
+	public function test_get_benchmarking_insight_operation() {
+		list ( $credentials, $site_id ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id );
+		$expected_success_response = array(
+			'done'     => true,
+			'state'    => 'SUCCEEDED',
+			'response' => array(
+				'scenario'       => 'above_benchmark',
+				'teaser'         => 'Your site is doing well.',
+				'text'           => 'Your site had more sessions than similar sites.',
+				'driver'         => 'organic_search',
+				'interaction_id' => 'interaction-456',
+				'model_version'  => 'model-1',
+			),
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'dcba';
+		$response     = $this->google_proxy->get_benchmarking_insight_operation( $credentials, $access_token, 'operation-123' );
+
+		$this->assertEquals( $expected_url, $this->request_url, 'Benchmarking insight operation request URL should have site_id as its only query parameter.' );
+		$this->assertEquals( 'GET', $this->request_args['method'], 'Benchmarking insight operation request method should be GET.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Benchmarking insight operation Authorization header should match access token.' );
+		$this->assertArrayNotHasKey( 'Content-Type', $this->request_args['headers'], 'Benchmarking insight operation request should not have a Content-Type header.' );
+		$this->assertNull( $this->request_args['body'], 'Benchmarking insight operation request should not have a body.' );
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Benchmarking insight operation should return the succeeded operation from the response.' );
+	}
+
+	public function test_get_benchmarking_insight_operation__failed_operation() {
+		list ( $credentials, $site_id ) = $this->get_credentials();
+
+		$expected_response = array(
+			'done'  => true,
+			'state' => 'FAILED',
+			'error' => array( 'message' => 'The insight could not be generated.' ),
+		);
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id ),
+			$expected_response
+		);
+
+		$response = $this->google_proxy->get_benchmarking_insight_operation( $credentials, 'dcba', 'operation-123' );
+
+		$this->assertEqualSetsWithIndex( $expected_response, $response, 'Benchmarking insight operation should return the failed operation from the response.' );
+	}
+
+	public function test_get_benchmarking_insight_operation__error_response() {
+		list ( $credentials, $site_id ) = $this->get_credentials();
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id ),
+			array(),
+			404
+		);
+
+		$response = $this->google_proxy->get_benchmarking_insight_operation( $credentials, 'dcba', 'operation-123' );
+
+		$this->assertWPError( $response, 'A 404 response to the benchmarking insight operation request should return a WP_Error.' );
+		$this->assertEquals( 404, $response->get_error_data()['status'], 'The benchmarking insight operation error should have status 404.' );
 	}
 
 	/**

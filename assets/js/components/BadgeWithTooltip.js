@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import { BADGE_VARIANTS } from './Badge/constants';
 import InfoTooltip from './InfoTooltip';
 
 export default function BadgeWithTooltip( {
@@ -32,12 +33,14 @@ export default function BadgeWithTooltip( {
 	label,
 	onTooltipOpen,
 	tooltipTitle,
+	variant = BADGE_VARIANTS.WARNING,
 } ) {
 	return (
 		<span
 			className={ classNames(
 				'googlesitekit-badge-with-tooltip',
 				'googlesitekit-badge',
+				`googlesitekit-badge--${ variant }`,
 				className
 			) }
 		>
@@ -54,4 +57,5 @@ BadgeWithTooltip.propTypes = {
 	tooltipTitle: PropTypes.node,
 	className: PropTypes.string,
 	label: PropTypes.node.isRequired,
+	variant: PropTypes.oneOf( Object.values( BADGE_VARIANTS ) ),
 };

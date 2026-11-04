@@ -74,8 +74,6 @@ PluginHeader.args = {
 	},
 };
 PluginHeader.scenario = {
-	hierarchyRootSeparator: '|',
-	hierarchySeparator: {},
 	delay: 3000,
 };
 
@@ -88,8 +86,6 @@ HeaderWithDateSelector.args = {
 	},
 };
 HeaderWithDateSelector.scenario = {
-	hierarchyRootSeparator: '|',
-	hierarchySeparator: {},
 	delay: 3000,
 };
 
@@ -100,6 +96,11 @@ HeaderWithHelpMenu.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 	},
+};
+HeaderWithHelpMenu.scenario = {
+	delay: 3000,
+	clickSelector: '.googlesitekit-help-menu__button',
+	postInteractionWait: 3000,
 };
 
 export const HeaderWithAddFeaturesButton = Template.bind( {} );
@@ -113,25 +114,6 @@ HeaderWithAddFeaturesButton.args = {
 };
 HeaderWithAddFeaturesButton.parameters = {
 	features: [ 'featureDiscoveryHub' ],
-};
-
-export const HeaderWithHelpMenuSFR = Template.bind( {} );
-HeaderWithHelpMenuSFR.storyName =
-	'Plugin Header with Help Menu - SetupFlowRefresh';
-HeaderWithHelpMenuSFR.args = {
-	children: <HelpMenu />,
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-	},
-};
-HeaderWithHelpMenuSFR.parameters = {
-	features: [ 'setupFlowRefresh' ],
-};
-HeaderWithHelpMenuSFR.scenario = {
-	delay: 3000,
-	clickSelector: '.googlesitekit-help-menu__button',
-	postInteractionWait: 3000,
-	onReadyScript: 'mouse.js',
 };
 
 export const HeaderWithHelpMenuDateRangeSelector = Template.bind( {} );

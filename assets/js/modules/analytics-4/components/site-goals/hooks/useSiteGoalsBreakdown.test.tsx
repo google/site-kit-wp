@@ -29,6 +29,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
@@ -36,7 +37,11 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getPreviousDate } from '@/js/util';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
-import { provideModules } from '@tests/js/utils';
+import {
+	freezeFetch,
+	provideModules,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import { useSiteGoalsBreakdown } from './useSiteGoalsBreakdown';
 
 describe( 'useSiteGoalsBreakdown', () => {
@@ -171,9 +176,13 @@ describe( 'useSiteGoalsBreakdown', () => {
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		// The breakdown dimension only exists on the property once the user asks
-		// for the breakdown, and the hook queries nothing until then, so every
-		// case below starts from the created state.
+		provideUserCapabilities( registry );
+		// The breakdown needs the dimension and plugin conversion tracking, and
+		// the hook queries nothing until both are in place, so every case below
+		// starts from the enabled state.
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID: PROPERTY_ID,
 			availableCustomDimensions: [ 'googlesitekit_form_id' ],
@@ -205,6 +214,69 @@ describe( 'useSiteGoalsBreakdown', () => {
 		expect( result.current.breakdownValues ).toBeUndefined();
 		expect( result.current.hasBreakdownTabs ).toBe( false );
 		expect( result.current.hasOtherSources ).toBe( false );
+	} );
+
+	it.each( [
+		[
+			'while plugin conversion tracking is off',
+			() =>
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConversionTrackingSettings( { enabled: false } ),
+		],
+		[
+			'while the conversion tracking setting is still loading',
+			() => {
+				registry = createTestRegistry();
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				provideUserCapabilities( registry );
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/conversion-tracking'
+					)
+				);
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					propertyID: PROPERTY_ID,
+					availableCustomDimensions: [ 'googlesitekit_form_id' ],
+				} );
+			},
+		],
+	] )(
+		'shows no breakdown %s, even though the dimension exists',
+		( _, setup ) => {
+			setup();
+			seedDiscoveryReport( [ '5', '12' ] );
+
+			const { result } = renderHook(
+				() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+				{ registry }
+			);
+
+			expect( result.current.breakdownValues ).toBeUndefined();
+			expect( result.current.hasBreakdownTabs ).toBe( false );
+			expect( result.current.breakdownFilter ).toBeUndefined();
+		}
+	);
+
+	it( 'shows the breakdown for a user who cannot read the conversion tracking setting', () => {
+		provideUserCapabilities( registry, {
+			googlesitekit_manage_options: false,
+		} );
+		seedDiscoveryReport( [ '5', '12' ] );
+
+		const { result } = renderHook(
+			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+			{ registry }
+		);
+
+		expect( result.current.hasBreakdownTabs ).toBe( true );
 	} );
 
 	it( 'defaults the active tab to the first breakdown value', () => {

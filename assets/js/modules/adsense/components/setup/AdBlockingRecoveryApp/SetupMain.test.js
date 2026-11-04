@@ -24,8 +24,13 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	consumePendingSetup,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -71,6 +76,10 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 
 		container = renderResult.container;
 		getByRole = renderResult.getByRole;
+	} );
+
+	afterEach( async () => {
+		await consumePendingSetup();
 	} );
 
 	describe( 'Place Tag step', () => {
@@ -436,6 +445,80 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 		} );
 
+		it( 'should return to the Feature Discovery Hub when `I published my message` is clicked and pending setup matches', async () => {
+			await setPendingSetup(
+				'ad-blocking-recovery',
+				ALL_SERVICES_TAB_PATH
+			);
+
+			const pendingRegistry = createTestRegistry();
+			provideSiteInfo( pendingRegistry );
+			provideModules( pendingRegistry, [
+				{
+					active: true,
+					connected: true,
+					slug: MODULE_SLUG_ADSENSE,
+				},
+			] );
+			pendingRegistry.dispatch( MODULES_ADSENSE ).setSettings( {
+				adBlockingRecoverySetupStatus: '',
+			} );
+
+			const featuresURL = pendingRegistry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-features' );
+
+			const { container: pendingContainer } = render( <SetupMain />, {
+				registry: pendingRegistry,
+				viewContext: VIEW_CONTEXT_AD_BLOCKING_RECOVERY,
+			} );
+
+			function getButtonFromPendingRender( name ) {
+				return Array.from(
+					pendingContainer.querySelectorAll( 'button' )
+				).find( ( button ) => name.test( button.textContent ) );
+			}
+
+			await act( () => Promise.resolve() );
+
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+				)
+			);
+
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				)
+			);
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /enable message/i )
+				);
+			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				),
+				{ body: { success: true }, status: 200 }
+			);
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /I published my message/i )
+				);
+			} );
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				featuresURL
+			);
+		} );
+
 		it( 'should fire the tracking event for `I published my message` when it is clicked', async () => {
 			fetchMock.postOnce(
 				new RegExp(
@@ -538,6 +621,87 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			expect( global.location.assign ).toHaveBeenCalled();
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				setupSuccessURL
+			);
+		} );
+
+		it( 'should return to the Feature Discovery Hub when `My message is ready` is clicked and pending setup matches', async () => {
+			await setPendingSetup(
+				'ad-blocking-recovery',
+				ALL_SERVICES_TAB_PATH
+			);
+
+			const pendingRegistry = createTestRegistry();
+			provideSiteInfo( pendingRegistry );
+			provideModules( pendingRegistry, [
+				{
+					active: true,
+					connected: true,
+					slug: MODULE_SLUG_ADSENSE,
+				},
+			] );
+			pendingRegistry.dispatch( MODULES_ADSENSE ).setSettings( {
+				adBlockingRecoverySetupStatus: '',
+			} );
+
+			const featuresURL = pendingRegistry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-features' );
+
+			const { container: pendingContainer } = render( <SetupMain />, {
+				registry: pendingRegistry,
+				viewContext: VIEW_CONTEXT_AD_BLOCKING_RECOVERY,
+			} );
+
+			function getButtonFromPendingRender( name ) {
+				return Array.from(
+					pendingContainer.querySelectorAll( 'button' )
+				).find( ( button ) => name.test( button.textContent ) );
+			}
+
+			await act( () => Promise.resolve() );
+
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+				)
+			);
+
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				)
+			);
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /enable message/i )
+				);
+			} );
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /create message/i )
+				);
+			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				),
+				{ body: { success: true }, status: 200 }
+			);
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /my message is ready/i )
+				);
+			} );
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				featuresURL
 			);
 		} );
 

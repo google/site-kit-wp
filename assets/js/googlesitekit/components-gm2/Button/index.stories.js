@@ -374,7 +374,6 @@ VRTStory.scenario = {
 	hoverSelector:
 		'.googlesitekit-button--icon:not(.googlesitekit-vrt-button-hover):not(.googlesitekit-vrt-button-focus):not(:disabled)',
 	postInteractionWait: 3000,
-	onReadyScript: 'mouse.js',
 };
 VRTStory.parameters = {
 	pseudo: {

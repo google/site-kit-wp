@@ -68,7 +68,7 @@ interface TopAuthorsDrivingLeadsWidgetProps {
  * the equivalent Selling products tile, which requests the same shape of
  * report (same `top-authors` suffix) for a different primary event.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object}   args              Builder args.
  * @param {Object}   args.dates        The date range.
@@ -91,7 +91,7 @@ function buildTopAuthorsDrivingLeadsReportOptions( {
  * Gets the report options for the Top Authors Driving Leads widget, for
  * `withCustomDimensions` to check the report for custom dimension errors.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Function} select Data store 'select' function.
  * @return {Object|undefined} The report options.

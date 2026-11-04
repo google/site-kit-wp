@@ -177,12 +177,9 @@ describe( 'FormCompletionRateWidget', () => {
 		) as HTMLElement;
 
 		expect(
-			within( tooltipContent ).getByText(
-				'like making a purchase or filling out a form',
-				{
-					exact: false,
-				}
-			)
+			within( tooltipContent ).getByText( 'like filling out a form', {
+				exact: false,
+			} )
 		).toBeInTheDocument();
 
 		const learnMoreLink = within( tooltipContent ).getByRole( 'link', {

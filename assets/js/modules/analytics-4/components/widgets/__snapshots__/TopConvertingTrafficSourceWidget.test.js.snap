@@ -20,12 +20,18 @@ exports[`TopConvertingTrafficSourceWidget renders correctly with no data in the 
             Top converting traffic source
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-2"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-2"
+            >
+              Channel (e.g. social, paid, search) that brought in visitors who generated the most key events
+            </span>
           </span>
         </div>
         <div
@@ -81,12 +87,18 @@ exports[`TopConvertingTrafficSourceWidget should render correctly with the expec
             Top converting traffic source
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Channel (e.g. social, paid, search) that brought in visitors who generated the most key events
+            </span>
           </span>
         </div>
         <div
@@ -139,12 +151,18 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
           Top converting traffic source
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-5"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-5"
+          >
+            Channel (e.g. social, paid, search) that brought in visitors who generated the most key events
+          </span>
         </span>
       </div>
       <div
@@ -214,12 +232,18 @@ exports[`TopConvertingTrafficSourceWidget should render the insufficient permiss
           Top converting traffic source
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-7"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-7"
+          >
+            Channel (e.g. social, paid, search) that brought in visitors who generated the most key events
+          </span>
         </span>
       </div>
       <div
@@ -285,12 +309,18 @@ exports[`TopConvertingTrafficSourceWidget should render the loading state while 
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-3"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-3"
+              >
+                Channel (e.g. social, paid, search) that brought in visitors who generated the most key events
+              </span>
             </span>
           </span>
         </div>

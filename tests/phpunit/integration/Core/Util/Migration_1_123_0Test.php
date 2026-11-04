@@ -61,7 +61,11 @@ class Migration_1_123_0Test extends TestCase {
 
 		$migration->register();
 
-		$this->assertTrue( has_action( 'admin_init' ), 'Migration should register admin_init action.' );
+		$this->assertSame(
+			0,
+			has_action( 'admin_init', array( $migration, 'migrate' ) ),
+			'The migration should add `migrate()` to the `admin_init` action at priority 0, so it runs in `Plugin.php` registration order.'
+		);
 	}
 
 	public function test_migrate() {
@@ -135,6 +139,36 @@ class Migration_1_123_0Test extends TestCase {
 		);
 
 		$this->assertEquals( Migration_1_123_0::DB_VERSION, $this->get_db_version(), 'Database version should be updated after migration.' );
+	}
+
+	public function test_migrate__copies_account_id_when_legacy_option_is_missing_other_keys() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->reset_analytics_4_options();
+
+		$this->options->set(
+			Migration_1_123_0::LEGACY_ANALYTICS_OPTION,
+			array( 'accountID' => '12345678' )
+		);
+
+		$migration->migrate();
+
+		$analytics_4_settings = $this->analytics_settings->get();
+
+		$this->assertSame( '12345678', $analytics_4_settings['accountID'], 'Migration should copy the legacy `accountID` to the Analytics 4 settings.' );
+		$this->assertSame( array( 'loggedinUsers' ), $analytics_4_settings['trackingDisabled'], 'Migration should keep the Analytics 4 `trackingDisabled` value when the legacy option has none.' );
+	}
+
+	public function test_migrate__skips_a_legacy_option_that_is_not_an_array() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->reset_analytics_4_options();
+
+		$this->options->set( Migration_1_123_0::LEGACY_ANALYTICS_OPTION, 'not-an-array' );
+
+		$migration->migrate();
+
+		$this->assertSame( '', $this->analytics_settings->get()['accountID'], 'Migration should not copy anything from a legacy option that is not an array.' );
 	}
 
 	protected function filter_settings( $settings, $keys_to_filter ) {

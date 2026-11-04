@@ -205,6 +205,62 @@ describe( 'googlesitekit.api', () => {
 			}
 		} );
 
+		it( 'should cache an error carrying a cacheTTL, and not re-issue the request inside the window', async () => {
+			const errorResponse = {
+				code: 429,
+				message: 'Quota exceeded for quota metric.',
+				data: {
+					status: 429,
+					reason: 'rateLimitExceeded',
+					cacheTTL: 600,
+				},
+			};
+
+			fetchMock.get(
+				new RegExp(
+					'^/google-site-kit/v1/core/search-console/data/quota-error'
+				),
+				{ body: errorResponse, status: 429 }
+			);
+
+			await expect(
+				get( 'core', MODULE_SLUG_SEARCH_CONSOLE, 'quota-error' )
+			).rejects.toEqual( errorResponse );
+			expect( console ).toHaveErrored();
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+			// The second request is answered from the cached error.
+			await expect(
+				get( 'core', MODULE_SLUG_SEARCH_CONSOLE, 'quota-error' )
+			).rejects.toEqual( errorResponse );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+		} );
+
+		it( 'should not cache an error that carries no cacheTTL', async () => {
+			const errorResponse = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
+			fetchMock.get(
+				new RegExp(
+					'^/google-site-kit/v1/core/search-console/data/plain-error'
+				),
+				{ body: errorResponse, status: 500 }
+			);
+
+			await expect(
+				get( 'core', MODULE_SLUG_SEARCH_CONSOLE, 'plain-error' )
+			).rejects.toEqual( errorResponse );
+			await expect(
+				get( 'core', MODULE_SLUG_SEARCH_CONSOLE, 'plain-error' )
+			).rejects.toEqual( errorResponse );
+
+			expect( console ).toHaveErrored();
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
+		} );
+
 		it( 'should cache requests by default', async () => {
 			expect( fetchMock ).not.toHaveFetched();
 

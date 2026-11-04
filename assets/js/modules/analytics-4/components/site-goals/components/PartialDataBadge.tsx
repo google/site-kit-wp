@@ -36,41 +36,11 @@ import {
 	RESOURCE_TYPE_CUSTOM_DIMENSION,
 } from '@/js/modules/analytics-4/datastore/constants';
 import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
-import { getLocale } from '@/js/util';
+import { formatDate } from '@/js/util';
 
 interface PartialDataBadgeProps {
 	// The breakdown custom dimension to report partial-data state for.
 	customDimensionSlug: string;
-}
-
-/**
- * Formats a YYYYMMDD availability date as a localized long-form date, e.g.
- * `20260519` → "May 19, 2026", or an empty string when it's missing/invalid
- * (e.g. `0`, which can occur while the resource is still partial).
- *
- * @since 1.182.0
- *
- * @param {number} [availabilityDate] Availability date as a YYYYMMDD number.
- * @return {string} The localized date, or an empty string.
- */
-function formatStartDate( availabilityDate?: number ): string {
-	const value = String( availabilityDate ?? '' );
-
-	if ( value.length !== 8 ) {
-		return '';
-	}
-
-	const date = parseDimensionStringToDate( value );
-
-	if ( ! date ) {
-		return '';
-	}
-
-	return new Intl.DateTimeFormat( getLocale(), {
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric',
-	} ).format( date as Date );
 }
 
 const PartialDataBadge: FC< PartialDataBadgeProps > = ( {
@@ -96,9 +66,12 @@ const PartialDataBadge: FC< PartialDataBadgeProps > = ( {
 		return null;
 	}
 
-	// The start date may be 0/unknown while still partial; the tooltip then omits
-	// it.
-	const date = formatStartDate( availabilityDate );
+	// The start date is a `YYYYMMDD` number. It may be 0/unknown while still
+	// partial; the tooltip then omits it.
+	const date = formatDate(
+		parseDimensionStringToDate( String( availabilityDate ?? '' ) ),
+		{ month: 'long' }
+	);
 	const tooltipTitle = date
 		? sprintf(
 				/* translators: %s: date the breakdown began collecting data, e.g. "May 19, 2026". */

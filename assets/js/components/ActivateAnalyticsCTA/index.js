@@ -25,17 +25,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorCTAContent from '@/js/components/ActivateAnalyticsCTA/ErrorCTAContent';
 import NormalCTAContent from '@/js/components/ActivateAnalyticsCTA/NormalCTAContent';
-import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
-import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -44,7 +40,6 @@ import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNot
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '@/js/hooks/useDebounce';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import {
 	ANALYTICS_SETUP_ERROR,
@@ -57,14 +52,9 @@ const ErrorCTAWithObserver = withIntersectionObserver( ErrorCTAContent );
 const NormalCTAWithObserver = withIntersectionObserver( NormalCTAContent );
 
 export default function ActivateAnalyticsCTA( {
-	children,
 	dismissedItemSlug,
 	analyticsEventLabel,
 } ) {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 	const viewContext = useViewContext();
 
 	const trackEvents = useNotificationEvents(
@@ -89,14 +79,14 @@ export default function ActivateAnalyticsCTA( {
 	);
 
 	const isDismissed = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return false;
-		}
 		return select( CORE_USER ).isItemDismissed( dismissedItemSlug );
 	} );
 
+	// This CTA shows its own error state, so the activation error is not also
+	// shown in the `InternalServerError` banner at the top of the page.
 	const activateModuleCallback = useActivateModuleCallback(
-		MODULE_SLUG_ANALYTICS_4
+		MODULE_SLUG_ANALYTICS_4,
+		{ internalServerErrorOptions: { showGlobalNotification: false } }
 	);
 	const completeModuleActivationCallback =
 		useCompleteModuleActivationCallback( MODULE_SLUG_ANALYTICS_4 );
@@ -113,17 +103,10 @@ export default function ActivateAnalyticsCTA( {
 	} );
 
 	const documentationURL = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return null;
-		}
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
 
 	const hasActivationError = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled || ! setupFlowRefreshPhase4Enabled ) {
-			return false;
-		}
-
 		const internalServerError =
 			select( CORE_SITE ).getInternalServerError();
 
@@ -210,41 +193,8 @@ export default function ActivateAnalyticsCTA( {
 		return null;
 	}
 
-	if ( setupFlowRefreshEnabled && isDismissed ) {
+	if ( isDismissed ) {
 		return null;
-	}
-
-	if ( ! setupFlowRefreshEnabled ) {
-		return (
-			<div className="googlesitekit-analytics-cta">
-				<div className="googlesitekit-analytics-cta__preview-graphs">
-					{ children }
-				</div>
-				<div className="googlesitekit-analytics-cta__details">
-					<P
-						className="googlesitekit-analytics-cta--description"
-						size={ SIZE_MEDIUM }
-					>
-						{ __(
-							'See how many people visit your site from Search and track how you’re achieving your goals',
-							'google-site-kit'
-						) }
-					</P>
-					<SpinnerButton
-						onClick={ onClickCallback }
-						isSaving={ inProgress }
-						disabled={ inProgress }
-					>
-						{ analyticsModuleActive
-							? __( 'Complete setup', 'google-site-kit' )
-							: __(
-									'Set up Google Analytics',
-									'google-site-kit'
-							  ) }
-					</SpinnerButton>
-				</div>
-			</div>
-		);
 	}
 
 	if ( hasActivationError ) {
@@ -273,7 +223,6 @@ export default function ActivateAnalyticsCTA( {
 }
 
 ActivateAnalyticsCTA.propTypes = {
-	children: PropTypes.node,
 	dismissedItemSlug: PropTypes.string.isRequired,
 	analyticsEventLabel: PropTypes.string,
 };

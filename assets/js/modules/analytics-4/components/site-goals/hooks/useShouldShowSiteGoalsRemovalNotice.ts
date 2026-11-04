@@ -30,7 +30,7 @@ import { isSiteGoalsWidgetShowingContent } from '@/js/modules/analytics-4/compon
  * The notice replaces the widget when no plugin for the goal type is active
  * and the selected date range has no events of that goal type.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {GoalType} goalType Goal type of the widget to check.
  * @return {(boolean|undefined)} `true` when the notice replaces the widget, and `false` when the widget shows its content. `undefined` while the Analytics settings, the Site Goals settings, or the event report load. With no plugin for the goal type active, also `undefined` until the widget is in view.

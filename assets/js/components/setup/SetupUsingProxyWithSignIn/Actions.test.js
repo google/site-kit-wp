@@ -161,42 +161,6 @@ describe( 'Actions', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			VIEW_CONTEXT_SPLASH,
-			'tracking_optin'
-		);
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-	} );
-
-	it( 'should track an event when the user opts in with setupFlowRefresh enabled', async () => {
-		jest.useFakeTimers();
-
-		provideModules( registry );
-		provideSiteConnection( registry );
-		provideTracking( { registry, enabled: false } );
-
-		fetchMock.post(
-			new RegExp( '^/google-site-kit/v1/core/user/data/tracking' ),
-			{
-				status: 200,
-				body: { enabled: true },
-			}
-		);
-
-		const { getByRole } = render( <Actions { ...actionsProps } />, {
-			viewContext: VIEW_CONTEXT_SPLASH,
-			registry,
-			features: [ 'setupFlowRefresh' ],
-		} );
-
-		fireEvent.click( getByRole( 'checkbox' ) );
-
-		// Wait for the debounced handler to complete, and advance to the next tick.
-		await act( () => {
-			jest.advanceTimersByTime( 300 );
-			return Promise.resolve();
-		} );
-
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			VIEW_CONTEXT_SPLASH,
 			'setup_flow_v3_tracking_optin'
 		);
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -248,31 +212,6 @@ describe( 'Actions', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should navigate to the dashboard when the button is clicked', async () => {
-			const { getByRole, waitForRegistry } = render(
-				<Actions { ...actionsProps } />,
-				{
-					viewContext: VIEW_CONTEXT_SPLASH,
-					registry,
-				}
-			);
-
-			expect( global.location.assign ).toHaveBeenCalledTimes( 0 );
-
-			fireEvent.click(
-				getByRole( 'button', {
-					name: 'Skip sign-in and view limited dashboard',
-				} )
-			);
-
-			await waitForRegistry();
-
-			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
-			);
-			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
-		} );
-
 		it( 'should preserve the panel query parameter when navigating to the dashboard', async () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&panel=email-reporting';
@@ -297,18 +236,17 @@ describe( 'Actions', () => {
 			await waitForRegistry();
 
 			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting'
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting&notification=initial_setup_success'
 			);
 			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
 		} );
 
-		it( 'should navigate to the dashboard when the button is clicked and setupFlowRefresh is enabled', async () => {
+		it( 'should navigate to the dashboard when the button is clicked', async () => {
 			const { getByRole, waitForRegistry } = render(
 				<Actions { ...actionsProps } />,
 				{
 					viewContext: VIEW_CONTEXT_SPLASH,
 					registry,
-					features: [ 'setupFlowRefresh' ],
 				}
 			);
 
@@ -365,37 +303,10 @@ describe( 'Actions', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
-		it( 'should track an event when the button is clicked', async () => {
-			const { getByRole, waitForRegistry } = render(
-				<Actions { ...actionsProps } />,
-				{
-					viewContext: VIEW_CONTEXT_SPLASH,
-					registry,
-				}
-			);
-
-			expect( global.location.assign ).toHaveBeenCalledTimes( 0 );
-
-			fireEvent.click(
-				getByRole( 'button', {
-					name: 'Skip sign-in and view limited dashboard',
-				} )
-			);
-
-			await waitForRegistry();
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				VIEW_CONTEXT_SPLASH,
-				'skip_setup_to_viewonly'
-			);
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-		} );
-
-		it( 'should track an event when the button is clicked and setupFlowRefresh is enabled', () => {
+		it( 'should track an event when the button is clicked', () => {
 			const { getByRole } = render( <Actions { ...actionsProps } />, {
 				viewContext: VIEW_CONTEXT_SPLASH,
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
 			fireEvent.click(

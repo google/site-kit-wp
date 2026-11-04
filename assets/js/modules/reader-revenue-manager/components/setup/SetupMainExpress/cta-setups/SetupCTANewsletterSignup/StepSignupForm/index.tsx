@@ -41,7 +41,12 @@ import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/co
 import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import Preview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/Preview';
 import CTAsPlacementFormSection from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAsPlacementFormSection';
-import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import useCreateExpressSetupCTA from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useCreateExpressSetupCTA';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
+import {
+	SetupStep,
+	SetupStepProps,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	EXPRESS_SETUP_CTA_FORMS,
@@ -53,13 +58,13 @@ import CTASettings from './CTASettings';
 import FormText from './FormText';
 import GeneralDetails from './GeneralDetails';
 
-const StepSignupForm: FC = () => {
-	const [ , setStep ] = useStep();
+const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const [ isPublishing, setIsPublishing ] = useState( false );
 
-	const { createCTA, submitChanges } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
-	);
+	const { submitChanges } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+	const createExpressSetupCTA = useCreateExpressSetupCTA();
 
 	const [ displayName ] = useFormValue< string >(
 		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
@@ -141,7 +146,9 @@ const StepSignupForm: FC = () => {
 			return;
 		}
 
-		const { error: createError } = await createCTA( createCTAParams );
+		const { error: createError } = await createExpressSetupCTA(
+			createCTAParams
+		);
 
 		if ( createError ) {
 			setIsPublishing( false );
@@ -149,8 +156,8 @@ const StepSignupForm: FC = () => {
 		}
 
 		setIsPublishing( false );
-		setStep( EXPRESS_SETUP_STEPS.SETUP_COMPLETE );
-	}, [ createCTA, createCTAParams, setStep, submitChanges ] );
+		onComplete();
+	}, [ createCTAParams, createExpressSetupCTA, onComplete, submitChanges ] );
 
 	const onSubmit = useCallback(
 		async ( event: FormEvent< HTMLFormElement > ) => {
@@ -166,7 +173,17 @@ const StepSignupForm: FC = () => {
 			'google-site-kit'
 		),
 		{
-			a: <DocumentationLink slug="rrm-newsletter-signup" />,
+			a: (
+				<DocumentationLink
+					slug="rrm-newsletter-signup"
+					onClick={ () =>
+						trackEvent(
+							'click_learn_more_link',
+							EXPRESS_SETUP_STEPS.NEWSLETTER_SIGNUP_FORM
+						)
+					}
+				/>
+			),
 		}
 	);
 
@@ -192,6 +209,7 @@ const StepSignupForm: FC = () => {
 					<StoreErrorNotices
 						moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 						storeName={ MODULES_READER_REVENUE_MANAGER }
+						scrollIntoView
 						hasButton
 					/>
 
@@ -228,6 +246,14 @@ const StepSignupForm: FC = () => {
 			</form>
 		</div>
 	);
+};
+
+// No `isComplete`: the express setup allows setting up more than one CTA of
+// the same type, so this step never counts as complete.
+export const signupFormStep: SetupStep = {
+	slug: EXPRESS_SETUP_STEPS.NEWSLETTER_SIGNUP_FORM,
+	label: __( 'Set up a sign-up form', 'google-site-kit' ),
+	Component: StepSignupForm,
 };
 
 export default StepSignupForm;

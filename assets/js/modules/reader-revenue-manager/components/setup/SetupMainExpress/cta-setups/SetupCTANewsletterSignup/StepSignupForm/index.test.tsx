@@ -21,14 +21,11 @@
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { EXPRESS_SETUP_STEP_UI_KEY } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_CTA_FORMS,
-	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
@@ -37,7 +34,11 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import * as tracking from '@/js/util/tracking';
+import {
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -73,6 +74,19 @@ const createCTAEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/create-cta'
 );
 
+const publicationEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
+);
+
+const ctasEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+);
+
+const createdCTA = {
+	name: 'organizations/ABCD1234/publications/ABCDEFGH/ctas/1',
+	type: CTA_TYPES.NEWSLETTER_SIGNUP,
+};
+
 /* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
 const testPublication = {
 	...publications[ 0 ],
@@ -81,9 +95,27 @@ const testPublication = {
 } as Publication;
 /* eslint-enable sitekit/acronym-case */
 
+// Mocks the requests made after the CTA is created: the publication and CTAs
+// are refreshed, then the settings are saved.
+function mockPostCreateRequests( { mockSettings = true } = {} ) {
+	fetchMock.getOnce( publicationEndpoint, {
+		body: testPublication,
+		status: 200,
+	} );
+	fetchMock.getOnce( ctasEndpoint, { body: [ createdCTA ], status: 200 } );
+
+	if ( mockSettings ) {
+		fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+			body: JSON.parse( opts.body as string ).data,
+			status: 200,
+		} ) );
+	}
+}
+
 function renderStepSignupForm(
 	formValues: Record< string, string | boolean > = {},
-	registry: Registry = createTestRegistry() as Registry
+	registry: Registry = createTestRegistry() as Registry,
+	onComplete: () => void = () => {}
 ) {
 	provideSiteInfo( registry );
 
@@ -109,24 +141,25 @@ function renderStepSignupForm(
 	providePublications( registry, [ testPublication ] );
 
 	registry
-		.dispatch( CORE_UI )
-		.setValue( EXPRESS_SETUP_STEP_UI_KEY, EXPRESS_SETUP_STEPS.SETUP_CTA );
-
-	registry
 		.dispatch( CORE_FORMS )
 		.setValues( EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP, formValues );
 
-	return render( <StepSignupForm />, { registry } );
+	return render( <StepSignupForm onComplete={ onComplete } />, {
+		registry,
+	} );
 }
 
 describe( 'StepSignupForm', () => {
+	mockBrowserScrolling();
+
 	mockLocation();
 
 	let registry: Registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.SETUP_CTA }`;
+		global.location.href =
+			'http://example.com/?step=newsletter-signup-form';
 	} );
 
 	it( 'should disable publish when the display name is empty', () => {
@@ -235,11 +268,14 @@ describe( 'StepSignupForm', () => {
 			status: 500,
 		} );
 
+		const onComplete = jest.fn();
+
 		renderStepSignupForm(
 			{
 				[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]: 'Newsletter signup',
 			},
-			registry
+			registry,
+			onComplete
 		);
 
 		fireEvent.click(
@@ -252,9 +288,7 @@ describe( 'StepSignupForm', () => {
 			);
 		} );
 
-		expect(
-			registry.select( CORE_UI ).getValue( EXPRESS_SETUP_STEP_UI_KEY )
-		).not.toBe( EXPRESS_SETUP_STEPS.SETUP_COMPLETE );
+		expect( onComplete ).not.toHaveBeenCalled();
 
 		expect( console ).toHaveErrored();
 	} );
@@ -276,22 +310,17 @@ describe( 'StepSignupForm', () => {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPostTypes( [ 'post', 'page' ] );
 
-		fetchMock.postOnce( settingsEndpoint, {
-			body: {
-				...validSettings,
-				snippetMode: 'post_types',
-				postTypes: [ 'post', 'page' ],
-			},
+		// Used for both `submitChanges()` and the save after the CTA is created.
+		fetchMock.post( settingsEndpoint, ( url, opts ) => ( {
+			body: JSON.parse( opts.body as string ).data,
 			status: 200,
-		} );
+		} ) );
 
 		fetchMock.postOnce( createCTAEndpoint, {
-			body: {
-				name: 'organizations/ABCD1234/publications/ABCDEFGH/ctas/1',
-				type: CTA_TYPES.NEWSLETTER_SIGNUP,
-			},
+			body: createdCTA,
 			status: 200,
 		} );
+		mockPostCreateRequests( { mockSettings: false } );
 
 		renderStepSignupForm(
 			{
@@ -331,20 +360,21 @@ describe( 'StepSignupForm', () => {
 		} );
 	} );
 
-	it( 'should navigate to setup complete on successful publish', async () => {
+	it( 'should call onComplete on successful publish', async () => {
 		fetchMock.postOnce( createCTAEndpoint, {
-			body: {
-				name: 'organizations/ABCD1234/publications/ABCDEFGH/ctas/1',
-				type: CTA_TYPES.NEWSLETTER_SIGNUP,
-			},
+			body: createdCTA,
 			status: 200,
 		} );
+		mockPostCreateRequests();
+
+		const onComplete = jest.fn();
 
 		renderStepSignupForm(
 			{
 				[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]: 'Newsletter signup',
 			},
-			registry
+			registry,
+			onComplete
 		);
 
 		fireEvent.click(
@@ -352,9 +382,106 @@ describe( 'StepSignupForm', () => {
 		);
 
 		await waitFor( () => {
-			expect(
-				registry.select( CORE_UI ).getValue( EXPRESS_SETUP_STEP_UI_KEY )
-			).toBe( EXPRESS_SETUP_STEPS.SETUP_COMPLETE );
+			expect( onComplete ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
+
+	it( 'should refresh the publication and CTAs and save settings before calling onComplete', async () => {
+		fetchMock.postOnce( createCTAEndpoint, {
+			body: createdCTA,
+			status: 200,
+		} );
+		mockPostCreateRequests();
+
+		const onComplete = jest.fn( () => {
+			// Verify the requests were made before `onComplete()` was called.
+			expect( fetchMock ).toHaveFetchedTimes( 1, publicationEndpoint );
+			expect( fetchMock ).toHaveFetchedTimes( 1, ctasEndpoint );
+			expect( fetchMock ).toHaveFetched( settingsEndpoint );
+		} );
+
+		renderStepSignupForm(
+			{
+				[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]: 'Newsletter signup',
+			},
+			registry,
+			onComplete
+		);
+
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Publish to your site' } )
+		);
+
+		await waitFor( () => {
+			expect( onComplete ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
+
+	it( 'should not refresh the publication or CTAs, or call onComplete, when createCTA fails', async () => {
+		fetchMock.postOnce( createCTAEndpoint, {
+			body: {
+				code: 'internal_server_error',
+				message: 'CTA creation failed',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		const onComplete = jest.fn();
+
+		renderStepSignupForm(
+			{
+				[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]: 'Newsletter signup',
+			},
+			registry,
+			onComplete
+		);
+
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Publish to your site' } )
+		);
+
+		await waitFor( () => {
+			expect( screen.getByRole( 'status' ) ).toHaveTextContent(
+				/CTA creation failed/
+			);
+		} );
+
+		expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
+		expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+		expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
+		expect( onComplete ).not.toHaveBeenCalled();
+		expect( console ).toHaveErrored();
+	} );
+
+	describe( 'event tracking', () => {
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it( 'should track a click on the "Learn more" link', () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=newsletter-signup-form';
+
+			const { getByText } = renderStepSignupForm( {}, registry );
+
+			fireEvent.click( getByText( 'Learn more' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expect.stringContaining(
+					'_rrm-express-setup_newsletter-signup'
+				),
+				'click_learn_more_link',
+				'newsletter-signup-form'
+			);
 		} );
 	} );
 } );

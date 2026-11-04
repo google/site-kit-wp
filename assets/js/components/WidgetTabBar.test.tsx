@@ -1,0 +1,258 @@
+/**
+ * Widget tab bar tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { fireEvent, render, screen, within } from '@tests/js/test-utils';
+import WidgetTabBar, { WidgetTab } from './WidgetTabBar';
+
+describe( 'WidgetTabBar', () => {
+	const tabs: WidgetTab[] = [
+		{ id: 'traffic-overview', label: 'Traffic overview' },
+		{ id: 'typical-traffic', label: 'Typical traffic' },
+	];
+
+	/**
+	 * Renders the tab bar with a mock `onTabChange`.
+	 *
+	 * @since 1.188.0
+	 *
+	 * @param {string} [activeTabID] Optional. The `id` of the tab to start on.
+	 * @return {Object} The render result, plus the mock `onTabChange`.
+	 */
+	function renderTabBar( activeTabID = 'traffic-overview' ) {
+		const onTabChange = jest.fn();
+
+		const result = render(
+			<WidgetTabBar
+				tabs={ tabs }
+				activeTabID={ activeTabID }
+				onTabChange={ onTabChange }
+			/>
+		);
+
+		return { ...result, onTabChange };
+	}
+
+	it( 'renders the tabs in order, showing each label with the correct tab ID set', () => {
+		renderTabBar();
+
+		const renderedTabs = screen.getAllByRole( 'tab' );
+
+		expect(
+			renderedTabs.map( ( tab ) => [ tab.id, tab.textContent ] )
+		).toEqual( [
+			[ 'traffic-overview', 'Traffic overview' ],
+			[ 'typical-traffic', 'Typical traffic' ],
+		] );
+	} );
+
+	it( 'marks the active tab as selected', () => {
+		renderTabBar( 'typical-traffic' );
+
+		expect(
+			screen.getByRole( 'tab', { selected: true } )
+		).toHaveTextContent( 'Typical traffic' );
+	} );
+
+	it( 'marks the first tab as selected when the active tab id does not match any tab', () => {
+		renderTabBar( 'no-such-tab' );
+
+		expect(
+			screen.getByRole( 'tab', { selected: true } )
+		).toHaveTextContent( 'Traffic overview' );
+	} );
+
+	it( 'calls onTabChange with the id of the tab the user clicks', () => {
+		const { onTabChange } = renderTabBar();
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Typical traffic' } )
+		);
+
+		expect( onTabChange ).toHaveBeenCalledWith( 'typical-traffic' );
+		expect( onTabChange ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'calls onTabChange with the next or previous tab id when the user presses an arrow key and then Enter', () => {
+		const { onTabChange } = renderTabBar();
+
+		const [ firstTab ] = screen.getAllByRole( 'tab' );
+		firstTab.focus();
+
+		const tabList = screen.getByRole( 'tablist' );
+
+		fireEvent.keyDown( tabList, { key: 'ArrowRight', keyCode: 39 } );
+		fireEvent.keyDown( tabList, { key: 'Enter', keyCode: 13 } );
+
+		expect( onTabChange ).toHaveBeenLastCalledWith( 'typical-traffic' );
+
+		fireEvent.keyDown( tabList, { key: 'ArrowLeft', keyCode: 37 } );
+		fireEvent.keyDown( tabList, { key: 'Enter', keyCode: 13 } );
+
+		expect( onTabChange ).toHaveBeenLastCalledWith( 'traffic-overview' );
+		expect( onTabChange ).toHaveBeenCalledTimes( 2 );
+	} );
+
+	it( 'leaves the selected tab unchanged when the user presses Enter with no tab focused', () => {
+		const { onTabChange } = renderTabBar();
+
+		// With no tab focused, MDC asks the tab bar to select index `-1`. No
+		// tab sits at `-1`, so the tab bar never calls `onTabChange`.
+		fireEvent.keyDown( screen.getByRole( 'tablist' ), {
+			key: 'Enter',
+			keyCode: 13,
+		} );
+
+		expect( onTabChange ).not.toHaveBeenCalled();
+		expect(
+			screen.getByRole( 'tab', { selected: true } )
+		).toHaveTextContent( 'Traffic overview' );
+	} );
+
+	it( 'should render the icon before the label, hidden from assistive technology', () => {
+		render(
+			<WidgetTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{
+						id: 'typical-traffic',
+						label: 'Typical traffic',
+						// The Jest mock for SVG files renders a bare `<svg />` and
+						// ignores its props, so this icon passes them on to show what
+						// the tab bar sets.
+						Icon: ( props ) => <svg { ...props } />,
+						isBeta: true,
+					},
+				] }
+				activeTabID="traffic-overview"
+				onTabChange={ jest.fn() }
+			/>
+		);
+
+		const tab = screen.getByRole( 'tab', {
+			name: 'Typical traffic Beta',
+		} );
+		const icon =
+			tab.querySelector( '.mdc-tab__content' )?.firstElementChild;
+
+		expect( icon ).toHaveClass( 'googlesitekit-widget-tab-bar__tab-icon' );
+		expect( icon ).toHaveAttribute( 'aria-hidden', 'true' );
+	} );
+
+	it( 'should call `onTabChange` with the tab `id` when the "Beta" badge is clicked', () => {
+		const onTabChange = jest.fn();
+
+		render(
+			<WidgetTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{
+						id: 'typical-traffic',
+						label: 'Typical traffic',
+						isBeta: true,
+					},
+				] }
+				activeTabID="traffic-overview"
+				onTabChange={ onTabChange }
+			/>
+		);
+
+		fireEvent.click( screen.getByText( 'Beta' ) );
+
+		expect( onTabChange ).toHaveBeenCalledTimes( 1 );
+		expect( onTabChange ).toHaveBeenCalledWith( 'typical-traffic' );
+	} );
+
+	it( 'should render no icon for a tab without an `Icon`', () => {
+		renderTabBar();
+
+		expect(
+			screen
+				.getByRole( 'tab', { name: 'Traffic overview' } )
+				.querySelector( '.googlesitekit-widget-tab-bar__tab-icon' )
+		).toBeNull();
+	} );
+
+	it( 'should select the tab whose `id` is `activeTabID` after a tab is added between two others', () => {
+		const { rerender } = render(
+			<WidgetTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{ id: 'recent-activity', label: 'Recent activity' },
+				] }
+				activeTabID="traffic-overview"
+				onTabChange={ jest.fn() }
+			/>
+		);
+
+		rerender(
+			<WidgetTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{ id: 'typical-traffic', label: 'Typical traffic' },
+					{ id: 'recent-activity', label: 'Recent activity' },
+				] }
+				activeTabID="recent-activity"
+				onTabChange={ jest.fn() }
+			/>
+		);
+
+		expect(
+			screen.getByRole( 'tab', { selected: true } )
+		).toHaveTextContent( 'Recent activity' );
+	} );
+
+	it( 'renders the tab bar inside the scrollable tabs wrapper', () => {
+		const { container } = renderTabBar();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-scrollable-tabs .mdc-tab-bar'
+			)
+		).not.toBeNull();
+	} );
+
+	it( 'should show a "Beta" badge only in the tab that is in beta', () => {
+		render(
+			<WidgetTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{
+						id: 'recent-activity',
+						label: 'Recent activity',
+						isBeta: true,
+					},
+				] }
+				activeTabID="traffic-overview"
+				onTabChange={ jest.fn() }
+			/>
+		);
+
+		const [ trafficOverviewTab, recentActivityTab ] =
+			screen.getAllByRole( 'tab' );
+
+		expect(
+			within( recentActivityTab ).getByText( 'Beta' )
+		).toBeInTheDocument();
+		expect(
+			within( trafficOverviewTab ).queryByText( 'Beta' )
+		).not.toBeInTheDocument();
+	} );
+} );

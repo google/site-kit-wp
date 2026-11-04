@@ -19,69 +19,64 @@
 /**
  * Internal dependencies
  */
-import { BENCHMARKING_DIMENSION_CODES } from './constants';
+import {
+	BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
+	BENCHMARKING_KEY_FACTOR_KINDS,
+} from './constants';
 
-export type BenchmarkingDimensionCode =
-	typeof BENCHMARKING_DIMENSION_CODES[ number ];
+export type BenchmarkingKeyFactorKind =
+	typeof BENCHMARKING_KEY_FACTOR_KINDS[ number ];
 
-export interface BenchmarkingVisitors {
-	/** Visitors in the date range the reader chose. */
+export type BenchmarkingKeyFactorAttributeKind =
+	typeof BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS[ number ];
+
+export interface BenchmarkingVisits {
+	/** Visits in the date range the reader chose. */
 	current: number;
-	/** Visitors in the range before it. */
+	/** Visits in the range before it. */
 	previous: number;
 }
 
 export interface BenchmarkingDailyTrafficRow {
 	/** The day, as `YYYY-MM-DD`. */
 	date: string;
-	/** Visitors on that day. */
-	visitors: number;
+	/** Visits on that day. */
+	visits: number;
 }
 
-export interface BenchmarkingValueRow {
-	/** The row's name, or null when the response carried none. */
+export interface BenchmarkingKeyFactorAttribute {
+	/** The attribute's kind, such as `DEVICE` for the device behind a `Direct` card. */
+	kind: BenchmarkingKeyFactorAttributeKind;
+	/** The attribute's name, or null when the response carried none. */
 	label: string | null;
-	/** Visitors in the date range the reader chose. */
+	/** Visits in the date range the reader chose. */
 	current: number;
-	/** Visitors in the range before it. */
+	/** Visits in the range before it. */
 	previous: number;
+	/** The percentage of the site's change, in the same direction, that the attribute accounts for. */
+	sharePct: number;
 }
 
-export interface BenchmarkingSearchQueryRow extends BenchmarkingValueRow {
-	/** Average search position in the date range the reader chose. */
-	positionCurrent: number | null;
-	/** Average search position in the range before it. */
-	positionPrevious: number | null;
-}
-
-export interface BenchmarkingContentRow {
-	/** The page's URL, or null when the response carried none. */
-	url: string | null;
-	/** The page's title, or null when the response carried none. */
-	title: string | null;
-	/** Visitors the page received. */
-	visitors: number;
-	/** Days between the page's publication and the end of the date range. */
-	publishedDaysAgo: number;
-}
-
-export interface BenchmarkingContextualData {
-	channels?: BenchmarkingValueRow[];
-	devices?: BenchmarkingValueRow[];
-	visitorMix?: BenchmarkingValueRow[];
-	referrers?: BenchmarkingValueRow[];
-	searchQueries?: BenchmarkingSearchQueryRow[];
-	content?: BenchmarkingContentRow[];
-	categories?: BenchmarkingValueRow[];
+export interface BenchmarkingKeyFactor {
+	/** The kind of driver behind the card's change, such as `CHANNEL` or `CONTENT`. */
+	kind: BenchmarkingKeyFactorKind;
+	/** The driver's name, or null when the response carried none. */
+	label: string | null;
+	/** Visits in the date range the reader chose. */
+	current: number;
+	/** Visits in the range before it. */
+	previous: number;
+	/** The percentage of the site's change, in the same direction, that the card accounts for. */
+	sharePct: number;
+	/** The values inside the driver that carried its change, in the order the response ranked them. */
+	attributes: BenchmarkingKeyFactorAttribute[];
 }
 
 export interface DecodedBenchmarkingResponse {
 	/** The two period totals. */
-	visitors: BenchmarkingVisitors;
+	visits: BenchmarkingVisits;
 	/** One row per day, in ascending date order. */
 	dailyTraffic: BenchmarkingDailyTrafficRow[];
-	/** The dimension codes, in the order the response ranked them. */
-	dimensions: BenchmarkingDimensionCode[];
-	/** The dimension rows, keyed by dimension. */
-	contextualData: BenchmarkingContextualData;
+	/** The key factor cards, in the order the response ranked them. */
+	keyFactors: BenchmarkingKeyFactor[];
 }

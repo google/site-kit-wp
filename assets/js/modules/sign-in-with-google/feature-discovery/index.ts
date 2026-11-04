@@ -29,6 +29,7 @@ import {
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
@@ -45,6 +46,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'sign-in-with-google', {
+		name: __( 'Sign in with Google', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 		title: __(
 			'Boost onboarding, security, and trust on your site using Sign in with Google',
@@ -66,21 +68,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Reduce friction:', 'google-site-kit' ),
+						term: __( 'Reduce friction', 'google-site-kit' ),
 						description: __(
 							'Eliminate long registration forms and password fatigue',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Boost conversions:', 'google-site-kit' ),
+						term: __( 'Boost conversions', 'google-site-kit' ),
 						description: __(
 							'Make signing up a simple, one-click process',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Grow your community:', 'google-site-kit' ),
+						term: __( 'Grow your community', 'google-site-kit' ),
 						description: __(
 							'Increase returning visitors and build deeper user connections',
 							'google-site-kit'
@@ -89,6 +91,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/sign-in-with-google/',
 				serviceRequirements: __(
 					'Access to the Google Cloud Platform is required to create a project and obtain OAuth credentials (Client ID). Your site must allow user registration (Settings > General) if you want to use the Sign in with Google "One Tap" option.',
 					'google-site-kit'
@@ -100,11 +104,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'google-site-kit'
 					),
 					__( 'Enable one-tap (optional)', 'google-site-kit' ),
+					__(
+						'Users can now sign in with Google to your site',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'Users can now sign in with Google to your site',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -113,8 +117,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Custom page showing Sign in with Google integration',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -129,6 +133,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			),
 			cta: {
 				label: __( 'Customize settings', 'google-site-kit' ),
+				getURL: ( select ) =>
+					select( CORE_SITE ).getModuleSettingsEditURL(
+						MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+					),
 			},
 			dismissLabel: __( 'Maybe later', 'google-site-kit' ),
 		},

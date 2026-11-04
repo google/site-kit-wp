@@ -151,7 +151,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect( getByText( /Set up Google Analytics/ ) ).toBeInTheDocument();
+		expect( getByText( /Set up Analytics/ ) ).toBeInTheDocument();
 	} );
 
 	it( 'should not render the Activate Analytics CTA when the Analytics module is not available', async () => {
@@ -172,9 +172,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect(
-			queryByText( /Set up Google Analytics/ )
-		).not.toBeInTheDocument();
+		expect( queryByText( /Set up Analytics/ ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
@@ -191,7 +189,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -234,7 +231,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -275,7 +271,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -302,7 +297,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -397,6 +391,67 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		} );
 	} );
 
+	it( 'should show "Analytics setup failed" when "Set up Analytics" is clicked and the activation fails', async () => {
+		fetchMock.postOnce( activateEndpoint, {
+			body: {
+				code: 'internal_server_error',
+				message: 'This is an error',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		const { getByRole, findByText, waitForRegistry } = render(
+			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: 'Set up Analytics' } ) );
+
+		expect(
+			await findByText( 'Analytics setup failed' )
+		).toBeInTheDocument();
+		expect( console ).toHaveErrored();
+	} );
+
+	it( 'should set `showGlobalNotification` to `false` on the internal server error when "Set up Analytics" is clicked and the activation fails', async () => {
+		fetchMock.postOnce( activateEndpoint, {
+			body: {
+				code: 'internal_server_error',
+				message: 'This is an error',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: 'Set up Analytics' } ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getInternalServerError()
+			).toEqual(
+				expect.objectContaining( {
+					id: ANALYTICS_SETUP_ERROR,
+					showGlobalNotification: false,
+				} )
+			);
+		} );
+		expect( console ).toHaveErrored();
+	} );
+
 	it( 'should render normal CTA again when "Got it" is clicked from activation error state', async () => {
 		registry.dispatch( CORE_SITE ).setInternalServerError( {
 			id: ANALYTICS_SETUP_ERROR,
@@ -407,7 +462,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -438,7 +492,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		} );
 	} );
 
-	it( 'should retry activation when "Retry Analytics setup" is clicked', async () => {
+	it( 'should retry activation and set `showGlobalNotification` to `false` on the internal server error when "Retry Analytics setup" is clicked and the activation fails again', async () => {
 		registry.dispatch( CORE_SITE ).setInternalServerError( {
 			id: ANALYTICS_SETUP_ERROR,
 			description: 'This is an error',
@@ -453,7 +507,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -466,5 +519,16 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		await waitFor( () => {
 			expect( fetchMock ).toHaveFetched( activateEndpoint );
 		} );
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getInternalServerError()
+			).toEqual(
+				expect.objectContaining( {
+					id: ANALYTICS_SETUP_ERROR,
+					showGlobalNotification: false,
+				} )
+			);
+		} );
+		expect( console ).toHaveErrored();
 	} );
 } );

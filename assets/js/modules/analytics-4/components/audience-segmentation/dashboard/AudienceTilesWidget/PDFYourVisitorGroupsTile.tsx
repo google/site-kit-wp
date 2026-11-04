@@ -44,7 +44,9 @@ import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
 import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFLink';
-import PDFPartialDataBadge from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
+import PDFPartialDataBadge, {
+	PDF_PARTIAL_DATA_BADGE_HEIGHT,
+} from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { numFmt } from '@/js/util';
 import type {
@@ -71,11 +73,13 @@ const styles = createPDFStyles( {
 		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
 	},
 	// A row that keeps a title on the left and its Partial data badge on the
-	// right, both vertically centered, like the dashboard tile.
+	// right, both vertically centered, like the dashboard tile. The row is at
+	// least the badge's height.
 	badgeRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		minHeight: PDF_PARTIAL_DATA_BADGE_HEIGHT,
 	},
 	// Each section is inset from the card edges and draws a divider below it.
 	row: {
@@ -101,7 +105,7 @@ const styles = createPDFStyles( {
 	sectionTitle: {
 		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 	},
-	topContentTitle: {
+	topContentTitleRow: {
 		marginBottom: 10,
 	},
 	citiesRow: {
@@ -200,11 +204,14 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 
 	return (
 		<PDFCard style={ styles.card }>
-			<View style={ [ styles.header, styles.badgeRow ] }>
-				<PDFTypography type="title" size="small">
-					{ audienceName }
-				</PDFTypography>
-				{ isAudiencePartialData && <PDFPartialDataBadge /> }
+			<View style={ styles.header }>
+				{ /* `minHeight` includes padding, so it goes on an inner row. */ }
+				<View style={ styles.badgeRow }>
+					<PDFTypography type="title" size="small">
+						{ audienceName }
+					</PDFTypography>
+					{ isAudiencePartialData && <PDFPartialDataBadge /> }
+				</View>
 			</View>
 
 			{ metricRows.map( ( row ) => (
@@ -258,13 +265,12 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 					<PDFAudienceMetricIconTopContent />
 				</View>
 				<View style={ styles.body }>
-					<View style={ [ styles.badgeRow ] }>
+					<View
+						style={ [ styles.badgeRow, styles.topContentTitleRow ] }
+					>
 						<PDFTypography
 							size="medium"
-							style={ [
-								styles.sectionTitle,
-								styles.topContentTitle,
-							] }
+							style={ styles.sectionTitle }
 						>
 							{ __(
 								'Top content by pageviews',

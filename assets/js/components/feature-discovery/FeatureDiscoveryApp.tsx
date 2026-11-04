@@ -32,11 +32,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import { FEATURE_DISCOVERY_TABS } from '@/js/components/feature-discovery/constants';
+import DashboardSharingDialog from '@/js/components/dashboard-sharing/DashboardSharingDialog';
+import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
+import {
+	ALL_SERVICES_TAB_PATH,
+	WHATS_NEW_TAB_PATH,
+} from '@/js/components/feature-discovery/constants';
+import useConsumePendingSetup from '@/js/components/feature-discovery/useConsumePendingSetup';
 import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
+import PDFExportRoot from '@/js/components/pdf-export/PDFExportRoot';
+import PDFSectionsSelectionPanel from '@/js/components/pdf-export/PDFSectionsSelectionPanel';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_MEDIUM,
@@ -47,10 +55,34 @@ import {
 import P from '@/js/components/Typography/P';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { Cell, Grid, Row } from '@/js/material-components';
-import FeatureDiscoveryContent from './FeatureDiscoveryContent';
+import AllServicesTab from './all-services/AllServicesTab';
+import FeatureDetailPanel from './detail/FeatureDetailPanel';
+import FeatureDiscoveryContent, {
+	type FeatureDiscoveryTab,
+} from './FeatureDiscoveryContent';
+import FeatureEffects from './FeatureEffects';
+import WhatsNewTab from './whats-new/WhatsNewTab';
+
+const FEATURE_DISCOVERY_TABS: FeatureDiscoveryTab[] = [
+	{
+		Component: AllServicesTab,
+		label: __( 'All services and features', 'google-site-kit' ),
+		panelID: 'googlesitekit-feature-discovery-all-services-tab-panel',
+		path: ALL_SERVICES_TAB_PATH,
+		tabID: 'googlesitekit-feature-discovery-all-services-tab',
+	},
+	{
+		Component: WhatsNewTab,
+		label: __( 'What’s new?', 'google-site-kit' ),
+		panelID: 'googlesitekit-feature-discovery-whats-new-tab-panel',
+		path: WHATS_NEW_TAB_PATH,
+		tabID: 'googlesitekit-feature-discovery-whats-new-tab',
+	},
+];
 
 const FeatureDiscoveryApp: FC = () => {
 	useFeatureCountCache();
+	const hasConsumedPendingSetup = useConsumePendingSetup();
 
 	const breakpoint = useBreakpoint();
 	const location = useLocation();
@@ -59,12 +91,14 @@ const FeatureDiscoveryApp: FC = () => {
 		( { path } ) => path === location.pathname
 	);
 
-	const activeIndex = activeTabIndex > -1 ? activeTabIndex : undefined;
+	const isExplicitTab = activeTabIndex > -1;
+	const activeIndex = isExplicitTab ? activeTabIndex : undefined;
 
 	const size = breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM;
 
 	return (
 		<Fragment>
+			<FeatureEffects />
 			<Header>
 				<HelpMenu />
 			</Header>
@@ -123,13 +157,24 @@ const FeatureDiscoveryApp: FC = () => {
 									) }
 								</TabBar>
 								<div className="googlesitekit-feature-discovery__content">
-									<FeatureDiscoveryContent />
+									{ hasConsumedPendingSetup && (
+										<FeatureDiscoveryContent
+											tabs={ FEATURE_DISCOVERY_TABS }
+											isExplicitTab={ isExplicitTab }
+										/>
+									) }
 								</div>
 							</Layout>
 						</Cell>
 					</Row>
 				</Grid>
+				<FeatureDetailPanel />
 			</div>
+			{ /* The existing panels that `in-place-panel` features open over the hub. */ }
+			<DashboardSharingDialog />
+			<UserSettingsSelectionPanel />
+			<PDFSectionsSelectionPanel />
+			<PDFExportRoot />
 		</Fragment>
 	);
 };

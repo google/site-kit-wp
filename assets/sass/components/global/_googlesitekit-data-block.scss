@@ -124,7 +124,7 @@
 	}
 
 	.googlesitekit-data-block__sparkline {
-		margin-top: $grid-gap-phone / 2;
+		margin-top: $grid-gap-phone * 0.5;
 		max-width: 150px;
 
 		.googlesitekit-adminbar & {
@@ -167,17 +167,17 @@
 	.googlesitekit-data-block__source {
 		font-size: $fs-body-sm;
 		letter-spacing: $ls-xs;
-		margin-top: $grid-gap-phone / 2;
+		margin-top: $grid-gap-phone * 0.5;
 
 		@media (min-width: $bp-desktop) {
-			margin-top: $grid-gap-desktop / 2;
+			margin-top: $grid-gap-desktop * 0.5;
 		}
 	}
 }
 
 /* stylelint-disable no-descending-specificity */
 .googlesitekit-data-block--button .googlesitekit-data-block__sparkline {
-	margin: ($grid-gap-phone / 2) auto 0 auto;
+	margin: ($grid-gap-phone * 0.5) auto 0 auto;
 }
 /* stylelint-enable */
 

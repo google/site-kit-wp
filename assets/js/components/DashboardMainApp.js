@@ -62,6 +62,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useQueryArg from '@/js/hooks/useQueryArg';
@@ -76,6 +77,7 @@ import { getNavigationalScrollTop } from '@/js/util/scroll';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import DateRangePicker from './DateRangePicker';
 import DateRangeSelector from './DateRangeSelector';
 import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
@@ -137,6 +139,8 @@ function getLastWidgetAnchor( {
 // eslint-disable-next-line complexity
 export default function DashboardMainApp() {
 	useFeatureCountCache();
+
+	const datePickerEnabled = useFeature( 'datePicker' );
 
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
@@ -350,7 +354,11 @@ export default function DashboardMainApp() {
 
 			<Header showNavigation>
 				<EntitySearchInput />
-				<DateRangeSelector />
+				{ datePickerEnabled ? (
+					<DateRangePicker />
+				) : (
+					<DateRangeSelector />
+				) }
 				{ shouldCollapseFeatureActions ? (
 					<Fragment>
 						<HelpMenu

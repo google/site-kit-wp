@@ -28,6 +28,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -59,6 +60,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -75,6 +77,9 @@ import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'LeadGenerationPerformanceWidget', () => {
 	let registry: WPDataRegistry;
@@ -222,6 +227,14 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				'analytics-4_goal-driver-reports_top-traffic-channels-rate_lead',
 		};
 
+		const topTrafficSessionsOptions = {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [ { name: 'sessions' } ],
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-sessions_lead',
+		};
+
 		const topPagesOptions = {
 			...dates,
 			dimensions: [ 'pagePath', 'eventName' ],
@@ -319,6 +332,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				topTrafficChannelsOptions,
 				topTrafficTotalOptions,
 				topTrafficRateOptions,
+				topTrafficSessionsOptions,
 				topPagesOptions,
 				pageTitlesOptions,
 				visitorTypeOptions,
@@ -409,6 +423,23 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [ 'Direct', 'Organic Search', 'Organic Social' ].map(
+							( channel ) => ( {
+								dimensionValues: [ { value: channel } ],
+								metricValues: [ { value: '2000' } ],
+							} )
+					  ),
+			},
+			{ options: topTrafficSessionsOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ topTrafficSessionsOptions ] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -993,7 +1024,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		) as HTMLElement;
 
 		expect(
-			within( tooltipContent ).getByText( 'like submitting a form', {
+			within( tooltipContent ).getByText( 'like filling out a form', {
 				exact: false,
 			} )
 		).toBeInTheDocument();
@@ -1070,7 +1101,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		expect(
 			getByRole( 'button', {
-				name: 'Hide section',
+				name: 'Lead generation performance Hide section',
 			} )
 		).toBeInTheDocument();
 	} );
@@ -1460,7 +1491,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'dispatches an up vote on thumbs-up click', async () => {
+	it( 'should track and dispatch an up vote on thumbs-up click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1482,12 +1513,21 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_up',
+			'lead'
 		);
 
 		await waitFor( () =>
@@ -1501,7 +1541,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 	} );
 
-	it( 'dispatches a down vote on thumbs-down click', async () => {
+	it( 'should track and dispatch a down vote on thumbs-down click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1523,12 +1563,21 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'No, this was not helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_down',
+			'lead'
 		);
 
 		await waitFor( () =>
@@ -1582,13 +1631,17 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedReadyReports();
 		seedBreakdownDimensions( true );
 
-		const { getByText, waitForRegistry } = render(
+		const { getByRole, getByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'button', {
+				name: 'Lead generation performance Hide section',
+			} )
+		).not.toContainElement( getByText( 'Gathering breakdown data' ) );
 	} );
 
 	it( 'does not render the gathering breakdown data badge when the dimensions have data available', async () => {

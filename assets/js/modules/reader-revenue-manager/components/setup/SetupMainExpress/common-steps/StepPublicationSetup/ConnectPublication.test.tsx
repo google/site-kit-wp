@@ -20,17 +20,17 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_SETUP_FORM,
-	SHOW_TERMS_OF_SERVICE,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import * as tracking from '@/js/util/tracking';
 import {
-	act,
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
+import {
 	createTestRegistry,
 	fireEvent,
 	freezeFetch,
@@ -44,9 +44,10 @@ import ConnectPublication from './ConnectPublication';
 
 const TEST_DEFAULT_PUBLICATION = publications[ publications.length - 1 ];
 const TEST_PUBLICATION_WITH_ACCEPTED_TERMS = publications[ 3 ];
-const TEST_PUBLICATION_WITHOUT_ACCEPTED_TERMS = publications[ 2 ];
 
 describe( 'ConnectPublication', () => {
+	mockBrowserScrolling();
+
 	let registry: Registry;
 
 	const publicationsEndpoint = new RegExp(
@@ -84,41 +85,6 @@ describe( 'ConnectPublication', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.finishResolution( 'getSettings', [] );
-	} );
-
-	it( 'should hide the terms step when selecting a publication with accepted terms', async () => {
-		providePublications( registry, publications );
-		await registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.selectPublication( TEST_PUBLICATION_WITHOUT_ACCEPTED_TERMS );
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-				[ SHOW_TERMS_OF_SERVICE ]: true,
-			} );
-		render( <ConnectPublication onComplete={ () => {} } />, { registry } );
-		expect(
-			registry
-				.select( CORE_FORMS )
-				.getValue(
-					READER_REVENUE_MANAGER_SETUP_FORM,
-					SHOW_TERMS_OF_SERVICE
-				)
-		).toBe( true );
-
-		await act( async () => {
-			await registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.selectPublication( TEST_PUBLICATION_WITH_ACCEPTED_TERMS );
-		} );
-		expect(
-			registry
-				.select( CORE_FORMS )
-				.getValue(
-					READER_REVENUE_MANAGER_SETUP_FORM,
-					SHOW_TERMS_OF_SERVICE
-				)
-		).toBe( false );
 	} );
 
 	it( 'should display a retry-able error if getting publications fails', async () => {
@@ -234,7 +200,7 @@ describe( 'ConnectPublication', () => {
 		} );
 	} );
 
-	it( 'should call the complete handler with true on success if terms have been accepted', async () => {
+	it( 'should call the complete handler on success', async () => {
 		providePublications( registry, [
 			TEST_PUBLICATION_WITH_ACCEPTED_TERMS,
 		] );
@@ -259,38 +225,7 @@ describe( 'ConnectPublication', () => {
 		fireEvent.click( submitButton );
 
 		await waitFor( () => {
-			expect( onComplete ).toHaveBeenCalledWith( true );
-		} );
-
-		expect( fetchMock ).toHaveFetched( settingsEndpoint );
-	} );
-
-	it( 'should call the complete handler with false if the terms have not been accepted', async () => {
-		providePublications( registry, [
-			TEST_PUBLICATION_WITHOUT_ACCEPTED_TERMS,
-		] );
-
-		fetchMock.postOnce( settingsEndpoint, {} );
-
-		const onComplete = jest.fn();
-
-		const { getByRole } = render(
-			<ConnectPublication onComplete={ onComplete } />,
-			{
-				registry,
-			}
-		);
-
-		const submitButton = getByRole( 'button', {
-			name: 'Connect existing publication',
-		} );
-
-		await waitFor( () => expect( submitButton ).toBeEnabled() );
-
-		fireEvent.click( submitButton );
-
-		await waitFor( () => {
-			expect( onComplete ).toHaveBeenCalledWith( false );
+			expect( onComplete ).toHaveBeenCalledWith();
 		} );
 
 		expect( fetchMock ).toHaveFetched( settingsEndpoint );
@@ -369,4 +304,52 @@ describe( 'ConnectPublication', () => {
 			} );
 		}
 	);
+
+	describe( 'event tracking', () => {
+		mockLocation();
+
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it( 'should track a click on the "Learn more" link', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+			providePublications( registry, [ TEST_DEFAULT_PUBLICATION ] );
+
+			const { getByText } = render(
+				<ConnectPublication onComplete={ () => {} } />,
+				{ registry, viewContext: VIEW_CONTEXT_MODULE_SETUP }
+			);
+
+			// Wait for the default publication to be selected on load.
+			await waitFor( () => {
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationID()
+				).toBe(
+					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+					TEST_DEFAULT_PUBLICATION.publicationId
+				);
+			} );
+
+			fireEvent.click( getByText( 'Learn more' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MODULE_SETUP }_rrm-express-setup_newsletter-signup`,
+				'click_learn_more_link',
+				'connect-publication'
+			);
+		} );
+	} );
 } );

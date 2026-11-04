@@ -40,7 +40,7 @@ interface IsSiteGoalsWidgetShowingContentOptions {
  * The removal notice shows while no plugin for the goal type is active and the
  * selected date range has no event of that type.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Select}   select                      The registry `select` function.
  * @param {GoalType} goalType                    The goal type of the widget to check.

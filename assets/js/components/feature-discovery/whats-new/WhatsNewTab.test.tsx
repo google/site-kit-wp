@@ -17,20 +17,42 @@
  */
 
 /**
+ * External dependencies
+ */
+import { HashRouter } from 'react-router-dom';
+
+/**
  * Internal dependencies
  */
+import { WHATS_NEW_TAB_PATH } from '@/js/components/feature-discovery/constants';
+import EnableAutoUpdateBannerNotification, {
+	FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
+} from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
 import { Registry } from '@/js/googlesitekit-data';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_SETUP_TYPES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import {
 	createTestRegistry,
 	fireEvent,
 	freezeFetch,
 	provideModules,
+	provideSiteInfo,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -41,6 +63,9 @@ const TEST_OLDER_VERSION = '1.186.0';
 const TEST_NEWER_VERSION = '1.188.0';
 
 const EMPTY_STATE_SELECTOR = '.googlesitekit-whats-new__empty-state';
+
+const AUTO_UPDATES_TITLE = 'Unlock the latest Site Kit features!';
+const SUCCESS_TITLE = 'Success! Set up feature is set up';
 
 const TIMERS_ENDPOINT = new RegExp(
 	'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
@@ -96,8 +121,60 @@ describe( 'WhatsNewTab', () => {
 		).map( ( heading ) => heading.textContent );
 	}
 
+	function provideAutoUpdatesNoticeRequirements() {
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification( FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG, {
+				Component: EnableAutoUpdateBannerNotification,
+				priority: PRIORITY.SETUP_CTA_LOW,
+				areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
+				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+				checkRequirements: () => true,
+				isDismissible: true,
+			} );
+	}
+
+	function provideSetupSuccessNotice() {
+		provideSiteInfo( registry );
+		provideFeatures( registry, [
+			{
+				slug: 'set-up-feature',
+				title: 'Set up feature',
+				addedInVersion: TEST_NEWER_VERSION,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Set up now',
+					isEnabled: () => true,
+				},
+				successNotice: { title: SUCCESS_TITLE },
+			} as Partial< Feature >,
+		] );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION,
+				DEFAULT_NOTIFICATIONS[
+					FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION
+				]
+			);
+
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+			featureSlug: 'set-up-feature',
+			returnTab: WHATS_NEW_TAB_PATH,
+		} );
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismissed-prompts'
+			),
+			{ body: {}, status: 200 }
+		);
 
 		provideModules( registry, [] );
 
@@ -118,6 +195,7 @@ describe( 'WhatsNewTab', () => {
 
 		const { container, waitForRegistry } = render( <WhatsNewTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -130,7 +208,10 @@ describe( 'WhatsNewTab', () => {
 
 		provideFeatures( registry, TEST_FEATURES );
 
-		const { waitForRegistry } = render( <WhatsNewTab />, { registry } );
+		const { waitForRegistry } = render( <WhatsNewTab />, {
+			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+		} );
 
 		await waitForRegistry();
 
@@ -167,6 +248,7 @@ describe( 'WhatsNewTab', () => {
 
 		const { container, waitForRegistry } = render( <WhatsNewTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -188,7 +270,7 @@ describe( 'WhatsNewTab', () => {
 
 		const { getByRole, queryByText, waitForRegistry } = render(
 			<WhatsNewTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -201,13 +283,28 @@ describe( 'WhatsNewTab', () => {
 	} );
 
 	it( 'should render the empty state and mark nothing seen when no features are new', async () => {
-		const { container, waitForRegistry } = render( <WhatsNewTab />, {
-			registry,
-		} );
+		const { container, getByRole, waitForRegistry } = render(
+			<HashRouter>
+				<WhatsNewTab />
+			</HashRouter>,
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+		);
 
 		await waitForRegistry();
 
 		expect( getListedTitles( container ) ).toEqual( [] );
+
+		expect(
+			getByRole( 'heading', { name: 'You’re up to date!' } )
+		).toBeInTheDocument();
+
+		expect(
+			getByRole( 'button', { name: 'Explore features' } )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Explore features' } ) );
+
+		expect( global.location.hash ).toBe( '#/all-services' );
 
 		expect(
 			container.querySelector( EMPTY_STATE_SELECTOR )
@@ -223,6 +320,7 @@ describe( 'WhatsNewTab', () => {
 
 		const { container, waitForRegistry } = render( <WhatsNewTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -248,7 +346,10 @@ describe( 'WhatsNewTab', () => {
 
 		provideFeatures( registry, TEST_FEATURES );
 
-		const { container } = render( <WhatsNewTab />, { registry } );
+		const { container } = render( <WhatsNewTab />, {
+			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+		} );
 
 		expect( getListedTitles( container ) ).toEqual( [] );
 
@@ -259,6 +360,131 @@ describe( 'WhatsNewTab', () => {
 		).not.toBeInTheDocument();
 
 		expect( fetchMock ).not.toHaveFetched( TIMERS_ENDPOINT );
+	} );
+
+	it( 'should render the auto-updates notice above the feature list', async () => {
+		provideAutoUpdatesNoticeRequirements();
+		fetchMock.postOnce( TIMERS_ENDPOINT, { body: {}, status: 200 } );
+
+		provideFeatures( registry, TEST_FEATURES );
+
+		const { container, getByText, waitForRegistry } = render(
+			<WhatsNewTab />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Unlock the latest Site Kit features!' )
+		).toBeInTheDocument();
+
+		const noticeContainer = container.querySelector(
+			'.googlesitekit-whats-new__notifications'
+		) as Element;
+		const featureListItem = container.querySelector(
+			'.googlesitekit-feature-card'
+		) as Element;
+
+		expect( noticeContainer ).toBeInTheDocument();
+		expect( featureListItem ).toBeInTheDocument();
+
+		expect(
+			noticeContainer.compareDocumentPosition( featureListItem )
+		).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
+	} );
+
+	it( 'should render the auto-updates notice above the empty state', async () => {
+		provideAutoUpdatesNoticeRequirements();
+
+		const { container, getByText, waitForRegistry } = render(
+			<WhatsNewTab />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Unlock the latest Site Kit features!' )
+		).toBeInTheDocument();
+
+		const noticeContainer = container.querySelector(
+			'.googlesitekit-whats-new__notifications'
+		) as Element;
+		const emptyState = container.querySelector(
+			EMPTY_STATE_SELECTOR
+		) as Element;
+
+		expect( noticeContainer ).toBeInTheDocument();
+		expect( emptyState ).toBeInTheDocument();
+
+		expect( noticeContainer.compareDocumentPosition( emptyState ) ).toBe(
+			Node.DOCUMENT_POSITION_FOLLOWING
+		);
+	} );
+
+	it( 'should render the setup success notice in place of the auto-updates notice on return from a setup', async () => {
+		provideAutoUpdatesNoticeRequirements();
+		provideSetupSuccessNotice();
+		fetchMock.postOnce( TIMERS_ENDPOINT, { body: {}, status: 200 } );
+
+		provideFeatures( registry, TEST_FEATURES );
+
+		const { container, getByText, queryByText, waitForRegistry } = render(
+			<WhatsNewTab />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( SUCCESS_TITLE ) ).toBeInTheDocument();
+		expect( queryByText( AUTO_UPDATES_TITLE ) ).not.toBeInTheDocument();
+
+		const noticeContainer = container.querySelector(
+			'.googlesitekit-whats-new__notifications'
+		) as Element;
+		const featureListItem = container.querySelector(
+			'.googlesitekit-feature-card'
+		) as Element;
+
+		expect( noticeContainer ).toContainElement(
+			getByText( SUCCESS_TITLE )
+		);
+		expect(
+			noticeContainer.compareDocumentPosition( featureListItem )
+		).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
+	} );
+
+	it( 'should render the auto-updates notice once the setup success notice is dismissed', async () => {
+		provideAutoUpdatesNoticeRequirements();
+		provideSetupSuccessNotice();
+		fetchMock.postOnce( TIMERS_ENDPOINT, { body: {}, status: 200 } );
+
+		provideFeatures( registry, TEST_FEATURES );
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<WhatsNewTab />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		expect( queryByText( SUCCESS_TITLE ) ).not.toBeInTheDocument();
+		expect( getByText( AUTO_UPDATES_TITLE ) ).toBeInTheDocument();
 	} );
 
 	it( 'should immediately hide a dismissed card while feedback is pending and preserve the remaining order', async () => {
@@ -276,7 +502,7 @@ describe( 'WhatsNewTab', () => {
 
 		const { container, getByRole, waitForRegistry } = render(
 			<WhatsNewTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -317,7 +543,7 @@ describe( 'WhatsNewTab', () => {
 
 		const { container, getByRole, queryByText, waitForRegistry } = render(
 			<WhatsNewTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();

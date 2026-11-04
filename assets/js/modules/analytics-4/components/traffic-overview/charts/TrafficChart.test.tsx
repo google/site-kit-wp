@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import GoogleChart from '@/js/components/GoogleChart';
 import { getChartOptions } from '@/js/components/GoogleChart/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -40,16 +41,13 @@ import {
 } from '@tests/js/utils';
 import TrafficChart from './TrafficChart';
 
-const mockGoogleChart = jest.fn();
+jest.mock( '@/js/components/GoogleChart', () =>
+	jest
+		.requireActual( '@tests/js/mock-google-chart-utils' )
+		.mockGoogleChartModule()
+);
 
-// Google Charts draws nothing under Jest, so `GoogleChartMock` records the
-// props each test reads.
-jest.mock( '@/js/components/GoogleChart', () => {
-	return function GoogleChartMock( props: Record< string, unknown > ) {
-		mockGoogleChart( props );
-		return <div className="googlesitekit-chart" />;
-	};
-} );
+const mockGoogleChart = jest.mocked( GoogleChart );
 
 describe( 'TrafficChart', () => {
 	let registry: WPDataRegistry;
@@ -275,6 +273,26 @@ describe( 'TrafficChart', () => {
 		] );
 	} );
 
+	it( 'should mark the day the Analytics property was created when that day is the last day of the range', async () => {
+		providePropertyCreateTime( '2025-01-16' );
+
+		render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+			/>,
+			{ registry }
+		);
+
+		const { dateMarkers } = await getLastChartProps();
+
+		expect( dateMarkers ).toEqual( [
+			{
+				date: '2025-01-16',
+				text: 'Google Analytics property created',
+			},
+		] );
+	} );
+
 	it( 'draws no marker when the Analytics property was created before the range', async () => {
 		providePropertyCreateTime( '2024-11-02' );
 
@@ -290,10 +308,38 @@ describe( 'TrafficChart', () => {
 		expect( dateMarkers ).toBeUndefined();
 	} );
 
-	it( 'draws no marker on a view-only dashboard', async () => {
+	it( 'should mark the day the Analytics property was created on a view-only dashboard, and read it to a screen reader', async () => {
 		providePropertyCreateTime( '2025-01-14' );
 
-		render(
+		const { getByText } = render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+			/>,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
+		);
+
+		const { dateMarkers } = await getLastChartProps();
+
+		expect( dateMarkers ).toEqual( [
+			{
+				date: '2025-01-14',
+				text: 'Google Analytics property created',
+			},
+		] );
+		expect(
+			getByText(
+				'Google Analytics property created on January 14, 2025.'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should draw no marker on a view-only dashboard when the Analytics property creation time is not known', async () => {
+		// The setting is `0` until Site Kit stores the property's creation time.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { propertyCreateTime: 0 } );
+
+		const { queryByText } = render(
 			<TrafficChart
 				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
@@ -303,6 +349,9 @@ describe( 'TrafficChart', () => {
 		const { dateMarkers } = await getLastChartProps();
 
 		expect( dateMarkers ).toBeUndefined();
+		expect(
+			queryByText( /Google Analytics property created/ )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'reads every day and its visitors to a screen reader', async () => {

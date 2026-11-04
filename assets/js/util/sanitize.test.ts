@@ -27,7 +27,7 @@ describe( 'sanitizeHTML', () => {
 				ALLOWED_TAGS: [ 'a' ],
 			} )
 		).toEqual( {
-			__html: '<a target="_blank" href="http://example.org">link</a>',
+			__html: html,
 		} );
 	} );
 } );

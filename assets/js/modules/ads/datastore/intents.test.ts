@@ -1,0 +1,410 @@
+/**
+ * `modules/ads` data store: intents tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	ADS_CONVERSION_TRACKING_INTENT_SLUG,
+	MODULE_SLUG_ADS,
+} from '@/js/modules/ads/constants';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+} from '@tests/js/utils';
+import { MODULES_ADS } from './constants';
+
+describe( 'modules/ads intents', () => {
+	const activationEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/modules/data/activation'
+	);
+	const authenticationEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/authentication'
+	);
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/ads/data/settings'
+	);
+	const conversionTrackingEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/site/data/conversion-tracking'
+	);
+	const completeIntentEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/intents/data/complete-intent'
+	);
+
+	const intentCode = 'abc123';
+	const tagID = 'AW-763597978';
+	const returnURL =
+		'https://ads.google.com/aw/conversions/sitekit?intent_code=abc123';
+	const returnURLWithOutcome =
+		'https://ads.google.com/aw/conversions/sitekit?intent_code=abc123&sitekit_status=success&tracked_conversion_ids=submit_lead_form%2Cadd_to_cart%2Cpurchase';
+
+	const settings = {
+		conversionID: '',
+		ownerID: 0,
+		paxConversionID: '',
+		customerID: '',
+		extCustomerID: '',
+		formattedExtCustomerID: '',
+		userID: '',
+		accountOverviewURL: '',
+	};
+
+	const error = {
+		code: 'internal_server_error',
+		message: 'Internal server error',
+		data: { status: 500 },
+	};
+
+	let registry: WPDataRegistry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideSiteInfo( registry );
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ADS, active: false, connected: false },
+		] );
+		provideModuleRegistrations( registry );
+
+		registry.dispatch( MODULES_ADS ).receiveGetSettings( settings );
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			supportedConversionEvents: [
+				'submit_lead_form',
+				'add_to_cart',
+				'purchase',
+			],
+		} );
+	} );
+
+	function provideActiveAdsModule() {
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ADS, active: true, connected: true },
+		] );
+	}
+
+	function provideEnabledConversionTracking() {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
+	}
+
+	describe( 'actions', () => {
+		describe( 'completeConversionTrackingIntent', () => {
+			it( 'should activate the Ads module, save the tag as the conversion ID, enable conversion tracking, complete the intent, and return the URL to return to Google Ads with the setup outcome', async () => {
+				fetchMock.postOnce( activationEndpoint, {
+					body: { success: true },
+				} );
+				fetchMock.getOnce( authenticationEndpoint, {
+					body: { needsReauthentication: false },
+				} );
+				fetchMock.getOnce( conversionTrackingEndpoint, {
+					body: { enabled: false },
+				} );
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( conversionTrackingEndpoint, {
+					body: { enabled: true },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: { return_url: returnURL },
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( fetchMock ).toHaveFetched( activationEndpoint, {
+					body: { data: { slug: MODULE_SLUG_ADS, active: true } },
+				} );
+				expect( fetchMock ).toHaveFetched( settingsEndpoint, {
+					body: { data: { ...settings, conversionID: tagID } },
+				} );
+				expect( fetchMock ).toHaveFetched( conversionTrackingEndpoint, {
+					method: 'POST',
+					body: { data: { settings: { enabled: true } } },
+				} );
+				expect( fetchMock ).toHaveFetched( completeIntentEndpoint, {
+					body: {
+						data: {
+							slug: ADS_CONVERSION_TRACKING_INTENT_SLUG,
+							intent_code: intentCode,
+						},
+					},
+				} );
+				expect( result ).toEqual( {
+					returnURL: returnURLWithOutcome,
+				} );
+			} );
+
+			it( 'should report success with an empty list of conversion events when the site tracks none', async () => {
+				provideActiveAdsModule();
+				provideEnabledConversionTracking();
+				registry.dispatch( MODULES_ADS ).receiveModuleData( {
+					supportedConversionEvents: [],
+				} );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: { return_url: returnURL },
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( result ).toEqual( {
+					returnURL:
+						'https://ads.google.com/aw/conversions/sitekit?intent_code=abc123&sitekit_status=success&tracked_conversion_ids=',
+				} );
+			} );
+
+			it( 'should not save the conversion tracking settings when conversion tracking is already enabled', async () => {
+				provideActiveAdsModule();
+
+				fetchMock.getOnce( conversionTrackingEndpoint, {
+					body: { enabled: true },
+				} );
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: { return_url: returnURL },
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( fetchMock ).not.toHaveFetched(
+					conversionTrackingEndpoint,
+					{
+						method: 'POST',
+					}
+				);
+				expect( result ).toEqual( {
+					returnURL: returnURLWithOutcome,
+				} );
+			} );
+
+			it( 'should not activate the Ads module when it is already active', async () => {
+				provideActiveAdsModule();
+				provideEnabledConversionTracking();
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: { return_url: returnURL },
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( fetchMock ).not.toHaveFetched( activationEndpoint );
+				expect( result ).toEqual( {
+					returnURL: returnURLWithOutcome,
+				} );
+			} );
+
+			it( 'should not save the tag or enable conversion tracking again when it is called again after completing the intent failed', async () => {
+				provideActiveAdsModule();
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConversionTrackingSettings( { enabled: false } );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( conversionTrackingEndpoint, {
+					body: { enabled: true },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: error,
+					status: 500,
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: { return_url: returnURL },
+				} );
+
+				await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( console ).toHaveErrored();
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1, settingsEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					conversionTrackingEndpoint
+				);
+				expect( fetchMock ).toHaveFetchedTimes(
+					2,
+					completeIntentEndpoint
+				);
+				expect( result ).toEqual( {
+					returnURL: returnURLWithOutcome,
+				} );
+			} );
+
+			it( 'should return the error, and neither save the tag nor complete the intent, when activating the Ads module fails', async () => {
+				fetchMock.postOnce( activationEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
+				expect( fetchMock ).not.toHaveFetched( completeIntentEndpoint );
+				expect( result ).toEqual( { error } );
+			} );
+
+			it( 'should return the error, and not complete the intent, when saving the tag fails', async () => {
+				provideActiveAdsModule();
+				provideEnabledConversionTracking();
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).not.toHaveFetched( completeIntentEndpoint );
+				expect( result ).toEqual( { error } );
+			} );
+
+			it( 'should return the error, and not complete the intent, when enabling conversion tracking fails', async () => {
+				provideActiveAdsModule();
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConversionTrackingSettings( { enabled: false } );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( conversionTrackingEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).not.toHaveFetched( completeIntentEndpoint );
+				expect( result ).toEqual( { error } );
+			} );
+
+			it( 'should return the error when completing the intent fails', async () => {
+				provideActiveAdsModule();
+				provideEnabledConversionTracking();
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( console ).toHaveErrored();
+				expect( result ).toEqual( { error } );
+			} );
+
+			it( 'should throw an error when the intent code is missing', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ADS )
+						.completeConversionTrackingIntent( undefined, tagID )
+				).toThrow( 'intentCode is required.' );
+			} );
+
+			it.each( [
+				[ 'missing', undefined ],
+				[ 'not a conversion ID', 'GT-763597978' ],
+			] )(
+				'should throw an error when the tag ID is %s',
+				( _, invalidTagID ) => {
+					expect( () =>
+						registry
+							.dispatch( MODULES_ADS )
+							.completeConversionTrackingIntent(
+								intentCode,
+								invalidTagID
+							)
+					).toThrow( 'a valid tagID is required.' );
+				}
+			);
+		} );
+
+		describe( 'confirmConversionTrackingIntentTag', () => {
+			it( 'should confirm the tag without saving anything', () => {
+				registry
+					.dispatch( MODULES_ADS )
+					.confirmConversionTrackingIntentTag();
+
+				expect(
+					registry
+						.select( MODULES_ADS )
+						.isConversionTrackingIntentTagConfirmed()
+				).toBe( true );
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'isConversionTrackingIntentTagConfirmed', () => {
+			it( 'should return false until the tag is confirmed', () => {
+				expect(
+					registry
+						.select( MODULES_ADS )
+						.isConversionTrackingIntentTagConfirmed()
+				).toBe( false );
+			} );
+		} );
+	} );
+} );

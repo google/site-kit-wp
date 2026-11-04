@@ -28,6 +28,7 @@ import fetchMock from 'fetch-mock';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { USER_AVATAR_URL } from '@tests/js/user-avatar';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import UserInputApp from './UserInputApp';
 
@@ -58,7 +59,7 @@ MultipleAdmins.decorators = [
 						answeredBy: 1,
 						values: [ 'sell_products_or_service' ],
 						author: {
-							photo: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+							photo: USER_AVATAR_URL,
 							login: 'admin',
 						},
 					},

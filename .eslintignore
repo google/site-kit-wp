@@ -1,6 +1,8 @@
 !/storybook
 /storybook/data/*
 /dist/*
-/tests/backstop/html_report/*
+/storybook-static/*
+/tests/vrt/report/*
+/tests/vrt/test-results/*
 /php-scoper/*
 /vendor/*

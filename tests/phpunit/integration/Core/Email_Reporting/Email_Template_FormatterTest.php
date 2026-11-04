@@ -220,8 +220,7 @@ class Email_Template_FormatterTest extends TestCase {
 	 * @dataProvider data_parse_change_value
 	 */
 	public function test_parse_change_value( $locale, $change, $expected ) {
-		$method = new \ReflectionMethod( Email_Template_Formatter::class, 'parse_change_value' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Email_Template_Formatter::class, 'parse_change_value' );
 
 		$result = $this->with_locale_number_format(
 			$locale,

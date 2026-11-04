@@ -31,23 +31,12 @@ import {
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
-import { renderJSON } from '@/js/components/pdf-export/test-utils';
+import {
+	flattenPDFStyle,
+	renderJSON,
+} from '@/js/components/pdf-export/test-utils';
 import PDFLink from './PDFLink';
 import PDFTypography from './PDFTypography';
-
-/**
- * Merges a style array into one object, so assertions read one flat style.
- *
- * @since 1.183.0
- *
- * @param style A style object, or the style array `@react-pdf` renders.
- * @return One object holding every style property.
- */
-function flattenStyle(
-	style: Record< string, unknown > | Array< Record< string, unknown > >
-): Record< string, unknown > {
-	return Array.isArray( style ) ? Object.assign( {}, ...style ) : style;
-}
 
 /**
  * Renders the text and returns its flattened style object.
@@ -65,11 +54,7 @@ function renderTextStyle(
 	if ( ! tree || Array.isArray( tree ) ) {
 		throw new Error( 'Unexpected render output.' );
 	}
-	return flattenStyle(
-		tree.props.style as
-			| Record< string, unknown >
-			| Array< Record< string, unknown > >
-	);
+	return flattenPDFStyle( tree.props.style );
 }
 
 describe( 'PDFTypography', () => {
@@ -86,11 +71,7 @@ describe( 'PDFTypography', () => {
 		expect( tree.type ).toBe( 'pdf-text' );
 		expect( tree.children ).toEqual( [ 'Heading' ] );
 
-		const style = flattenStyle(
-			tree.props.style as
-				| Record< string, unknown >
-				| Array< Record< string, unknown > >
-		);
+		const style = flattenPDFStyle( tree.props.style );
 		// The expected values for headline medium, scaled to the page.
 		expect( style ).toMatchObject( {
 			fontSize: 28 * PDF_SCALE,

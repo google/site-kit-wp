@@ -82,5 +82,8 @@ WithCTADetails.scenario = {};
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/StepSetupComplete',
 	component: StepSetupComplete,
+	args: {
+		onComplete: () => {},
+	},
 	decorators: [ withQuery ],
 };

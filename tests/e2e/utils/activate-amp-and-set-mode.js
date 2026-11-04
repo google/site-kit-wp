@@ -17,16 +17,13 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
+import { activatePlugin } from './activate-plugin';
 import { createWaitForFetchRequests } from './create-wait-for-fetch-requests';
 import { pageWait } from './page-wait';
 import { useRequestInterception } from './use-request-interception';
+import { visitAdminPage } from './visit-admin-page';
 
 /**
  * The allow list of AMP modes.

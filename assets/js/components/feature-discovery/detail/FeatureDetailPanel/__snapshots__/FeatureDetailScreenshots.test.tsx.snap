@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeatureDetailScreenshots should omit missing screenshots for { screenshots: [] } 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__images"
+  />
+</div>
+`;
+
+exports[`FeatureDetailScreenshots should omit missing screenshots for {} 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__images"
+  />
+</div>
+`;
+
+exports[`FeatureDetailScreenshots should omit missing screenshots for undefined 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__images"
+  />
+</div>
+`;
+
+exports[`FeatureDetailScreenshots should render lazy loaded screenshots in catalog order with their attributes 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__images"
+  >
+    <img
+      alt="First preview"
+      height="480"
+      loading="lazy"
+      src="/first.png"
+      width="640"
+    />
+    <img
+      alt="Second preview"
+      height="600"
+      loading="lazy"
+      src="/second.png"
+      width="800"
+    />
+  </div>
+</div>
+`;

@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import type { FC, ReactNode } from 'react';
 
 /**
@@ -35,7 +36,7 @@ import PoweredBy from './PoweredBy';
 
 interface ExpressSetupLayoutProps {
 	children: ReactNode;
-	sidebar: ReactNode;
+	sidebar?: ReactNode;
 }
 
 const ExpressSetupLayout: FC< ExpressSetupLayoutProps > = ( {
@@ -47,27 +48,40 @@ const ExpressSetupLayout: FC< ExpressSetupLayoutProps > = ( {
 	const isMobileOrTablet = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
-	const showPoweredBy = !! cta;
+	const hasSidebar = !! sidebar;
+	const showPoweredBy = !! cta && hasSidebar;
 
 	return (
 		<Grid className="googlesitekit-rrm-express-setup" collapsed>
-			<Row className="googlesitekit-rrm-express-setup__layout">
-				<Cell
-					className="googlesitekit-rrm-express-setup__sidebar"
-					smSize={ 4 }
-					mdSize={ 8 }
-					lgSize={ 3 }
-				>
-					<div className="googlesitekit-rrm-express-setup__sidebar-inner">
-						{ sidebar }
-						{ showPoweredBy && ! isMobileOrTablet && <PoweredBy /> }
-					</div>
-				</Cell>
+			<Row
+				className={ classnames(
+					'googlesitekit-rrm-express-setup__layout',
+					{
+						'googlesitekit-rrm-express-setup__layout--full-width':
+							! hasSidebar,
+					}
+				) }
+			>
+				{ hasSidebar && (
+					<Cell
+						className="googlesitekit-rrm-express-setup__sidebar"
+						smSize={ 4 }
+						mdSize={ 8 }
+						lgSize={ 3 }
+					>
+						<div className="googlesitekit-rrm-express-setup__sidebar-inner">
+							{ sidebar }
+							{ showPoweredBy && ! isMobileOrTablet && (
+								<PoweredBy />
+							) }
+						</div>
+					</Cell>
+				) }
 				<Cell
 					className="googlesitekit-rrm-express-setup__content"
 					smSize={ 4 }
 					mdSize={ 8 }
-					lgSize={ 9 }
+					lgSize={ hasSidebar ? 9 : 12 }
 				>
 					{ children }
 				</Cell>

@@ -19,7 +19,6 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
-import { enabledFeatures } from '@/js/features';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -969,40 +968,6 @@ describe( 'core/user key metrics', () => {
 				provideUserAuthentication( registry );
 			} );
 
-			it( 'should return undefined while settings are loading', async () => {
-				freezeFetch( coreKeyMetricsEndpointRegExp );
-
-				const { isKeyMetricsWidgetHidden } =
-					registry.select( CORE_USER );
-
-				expect( isKeyMetricsWidgetHidden() ).toBeUndefined();
-
-				await waitForDefaultTimeouts();
-			} );
-
-			it( 'uses a resolver to make a network request if settings are not available', async () => {
-				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
-					body: coreKeyMetricsExpectedResponse,
-					status: 200,
-				} );
-
-				const { isKeyMetricsWidgetHidden } =
-					registry.select( CORE_USER );
-
-				expect( isKeyMetricsWidgetHidden() ).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					CORE_USER
-				).getKeyMetricsSettings();
-
-				expect(
-					registry.select( CORE_USER ).isKeyMetricsWidgetHidden()
-				).toEqual( coreKeyMetricsExpectedResponse.isWidgetHidden );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-
 			it( 'should return true when the key metrics widget area is hidden, regardless of user settings', () => {
 				provideSiteInfo( registry, {
 					keyMetricsSetupIsWidgetAreaHidden: true,
@@ -1018,20 +983,7 @@ describe( 'core/user key metrics', () => {
 				).toBe( true );
 			} );
 
-			it( 'should return the stored value when the `setupFlowRefresh` feature flag is disabled', () => {
-				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					...coreKeyMetricsExpectedResponse,
-					isWidgetHidden: true,
-				} );
-
-				expect(
-					registry.select( CORE_USER ).isKeyMetricsWidgetHidden()
-				).toBe( true );
-			} );
-
-			it( 'should return false when the `setupFlowRefresh` feature flag is enabled, regardless of the stored value', () => {
-				enabledFeatures.add( 'setupFlowRefresh' );
-
+			it( 'should return false regardless of the stored value', () => {
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					...coreKeyMetricsExpectedResponse,
 					isWidgetHidden: true,
@@ -1040,8 +992,6 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_USER ).isKeyMetricsWidgetHidden()
 				).toBe( false );
-
-				enabledFeatures.delete( 'setupFlowRefresh' );
 			} );
 		} );
 
@@ -1060,9 +1010,7 @@ describe( 'core/user key metrics', () => {
 				await waitForDefaultTimeouts();
 			} );
 
-			it( 'should return the stored value regardless of the `setupFlowRefresh` feature flag', () => {
-				enabledFeatures.add( 'setupFlowRefresh' );
-
+			it( 'should return the stored value', () => {
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					...coreKeyMetricsExpectedResponse,
 					isWidgetHidden: true,
@@ -1071,8 +1019,6 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_USER ).getRawKeyMetricsWidgetHidden()
 				).toBe( true );
-
-				enabledFeatures.delete( 'setupFlowRefresh' );
 			} );
 		} );
 

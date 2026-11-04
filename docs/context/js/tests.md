@@ -1,6 +1,6 @@
 # JavaScript Testing
 
-Site Kit uses a comprehensive testing strategy with Jest for unit and integration tests, Playwright (migrating from legacy Puppeteer) for end-to-end tests, and specialized visual regression testing through Storybook.
+Site Kit uses a comprehensive testing strategy with Jest for unit and integration tests, Playwright for end-to-end tests, and specialized visual regression testing through Storybook.
 
 ## Test Organization
 
@@ -321,6 +321,17 @@ each test can be read on its own.
 - A test for a loading or empty state also asserts that the normal content is **not**
   rendered.
 - Only set up the reports and settings that the code being tested requires.
+- A negative assertion must be able to fail. `expect( fetchMock ).not.toHaveFetched( … )`
+  passes even when the code sends the request if no route is registered for that endpoint: the
+  request fails before `fetchMock` records it. Register the route (for example with
+  `fetchMock.get()`), then assert it wasn't called.
+- A test for a fix asserts what is shown afterwards, not only that the symptom is gone. A test
+  that only checks that a spinner or an error went away still passes when the component now
+  shows a wrong value, such as `0%`.
+- Each test protects something no other test does. Don't test the same behaviour several times,
+  or behaviour that belongs to another unit (a child component, WordPress, the Google client).
+  Keep one test per acceptance criterion, both sides of each boundary, and a regression test for
+  each real bug.
 
 ### Mock Data Patterns
 
@@ -406,7 +417,8 @@ Test title convention: `it(...)`/`test(...)` titles start with "should …" (e.g
 
 ## End-to-End Testing
 
-Site Kit's E2E tests are migrating from the legacy Puppeteer setup to Playwright:
+Site Kit's E2E tests are migrating from the legacy Jest-based suite to Playwright
+Test. Both run in Playwright Chromium:
 
 - **Playwright (current)** — `tests/playwright/`, run with `npm run test:playwright`.
   All new E2E tests are written in Playwright (`*.spec.ts` under
@@ -435,26 +447,34 @@ Site Kit's E2E tests are migrating from the legacy Puppeteer setup to Playwright
   full set of annotations, fixtures, helpers, and the Docker environment. Do not
   duplicate its content.
 
-- **Puppeteer (legacy)** — `tests/e2e/` (specs under `tests/e2e/specs/`), run with
+- **Jest (legacy)** — `tests/e2e/` (specs under `tests/e2e/specs/`), run with
   `npm run test:e2e`. Maintained for existing coverage only; prefer Playwright for
-  new tests.
+  new tests. These specs were written for Puppeteer and now run on Playwright
+  through a compatibility layer, so they keep the Puppeteer-style `page` API
+  (`page.setRequestInterception()`, `useRequestInterception()`) and the
+  `toClick`/`toMatchElement`/`toFill` matchers. Don't extend that layer for new
+  tests; move specs to `tests/playwright/` instead.
 
 ## Visual Regression Testing
 
-Visual regression tests run through BackstopJS against Storybook stories
-(`*.stories.js`, increasingly `.tsx`). Run `npm run test:visualtest` to compare
-against reference images and `npm run test:visualapprove` to accept new
-screenshots as the reference.
+Visual regression tests screenshot every Storybook story that has a `.scenario`
+(`*.stories.js`, increasingly `.tsx`) with Playwright, in Docker, and compare the
+screenshots with reference images committed in `tests/vrt/__screenshots__/`.
+**`tests/vrt/README.md` is the authoritative guide**: commands, scenario options,
+how to make a story deterministic, and troubleshooting.
 
-To scope a run to a single scenario (preferred over the full suite while iterating),
-pass `--filter`. The npm scripts call `npm run` twice more, so the filter needs two `--` to
-reach BackstopJS. Calling the backstop binary directly works as well:
+Run `npm run test:visualtest` to build Storybook and compare every story, and
+`npm run test:visualapprove` to write new reference images for stories that
+changed.
+Both forward extra arguments to Playwright, so scope a run to the stories you
+changed (preferred over the full suite while iterating) with `--grep`:
 
 ```bash
-npm run test:visualtest -- -- --filter="<scenario label>"
-npm run test:visualapprove -- -- --filter="<scenario label>"
-./tests/backstop/bin/backstop test --filter="<scenario label>"
+npm run test:visualtest -- --grep "<story label>"
+npm run test:visualapprove -- --grep "<story label>"
 ```
 
-Scenario labels are generated from the Storybook story's title/name — check
-`tests/backstop/scenarios.js` or the HTML report for the exact label.
+`tests/vrt/bin/vrt test --grep "<story label>"` does the same without rebuilding
+Storybook first. The label is the story's title and name, e.g.
+`Components/Button/All Buttons VRT`; it is also how the report
+(`tests/vrt/bin/vrt report`) names the story.

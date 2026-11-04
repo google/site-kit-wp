@@ -30,11 +30,20 @@ import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecover
 import SetUpEmailReportingOverlayNotification, {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 } from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
+import {
+	ALL_SERVICES_TAB_PATH,
+	WHATS_NEW_TAB_PATH,
+} from '@/js/components/feature-discovery/constants';
+import FeatureDiscoveryCallout, {
+	FEATURE_DISCOVERY_CALLOUT_NOTIFICATION,
+} from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
+import FeatureDiscoverySetupSuccessNotification from '@/js/components/feature-discovery/FeatureDiscoverySetupSuccessNotification';
 import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
 import AuthError from '@/js/components/notifications/AuthError';
 import ConnectMoreServicesNotification from '@/js/components/notifications/ConnectMoreServicesNotification';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+	FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
 } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
 import createFeatureTourNotification from '@/js/components/notifications/FeatureTourNotification';
 import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
@@ -54,10 +63,10 @@ import WelcomeModal, {
 	WELCOME_MODAL_NOTIFICATION,
 } from '@/js/components/WelcomeModal';
 import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
-import { isFeatureEnabled } from '@/js/features';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_FEATURE_DISCOVERY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
@@ -95,11 +104,13 @@ import {
 	requireUnsatisfiedScopesCount,
 	requireViewOnlyContext,
 } from '@/js/googlesitekit/data-requirements';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+	PERMISSION_MANAGE_OPTIONS,
 	PERMISSION_UPDATE_PLUGINS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -121,6 +132,8 @@ import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
 	ACTIVATE_ANALYTICS_NOTIFICATION,
 	CONNECT_MORE_SERVICES_NOTIFICATION,
+	FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION,
+	FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION,
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_AREAS,
@@ -188,6 +201,70 @@ function requireModuleDataAvailable( slug ) {
 	);
 }
 
+/**
+ * Requires the hub visit to be a return from a feature setup that has
+ * completed, to the given tab.
+ *
+ * Both tabs' notification areas share a single queue, which only shows its
+ * first notification in the area it belongs to, so each placement is limited
+ * to the tab the user is returned to.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} returnTab Path of the hub tab the notification is shown on.
+ * @return {function(): Promise<boolean>} Whether the user has returned to the tab from a completed feature setup or not.
+ */
+function requireFeatureDiscoverySetupSuccess( returnTab ) {
+	return async ( { select, resolveSelect } ) => {
+		const pendingSetup = select( CORE_FEATURE_DISCOVERY ).getPendingSetup();
+
+		if ( ! pendingSetup || pendingSetup.returnTab !== returnTab ) {
+			return false;
+		}
+
+		const { featureSlug } = pendingSetup;
+		const feature = select( CORE_FEATURE_DISCOVERY ).getFeature(
+			featureSlug
+		);
+
+		if ( ! feature?.successNotice ) {
+			return false;
+		}
+
+		// Wait for the state the feature's connection check may depend on.
+		await resolveSelect( CORE_MODULES ).getModules();
+
+		// A feature's completion can depend on the settings of the module it
+		// sets up, or of a prerequisite module it configures, as for ad
+		// blocking recovery in AdSense.
+		const moduleSlugs = [
+			feature.setup?.moduleSlug,
+			...( feature.prerequisiteModules || [] ),
+		].filter( Boolean );
+
+		for ( const moduleSlug of moduleSlugs ) {
+			const module = select( CORE_MODULES ).getModule( moduleSlug );
+
+			if (
+				module?.storeName &&
+				typeof resolveSelect( module.storeName )?.getSettings ===
+					'function'
+			) {
+				await resolveSelect( module.storeName ).getSettings();
+			}
+		}
+
+		await resolveSelect( CORE_SITE ).getSiteInfo();
+
+		// Confirm the feature is actually set up, so we don't show the notice for an abandoned setup.
+		return (
+			select( CORE_FEATURE_DISCOVERY ).isFeatureConnected(
+				featureSlug
+			) === true
+		);
+	};
+}
+
 export const DEFAULT_NOTIFICATIONS = {
 	[ CONNECT_MORE_SERVICES_NOTIFICATION ]: {
 		Component: ConnectMoreServicesNotification,
@@ -196,6 +273,12 @@ export const DEFAULT_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			// The notification is only for sites with Analytics connected.
+			// Checking the connection first also keeps
+			// `requireModuleGatheringData()` from requesting a report for an
+			// inactive module, which fails with "Module must be active to
+			// request data."
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			asyncRequire(
 				false,
 				requireModuleGatheringData( MODULES_ANALYTICS_4 )
@@ -206,7 +289,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			),
 			requireIsAuthenticated()
 		),
-		featureFlag: 'setupFlowRefresh',
 	},
 	[ ACTIVATE_ANALYTICS_NOTIFICATION ]: {
 		Component: ActivateAnalyticsNotification,
@@ -227,7 +309,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			requireIsAuthenticated(),
 			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
 		),
-		featureFlag: 'setupFlowRefresh',
 	},
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
@@ -288,9 +369,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
-			...( isFeatureEnabled( 'setupFlowRefreshPhase4' )
-				? []
-				: [ VIEW_CONTEXT_SPLASH ] ),
 		],
 		checkRequirements: asyncRequireAll(
 			// A temporarily persisted permissions error can opt out of the
@@ -312,7 +390,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: requireSetupError(),
 		isDismissible: false,
-		featureFlag: 'setupFlowRefreshPhase4',
 	},
 	'auth-error': {
 		Component: AuthError,
@@ -458,6 +535,42 @@ export const DEFAULT_NOTIFICATIONS = {
 			// Don't render anything if the user has no permission to update plugin,
 			// auto-updates can not be enabled for Site Kit, or auto updates are already
 			// enabled for Site Kit.
+			requireCapability( PERMISSION_UPDATE_PLUGINS ),
+			requireCanChangePluginAutoUpdates(),
+			asyncRequire( false, requireSiteKitAutoUpdatesEnabled() )
+		),
+		isDismissible: true,
+	},
+	[ FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION ]: {
+		Component: FeatureDiscoverySetupSuccessNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements:
+			requireFeatureDiscoverySetupSuccess( WHATS_NEW_TAB_PATH ),
+		isDismissible: false,
+	},
+	[ FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION ]: {
+		Component: FeatureDiscoverySetupSuccessNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_ALL_SERVICES_TOP,
+		// Use the DEFAULT group so the notification doesn't block the auto-updates banner
+		// from being shown on the "What's new" tab.
+		groupID: NOTIFICATION_GROUPS.DEFAULT,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements: requireFeatureDiscoverySetupSuccess(
+			ALL_SERVICES_TAB_PATH
+		),
+		isDismissible: false,
+	},
+	[ FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG ]: {
+		Component: EnableAutoUpdateBannerNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements: asyncRequireAll(
 			requireCapability( PERMISSION_UPDATE_PLUGINS ),
 			requireCanChangePluginAutoUpdates(),
 			asyncRequire( false, requireSiteKitAutoUpdatesEnabled() )
@@ -628,6 +741,22 @@ export const DEFAULT_NOTIFICATIONS = {
 			)
 		),
 	},
+	[ FEATURE_DISCOVERY_CALLOUT_NOTIFICATION ]: {
+		Component: FeatureDiscoveryCallout,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+		],
+		isDismissible: true,
+		featureFlag: 'featureDiscoveryHub',
+		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotHidden(),
+			requireCapability( PERMISSION_MANAGE_OPTIONS )
+		),
+	},
 	[ PDF_INTRODUCTION_OVERLAY_NOTIFICATION ]: {
 		Component: PDFIntroductionOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
@@ -697,7 +826,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		featureFlag: 'setupFlowRefresh',
 		checkRequirements: asyncRequireAll(
 			requireAccessToFeatureTour(),
 			asyncRequireAny( requireDataGatheringCompleteModalActive(), () =>

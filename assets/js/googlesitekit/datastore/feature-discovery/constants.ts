@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { BadgeProps } from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import {
 	FeatureBadge,
 	FeatureEffort,
@@ -62,7 +63,7 @@ export const FEATURE_EFFORTS = {
 
 export const FEATURE_EFFORT_LABELS: Record< FeatureEffort, string > = {
 	[ FEATURE_EFFORTS.LOW ]: __( 'Just a few clicks', 'google-site-kit' ),
-	[ FEATURE_EFFORTS.MEDIUM ]: __( 'A short setup', 'google-site-kit' ),
+	[ FEATURE_EFFORTS.MEDIUM ]: __( 'Guided setup', 'google-site-kit' ),
 	[ FEATURE_EFFORTS.HIGH ]: __( 'In depth setup', 'google-site-kit' ),
 };
 
@@ -78,16 +79,18 @@ export const FEATURE_BADGES = {
 	RECOMMENDED: 'recommended',
 } as const;
 
-// TODO: #13361 -- Provide a `variant` prop for each badge type.
 export const FEATURE_BADGE_PROPS: Record< FeatureBadge, BadgeProps > = {
 	[ FEATURE_BADGES.NEW ]: {
 		label: __( 'New', 'google-site-kit' ),
+		variant: BADGE_VARIANTS.ANNOUNCEMENT,
 	},
 	[ FEATURE_BADGES.PAID_SERVICE ]: {
 		label: __( 'Paid service', 'google-site-kit' ),
+		variant: BADGE_VARIANTS.COST,
 	},
 	[ FEATURE_BADGES.RECOMMENDED ]: {
 		label: __( 'Recommended for you', 'google-site-kit' ),
+		variant: BADGE_VARIANTS.RECOMMENDATION,
 	},
 } as const;
 
@@ -96,4 +99,5 @@ export const FEATURE_RELEVANCY_REASONS = {
 	NOT_RELEVANT: 'not_relevant',
 	ALREADY_USING: 'already_using',
 	TOO_COMPLICATED: 'too_complicated',
+	SOMETHING_ELSE: 'something_else',
 } as const;

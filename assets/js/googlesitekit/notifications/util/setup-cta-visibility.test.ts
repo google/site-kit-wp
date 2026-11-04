@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import { Select } from 'googlesitekit-data';
-import { enabledFeatures } from '@/js/features';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
@@ -57,23 +56,6 @@ describe( 'shouldHideSetupCTAs', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
-		enabledFeatures.add( 'setupFlowRefresh' );
-	} );
-
-	afterEach( () => {
-		enabledFeatures.delete( 'setupFlowRefresh' );
-	} );
-
-	it( 'returns false when setupFlowRefresh is disabled', () => {
-		enabledFeatures.delete( 'setupFlowRefresh' );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
-			] );
-
-		expect( callHelper() ).toBe( false );
 	} );
 
 	it( 'returns false when nothing suppresses the setup CTAs', () => {
@@ -121,11 +103,6 @@ describe( 'requireSetupCTAsNotHidden', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		enabledFeatures.add( 'setupFlowRefresh' );
-	} );
-
-	afterEach( () => {
-		enabledFeatures.delete( 'setupFlowRefresh' );
 	} );
 
 	it( 'returns a callback rather than a verdict', () => {

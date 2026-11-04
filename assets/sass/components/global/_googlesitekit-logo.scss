@@ -58,13 +58,12 @@
 	.googlesitekit-logo__logo-sitekit,
 	.googlesitekit-svg-logo-sitekit {
 		height: 17px;
-		margin-left: $grid-gap-phone / 4;
+		margin-left: $grid-gap-phone * 0.25;
 		width: 78px;
 	}
 }
 
-.googlesitekit-setup-flow,
-.googlesitekit-setup-splash {
+.googlesitekit-setup-flow {
 	.googlesitekit-logo {
 
 		.googlesitekit-logo__logo-g {

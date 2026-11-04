@@ -89,9 +89,10 @@ class Migration_1_129_0 {
 	 * Registers hooks.
 	 *
 	 * @since 1.129.0
+	 * @since n.e.x.t Changed the `admin_init` priority to 0.
 	 */
 	public function register() {
-		add_action( 'admin_init', array( $this, 'migrate' ) );
+		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
 	}
 
 	/**
@@ -103,17 +104,29 @@ class Migration_1_129_0 {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
-			$this->migrate_analytics_conversion_id_setting();
-			$this->activate_ads_module();
+			$this->apply_changes();
 
 			$this->options->set( self::DB_VERSION_OPTION, self::DB_VERSION );
 		}
 	}
 
 	/**
+	 * Moves the Ads Conversion ID from the Analytics settings to the Ads module, and activates Ads if needed.
+	 *
+	 * This neither checks nor updates `googlesitekit_db_version`.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function apply_changes() {
+		$this->migrate_analytics_conversion_id_setting();
+		$this->activate_ads_module();
+	}
+
+	/**
 	 * Migrates the Ads Conversion ID to the new Ads module.
 	 *
 	 * @since 1.129.0
+	 * @since n.e.x.t Updated to handle missing Ads settings.
 	 */
 	protected function migrate_analytics_conversion_id_setting() {
 		if ( ! $this->analytics_settings->has() ) {
@@ -127,6 +140,7 @@ class Migration_1_129_0 {
 		}
 
 		$ads_settings = $this->ads_settings->get();
+		$ads_settings = is_array( $ads_settings ) ? $ads_settings : array();
 
 		if ( array_key_exists( 'conversionID', $ads_settings ) && ! empty( $ads_settings['conversionID'] ) ) {
 			// If there is already an adsConversionID set in the Ads module, do not overwrite it, remove it from the Analytics module.

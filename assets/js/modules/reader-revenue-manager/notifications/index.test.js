@@ -19,21 +19,25 @@
 /**
  * Internal dependencies
  */
+import { isFeatureEnabled } from '@/js/features';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
-	RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	CONTENT_POLICY_STATES,
-	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { createTestRegistry, provideModules } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideModules,
+	setEnabledFeatures,
+} from '@tests/js/test-utils';
 import { NOTIFICATIONS } from './index';
 
 const SETUP_SUCCESS_URL = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ MODULE_SLUG_READER_REVENUE_MANAGER }`;
@@ -268,106 +272,44 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 			expect( await checkRequirements( registry ) ).toBe( false );
 		} );
 	} );
-	describe( 'rrm-express-setup-resume-newsletter-notification', () => {
-		const { checkRequirements } =
-			NOTIFICATIONS[
-				RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID
-			];
+	describe( 'main dashboard notifications with RRM inactive', () => {
+		it( 'should not request the user settings or log an error when the `rrmExpressSetup` feature is enabled', async () => {
+			setEnabledFeatures( [ 'rrmExpressSetup' ] );
 
-		function provideExpressSetupSettings( {
-			configuredCTAs,
-			lastActionedExpressSetups,
-		} ) {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( { configuredCTAs } );
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetUserSettings( { lastActionedExpressSetups } );
-		}
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
-		it( 'should be active when the CTA was actioned but is not configured', async () => {
-			provideExpressSetupSettings( {
-				configuredCTAs: {},
-				lastActionedExpressSetups: {
-					[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 1752451200,
-				},
-			} );
-
-			expect( await checkRequirements( registry ) ).toBe( true );
-		} );
-
-		it( 'should not be active when the CTA action timestamp is falsy', async () => {
-			provideExpressSetupSettings( {
-				configuredCTAs: {},
-				lastActionedExpressSetups: {
-					[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 0,
-				},
-			} );
-
-			expect( await checkRequirements( registry ) ).toBe( false );
-		} );
-
-		it( 'should not be active when the CTA is already configured', async () => {
-			provideExpressSetupSettings( {
-				configuredCTAs: {
-					'configured-cta-id': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
-				},
-				lastActionedExpressSetups: {
-					[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 1752451200,
-				},
-			} );
-
-			expect( await checkRequirements( registry ) ).toBe( false );
-		} );
-
-		it( 'should only evaluate the requested CTA type', async () => {
-			provideExpressSetupSettings( {
-				configuredCTAs: {
-					'configured-cta-id': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
-				},
-				lastActionedExpressSetups: { 'another-cta': 1752451200 },
-			} );
-
-			expect( await checkRequirements( registry ) ).toBe( false );
-		} );
-
-		it( 'should not be active when the module settings are unavailable', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetUserSettings( {
-					lastActionedExpressSetups: {
-						[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 1752451200,
-					},
-				} );
-
-			fetchMock.getOnce(
-				new RegExp(
-					'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
-				),
+			provideModules( registry, [
 				{
-					body: {
-						code: 'internal_server_error',
-						message: 'Internal server error',
-						data: { status: 500 },
-					},
-					status: 500,
-				}
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: false,
+					connected: false,
+				},
+			] );
+
+			const mainDashboardNotifications = Object.values(
+				NOTIFICATIONS
+			).filter(
+				( { viewContexts, featureFlag } ) =>
+					viewContexts.includes( VIEW_CONTEXT_MAIN_DASHBOARD ) &&
+					( ! featureFlag || isFeatureEnabled( featureFlag ) )
 			);
 
-			expect( await checkRequirements( registry ) ).toBe( false );
+			// Sanity check that the notifications under test were found.
+			expect( mainDashboardNotifications.length ).toBeGreaterThan( 0 );
 
-			expect( console ).toHaveErrored();
-		} );
+			await Promise.all(
+				mainDashboardNotifications.map( ( { checkRequirements } ) =>
+					checkRequirements( registry )
+				)
+			);
 
-		it( 'should not request the module settings when the CTA was not actioned', async () => {
-			// Only the user settings are provided, so a settings request would
-			// be issued if the checks ran out of order.
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetUserSettings( { lastActionedExpressSetups: {} } );
-
-			expect( await checkRequirements( registry ) ).toBe( false );
+			expect( fetchMock ).not.toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/reader-revenue-manager/data/user-settings'
+				)
+			);
+			expect( console ).not.toHaveErrored();
 		} );
 	} );
 } );

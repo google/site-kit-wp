@@ -100,8 +100,7 @@ export function useWelcomeTour() {
 			isAnalyticsViewable &&
 			!! select(
 				MODULES_ANALYTICS_4
-			).isAudienceSegmentationSetupCompleted() &&
-			! select( CORE_USER ).isAudienceSegmentationWidgetHidden(),
+			).isAudienceSegmentationSetupCompleted(),
 		[ isAnalyticsViewable ]
 	);
 

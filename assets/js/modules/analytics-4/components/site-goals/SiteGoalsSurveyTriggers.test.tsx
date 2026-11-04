@@ -29,6 +29,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -43,6 +44,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -75,6 +77,7 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 		availableCustomDimensions?: string[];
 		detectedEvents?: string[];
 		activeWidgets?: string[];
+		conversionTracking?: boolean;
 	}
 
 	// One event per goal type, so both Site Goals widgets render by default and
@@ -88,10 +91,15 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 		availableCustomDimensions = [],
 		detectedEvents = BOTH_WIDGET_EVENTS,
 		activeWidgets = BOTH_WIDGETS,
+		conversionTracking = true,
 	}: SetupOptions = {} ) {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
+			enabled: conversionTracking,
+		} );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -154,6 +162,10 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		mockSurveyEndpoints();
 
@@ -207,7 +219,7 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 		await expectTriggerFetch( SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN );
 	} );
 
-	it( 'dispatches the breakdown-enabled trigger when the custom dimensions exist', async () => {
+	it( 'dispatches the breakdown-enabled trigger when the custom dimensions exist and plugin conversion tracking is on', async () => {
 		setup( {
 			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 		} );
@@ -217,6 +229,27 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 
 		await waitForRegistry();
 		await expectTriggerFetch( SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED );
+	} );
+
+	it( 'dispatches the no-breakdown trigger, not the breakdown-enabled one, when the custom dimensions exist but plugin conversion tracking is off', async () => {
+		// Another custom dimensions CTA created the dimensions, which leaves
+		// conversion tracking alone, so the breakdown is not rendered.
+		setup( {
+			dismissedItems: [
+				SITE_GOALS_INTRO_MODAL_BANNER,
+				SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
+			],
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+			conversionTracking: false,
+		} );
+		mockSurveyEndpoints();
+
+		const { waitForRegistry } = renderComponent();
+
+		await waitForRegistry();
+		await expectTriggerFetch( SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN );
+
+		expect( fetchMock.calls( surveyTriggerEndpoint ) ).toHaveLength( 1 );
 	} );
 
 	it( 'dispatches no trigger when no Site Goals widget renders', async () => {

@@ -36,6 +36,7 @@ import {
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -211,13 +212,7 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		const sections = Array.from(
-			container.querySelectorAll(
-				'.googlesitekit-traffic-overview__panel > *'
-			)
-		);
-
-		expect( sections.map( ( section ) => section.className ) ).toEqual( [
+		expect( getSectionClassNames( container ) ).toEqual( [
 			'googlesitekit-traffic-overview__total-visitors',
 			'googlesitekit-traffic-overview__chart',
 			'googlesitekit-traffic-overview__breakdown',

@@ -10,14 +10,14 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 
-use Google\Site_Kit\Context;
+use DateTimeImmutable;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\Modules\Permission_Aware_Datapoint;
 use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Encoder;
 use WP_Error;
@@ -28,7 +28,7 @@ use WP_Error;
  * Everything the Typical Traffic tab renders comes back from this one request,
  * so the tab has one loading state and one error state.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -40,31 +40,15 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 * The end is anchored with `\z` rather than `$`, which would also accept a
 	 * date carrying a trailing newline.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var string
 	 */
 	const DATE_PATTERN = '/\A(\d{4})-(\d{2})-(\d{2})\z/';
 
 	/**
-	 * Analytics 4 module instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Analytics_4
-	 */
-	private $module;
-
-	/**
-	 * Context instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Context
-	 */
-	private $context;
-
-	/**
 	 * Response builder instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var Response_Builder
 	 */
 	private $response_builder;
@@ -72,15 +56,13 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
-		$this->module           = $definition['module'];
-		$this->context          = $definition['context'];
-		$this->response_builder = new Response_Builder( $this->context, $this->module );
+		$this->response_builder = new Response_Builder( $definition['module'], $definition['custom_dimensions_data_available'] );
 	}
 
 	/**
@@ -89,10 +71,11 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 * The two dates are the only parameters the response depends on. The
 	 * analysis is site-wide, so there is no per-page version of it to ask for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
+	 * @since n.e.x.t The longest period it accepts changed from 197 days to 90.
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date.
+	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date, for a `startDate` later than `endDate`, or for a period longer than `Report_Options::MAXIMUM_PERIOD_DAYS` days.
 	 * @throws Missing_Required_Param_Exception Thrown when `startDate` or `endDate` is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
@@ -130,6 +113,20 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 			);
 		}
 
+		// No preset date range is longer than `Report_Options::MAXIMUM_PERIOD_DAYS`,
+		// so refuse a longer period before any report runs.
+		$period_days = ( new DateTimeImmutable( $start_date ) )->diff( new DateTimeImmutable( $end_date ) )->days + 1;
+
+		if ( $period_days > Report_Options::MAXIMUM_PERIOD_DAYS ) {
+			return $this->invalid_param_error(
+				sprintf(
+					/* translators: %d: the maximum number of days the period can have, e.g. 90 */
+					__( 'The period from startDate to endDate must not be longer than %d days.', 'google-site-kit' ),
+					Report_Options::MAXIMUM_PERIOD_DAYS
+				)
+			);
+		}
+
 		return function () use ( $start_date, $end_date ) {
 			$response = $this->response_builder->build( $start_date, $end_date );
 
@@ -147,7 +144,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 * The parts are checked with `checkdate()` as well as with the pattern, so
 	 * `2026-13-45` is rejected rather than rolled forward into another month.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param mixed $value The date parameter, as it arrived.
 	 * @return bool True when the value names a real day, false otherwise.
@@ -165,7 +162,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	/**
 	 * Builds the error an unusable date parameter answers with.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $message Message naming what was wrong with the parameter.
 	 * @return WP_Error The error, carrying a 400 status.
@@ -177,7 +174,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
@@ -193,7 +190,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 * The Typical Traffic tab is part of the shared dashboard, so a view-only
 	 * reader has to reach this datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return bool True if the current user can view the dashboard, false otherwise.
 	 */

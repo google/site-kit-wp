@@ -17,20 +17,17 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import {
+	activatePlugin,
 	deactivateUtilityPlugins,
 	pageWait,
 	setSearchConsoleProperty,
 	setSiteVerification,
 	switchDateRange,
 	useRequestInterception,
+	visitAdminPage,
 } from '../../../utils';
 import * as entityDashboardRequests from './fixtures/entity-dashboard';
 import * as mainDashboardRequests from './fixtures/main-dashboard';

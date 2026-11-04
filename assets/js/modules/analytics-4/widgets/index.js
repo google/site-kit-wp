@@ -25,7 +25,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
-import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -250,30 +249,28 @@ export function registerWidgets( widgets ) {
 		]
 	);
 
-	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
-		widgets.registerWidget(
-			'analyticsAudienceSegmentationBackNotice',
-			{
-				Component: AudienceSegmentationBackNotice,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 0,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				isActive: ( select ) => {
-					const isWidgetHidden =
-						select(
-							CORE_USER
-						).getRawAudienceSegmentationWidgetHidden();
-					const isDismissed = select( CORE_USER ).isItemDismissed(
-						AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG
-					);
+	widgets.registerWidget(
+		'analyticsAudienceSegmentationBackNotice',
+		{
+			Component: AudienceSegmentationBackNotice,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 0,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) => {
+				const isWidgetHidden =
+					select(
+						CORE_USER
+					).getRawAudienceSegmentationWidgetHidden();
+				const isDismissed = select( CORE_USER ).isItemDismissed(
+					AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG
+				);
 
-					return isWidgetHidden === true && isDismissed === false;
-				},
+				return isWidgetHidden === true && isDismissed === false;
 			},
-			[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
-		);
-	}
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
 
 	widgets.registerWidget(
 		'analyticsAudienceTiles',
@@ -374,10 +371,6 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
-				if ( ! isFeatureEnabled( 'setupFlowRefresh' ) ) {
-					return false;
-				}
-
 				const hasAccessToShareableModule = select(
 					CORE_USER
 				).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
@@ -441,13 +434,9 @@ export function registerWidgets( widgets ) {
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
-				const isAudienceSegmentationWidgetHidden =
-					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
 				return (
-					configuredAudiences?.length > 0 &&
-					isAudienceSegmentationWidgetHidden === false &&
-					! isAnalyticsConnected
+					configuredAudiences?.length > 0 && ! isAnalyticsConnected
 				);
 			},
 		},

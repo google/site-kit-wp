@@ -20,30 +20,21 @@
  * Internal dependencies
  */
 import MainHeader from '@/js/components/Header';
-import HelpMenu from '@/js/components/help/HelpMenu';
 import ExitSetup from '@/js/components/setup/ExitSetup';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 
 export default function Header() {
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 	const viewContext = useViewContext();
 
 	return (
 		<MainHeader>
-			{ setupFlowRefreshPhase4Enabled ? (
-				<ExitSetup
-					gaTrackingEventArgs={ {
-						category: viewContext,
-						action: 'setup_flow_v3_exit_setup',
-						label: 'splash',
-					} }
-				/>
-			) : (
-				<HelpMenu />
-			) }
+			<ExitSetup
+				gaTrackingEventArgs={ {
+					category: viewContext,
+					action: 'setup_flow_v3_exit_setup',
+					label: 'splash',
+				} }
+			/>
 		</MainHeader>
 	);
 }

@@ -1,0 +1,225 @@
+/**
+ * Ads conversion tracking intent styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-ads-conversion-tracking-intent {
+		align-items: flex-start;
+		color: $c-grey-g-900;
+		display: flex;
+		gap: 26px;
+		padding-top: 8px;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__content {
+		display: flex;
+		flex: 0 1 618px;
+		flex-direction: column;
+		gap: 24px;
+		min-width: 0;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__header {
+		display: flex;
+		flex-direction: column;
+		gap: 42px;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__title,
+	.googlesitekit-ads-conversion-tracking-intent__step-title {
+		color: $c-grey-g-900;
+		margin: 0;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__description,
+	.googlesitekit-ads-conversion-tracking-intent__step-description {
+		margin: 0;
+		max-width: 552px;
+	}
+
+	// Nested to take precedence over the Typography component styles.
+	.googlesitekit-ads-conversion-tracking-intent .googlesitekit-ads-conversion-tracking-intent__header .googlesitekit-ads-conversion-tracking-intent__description {
+		letter-spacing: $ls-xxs;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__steps {
+		list-style: none;
+		margin: 0;
+		max-width: 592px;
+		padding: 0;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__step {
+		display: flex;
+		gap: 16px;
+		margin: 0;
+		position: relative;
+
+		// Connects this step's marker to the next one's. The markers are drawn
+		// on top, so the line runs between their edges whatever their size.
+		&:not(:last-child)::before {
+			background-color: $c-surfaces-surface-2;
+			bottom: -12px;
+			content: "";
+			left: 11.5px;
+			position: absolute;
+			top: 12px;
+			width: 1px;
+		}
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__step-marker {
+		align-items: center;
+		border-radius: 50%;
+		display: flex;
+		flex-shrink: 0;
+		height: 24px;
+		justify-content: center;
+		position: relative;
+		width: 24px;
+
+		&::after {
+			background-color: $c-site-kit-sk-200;
+			border-radius: 50%;
+			content: "";
+			height: 15px;
+			width: 15px;
+		}
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__step--active .googlesitekit-ads-conversion-tracking-intent__step-marker {
+		background-color: $c-surfaces-surface;
+		border: 1.5px solid $c-site-kit-sk-600;
+
+		&::after {
+			background-color: $c-site-kit-sk-600;
+		}
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__step-content {
+		align-items: flex-start;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 16px;
+		min-width: 0;
+		padding-top: 4px;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__step:not(:last-child) .googlesitekit-ads-conversion-tracking-intent__step-content {
+		padding-bottom: 31px;
+	}
+
+	// The padding includes the border, so the content sits 16px from the edge.
+	.googlesitekit-ads-conversion-tracking-intent__tag {
+		align-items: center;
+		border: 1px solid $c-iron;
+		border-radius: $br-xs;
+		display: flex;
+		gap: 12px;
+		max-width: 400px;
+		padding: 15px 23px 15px 15px;
+		width: 100%;
+	}
+
+	// The logo's tile overflows its 24px slot by 6px on each side.
+	.googlesitekit-ads-conversion-tracking-intent__tag-logo {
+		align-items: center;
+		background-color: $c-surfaces-surface;
+		border-radius: 10px;
+		display: flex;
+		flex-shrink: 0;
+		height: 36px;
+		justify-content: center;
+		margin: -6px;
+		width: 36px;
+
+		svg {
+			display: block;
+		}
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__tag-details {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__tag-name {
+		color: $c-grey-g-800;
+		margin: 0;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__tag-id,
+	.googlesitekit-ads-conversion-tracking-intent__note {
+		color: $c-grey-g-700;
+		margin: 0;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__notes {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		max-width: 400px;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__confirm-tag--confirmed.mdc-button:disabled {
+		background-color: $c-content-primary-container;
+		color: $c-content-on-primary-container;
+		gap: 10px;
+	}
+
+	// The icon's circle is 22px inside a 24px box, so the negative margin sizes
+	// its box to the circle.
+	.googlesitekit-ads-conversion-tracking-intent__confirm-tag-icon {
+		display: block;
+		flex-shrink: 0;
+		margin: -1px;
+	}
+
+	.googlesitekit-ads-conversion-tracking-intent__place-tag.mdc-button:disabled {
+		background-color: $c-interactive-disable-container;
+		color: $c-interactive-on-disable-container;
+
+		// The spinner shows while the tag is placed, on the disabled button.
+		svg circle {
+			stroke: $c-interactive-on-disable-container;
+		}
+	}
+
+	// The graphic uses the remaining space leftover from the content.
+	// The graphic should disappear/shrink in size before the content.
+	.googlesitekit-ads-conversion-tracking-intent__graphic {
+		display: none;
+
+		@media (min-width: $bp-desktop) {
+			display: block;
+			flex: 1 1 0;
+			margin-top: 55px;
+			max-width: 495px;
+			min-width: 0;
+		}
+
+		svg {
+			display: block;
+			height: auto;
+			max-width: 100%;
+		}
+	}
+}

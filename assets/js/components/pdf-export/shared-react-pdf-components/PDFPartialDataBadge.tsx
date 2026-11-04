@@ -33,8 +33,17 @@ import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFBadge from './PDFBadge';
 
+/**
+ * The badge height, in Figma frame pixels: the label's line height plus the
+ * vertical padding.
+ *
+ * @since 1.191.0
+ */
+export const PDF_PARTIAL_DATA_BADGE_HEIGHT = 28;
+
 const styles = createPDFStyles( {
 	badge: {
+		height: PDF_PARTIAL_DATA_BADGE_HEIGHT,
 		paddingVertical: 6,
 		paddingHorizontal: 10,
 	},
@@ -45,7 +54,7 @@ const PDFPartialDataBadge: FC = () => {
 		<PDFBadge
 			label={ __( 'Partial data', 'google-site-kit' ) }
 			backgroundColor={ PDF_COLORS.UTILITY_WARNING_CONTAINER }
-			color={ PDF_COLORS.YELLOW_Y_600 }
+			color={ PDF_COLORS.YELLOW_Y_700 }
 			style={ styles.badge }
 		/>
 	);

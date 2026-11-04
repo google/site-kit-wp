@@ -25,8 +25,8 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -44,7 +44,6 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import { useFeature } from '@/js/hooks/useFeature';
 import useIsIntentSetupFlow from '@/js/hooks/useIsIntentSetupFlow';
 import { Cell, Row } from '@/js/material-components';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
@@ -58,8 +57,6 @@ export default function SplashContent( {
 	children,
 	description,
 	getHelpURL,
-	secondAdminLearnMoreLink,
-	showLearnMoreLink,
 	title,
 } ) {
 	// Add the initial setup class to the body when the component mounts.
@@ -70,9 +67,6 @@ export default function SplashContent( {
 	const breakpoint = useBreakpoint();
 	const isMobileOrTablet =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 	const isIntentSetupFlow = useIsIntentSetupFlow();
 
 	const cellDetailsProp = analyticsModuleActive
@@ -95,35 +89,12 @@ export default function SplashContent( {
 						{ title }
 					</Typography>
 
-					{ ( showLearnMoreLink || description ) && (
+					{ description && (
 						<P
 							className="googlesitekit-setup__description"
 							size={ SIZE_MEDIUM }
 						>
-							{ ! showLearnMoreLink && description }
-
-							{ showLearnMoreLink &&
-								createInterpolateElement(
-									sprintf(
-										/* translators: 1: The description. 2: The learn more link. */
-										__(
-											'%1$s <Link>%2$s</Link>',
-											'google-site-kit'
-										),
-										description,
-										__( 'Learn more', 'google-site-kit' )
-									),
-									{
-										Link: (
-											<Link
-												href={
-													secondAdminLearnMoreLink
-												}
-												external
-											/>
-										),
-									}
-								) }
+							{ description }
 						</P>
 					) }
 
@@ -135,8 +106,7 @@ export default function SplashContent( {
 
 					<ConnectedURLComparison />
 
-					{ setupFlowRefreshPhase4Enabled &&
-						analyticsModuleActive && <Services /> }
+					{ analyticsModuleActive && <Services /> }
 
 					{ analyticsModuleAvailable &&
 						! analyticsModuleActive &&
@@ -171,7 +141,5 @@ SplashContent.propTypes = {
 	children: PropTypes.func,
 	description: PropTypes.string,
 	getHelpURL: PropTypes.string,
-	secondAdminLearnMoreLink: PropTypes.string,
-	showLearnMoreLink: PropTypes.bool,
 	title: PropTypes.string.isRequired,
 };

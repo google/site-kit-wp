@@ -218,38 +218,39 @@ class AdsTest extends TestCase {
 		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected with extCustomerID.' );
 	}
 
-	public function test_inline_modules_data__module_not_connected() {
-		$this->ads->register();
+	public function test_inline_modules_data__module_not_active() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 
-		$inline_module_data = $this->ads->get_inline_data();
+		$modules = new Modules( $this->context );
+		$modules->register();
+
+		$this->assertArrayNotHasKey( Ads::MODULE_SLUG, $modules->get_active_modules(), 'The Ads module should not be active for this test.' );
 
 		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
-			$inline_module_data,
-			'Inline modules data for Ads should include supportedConversionEvents when module not connected.'
+			apply_filters( 'googlesitekit_inline_modules_data', array() )[ Ads::MODULE_SLUG ],
+			'Inline modules data for Ads should include supportedConversionEvents even though the module is not active.'
 		);
 	}
 
-	public function test_inline_modules_data__module_connected() {
-		$this->ads->register();
+	public function test_inline_modules_data__module_active() {
+		$this->activate_modules( Ads::MODULE_SLUG );
 
-		// Ensure the module is connected.
-		$this->ads->get_settings()->merge(
-			array( 'conversionID' => 'AW-123456789' )
-		);
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 
-		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected after setting conversionID.' );
+		$modules = new Modules( $this->context );
+		$modules->register();
 
-		$inline_module_data = $this->ads->get_inline_data();
+		$this->assertArrayHasKey( Ads::MODULE_SLUG, $modules->get_active_modules(), 'The Ads module should be active for this test.' );
 
 		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
-			$inline_module_data,
-			'Inline modules data for Ads should include supportedConversionEvents when module connected.'
+			apply_filters( 'googlesitekit_inline_modules_data', array() )[ Ads::MODULE_SLUG ],
+			'Inline modules data for Ads should include supportedConversionEvents while the module is active.'
 		);
 	}
 

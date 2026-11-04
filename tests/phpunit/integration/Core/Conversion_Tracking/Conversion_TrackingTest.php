@@ -19,10 +19,13 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeContentEventProvider_Active;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active;
+use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active_Overlapping;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active_Two;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeLeadEventProvider_Active;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Tests\TestCase;
 
 class Conversion_TrackingTest extends TestCase {
@@ -130,6 +133,23 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertTrue( has_action( 'fake_provider_action' ), 'Provider hook should be registered after snippet.' );
 	}
 
+	public function test_gtag_event__adds_user_data_developer_id_only_for_events_with_user_data() {
+		wp_register_script( GTag::HANDLE, 'https://www.googletagmanager.com/gtag/js', array(), null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+
+		$this->conversion_tracking->register();
+
+		do_action( 'googlesitekit_analytics-4_init_tag' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$inline_script = implode( '', wp_scripts()->registered[ GTag::HANDLE ]->extra['after'] );
+
+		$this->assertStringContainsString(
+			'data && data.user_data ? {"developer_id.' . Enhanced_Conversions::USER_DATA_DEVELOPER_ID . '":true} : {}',
+			$inline_script,
+			'The gtagEvent wrapper should add the user data developer ID to the event params only when the event has user data.'
+		);
+	}
+
 	public function data_modules() {
 		return array(
 			'ads_module'        => array( 'ads' ),
@@ -220,6 +240,23 @@ class Conversion_TrackingTest extends TestCase {
 			array(),
 			$events,
 			'Supported conversion events should be empty without active providers.'
+		);
+	}
+
+	public function test_get_supported_conversion_events__reindexes_events_after_removing_duplicates() {
+		Conversion_Tracking::$providers[ FakeConversionEventProvider_Active_Overlapping::CONVERSION_EVENT_PROVIDER_SLUG ] = FakeConversionEventProvider_Active_Overlapping::class;
+
+		$events = $this->conversion_tracking->get_supported_conversion_events();
+
+		// A gap in the keys would JSON-encode the events as an object rather than an array.
+		$this->assertSame(
+			array(
+				'fake_event_active_1',
+				'fake_event_active_2',
+				'fake_event_active_3',
+			),
+			$events,
+			'Supported conversion events should be a list without duplicates.'
 		);
 	}
 

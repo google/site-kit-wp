@@ -130,7 +130,8 @@ export function provideWhatsNewState(
 		new RegExp(
 			'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 		),
-		{ body: expirableItems, status: 200 }
+		{ body: expirableItems, status: 200 },
+		{ overwriteRoutes: true }
 	);
 }
 

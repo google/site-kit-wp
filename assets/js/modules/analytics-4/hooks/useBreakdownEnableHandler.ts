@@ -45,19 +45,13 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { BreakdownScope } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
-	CUSTOM_DIMENSION_DEFINITIONS,
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
-
-// Every Site Kit custom dimension is created, not just the Site Goals-specific
-// ones, so a single "Enable" sets up all advanced data breakdowns at once.
-export const ALL_CUSTOM_DIMENSIONS = Object.keys(
-	CUSTOM_DIMENSION_DEFINITIONS
-);
 
 export interface BreakdownEnableHandler {
 	/**
@@ -183,8 +177,7 @@ export function useBreakdownEnableHandler(
 		// Await so `onEnable` resolves only once the action settles, including
 		// the path where nothing is created (all dimensions already exist), so
 		// the caller can clear its loading state.
-		const { error } =
-			( await createCustomDimensions( ALL_CUSTOM_DIMENSIONS ) ) ?? {};
+		const { error } = ( await createCustomDimensions() ) ?? {};
 
 		// The confirming sync can fail even when the dimensions exist, leaving
 		// `availableCustomDimensions` stale and the notice unrendered. Reset the

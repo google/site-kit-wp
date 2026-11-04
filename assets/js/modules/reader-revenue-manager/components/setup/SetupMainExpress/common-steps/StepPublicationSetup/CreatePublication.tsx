@@ -53,28 +53,26 @@ import {
 	ExpressSetupStepLanguageSelect,
 	ExpressSetupStepRegionSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
+import { CREATE_PUBLICATION_EVENT_LABEL } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	CREATE_PUBLICATION_FORM,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
-	SHOW_TERMS_OF_SERVICE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 interface CreatePublicationProps {
 	description?: string;
-	onComplete: ( hasAcceptedTerms: boolean ) => void;
+	onComplete: () => void;
 }
 
 const CreatePublication: FC< CreatePublicationProps > = ( {
 	description,
 	onComplete,
 } ) => {
-	const [ , setShowTermsOfService ] = useFormValue< boolean >(
-		READER_REVENUE_MANAGER_SETUP_FORM,
-		SHOW_TERMS_OF_SERVICE
-	);
+	const trackEvent = useExpressSetupTrackEvent();
 
 	const [ isBusy, setIsBusy ] = useState( false );
 
@@ -90,7 +88,18 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 			description || defaultDescription
 		),
 		{
-			a: <DocumentationLink slug="rrm-publication" external />,
+			a: (
+				<DocumentationLink
+					slug="rrm-publication"
+					onClick={ () =>
+						trackEvent(
+							'click_learn_more_link',
+							CREATE_PUBLICATION_EVENT_LABEL
+						)
+					}
+					external
+				/>
+			),
 		}
 	);
 
@@ -192,7 +201,7 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 				return;
 			}
 
-			onComplete( false );
+			onComplete();
 		},
 		[
 			createPublication,
@@ -220,10 +229,6 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 		}
 	}, [ displayName, setDisplayName, siteName ] );
 
-	useEffect( () => {
-		setShowTermsOfService( true );
-	}, [ setShowTermsOfService ] );
-
 	return (
 		<form
 			className="googlesitekit-rrm-express-setup-step__form"
@@ -237,6 +242,7 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 				<StoreErrorNotices
 					moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 					storeName={ MODULES_READER_REVENUE_MANAGER }
+					scrollIntoView
 				/>
 
 				<P

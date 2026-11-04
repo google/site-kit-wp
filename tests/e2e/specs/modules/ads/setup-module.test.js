@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import {
@@ -30,6 +25,7 @@ import {
 	setupSiteKit,
 	step,
 	useRequestInterception,
+	visitAdminPage,
 } from '../../../utils';
 
 describe( 'Ads module setup', () => {

@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
@@ -192,7 +192,7 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 			customDimensions: TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
 		} );
 
-		createCustomDimensions( TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS );
+		createCustomDimensions();
 	}, [
 		createCustomDimensions,
 		customDimensionsLoading,

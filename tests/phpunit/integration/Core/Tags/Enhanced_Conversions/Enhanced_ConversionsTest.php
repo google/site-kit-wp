@@ -57,9 +57,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		// Use reflection method to access the protected method.
-		$reflection = new \ReflectionClass( $this->enhanced_conversions );
-		$method     = $reflection->getMethod( 'get_user_data' );
-		$method->setAccessible( true );
+		$method    = $this->get_accessible_method( $this->enhanced_conversions, 'get_user_data' );
 		$user_data = $method->invoke( $this->enhanced_conversions );
 
 		$this->assertEquals( $expected, $user_data, 'User data does not match expected values.' );
@@ -81,9 +79,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		// Use reflection method to access the protected method.
-		$reflection = new \ReflectionClass( $this->enhanced_conversions );
-		$method     = $reflection->getMethod( 'get_user_data' );
-		$method->setAccessible( true );
+		$method    = $this->get_accessible_method( $this->enhanced_conversions, 'get_user_data' );
 		$user_data = $method->invoke( $this->enhanced_conversions );
 
 		$this->assertEquals( $expected, $user_data, 'User data should only contain email when name fields are empty.' );
@@ -95,9 +91,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		wp_set_current_user( 0 );
 
 		// Use reflection method to access the protected method.
-		$reflection = new \ReflectionClass( $this->enhanced_conversions );
-		$method     = $reflection->getMethod( 'get_user_data' );
-		$method->setAccessible( true );
+		$method    = $this->get_accessible_method( $this->enhanced_conversions, 'get_user_data' );
 		$user_data = $method->invoke( $this->enhanced_conversions );
 
 		$this->assertEquals( array(), $user_data, 'User data should be empty when user is not logged in.' );
@@ -232,6 +226,8 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		$this->assertStringContainsString( $expected_script, $head_html, 'The inline script containing user data should be in the HTML.' );
+		$this->assertStringContainsString( 'gtag("set","developer_id.' . Enhanced_Conversions::USER_DATA_DEVELOPER_ID . '",true);', $head_html, 'The user data developer ID should be set when user data is set.' );
+		$this->assertStringContainsString( 'gtag("set", "developer_id.dZTNiMT", true);', $head_html, 'The Site Kit developer ID should still be set.' );
 	}
 
 	public function data_gtag_modules() {
@@ -274,5 +270,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		$head_html = $this->capture_action( 'wp_head' );
 
 		$this->assertStringNotContainsString( 'gtag("set","user_data"', $head_html, 'The inline script containing user data should not be in the HTML.' );
+		$this->assertStringNotContainsString( 'developer_id.' . Enhanced_Conversions::USER_DATA_DEVELOPER_ID, $head_html, 'The user data developer ID should not be set when no user data is set.' );
+		$this->assertStringContainsString( 'gtag("set", "developer_id.dZTNiMT", true);', $head_html, 'The Site Kit developer ID should still be set.' );
 	}
 }

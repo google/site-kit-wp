@@ -20,12 +20,18 @@ exports[`VisitLengthWidget should render correctly with the expected metrics 1`]
             Visit length
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Average duration of engaged visits"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Average duration of engaged visits
+            </span>
           </span>
         </div>
         <div
@@ -78,12 +84,18 @@ exports[`VisitLengthWidget should render the generic error variant when the repo
           Visit length
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Average duration of engaged visits"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Average duration of engaged visits
+          </span>
         </span>
       </div>
       <div
@@ -153,12 +165,18 @@ exports[`VisitLengthWidget should render the insufficient permissions error vari
           Visit length
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Average duration of engaged visits"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Average duration of engaged visits
+          </span>
         </span>
       </div>
       <div
@@ -224,12 +242,18 @@ exports[`VisitLengthWidget should render the loading state while resolving the r
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Average duration of engaged visits"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Average duration of engaged visits
+              </span>
             </span>
           </span>
         </div>

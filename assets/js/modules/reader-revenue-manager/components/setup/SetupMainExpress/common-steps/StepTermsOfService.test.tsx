@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	publications,
@@ -29,11 +29,14 @@ import {
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_TYPES,
-	READER_REVENUE_MANAGER_SETUP_FORM,
-	SHOW_TERMS_OF_SERVICE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import * as tracking from '@/js/util/tracking';
+import {
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -65,6 +68,8 @@ function provideTermsOfService( registry: Registry ) {
 }
 
 describe( 'StepTermsOfService', () => {
+	mockBrowserScrolling();
+
 	let registry: Registry;
 
 	const publicationEndpoint = new RegExp(
@@ -90,27 +95,6 @@ describe( 'StepTermsOfService', () => {
 		provideModuleRegistrations( registry, moduleData );
 		provideSiteInfo( registry );
 		providePublication( registry, TEST_PUBLICATION );
-	} );
-
-	it( 'should keep the terms step visible after visiting it', () => {
-		provideTermsOfService( registry );
-
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-				[ SHOW_TERMS_OF_SERVICE ]: false,
-			} );
-
-		render( <StepTermsOfService onComplete={ () => {} } />, { registry } );
-
-		expect(
-			registry
-				.select( CORE_FORMS )
-				.getValue(
-					READER_REVENUE_MANAGER_SETUP_FORM,
-					SHOW_TERMS_OF_SERVICE
-				)
-		).toBe( true );
 	} );
 
 	it( 'should render as a progress bar if the terms of service are loading', () => {
@@ -318,6 +302,42 @@ describe( 'StepTermsOfService', () => {
 
 		await waitFor( () => {
 			expect( onComplete ).toHaveBeenCalled();
+		} );
+	} );
+
+	describe( 'event tracking', () => {
+		mockLocation();
+
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it( 'should track a click on the "Learn more" link', () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=terms-of-service';
+
+			provideTermsOfService( registry );
+
+			const { getByText } = render(
+				<StepTermsOfService onComplete={ () => {} } />,
+				{ registry, viewContext: VIEW_CONTEXT_MODULE_SETUP }
+			);
+
+			fireEvent.click( getByText( 'Learn more' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MODULE_SETUP }_rrm-express-setup_newsletter-signup`,
+				'click_learn_more_link',
+				'terms-of-service'
+			);
 		} );
 	} );
 } );

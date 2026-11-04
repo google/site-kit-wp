@@ -17,8 +17,6 @@
 !.agents/README.md
 !.agents/skills/
 !.agents/skills/**
-!.agents/workflows/
-!.agents/workflows/**
 !.agents/rules/
 !.agents/rules/**
 !.github
@@ -73,9 +71,15 @@ Session.vim
 Thumbs.db
 Desktop.ini
 
-# Backstop
+# Backstop (replaced by tests/vrt; output from old local runs may remain)
 tests/backstop/*_report/
 tests/backstop/tests/
+
+# Visual regression tests
+tests/vrt/test-results/
+tests/vrt/report/
+tests/vrt/blob-report/
+tests/vrt/all-blob-reports/
 
 # Jest
 coverage/

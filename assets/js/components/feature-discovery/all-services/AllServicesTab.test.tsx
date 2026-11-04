@@ -30,16 +30,23 @@ import {
 	secondAudienceFeature,
 	setupModuleFeature,
 } from '@/js/components/feature-discovery/__fixtures__/all-services';
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
+	fireEvent,
 	provideModules,
+	provideSiteInfo,
 	render,
 } from '@tests/js/test-utils';
 import AllServicesTab from './AllServicesTab';
@@ -85,6 +92,7 @@ describe( 'AllServicesTab', () => {
 		registry = createTestRegistry() as Registry;
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 		registry
 			.dispatch( CORE_USER )
@@ -100,6 +108,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -116,6 +125,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -137,6 +147,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -153,7 +164,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, queryByRole, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -170,7 +181,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, getAllByRole, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -187,11 +198,127 @@ describe( 'AllServicesTab', () => {
 		expect( engagementGroup ).toHaveTextContent( 'Multi goal feature' );
 	} );
 
+	it( 'should place a feature under a selected secondary goal when filtered', async () => {
+		provideFeatures( registry, [ multiGoalFeature ] );
+
+		const { getByText, queryByRole, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+
+		expect(
+			queryByRole( 'heading', { name: ENGAGEMENT_HEADING } )
+		).not.toBeInTheDocument();
+
+		const audienceGroupHeading = queryByRole( 'heading', {
+			name: AUDIENCE_HEADING,
+		} );
+		expect( audienceGroupHeading ).toBeInTheDocument();
+		expect(
+			audienceGroupHeading?.closest( '.googlesitekit-feature-goal-group' )
+		).toHaveTextContent( 'Multi goal feature' );
+	} );
+
+	it( 'should render a feature once under the first selected goal in its own goal order', async () => {
+		provideFeatures( registry, [ multiGoalFeature ] );
+
+		const { container, getAllByRole, getByText, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+		fireEvent.click( getByText( 'Engage your visitors' ) );
+
+		expect(
+			getAllByRole( 'heading', { name: 'Multi goal feature' } )
+		).toHaveLength( 1 );
+
+		const [ firstGroup ] = Array.from(
+			container.querySelectorAll( '.googlesitekit-feature-goal-group' )
+		);
+
+		expect( firstGroup ).toHaveTextContent( ENGAGEMENT_HEADING );
+		expect( firstGroup ).toHaveTextContent( 'Multi goal feature' );
+	} );
+
+	it( 'should only render selected goal headings with features, in curated order', async () => {
+		provideFeatures( registry, [
+			audienceFeature,
+			monetizationFeature,
+			productivityFeature,
+		] );
+
+		const { container, getByText, queryByRole, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Collaborate' ) );
+		fireEvent.click( getByText( 'Know your audience' ) );
+
+		expect( getHeadings( container ) ).toEqual( [
+			AUDIENCE_HEADING,
+			PRODUCTIVITY_HEADING,
+		] );
+
+		expect(
+			queryByRole( 'heading', { name: MONETIZATION_HEADING } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should restore All services view when the last selected category is deselected', async () => {
+		provideFeatures( registry, oneFeaturePerCategory );
+
+		const { container, getByText, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+		expect( getHeadings( container ) ).toEqual( [ AUDIENCE_HEADING ] );
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+		expect( getHeadings( container ) ).toEqual( ALL_HEADINGS );
+	} );
+
+	it( 'should clear selected categories when clicking All services', async () => {
+		provideFeatures( registry, oneFeaturePerCategory );
+
+		const { container, getByText, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+		fireEvent.click( getByText( 'Monetize' ) );
+		expect( getHeadings( container ) ).toEqual( [
+			AUDIENCE_HEADING,
+			MONETIZATION_HEADING,
+		] );
+
+		fireEvent.click( getByText( 'All services' ) );
+		expect( getHeadings( container ) ).toEqual( ALL_HEADINGS );
+	} );
+
 	it( 'should keep catalog registration order within a group', async () => {
 		provideFeatures( registry, [ secondAudienceFeature, audienceFeature ] );
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -213,6 +340,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -226,6 +354,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -239,6 +368,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -252,6 +382,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -267,7 +398,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, queryByRole, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -277,5 +408,103 @@ describe( 'AllServicesTab', () => {
 		expect(
 			queryByRole( 'button', { name: /^Dismiss/ } )
 		).not.toBeInTheDocument();
+	} );
+
+	describe( 'setup success notice', () => {
+		const SUCCESS_TITLE = 'Success! Set up feature is set up';
+
+		beforeEach( () => {
+			provideSiteInfo( registry );
+			provideModules( registry );
+
+			provideFeatures( registry, [
+				audienceFeature,
+				{
+					slug: 'set-up-feature',
+					title: 'Set up feature',
+					setup: {
+						...audienceFeature.setup,
+						isEnabled: () => true,
+					},
+					successNotice: { title: SUCCESS_TITLE },
+				} as Partial< Feature >,
+			] );
+
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification(
+					FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION,
+					DEFAULT_NOTIFICATIONS[
+						FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION
+					]
+				);
+		} );
+
+		it( 'should render the notice between the category filters and the feature list on return from a setup', async () => {
+			registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+				featureSlug: 'set-up-feature',
+				returnTab: ALL_SERVICES_TAB_PATH,
+			} );
+
+			const { container, getByText, waitForRegistry } = render(
+				<AllServicesTab />,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( SUCCESS_TITLE ) ).toBeInTheDocument();
+
+			const filters = container.querySelector(
+				'.googlesitekit-category-filter-chips'
+			) as Element;
+			const noticeContainer = container.querySelector(
+				'.googlesitekit-all-services-tab__notifications'
+			) as Element;
+			const featureCard = container.querySelector(
+				'.googlesitekit-feature-card'
+			) as Element;
+
+			expect( filters.compareDocumentPosition( noticeContainer ) ).toBe(
+				Node.DOCUMENT_POSITION_FOLLOWING
+			);
+			expect(
+				noticeContainer.compareDocumentPosition( featureCard )
+			).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
+		} );
+
+		it( 'should not render the notice when the user has not returned from a setup', async () => {
+			const { container, queryByText, waitForRegistry } = render(
+				<AllServicesTab />,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			expect( queryByText( SUCCESS_TITLE ) ).not.toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-all-services-tab__notifications'
+				)
+			).toBeEmptyDOMElement();
+		} );
+
+		it( 'should remove the notice once it is dismissed', async () => {
+			registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+				featureSlug: 'set-up-feature',
+				returnTab: ALL_SERVICES_TAB_PATH,
+			} );
+
+			const { getByRole, queryByText, waitForRegistry } = render(
+				<AllServicesTab />,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+			expect( queryByText( SUCCESS_TITLE ) ).not.toBeInTheDocument();
+		} );
 	} );
 } );

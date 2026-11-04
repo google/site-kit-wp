@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function KeyMetricsNewBadge() {
@@ -60,6 +61,7 @@ export default function KeyMetricsNewBadge() {
 		<Badge
 			className="googlesitekit-new-badge"
 			label={ __( 'New', 'google-site-kit' ) }
+			variant={ BADGE_VARIANTS.ANNOUNCEMENT }
 		/>
 	);
 }

@@ -22,12 +22,65 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback, useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { ErrorObject } from '@/js/util/errors';
 import FeatureCard, { FeatureCardProps } from './FeatureCard';
+import FeatureSetupErrorNotice from './FeatureSetupErrorNotice';
 
-const FeatureListItem: FC< FeatureCardProps > = ( props ) => {
-	return <FeatureCard { ...props } />;
+const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
+	const [ isRetrying, setIsRetrying ] = useState( false );
+
+	const { clearActionError, setupFeature } = useDispatch(
+		CORE_FEATURE_DISCOVERY
+	) as {
+		clearActionError: ( actionName: string, args?: unknown[] ) => void;
+		setupFeature: ( featureSlug: string ) => Promise< unknown >;
+	};
+
+	const setupError = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).getErrorForAction(
+				'setupFeature',
+				[ slug ]
+			) as ErrorObject | undefined,
+		[ slug ]
+	);
+
+	const handleRetry = useCallback( async () => {
+		setIsRetrying( true );
+
+		try {
+			await setupFeature( slug );
+		} finally {
+			setIsRetrying( false );
+		}
+	}, [ setupFeature, slug ] );
+
+	const handleDismiss = useCallback( () => {
+		clearActionError( 'setupFeature', [ slug ] );
+	}, [ clearActionError, slug ] );
+
+	if ( setupError ) {
+		return (
+			<FeatureSetupErrorNotice
+				error={ setupError }
+				isRetrying={ isRetrying }
+				onDismiss={ handleDismiss }
+				onRetry={ handleRetry }
+				slug={ slug }
+			/>
+		);
+	}
+
+	return <FeatureCard slug={ slug } { ...props } />;
 };
 
 export default FeatureListItem;

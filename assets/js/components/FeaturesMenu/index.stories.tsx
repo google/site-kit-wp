@@ -94,7 +94,6 @@ Default.scenario = {
 	delay: 3000,
 	clickSelector: '.googlesitekit-features-menu__button',
 	postInteractionWait: 3000,
-	onReadyScript: 'mouse.js',
 };
 
 export const WithAddFeaturesButton = Template.bind( {} ) as Story;
@@ -111,7 +110,6 @@ WithAddFeaturesButton.scenario = {
 	delay: 3000,
 	clickSelector: '.googlesitekit-features-menu__button',
 	postInteractionWait: 3000,
-	onReadyScript: 'mouse.js',
 };
 
 export const ViewOnly = Template.bind( {} ) as Story;
@@ -155,7 +153,6 @@ ViewOnly.scenario = {
 	delay: 3000,
 	clickSelector: '.googlesitekit-features-menu__button',
 	postInteractionWait: 3000,
-	onReadyScript: 'mouse.js',
 };
 
 export default {

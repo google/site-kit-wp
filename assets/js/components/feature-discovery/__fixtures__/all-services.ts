@@ -40,6 +40,7 @@ export const INITIAL_VERSION = '1.186.0';
 export const sampleFeatures: Partial< Feature >[] = [
 	{
 		slug: 'analytics-setup',
+		name: 'Analytics',
 		title: 'Understand how visitors interact with your content',
 		shortDescription:
 			'Track your traffic, see which pages perform best, and learn what keeps your audience coming back. Analytics gives you the clear data you need to optimize your user experience and turn casual visitors into loyal customers.',

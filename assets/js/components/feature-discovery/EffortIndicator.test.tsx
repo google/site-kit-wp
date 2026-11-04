@@ -36,7 +36,7 @@ jest.mock(
 describe( 'EffortIndicator', () => {
 	it.each( [
 		[ 'Just a few clicks', FEATURE_EFFORTS.LOW, 2 ],
-		[ 'A short setup', FEATURE_EFFORTS.MEDIUM, 1 ],
+		[ 'Guided setup', FEATURE_EFFORTS.MEDIUM, 1 ],
 		[ 'In depth setup', FEATURE_EFFORTS.HIGH, 0 ],
 	] as const )(
 		'should display "%s" for effort %s, with %s/3 inactive icons',

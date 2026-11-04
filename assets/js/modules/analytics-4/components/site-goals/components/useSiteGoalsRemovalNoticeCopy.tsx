@@ -47,7 +47,7 @@ export interface SiteGoalsRemovalNoticeCopy {
  * Picks the removal notice title and description for the online store or the
  * lead generation widget.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {GoalType} goalType The goal type of the widget that shows the notice.
  * @return {SiteGoalsRemovalNoticeCopy} The `title` and `description`.

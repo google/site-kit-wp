@@ -22,11 +22,6 @@
 import { FC, useCallback } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { useState } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
@@ -41,16 +36,25 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export interface FeatureCTAProps {
-	slug: string;
 	isTertiary?: boolean;
+	onSetupComplete?: () => void;
+	slug: string;
 }
 
-const FeatureCTA: FC< FeatureCTAProps > = ( { slug, isTertiary = false } ) => {
-	const [ isBusy, setIsBusy ] = useState( false );
-
+const FeatureCTA: FC< FeatureCTAProps > = ( {
+	isTertiary = false,
+	onSetupComplete,
+	slug,
+} ) => {
 	const feature = useSelect(
 		( select: Select ): Feature | null =>
 			select( CORE_FEATURE_DISCOVERY ).getFeature( slug ),
+		[ slug ]
+	);
+
+	const isSetupInProgress = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).isSetupInProgress( slug ),
 		[ slug ]
 	);
 
@@ -81,17 +85,13 @@ const FeatureCTA: FC< FeatureCTAProps > = ( { slug, isTertiary = false } ) => {
 	const { setupFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 
 	const onClick = useCallback( async () => {
-		setIsBusy( true );
-
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
 
-		try {
-			await setupFeature( slug );
-		} finally {
-			setIsBusy( false );
-		}
-	}, [ setupFeature, slug, triggerSurvey ] );
+		await setupFeature( slug );
+
+		onSetupComplete?.();
+	}, [ onSetupComplete, setupFeature, slug, triggerSurvey ] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
 		return null;
@@ -111,7 +111,7 @@ const FeatureCTA: FC< FeatureCTAProps > = ( { slug, isTertiary = false } ) => {
 
 	return (
 		<FeatureCTAButton
-			isBusy={ isBusy }
+			isBusy={ isSetupInProgress }
 			isTertiary={ isTertiary }
 			onClick={ onClick }
 		>

@@ -35,8 +35,16 @@ import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { CREATE_PUBLICATION_EVENT_LABEL } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
+	SetupStep,
+	SetupStepProps,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import {
+	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
@@ -46,10 +54,9 @@ import PlusIcon from '@/svg/icons/plus.svg';
 import ConnectPublication from './ConnectPublication';
 import CreatePublication from './CreatePublication';
 
-interface StepPublicationSetupProps {
+interface StepPublicationSetupProps extends SetupStepProps {
 	connectDescription?: string;
 	createDescription?: string;
-	onComplete: ( hasAcceptedTerms: boolean ) => void;
 }
 
 const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
@@ -57,6 +64,8 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	createDescription,
 	onComplete,
 } ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const [ showPublicationCreate, setShowPublicationCreate ] =
 		useFormValue< boolean >(
 			READER_REVENUE_MANAGER_SETUP_FORM,
@@ -105,6 +114,22 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 		showPublicationCreate,
 	] );
 
+	function onTogglePublicationCreate() {
+		if ( showPublicationCreate ) {
+			trackEvent(
+				'click_use_existing_publication_link',
+				CREATE_PUBLICATION_EVENT_LABEL
+			);
+		} else {
+			trackEvent(
+				'click_create_new_publication_link',
+				EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION
+			);
+		}
+
+		setShowPublicationCreate( ! showPublicationCreate );
+	}
+
 	if ( ! hasResolvedPublications ) {
 		return <ProgressBar />;
 	}
@@ -137,9 +162,7 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 								<PlusIcon width={ 12 } height={ 12 } />
 							)
 						}
-						onClick={ () =>
-							setShowPublicationCreate( ! showPublicationCreate )
-						}
+						onClick={ onTogglePublicationCreate }
 						type="button"
 					>
 						{ showPublicationCreate
@@ -156,6 +179,20 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 			) : null }
 		</div>
 	);
+};
+
+export const publicationSetupStep: SetupStep = {
+	slug: EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION,
+	label: ( select: Select ) =>
+		select( CORE_FORMS ).getValue(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			SHOW_PUBLICATION_CREATE
+		)
+			? __( 'Create publication', 'google-site-kit' )
+			: __( 'Connect publication', 'google-site-kit' ),
+	Component: StepPublicationSetup,
+	isComplete: ( select: Select ) =>
+		!! select( MODULES_READER_REVENUE_MANAGER ).getPublicationID(),
 };
 
 export default StepPublicationSetup;

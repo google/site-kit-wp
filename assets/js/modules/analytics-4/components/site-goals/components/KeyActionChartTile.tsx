@@ -34,6 +34,10 @@ import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import GoogleChart from '@/js/components/GoogleChart';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import ReportError from '@/js/components/ReportError';
+import {
+	TileShell,
+	TileZeroDataMessage,
+} from '@/js/modules/analytics-4/components/common/tiles';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
@@ -41,8 +45,6 @@ import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDime
 import getKeyActionChartReportOptions, {
 	KeyActionChartReportArgs,
 } from './getKeyActionChartReportOptions';
-import GoalTile from './GoalTile';
-import ZeroDataMessage from './ZeroDataMessage';
 
 /** The area under the line, from the `$c-blue-b-50` Sass variable. */
 const CHART_AREA_COLOR = '#dce8ff';
@@ -167,7 +169,7 @@ const KeyActionChartTile: FC< KeyActionChartTileProps > = ( {
 	];
 
 	return (
-		<GoalTile
+		<TileShell
 			baseClassName="googlesitekit-site-goals-tile"
 			className="googlesitekit-site-goals-tile--chart"
 			title={ title }
@@ -190,7 +192,7 @@ const KeyActionChartTile: FC< KeyActionChartTileProps > = ( {
 
 			{ ! loading && ! error && ! hasEvents && (
 				<div className="googlesitekit-site-goals-tile__zero-state">
-					<ZeroDataMessage
+					<TileZeroDataMessage
 						metricLabel={
 							goalType === GOAL_TYPES.ECOMMERCE
 								? 'sales'
@@ -209,7 +211,7 @@ const KeyActionChartTile: FC< KeyActionChartTileProps > = ( {
 					width="100%"
 				/>
 			) }
-		</GoalTile>
+		</TileShell>
 	);
 };
 

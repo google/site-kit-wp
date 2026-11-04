@@ -199,7 +199,7 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 	/**
 	 * Sets up Analytics with a connected property whose report returns one detected event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $detected_event Conversion event name the faked report returns.
 	 * @return Analytics_4 The registered Analytics instance the cron callback reads.
@@ -266,8 +266,7 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 	 * @param Conversion_Reporting_Provider $provider Provider instance.
 	 */
 	private function invoke_cron_callback( Conversion_Reporting_Provider $provider ) {
-		$method = new \ReflectionMethod( $provider, 'cron_callback' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( $provider, 'cron_callback' );
 		$method->invoke( $provider );
 	}
 

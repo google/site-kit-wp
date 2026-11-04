@@ -39,12 +39,10 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
 import Link from '@/js/components/Link';
-import Null from '@/js/components/Null';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
 import {
@@ -75,15 +73,9 @@ export default function SetupForm( { finishSetup } ) {
 			select( CORE_LOCATION ).isNavigating()
 	);
 	const viewContext = useViewContext();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	const showProgress = getQueryArg( location.href, 'showProgress' );
 
 	const keyMetricsSetupURL = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return undefined;
-		}
-
 		const url = select( CORE_SITE ).getAdminURL(
 			'googlesitekit-key-metrics-setup'
 		);
@@ -176,7 +168,7 @@ export default function SetupForm( { finishSetup } ) {
 						'google-site-kit'
 					),
 					{
-						LearnMoreLink: setupFlowRefreshEnabled ? (
+						LearnMoreLink: (
 							<Link
 								href={ pluginConversionsDocumentationURL }
 								onClick={ () => {
@@ -192,8 +184,6 @@ export default function SetupForm( { finishSetup } ) {
 							>
 								{ __( 'Learn more', 'google-site-kit' ) }
 							</Link>
-						) : (
-							<Null />
 						),
 					}
 				) }
@@ -204,9 +194,7 @@ export default function SetupForm( { finishSetup } ) {
 					disabled={ ! canSubmitChanges || isSaving }
 					isSaving={ isSaving }
 				>
-					{ setupFlowRefreshEnabled
-						? __( 'Set up', 'google-site-kit' )
-						: __( 'Complete setup', 'google-site-kit' ) }
+					{ __( 'Set up', 'google-site-kit' ) }
 				</SpinnerButton>
 			</div>
 		</form>

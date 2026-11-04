@@ -531,9 +531,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 				}
 			);
 
-		$reflection = new \ReflectionProperty( REST_Email_Reporting_Controller::class, 'email_log_batch_query' );
-		$reflection->setAccessible( true );
-		$reflection->setValue( $controller, $batch_query );
+		$this->force_set_property( $controller, 'email_log_batch_query', $batch_query );
 
 		$controller->register();
 		$this->register_rest_routes();
@@ -1083,8 +1081,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 
 	private function register_email_log_dependencies() {
 		$email_log       = new Email_Log( $this->context );
-		$register_method = new \ReflectionMethod( Email_Log::class, 'register_email_log' );
-		$register_method->setAccessible( true );
+		$register_method = $this->get_accessible_method( Email_Log::class, 'register_email_log' );
 		$register_method->invoke( $email_log );
 	}
 

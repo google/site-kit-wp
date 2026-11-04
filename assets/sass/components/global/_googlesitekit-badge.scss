@@ -17,9 +17,12 @@
  */
 
 .googlesitekit-badge {
-	background-color: $c-surfaces-surface-1;
-	border-radius: $br-lg;
-	color: $c-badge-text;
+	--googlesitekit-badge-background-color: #{$c-surfaces-surface-1};
+	--googlesitekit-badge-text-color: #{$c-badge-text};
+
+	background-color: var(--googlesitekit-badge-background-color);
+	border-radius: $br-xxs;
+	color: var(--googlesitekit-badge-text-color);
 	display: inline-block;
 	font-family: $f-primary;
 	font-size: $fs-label-sm;
@@ -35,21 +38,31 @@
 	margin-left: 12px;
 }
 
-.googlesitekit-badge--primary {
-	background-color: $c-blue-b-500;
-	color: $c-violet-v-0;
-}
-
 .googlesitekit-badge--hidden {
 	visibility: hidden;
 }
 
-.googlesitekit-badge--beta {
-	background-color: $c-neutral-n-500;
-	color: $c-neutral-n-0;
+.googlesitekit-badge--announcement {
+	--googlesitekit-badge-text-color: #{$c-badge-announcement-text};
+	--googlesitekit-badge-background-color: #{$c-badge-announcement-background};
+}
+
+.googlesitekit-badge--recommendation {
+	--googlesitekit-badge-text-color: #{$c-badge-recommendation-text};
+	--googlesitekit-badge-background-color: #{$c-badge-recommendation-background};
+}
+
+.googlesitekit-badge--cost {
+	--googlesitekit-badge-text-color: #{$c-badge-cost-text};
+	--googlesitekit-badge-background-color: #{$c-badge-cost-background};
+}
+
+.googlesitekit-badge--experimental {
+	--googlesitekit-badge-text-color: #{$c-badge-experimental-text};
+	--googlesitekit-badge-background-color: #{$c-badge-experimental-background};
 }
 
 .googlesitekit-badge--warning {
-	background-color: $c-utility-warning-container;
-	color: $c-utility-on-warning-container;
+	--googlesitekit-badge-text-color: #{$c-badge-warning-text};
+	--googlesitekit-badge-background-color: #{$c-badge-warning-background};
 }

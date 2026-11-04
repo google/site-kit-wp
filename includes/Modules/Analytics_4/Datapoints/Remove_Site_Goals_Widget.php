@@ -24,7 +24,7 @@ use WP_Error;
  * The daily cron adds a removed widget back when its plugin is active again
  * and Site Kit finds its events.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Remove_Site_Goals_Widget extends Site_Goals_Settings_Datapoint {
 	/**
 	 * Site_Goals_Site_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var Site_Goals_Site_Settings
 	 */
 	private $site_goals_site_settings;
@@ -41,7 +41,7 @@ class Remove_Site_Goals_Widget extends Site_Goals_Settings_Datapoint {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var Context
 	 */
 	private $context;
@@ -49,7 +49,7 @@ class Remove_Site_Goals_Widget extends Site_Goals_Settings_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -62,7 +62,7 @@ class Remove_Site_Goals_Widget extends Site_Goals_Settings_Datapoint {
 	/**
 	 * Builds the callback that takes one Site Goals widget off the dashboard.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable|WP_Error Closure that removes the widget, or an error while an event provider plugin is active.

@@ -82,6 +82,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'detectedEvents',
 			'newConversionEventsLastUpdateAt',
 			'lostConversionEventsLastUpdateAt',
+			'propertyCreateTime',
 		);
 
 		if ( Feature_Flags::enabled( 'freshData' ) ) {

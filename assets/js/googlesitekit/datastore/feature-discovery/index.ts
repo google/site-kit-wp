@@ -25,27 +25,34 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_FEATURE_DISCOVERY } from './constants';
 import featuresStore from './features';
 import newnessStore from './newness';
+import relevancyStore from './relevancy';
 import selectorsStore from './selectors';
 
 interface Store {
 	initialState: typeof featuresStore.initialState;
 	actions: typeof featuresStore.actions &
 		typeof newnessStore.actions &
+		typeof relevancyStore.actions &
 		typeof commonStore.actions;
 	controls: typeof commonStore.controls;
 	reducer: typeof featuresStore.reducer;
 	resolvers: Record< string, never >;
-	selectors: typeof selectorsStore.selectors & typeof newnessStore.selectors;
+	selectors: typeof selectorsStore.selectors &
+		typeof newnessStore.selectors &
+		typeof relevancyStore.selectors;
 }
 
 const store = combineStores(
 	commonStore,
 	featuresStore,
 	newnessStore,
-	selectorsStore
+	relevancyStore,
+	selectorsStore,
+	createErrorStore( CORE_FEATURE_DISCOVERY )
 ) as Store;
 
 export const initialState = store.initialState;

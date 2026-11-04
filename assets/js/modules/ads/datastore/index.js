@@ -23,6 +23,7 @@ import { combineStores } from 'googlesitekit-data';
 import adblocker from './adblocker';
 import baseModuleStore from './base';
 import { MODULES_ADS } from './constants';
+import intents from './intents';
 import moduleData from './module-data';
 import service from './service';
 import woocommerce from './woocommerce';
@@ -30,6 +31,7 @@ import woocommerce from './woocommerce';
 const store = combineStores(
 	baseModuleStore,
 	adblocker,
+	intents,
 	moduleData,
 	woocommerce,
 	service

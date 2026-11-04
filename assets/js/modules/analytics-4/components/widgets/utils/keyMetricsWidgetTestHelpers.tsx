@@ -47,7 +47,7 @@ type WidgetProps = ReturnType< typeof getWidgetComponentProps >;
  * exercises each tile's error UI the same way, no matter which specific
  * report(s) the tile itself requests.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  */
 export const KEY_METRICS_WIDGET_REPORT_ENDPOINT = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -56,7 +56,7 @@ export const KEY_METRICS_WIDGET_REPORT_ENDPOINT = new RegExp(
 /**
  * Registers the shared "generic report error" test for a Key Metrics widget.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Function}      getRegistry    Returns the current test's registry (called lazily, after `beforeEach` has run).
  * @param {ComponentType} Component      The widget component under test.
@@ -106,7 +106,7 @@ export function testGenericReportError(
  * Only the `MetricTileTable`-based tiles use this - the `MetricTileNumeric`
  * ones don't have a dedicated insufficient-permissions variant.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Function}      getRegistry    Returns the current test's registry (called lazily, after `beforeEach` has run).
  * @param {ComponentType} Component      The widget component under test.

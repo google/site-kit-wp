@@ -1,0 +1,58 @@
+/**
+ * DragHandle component.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { useContext } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import ActionButton, { ActionButtonProps } from '@/js/components/ActionButton';
+import DragHandleIcon from '@/svg/icons/drag-handle.svg';
+import { DragHandleContext } from './DragHandleContext';
+
+export type DragHandleProps = Omit< ActionButtonProps, 'Icon' >;
+
+const DragHandle: FC< DragHandleProps > = ( { className, ...props } ) => {
+	const handleProps = useContext( DragHandleContext );
+
+	const classNames = classnames(
+		'googlesitekit-draggable-list__handle',
+		className
+	);
+
+	return (
+		<ActionButton
+			className={ classNames }
+			Icon={ DragHandleIcon }
+			iconSize={ 18 }
+			{ ...props }
+			{ ...handleProps }
+		/>
+	);
+};
+
+export default DragHandle;

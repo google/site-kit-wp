@@ -29,10 +29,17 @@ import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { type Registry, useDispatch, useRegistry } from 'googlesitekit-data';
+import {
+	type Registry,
+	type Select,
+	useDispatch,
+	useRegistry,
+} from 'googlesitekit-data';
+import { MODULE_SLUG_TO_FEATURE_SLUG } from '@/js/components/feature-discovery/constants';
 import { deleteItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { getPendingSetupReturnURL } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import { trackEvent } from '@/js/util';
 import {
@@ -45,7 +52,9 @@ import {
  * Returns a callback to complete module setup.
  *
  * Clears the module setup cache, tracks a completion event, and redirects
- * the user to the Site Kit dashboard or an optional custom URL.
+ * the user to an optional custom URL or, by default, to the feature
+ * discovery hub when the setup was started there, otherwise the Site Kit
+ * dashboard.
  *
  * @since 1.183.0
  *
@@ -94,6 +103,24 @@ export default function useFinishSetup(
 
 			const { select, resolveSelect } = registry;
 			await resolveSelect( CORE_SITE ).getSiteInfo();
+
+			// Where the setup was started from the feature discovery hub, it
+			// completes back to the hub instead of the dashboard.
+			const featureSlug = MODULE_SLUG_TO_FEATURE_SLUG[ moduleSlug ];
+			if ( featureSlug ) {
+				// A failed lookup is treated as no record, so setup still
+				// completes to the dashboard.
+				const hubURL = await getPendingSetupReturnURL(
+					select as Select,
+					featureSlug
+				).catch( () => undefined );
+
+				if ( hubURL ) {
+					navigateTo( hubURL );
+					return;
+				}
+			}
+
 			const adminURL = select( CORE_SITE ).getAdminURL(
 				'googlesitekit-dashboard',
 				{

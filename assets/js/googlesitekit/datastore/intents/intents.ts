@@ -61,7 +61,7 @@ interface IntentsState {
 	intents: Record< string, Record< string, Intent > >;
 }
 
-interface CompleteIntentResult {
+export interface CompleteIntentResult {
 	/** Response from the Site Kit Service, or `undefined` when the request fails. */
 	response?: {
 		/** URL to send the user back to. */

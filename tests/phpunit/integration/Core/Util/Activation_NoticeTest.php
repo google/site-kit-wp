@@ -57,8 +57,7 @@ class Activation_NoticeTest extends TestCase {
 	protected function assertAssetsEnqueued() {
 		// Due to a static variable in Assets->enqueue_asset, assets will only be registered once, with no way to reset it.
 		// This test works without this call when run in isolation, but fails when run with the full suite.
-		$register_assets = new \ReflectionMethod( $this->assets, 'register_assets' );
-		$register_assets->setAccessible( true );
+		$register_assets = $this->get_accessible_method( $this->assets, 'register_assets' );
 		$register_assets->invoke( $this->assets );
 		// Reset enqueued styles.
 		wp_styles()->queue = array();

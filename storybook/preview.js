@@ -45,10 +45,28 @@ import { Cell, Grid, Row } from '../assets/js/material-components';
 import { bootstrapFetchMocks } from './fetch-mocks';
 import { reloadForFeatures } from './utils/reloadForFeatures';
 import { resetGlobals } from './utils/resetGlobals';
+import { isVRT, loadVRTFonts, trackVRTStoryState } from './utils/vrt';
 
 setUsingCache( false );
 
 bootstrapFetchMocks();
+
+if ( isVRT() ) {
+	trackVRTStoryState();
+}
+
+// Stories must not render until the web fonts have loaded: components such as
+// MDC outlined fields and `DataBlockGroup` measure text on mount, and would
+// otherwise measure it in the fallback font.
+export const loaders = [
+	async () => {
+		if ( isVRT() ) {
+			await loadVRTFonts();
+		}
+
+		return {};
+	},
+];
 
 const inViewState = {
 	key: 'renderStory',

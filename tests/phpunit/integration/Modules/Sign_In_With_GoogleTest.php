@@ -644,17 +644,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	private function call_resolve_authenticator_class( $integration ) {
-		$class  = new \ReflectionClass( Sign_In_With_Google::class );
-		$method = $class->getMethod( 'resolve_authenticator_class' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Sign_In_With_Google::class, 'resolve_authenticator_class' );
 
 		return $method->invokeArgs( $this->module, array( $integration ) );
 	}
 
 	private function call_handle_auth_callback( $authenticator ) {
-		$class  = new \ReflectionClass( Sign_In_With_Google::class );
-		$method = $class->getMethod( 'handle_auth_callback' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Sign_In_With_Google::class, 'handle_auth_callback' );
 
 		return $method->invokeArgs( $this->module, array( $authenticator ) );
 	}
@@ -846,6 +842,18 @@ class Sign_In_With_GoogleTest extends TestCase {
 			'An account with that email address uses two-factor authentication. To use Sign in with Google, log in with your username and password, then connect your Google account on your profile page.',
 			$error->get_error_message( 'sign-in-with-google' ),
 			'Should add the two-factor message for the two-factor error code.'
+		);
+	}
+
+	public function test_handle_login_errors__adds_duplicate_email_error_message() {
+		$_GET['error'] = Authenticator::ERROR_DUPLICATE_EMAIL;
+
+		$error = $this->module->handle_login_errors( new WP_Error() );
+
+		$this->assertEquals(
+			'Multiple accounts on this site use your email address. To use Sign in with Google, log in with your username and password, then connect your Google account on your profile page.',
+			$error->get_error_message( 'sign-in-with-google' ),
+			'Should add the duplicate email message for the duplicate email error code.'
 		);
 	}
 

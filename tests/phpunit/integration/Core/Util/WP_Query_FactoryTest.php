@@ -579,6 +579,26 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			'single post, path with no host'     => array(
+				'/?p=42',
+				array(
+					'p' => '42',
+				),
+				array(
+					'is_single'   => true,
+					'is_singular' => true,
+				),
+			),
+			'front page, path with no host'      => array(
+				'/',
+				array(),
+				array(
+					'is_front_page' => true,
+					'is_page'       => true,
+					'is_home'       => false,
+					'is_singular'   => true,
+				),
+			),
 		);
 	}
 
@@ -1119,5 +1139,39 @@ class WP_Query_FactoryTest extends TestCase {
 				array(),
 			),
 		);
+	}
+
+	public function test_get_public_query_vars__before_the_main_request_is_parsed() {
+		add_filter(
+			'query_vars',
+			function ( $query_vars ) {
+				$query_vars[] = 'customvar';
+				return $query_vars;
+			}
+		);
+
+		$public_query_vars = WP_Query_Factory::get_public_query_vars();
+
+		$this->assertContains( 'p', $public_query_vars, 'The public query vars should include `p`, which WordPress registers.' );
+		$this->assertContains( 'customvar', $public_query_vars, 'The public query vars should include a query var that a `query_vars` filter adds, because WordPress has not run that filter yet.' );
+	}
+
+	public function test_get_public_query_vars__after_the_main_request_is_parsed() {
+		$this->go_to( home_url( '/' ) );
+
+		// WordPress has already run the `query_vars` filter for the main request,
+		// so a filter added now changes no query var that WordPress reads.
+		add_filter(
+			'query_vars',
+			function ( $query_vars ) {
+				$query_vars[] = 'customvar';
+				return $query_vars;
+			}
+		);
+
+		$public_query_vars = WP_Query_Factory::get_public_query_vars();
+
+		$this->assertContains( 'p', $public_query_vars, 'The public query vars should include `p` after WordPress read the main request.' );
+		$this->assertNotContains( 'customvar', $public_query_vars, 'The public query vars should leave out a query var that a `query_vars` filter adds after WordPress read the main request.' );
 	}
 }

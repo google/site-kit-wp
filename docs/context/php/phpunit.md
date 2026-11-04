@@ -542,6 +542,19 @@ $value = $this->force_get_property( $object, 'private_property' );
 $this->assertEquals( 'test_value', $value );
 ```
 
+### Calling non-public methods
+
+To call a private or protected method, or to keep a reflection of a property, use
+`get_accessible_method()` and `get_accessible_property()` from `TestCase` instead of calling
+`setAccessible( true )` yourself. PHP 8.5 deprecates `setAccessible()`, and the test suite
+turns deprecations into errors, so a direct call fails the PHP 8.5 job. The helpers only call
+it on PHP versions older than 8.1, which still need it.
+
+```php
+$method = $this->get_accessible_method( $object, 'private_method' );
+$result = $method->invoke( $object, 'argument' );
+```
+
 ## Testing Patterns
 
 ### Testing Module Registration

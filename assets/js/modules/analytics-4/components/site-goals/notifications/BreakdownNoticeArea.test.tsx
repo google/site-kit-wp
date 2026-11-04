@@ -43,11 +43,11 @@ import {
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { ALL_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
@@ -414,7 +414,7 @@ describe( 'BreakdownNoticeArea', () => {
 			{ registry }
 		);
 		expect(
-			ecommerce.getByText( /Event breakdown is now active/ )
+			ecommerce.getByText( /Sales plugin breakdown is now active/ )
 		).toBeInTheDocument();
 		ecommerce.unmount();
 
@@ -638,7 +638,7 @@ describe( 'BreakdownNoticeArea', () => {
 		} );
 	} );
 
-	it( 'renders "Event breakdown setup failed" title for ECOMMERCE permissions error in widget and panel', () => {
+	it( 'should render "Sales plugin breakdown setup failed" title for ECOMMERCE permissions error in widget and panel', () => {
 		seedAvailableCustomDimensions( [] );
 		provideCustomDimensionError( registry, {
 			customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
@@ -665,7 +665,7 @@ describe( 'BreakdownNoticeArea', () => {
 				);
 
 				expect(
-					getByText( 'Event breakdown setup failed' )
+					getByText( 'Sales plugin breakdown setup failed' )
 				).toBeInTheDocument();
 
 				unmount();
@@ -673,7 +673,7 @@ describe( 'BreakdownNoticeArea', () => {
 		);
 	} );
 
-	it( 'renders "Sales plugin breakdown setup failed" title for BREAKDOWN_SCOPE_BOTH permissions error in the panel', () => {
+	it( 'should render "Event breakdown setup failed" title for BREAKDOWN_SCOPE_BOTH permissions error in the panel', () => {
 		seedAvailableCustomDimensions( [] );
 		provideCustomDimensionError( registry, {
 			customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
@@ -698,8 +698,52 @@ describe( 'BreakdownNoticeArea', () => {
 		);
 
 		expect(
-			getByText( 'Sales plugin breakdown setup failed' )
+			getByText( 'Event breakdown setup failed' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should render each widget the error title of its own scope after a Side Panel permissions error', () => {
+		seedAvailableCustomDimensions( [] );
+		provideCustomDimensionError( registry, {
+			customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
+			error: {
+				code: 'insufficient_permissions',
+				message: 'Insufficient permissions',
+				data: { status: 403, reason: 'insufficientPermissions' },
+			},
+		} );
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_PANEL,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: BREAKDOWN_SCOPE_BOTH,
+			} );
+
+		[
+			{
+				goalType: GOAL_TYPES.ECOMMERCE,
+				title: 'Sales plugin breakdown setup failed',
+			},
+			{
+				goalType: GOAL_TYPES.LEAD,
+				title: 'Individual form tracking setup failed',
+			},
+		].forEach( ( { goalType, title } ) => {
+			const { getByText, queryByText, unmount } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ goalType ] }
+				/>,
+				{ registry }
+			);
+
+			expect( getByText( title ) ).toBeInTheDocument();
+			expect(
+				queryByText( 'Event breakdown setup failed' )
+			).not.toBeInTheDocument();
+
+			unmount();
+		} );
 	} );
 
 	it( 'does not render the error notice for a section whose dimension already exists', () => {
@@ -795,7 +839,7 @@ describe( 'BreakdownNoticeArea', () => {
 			);
 
 			expect(
-				getByText( /Breakdown is now active/ )
+				getByText( /Event breakdown is now active/ )
 			).toBeInTheDocument();
 		} );
 	} );
@@ -1043,6 +1087,127 @@ describe( 'BreakdownNoticeArea', () => {
 	} );
 
 	describe( 'against the conversion tracking setting', () => {
+		it.each( [
+			[ 'the dimensions are missing and it is on', [], true, true ],
+			[ 'the dimensions are missing and it is off', [], false, true ],
+			[
+				'the dimensions exist but it is off',
+				ALL_CUSTOM_DIMENSIONS,
+				false,
+				true,
+			],
+			[
+				'the dimensions exist and it is on',
+				ALL_CUSTOM_DIMENSIONS,
+				true,
+				false,
+			],
+		] )(
+			'shows the "New" notice only while the breakdown is not enabled, when %s',
+			async (
+				_,
+				availableCustomDimensions,
+				conversionTracking,
+				showsNotice
+			) => {
+				await setUpRegistry( { conversionTracking } );
+				seedAvailableCustomDimensions( availableCustomDimensions );
+
+				const { queryByText } = render(
+					<BreakdownNoticeArea
+						origin={ BREAKDOWN_ORIGIN_WIDGET }
+						goalTypes={ [ GOAL_TYPES.LEAD ] }
+					/>,
+					{ registry }
+				);
+
+				expect( !! queryByText( 'Get breakdown' ) ).toBe( showsNotice );
+			}
+		);
+
+		it( 'tells a site that already has the dimensions that conversion tracking will be enabled', async () => {
+			// The dimensions came from another custom dimensions CTA, which
+			// leaves conversion tracking alone.
+			await setUpRegistry( { conversionTracking: false } );
+			seedAvailableCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+
+			const { getByText } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect(
+				getByText(
+					/Enabling this breakdown will also enable conversion tracking for your forms\./
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'enables the breakdown once "Get breakdown" switches conversion tracking on for a site that already has the dimensions', async () => {
+			await setUpRegistry( { conversionTracking: false } );
+			provideUserAuthentication( registry, {
+				grantedScopes: [ EDIT_SCOPE ],
+			} );
+			seedAvailableCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
+					propertyID: '12345',
+				} );
+
+			fetchMock.postOnce( conversionTrackingEndpoint, {
+				body: { enabled: true },
+				status: 200,
+			} );
+			// Nothing is left to create, so the action only syncs.
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				),
+				{ body: ALL_CUSTOM_DIMENSIONS, status: 200 }
+			);
+
+			const { getByRole, findByText } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Get breakdown' } ) );
+
+			expect(
+				await findByText( /Individual form tracking is now active/ )
+			).toBeInTheDocument();
+			expect(
+				registry.select( CORE_SITE ).isConversionTrackingEnabled()
+			).toBe( true );
+			expect( fetchMock ).not.toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+				)
+			);
+		} );
+
+		it( 'shows no notice while the setting is still loading, even when the dimensions exist', async () => {
+			await setUpRegistry( { conversionTracking: 'loading' } );
+			seedAvailableCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+
+			const { queryByText } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect( queryByText( 'Get breakdown' ) ).not.toBeInTheDocument();
+		} );
+
 		it( 'leaves conversion tracking off when the notice is dismissed', async () => {
 			await setUpRegistry( { conversionTracking: false } );
 			seedAvailableCustomDimensions( [] );

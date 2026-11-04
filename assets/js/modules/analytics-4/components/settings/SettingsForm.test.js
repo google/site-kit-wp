@@ -71,7 +71,7 @@ describe( 'SettingsForm', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not track the learn more link when setupFlowRefresh is disabled', () => {
+	it( 'should track the learn more link', () => {
 		const { getByRole } = render( <SettingsForm />, {
 			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
@@ -83,7 +83,11 @@ describe( 'SettingsForm', () => {
 
 		fireEvent.click( link );
 
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			VIEW_CONTEXT_SETTINGS,
+			'click_learn_more_link',
+			'plugin_conversion_tracking'
+		);
 	} );
 
 	it( 'should not render the WooCommerce products row by default (no flag)', () => {
@@ -119,25 +123,5 @@ describe( 'SettingsForm', () => {
 		expect(
 			getByLabelText( 'Include products in Recent activity' )
 		).toBeInTheDocument();
-	} );
-
-	it( 'should track the learn more link when setupFlowRefresh is enabled', () => {
-		const { getByRole } = render( <SettingsForm />, {
-			features: [ 'setupFlowRefresh' ],
-			registry,
-			viewContext: VIEW_CONTEXT_SETTINGS,
-		} );
-
-		const link = getByRole( 'link', {
-			name: /learn more/i,
-		} );
-
-		fireEvent.click( link );
-
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			VIEW_CONTEXT_SETTINGS,
-			'click_learn_more_link',
-			'plugin_conversion_tracking'
-		);
 	} );
 } );

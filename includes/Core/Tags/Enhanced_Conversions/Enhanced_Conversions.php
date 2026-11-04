@@ -36,6 +36,13 @@ class Enhanced_Conversions {
 	);
 
 	/**
+	 * Developer ID for hits that carry user-provided data.
+	 *
+	 * @since 1.191.0
+	 */
+	const USER_DATA_DEVELOPER_ID = 'dZjRkOT';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.159.0
@@ -101,6 +108,7 @@ class Enhanced_Conversions {
 	 *
 	 * @since 1.159.0
 	 * @since 1.160.0 Add the hashed user data to the GTag if it exists.
+	 * @since 1.191.0 Set the user data developer ID along with the user data.
 	 *
 	 * @param GTag $gtag GTag instance.
 	 */
@@ -116,6 +124,7 @@ class Enhanced_Conversions {
 		}
 
 		$gtag->add_command( 'set', array( 'user_data', $user_data ) );
+		$gtag->add_command( 'set', array( 'developer_id.' . self::USER_DATA_DEVELOPER_ID, true ) );
 	}
 
 	/**

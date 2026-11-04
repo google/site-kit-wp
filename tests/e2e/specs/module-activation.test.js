@@ -17,14 +17,14 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
-import { deactivateUtilityPlugins, resetSiteKit, setupSiteKit } from '../utils';
+import {
+	deactivateUtilityPlugins,
+	resetSiteKit,
+	setupSiteKit,
+	visitAdminPage,
+} from '../utils';
 
 describe( 'Module activation', () => {
 	beforeEach( async () => {

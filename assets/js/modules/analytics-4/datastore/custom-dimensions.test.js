@@ -35,11 +35,11 @@ import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/cust
 import {
 	createTestRegistry,
 	provideModules,
-	provideSiteInfo,
 	provideUserAuthentication,
 	untilResolved,
 } from '@tests/js/utils';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -238,328 +238,140 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 
 		describe( 'createCustomDimensions', () => {
-			const keyMetricsSettings = {
-				widgetSlugs: [
-					KM_ANALYTICS_POPULAR_AUTHORS,
-					KM_ANALYTICS_TOP_CATEGORIES,
-				],
-				isWidgetHidden: false,
-			};
-			const coreUserInputSettings = {
-				purpose: {
-					values: [ 'purpose1' ],
-					scope: 'site',
-				},
-				postFrequency: {
-					values: [ 'daily' ],
-					scope: 'user',
-				},
-				goals: {
-					values: [ 'goal1', 'goal2' ],
-					scope: 'user',
-				},
-			};
+			const createEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+			);
+			const syncEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			);
 
-			beforeEach( () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAdvancedDataBreakdownsSettings( {
-						[ propertyID ]: false,
-					} );
-			} );
-
-			it( 'does not make a network request if there are no missing custom dimensions', async () => {
-				provideSiteInfo( registry, {
-					postTypes: [ { slug: 'product', label: 'Product' } ],
-				} );
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID,
-					availableCustomDimensions: customDimensionNames,
-				} );
-				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					widgetSlugs: [ 'non-existent-widget-slug' ],
-					isWidgetHidden: false,
-				} );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.createCustomDimensions();
-
-				expect( fetchMock ).not.toHaveFetched();
-			} );
-
-			it( 'does not include the Site Goals dimensions when advanced data breakdowns is off', async () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID,
-					availableCustomDimensions: customDimensionNames,
-				} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetCustomDimensions( customDimensionNames, {
-						propertyID,
-					} );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( keyMetricsSettings );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-
-				// No dimension needs creating, but the "already exists" path
-				// still syncs the available dimensions.
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-					),
-					{ body: customDimensionNames, status: 200 }
-				);
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.createCustomDimensions();
-
-				// All key metric dimensions are already available, so none of the
-				// Site Goals (or any) dimensions are created.
-				expect( fetchMock ).not.toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-					)
-				);
-			} );
-
-			it( 'includes the Site Goals dimensions when the flag and the setting are both on', async () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAdvancedDataBreakdownsSettings( {
-						[ propertyID ]: true,
-					} );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID,
-					availableCustomDimensions: customDimensionNames,
-				} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetCustomDimensions( customDimensionNames, {
-						propertyID,
-					} );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( keyMetricsSettings );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-
-				const createEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-				);
-				fetchMock.post( createEndpoint, {
-					body: customDimension,
+			// Responds to each create request with the dimension it was sent.
+			function mockCreateCustomDimension() {
+				fetchMock.post( createEndpoint, ( url, { body } ) => ( {
+					body: JSON.parse( body ).data.customDimension,
 					status: 200,
-				} );
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-					),
-					{
-						body: customDimensionNames,
-						status: 200,
-					}
-				);
+				} ) );
+			}
 
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.createCustomDimensions();
-
-				const createCalls = fetchMock
+			function getCreateCalls() {
+				return fetchMock
 					.calls( createEndpoint )
-					.map( ( [ , req ] ) => JSON.parse( req.body ) );
-				const dimensionNames = createCalls.map(
-					( payload ) => payload?.data?.customDimension?.parameterName
+					.map(
+						( [ , request ] ) => JSON.parse( request.body ).data
+					);
+			}
+
+			function getCreatedDimensionNames() {
+				return getCreateCalls().map(
+					( { customDimension: { parameterName } } ) => parameterName
 				);
+			}
 
-				// The fold-in adds the Site Goals dimensions that have a
-				// definition (post_date and post_type here) to the required
-				// set, so they get created. googlesitekit_event_provider and
-				// googlesitekit_form_id have no entry in
-				// CUSTOM_DIMENSION_DEFINITIONS yet (that arrives with #12775),
-				// so they cannot be created and are not asserted here.
-				expect( dimensionNames ).toContain( 'googlesitekit_post_date' );
-				expect( dimensionNames ).toContain( 'googlesitekit_post_type' );
-			} );
+			it.each( [
+				[
+					'no metric tiles, with advanced data breakdowns off',
+					[],
+					false,
+				],
+				[
+					'metric tiles that need dimensions, with advanced data breakdowns on',
+					[
+						KM_ANALYTICS_POPULAR_AUTHORS,
+						KM_ANALYTICS_TOP_CATEGORIES,
+					],
+					true,
+				],
+			] )(
+				'creates every Site Kit custom dimension for %s',
+				async ( _, widgetSlugs, isAdvancedDataBreakdownsEnabled ) => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetKeyMetricsSettings( {
+							widgetSlugs,
+							isWidgetHidden: false,
+						} );
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetAdvancedDataBreakdownsSettings( {
+							[ propertyID ]: isAdvancedDataBreakdownsEnabled,
+						} );
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						propertyID,
+						availableCustomDimensions: [],
+					} );
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetCustomDimensions( [], { propertyID } );
 
-			it( "doesn't create the Site Goals dimensions when the selected property's 'enabled' flag is off", async () => {
-				// Turn on the "enabled" flag for another property, but not the selected one.
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAdvancedDataBreakdownsSettings( {
-						654321: true,
+					mockCreateCustomDimension();
+					fetchMock.postOnce( syncEndpoint, {
+						body: ALL_CUSTOM_DIMENSIONS,
+						status: 200,
 					} );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID,
-					availableCustomDimensions: [],
-				} );
+					await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.createCustomDimensions();
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetCustomDimensions( [], { propertyID } );
-
-				// No key metric tiles need custom dimensions, so the Site Goals
-				// dimensions are the only ones the action could create.
-				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					widgetSlugs: [ 'non-existent-widget-slug' ],
-					isWidgetHidden: false,
-				} );
-
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.createCustomDimensions();
-
-				// The selected property's flag is off, so the Site Goals
-				// dimensions aren't created, even though another property's
-				// flag is on.
-				expect( fetchMock ).not.toHaveFetched();
-			} );
-
-			it( 'creates missing custom dimensions and syncs them in the Analytics 4 module settings', async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( keyMetricsSettings );
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID,
-					availableCustomDimensions: [],
-				} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetCustomDimensions( [], { propertyID } );
-
-				// Mock the network requests for creating custom dimension and syncing
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-					),
-					{
-						body: customDimension,
-						status: 200,
-					}
-				);
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-					),
-					{
-						body: {
-							...customDimension,
-							parameterName: 'googlesitekit_post_categories',
-						},
-						status: 200,
-					}
-				);
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-					),
-					{
-						body: customDimensionNames,
-						status: 200,
-					}
-				);
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.createCustomDimensions();
-
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getAvailableCustomDimensions()
-				).toEqual( customDimensionNames );
-
-				// Verify that the created custom dimensions are in a gathering data state.
-				customDimensionNames.forEach( ( customDimensionName ) => {
+					expect( getCreatedDimensionNames() ).toEqual(
+						ALL_CUSTOM_DIMENSIONS
+					);
+					expect( fetchMock ).toHaveFetchedTimes( 1, syncEndpoint );
 					expect(
 						registry
 							.select( MODULES_ANALYTICS_4 )
-							.isCustomDimensionGatheringData(
-								customDimensionName
-							)
-					).toBe( true );
-				} );
-			} );
+							.getAvailableCustomDimensions()
+					).toEqual( ALL_CUSTOM_DIMENSIONS );
 
-			it( 'creates explicitly requested missing custom dimensions', async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					widgetSlugs: [],
-					isWidgetHidden: false,
-				} );
+					// Verify that the created custom dimensions are in a gathering data state.
+					ALL_CUSTOM_DIMENSIONS.forEach( ( customDimensionName ) => {
+						expect(
+							registry
+								.select( MODULES_ANALYTICS_4 )
+								.isCustomDimensionGatheringData(
+									customDimensionName
+								)
+						).toBe( true );
+					} );
+				}
+			);
+
+			it( 'creates only the dimensions missing from the property', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
-					availableCustomDimensions: [],
+					availableCustomDimensions: customDimensionNames,
 				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetCustomDimensions( [], { propertyID } );
+					.receiveGetCustomDimensions( customDimensionNames, {
+						propertyID,
+					} );
 
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-					),
-					{
-						body: customDimension,
-						status: 200,
-					}
-				);
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-					),
-					{
-						body: [ 'googlesitekit_post_author' ],
-						status: 200,
-					}
-				);
+				mockCreateCustomDimension();
+				fetchMock.postOnce( syncEndpoint, {
+					body: ALL_CUSTOM_DIMENSIONS,
+					status: 200,
+				} );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.createCustomDimensions( [ 'googlesitekit_post_author' ] );
+					.createCustomDimensions();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getAvailableCustomDimensions()
-				).toEqual( [ 'googlesitekit_post_author' ] );
+				expect( getCreatedDimensionNames() ).toEqual(
+					ALL_CUSTOM_DIMENSIONS.filter(
+						( dimension ) =>
+							! customDimensionNames.includes( dimension )
+					)
+				);
 			} );
 
 			it( 'creates the missing dimensions on the selected property, not the saved one', async () => {
 				const selectedPropertyID = '654321';
 
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( keyMetricsSettings );
-
-				// The saved property already has every required dimension.
+				// The saved property already has every dimension.
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
-					availableCustomDimensions: customDimensionNames,
+					availableCustomDimensions: ALL_CUSTOM_DIMENSIONS,
 				} );
 
 				registry
@@ -571,66 +383,33 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 						propertyID: selectedPropertyID,
 					} );
 
-				const createEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-				);
-
-				fetchMock.postOnce( createEndpoint, {
-					body: customDimension,
+				mockCreateCustomDimension();
+				fetchMock.postOnce( syncEndpoint, {
+					body: ALL_CUSTOM_DIMENSIONS,
 					status: 200,
 				} );
-				fetchMock.postOnce( createEndpoint, {
-					body: {
-						...customDimension,
-						parameterName: 'googlesitekit_post_categories',
-					},
-					status: 200,
-				} );
-
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-					),
-					{
-						body: customDimensionNames,
-						status: 200,
-					}
-				);
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.createCustomDimensions();
 
-				const createCalls = fetchMock
-					.calls( createEndpoint )
-					.map( ( [ , request ] ) => JSON.parse( request.body ) );
-
-				expect( createCalls ).toHaveLength( 2 );
-
-				const createCallPropertyIDs = createCalls.map(
-					( payload ) => payload?.data?.propertyID
+				const createCallPropertyIDs = getCreateCalls().map(
+					( data ) => data.propertyID
 				);
 
-				expect( createCallPropertyIDs ).toEqual( [
-					selectedPropertyID,
-					selectedPropertyID,
-				] );
+				expect( createCallPropertyIDs ).toEqual(
+					ALL_CUSTOM_DIMENSIONS.map( () => selectedPropertyID )
+				);
 
 				// The created dimensions are added to the selected property's list.
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getCustomDimensions( selectedPropertyID )
-				).toEqual( customDimensionNames );
+				).toEqual( ALL_CUSTOM_DIMENSIONS );
 			} );
 
 			it( 'makes no requests while a new property is being set up', async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( keyMetricsSettings );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID: PROPERTY_CREATE,
 				} );
@@ -643,24 +422,10 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 			} );
 
 			it( "doesn't create dimensions when the selected property's custom dimensions fail to load", async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( keyMetricsSettings );
-
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions: [],
 				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAdvancedDataBreakdownsSettings( {
-						[ propertyID ]: true,
-					} );
 
 				// The request for the selected property's custom dimensions
 				// fails, so the list stays unknown and nothing is created.
@@ -673,21 +438,11 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.createCustomDimensions();
 
-				expect( fetchMock ).not.toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-					)
-				);
+				expect( fetchMock ).not.toHaveFetched( createEndpoint );
 				expect( console ).toHaveErrored();
 			} );
 
 			it( 'refetches the property custom dimensions on a retry after a prior load error, then creates them', async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( keyMetricsSettings );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions: [],
@@ -719,24 +474,11 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					body: [],
 					status: 200,
 				} );
-				fetchMock.post(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-					),
-					{
-						body: customDimension,
-						status: 200,
-					}
-				);
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-					),
-					{
-						body: customDimensionNames,
-						status: 200,
-					}
-				);
+				mockCreateCustomDimension();
+				fetchMock.postOnce( syncEndpoint, {
+					body: ALL_CUSTOM_DIMENSIONS,
+					status: 200,
+				} );
 
 				// Second attempt (a Retry).
 				await registry
@@ -755,50 +497,34 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getCustomDimensionsError( propertyID )
 				).toBeUndefined();
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-					)
-				);
+				expect( fetchMock ).toHaveFetched( createEndpoint );
 			} );
 
 			it( 'syncs the available dimensions and settles when none are missing', async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( keyMetricsSettings );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
-					// Saved setting is stale/empty; the property actually has the
-					// required dimensions already.
+					// Saved setting is stale/empty; the property actually has
+					// every dimension already.
 					availableCustomDimensions: [],
 				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetCustomDimensions( customDimensionNames, {
+					.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
 						propertyID,
 					} );
 
-				const syncEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-				);
 				fetchMock.postOnce( syncEndpoint, {
-					body: customDimensionNames,
+					body: ALL_CUSTOM_DIMENSIONS,
 					status: 200,
 				} );
 
-				await registry
+				const { error } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.createCustomDimensions();
 
-				// Nothing is created...
-				expect( fetchMock ).not.toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-					)
-				);
+				// Nothing is created, and the action completes without error...
+				expect( fetchMock ).not.toHaveFetched( createEndpoint );
+				expect( error ).toBeUndefined();
 				// ...but the available dimensions are synced, so the saved
 				// setting now reflects the property's actual state.
 				expect( fetchMock ).toHaveFetched( syncEndpoint );
@@ -806,35 +532,26 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableCustomDimensions()
-				).toEqual( customDimensionNames );
+				).toEqual( ALL_CUSTOM_DIMENSIONS );
 				// The creation flag is never left stuck set.
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isCreatingCustomDimension( customDimensionNames[ 0 ] )
+						.isCreatingCustomDimension( ALL_CUSTOM_DIMENSIONS[ 0 ] )
 				).toBe( false );
 			} );
 
 			it( 'returns the sync error when none are missing and the sync fails', async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserInputSettings( coreUserInputSettings );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( keyMetricsSettings );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions: [],
 				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetCustomDimensions( customDimensionNames, {
+					.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
 						propertyID,
 					} );
 
-				const syncEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-				);
 				fetchMock.postOnce( syncEndpoint, {
 					body: { code: 'error', message: 'Sync failed' },
 					status: 500,

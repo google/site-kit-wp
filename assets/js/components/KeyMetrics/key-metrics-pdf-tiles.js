@@ -108,12 +108,14 @@ import { buildTopPagesReportOptions } from '@/js/modules/analytics-4/components/
 import { buildTopTrafficChannelsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannels';
 import {
 	buildTopTrafficChannelsRateReportOptions,
+	buildTopTrafficChannelsSessionsReportOptions,
 	mapTopTrafficChannelsRateRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
 import {
 	buildVisitorTypeReportOptions,
 	mapVisitorTypeRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/visitorType';
+import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	getEngagedTrafficSourceReportOptions,
@@ -264,44 +266,78 @@ async function resolvePrimaryEcommerceEvent( registry ) {
 }
 
 /**
- * Builds a PDF tile config for a single-report, ranked "Selling products" table tile.
+ * Builds a table tile's report requests: its main report and, when
+ * `buildSecondaryReportOptions` is given, the second report its row mapper
+ * reads.
+ *
+ * @since 1.190.0
+ *
+ * @param {Function} buildReportOptions            Builds this tile's Analytics 4 report options.
+ * @param {Function} [buildSecondaryReportOptions] Builds a second report's options.
+ * @param {Object}   args                          Builder args.
+ * @return {Object[]} The report requests, or an empty array when there is no primary event.
+ */
+function buildTableTileRequests(
+	buildReportOptions,
+	buildSecondaryReportOptions,
+	args
+) {
+	const options = buildReportOptions( args );
+
+	if ( ! options ) {
+		return [];
+	}
+
+	return [ options, buildSecondaryReportOptions?.( args ) ]
+		.filter( Boolean )
+		.map( ( reportOptions ) => ( {
+			moduleStore: MODULES_ANALYTICS_4,
+			options: reportOptions,
+		} ) );
+}
+
+/**
+ * Builds a PDF tile config for a ranked "Selling products" table tile.
  *
  * This tile is purchase-specific, so the primary event is always `purchase`
  * rather than `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`) - if we
  * used `getPrimaryEcommerceEvent()`, the tile would start showing
  * "add-to-cart" data under the "sales" label.
  *
- * Covers the tiles that need nothing beyond that single ranked report and its
+ * Covers the tiles that need nothing beyond that ranked report and its
  * row mapper - `Top traffic channels by sales rate`, `Sales by visitor type`,
  * `Sales by countries`, `Sales by cities` and `Sales by device type`. `Top authors driving sales` (a second, site-wide
  * total report) and `Top pages driving sales` (a second, page-titles report)
  * have extra requirements and keep their own tile config.
  *
  * @since 1.188.0
+ * @since 1.190.0 Added the optional `buildSecondaryReportOptions` argument.
  *
- * @param {Function} buildReportOptions Builds this tile's Analytics 4 report options.
- * @param {Function} mapRows            Maps this tile's report rows to `GoalDriverRow[]`.
+ * @param {Function} buildReportOptions            Builds this tile's Analytics 4 report options.
+ * @param {Function} mapRows                       Maps this tile's report rows to `GoalDriverRow[]`.
+ * @param {Function} [buildSecondaryReportOptions] Builds a second report's options, passed to `mapRows` alongside the rows.
  * @return {*} The PDF tile config: its `TileComponent` and `getTileData`, matching every other entry in `KEY_METRICS_PDF_TILES`.
  */
-function createSellingProductsTableTile( buildReportOptions, mapRows ) {
+function createSellingProductsTableTile(
+	buildReportOptions,
+	mapRows,
+	buildSecondaryReportOptions
+) {
 	return {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
-			( dates ) => {
-				const options = buildReportOptions( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = mapRows( report?.rows || [] );
+			( dates ) =>
+				buildTableTileRequests(
+					buildReportOptions,
+					buildSecondaryReportOptions,
+					{
+						dates: pdfTableDates( dates ),
+						primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
+						limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+					}
+				),
+			( [ report, secondaryReport ] ) => {
+				const rows = mapRows( report?.rows || [], secondaryReport );
 
 				if ( ! rows.length ) {
 					return null;
@@ -342,7 +378,7 @@ async function resolveDetectedLeadEvents( registry ) {
  * can build its report options, so this centralizes that resolution instead
  * of every tile repeating it.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Function} buildRequests Given `(dates, detectedLeadEvents)`, returns this tile's report request(s), or a falsy value when there's nothing to fetch.
  * @return {Function} An async `getTileData` request-builder function.
@@ -354,35 +390,40 @@ function createLeadEventsPDFTileRequestBuilder( buildRequests ) {
 }
 
 /**
- * Builds a PDF tile config for a single-report, ranked "Generating leads" table tile.
+ * Builds a PDF tile config for a ranked "Generating leads" table tile.
  *
  * The lead-generation counterpart to `createSellingProductsTableTile`: the
  * primary event is the detected lead events rather than a hardcoded
  * `purchase`, since lead generation has no single triggering event.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
- * @param {Function} buildReportOptions Builds this tile's Analytics 4 report options.
- * @param {Function} mapRows            Maps this tile's report rows to `GoalDriverRow[]`.
+ * @param {Function} buildReportOptions            Builds this tile's Analytics 4 report options.
+ * @param {Function} mapRows                       Maps this tile's report rows to `GoalDriverRow[]`.
+ * @param {Function} [buildSecondaryReportOptions] Builds a second report's options, passed to `mapRows` alongside the rows.
  * @return {*} The PDF tile config: its `TileComponent` and `getTileData`, matching every other entry in `KEY_METRICS_PDF_TILES`.
  */
-function createGeneratingLeadsTableTile( buildReportOptions, mapRows ) {
+function createGeneratingLeadsTableTile(
+	buildReportOptions,
+	mapRows,
+	buildSecondaryReportOptions
+) {
 	return {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
-			createLeadEventsPDFTileRequestBuilder( ( dates, primaryEvent ) => {
-				const options = buildReportOptions( {
-					dates: pdfTableDates( dates ),
-					primaryEvent,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				return (
-					options && [ { moduleStore: MODULES_ANALYTICS_4, options } ]
-				);
-			} ),
-			( [ report ] ) => {
-				const rows = mapRows( report?.rows || [] );
+			createLeadEventsPDFTileRequestBuilder( ( dates, primaryEvent ) =>
+				buildTableTileRequests(
+					buildReportOptions,
+					buildSecondaryReportOptions,
+					{
+						dates: pdfTableDates( dates ),
+						primaryEvent,
+						limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+					}
+				)
+			),
+			( [ report, secondaryReport ] ) => {
+				const rows = mapRows( report?.rows || [], secondaryReport );
 
 				if ( ! rows.length ) {
 					return null;
@@ -1966,6 +2007,11 @@ export const KEY_METRICS_PDF_TILES = {
 					value: numFmt( currentPrimaryCount, {
 						style: 'decimal',
 					} ),
+					subtext: sprintf(
+						/* translators: %s: GA4 event name, e.g. "purchase". */
+						__( '“%s” events', 'google-site-kit' ),
+						ENUM_CONVERSION_EVENTS.PURCHASE
+					),
 					...getPDFTileChange(
 						previousPrimaryCount,
 						currentPrimaryCount
@@ -2085,7 +2131,8 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE ]:
 		createSellingProductsTableTile(
 			buildTopTrafficChannelsRateReportOptions,
-			mapTopTrafficChannelsRateRows
+			mapTopTrafficChannelsRateRows,
+			buildTopTrafficChannelsSessionsReportOptions
 		),
 	[ KM_ANALYTICS_SALES_BY_VISITOR_TYPE ]: createSellingProductsTableTile(
 		buildVisitorTypeReportOptions,
@@ -2245,7 +2292,7 @@ export const KEY_METRICS_PDF_TILES = {
 					);
 				}
 			),
-			( [ report ] ) => {
+			( [ report ], { registry } ) => {
 				const { currentPrimaryCount, previousPrimaryCount } =
 					processReports( report || {}, {}, { aggregate: true } );
 
@@ -2258,6 +2305,11 @@ export const KEY_METRICS_PDF_TILES = {
 					value: numFmt( currentPrimaryCount, {
 						style: 'decimal',
 					} ),
+					subtext: getLeadEventsSubtitle(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getDetectedLeadEvents() || []
+					),
 					...getPDFTileChange(
 						previousPrimaryCount,
 						currentPrimaryCount
@@ -2363,7 +2415,8 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE ]:
 		createGeneratingLeadsTableTile(
 			buildTopTrafficChannelsRateReportOptions,
-			mapTopTrafficChannelsRateRows
+			mapTopTrafficChannelsRateRows,
+			buildTopTrafficChannelsSessionsReportOptions
 		),
 	[ KM_ANALYTICS_LEADS_BY_VISITOR_TYPE ]: createGeneratingLeadsTableTile(
 		buildVisitorTypeReportOptions,

@@ -30,35 +30,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { formatDateString } from '@/js/components/pdf-export/formatDateString';
 import { PDFChevronRight } from '@/js/components/pdf-export/pdf-icons';
 import {
 	PDF_PAGE_PADDING,
 	createPDFStyles,
 } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { getSiteHost } from '@/js/components/pdf-export/pdf-utils';
 import { PDFHeaderSection } from '@/js/components/pdf-export/types';
+import { formatDate } from '@/js/util';
 import PDFChip from './PDFChip';
 import PDFLink from './PDFLink';
 import PDFSiteKitLogo from './PDFSiteKitLogo';
 import PDFTypography from './PDFTypography';
-
-/**
- * Extracts the host (e.g. "www.example.com") from the reference site URL for
- * display as the header's site address.
- *
- * @since 1.182.0
- *
- * @param siteURL The reference site URL.
- * @return The host, or the original value when it cannot be parsed.
- */
-function getSiteHost( siteURL: string ): string {
-	try {
-		return new URL( siteURL ).host;
-	} catch {
-		return siteURL;
-	}
-}
 
 /**
  * The page adds padding around its content. The header uses negative margins
@@ -148,8 +132,8 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 	dateRange,
 	sections,
 } ) => {
-	const startDate = formatDateString( dateRange.startDate );
-	const endDate = formatDateString( dateRange.endDate );
+	const startDate = formatDate( dateRange.startDate );
+	const endDate = formatDate( dateRange.endDate );
 	/** Avoid a dangling " - " when one (or both) of the dates is invalid. */
 	const formattedDateRange =
 		startDate && endDate

@@ -1,7 +1,7 @@
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
+import { visitAdminPage } from '../../utils';
 
 describe( 'Site Kit set up flow for the first time', () => {
 	it( 'renders a splash page for proxy set up when no GCP credentials are provided', async () => {
@@ -10,7 +10,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 		await page.waitForSelector( '.googlesitekit-start-setup' );
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup__title', {
-			text: 'Set up Site Kit',
+			text: 'Let’s get started!',
 		} );
 		await expect( page ).toMatchElement( '.googlesitekit-start-setup', {
 			text: 'Sign in with Google',

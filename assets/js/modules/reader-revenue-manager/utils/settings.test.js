@@ -28,15 +28,23 @@ import {
 } from './settings';
 
 describe( 'getConfiguredCTAList', () => {
-	it( 'returns the CTA ID and display label for each configured CTA', () => {
+	it( 'should return the CTA ID, type, and display label for each configured CTA', () => {
 		expect(
 			getConfiguredCTAList( {
 				'cta-1': 'newsletter-signup',
 				'cta-2': 'newsletter-signup',
 			} )
 		).toEqual( [
-			{ ctaID: 'cta-1', label: 'Newsletter sign-up form' },
-			{ ctaID: 'cta-2', label: 'Newsletter sign-up form' },
+			{
+				ctaID: 'cta-1',
+				ctaType: 'newsletter-signup',
+				label: 'Newsletter sign-up form',
+			},
+			{
+				ctaID: 'cta-2',
+				ctaType: 'newsletter-signup',
+				label: 'Newsletter sign-up form',
+			},
 		] );
 	} );
 
@@ -46,7 +54,13 @@ describe( 'getConfiguredCTAList', () => {
 				'cta-1': 'newsletter-signup',
 				'cta-2': 'not-a-cta-type',
 			} )
-		).toEqual( [ { ctaID: 'cta-1', label: 'Newsletter sign-up form' } ] );
+		).toEqual( [
+			{
+				ctaID: 'cta-1',
+				ctaType: 'newsletter-signup',
+				label: 'Newsletter sign-up form',
+			},
+		] );
 	} );
 
 	it.each( [

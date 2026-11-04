@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
@@ -27,9 +28,12 @@ import {
 	CREATE_PUBLICATION_FORM,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
-	SHOW_TERMS_OF_SERVICE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import * as tracking from '@/js/util/tracking';
+import {
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -44,6 +48,8 @@ import {
 import CreatePublication from './CreatePublication';
 
 describe( 'CreatePublication', () => {
+	mockBrowserScrolling();
+
 	let registry: Registry;
 
 	const createPublicationEndpoint = new RegExp(
@@ -70,25 +76,6 @@ describe( 'CreatePublication', () => {
 
 		provideModules( registry, moduleData );
 		provideModuleRegistrations( registry, moduleData );
-	} );
-
-	it( 'should show the terms step when displaying the creation form', () => {
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-				[ SHOW_TERMS_OF_SERVICE ]: false,
-			} );
-
-		render( <CreatePublication onComplete={ () => {} } />, { registry } );
-
-		expect(
-			registry
-				.select( CORE_FORMS )
-				.getValue(
-					READER_REVENUE_MANAGER_SETUP_FORM,
-					SHOW_TERMS_OF_SERVICE
-				)
-		).toBe( true );
 	} );
 
 	it.each( [
@@ -218,7 +205,7 @@ describe( 'CreatePublication', () => {
 		);
 
 		await waitFor( () => {
-			expect( onComplete ).toHaveBeenCalledWith( false );
+			expect( onComplete ).toHaveBeenCalledWith();
 		} );
 
 		expect( fetchMock ).toHaveFetched( createPublicationEndpoint );
@@ -304,5 +291,37 @@ describe( 'CreatePublication', () => {
 
 		expect( onComplete ).not.toHaveBeenCalled();
 		expect( console ).toHaveErrored();
+	} );
+
+	describe( 'event tracking', () => {
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it( 'should track a click on the "Learn more" link', () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+			const { getByText } = render(
+				<CreatePublication onComplete={ () => {} } />,
+				{ registry, viewContext: VIEW_CONTEXT_MODULE_SETUP }
+			);
+
+			fireEvent.click( getByText( 'Learn more' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MODULE_SETUP }_rrm-express-setup_newsletter-signup`,
+				'click_learn_more_link',
+				'create-publication'
+			);
+		} );
 	} );
 } );

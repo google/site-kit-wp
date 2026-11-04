@@ -61,6 +61,16 @@
 		}
 	}
 
+	.googlesitekit-feedback-menu--top-start {
+		inset-block: auto 100% !important;
+		inset-inline: 0 auto !important;
+	}
+
+	.googlesitekit-feedback-menu--top-end {
+		inset-block-start: auto !important;
+		inset-inline: auto 0 !important;
+	}
+
 	.googlesitekit-feedback-menu__heading {
 		margin-block: 0;
 	}
