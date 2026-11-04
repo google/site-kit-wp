@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
