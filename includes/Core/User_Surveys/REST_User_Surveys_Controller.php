@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use Google\Site_Kit\Core\REST_API\Schema\Success_Schema;
 use WP_Error;
 use WP_REST_Request;
@@ -280,9 +281,7 @@ class REST_User_Surveys_Controller {
 					},
 				),
 				array(
-					'schema' => function () {
-						return $this->get_survey_timeouts_schema();
-					},
+					'schema' => array( String_List_Schema::class, 'get' ),
 				)
 			),
 			'survey'          => new REST_Route(
@@ -321,25 +320,6 @@ class REST_User_Surveys_Controller {
 			'description'          => __( 'Reply of the Site Kit service to a survey event.', 'google-site-kit' ),
 			'type'                 => 'object',
 			'additionalProperties' => true,
-		);
-	}
-
-	/**
-	 * Gets the REST schema of the survey triggers whose timeout has not ended.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array REST schema.
-	 */
-	private function get_survey_timeouts_schema() {
-		return array(
-			'$schema'     => 'http://json-schema.org/draft-04/schema#',
-			'title'       => 'survey-timeouts',
-			'description' => __( 'IDs of the survey triggers whose timeout has not ended, for the current user. The dashboard sends none of these triggers, and shows no survey while the list has the ID __global.', 'google-site-kit' ),
-			'type'        => 'array',
-			'items'       => array(
-				'type' => 'string',
-			),
 		);
 	}
 

@@ -13,9 +13,9 @@ namespace Google\Site_Kit\Tests\Core\REST_API;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Prompts_Schema;
-use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
 use Google\Site_Kit\Core\REST_API\Schema\Expirable_Items_Schema;
 use Google\Site_Kit\Core\REST_API\Schema\On_Off_Setting_Schema;
+use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use Google\Site_Kit\Core\REST_API\Schema\Success_Schema;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
@@ -154,14 +154,15 @@ class REST_RoutesTest extends TestCase {
 
 	public function provider_route_resource_schemas() {
 		return array(
-			'dismissed-items'           => array( 'core/user/data/dismissed-items', Dismissed_Slugs_Schema::class ),
-			'dismiss-item'              => array( 'core/user/data/dismiss-item', Dismissed_Slugs_Schema::class ),
+			'dismissed-items'           => array( 'core/user/data/dismissed-items', String_List_Schema::class ),
+			'dismiss-item'              => array( 'core/user/data/dismiss-item', String_List_Schema::class ),
 			'dismissed-prompts'         => array( 'core/user/data/dismissed-prompts', Dismissed_Prompts_Schema::class ),
 			'dismiss-prompt'            => array( 'core/user/data/dismiss-prompt', Dismissed_Prompts_Schema::class ),
-			'dismissed-tours'           => array( 'core/user/data/dismissed-tours', Dismissed_Slugs_Schema::class ),
-			'dismiss-tour'              => array( 'core/user/data/dismiss-tour', Dismissed_Slugs_Schema::class ),
+			'dismissed-tours'           => array( 'core/user/data/dismissed-tours', String_List_Schema::class ),
+			'dismiss-tour'              => array( 'core/user/data/dismiss-tour', String_List_Schema::class ),
 			'expirable-items'           => array( 'core/user/data/expirable-items', Expirable_Items_Schema::class ),
 			'set-expirable-item-timers' => array( 'core/user/data/set-expirable-item-timers', Expirable_Items_Schema::class ),
+			'survey-timeouts'           => array( 'core/user/data/survey-timeouts', String_List_Schema::class ),
 			'survey-trigger'            => array( 'core/user/data/survey-trigger', Success_Schema::class ),
 			'tracking'                  => array( 'core/user/data/tracking', On_Off_Setting_Schema::class ),
 		);
