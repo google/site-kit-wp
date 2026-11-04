@@ -150,6 +150,9 @@ export async function activateEnhancedMeasurement(
 				scopes: [ EDIT_SCOPE ],
 				skipModal: true,
 				redirectURL: global.location.href,
+				errorRedirectURL: select( CORE_SITE ).getAdminURL(
+					'googlesitekit-features'
+				),
 			},
 		} );
 

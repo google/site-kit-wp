@@ -31,6 +31,7 @@ import {
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
@@ -290,6 +291,9 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 								cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
 							},
 							additionalScopes: EXPRESS_SETUP_SCOPES,
+							errorRedirectURL: select( CORE_SITE ).getAdminURL(
+								'googlesitekit-features'
+							),
 						}
 					),
 				// Connecting RRM doesn't mean a newsletter form exists, so
