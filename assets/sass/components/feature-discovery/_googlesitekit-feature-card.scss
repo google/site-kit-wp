@@ -37,6 +37,12 @@
 		border-bottom: none;
 	}
 
+	// A feature's own setup failure takes the place of its card in the list, as
+	// a single column inside the card's row.
+	.googlesitekit-feature-card--custom {
+		grid-template-columns: auto;
+	}
+
 	.googlesitekit-feature-card__status {
 		grid-row: span 2;
 		padding-block: var(--googlesitekit-feature-card-gap-s);
@@ -123,5 +129,13 @@
 		flex-grow: 1;
 		gap: var(--googlesitekit-feature-card-gap-m);
 		justify-content: end;
+
+		.MuiCircularProgress-colorPrimary {
+			color: inherit;
+
+			svg circle {
+				stroke: currentColor;
+			}
+		}
 	}
 }

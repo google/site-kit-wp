@@ -431,6 +431,30 @@ describe( 'core/feature-discovery selectors', () => {
 		} );
 	} );
 
+	describe( 'isSetupInProgress', () => {
+		it( 'should require a slug', () => {
+			expect( () =>
+				registry.select( CORE_FEATURE_DISCOVERY ).isSetupInProgress()
+			).toThrow( 'slug is required to check setup progress.' );
+		} );
+
+		it( 'should return false when setup has not started', () => {
+			registerFeature( 'test-feature' );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isSetupInProgress( 'test-feature' )
+			).toBe( false );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isSetupInProgress( 'unknown-feature' )
+			).toBe( false );
+		} );
+	} );
+
 	describe( 'getFeatureResumeURL', () => {
 		it( 'should return undefined for an unregistered feature', () => {
 			expect(

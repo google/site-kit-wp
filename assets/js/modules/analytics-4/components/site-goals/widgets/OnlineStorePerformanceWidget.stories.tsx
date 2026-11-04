@@ -893,6 +893,13 @@ GatheringBreakdownData.args = {
 		provideAnalytics4MockReport( registry, engagementReportOptions );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
+		// The badge needs plugin conversion tracking to be on for a user who
+		// can manage options.
+		provideUserCapabilities( registry );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 		} );
@@ -905,6 +912,10 @@ GatheringBreakdownData.args = {
 				} );
 		} );
 	},
+};
+GatheringBreakdownData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
 };
 
 export const TabbedBreakdown = Template.bind( {} ) as Story;

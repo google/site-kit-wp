@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as useCTAID } from './useCTAID';
 export { default as useCreateExpressSetupCTA } from './useCreateExpressSetupCTA';
 export { default as useExpressSetupEventCategory } from './useExpressSetupEventCategory';
 export { default as useExpressSetupScopes } from './useExpressSetupScopes';

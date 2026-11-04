@@ -41,16 +41,34 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
+/**
+ * Enables the audience group, keeping track of the setup errors and of the
+ * audiences that could not be created.
+ *
+ * @since 1.132.0
+ * @since n.e.x.t Added the `initialFailedAudiences` option.
+ *
+ * @param {Object}   [options]                        Optional. Options.
+ * @param {string}   [options.redirectURL]            Optional. URL to return to after the OAuth flow.
+ * @param {Function} [options.onSuccess]              Optional. Called once the audience group is enabled.
+ * @param {Function} [options.onError]                Optional. Called when enabling the audience group fails.
+ * @param {Function} [options.onOAuthNavigation]      Optional. Called before navigating to the OAuth flow.
+ * @param {string[]} [options.initialFailedAudiences] Optional. Audiences that previously failed to be created, which a retry creates again. Default empty array.
+ * @return {Object} Object with `apiErrors`, `failedAudiences`, `isAudienceCreationError`, `isSaving` and `onEnableGroups`.
+ */
 export default function useEnableAudienceGroup( {
 	redirectURL,
 	onSuccess,
 	onError,
 	onOAuthNavigation,
+	initialFailedAudiences = [],
 } = {} ) {
 	const isMounted = useMountedState();
 
 	const [ apiErrors, setApiErrors ] = useState( [] );
-	const [ failedAudiences, setFailedAudiences ] = useState( [] );
+	const [ failedAudiences, setFailedAudiences ] = useState(
+		initialFailedAudiences
+	);
 	const [ isAudienceCreationError, setIsAudienceCreationError ] =
 		useState( false );
 	const [ isSaving, setIsSaving ] = useState( false );
