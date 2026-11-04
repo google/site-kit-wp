@@ -227,6 +227,14 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				'analytics-4_goal-driver-reports_top-traffic-channels-rate_lead',
 		};
 
+		const topTrafficSessionsOptions = {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [ { name: 'sessions' } ],
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-sessions_lead',
+		};
+
 		const topPagesOptions = {
 			...dates,
 			dimensions: [ 'pagePath', 'eventName' ],
@@ -324,6 +332,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				topTrafficChannelsOptions,
 				topTrafficTotalOptions,
 				topTrafficRateOptions,
+				topTrafficSessionsOptions,
 				topPagesOptions,
 				pageTitlesOptions,
 				visitorTypeOptions,
@@ -414,6 +423,23 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [ 'Direct', 'Organic Search', 'Organic Social' ].map(
+							( channel ) => ( {
+								dimensionValues: [ { value: channel } ],
+								metricValues: [ { value: '2000' } ],
+							} )
+					  ),
+			},
+			{ options: topTrafficSessionsOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ topTrafficSessionsOptions ] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -998,7 +1024,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		) as HTMLElement;
 
 		expect(
-			within( tooltipContent ).getByText( 'like submitting a form', {
+			within( tooltipContent ).getByText( 'like filling out a form', {
 				exact: false,
 			} )
 		).toBeInTheDocument();
@@ -1075,7 +1101,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		expect(
 			getByRole( 'button', {
-				name: 'Hide section',
+				name: 'Lead generation performance Hide section',
 			} )
 		).toBeInTheDocument();
 	} );
@@ -1605,13 +1631,17 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedReadyReports();
 		seedBreakdownDimensions( true );
 
-		const { getByText, waitForRegistry } = render(
+		const { getByRole, getByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'button', {
+				name: 'Lead generation performance Hide section',
+			} )
+		).not.toContainElement( getByText( 'Gathering breakdown data' ) );
 	} );
 
 	it( 'does not render the gathering breakdown data badge when the dimensions have data available', async () => {

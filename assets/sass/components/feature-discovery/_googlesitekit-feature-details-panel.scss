@@ -77,7 +77,63 @@
 
 	.googlesitekit-feature-details-panel__content {
 		flex-grow: 1;
+		padding-inline: var(--googlesitekit-feature-details-panel-padding-m);
+	}
+
+	.googlesitekit-feature-details-panel__images {
+		background: $c-surfaces-surface-2;
 		padding: var(--googlesitekit-feature-details-panel-padding-m);
+
+		img {
+			block-size: auto;
+			display: block;
+			inline-size: 100%;
+		}
+	}
+
+	.googlesitekit-feature-details-panel__text {
+		display: grid;
+		gap: 36px;
+		padding-block: var(--googlesitekit-feature-details-panel-padding-m);
+
+		h3, p {
+			margin: 0;
+		}
+
+		ol, ul, dl {
+			display: grid;
+			margin: 0;
+			padding: 0 0 0 2ch;
+		}
+
+		ol, ul {
+			gap: 8px;
+		}
+
+		ol {
+			list-style-type: disc;
+		}
+
+		li {
+			margin-block: 0;
+		}
+
+		dl {
+			gap: 10px;
+		}
+
+		dt {
+			display: list-item;
+		}
+
+		dd {
+			margin: 0;
+		}
+	}
+
+	.googlesitekit-feature-details-panel__section {
+		display: grid;
+		gap: 8px;
 	}
 
 	.googlesitekit-feature-details-panel__relevancy {

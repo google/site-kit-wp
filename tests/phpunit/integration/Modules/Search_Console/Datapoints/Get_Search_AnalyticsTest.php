@@ -118,7 +118,29 @@ class Get_Search_AnalyticsTest extends TestCase {
 
 		$this->assertEquals( '2024-01-01', $body['startDate'], 'The request should use the provided start date.' );
 		$this->assertEquals( '2024-01-07', $body['endDate'], 'The request should use the provided end date.' );
-		$this->assertEquals( 'all', $body['dataState'], 'The request should always ask for the `all` data state.' );
+		$this->assertEquals( 'all', $body['dataState'], 'The request should ask for the `all` data state when it does not group by hour.' );
+	}
+
+	public function test_create_request__asks_for_hourly_data_when_grouping_by_hour() {
+		$data_request = new Data_Request(
+			'GET',
+			'modules',
+			Search_Console::MODULE_SLUG,
+			'searchanalytics',
+			array(
+				'startDate'  => '2024-01-01',
+				'endDate'    => '2024-01-02',
+				'dimensions' => 'page,hour',
+			)
+		);
+
+		$request = $this->datapoint->create_request( $data_request );
+
+		$this->search_console->get_client()->execute( $request );
+
+		$body = json_decode( (string) $this->captured_request->getBody(), true );
+
+		$this->assertEquals( 'hourly_all', $body['dataState'], 'The request should ask for the `hourly_all` data state when it groups by hour.' );
 	}
 
 	public function test_create_request__passes_dimensions_and_row_limit() {
@@ -143,6 +165,7 @@ class Get_Search_AnalyticsTest extends TestCase {
 
 		$this->assertEquals( array( 'date', 'page' ), $body['dimensions'], 'A comma separated dimensions string should be parsed into a list.' );
 		$this->assertEquals( 5, $body['rowLimit'], 'The `limit` parameter should map to the request row limit.' );
+		$this->assertEquals( 'all', $body['dataState'], 'The request should ask for the `all` data state when it groups by `date` and `page`.' );
 	}
 
 	public function test_parse_response__returns_rows_from_search_analytics_query_response() {

@@ -29,7 +29,7 @@ import { useEffect } from '@wordpress/element';
 /**
  * Listens for matching keys on a ref's element, allowing handlers to stop propagation.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param  key     KeyboardEvent.key value to respond to.
  * @param  ref     React ref to the element containing the event target.

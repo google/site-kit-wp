@@ -93,9 +93,10 @@ class Migration_1_8_1 {
 	 * Registers hooks.
 	 *
 	 * @since 1.8.1
+	 * @since n.e.x.t Changed the `admin_init` priority to 0.
 	 */
 	public function register() {
-		add_action( 'admin_init', array( $this, 'migrate' ) );
+		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
 	}
 
 	/**

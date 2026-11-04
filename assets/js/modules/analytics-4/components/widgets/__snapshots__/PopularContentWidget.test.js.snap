@@ -20,12 +20,18 @@ exports[`PopularContentWidget should render correctly with the expected metrics 
             Most popular content by pageviews
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Pages your visitors read the most"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Pages your visitors read the most
+            </span>
           </span>
         </div>
         <div
@@ -146,12 +152,18 @@ exports[`PopularContentWidget should render the generic error variant when the r
           Most popular content by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages your visitors read the most"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Pages your visitors read the most
+          </span>
         </span>
       </div>
       <div
@@ -221,12 +233,18 @@ exports[`PopularContentWidget should render the insufficient permissions error v
           Most popular content by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages your visitors read the most"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Pages your visitors read the most
+          </span>
         </span>
       </div>
       <div
@@ -292,12 +310,18 @@ exports[`PopularContentWidget should render the loading state while resolving th
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Pages your visitors read the most"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Pages your visitors read the most
+              </span>
             </span>
           </span>
         </div>

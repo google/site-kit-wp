@@ -33,7 +33,7 @@ import type { ConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/u
  * anyone else falls back to the dimensions alone, as the setting never loads
  * for them. This matches how `BreakdownNoticeArea` waits for the setting.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {boolean|undefined} hasBreakdownDimensions                         Whether the breakdown custom dimensions exist, or `undefined` while loading.
  * @param {Object}            conversionTracking                             The conversion tracking setting, see `useConversionTrackingSetting`.

@@ -502,7 +502,7 @@ interface UseExampleReturn {
 /**
  * Custom hook description.
  *
- * \@since 1.187.0
+ * \@since n.e.x.t
  *
  * \@return {Object} Description of return value.
  */
@@ -883,6 +883,8 @@ describe( 'useFeature', () => {
 	} );
 } );
 ```
+
+The `viewContext`, `inView`, and `widget` options work the same way for a hook that calls `useViewContext()`, `useInView()`, or `useWidget()`.
 
 ## Best Practices
 

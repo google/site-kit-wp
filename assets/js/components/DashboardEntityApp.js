@@ -51,11 +51,13 @@ import {
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
+import { useFeature } from '@/js/hooks/useFeature';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import DateRangePicker from './DateRangePicker';
 import DateRangeSelector from './DateRangeSelector';
 import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
@@ -74,6 +76,8 @@ import VisuallyHidden from './VisuallyHidden';
 
 function DashboardEntityApp() {
 	useFeatureCountCache();
+
+	const datePickerEnabled = useFeature( 'datePicker' );
 
 	const viewOnlyDashboard = useViewOnly();
 	// On mobile and tablet, or when the "Add features" button would otherwise
@@ -234,7 +238,11 @@ function DashboardEntityApp() {
 			<ModuleDashboardEffects />
 			<Header showNavigation>
 				<EntitySearchInput />
-				<DateRangeSelector />
+				{ datePickerEnabled ? (
+					<DateRangePicker />
+				) : (
+					<DateRangeSelector />
+				) }
 				{ shouldCollapseFeatureActions ? (
 					<Fragment>
 						<HelpMenu />

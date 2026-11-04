@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Internal dependencies
@@ -36,7 +36,7 @@ import useStep from './useStep';
  * A step without completion criteria is never complete, so it is always a
  * valid target.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Array.<Object>} steps       Ordered step definitions.
  * @param {Function}       select      Registry select function.
@@ -59,7 +59,7 @@ export function resolveStep(
  * Steps without completion criteria are ignored, so they never hold the flow
  * back.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Array.<Object>} steps  Ordered step definitions.
  * @param {Function}       select Registry select function.
@@ -82,7 +82,10 @@ export function findBlockingStep(
  * earlier in the flow has unmet completion criteria, in which case the flow
  * redirects back to it.
  *
- * @since n.e.x.t
+ * The current step stays `undefined` until the initial step resolves.
+ *
+ * @since 1.190.0
+ * @since 1.191.0 Returns no current step until the initial step resolves.
  *
  * @param {Array.<Object>} steps Ordered step definitions. Must be referentially stable.
  * @return {Object} The current step definition, and a callback that advances to the next step that is not yet complete.
@@ -94,6 +97,9 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 	// `@wordpress/data` types `useRegistry()` as returning `Function`.
 	const registry = useRegistry() as unknown as Registry;
 	const [ slug, setStep ] = useStep();
+
+	// Never reset, so refetching the publication doesn't hide the step again.
+	const [ hasResolvedStep, setHasResolvedStep ] = useState( false );
 
 	const publicationID: string | undefined = useSelect(
 		( select: Select ) =>
@@ -152,7 +158,11 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 
 		if ( blockingSlug && blockingIndex < currentIndex ) {
 			setStep( blockingSlug );
+
+			return;
 		}
+
+		setHasResolvedStep( true );
 	}, [
 		blockingSlug,
 		currentIndex,
@@ -173,12 +183,20 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 		);
 
 		if ( nextStep ) {
+			// A stored error clears only when the same request runs again, so drop
+			// any errors the completed step left, or the next step shows them.
+			const { clearActionErrors, clearSelectorErrors } =
+				registry.dispatch( MODULES_READER_REVENUE_MANAGER );
+
+			clearActionErrors();
+			clearSelectorErrors();
+
 			setStep( nextStep.slug );
 		}
 	}, [ currentIndex, registry, setStep, steps ] );
 
 	return {
-		currentStep: steps[ currentIndex ],
+		currentStep: hasResolvedStep ? steps[ currentIndex ] : undefined,
 		advance,
 	};
 }

@@ -26,12 +26,16 @@ import { ESCAPE } from '@wordpress/keycodes';
  */
 import { Registry } from 'googlesitekit-data';
 import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_SETUP_TYPES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
 import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -50,6 +54,8 @@ import FeatureDetailPanel from './';
 describe( 'FeatureDetailPanel', () => {
 	let registry: Registry;
 
+	mockBrowserScrolling();
+
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -66,10 +72,28 @@ describe( 'FeatureDetailPanel', () => {
 		] );
 
 		provideFeatures( registry, [
-			{ slug: 'first', title: 'First feature' },
+			{
+				slug: 'first',
+				title: 'First feature',
+				detail: {
+					description: { whatIs: 'First feature description' },
+					requirements: { setupList: [ 'First feature setup' ] },
+					screenshots: [
+						{
+							src: '/first.png',
+							alt: 'First feature preview',
+							width: 640,
+							height: 480,
+						},
+					],
+				},
+			},
 			{
 				slug: 'second',
 				title: 'Second feature',
+				detail: {
+					description: { whatIs: 'Second feature description' },
+				},
 				moduleSlug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
@@ -112,6 +136,10 @@ describe( 'FeatureDetailPanel', () => {
 		setFeature( 'second' );
 
 		await waitForRegistry();
+
+		expect( getByRole( 'tabpanel' ) ).toHaveTextContent(
+			'Second feature description'
+		);
 
 		expect(
 			getByRole( 'heading', { name: 'Second feature' } )
@@ -259,7 +287,27 @@ describe( 'FeatureDetailPanel', () => {
 				name
 			);
 
-			expect( getByRole( 'tabpanel', { name } ) ).toBeInTheDocument();
+			const panel = getByRole( 'tabpanel', { name } );
+
+			if ( name === 'Description' ) {
+				expect( panel ).toHaveTextContent(
+					'First feature description'
+				);
+			} else if ( name === 'Requirements' ) {
+				expect( panel ).toHaveTextContent( 'First feature setup' );
+
+				expect( panel ).not.toHaveTextContent(
+					'First feature description'
+				);
+			} else {
+				expect(
+					within( panel ).getByRole( 'img', {
+						name: 'First feature preview',
+					} )
+				).toBeInTheDocument();
+
+				expect( panel ).not.toHaveTextContent( 'First feature setup' );
+			}
 		}
 
 		fireEvent.click( getByRole( 'button', { name: 'Cancel' } ) );
@@ -277,6 +325,10 @@ describe( 'FeatureDetailPanel', () => {
 
 		await waitForRegistry();
 
+		expect( getByRole( 'tabpanel' ) ).toHaveTextContent(
+			'Second feature description'
+		);
+
 		expect(
 			getByRole( 'tabpanel', { name: 'Description' } )
 		).toBeInTheDocument();
@@ -290,21 +342,30 @@ describe( 'FeatureDetailPanel', () => {
 
 		fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 
-		let finishSetup: ( value: Record< string, never > ) => void;
+		let finishSetup!: ( value: Record< string, never > ) => void;
 
-		const setupFeature = jest
-			.spyOn(
-				registry.dispatch( CORE_FEATURE_DISCOVERY ),
-				'setupFeature'
-			)
-			.mockImplementation(
-				() =>
-					new Promise( ( resolve ) => {
-						finishSetup = resolve;
-					} )
-			);
+		const activation = new Promise< Record< string, never > >(
+			( resolve ) => {
+				finishSetup = resolve;
+			}
+		);
 
-		setFeature( 'first' );
+		provideFeatures( registry, [
+			{
+				slug: 'background',
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					activate: () => activation,
+				},
+			},
+		] );
+
+		const setupFeature = jest.spyOn(
+			registry.dispatch( CORE_FEATURE_DISCOVERY ),
+			'setupFeature'
+		);
+
+		setFeature( 'background' );
 
 		const { getByRole, queryByRole } = render( <FeatureDetailPanel />, {
 			registry,
@@ -312,7 +373,7 @@ describe( 'FeatureDetailPanel', () => {
 
 		fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
 
-		expect( setupFeature ).toHaveBeenCalledWith( 'first' );
+		expect( setupFeature ).toHaveBeenCalledWith( 'background' );
 		expect( getByRole( 'dialog' ) ).toBeInTheDocument();
 		expect( getByRole( 'button', { name: 'Set up now' } ) ).toBeDisabled();
 
@@ -320,12 +381,11 @@ describe( 'FeatureDetailPanel', () => {
 			registry
 				.select( CORE_UI )
 				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
-		).toBe( 'first' );
+		).toBe( 'background' );
 
-		await act( () => {
+		await act( async () => {
 			finishSetup( {} );
-
-			return Promise.resolve();
+			await setupFeature.mock.results[ 0 ].value;
 		} );
 
 		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
@@ -338,7 +398,72 @@ describe( 'FeatureDetailPanel', () => {
 
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: { data: { triggerID: 'setup:feature_setup_first' } },
+				body: { data: { triggerID: 'setup:feature_setup_background' } },
+			} )
+		);
+	} );
+
+	it( 'should close and open an in-place feature’s panel over the hub, as the card does', async () => {
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+		fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+		const setupFeature = jest.spyOn(
+			registry.dispatch( CORE_FEATURE_DISCOVERY ),
+			'setupFeature'
+		);
+
+		let detailPanelSlugOnOpen;
+
+		const open = jest.fn( ( panelRegistry: Registry ) => {
+			detailPanelSlugOnOpen = panelRegistry
+				.select( CORE_UI )
+				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY );
+
+			panelRegistry
+				.dispatch( CORE_UI )
+				.setValue( 'testPanelOpened', true );
+		} );
+
+		provideFeatures( registry, [
+			{
+				slug: 'in-place',
+				title: 'In-place feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+					ctaLabel: 'Try it now',
+					open,
+				},
+			},
+		] );
+
+		setFeature( 'in-place' );
+
+		const { getByRole, queryByRole } = render( <FeatureDetailPanel />, {
+			registry,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Try it now' } ) );
+
+		await waitFor( () =>
+			expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument()
+		);
+
+		expect( setupFeature ).toHaveBeenCalledWith( 'in-place' );
+		expect( open ).toHaveBeenCalledTimes( 1 );
+
+		// The detail panel was already closed when the feature's panel opened.
+		expect( detailPanelSlugOnOpen ).toBe( false );
+		expect( registry.select( CORE_UI ).getValue( 'testPanelOpened' ) ).toBe(
+			true
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: { data: { triggerID: 'setup:feature_setup_in-place' } },
 			} )
 		);
 	} );

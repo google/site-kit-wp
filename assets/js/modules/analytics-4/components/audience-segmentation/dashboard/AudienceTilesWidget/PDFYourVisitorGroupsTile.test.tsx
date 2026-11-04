@@ -25,7 +25,9 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { flattenPDFStyle } from '@/js/components/pdf-export/test-utils';
 import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
 
 const METRICS = {
@@ -93,6 +95,54 @@ function renderTile(
  */
 function countPartialDataBadges( json: string ) {
 	return json.split( 'Partial data' ).length - 1;
+}
+
+/**
+ * Finds the first row that directly holds the given title text.
+ *
+ * @since 1.191.0
+ *
+ * @param node  The rendered tree, or a node within it.
+ * @param title The title text the row holds.
+ * @return The row, or `undefined` when no row holds the title.
+ */
+function findTitleRow(
+	node: TestRenderer.ReactTestRendererJSON,
+	title: string
+): TestRenderer.ReactTestRendererJSON | undefined {
+	const children = ( node.children ?? [] ).filter(
+		( child ): child is TestRenderer.ReactTestRendererJSON =>
+			typeof child === 'object'
+	);
+
+	if ( children.some( ( child ) => child.children?.includes( title ) ) ) {
+		return node;
+	}
+
+	for ( const child of children ) {
+		const row = findTitleRow( child, title );
+
+		if ( row ) {
+			return row;
+		}
+	}
+
+	return undefined;
+}
+
+/**
+ * Finds the style of the row that holds the given title text.
+ *
+ * @since 1.191.0
+ *
+ * @param json  The rendered PDF content, serialized to a string.
+ * @param title The title text the row holds.
+ * @return The row's style, flattened to one object.
+ */
+function findTitleRowStyle( json: string, title: string ) {
+	const row = findTitleRow( JSON.parse( json ), title );
+
+	return flattenPDFStyle( row?.props.style );
 }
 
 describe( 'PDFYourVisitorGroupsTile', () => {
@@ -178,6 +228,45 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 				} )
 			)
 		).toBe( 2 );
+	} );
+
+	it( 'should reserve the badge height on the card header with or without a badge', () => {
+		// Header flag set: the badge shows beside the audience name. The row
+		// holding the height can't be the padded header, as `minHeight`
+		// includes padding there.
+		const headerRow = findTitleRowStyle(
+			renderTile( { isAudiencePartialData: true } ),
+			'New visitors'
+		);
+
+		expect( headerRow ).toMatchObject( { minHeight: scalePDFValue( 28 ) } );
+		expect( headerRow ).not.toHaveProperty( 'paddingVertical' );
+
+		// Header flag unset: no badge, but the header keeps its height.
+		expect(
+			findTitleRowStyle(
+				renderTile( { isAudiencePartialData: false } ),
+				'New visitors'
+			)
+		).toMatchObject( { minHeight: scalePDFValue( 28 ) } );
+	} );
+
+	it( 'should reserve the badge height on the Top content title row with or without a badge', () => {
+		// Top content flag set: the badge shows beside the title.
+		expect(
+			findTitleRowStyle(
+				renderTile( { isTopContentPartialData: true } ),
+				'Top content by pageviews'
+			)
+		).toMatchObject( { minHeight: scalePDFValue( 28 ) } );
+
+		// Top content flag unset: no badge, but the row keeps its height.
+		expect(
+			findTitleRowStyle(
+				renderTile( { isTopContentPartialData: false } ),
+				'Top content by pageviews'
+			)
+		).toMatchObject( { minHeight: scalePDFValue( 28 ) } );
 	} );
 
 	it( 'truncates a long city name to one line with an ellipsis', () => {

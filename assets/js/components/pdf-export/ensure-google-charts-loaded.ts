@@ -71,7 +71,7 @@ function injectLoaderScript(): Promise< void > {
  * Loads the CDN loader (if needed) and the `corechart` package.
  *
  * @since 1.182.0
- * @since n.e.x.t Loaded Google Charts in the site language.
+ * @since 1.190.0 Loaded Google Charts in the site language.
  *
  * @return {Promise<void>} Resolves once Google Charts is ready to draw.
  */

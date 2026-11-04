@@ -18,7 +18,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
  * filter, so what a callback returns is checked before it is ranked or sent
  * to the browser.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Contextual_Data_Validator {
 	 * A `CONTENT` row has `current` and `previous` rather than `visitors`
 	 * because the rows are validated before they are scored.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const ROW_FIELDS = array(
 		'CHANNELS'       => array(
@@ -81,7 +81,7 @@ class Contextual_Data_Validator {
 	 * value isn't a list. A row that misses a field, or has a value of the
 	 * wrong type, is removed, and the other rows of its key are kept.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $contextual_data The rows, keyed by `contextualData` key, such as `channels`.
 	 * @return array The valid rows, keyed by `contextualData` key. Each row has only the fields its key defines, with a count as an integer and an average position as a float or `null`.
@@ -113,7 +113,7 @@ class Contextual_Data_Validator {
 	/**
 	 * Validates one row against the fields of its key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $fields The fields the row must have, and the type of each.
 	 * @param mixed $row    The row a filter callback returned.

@@ -16,14 +16,14 @@ use Google\Site_Kit\Core\Modules\Schema_Aware_Datapoint;
  * Fake datapoint that describes the parameters it accepts, so its requests are
  * validated before it runs.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  */
 class FakeModule_Schema_Aware_Request extends FakeModule_Test_Request implements Schema_Aware_Datapoint {
 
 	/**
 	 * Gets the schema of the parameters the datapoint accepts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Map of parameter names to their schemas.
 	 */

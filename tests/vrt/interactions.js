@@ -34,7 +34,7 @@ const FONT_SIZE_TIMEOUT = 5000;
  * Interactive scenarios run in their own browser context (see `fixtures.js`),
  * so the mouse position never carries over to another story.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} page     The Playwright page.
  * @param {Object} scenario The scenario.
@@ -66,7 +66,7 @@ async function runInteractions( page, scenario, network ) {
  * `DataBlockGroup` shrinks its data points to fit on resize, so the scenario
  * clears their sizes and nudges the viewport to make it fit them again.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} page          The Playwright page.
  * @param {Object} scenario      The scenario.

@@ -551,30 +551,33 @@ add_action(
 
 ```php
 private function get_inline_base_data() {
-    global $wpdb;
-    $site_url = $this->context->get_reference_site_url();
+    global $wpdb, $wp_rewrite;
+    $site_url          = $this->context->get_reference_site_url();
+    $product_type      = Product_Post_Type::get();
+    $product_post_type = $product_type ? $product_type->name : null;
 
     $inline_data = array(
-        'homeURL'           => trailingslashit( $this->context->get_canonical_home_url() ),
-        'referenceSiteURL'  => esc_url_raw( trailingslashit( $site_url ) ),
-        'adminURL'          => esc_url_raw( trailingslashit( admin_url() ) ),
-        'assetsURL'         => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-        'widgetsAdminURL'   => esc_url_raw( $this->get_widgets_admin_url() ),
-        'blogPrefix'        => $wpdb->get_blog_prefix(),
-        'ampMode'           => $this->context->get_amp_mode(),
-        'isNetworkMode'     => $this->context->is_network_mode(),
-        'timezone'          => get_option( 'timezone_string' ),
-        'startOfWeek'       => (int) get_option( 'start_of_week' ),
-        'siteName'          => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
-        'siteLocale'        => $this->context->get_locale(),
-        'enabledFeatures'   => Feature_Flags::get_enabled_features(),
-        'webStoriesActive'  => defined( 'WEBSTORIES_VERSION' ),
-        'postTypes'         => $this->get_post_types(),
-        'storagePrefix'     => $this->get_storage_prefix(),
-        'referenceDate'     => Date::reference_date(),
-        'productPostType'   => $this->get_product_post_type(),
-        'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
-        'isMultisite'       => is_multisite(),
+        'homeURL'              => trailingslashit( $this->context->get_canonical_home_url() ),
+        'referenceSiteURL'     => esc_url_raw( trailingslashit( $site_url ) ),
+        'adminURL'             => esc_url_raw( trailingslashit( admin_url() ) ),
+        'assetsURL'            => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+        'widgetsAdminURL'      => esc_url_raw( $this->get_widgets_admin_url() ),
+        'blogPrefix'           => $wpdb->get_blog_prefix(),
+        'ampMode'              => $this->context->get_amp_mode(),
+        'isNetworkMode'        => $this->context->is_network_mode(),
+        'timezone'             => get_option( 'timezone_string' ),
+        'startOfWeek'          => (int) get_option( 'start_of_week' ),
+        'siteName'             => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+        'siteLocale'           => $this->context->get_locale(),
+        'enabledFeatures'      => Feature_Flags::get_enabled_features(),
+        'webStoriesActive'     => defined( 'WEBSTORIES_VERSION' ),
+        'postTypes'            => $this->get_post_types(),
+        'storagePrefix'        => $this->get_storage_prefix(),
+        'referenceDate'        => Date::reference_date(),
+        'productPostType'      => $product_post_type,
+        'usingPlainPermalinks' => ! $wp_rewrite->using_permalinks(),
+        'anyoneCanRegister'    => (bool) get_option( 'users_can_register' ),
+        'isMultisite'          => is_multisite(),
     );
 
     return apply_filters( 'googlesitekit_inline_base_data', $inline_data );

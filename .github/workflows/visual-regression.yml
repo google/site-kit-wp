@@ -54,7 +54,7 @@ on:
         default: '1'
 
 concurrency:
-  group: visual-regression-${{ github.ref }}
+  group: visual-regression-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -62,7 +62,7 @@ permissions:
 
 env:
   GCS_ROOT_PATH: vrt
-  CAN_UPLOAD_VRT_REPORTS: ${{ github.event_name != 'pull_request' || ( ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false ) }}
+  CAN_UPLOAD_VRT_REPORTS: ${{ github.event_name != 'pull_request' || ( ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.full_name == github.repository ) }}
 
 jobs:
   build:
@@ -73,6 +73,13 @@ jobs:
     outputs:
       playwright-version: ${{ steps.playwright.outputs.version }}
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
         with:
           persist-credentials: false
@@ -99,8 +106,8 @@ jobs:
         with:
           name: storybook-vrt
           path: |
-            dist
-            !dist/**/*.map
+            storybook-static
+            !storybook-static/**/*.map
           retention-days: 1
 
   test:
@@ -125,7 +132,7 @@ jobs:
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
         with:
           name: storybook-vrt
-          path: dist
+          path: storybook-static
       - name: npm install
         run: SKIP_PATCH_PACKAGE=1 npm ci -w tests/vrt --ignore-scripts
       - name: Run VR tests
@@ -154,6 +161,13 @@ jobs:
       # For the flaky screenshots check.
       checks: write
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
         with:
           persist-credentials: false
@@ -320,7 +334,7 @@ jobs:
     name: Add comment to PR
     runs-on: ubuntu-latest
     needs: report
-    if: always() && github.event_name == 'pull_request' && ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false && github.event.action != 'closed' && needs.report.result != 'skipped'
+    if: always() && github.event_name == 'pull_request' && ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.full_name == github.repository && github.event.action != 'closed' && needs.report.result != 'skipped'
     permissions:
       contents: read
       pull-requests: write
@@ -359,6 +373,13 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/remove-gcs-path

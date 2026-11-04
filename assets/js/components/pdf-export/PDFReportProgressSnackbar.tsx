@@ -53,7 +53,7 @@ const PDFReportProgressSnackbar: FC< PDFReportProgressSnackbarProps > = ( {
 	onCancel,
 	title = __( 'Generating your PDF report', 'google-site-kit' ),
 	description = __(
-		'Please keep this tab open until the download starts automatically',
+		'Please keep this page open until the download starts automatically',
 		'google-site-kit'
 	),
 	cancelLabel = __( 'Cancel', 'google-site-kit' ),

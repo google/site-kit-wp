@@ -17,10 +17,30 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import {
+	consumePendingSetup,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
+import {
+	ADWORDS_SCOPE,
+	MODULES_ADS,
+	PLUGINS,
+} from '@/js/modules/ads/datastore/constants';
+import {
+	PAX_PARAM_SETUP_STEP,
+	PAX_SETUP_STEP,
+	PAX_SETUP_SUCCESS_NOTIFICATION,
+} from '@/js/modules/ads/pax/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	act,
@@ -33,6 +53,20 @@ import {
 	render,
 } from '@tests/js/test-utils';
 import SetupMain from './SetupMain';
+
+jest.mock( '@/js/modules/ads/components/common/PAXEmbeddedApp', () => {
+	return function MockPAXEmbeddedApp( {
+		onFinishAndCloseSignUpFlow,
+	}: {
+		onFinishAndCloseSignUpFlow: () => void;
+	} ) {
+		return (
+			<button onClick={ onFinishAndCloseSignUpFlow }>
+				Complete PAX setup
+			</button>
+		);
+	};
+} );
 
 describe( 'SetupMain', () => {
 	mockLocation();
@@ -72,6 +106,10 @@ describe( 'SetupMain', () => {
 		registry.dispatch( MODULES_ADS ).receiveGetSettings( {} );
 
 		providePluginState();
+	} );
+
+	afterEach( async () => {
+		await consumePendingSetup();
 	} );
 
 	it( 'should not open the WooCommerce modal when WooCommerce is not active', async () => {
@@ -174,5 +212,78 @@ describe( 'SetupMain', () => {
 			container.querySelector( WOO_MODAL_SELECTOR )
 		).not.toBeInTheDocument();
 		expect( global.location.assign ).toHaveBeenCalled();
+	} );
+
+	it( 'should finish setup on the Feature Discovery Hub when pending setup matches Ads', async () => {
+		await setPendingSetup( 'ads', ALL_SERVICES_TAB_PATH );
+
+		const featuresURL = registry
+			.select( CORE_SITE )
+			.getAdminURL( 'googlesitekit-features' );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ ADWORDS_SCOPE ],
+		} );
+		global.history.replaceState(
+			{},
+			'',
+			addQueryArgs( 'http://example.com/wp-admin/', {
+				[ PAX_PARAM_SETUP_STEP ]: PAX_SETUP_STEP.LAUNCH,
+			} )
+		);
+
+		const finishSetup = jest.fn();
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupMain finishSetup={ finishSetup } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /complete pax setup/i } )
+			);
+		} );
+
+		expect( finishSetup ).toHaveBeenCalledWith( featuresURL );
+	} );
+
+	it( 'should finish setup on the dashboard success URL when pending setup does not match Ads', async () => {
+		await setPendingSetup( 'analytics', ALL_SERVICES_TAB_PATH );
+
+		provideUserAuthentication( registry, {
+			grantedScopes: [ ADWORDS_SCOPE ],
+		} );
+		global.history.replaceState(
+			{},
+			'',
+			addQueryArgs( 'http://example.com/wp-admin/', {
+				[ PAX_PARAM_SETUP_STEP ]: PAX_SETUP_STEP.LAUNCH,
+			} )
+		);
+
+		const finishSetup = jest.fn();
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupMain finishSetup={ finishSetup } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /complete pax setup/i } )
+			);
+		} );
+
+		const dashboardSuccessURL = registry
+			.select( CORE_SITE )
+			.getAdminURL( 'googlesitekit-dashboard', {
+				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+			} );
+
+		expect( finishSetup ).toHaveBeenCalledWith( dashboardSuccessURL );
 	} );
 } );

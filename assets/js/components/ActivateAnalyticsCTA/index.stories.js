@@ -50,10 +50,9 @@ CompleteSetup.args = {
 	isAnalyticsActive: true,
 };
 
-export const WithSetupFlowRefreshPhase4ActivationError = Template.bind( {} );
-WithSetupFlowRefreshPhase4ActivationError.storyName =
-	'Setup Flow Refresh Phase 4 - Activation Error';
-WithSetupFlowRefreshPhase4ActivationError.args = {
+export const ActivationError = Template.bind( {} );
+ActivationError.storyName = 'Activation Error';
+ActivationError.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_SITE ).setInternalServerError( {
@@ -61,9 +60,6 @@ WithSetupFlowRefreshPhase4ActivationError.args = {
 			description: 'This is an error',
 		} );
 	},
-};
-WithSetupFlowRefreshPhase4ActivationError.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
 };
 
 export default {

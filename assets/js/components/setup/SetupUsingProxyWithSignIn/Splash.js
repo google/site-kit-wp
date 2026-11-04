@@ -38,15 +38,10 @@ import {
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import { Grid } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Splash( { children } ) {
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
-
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
@@ -97,9 +92,7 @@ export default function Splash( { children } ) {
 		title = __( "Let's get started!", 'google-site-kit' );
 
 		description =
-			setupFlowRefreshPhase4Enabled &&
-			analyticsModuleActive &&
-			hasViewableModules
+			analyticsModuleActive && hasViewableModules
 				? __(
 						'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services that are shared with you:',
 						'google-site-kit'

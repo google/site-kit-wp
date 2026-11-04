@@ -15,7 +15,7 @@ use Google\Site_Kit\Modules\Search_Console;
 /**
  * Builds the search query rows of the benchmarking response.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Report_Data_Builder {
 	/**
 	 * Search Console module instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var Search_Console
 	 */
 	private $search_console;
@@ -32,7 +32,7 @@ class Report_Data_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param Search_Console $search_console The Search Console module instance, which runs the reports.
 	 */
@@ -43,7 +43,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds the search query rows for the period the benchmarking response is for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $args {
 	 *     The period the rows are for, as the `googlesitekit_benchmarking_contextual_data` filter passes it.

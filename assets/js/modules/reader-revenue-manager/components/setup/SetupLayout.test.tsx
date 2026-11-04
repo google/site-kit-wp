@@ -21,9 +21,15 @@
  */
 import { type Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -153,5 +159,79 @@ describe( 'SetupLayout', () => {
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
 		);
+	} );
+
+	describe( 'event tracking', () => {
+		const eventCategory = `${ VIEW_CONTEXT_MODULE_SETUP }_rrm-express-setup_newsletter-signup`;
+
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it.each( [
+			[ 'terms-of-service', 'terms-of-service', false ],
+			[ 'connect-publication', 'connect-publication', false ],
+			[ 'connect-publication', 'create-publication', true ],
+		] )(
+			'should track exit_setup from the %s step with the %s label',
+			async ( step, label, showPublicationCreate ) => {
+				global.location.href = `http://example.com/?expressSetup=true&cta=newsletter-signup&step=${ step }`;
+
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+						[ SHOW_PUBLICATION_CREATE ]: showPublicationCreate,
+					} );
+
+				const { getByRole } = render( <SetupLayout />, {
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				} );
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Exit setup' } )
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					eventCategory,
+					'exit_setup',
+					label
+				);
+
+				await waitFor( () => {
+					expect( global.location.assign ).toHaveBeenCalled();
+				} );
+			}
+		);
+
+		it( 'should not track exit_setup outside a CTA setup flow', async () => {
+			global.location.href =
+				'http://example.com/?expressSetup=true&step=terms-of-service';
+
+			const { getByRole } = render( <SetupLayout />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Exit setup' } ) );
+
+			await waitFor( () => {
+				expect( global.location.assign ).toHaveBeenCalled();
+			} );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				expect.anything(),
+				'exit_setup',
+				expect.anything()
+			);
+		} );
 	} );
 } );

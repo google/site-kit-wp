@@ -26,6 +26,33 @@ $tile-content-offset: 19px;
 // The 2px connector sits centered in the 9px dot: (9px - 2px) / 2.
 $tile-connector-offset: 3.5px;
 
+// Draws the connector down a tile's left edge, and its 9px dot `$dot-top` from
+// the tile's top. They're a `::before` and an `::after` rather than a border,
+// so both sit inside the tile's own box, which needs `position: relative`.
+@mixin tile-connector($dot-top) {
+
+	&::before {
+		background: $c-utility-divider;
+		bottom: 0;
+		content: "";
+		left: $tile-connector-offset;
+		position: absolute;
+		top: 0;
+		width: 2px;
+	}
+
+	&::after {
+		background: $c-utility-divider;
+		border-radius: 50%;
+		content: "";
+		height: 9px;
+		left: 0;
+		position: absolute;
+		top: $dot-top;
+		width: 9px;
+	}
+}
+
 .googlesitekit-plugin {
 
 	.googlesitekit-site-goals-tiles-group {

@@ -47,7 +47,7 @@ const HOST_RESOLVER_RULES = [
 /**
  * Builds the pattern for tests limited to viewports other than this one.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} label The viewport label.
  * @return {RegExp} Matches the `@only-<viewport>` tags of the other viewports.

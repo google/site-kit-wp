@@ -106,7 +106,7 @@ describe( 'useExpressSetupScopes', () => {
 	it( 'should wait for authentication to resolve before requesting scopes', () => {
 		registry = createTestRegistry() as Registry;
 		freezeFetch(
-			/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' )
 		);
 		renderHook( () => useExpressSetupScopes(), {
 			registry,
@@ -114,5 +114,53 @@ describe( 'useExpressSetupScopes', () => {
 		expect(
 			registry.select( CORE_USER ).getPermissionScopeError()
 		).toBeNull();
+	} );
+
+	describe( 'return value', () => {
+		it( 'should return undefined while the granted scopes are loading', () => {
+			registry = createTestRegistry() as Registry;
+			freezeFetch(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/authentication'
+				)
+			);
+
+			const { result } = renderHook( () => useExpressSetupScopes(), {
+				registry,
+			} );
+
+			expect( result.current ).toBeUndefined();
+		} );
+
+		it( 'should return false when a required scope is missing, and still request it once', () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: [ EXPRESS_SETUP_SCOPES[ 0 ] ],
+			} );
+			const dispatch = jest.spyOn(
+				registry.dispatch( CORE_USER ),
+				'setPermissionScopeError'
+			);
+
+			const { result, rerender } = renderHook(
+				() => useExpressSetupScopes(),
+				{ registry }
+			);
+			rerender();
+
+			expect( result.current ).toBe( false );
+			expect( dispatch ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'should return true when all required scopes are granted', () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: EXPRESS_SETUP_SCOPES,
+			} );
+
+			const { result } = renderHook( () => useExpressSetupScopes(), {
+				registry,
+			} );
+
+			expect( result.current ).toBe( true );
+		} );
 	} );
 } );

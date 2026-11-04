@@ -911,7 +911,7 @@ class OAuth_ClientTest extends TestCase {
 	/**
 	 * Authorizes a new user and returns the URL they are redirected to.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $stored_redirect_url Optional. Redirect URL stored for the user before authorization. Default empty.
 	 * @return string Redirect location.

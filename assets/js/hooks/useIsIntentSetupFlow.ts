@@ -26,7 +26,7 @@ import useQueryArg from '@/js/hooks/useQueryArg';
  *
  * The Site Kit service marks such a flow by sending the user to the splash screen with `purpose=intent`.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {boolean} TRUE when the setup flow fulfills an intent, otherwise FALSE.
  */

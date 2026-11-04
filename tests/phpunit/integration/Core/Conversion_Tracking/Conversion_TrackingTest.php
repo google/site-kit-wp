@@ -24,6 +24,8 @@ use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\Fa
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active_Two;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeLeadEventProvider_Active;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Tests\TestCase;
 
 class Conversion_TrackingTest extends TestCase {
@@ -129,6 +131,23 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ), 'Inactive provider script should not enqueue after snippet.' );
 
 		$this->assertTrue( has_action( 'fake_provider_action' ), 'Provider hook should be registered after snippet.' );
+	}
+
+	public function test_gtag_event__adds_user_data_developer_id_only_for_events_with_user_data() {
+		wp_register_script( GTag::HANDLE, 'https://www.googletagmanager.com/gtag/js', array(), null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+
+		$this->conversion_tracking->register();
+
+		do_action( 'googlesitekit_analytics-4_init_tag' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$inline_script = implode( '', wp_scripts()->registered[ GTag::HANDLE ]->extra['after'] );
+
+		$this->assertStringContainsString(
+			'data && data.user_data ? {"developer_id.' . Enhanced_Conversions::USER_DATA_DEVELOPER_ID . '":true} : {}',
+			$inline_script,
+			'The gtagEvent wrapper should add the user data developer ID to the event params only when the event has user data.'
+		);
 	}
 
 	public function data_modules() {

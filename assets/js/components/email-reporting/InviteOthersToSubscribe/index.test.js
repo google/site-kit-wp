@@ -205,25 +205,28 @@ describe( 'InviteOthersToSubscribe', () => {
 		await act( waitForDefaultTimeouts );
 	} );
 
-	it( 'displays the info tooltip with eligibility explanation next to the empty state', async () => {
+	it( 'should display the info tooltip with eligibility explanation next to the empty state', async () => {
 		fetchMock.getOnce( eligibleSubscribersEndpoint, {
 			body: createSubscribersResponse( [], { total: 0, totalPages: 0 } ),
 			status: 200,
 		} );
 
-		const { findByText, getByRole } = render( <InviteOthersToSubscribe />, {
-			registry,
-		} );
+		const { findByRole, findByText, getByRole } = render(
+			<InviteOthersToSubscribe />,
+			{ registry }
+		);
 
 		await findByText( 'No users are eligible to receive invitations.' );
 
-		fireEvent.mouseOver( getByRole( 'tooltip' ) );
+		fireEvent.mouseOver(
+			getByRole( 'button', {
+				name: /You can only invite users who have access to the dashboard/i,
+			} )
+		);
 
-		expect(
-			await findByText(
-				/You can only invite users who have access to the dashboard/i
-			)
-		).toBeInTheDocument();
+		expect( await findByRole( 'tooltip' ) ).toHaveTextContent(
+			/You can only invite users who have access to the dashboard/i
+		);
 		await act( waitForDefaultTimeouts );
 	} );
 

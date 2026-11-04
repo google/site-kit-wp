@@ -36,7 +36,7 @@ import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
  * Builds the options of the report that counts a goal type's conversion events
  * in the selected date range.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {WPDataRegistry} registry Test registry whose selected date range the report covers.
  * @param {GoalType}       goalType Goal type whose conversion events the report counts.
@@ -68,7 +68,7 @@ export function buildSiteGoalsEventCountReportOptions(
  * Stores a finished event count report for the selected date range, so the code
  * under test reads it without a request.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {WPDataRegistry} registry   Test registry whose selected date range the report covers.
  * @param {GoalType}       goalType   Goal type whose conversion events the report counts.

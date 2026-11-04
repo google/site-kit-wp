@@ -23,7 +23,7 @@ use WP_Error;
  * Everything the Typical Traffic tab renders comes from here, so the tab makes
  * one request and has one loading state instead of eight.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -32,14 +32,14 @@ class Response_Builder {
 	/**
 	 * The most rows a dimension keeps in the response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const MAX_ROWS_PER_DIMENSION = 5;
 
 	/**
 	 * Analytics 4 module instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var Analytics_4
 	 */
 	private $analytics_4;
@@ -47,7 +47,7 @@ class Response_Builder {
 	/**
 	 * Custom_Dimensions_Data_Available instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var Custom_Dimensions_Data_Available
 	 */
 	private $custom_dimensions_data_available;
@@ -55,7 +55,7 @@ class Response_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param Analytics_4                      $analytics_4                      The Analytics 4 module instance, which runs the reports.
 	 * @param Custom_Dimensions_Data_Available $custom_dimensions_data_available The Custom_Dimensions_Data_Available instance.
@@ -70,15 +70,17 @@ class Response_Builder {
 	 *
 	 * Nothing is saved to the site, so every call builds the response again.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
+	 * @since 1.191.0 Returns `visits` in place of `visitors`, and each day's count as `visits`.
+	 * @since n.e.x.t `dailyTraffic` changed from the 395 days that end on the end date to the days of the selected period.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
 	 * @return array|WP_Error {
 	 *     The assembled response, or the error a failed report returned.
 	 *
-	 *     @type array $visitors       Visitor totals for the selected period and the one before it.
-	 *     @type array $dailyTraffic   Daily visitor counts, oldest first.
+	 *     @type array $visits         Visit totals for the selected period and the one before it.
+	 *     @type array $dailyTraffic   List of the days of the selected period, oldest first, each as `array( 'date' => 'YYYY-MM-DD', 'visits' => int )`.
 	 *     @type array $dimensions     Dimension codes, in the order the Typical Traffic tab shows them.
 	 *     @type array $contextualData Ranked rows, keyed by the dimension they belong to.
 	 * }
@@ -92,12 +94,12 @@ class Response_Builder {
 			return $reports;
 		}
 
-		$daily_traffic = $this->get_daily_traffic( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'] );
+		$daily_series  = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
 		$compare_range = $report_options->get_compare_range();
 
-		$visitors = array(
-			'current'  => $this->sum_visitors( $daily_traffic, $start_date, $end_date ),
-			'previous' => $this->sum_visitors( $daily_traffic, $compare_range['startDate'], $compare_range['endDate'] ),
+		$visits = array(
+			'current'  => $this->sum_visits( $daily_series, $start_date, $end_date ),
+			'previous' => $this->sum_visits( $daily_series, $compare_range['startDate'], $compare_range['endDate'] ),
 		);
 
 		$contextual_data = $this->filter_contextual_data(
@@ -111,11 +113,11 @@ class Response_Builder {
 			)
 		);
 
-		$ranked_data = $this->rank_contextual_data( $contextual_data, $visitors );
+		$ranked_data = $this->rank_contextual_data( $contextual_data, $visits );
 
 		return array(
-			'visitors'       => $visitors,
-			'dailyTraffic'   => $daily_traffic,
+			'visits'         => $visits,
+			'dailyTraffic'   => $this->get_daily_traffic( $daily_series, $start_date ),
 			'dimensions'     => $ranked_data['dimensions'],
 			'contextualData' => $ranked_data['contextualData'],
 		);
@@ -129,7 +131,7 @@ class Response_Builder {
 	 * of their row scores, which counts the rows past the cut too. A dimension
 	 * with no row left is in neither `dimensions` nor `contextualData`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $contextual_data The rows, keyed by `contextualData` key, such as `channels`. Every row has its `current` and `previous` visitors.
 	 * @param array $visitors        The site's visitors, with `current` and `previous`.
@@ -202,7 +204,7 @@ class Response_Builder {
 	 * The `CONTENT` and `CATEGORIES` reports count visitors by a custom dimension,
 	 * so each one runs only while its dimension has data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param Report_Options $report_options The report options for the selected period.
 	 * @return array Report request options, keyed by `dailyTraffic` or by dimension code, such as `CHANNELS`. The daily series is first.
@@ -233,7 +235,7 @@ class Response_Builder {
 	 * Runs the reports in batch calls, because one `GET:batch-report` call takes
 	 * at most five reports.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $requests The report request options, keyed by `dailyTraffic` or by dimension code.
 	 * @return array|WP_Error Report rows, keyed like the requests, or the error the first failed call returned.
@@ -266,7 +268,7 @@ class Response_Builder {
 	/**
 	 * Gets the rows of a report, as plain arrays.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $report A report from a batch call.
 	 * @return array List of rows, each with its dimension `values` in the order the report asked for them, its `dateRange`, and its `visitors`.
@@ -302,66 +304,96 @@ class Response_Builder {
 	}
 
 	/**
-	 * Gets each day's visitors in the daily series, oldest first.
+	 * Gets each day's visits in the daily series, oldest first.
 	 *
-	 * Analytics returns no row for a day with no visitors, so that day is listed
-	 * with `0` visitors. `Response_Encoder` keeps only the first date, so every
+	 * Analytics returns no row for a day with no visits, so that day is listed
+	 * with `0` visits. `Response_Encoder` keeps only the first date, so every
 	 * day has to be in the list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
+	 * @since 1.191.0 Lists each day's count as `visits` in place of `visitors`.
+	 * @since n.e.x.t Method renamed from `get_daily_traffic()`, and changed from walking 395 days to walking every day from `$first_date` to `$end_date`.
 	 *
 	 * @param array  $report_rows The rows of the daily series report.
 	 * @param string $first_date  The first day of the daily series, as `YYYY-MM-DD`.
-	 * @return array List of days, each with `visitors` and a `date` as `YYYY-MM-DD`.
+	 * @param string $end_date    The last day of the daily series, as `YYYY-MM-DD`.
+	 * @return array List of days, each with `visits` and a `date` as `YYYY-MM-DD`.
 	 */
-	private function get_daily_traffic( array $report_rows, $first_date ) {
+	private function get_daily_series( array $report_rows, $first_date, $end_date ) {
 		$visitors_by_date = array();
 
 		foreach ( $report_rows as $report_row ) {
 			$visitors_by_date[ $report_row['values'][0] ] = $report_row['visitors'];
 		}
 
-		$date          = new DateTimeImmutable( $first_date, new DateTimeZone( 'UTC' ) );
-		$daily_traffic = array();
+		$utc          = new DateTimeZone( 'UTC' );
+		$date         = new DateTimeImmutable( $first_date, $utc );
+		$end          = new DateTimeImmutable( $end_date, $utc );
+		$daily_series = array();
 
-		for ( $day = 0; $day < Report_Options::DAILY_SERIES_DAYS; $day++ ) {
-			$daily_traffic[] = array(
-				'date'     => $date->format( 'Y-m-d' ),
-				'visitors' => $visitors_by_date[ $date->format( 'Ymd' ) ] ?? 0,
+		// The day after `9999-12-31` formats as `10000-01-01`, which sorts
+		// before it as a string, so the loop compares the dates themselves.
+		while ( $date <= $end ) {
+			$daily_series[] = array(
+				'date'   => $date->format( 'Y-m-d' ),
+				'visits' => $visitors_by_date[ $date->format( 'Ymd' ) ] ?? 0,
 			);
 
 			$date = $date->modify( '+1 day' );
 		}
 
-		return $daily_traffic;
+		return $daily_series;
 	}
 
 	/**
-	 * Adds up each day's visitors from one date to another.
+	 * Gets the days of the selected period from the daily series, oldest first.
+	 *
+	 * The daily series starts with the compare period, which `dailyTraffic`
+	 * leaves out.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array  $daily_traffic The days, each with `visitors` and a `date` as `YYYY-MM-DD`.
-	 * @param string $start_date    The first day to count, as `YYYY-MM-DD`.
-	 * @param string $end_date      The last day to count, as `YYYY-MM-DD`.
-	 * @return int The total visitors from `$start_date` to `$end_date`.
+	 * @param array  $daily_series The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
+	 * @param string $start_date   The first day of the selected period, as `YYYY-MM-DD`.
+	 * @return array List of days from `$start_date` on, keyed from `0`.
 	 */
-	private function sum_visitors( array $daily_traffic, $start_date, $end_date ) {
-		$visitors = 0;
+	private function get_daily_traffic( array $daily_series, $start_date ) {
+		return array_values(
+			array_filter(
+				$daily_series,
+				fn( $day ) => $day['date'] >= $start_date
+			)
+		);
+	}
 
-		foreach ( $daily_traffic as $day ) {
+	/**
+	 * Adds up each day's visits from one date to another.
+	 *
+	 * @since 1.190.0
+	 * @since 1.191.0 Renamed from `sum_visitors()`.
+	 * @since n.e.x.t Parameter `$daily_traffic` renamed to `$daily_series`, because `dailyTraffic` now has the selected period alone.
+	 *
+	 * @param array  $daily_series The days of the daily series, each with `visits` and a `date` as `YYYY-MM-DD`.
+	 * @param string $start_date   The first day to count, as `YYYY-MM-DD`.
+	 * @param string $end_date     The last day to count, as `YYYY-MM-DD`.
+	 * @return int The total visits from `$start_date` to `$end_date`.
+	 */
+	private function sum_visits( array $daily_series, $start_date, $end_date ) {
+		$visits = 0;
+
+		foreach ( $daily_series as $day ) {
 			if ( $day['date'] >= $start_date && $day['date'] <= $end_date ) {
-				$visitors += $day['visitors'];
+				$visits += $day['visits'];
 			}
 		}
 
-		return $visitors;
+		return $visits;
 	}
 
 	/**
 	 * Builds each dimension's rows from its report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array  $reports  The report rows, keyed by `dailyTraffic` or by dimension code.
 	 * @param string $end_date The end date, as `YYYY-MM-DD`.
@@ -407,7 +439,7 @@ class Response_Builder {
 	 * and the `all` hook don't see the filter. They still run in the order of
 	 * their priority, since `WP_Hook` keeps them sorted by it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $contextual_data The rows built from Analytics reports, keyed by `contextualData` key.
 	 * @param array $args            The dates and the row limit the callbacks receive.
@@ -449,7 +481,7 @@ class Response_Builder {
 		 * out, each key keeps at most its 5 highest scoring rows, and a key
 		 * with no row left is left out of the response.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.190.0
 		 *
 		 * @param array $contextual_data The rows, keyed by `contextualData` key.
 		 * @param array $args {
@@ -491,7 +523,7 @@ class Response_Builder {
 	 * keeps the `values` of its first row, such as a page's title, and the rows
 	 * of the selected period are read first.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $report_rows The rows of a dimension report.
 	 * @return array List of pairs, one per value. Each pair has `current` and `previous`, and the `values` of the first row read for that value.
@@ -531,7 +563,7 @@ class Response_Builder {
 	 * Analytics returns the post date as `YYYYMMDD`, and a page whose post date
 	 * isn't a real day is skipped, since it has no age to report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array  $pairs    The pairs from the content report, each with the page path, the page title, and the post date as its values.
 	 * @param string $end_date The end date, as `YYYY-MM-DD`.
@@ -575,7 +607,7 @@ class Response_Builder {
 	 * A `CONTENT` row reports the visitors of the selected period as
 	 * `visitors`, without the `previous` count that only its score used.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $dimension_code The dimension code the row belongs to, such as `CONTENT`.
 	 * @param array  $row            The row, with its `current` and `previous` visitors.

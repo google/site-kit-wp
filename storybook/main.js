@@ -143,6 +143,11 @@ module.exports = {
 								path.resolve( rootDir, 'node_modules/' ),
 								path.resolve( rootDir, 'assets/node_modules/' ),
 							],
+							quietDeps: true,
+							fatalDeprecations: [
+								'slash-div',
+								'global-builtin',
+							],
 						},
 					},
 				},

@@ -25,7 +25,7 @@ import { FC, Fragment } from 'react';
  * WordPress dependencies
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
-import { useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,6 +40,9 @@ import {
 } from '@/js/components/Typography/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import FeatureDetailDescription from './FeatureDetailDescription';
+import FeatureDetailRequirements from './FeatureDetailRequirements';
+import FeatureDetailScreenshots from './FeatureDetailScreenshots';
 import PanelFooter from './PanelFooter';
 import PanelHeader from './PanelHeader';
 
@@ -64,6 +67,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 	const breakpoint = useBreakpoint();
 
 	const [ activeIndex, setActiveIndex ] = useState( initialActiveIndex );
+	const contentRef = useRef< HTMLDivElement >( null );
 
 	const baseID = useInstanceID(
 		PanelContent,
@@ -72,22 +76,19 @@ const PanelContent: FC< PanelContentProps > = ( {
 
 	const tabs: FeatureDetailPanelTab[] = [
 		{
-			// TODO: #13331 -- Pass FeatureDetailDescription.
-			Component: () => <code>&lt;FeatureDetailDescription /&gt;</code>,
+			Component: FeatureDetailDescription,
 			tabID: `${ baseID }-tab-description`,
 			tabPanelID: `${ baseID }-panel-description`,
 			label: __( 'Description', 'google-site-kit' ),
 		},
 		{
-			// TODO: #13331 -- Pass FeatureDetailRequirements.
-			Component: () => <code>&lt;FeatureDetailRequirements /&gt;</code>,
+			Component: FeatureDetailRequirements,
 			tabID: `${ baseID }-tab-requirements`,
 			tabPanelID: `${ baseID }-panel-requirements`,
 			label: __( 'Requirements', 'google-site-kit' ),
 		},
 		{
-			// TODO: #13331 -- Pass FeatureDetailScreenshots.
-			Component: () => <code>&lt;FeatureDetailScreenshots /&gt;</code>,
+			Component: FeatureDetailScreenshots,
 			tabID: `${ baseID }-tab-screenshots`,
 			tabPanelID: `${ baseID }-panel-screenshots`,
 			label: __( 'Screenshots', 'google-site-kit' ),
@@ -95,6 +96,10 @@ const PanelContent: FC< PanelContentProps > = ( {
 	];
 
 	const size = breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM;
+
+	useEffect( () => {
+		contentRef.current?.parentElement?.scrollTo( { top: 0 } );
+	}, [ activeIndex ] );
 
 	return (
 		<Fragment>
@@ -130,6 +135,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 							className="googlesitekit-feature-details-panel__content"
 							id={ tabPanelID }
 							key={ tabPanelID }
+							ref={ contentRef }
 							role="tabpanel"
 							tabIndex={ 0 }
 						>

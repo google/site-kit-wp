@@ -1,0 +1,119 @@
+/**
+ * Widget tab bar.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { ComponentType, FC, SVGAttributes } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { Tab, TabBar } from 'googlesitekit-components';
+import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
+import ScrollableTabs from '@/js/components/ScrollableTabs';
+
+export interface WidgetTab {
+	/** The tab's identifier, which becomes the tab element's DOM `id`. */
+	id: string;
+	/** The text the tab shows. */
+	label: string;
+	/** An icon the tab shows before its label. It is hidden from assistive technology. */
+	Icon?: ComponentType< SVGAttributes< SVGElement > >;
+	/** Whether the tab shows a "Beta" badge after its label. */
+	isBeta?: boolean;
+}
+
+interface WidgetTabBarProps {
+	/** The tabs the tab bar renders, in the order given. */
+	tabs: WidgetTab[];
+	/**
+	 * The `id` of the selected tab. The tab bar selects the first tab when no
+	 * tab has this `id`.
+	 */
+	activeTabID: string;
+	/** The tab bar calls this handler with the `id` of the tab the user selects. */
+	onTabChange: ( tabID: string ) => void;
+}
+
+const WidgetTabBar: FC< WidgetTabBarProps > = ( {
+	tabs,
+	activeTabID,
+	onTabChange,
+} ) => {
+	const activeIndex = tabs.findIndex( ( tab ) => tab.id === activeTabID );
+
+	return (
+		<ScrollableTabs className="googlesitekit-widget-tab-bar">
+			<TabBar
+				// Material's tab bar lists its tabs in the order they mount, not
+				// in the order they render, so a tab added between two others
+				// would be selected by the wrong index. A new `key` for each
+				// list of tabs mounts the tab bar again, in the list's order.
+				key={ tabs.map( ( tab ) => tab.id ).join() }
+				activeIndex={ activeIndex < 0 ? 0 : activeIndex }
+				handleActiveIndexUpdate={ ( index: number ) => {
+					const tab = tabs[ index ];
+
+					if ( tab ) {
+						onTabChange( tab.id );
+					}
+				} }
+			>
+				{ tabs.map( ( tab ) => (
+					<Tab
+						key={ tab.id }
+						id={ tab.id }
+						className="mdc-tab--min-width"
+						focusOnActivate={ false }
+					>
+						{ tab.Icon && (
+							<tab.Icon
+								className="googlesitekit-widget-tab-bar__tab-icon"
+								width={ 18 }
+								height={ 18 }
+								aria-hidden="true"
+							/>
+						) }
+						<span className="mdc-tab__text-label">
+							{ tab.label }
+						</span>
+						{ tab.isBeta && (
+							// WCAG 2.5.3, Label in Name, requires the tab's accessible
+							// name to include "Beta", because the badge shows inside
+							// the tab.
+							// See: https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html
+							<Badge
+								label={ __( 'Beta', 'google-site-kit' ) }
+								variant={ BADGE_VARIANTS.ANNOUNCEMENT }
+							/>
+						) }
+					</Tab>
+				) ) }
+			</TabBar>
+		</ScrollableTabs>
+	);
+};
+
+export default WidgetTabBar;

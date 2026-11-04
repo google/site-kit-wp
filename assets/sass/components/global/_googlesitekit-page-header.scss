@@ -27,7 +27,7 @@
 	}
 
 	.googlesitekit-page-header__icon + .googlesitekit-page-header__title {
-		margin-left: $grid-gap-phone / 2;
+		margin-left: $grid-gap-phone * 0.5;
 	}
 
 	.googlesitekit-page-header__icon {
@@ -58,7 +58,7 @@
 			display: flex;
 			height: 19px;
 			justify-content: center;
-			margin-left: $grid-gap-phone / 2;
+			margin-left: $grid-gap-phone * 0.5;
 			width: 19px;
 		}
 	}

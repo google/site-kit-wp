@@ -22,11 +22,6 @@
 import { FC, useCallback } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { useState } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
@@ -51,11 +46,15 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 	onSetupComplete,
 	slug,
 } ) => {
-	const [ isBusy, setIsBusy ] = useState( false );
-
 	const feature = useSelect(
 		( select: Select ): Feature | null =>
 			select( CORE_FEATURE_DISCOVERY ).getFeature( slug ),
+		[ slug ]
+	);
+
+	const isSetupInProgress = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).isSetupInProgress( slug ),
 		[ slug ]
 	);
 
@@ -86,18 +85,12 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 	const { setupFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 
 	const onClick = useCallback( async () => {
-		setIsBusy( true );
-
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
 
-		try {
-			await setupFeature( slug );
-			setIsBusy( false );
-			onSetupComplete?.();
-		} catch {
-			setIsBusy( false );
-		}
+		await setupFeature( slug );
+
+		onSetupComplete?.();
 	}, [ onSetupComplete, setupFeature, slug, triggerSurvey ] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
@@ -118,7 +111,7 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 
 	return (
 		<FeatureCTAButton
-			isBusy={ isBusy }
+			isBusy={ isSetupInProgress }
 			isTertiary={ isTertiary }
 			onClick={ onClick }
 		>

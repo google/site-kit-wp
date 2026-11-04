@@ -17,14 +17,11 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { clearLocalStorage, visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import { clearSessionStorage, pageWait, wpApiFetch } from '../utils';
+import { clearLocalStorage } from './browser-state';
+import { visitAdminPage } from './visit-admin-page';
 
 /**
  * Resets Site Kit using a utility plugin.

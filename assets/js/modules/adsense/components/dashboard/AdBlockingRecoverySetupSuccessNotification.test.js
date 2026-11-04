@@ -157,4 +157,94 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 			undefined
 		);
 	} );
+
+	describe( 'checkRequirements', () => {
+		const notification =
+			ADSENSE_NOTIFICATIONS[ 'adsense-abr-success-notification' ];
+		let oldLocation;
+
+		beforeAll( () => {
+			oldLocation = global.location;
+			delete global.location;
+			global.location = { href: 'http://example.com/wp-admin/admin.php' };
+		} );
+
+		afterAll( () => {
+			global.location = oldLocation;
+		} );
+
+		beforeEach( () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?notification=ad_blocking_recovery_setup_success';
+
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				adBlockingRecoverySetupStatus:
+					ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+			} );
+		} );
+
+		it( 'should be active when all the conditions are met', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'should not be active when the notification query argument is absent', async () => {
+			global.location.href = 'http://example.com/wp-admin/admin.php';
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'should not be active when the notification query argument has a different value', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?notification=authentication_success';
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'should not be active when the AdSense module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ADSENSE,
+					active: true,
+					connected: false,
+				},
+			] );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'should not be active when the ad blocking recovery setup is not confirmed', async () => {
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.setAdBlockingRecoverySetupStatus(
+					ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
+				);
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+	} );
 } );

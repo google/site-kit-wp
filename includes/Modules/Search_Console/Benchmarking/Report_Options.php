@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Search_Console\Benchmarking;
 /**
  * Builds the Search Console report options the benchmarking response needs.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Report_Options {
 	/**
 	 * The start date of the selected period, as `YYYY-MM-DD`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var string
 	 */
 	private $start_date;
@@ -30,7 +30,7 @@ class Report_Options {
 	/**
 	 * The end date of the selected period, as `YYYY-MM-DD`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var string
 	 */
 	private $end_date;
@@ -38,7 +38,7 @@ class Report_Options {
 	/**
 	 * The start date of the compare period, as `YYYY-MM-DD`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var string
 	 */
 	private $compare_start_date;
@@ -46,7 +46,7 @@ class Report_Options {
 	/**
 	 * The end date of the compare period, as `YYYY-MM-DD`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var string
 	 */
 	private $compare_end_date;
@@ -54,7 +54,7 @@ class Report_Options {
 	/**
 	 * The most rows each report returns.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var int
 	 */
 	private $row_limit;
@@ -62,7 +62,7 @@ class Report_Options {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $start_date         The start date of the selected period, as `YYYY-MM-DD`.
 	 * @param string $end_date           The end date of the selected period, as `YYYY-MM-DD`.
@@ -81,7 +81,7 @@ class Report_Options {
 	/**
 	 * Gets the requests of the two search query reports, one per period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array List of the two `searchanalytics-batch` requests, identified by `current` for the selected period and `previous` for the compare period.
 	 */

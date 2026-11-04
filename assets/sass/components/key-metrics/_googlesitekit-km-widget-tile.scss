@@ -213,7 +213,7 @@
 			}
 
 			.googlesitekit-cta__header {
-				column-gap: $grid-gap-phone / 2;
+				column-gap: $grid-gap-phone * 0.5;
 				display: flex;
 				flex-basis: 50%;
 

@@ -114,7 +114,7 @@ class Report_Data_BuilderTest extends TestCase {
 	/**
 	 * Creates the response the Search Console API refuses a request with.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return Response The `403` response.
 	 */

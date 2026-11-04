@@ -46,7 +46,7 @@ import {
 } from '@/js/modules/adsense/datastore/constants';
 import { trackEvent } from '@/js/util';
 
-export default function CreateMessageStep() {
+export default function CreateMessageStep( { completionURL } ) {
 	const viewContext = useViewContext();
 
 	const adsenseAccountID = useSelect( ( select ) =>
@@ -63,10 +63,11 @@ export default function CreateMessageStep() {
 	const setupSuccessURL = addQueryArgs( dashboardURL, {
 		notification: 'ad_blocking_recovery_setup_success',
 	} );
+	const destinationURL = completionURL || setupSuccessURL;
 	const isSaving = useSelect(
 		( select ) =>
 			select( MODULES_ADSENSE ).isDoingSaveSettings() ||
-			select( CORE_LOCATION ).isNavigatingTo( setupSuccessURL )
+			select( CORE_LOCATION ).isNavigatingTo( destinationURL )
 	);
 	const createMessageCTAClicked = useSelect(
 		( select ) =>
@@ -109,15 +110,15 @@ export default function CreateMessageStep() {
 				'confirm_message_ready'
 			);
 
-			navigateTo( setupSuccessURL );
+			navigateTo( destinationURL );
 		}
 	}, [
 		createMessageCTAClicked,
+		destinationURL,
 		navigateTo,
 		saveSettings,
 		setAdBlockingRecoverySetupStatus,
 		setValue,
-		setupSuccessURL,
 		viewContext,
 	] );
 
@@ -134,13 +135,13 @@ export default function CreateMessageStep() {
 				'confirm_message_ready_secondary_cta'
 			);
 
-			navigateTo( setupSuccessURL );
+			navigateTo( destinationURL );
 		}
 	}, [
+		destinationURL,
 		setAdBlockingRecoverySetupStatus,
 		saveSettings,
 		navigateTo,
-		setupSuccessURL,
 		viewContext,
 	] );
 

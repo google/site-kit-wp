@@ -320,33 +320,6 @@ describe( 'ReportError', () => {
 		expect( queryByText( /request access/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
-			{
-				code: 'test-error-code',
-				message: 'Test error message',
-				data: {
-					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-				},
-			},
-			'getAccountID',
-			[]
-		);
-
-		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
-
-		const { queryByText, waitForRegistry } = render(
-			<ReportError moduleSlug={ moduleName } error={ errors } />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
-	} );
-
 	it( 'should not render the `Retry` button if the error reason is `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', async () => {
 		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
@@ -461,6 +434,97 @@ describe( 'ReportError', () => {
 		await waitForRegistry();
 
 		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the `Retry` button, and call `onRetry` on its click, for an error of a selector other than `getReport` when `onRetry` is passed', async () => {
+		const onRetry = jest.fn();
+
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			'getRecentContent',
+			[ { count: 1 } ]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
+
+		const { getByRole, waitForRegistry } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ errors }
+				onRetry={ onRetry }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+		expect( onRetry ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'should not render the `Retry` button for an error of a selector other than `getReport` when no `onRetry` is passed', async () => {
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			'getRecentContent',
+			[ { count: 1 } ]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
+
+		const { queryByRole, waitForRegistry } = render(
+			<ReportError moduleSlug={ moduleName } error={ errors } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			queryByRole( 'button', { name: 'Retry' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should not render the `Retry` button for a rate limit error of a selector other than `getReport` when `onRetry` is passed', async () => {
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: { reason: 'rateLimitExceeded' },
+			},
+			'getRecentContent',
+			[ { count: 1 } ]
+		);
+
+		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
+
+		const { queryByRole, waitForRegistry } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ errors }
+				onRetry={ jest.fn() }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			queryByRole( 'button', { name: 'Retry' } )
+		).not.toBeInTheDocument();
 	} );
 
 	it.each( [

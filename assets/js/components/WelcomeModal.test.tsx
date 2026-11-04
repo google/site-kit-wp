@@ -320,13 +320,12 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show the view-only data available description when setupFlowRefreshPhase4 is enabled', async () => {
+	it( 'should show the view-only data available description', async () => {
 		provideDataAvailableVariantData();
 
 		const { getByText, waitForRegistry } = render(
 			<WelcomeModalComponent />,
 			{
-				features: [ 'setupFlowRefreshPhase4' ],
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
@@ -668,13 +667,12 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show the view-only gathering data description when setupFlowRefreshPhase4 is enabled', async () => {
+	it( 'should show the view-only gathering data description', async () => {
 		provideGatheringDataVariantData();
 
 		const { getByText, queryByText, waitForRegistry } = render(
 			<WelcomeModalComponent />,
 			{
-				features: [ 'setupFlowRefreshPhase4' ],
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}

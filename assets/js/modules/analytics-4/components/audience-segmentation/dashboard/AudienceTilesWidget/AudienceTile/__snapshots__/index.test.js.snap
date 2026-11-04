@@ -19,12 +19,18 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
           >
             New visitors
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-6"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="This is a tooltip"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-6"
+              >
+                This is a tooltip
+              </span>
             </span>
           </div>
         </div>
@@ -243,12 +249,18 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
                 >
                   Partial data
                   <span
+                    aria-labelledby="googlesitekit-info-tooltip-label-7"
                     class="googlesitekit-info-tooltip"
-                    role="tooltip"
+                    role="button"
                     tabindex="0"
-                    title="Still collecting full data for this timeframe, partial data is displayed for this metric"
                   >
                     <svg />
+                    <span
+                      hidden=""
+                      id="googlesitekit-info-tooltip-label-7"
+                    >
+                      Still collecting full data for this timeframe, partial data is displayed for this metric
+                    </span>
                   </span>
                 </span>
               </div>
@@ -304,12 +316,18 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
           >
             New visitors
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-4"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="This is a tooltip"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-4"
+              >
+                This is a tooltip
+              </span>
             </span>
           </div>
           <span
@@ -317,12 +335,18 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
           >
             Partial data
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-5"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Still collecting full data for this timeframe, partial data is displayed for this group"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-5"
+              >
+                Still collecting full data for this timeframe, partial data is displayed for this group
+              </span>
             </span>
           </span>
         </div>
@@ -589,12 +613,18 @@ exports[`AudienceTile should render the AudienceTile component 1`] = `
           >
             New visitors
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-0"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="This is a tooltip"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-0"
+              >
+                This is a tooltip
+              </span>
             </span>
           </div>
         </div>
@@ -864,12 +894,18 @@ exports[`AudienceTile with zero data, in the partial data state should render th
             >
               New visitors
               <span
+                aria-labelledby="googlesitekit-info-tooltip-label-17"
                 class="googlesitekit-info-tooltip"
-                role="tooltip"
+                role="button"
                 tabindex="0"
-                title="This is a tooltip"
               >
                 <svg />
+                <span
+                  hidden=""
+                  id="googlesitekit-info-tooltip-label-17"
+                >
+                  This is a tooltip
+                </span>
               </span>
             </div>
           </div>

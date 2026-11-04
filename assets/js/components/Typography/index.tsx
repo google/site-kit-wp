@@ -32,13 +32,25 @@ interface TypographyOwnProps {
 	type: TypographyType;
 }
 
+type PropsOf< E extends React.ElementType > =
+	React.ComponentPropsWithoutRef< E >;
+
+type UnderlyingProp<
+	E extends React.ElementType,
+	K extends PropertyKey
+> = K extends keyof PropsOf< E > ? PropsOf< E >[ K ] : never;
+
 export type TypographyProps< E extends React.ElementType > = {
 	as?: E;
+	asType?: UnderlyingProp< E, 'type' >;
+	asSize?: UnderlyingProp< E, 'size' >;
 } & TypographyOwnProps &
-	Omit< React.ComponentPropsWithoutRef< E >, keyof TypographyOwnProps >;
+	Omit< PropsOf< E >, keyof TypographyOwnProps | 'as' | 'asType' | 'asSize' >;
 
 function Typography< E extends React.ElementType = typeof DEFAULT_TAG_NAME >( {
 	as,
+	asType,
+	asSize,
 	className,
 	size,
 	type,
@@ -54,6 +66,8 @@ function Typography< E extends React.ElementType = typeof DEFAULT_TAG_NAME >( {
 				type && `googlesitekit-typography--${ type }`,
 				size && `googlesitekit-typography--${ size }`
 			) }
+			size={ asSize }
+			type={ asType }
 			{ ...props }
 		/>
 	);

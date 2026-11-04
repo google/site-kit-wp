@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import type { Select } from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	FEATURE_CATEGORIES,
@@ -31,8 +32,15 @@ import {
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
+import { FEATURE_SLUG_NEWSLETTER_SIGNUP } from './constants';
 
 /**
  * Registers Reader Revenue Manager module features in the Feature Discovery catalog.
@@ -46,6 +54,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'reader-revenue-manager', {
+		name: __( 'Reader Revenue Manager', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		title: __(
 			'Open up new revenue opportunities while growing, retaining and engaging your audience',
@@ -67,7 +76,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Earn money:', 'google-site-kit' ),
+						term: __( 'Earn money', 'google-site-kit' ),
 						description: __(
 							'Flexible monetization lets you accept direct contributions or subscriptions from your readers',
 							'google-site-kit'
@@ -75,7 +84,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					},
 					{
 						term: __(
-							'Improved visitor retention:',
+							'Improved visitor retention',
 							'google-site-kit'
 						),
 						description: __(
@@ -84,14 +93,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						),
 					},
 					{
-						term: __( 'Easy setup:', 'google-site-kit' ),
+						term: __( 'Easy setup', 'google-site-kit' ),
 						description: __(
 							'Launch the entire platform directly onto your site with zero coding required',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Collect feedback:', 'google-site-kit' ),
+						term: __( 'Collect feedback', 'google-site-kit' ),
 						description: __(
 							'Gather valuable audience insights by running quick, native surveys',
 							'google-site-kit'
@@ -100,6 +109,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://support.google.com/news/publisher-center/answer/11449914?hl=en-GB&ref_topic=11493750&sjid=4921721547083949313-SA',
 				serviceRequirements: __(
 					'Sites will be subject to Reader Revenue Manager approval processes, which can take from a few hours to a few days',
 					'google-site-kit'
@@ -110,11 +121,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'google-site-kit'
 					),
 					__( 'Set up features', 'google-site-kit' ),
+					__(
+						'You’re all set! Reader Revenue Manager setup is complete.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'You’re all set! Reader Revenue Manager setup is complete.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -123,14 +134,15 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Reader Revenue Manager contribution prompt screenshot',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
 		effort: FEATURE_EFFORTS.HIGH,
 		goalCategories: [
 			FEATURE_CATEGORIES.AUDIENCE,
+			FEATURE_CATEGORIES.MONETIZATION,
 			FEATURE_CATEGORIES.TRAFFIC,
 		],
 		addedInVersion: '1.129.0',
@@ -143,7 +155,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 
 	// Newsletter sign-up sub-feature (only if rrmExpressSetup feature flag is enabled).
 	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
-		registerFeature( 'newsletter-signup', {
+		registerFeature( FEATURE_SLUG_NEWSLETTER_SIGNUP, {
+			name: __( 'Newsletter sign-up form', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 			title: __(
 				'Collect reader emails directly on your site',
@@ -166,7 +179,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					whyUseList: [
 						{
 							term: __(
-								'Drive repeat traffic:',
+								'Drive repeat traffic',
 								'google-site-kit'
 							),
 							description: __(
@@ -175,14 +188,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							),
 						},
 						{
-							term: __( 'Boost engagement:', 'google-site-kit' ),
+							term: __( 'Boost engagement', 'google-site-kit' ),
 							description: __(
 								'Keep readers coming back with timely updates and exclusive content',
 								'google-site-kit'
 							),
 						},
 						{
-							term: __( 'Own your growth:', 'google-site-kit' ),
+							term: __( 'Own your growth', 'google-site-kit' ),
 							description: __(
 								'Reduce reliance on social media and search algorithms',
 								'google-site-kit'
@@ -190,7 +203,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						},
 						{
 							term: __(
-								'Convert strategically:',
+								'Convert strategically',
 								'google-site-kit'
 							),
 							description: __(
@@ -201,6 +214,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					],
 				},
 				requirements: {
+					documentationURL:
+						'https://support.google.com/news/publisher-center/answer/12813936?hl=en-GB&sjid=16842124317358157127-EU#zippy=%2Ccreate-a-newsletter-sign-up-form:~:text=Create%20a%20newsletter%20sign%2Dup%20form',
 					serviceRequirements: __(
 						'A supported email service provider (e.g., Mailchimp, Substack, etc.) is required for the collected email data to be sent',
 						'google-site-kit'
@@ -214,11 +229,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'Set up a newsletter sign-up form',
 							'google-site-kit'
 						),
+						__(
+							'Your newsletter sign-up form for Reader Revenue Manager is set up',
+							'google-site-kit'
+						),
 					],
-					setupComplete: __(
-						'Your newsletter sign-up form for Reader Revenue Manager is set up',
-						'google-site-kit'
-					),
 				},
 				screenshots: [
 					{
@@ -227,8 +242,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'Reader Revenue Manager newsletter sign-up prompt screenshot',
 							'google-site-kit'
 						),
-						width: 659,
-						height: 577,
+						width: 292,
+						height: 210,
 					},
 					{
 						src: splashScreenScreenshotURL,
@@ -236,8 +251,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'Reader Revenue Manager newsletter sign-up form dashboard screenshot',
 							'google-site-kit'
 						),
-						width: 659,
-						height: 577,
+						width: 292,
+						height: 210,
 					},
 				],
 			},
@@ -252,6 +267,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				cta: {
 					label: __( 'Go to Publisher center', 'google-site-kit' ),
+					getURL: ( select ) =>
+						select( CORE_MODULES ).getDetailsLinkURL(
+							MODULE_SLUG_READER_REVENUE_MANAGER
+						),
+					external: true,
 				},
 				dismissLabel: __( 'Got it', 'google-site-kit' ),
 			},
@@ -261,6 +281,32 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			setup: {
 				type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 				ctaLabel: __( 'Set up a sign-up form', 'google-site-kit' ),
+				moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				getSetupURL: ( select: Select ) =>
+					select( MODULES_READER_REVENUE_MANAGER ).getAdminReauthURL(
+						{
+							redirectQueryArgs: {
+								expressSetup: 'true',
+								cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+							},
+							additionalScopes: EXPRESS_SETUP_SCOPES,
+						}
+					),
+				// Connecting RRM doesn't mean a newsletter form exists, so
+				// completion is based on the publication's configured CTAs.
+				isEnabled: ( select: Select ) => {
+					const configuredCTAs = select(
+						MODULES_READER_REVENUE_MANAGER
+					).getConfiguredCTAs();
+
+					if ( configuredCTAs === undefined ) {
+						return undefined;
+					}
+
+					return Object.values( configuredCTAs ).includes(
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+					);
+				},
 			},
 		} );
 	}

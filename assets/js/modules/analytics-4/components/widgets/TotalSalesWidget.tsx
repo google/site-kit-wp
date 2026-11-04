@@ -22,6 +22,11 @@
 import { ElementType, FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
@@ -73,7 +78,11 @@ const TotalSalesWidget: FC< TotalSalesWidgetProps > = ( { Widget } ) => {
 			widgetSlug={ KM_ANALYTICS_TOTAL_SALES }
 			metricValue={ currentPrimaryCount }
 			metricValueFormat={ { style: 'decimal' } }
-			subText={ undefined }
+			subText={ sprintf(
+				/* translators: %s: GA4 event name, e.g. "purchase". */
+				__( '“%s” events', 'google-site-kit' ),
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			) }
 			previousValue={ previousPrimaryCount }
 			currentValue={ currentPrimaryCount }
 			loading={ loading }

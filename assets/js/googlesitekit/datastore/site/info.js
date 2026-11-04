@@ -189,6 +189,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productPostType,
+				productPathPrefix,
+				usingPlainPermalinks,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -234,6 +236,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productPostType,
+				productPathPrefix,
+				usingPlainPermalinks,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -335,6 +339,8 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productPostType,
+			productPathPrefix,
+			usingPlainPermalinks,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -387,6 +393,8 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productPostType,
+			productPathPrefix,
+			usingPlainPermalinks,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -981,6 +989,24 @@ export const selectors = {
 	getProductPostType: getSiteInfoProperty( 'productPostType' ),
 
 	/**
+	 * Gets the path that the URL of every product starts with.
+	 *
+	 * @since 1.191.0
+	 *
+	 * @return {(string|null|undefined)} The path, such as `/product/`, never a full URL, or `null` when product URLs share no such path, such as on plain permalinks. Returns `undefined` if not loaded.
+	 */
+	getProductPathPrefix: getSiteInfoProperty( 'productPathPrefix' ),
+
+	/**
+	 * Checks whether the site uses plain permalinks, where each URL names its post in its query string, such as `/?p=123`.
+	 *
+	 * @since 1.191.0
+	 *
+	 * @return {(boolean|undefined)} `true` when the site uses plain permalinks, `false` when it has a permalink structure. Returns `undefined` if not loaded.
+	 */
+	isUsingPlainPermalinks: getSiteInfoProperty( 'usingPlainPermalinks' ),
+
+	/**
 	 * Checks if the Key Metrics widget has been setup either if at least one user
 	 * has answered the User Input questionnaire or picked their own metrics.
 	 *
@@ -1153,7 +1179,7 @@ export const selectors = {
 	/**
 	 * Determines whether the WooCommerce plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if WooCommerce is active, `false` if not. Returns `undefined` if not loaded.
@@ -1163,7 +1189,7 @@ export const selectors = {
 	/**
 	 * Determines whether the WooCommerce plugin is installed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if WooCommerce is installed, `false` if not. Returns `undefined` if not loaded.

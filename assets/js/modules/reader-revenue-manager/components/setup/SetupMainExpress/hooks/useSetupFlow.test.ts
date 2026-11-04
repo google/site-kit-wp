@@ -96,7 +96,7 @@ function StepContent() {
 /**
  * Creates a step definition for testing.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @private
  *
  * @param {string}  slug                 Step slug.
@@ -396,16 +396,17 @@ describe( 'useSetupFlow', () => {
 	} );
 
 	describe( 'while the data is loading', () => {
-		it( 'should not navigate while the settings are loading', () => {
+		it( 'should not return a step while the settings are loading', () => {
 			global.location.href = 'http://example.com/?step=setup-complete';
 			freezeFetch( settingsEndpoint );
 
 			const { result } = renderUseSetupFlow();
 
-			expect( result.current.currentStep ).toBe( setupCompleteStep );
+			expect( result.current.currentStep ).toBeUndefined();
+			expect( global.location.href ).toContain( 'step=setup-complete' );
 		} );
 
-		it( 'should not navigate while the connected publication is loading', () => {
+		it( 'should not return a step while the connected publication is loading', () => {
 			global.location.href = 'http://example.com/?step=setup-complete';
 			freezeFetch( publicationEndpoint );
 
@@ -419,7 +420,8 @@ describe( 'useSetupFlow', () => {
 
 			const { result } = renderUseSetupFlow();
 
-			expect( result.current.currentStep ).toBe( setupCompleteStep );
+			expect( result.current.currentStep ).toBeUndefined();
+			expect( global.location.href ).toContain( 'step=setup-complete' );
 
 			// Prevent another request from being made to the publication endpoint.
 			registry
@@ -434,6 +436,68 @@ describe( 'useSetupFlow', () => {
 			const { result } = renderUseSetupFlow();
 
 			expect( result.current.currentStep ).toBeUndefined();
+		} );
+
+		it( 'should not return a requested step that an earlier incomplete step blocks', () => {
+			global.location.href = 'http://example.com/?step=setup-complete';
+			provideConnectedPublication( registry, publicationWithoutTerms );
+
+			// Records the step returned on every render.
+			const steps: ( SetupStep | undefined )[] = [];
+
+			renderHook(
+				() => {
+					const flow = useSetupFlow( DEFAULT_FLOW );
+
+					steps.push( flow.currentStep );
+
+					return flow;
+				},
+				{ registry }
+			);
+
+			const firstStepIndex = steps.findIndex( Boolean );
+
+			expect( firstStepIndex ).toBeGreaterThan( 0 );
+			expect( steps ).not.toContain( setupCompleteStep );
+			expect( steps.slice( 0, firstStepIndex ) ).toEqual(
+				Array( firstStepIndex ).fill( undefined )
+			);
+			expect( steps.slice( firstStepIndex ) ).toEqual(
+				Array( steps.length - firstStepIndex ).fill(
+					termsOfServiceStep
+				)
+			);
+		} );
+
+		it( 'should keep returning the step while the publication is refetched', () => {
+			global.location.href = 'http://example.com/?step=terms-of-service';
+			provideConnectedPublication( registry, publicationWithoutTerms );
+
+			const { result } = renderUseSetupFlow();
+
+			expect( result.current.currentStep ).toBe( termsOfServiceStep );
+
+			freezeFetch( publicationEndpoint );
+
+			// As saving a different publication does.
+			actHook( () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+					.setPublicationID( publications[ 1 ].publicationId );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.invalidateResolutionForStoreSelector( 'getPublication' );
+			} );
+
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublication()
+			).toBeUndefined();
+			expect( result.current.currentStep ).toBe( termsOfServiceStep );
 		} );
 	} );
 
@@ -540,6 +604,80 @@ describe( 'useSetupFlow', () => {
 			actHook( () => result.current.advance() );
 
 			expect( result.current.currentStep ).toBe( setupCompleteStep );
+		} );
+	} );
+
+	describe( 'errors', () => {
+		const actionError = {
+			code: 'internal_server_error',
+			message: 'Internal server error',
+			data: { status: 500 },
+		};
+
+		const selectorError = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { status: 400 },
+		};
+
+		function provideErrors() {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setErrorForAction( actionError, 'createPublication', [
+					{ displayName: 'Test' },
+				] );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setErrorForSelector( selectorError, 'getPublications' );
+		}
+
+		function getErrors() {
+			return registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getErrors();
+		}
+
+		it( 'should clear errors on completing a step, including when passing over completed steps', () => {
+			global.location.href =
+				'http://example.com/?step=connect-publication';
+			provideConnectedPublication( registry, publicationWithTerms );
+
+			const { result } = renderUseSetupFlow();
+
+			provideErrors();
+
+			actHook( () => result.current.advance() );
+
+			expect( result.current.currentStep ).toBe(
+				publicationPoliciesStep
+			);
+			expect( getErrors() ).toEqual( [] );
+
+			// Simulate a request failing on the newly opened step, whose error
+			// should stay.
+			actHook( () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setErrorForSelector( selectorError, 'getPublication' );
+			} );
+
+			expect( getErrors() ).toEqual( [ selectorError ] );
+		} );
+
+		it( 'should keep errors on mounting, rendering again, and completing the last step', () => {
+			global.location.href = 'http://example.com/?step=setup-complete';
+			provideConnectedPublication( registry, publicationWithPolicies );
+			provideErrors();
+
+			const { result, rerender } = renderUseSetupFlow();
+
+			rerender();
+
+			actHook( () => result.current.advance() );
+
+			expect( result.current.currentStep ).toBe( setupCompleteStep );
+			expect( getErrors() ).toEqual( [ selectorError, actionError ] );
 		} );
 	} );
 } );

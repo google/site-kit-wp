@@ -24,7 +24,10 @@ const path = require( 'path' );
 const ROOT_DIR = path.resolve( __dirname, '../..' );
 
 // The `VRT=1` Storybook build (`npm run build:storybook`).
-const DIST_DIR = path.resolve( ROOT_DIR, process.env.VRT_DIST_DIR || 'dist' );
+const DIST_DIR = path.resolve(
+	ROOT_DIR,
+	process.env.VRT_DIST_DIR || 'storybook-static'
+);
 
 const PORT = Number( process.env.VRT_PORT || 3000 );
 

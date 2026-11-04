@@ -35,7 +35,7 @@ const CHART_TIMEOUT = 15000;
  *
  * `storybook/utils/vrt.js` records Storybook's render events on the document.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} page The Playwright page.
  */
@@ -63,7 +63,7 @@ async function waitForStoryRender( page ) {
 /**
  * Waits until no element changes for a while.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} page The Playwright page.
  */
@@ -105,7 +105,7 @@ async function waitForDOMQuiet( page ) {
  * Charts still loading their data render without an ID (an intentional loading
  * state), so only charts with data are waited for.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} page The Playwright page.
  */
@@ -133,7 +133,7 @@ async function waitForCharts( page ) {
 /**
  * Waits for two animation frames, so the last changes have been painted.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} page The Playwright page.
  */
@@ -149,7 +149,7 @@ async function waitForPaint( page ) {
 /**
  * Waits until a story is ready for its screenshot.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} page     The Playwright page.
  * @param {Object} scenario The scenario.
@@ -185,7 +185,7 @@ async function waitForStoryReady( page, scenario, network ) {
 /**
  * Waits for the page to settle after an interaction.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} page    The Playwright page.
  * @param {Object} network The page's network tracker, from `fixtures.js`.

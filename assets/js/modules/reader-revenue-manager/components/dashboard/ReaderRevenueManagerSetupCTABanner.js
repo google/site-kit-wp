@@ -44,9 +44,10 @@ import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCT
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import { useFeature } from '@/js/hooks/useFeature';
+import useViewContext from '@/js/hooks/useViewContext';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { WEEK_IN_SECONDS } from '@/js/util';
+import { WEEK_IN_SECONDS, trackEvent } from '@/js/util';
 import BannerExpressSetupSVGMobile from '@/svg/graphics/banner-rrm-express-setup-cta-mobile.svg?url';
 import BannerExpressSetupSVGTablet from '@/svg/graphics/banner-rrm-express-setup-cta-tablet.svg?url';
 import BannerExpressSetupSVGDesktop from '@/svg/graphics/banner-rrm-express-setup-cta.svg?url';
@@ -58,6 +59,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	Notification,
 } ) {
 	const rrmExpressSetupEnabled = useFeature( 'rrmExpressSetup' );
+	const viewContext = useViewContext();
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const onSetupActivate = useActivateModuleCallback(
@@ -104,10 +106,19 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	const onExploreOtherFeaturesCallback = useCallback(
 		( event ) => {
 			event.preventDefault();
+			trackEvent(
+				`${ viewContext }_rrm-setup-notification`,
+				'click_explore_other_features_link',
+				'newsletter-signup'
+			);
 			onExploreOtherFeaturesActivate();
 		},
-		[ onExploreOtherFeaturesActivate ]
+		[ onExploreOtherFeaturesActivate, viewContext ]
 	);
+
+	const gaTrackingEventArgs = rrmExpressSetupEnabled
+		? { label: 'newsletter-signup' }
+		: undefined;
 
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
@@ -122,10 +133,11 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 
 	if ( rrmExpressSetupEnabled ) {
 		return (
-			<Notification>
+			<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 				<SetupCTA
 					className="googlesitekit-rrm-setup-cta-banner"
 					notificationID={ id }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
 					title={ __(
 						'Turn casual visitors into loyal readers',
 						'google-site-kit'

@@ -43,7 +43,7 @@ const CONTEXT_OPTIONS = [
  *
  * Runs in the browser, in every frame of the context.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} options     Options.
  * @param {number} options.now The timestamp "now" should start at.
@@ -84,7 +84,7 @@ function initDocument( { now } ) {
 /**
  * Creates a browser context set up for visual regression tests.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} browser The Playwright browser.
  * @param {Object} project The Playwright project, for its `use` options.
@@ -105,7 +105,7 @@ async function createContext( browser, project ) {
 /**
  * Tracks a page's network activity and navigations during one test.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} page     The Playwright page.
  * @param {Object} testInfo The Playwright test info.
@@ -169,7 +169,7 @@ function trackPage( page, testInfo ) {
 		/**
 		 * Waits until no request has been pending for `quietMs`.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.190.0
 		 *
 		 * @param {number} quietMs   How long the network must be quiet.
 		 * @param {number} timeoutMs How long to wait at most.
@@ -195,7 +195,7 @@ function trackPage( page, testInfo ) {
 		/**
 		 * Fails the test if the story reloaded or an allowed request failed.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.190.0
 		 */
 		assertHealthy() {
 			if ( documentLoads > 1 ) {
@@ -216,7 +216,7 @@ function trackPage( page, testInfo ) {
 		/**
 		 * Stops tracking, and notes requests to hosts that aren't allowed.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.190.0
 		 */
 		dispose() {
 			page.off( 'request', onRequest );

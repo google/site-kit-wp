@@ -76,7 +76,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added the search query rows to the benchmarking contextual data.
+	 * @since 1.190.0 Added the search query rows to the benchmarking contextual data.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -396,7 +396,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 * `is_connected()` is always `true` for Search Console, so the property is
 	 * what tells whether there is anything to report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $contextual_data The rows of the benchmarking response, keyed by `contextualData` key.
 	 * @param array $args            The period the rows are for, with `start_date`, `end_date`, `compare_start_date`, `compare_end_date`, and `row_limit`.

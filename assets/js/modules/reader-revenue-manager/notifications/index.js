@@ -36,7 +36,6 @@ import {
 } from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 import {
-	ExpressSetupResumeNewsletterNotification,
 	PolicyViolationNotification,
 	RRMSetupSuccessSubtleNotification,
 	ReaderRevenueManagerSetupCTABanner,
@@ -51,7 +50,6 @@ import RRMIntroductoryOverlayNotification, {
 } from '@/js/modules/reader-revenue-manager/components/dashboard/RRMIntroductoryOverlayNotification';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
-	RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
@@ -61,16 +59,12 @@ import {
 } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	requireContentPolicyState,
-	requireExpressSetupCTAActioned,
-	requireExpressSetupCTAConfigured,
 	requirePaymentOption,
 	requireProductID,
 	requireProductIDs,
 	requirePublicationOnboardingState,
-	requireSettingsAvailable,
 } from '@/js/modules/reader-revenue-manager/data-requirements';
 import {
-	EXPRESS_SETUP_CTAS,
 	EXTREME_POLICY_VIOLATION_STATES,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	MODULES_READER_REVENUE_MANAGER,
@@ -293,29 +287,6 @@ export const NOTIFICATIONS = {
 			),
 			// Show only for EXTREME severity.
 			requireContentPolicyState( EXTREME_POLICY_VIOLATION_STATES )
-		),
-	},
-	[ RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID ]: {
-		Component: ExpressSetupResumeNewsletterNotification,
-		priority: PRIORITY.SETUP_CTA_HIGH,
-		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		featureFlag: 'rrmExpressSetup',
-		isDismissible: true,
-		checkRequirements: asyncRequireAll(
-			requireExpressSetupCTAActioned(
-				EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-			),
-			// An unavailable settings response leaves the configured CTAs
-			// unknown, in which case the notification is not shown.
-			requireSettingsAvailable(),
-			asyncRequire(
-				false,
-				requireExpressSetupCTAConfigured(
-					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-				)
-			)
 		),
 	},
 };

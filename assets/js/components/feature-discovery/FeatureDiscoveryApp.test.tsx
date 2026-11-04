@@ -24,7 +24,12 @@ import { HashRouter } from 'react-router-dom';
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
+import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
@@ -37,6 +42,44 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import FeatureDiscoveryApp from './FeatureDiscoveryApp';
+
+// The `core/ui` key that opens each of the existing panels mounted on the hub.
+const mockPanelUIKeys: Record< string, string > = {
+	DashboardSharingDialog: SETTINGS_DIALOG,
+	UserSettingsSelectionPanel: USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+	PDFSectionsSelectionPanel: PDF_DOWNLOAD_PANEL_OPENED_KEY,
+};
+
+// Stands in for an existing panel, rendering only while its `core/ui` key is
+// set, as the real panel opens.
+function mockCreatePanel( name: string ) {
+	return function MockPanel() {
+		const isOpen = useSelect(
+			( select: Select ) =>
+				select( CORE_UI ).getValue( mockPanelUIKeys[ name ] ),
+			[]
+		);
+
+		return isOpen ? <div>{ name }</div> : null;
+	};
+}
+
+jest.mock( '@/js/components/dashboard-sharing/DashboardSharingDialog', () =>
+	mockCreatePanel( 'DashboardSharingDialog' )
+);
+jest.mock( '@/js/components/email-reporting/UserSettingsSelectionPanel', () =>
+	mockCreatePanel( 'UserSettingsSelectionPanel' )
+);
+jest.mock( '@/js/components/pdf-export/PDFSectionsSelectionPanel', () =>
+	mockCreatePanel( 'PDFSectionsSelectionPanel' )
+);
+jest.mock(
+	'@/js/components/pdf-export/PDFExportRoot',
+	() =>
+		function MockPDFExportRoot() {
+			return <div>PDFExportRoot</div>;
+		}
+);
 
 function provideHeader( registry: ReturnType< typeof createTestRegistry > ) {
 	provideModules( registry );
@@ -161,4 +204,44 @@ describe( 'FeatureDiscoveryApp', () => {
 		expect( global.history.length ).toBe( historyLength );
 		expect( global.location.hash ).toBe( '#/whats-new' );
 	} );
+
+	it( 'should mount the PDF export root', async () => {
+		const { getByText } = await renderApp();
+
+		expect( getByText( 'PDFExportRoot' ) ).toBeInTheDocument();
+	} );
+
+	it.each( [
+		[ 'DashboardSharingDialog', SETTINGS_DIALOG ],
+		[
+			'UserSettingsSelectionPanel',
+			USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+		],
+		[ 'PDFSectionsSelectionPanel', PDF_DOWNLOAD_PANEL_OPENED_KEY ],
+	] )(
+		'should mount %s and open it over the hub when its UI key is set',
+		async ( name, uiKey ) => {
+			const { queryByText, getByText, getByRole, registry } =
+				await renderApp( '/all-services' );
+
+			expect( queryByText( name ) ).not.toBeInTheDocument();
+
+			act( () => {
+				registry.dispatch( CORE_UI ).setValue( uiKey, true );
+			} );
+
+			expect( getByText( name ) ).toBeInTheDocument();
+
+			// The hub stays on the tab it was on.
+			expect( getByRole( 'tab', { selected: true } ) ).toHaveTextContent(
+				'All services and features'
+			);
+
+			act( () => {
+				registry.dispatch( CORE_UI ).setValue( uiKey, false );
+			} );
+
+			expect( queryByText( name ) ).not.toBeInTheDocument();
+		}
+	);
 } );

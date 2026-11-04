@@ -619,7 +619,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * Return the URL to redirect the user to after authorization, including important query params.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added the `intent` and `intent_code` arguments, with a dashboard redirect when no redirect URL is stored.
+	 * @since 1.190.0 Added the `intent` and `intent_code` arguments, with a dashboard redirect when no redirect URL is stored.
 	 */
 	private function get_authorize_user_redirect_url() {
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );

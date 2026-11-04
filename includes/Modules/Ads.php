@@ -240,7 +240,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * Populates module data needed independent of Ads module activation.
 	 *
 	 * @since 1.148.0
-	 * @since n.e.x.t Removed the WooCommerce plugin status, now provided via the base inline data.
+	 * @since 1.190.0 Removed the WooCommerce plugin status, now provided via the base inline data.
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.

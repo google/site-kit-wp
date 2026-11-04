@@ -29,7 +29,6 @@ import { Button, Checkbox } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Logo from '@/js/components/Logo';
 import Typography from '@/js/components/Typography';
-import { isFeatureEnabled } from '@/js/features';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -44,9 +43,6 @@ export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
 	const viewContext = useViewContext();
-	const setupFlowRefreshPhase4Enabled = isFeatureEnabled(
-		'setupFlowRefreshPhase4'
-	);
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -94,7 +90,7 @@ export function ActivationApp() {
 			const eventLabel = canViewDashboard ? 'dashboard' : 'splash';
 			await trackEvent( viewContext, 'confirm_notification', eventLabel );
 
-			if ( setupFlowRefreshPhase4Enabled && autoUpdatesEnabled ) {
+			if ( autoUpdatesEnabled ) {
 				await enableAutoUpdate();
 			}
 
@@ -106,13 +102,11 @@ export function ActivationApp() {
 			canViewDashboard,
 			enableAutoUpdate,
 			navigateTo,
-			setupFlowRefreshPhase4Enabled,
 			viewContext,
 		]
 	);
 
-	const showAutoUpdatesCheckbox =
-		setupFlowRefreshPhase4Enabled && siteKitAutoUpdatesEnabled === false;
+	const showAutoUpdatesCheckbox = siteKitAutoUpdatesEnabled === false;
 
 	useEffect( () => {
 		const noticeElement = document.getElementById(

@@ -47,7 +47,7 @@ const checkBuild = buildOnly || process.argv.includes( '--build' );
 /**
  * Lists the PNG files in a directory and its subdirectories.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} directory The directory.
  * @return {string[]} File paths, relative to `SCREENSHOTS_DIR`.
@@ -75,7 +75,7 @@ function listPNGs( directory ) {
 /**
  * Removes empty directories below `SCREENSHOTS_DIR`.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} directory The directory to start from.
  */
@@ -97,7 +97,7 @@ function removeEmptyDirectories( directory ) {
 /**
  * Checks the reference image files against the scenarios.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {boolean} Whether the check passed. When pruning, missing reference
  *                   images are about to be created, so they don't fail it.
@@ -154,7 +154,7 @@ function checkReferenceImages() {
 /**
  * Checks that every scenario's story is in the Storybook build.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {boolean} Whether the check passed.
  */

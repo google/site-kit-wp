@@ -212,7 +212,6 @@ describe( 'WPDashboardWidgets', () => {
 			<WPDashboardWidgets />,
 			{
 				registry,
-				features: [ 'setupFlowRefreshPhase4' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -263,7 +262,6 @@ describe( 'WPDashboardWidgets', () => {
 
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
-			features: [ 'setupFlowRefreshPhase4' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -292,7 +290,6 @@ describe( 'WPDashboardWidgets', () => {
 
 		const { waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
-			features: [ 'setupFlowRefreshPhase4' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 

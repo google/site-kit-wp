@@ -41,7 +41,7 @@ export const actions = {
 	/**
 	 * Saves a feature relevancy vote for the current user, replacing the opposite vote.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {string}        slug      Feature slug.
 	 * @param {VoteDirection} direction Vote direction.
@@ -97,7 +97,7 @@ export const selectors = {
 	/**
 	 * Gets the current user's relevancy vote for a feature.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Feature slug.

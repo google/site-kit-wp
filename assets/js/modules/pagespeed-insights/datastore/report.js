@@ -100,7 +100,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.10.0
 	 * @since 1.182.0 Accept optional fetch options as a third argument, such as `{ signal }` to cancel the report request.
-	 * @since n.e.x.t Accept an optional `cacheTTL` fetch option, such as `{ cacheTTL }` to change how long the report response is cached.
+	 * @since 1.190.0 Accept an optional `cacheTTL` fetch option, such as `{ cacheTTL }` to change how long the report response is cached.
 	 *
 	 * @param {Object} state          Data store's state.
 	 * @param {string} url            URL used for generating the report.

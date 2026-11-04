@@ -129,7 +129,7 @@ describe( 'TotalFormCompletionsWidget', () => {
 		).toHaveTextContent( '0%' );
 	} );
 
-	it( 'should sum form completions across every detected lead event and render the change vs. the previous period', async () => {
+	it( 'should sum form completions across every detected lead event and render the events subtext and the change vs. the previous period', async () => {
 		const reportOptions = getReportOptions();
 
 		// `provideLeadsWidgetTestRegistry()` detects three lead events, so the
@@ -196,6 +196,9 @@ describe( 'TotalFormCompletionsWidget', () => {
 			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
 		).toHaveTextContent( '180' );
 		expect( getByText( '180' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
+		).toHaveTextContent( '3 event types' );
 
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )

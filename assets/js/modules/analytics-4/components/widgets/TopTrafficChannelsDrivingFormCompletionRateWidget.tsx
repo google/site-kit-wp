@@ -37,6 +37,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	buildTopTrafficChannelsRateReportOptions,
+	buildTopTrafficChannelsSessionsReportOptions,
 	mapTopTrafficChannelsRateRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -63,18 +64,33 @@ const TopTrafficChannelsDrivingFormCompletionRateWidget: FC<
 		[]
 	);
 
-	const reportOptions = buildTopTrafficChannelsRateReportOptions( {
+	const reportArgs = {
 		dates,
 		primaryEvent: detectedLeadEvents,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	} );
+	};
+	const reportOptions =
+		buildTopTrafficChannelsRateReportOptions( reportArgs );
 	const hasNoLeadEvents = detectedLeadEvents?.length === 0;
 
-	const { report, loading, error } = useAnalyticsReportsData( {
+	const sessionsReportOptions =
+		buildTopTrafficChannelsSessionsReportOptions( reportArgs );
+
+	const {
+		report,
+		secondaryReport: sessionsReport,
+		loading,
+		error,
+	} = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,
+		secondaryOptions: sessionsReportOptions,
+		ready: Boolean( reportOptions ) && Boolean( sessionsReportOptions ),
 	} );
 
-	const rows = mapTopTrafficChannelsRateRows( report?.rows || [] );
+	const rows = mapTopTrafficChannelsRateRows(
+		report?.rows || [],
+		sessionsReport
+	);
 
 	return (
 		<MetricTileTable

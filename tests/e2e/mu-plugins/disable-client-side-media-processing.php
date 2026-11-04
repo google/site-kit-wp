@@ -9,6 +9,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// Disable client-side media processing allows Puppeteer to
-// navigate in headless mode during media uploads.
+// Disable client-side media processing so the headless test browser can
+// navigate during media uploads.
 add_filter( 'wp_client_side_media_processing_enabled', '__return_false' );

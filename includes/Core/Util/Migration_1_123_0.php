@@ -90,9 +90,10 @@ class Migration_1_123_0 {
 	 * Registers hooks.
 	 *
 	 * @since 1.123.0
+	 * @since n.e.x.t Changed the `admin_init` priority to 0.
 	 */
 	public function register() {
-		add_action( 'admin_init', array( $this, 'migrate' ) );
+		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
 	}
 
 	/**
@@ -116,15 +117,16 @@ class Migration_1_123_0 {
 	 * Migrates the legacy analytics settings over to analytics-4.
 	 *
 	 * @since 1.123.0
+	 * @since n.e.x.t Made method public, and updated to skip missing keys and a legacy option that is not an array.
 	 */
-	protected function migrate_legacy_analytics_settings() {
+	public function migrate_legacy_analytics_settings() {
 		if ( ! $this->analytics_settings->has() ) {
 			return;
 		}
 
 		$legacy_settings = $this->options->get( self::LEGACY_ANALYTICS_OPTION );
 
-		if ( empty( $legacy_settings ) ) {
+		if ( ! is_array( $legacy_settings ) || empty( $legacy_settings ) ) {
 			return;
 		}
 
@@ -138,6 +140,10 @@ class Migration_1_123_0 {
 		array_walk(
 			$options_to_migrate,
 			function ( $setting ) use ( &$recovered_settings, $legacy_settings ) {
+				if ( ! array_key_exists( $setting, $legacy_settings ) ) {
+					return;
+				}
+
 				$recovered_settings[ $setting ] = $legacy_settings[ $setting ];
 			}
 		);
@@ -153,8 +159,9 @@ class Migration_1_123_0 {
 	 * Activates the analytics-4 module if the legacy analytics module was active.
 	 *
 	 * @since 1.123.0
+	 * @since n.e.x.t Made method public.
 	 */
-	protected function activate_analytics() {
+	public function activate_analytics() {
 		$option = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
 		// Check legacy option.
@@ -190,8 +197,9 @@ class Migration_1_123_0 {
 	 * Replicates sharing settings from the legacy analytics module to analytics-4.
 	 *
 	 * @since 1.123.0
+	 * @since n.e.x.t Made method public.
 	 */
-	protected function migrate_legacy_analytics_sharing_settings() {
+	public function migrate_legacy_analytics_sharing_settings() {
 		$option = $this->options->get( Module_Sharing_Settings::OPTION );
 
 		if ( ! is_array( $option ) ) {

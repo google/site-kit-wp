@@ -284,26 +284,7 @@ class Search_ConsoleTest extends TestCase {
 		$this->enable_feature( 'typicalTraffic' );
 
 		$search_console = $this->create_authenticated_search_console(
-			fn( Request $request ) => new FulfilledPromise(
-				FakeHttp::create_batch_response(
-					$request,
-					fn( $identifier ) => new Response(
-						200,
-						array(),
-						wp_json_encode(
-							array(
-								'rows' => array(
-									array(
-										'keys'     => array( 'plant garlic' ),
-										'clicks'   => 'current' === $identifier ? 300 : 210,
-										'position' => 'current' === $identifier ? 3.4 : 4.8,
-									),
-								),
-							)
-						)
-					)
-				)
-			)
+			fn( Request $request ) => new FulfilledPromise( $this->create_plant_garlic_batch_response( $request ) )
 		);
 		$search_console->get_settings()->merge( array( 'propertyID' => 'https://example.com/' ) );
 		remove_all_filters( 'googlesitekit_benchmarking_contextual_data' );

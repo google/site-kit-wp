@@ -631,7 +631,7 @@ describe( 'AccountCreate', () => {
 				).not.toBeInTheDocument();
 			} );
 
-			it( 'should navigate to the dashboard when clicked', async () => {
+			it( 'should navigate to the key metrics setup when clicked', async () => {
 				global.location.href =
 					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
 
@@ -647,56 +647,6 @@ describe( 'AccountCreate', () => {
 					<AccountCreate />,
 					{
 						registry,
-					}
-				);
-
-				await waitForRegistry();
-
-				fireEvent.click(
-					getByRole( 'button', {
-						name: /continue without analytics/i,
-					} )
-				);
-
-				await waitForRegistry();
-
-				// Verify the initial setup settings were saved before navigation.
-				expect( fetchMock ).toHaveFetched(
-					initialSetupSettingsEndpoint,
-					{
-						method: 'POST',
-						body: {
-							data: {
-								settings: {
-									isAnalyticsSetupComplete: true,
-								},
-							},
-						},
-					}
-				);
-
-				expect( global.location.assign ).toHaveBeenCalledWith(
-					expect.stringContaining( 'page=googlesitekit-dashboard' )
-				);
-			} );
-
-			it( 'should navigate to the key metrics setup when clicked with the setupFlowRefreshPhase4 feature flag enabled', async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
-
-				const initialSetupSettingsEndpoint = new RegExp(
-					'^/google-site-kit/v1/core/user/data/initial-setup-settings'
-				);
-				fetchMock.postOnce( initialSetupSettingsEndpoint, {
-					body: { isAnalyticsSetupComplete: true },
-					status: 200,
-				} );
-
-				const { getByRole, waitForRegistry } = render(
-					<AccountCreate />,
-					{
-						registry,
-						features: [ 'setupFlowRefreshPhase4' ],
 					}
 				);
 

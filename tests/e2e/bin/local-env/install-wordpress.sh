@@ -56,6 +56,41 @@ until curl -L -s -f -o /dev/null "http://localhost:$HOST_PORT"; do
 done
 echo -e "\nWeb server is up!"
 
+# The containers' system certificates are out of date, so replace them with the
+# host's certificate bundle before downloading anything. Set HOST_CA_BUNDLE to
+# use a specific bundle, e.g. Homebrew's `ca-certificates` on macOS.
+if [ -z "$HOST_CA_BUNDLE" ]; then
+	for bundle in \
+		/etc/ssl/certs/ca-certificates.crt \
+		/opt/homebrew/etc/ca-certificates/cert.pem \
+		/usr/local/etc/ca-certificates/cert.pem \
+		/etc/pki/tls/certs/ca-bundle.crt; do
+		if [ -f "$bundle" ]; then
+			HOST_CA_BUNDLE=$bundle
+			break
+		fi
+	done
+fi
+
+if [ -n "$HOST_CA_BUNDLE" ]; then
+	status_message "Updating system certificates in the containers from $HOST_CA_BUNDLE..."
+	for service in $CONTAINER $CLI; do
+		dc cp -L "$HOST_CA_BUNDLE" "$service:/tmp/ca-bundle.pem"
+		# Rebuild /etc/ssl/certs from the bundle: OpenSSL also looks up certificates
+		# by hash in this directory, so replacing the bundle file alone isn't enough.
+		dc exec $COMPOSE_EXEC_ARGS -u 0 "$service" sh -c '
+			set -e
+			rm -rf /etc/ssl/certs
+			mkdir -p /etc/ssl/certs
+			mv /tmp/ca-bundle.pem /etc/ssl/certs/ca-certificates.crt
+			awk "/BEGIN CERTIFICATE/ { n++ } n { print > (\"/etc/ssl/certs/ca-\" n \".pem\") }" /etc/ssl/certs/ca-certificates.crt
+			openssl rehash /etc/ssl/certs 2>/dev/null || c_rehash /etc/ssl/certs >/dev/null
+		'
+	done
+else
+	warning_message "No certificate bundle found on the host. Set HOST_CA_BUNDLE to update the containers' system certificates."
+fi
+
 # If this is the test site, we reset the database so no posts/comments/etc.
 # dirty up the tests.
 if [ "$1" == '--reset-site' ]; then
@@ -119,10 +154,9 @@ if [ "$WP_VERSION" == "latest" ]; then
 	wp core update-db --quiet
 fi
 
-if [ -n "$CA_CERT_REFRESH" ]; then
+if [ -n "$HOST_CA_BUNDLE" ]; then
 	status_message "Updating WordPress certificate bundle..."
-	container curl --remote-name --show-error --silent https://raw.githubusercontent.com/WordPress/wordpress-develop/refs/heads/trunk/src/wp-includes/certificates/ca-bundle.crt
-	container mv ca-bundle.crt wp-includes/certificates/ca-bundle.crt
+	container cp /etc/ssl/certs/ca-certificates.crt wp-includes/certificates/ca-bundle.crt
 fi
 
 # Switch to `twentytwenty` theme for consistent results (particularly for AMP compatibility).

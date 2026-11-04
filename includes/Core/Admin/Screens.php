@@ -294,7 +294,7 @@ final class Screens {
 	 * not eligible for accessing Site Kit entirely, i.e. if they are not allowed to authenticate.
 	 *
 	 * @since 1.12.0
-	 * @since n.e.x.t Added the `purpose=intent` argument when the request has an intent.
+	 * @since 1.190.0 Added the `purpose=intent` argument when the request has an intent.
 	 */
 	private function no_access_redirect_dashboard_to_splash() {
 		global $plugin_page;
@@ -342,7 +342,7 @@ final class Screens {
 	 *
 	 * The splash screen URL doesn't say which intent it was opened for, so the message doesn't name it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	private function no_access_explain_intent_on_splash() {
 		global $plugin_page;
@@ -457,7 +457,7 @@ final class Screens {
 	 * unless the request has an intent, which takes priority.
 	 *
 	 * @since 1.183.0
-	 * @since n.e.x.t Moved from the dashboard screen's `initialize_callback` and skipped for requests with an intent.
+	 * @since 1.190.0 Moved from the dashboard screen's `initialize_callback` and skipped for requests with an intent.
 	 */
 	private function redirect_dashboard_to_unfinished_setup_step() {
 		if ( ! $this->authentication->is_authenticated() ) {

@@ -169,7 +169,7 @@ class Batch_Error_Notifier {
 	 * error-email key.
 	 *
 	 * @since 1.175.0
-	 * @since n.e.x.t Returns the generic key without a map lookup when there is no category.
+	 * @since 1.190.0 Returns the generic key without a map lookup when there is no category.
 	 *
 	 * @param string|null $category_id Error category ID.
 	 * @param string|null $module_slug Module slug (e.g. analytics-4, search-console).

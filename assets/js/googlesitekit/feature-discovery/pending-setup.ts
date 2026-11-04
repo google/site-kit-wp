@@ -33,7 +33,7 @@ export const FEATURE_DISCOVERY_SETUP_CACHE_KEY = 'feature_discovery_setup';
 /**
  * Gets the path of the hub tab the user is currently on.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {string} The tab's route path, defaulting to the "All services and features" tab.
  */
@@ -52,7 +52,7 @@ export function getCurrentFeatureDiscoveryTabPath(): string {
  * hour), so that it belongs to the browser tab the user left from, survives
  * the OAuth round trip and expires if the setup is abandoned.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} featureSlug Feature's slug.
  * @param {string} returnTab   Path of the tab to return the user to.
@@ -74,7 +74,7 @@ export function setPendingSetup(
  *
  * This must only be called from the hub's mount.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {Promise<(Object|null)>} The record, or `null` if there is none or it has expired.
  */
@@ -95,7 +95,7 @@ export async function consumePendingSetup(): Promise< PendingSetup | null > {
  * The record is only read, not deleted, so it is left for
  * `consumePendingSetup()` to pick up once the hub mounts.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Function} select      Registry `select` function.
  * @param {string}   featureSlug Slug of the feature whose setup has completed.

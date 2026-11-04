@@ -29,11 +29,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { sampleFeatures } from '@/js/components/feature-discovery/__fixtures__/all-services';
 import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
-import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createFeatureDiscovery } from '@/js/googlesitekit/feature-discovery';
+import { registerFeatures } from '@/js/modules/analytics-4/feature-discovery';
 import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
@@ -53,45 +53,40 @@ export const Description = Template.bind(
 ) as Story< FeatureDetailPanelProps >;
 Description.storyName = 'Description';
 Description.args = { initialActiveIndex: 0 };
-// TODO: #13331 -- Description.scenario = {};
+Description.scenario = {};
 
 export const Requirements = Template.bind(
 	{}
 ) as Story< FeatureDetailPanelProps >;
 Requirements.storyName = 'Requirements';
 Requirements.args = { initialActiveIndex: 1 };
-// TODO: #13331 -- Requirements.scenario = {};
+Requirements.scenario = {};
 
 export const Screenshots = Template.bind(
 	{}
 ) as Story< FeatureDetailPanelProps >;
 Screenshots.storyName = 'Screenshots';
 Screenshots.args = { initialActiveIndex: 2 };
-// TODO: #13331 -- Screenshots.scenario = {};
+Screenshots.scenario = {};
 
 export const RelevancyFeedback = Template.bind(
 	{}
 ) as Story< FeatureDetailPanelProps >;
 RelevancyFeedback.storyName = 'Relevancy Feedback';
-// TODO: #13331 -- Enable scenario and commit references.
-// RelevancyFeedback.scenario = {
-// 	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--down',
-// 	postInteractionWait: 200,
-// 	onReadyScript: 'mouse.js',
-// };
+RelevancyFeedback.scenario = {
+	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--down',
+	postInteractionWait: 200,
+};
 
 export const RelevancyConfirmation = Template.bind(
 	{}
 ) as Story< FeatureDetailPanelProps >;
 RelevancyConfirmation.storyName = 'Relevancy Confirmation';
-// TODO: #13331 -- Enable scenario and commit references.
-// RelevancyConfirmation.scenario = {
-// 	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--up',
-// 	postInteractionWait: 200,
-// 	onReadyScript: 'mouse.js',
-// };
+RelevancyConfirmation.scenario = {
+	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--up',
+	postInteractionWait: 200,
+};
 
-// VRT scenarios and references arrive with the sub-tab content in #13331.
 export default {
 	title: 'Components/Feature Discovery/FeatureDetailPanel',
 	component: FeatureDetailPanel,
@@ -130,7 +125,7 @@ export default {
 
 				provideModuleRegistrations( registry );
 				provideModules( registry );
-				provideFeatures( registry, sampleFeatures );
+				registerFeatures( createFeatureDiscovery( registry ) );
 				provideSiteInfo( registry );
 				provideUserAuthentication( registry );
 
@@ -141,7 +136,7 @@ export default {
 					.dispatch( CORE_UI )
 					.setValue(
 						FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
-						'analytics-setup'
+						'analytics'
 					);
 			}
 			return (

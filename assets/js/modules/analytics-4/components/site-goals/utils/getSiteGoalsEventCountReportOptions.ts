@@ -31,7 +31,7 @@ import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
  * The data store keeps one report for each set of options, so the same dates
  * and goal type always share one request.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object}   dates           The date range the report covers.
  * @param {string}   dates.startDate The first date, as `YYYY-MM-DD`, e.g. `2026-08-28`, not `20260828`.

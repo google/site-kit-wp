@@ -98,9 +98,7 @@ DataGatheringComplete.args = {
 };
 DataGatheringComplete.scenario = {};
 
-export const DataAvailableViewOnly = Template.bind( {} ) as Story & {
-	parameters?: Record< string, unknown >;
-};
+export const DataAvailableViewOnly = Template.bind( {} ) as Story;
 DataAvailableViewOnly.storyName = 'Data Available View Only';
 DataAvailableViewOnly.args = {
 	setupRegistry: ( registry ) => {
@@ -110,14 +108,9 @@ DataAvailableViewOnly.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-DataAvailableViewOnly.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
-};
 DataAvailableViewOnly.scenario = {};
 
-export const GatheringDataViewOnly = Template.bind( {} ) as Story & {
-	parameters?: Record< string, unknown >;
-};
+export const GatheringDataViewOnly = Template.bind( {} ) as Story;
 GatheringDataViewOnly.storyName = 'Gathering Data View Only';
 GatheringDataViewOnly.args = {
 	setupRegistry: ( registry ) => {
@@ -126,9 +119,6 @@ GatheringDataViewOnly.args = {
 			.receiveIsGatheringData( true );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-};
-GatheringDataViewOnly.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
 };
 GatheringDataViewOnly.scenario = {};
 

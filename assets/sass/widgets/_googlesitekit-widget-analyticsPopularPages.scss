@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@use "sass:map";
+
 .googlesitekit-plugin {
 	.googlesitekit-analytics-popular-pages-widget__report-table--tabbed-layout {
 		.googlesitekit-table__body-item:last-child {
@@ -25,6 +27,88 @@
 			.googlesitekit-table__body-item-content {
 				padding-left: 1em;
 			}
+		}
+	}
+
+	.googlesitekit-analytics-popular-pages-widget__latest-content-table {
+		// The Posted columns replace the numbered list the shared table styles
+		// draw in the first column.
+		.googlesitekit-table__body-item:first-child .googlesitekit-table__body-item-content {
+			margin-left: 0;
+
+			&::before {
+				content: none;
+			}
+		}
+
+		.googlesitekit-table__wrapper:not(.googlesitekit-table__wrapper--tabbed-layout) {
+			.googlesitekit-table__head-item,
+			.googlesitekit-table__body-item {
+				&:nth-child(-n + 3) {
+					text-align: left;
+				}
+			}
+		}
+
+		.googlesitekit-analytics-popular-pages-widget__posted-date,
+		.googlesitekit-analytics-popular-pages-widget__posted-time {
+			white-space: nowrap;
+		}
+
+		.googlesitekit-analytics-popular-pages-widget__posted-date {
+			width: 60px;
+		}
+
+		// Wide enough for a 12-hour time such as "11:05 AM".
+		.googlesitekit-analytics-popular-pages-widget__posted-time {
+			width: 80px;
+		}
+
+		.googlesitekit-analytics-popular-pages-widget__posted-time .googlesitekit-table__head-item-title {
+			@include screen-reader-only;
+		}
+
+		.googlesitekit-analytics-popular-pages-widget__posted-meta {
+			color: $c-surfaces-on-surface-variant;
+			display: block;
+			font-size: $fs-body-sm;
+			margin-bottom: 4px;
+		}
+
+		.googlesitekit-table__head-item--primary {
+			width: 42%;
+		}
+
+		.googlesitekit-table__wrapper--3-col .googlesitekit-table__head-item--primary {
+			width: auto;
+		}
+
+		.googlesitekit-table__wrapper:not(.googlesitekit-table__wrapper--tabbed-layout) .googlesitekit-analytics-popular-pages-widget__title a {
+			display: block;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+
+	.googlesitekit-analytics-popular-pages-widget__error {
+
+		@each $size in map.keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
+
+				padding: $margin;
+				padding: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+			}
+		}
+	}
+
+	.googlesitekit-analytics-popular-pages-widget__report-error {
+		padding: $grid-gap-phone $grid-gap-phone 0;
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop $grid-gap-desktop 0;
 		}
 	}
 }

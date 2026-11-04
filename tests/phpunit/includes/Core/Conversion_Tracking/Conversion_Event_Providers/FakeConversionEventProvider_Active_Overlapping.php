@@ -21,7 +21,7 @@ class FakeConversionEventProvider_Active_Overlapping extends FakeConversionEvent
 	/**
 	 * Gets the event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array List of event names.
 	 */

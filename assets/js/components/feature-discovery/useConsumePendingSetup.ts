@@ -35,7 +35,7 @@ import { consumePendingSetup } from '@/js/googlesitekit/feature-discovery/pendin
  * This is the only place the record is consumed, so reloading or revisiting
  * the hub afterwards can't route the user again.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {boolean} `true` once the record has been consumed and stored.
  */

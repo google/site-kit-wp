@@ -40,7 +40,7 @@ import { EXPRESS_SETUP_STEP_UI_KEY } from '@/js/modules/reader-revenue-manager/c
  * itself through `useSetupFlow()`.
  *
  * @since 1.187.0
- * @since n.e.x.t Reduced to reading and writing the step, without resolving it.
+ * @since 1.190.0 Reduced to reading and writing the step, without resolving it.
  *
  * @return {Array} Value and setter tuple.
  */

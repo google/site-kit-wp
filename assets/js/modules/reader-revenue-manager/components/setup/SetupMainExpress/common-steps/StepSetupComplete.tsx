@@ -24,26 +24,35 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import {
+	Registry,
+	Select,
+	useDispatch,
+	useRegistry,
+	useSelect,
+} from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { getPendingSetupReturnURL } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
-import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import {
+	SetupStep,
+	SetupStepProps,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { EXPRESS_SETUP_CTA_TO_FEATURE_SLUG } from '@/js/modules/reader-revenue-manager/feature-discovery/constants';
 import SuccessIcon from '@/svg/graphics/rrm-express-setup-success.svg';
 
-// Does not extend `SetupStepProps`: this step ends the flow, so it ignores the
-// `onComplete` callback the flow passes to every step.
-interface StepSetupCompleteProps {
+interface StepSetupCompleteProps extends SetupStepProps {
 	title?: string;
 	children?: ReactNode;
 	secondaryCTA?: ReactNode;
@@ -53,6 +62,7 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 	title = __( 'Reader Revenue Manager is set up', 'google-site-kit' ),
 	children,
 	secondaryCTA,
+	onComplete,
 } ) => {
 	const [ cta ] = useQueryArg( 'cta' );
 
@@ -63,12 +73,48 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	// `@wordpress/data` types `useRegistry()` as returning `Function`.
+	const registry = useRegistry() as unknown as Registry;
 
-	const onReturnToDashboardClick = useCallback( () => {
-		if ( dashboardURL ) {
-			navigateTo( dashboardURL );
+	// Where the setup for a feature's CTA was started from the hub, the user is
+	// returned there rather than to the dashboard.
+	const [ hubURL, setHubURL ] = useState< string | undefined >();
+
+	useEffect( () => {
+		const featureSlug = cta
+			? EXPRESS_SETUP_CTA_TO_FEATURE_SLUG[ cta ]
+			: undefined;
+
+		if ( ! featureSlug ) {
+			return undefined;
 		}
-	}, [ dashboardURL, navigateTo ] );
+
+		let ignore = false;
+
+		getPendingSetupReturnURL( registry.select as Select, featureSlug ).then(
+			( url ) => {
+				if ( ! ignore ) {
+					setHubURL( url );
+				}
+			}
+		);
+
+		return () => {
+			ignore = true;
+		};
+	}, [ cta, registry ] );
+
+	// The button completes this last step, so the flow can track it before the
+	// page is left.
+	const onReturnClick = useCallback( async () => {
+		await onComplete();
+
+		const returnURL = hubURL || dashboardURL;
+
+		if ( returnURL ) {
+			navigateTo( returnURL );
+		}
+	}, [ dashboardURL, hubURL, navigateTo, onComplete ] );
 
 	// The CTA details only make sense within a CTA-specific setup flow, which
 	// is identified by the `cta` query argument.
@@ -108,8 +154,10 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 			</div>
 			<div className="googlesitekit-rrm-express-setup-complete__actions">
 				{ /* @ts-expect-error `Button` component is not yet typed. */ }
-				<Button onClick={ onReturnToDashboardClick }>
-					{ __( 'Return to Dashboard', 'google-site-kit' ) }
+				<Button onClick={ onReturnClick }>
+					{ hubURL
+						? __( 'Return to features page', 'google-site-kit' )
+						: __( 'Return to Dashboard', 'google-site-kit' ) }
 				</Button>
 				{ secondaryCTA }
 			</div>

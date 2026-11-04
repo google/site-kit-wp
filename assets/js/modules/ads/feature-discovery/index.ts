@@ -31,6 +31,7 @@ import {
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
@@ -46,6 +47,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'ads', {
+		name: __( 'Ads', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ADS,
 		title: __( 'Increase your visibility in Search', 'google-site-kit' ),
 		shortDescription: __(
@@ -61,21 +63,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				whyUseHeading: __( 'Why use Ads?', 'google-site-kit' ),
 				whyUseList: [
 					{
-						term: __( 'Accelerate growth:', 'google-site-kit' ),
+						term: __( 'Accelerate growth', 'google-site-kit' ),
 						description: __(
 							'Reach your target audience instantly, bypassing organic wait times',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Drive quality traffic:', 'google-site-kit' ),
+						term: __( 'Drive quality traffic', 'google-site-kit' ),
 						description: __(
 							'Send visitors directly to your most important pages',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Scale results:', 'google-site-kit' ),
+						term: __( 'Scale results', 'google-site-kit' ),
 						description: __(
 							'Boost conversions while keeping full control of your budget',
 							'google-site-kit'
@@ -84,6 +86,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/ads/',
 				serviceRequirements: __(
 					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information and payment details',
 					'google-site-kit'
@@ -102,11 +106,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable Google tag gateway for advertisers (optional)',
 						'google-site-kit'
 					),
+					__(
+						'Ads is set up! You are growing your reach.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'Ads is set up! You are growing your reach.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -115,8 +119,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Ads settings page showing various configuration options',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -128,6 +132,9 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			),
 			cta: {
 				label: __( 'Manage account in Ads', 'google-site-kit' ),
+				getURL: ( select ) =>
+					select( CORE_MODULES ).getDetailsLinkURL( MODULE_SLUG_ADS ),
+				external: true,
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},

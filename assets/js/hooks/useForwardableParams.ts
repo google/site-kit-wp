@@ -38,7 +38,7 @@ export interface ForwardableParams {
  * Gets splash/auth params that should be forwarded to dashboard URLs.
  *
  * @since 1.174.0
- * @since n.e.x.t Added the `intent` and `intent_code` params.
+ * @since 1.190.0 Added the `intent` and `intent_code` params.
  *
  * @return {Object} Forwardable query params.
  */

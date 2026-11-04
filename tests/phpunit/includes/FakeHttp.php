@@ -51,7 +51,7 @@ class FakeHttp {
 	 * Creates the response to a Google API batch request, with one part for each
 	 * request in the batch.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param RequestInterface $request              The batch request.
 	 * @param callable         $create_part_response Creates the response to one request in the batch. Called with

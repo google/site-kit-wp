@@ -29,6 +29,7 @@ describe( 'core/site errors', () => {
 		description: 'Test error message',
 		format: 'small',
 		type: 'win-error',
+		showGlobalNotification: true,
 	};
 
 	let registry;
@@ -64,6 +65,17 @@ describe( 'core/site errors', () => {
 				expect( store.getState().internalServerError ).toEqual(
 					internalServerError
 				);
+			} );
+
+			it( 'should set `showGlobalNotification` to `true` when the error does not set it', () => {
+				registry.dispatch( CORE_SITE ).setInternalServerError( {
+					id: 'module-setup-error',
+					description: 'Test error message',
+				} );
+
+				expect(
+					store.getState().internalServerError.showGlobalNotification
+				).toBe( true );
 			} );
 		} );
 

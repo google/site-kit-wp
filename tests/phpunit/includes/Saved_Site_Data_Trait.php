@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Tests;
 /**
  * Trait for testing that nothing is saved to the site.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ trait Saved_Site_Data_Trait {
 	 * WordPress stores a transient in the options table when the site has no
 	 * persistent object cache, so the `options` rows include every transient.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array The rows of each table, keyed by `options`, `post_meta`, and `user_meta`.
 	 */

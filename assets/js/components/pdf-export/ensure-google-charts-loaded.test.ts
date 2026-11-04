@@ -31,7 +31,7 @@ function getLoaderScript(): Element | null {
 /**
  * Sets the site locale that `getLocale()` reads.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string|undefined} locale The WordPress locale, such as `de_DE`, or `undefined` so `getLocale()` falls back to the browser language.
  * @return {void}

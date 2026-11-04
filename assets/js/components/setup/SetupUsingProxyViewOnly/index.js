@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -37,21 +32,15 @@ import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constant
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
-import { Cell, Grid, Row } from '@/js/material-components';
+import { Grid } from '@/js/material-components';
 import { trackEvent } from '@/js/util';
 import Header from './Header';
 import IntentSetupAdminRequiredNotice from './IntentSetupAdminRequiredNotice';
-import LegacySplashViewOnlyContent from './LegacySplashViewOnlyContent';
 import SplashViewOnlyContent from './SplashViewOnlyContent';
 
 export default function SetupUsingProxyViewOnly() {
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
-
 	const viewContext = useViewContext();
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -93,57 +82,22 @@ export default function SetupUsingProxyViewOnly() {
 		return null;
 	}
 
-	const splashContent = setupFlowRefreshPhase4Enabled ? (
-		<SplashViewOnlyContent
-			documentationURL={ documentationURL }
-			onButtonClick={ onButtonClick }
-		/>
-	) : (
-		<LegacySplashViewOnlyContent
-			documentationURL={ documentationURL }
-			onButtonClick={ onButtonClick }
-		/>
-	);
-
-	const classname = setupFlowRefreshPhase4Enabled
-		? 'googlesitekit-splash'
-		: 'googlesitekit-setup__splash';
-
-	const splashSetupContent = (
-		<Layout rounded={ ! setupFlowRefreshPhase4Enabled }>
-			<section className={ classname }>
-				<Grid>
-					<IntentSetupAdminRequiredNotice />
-					{ splashContent }
-				</Grid>
-			</section>
-		</Layout>
-	);
-
 	return (
 		<Fragment>
 			<Header />
-			<div
-				className={ classnames(
-					'googlesitekit-setup googlesitekit-view-only-splash',
-					{
-						'googlesitekit-initial-setup':
-							setupFlowRefreshPhase4Enabled,
-					}
-				) }
-			>
-				{ setupFlowRefreshPhase4Enabled ? (
-					<Fragment>
-						<ProgressIndicator />
-						{ splashSetupContent }
-					</Fragment>
-				) : (
-					<Grid>
-						<Row>
-							<Cell size={ 12 }>{ splashSetupContent }</Cell>
-						</Row>
-					</Grid>
-				) }
+			<div className="googlesitekit-setup googlesitekit-view-only-splash googlesitekit-initial-setup">
+				<ProgressIndicator />
+				<Layout>
+					<section className="googlesitekit-splash">
+						<Grid>
+							<IntentSetupAdminRequiredNotice />
+							<SplashViewOnlyContent
+								documentationURL={ documentationURL }
+								onButtonClick={ onButtonClick }
+							/>
+						</Grid>
+					</section>
+				</Layout>
 			</div>
 		</Fragment>
 	);

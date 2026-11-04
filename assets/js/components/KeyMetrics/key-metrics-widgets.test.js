@@ -113,7 +113,7 @@ function registryReturningReports( reports ) {
  * `fetchGetReport` resolves with the given reports in order, so a "Generating
  * leads" tile's `getTileData` can be exercised against report fixtures.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object[]} reports The report responses to resolve, in fetch order.
  * @return {Object} A mock registry.

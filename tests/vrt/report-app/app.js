@@ -87,7 +87,7 @@
 	/**
 	 * Creates an element.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {string}        tag        The tag name.
 	 * @param {Object}        [props]    Properties to set, such as `className` or
@@ -116,7 +116,7 @@
 	/**
 	 * Checks whether an entry belongs under a status filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} entry  The report entry.
 	 * @param {string} filter The status filter.
@@ -137,7 +137,7 @@
 	/**
 	 * Gets the images an entry has, in display order.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} entry The report entry.
 	 * @return {Array<Object>} The image modes, with each image's `src`, `width`
@@ -159,7 +159,7 @@
 	/**
 	 * Creates an image, sized before it loads so the page doesn't shift.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} image   The image's `src`, `width` and `height`.
 	 * @param {Object} [props] Other properties, as for `createNode()`.
@@ -180,7 +180,7 @@
 	/**
 	 * Gets the compare modes available for an entry.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} entry The report entry.
 	 * @return {Array<Object>} The modes.
@@ -196,7 +196,7 @@
 	/**
 	 * Describes an entry's viewport, and its run if the tests were repeated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} entry The report entry.
 	 * @return {string} For example, "small", or "small, run 2".
@@ -210,7 +210,7 @@
 	/**
 	 * Splits a story label into nodes that can wrap after each `/`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {string} label The story's label.
 	 * @return {Array<string|Element>} Text and `<wbr>` elements.
@@ -226,7 +226,7 @@
 	/**
 	 * Formats a duration in milliseconds.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {number} milliseconds The duration.
 	 * @return {string} For example, "3m 12s".
@@ -242,7 +242,7 @@
 	/**
 	 * Reads the filters from the URL hash.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	function readHash() {
 		const params = new URLSearchParams( window.location.hash.slice( 1 ) ); // eslint-disable-line sitekit/acronym-case
@@ -260,7 +260,7 @@
 	/**
 	 * Saves the filters in the URL hash, so a view can be linked to.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	function writeHash() {
 		const params = new URLSearchParams( { status: state.status } ); // eslint-disable-line sitekit/acronym-case
@@ -279,7 +279,7 @@
 	/**
 	 * Renders the run details and any errors not tied to a test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	function renderRun() {
 		const { run, summary, errors } = report;
@@ -313,7 +313,7 @@
 	/**
 	 * Renders the status filters, with their counts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	function renderFilters() {
 		filters.replaceChildren(
@@ -359,7 +359,7 @@
 	/**
 	 * Renders an entry's card.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} entry The report entry.
 	 * @param {number} index The entry's position in the visible list.
@@ -484,7 +484,7 @@
 	/**
 	 * Renders the cards that match the filters.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	function renderList() {
 		const query = state.query.trim().toLowerCase();
@@ -523,7 +523,7 @@
 	/**
 	 * Re-renders after a filter changes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	function update() {
 		writeHash();
@@ -534,7 +534,7 @@
 	/**
 	 * Copies text to the clipboard, and confirms it on the button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {string}  text   The text.
 	 * @param {Element} button The button that was clicked.
@@ -565,7 +565,7 @@
 	 * Renders the slider: the screenshot covers the reference image to the
 	 * right of a divider that follows the pointer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} entry The report entry.
 	 * @return {Element} The slider.
@@ -617,7 +617,7 @@
 	/**
 	 * Renders the compare view for the current entry and mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	function renderCompare() {
 		const entry = visible[ compare.index ];
@@ -695,7 +695,7 @@
 	/**
 	 * Opens the compare view.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {number}  index    The entry's position in the visible list.
 	 * @param {string}  mode     The mode to start in.
@@ -713,7 +713,7 @@
 	/**
 	 * Closes the compare view.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	function closeCompare() {
 		compare = null;
@@ -729,7 +729,7 @@
 	/**
 	 * Moves the compare view to the previous or next entry.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {number} offset `-1` or `1`.
 	 */

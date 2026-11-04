@@ -1,11 +1,9 @@
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { isCurrentURL, loginUser } from '@wordpress/e2e-test-utils';
-import {
-	WP_PASSWORD,
-	WP_USERNAME,
-} from '@wordpress/e2e-test-utils/build/shared/config';
+import { isCurrentURL } from './create-url';
+import { loginUser } from './login-user';
+import { WP_PASSWORD, WP_USERNAME } from './wp-config';
 
 const MAX_LOGIN_ATTEMPTS = 3;
 

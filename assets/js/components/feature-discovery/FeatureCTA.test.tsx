@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
 import { Registry, Select } from '@/js/googlesitekit-data';
 import {
 	CORE_FEATURE_DISCOVERY,
@@ -27,11 +28,13 @@ import {
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
@@ -257,7 +260,15 @@ describe( 'FeatureCTA', () => {
 
 	describe( 'on click', () => {
 		beforeEach( () => {
-			provideFeatures( registry, [ { slug: 'test-feature' } ] );
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						activate: jest.fn().mockResolvedValue( {} ),
+					},
+				},
+			] );
 		} );
 
 		it( 'should record the setup having been started through the survey pipeline', async () => {
@@ -336,6 +347,150 @@ describe( 'FeatureCTA', () => {
 			);
 
 			expect( onSetupComplete ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
+
+	it( 'should complete the click handler and expose an activation rejection as a setup error', async () => {
+		const error = new Error( 'Activation failed' );
+
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					activate: jest.fn().mockRejectedValue( error ),
+				},
+			},
+		] );
+
+		fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+		const { getByRole } = render( <FeatureCTA slug="test-feature" />, {
+			registry,
+		} );
+
+		const button = getByRole( 'button', { name: 'Set up now' } );
+
+		fireEvent.click( button );
+
+		await waitFor( () => expect( button ).not.toBeDisabled() );
+
+		expect( button ).not.toBeDisabled();
+
+		expect(
+			registry
+				.select( CORE_FEATURE_DISCOVERY )
+				.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+		).toBe( error );
+	} );
+
+	it( 'should share progress across CTAs mounted during externally started setup', async () => {
+		let finishSetup!: ( result: Record< string, never > ) => void;
+
+		const activation = new Promise< Record< string, never > >(
+			( resolve ) => {
+				finishSetup = resolve;
+			}
+		);
+
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					activate: () => activation,
+				},
+			},
+			{ slug: 'other-feature' },
+		] );
+
+		const setup = registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.setupFeature( 'test-feature' );
+
+		const { getAllByRole } = render(
+			<div>
+				<FeatureCTA slug="test-feature" />
+				<FeatureCTA slug="test-feature" isTertiary />
+				<FeatureCTA slug="other-feature" />
+			</div>,
+			{ registry }
+		);
+
+		const [ cardButton, panelButton, otherButton ] = getAllByRole(
+			'button',
+			{
+				name: 'Set up now',
+			}
+		);
+
+		for ( const button of [ cardButton, panelButton ] ) {
+			expect( button ).toBeDisabled();
+
+			expect( button ).toHaveClass(
+				'googlesitekit-button-icon--spinner__running'
+			);
+		}
+
+		expect( otherButton ).not.toBeDisabled();
+
+		await act( async () => {
+			finishSetup( {} );
+			await setup;
+		} );
+
+		for ( const button of [ cardButton, panelButton ] ) {
+			expect( button ).not.toBeDisabled();
+
+			expect( button ).not.toHaveClass(
+				'googlesitekit-button-icon--spinner__running'
+			);
+		}
+	} );
+
+	describe( 'for an in-place-panel feature', () => {
+		it( 'should open the feature’s panel over the hub', async () => {
+			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: {
+						type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+						ctaLabel: 'Try it now',
+						open: ( panelRegistry: Registry ) => {
+							panelRegistry
+								.dispatch( CORE_UI )
+								.setValue( 'testPanelOpened', true );
+						},
+					},
+				},
+			] );
+
+			const onSetupComplete = jest.fn();
+
+			const { getByRole } = render(
+				<FeatureCTA
+					slug="test-feature"
+					onSetupComplete={ onSetupComplete }
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Try it now' } ) );
+
+			await waitFor( () =>
+				expect( onSetupComplete ).toHaveBeenCalledTimes( 1 )
+			);
+
+			expect(
+				registry.select( CORE_UI ).getValue( 'testPanelOpened' )
+			).toBe( true );
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
+			).toBe( false );
 		} );
 	} );
 } );

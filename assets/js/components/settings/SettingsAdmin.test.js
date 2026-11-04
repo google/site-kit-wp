@@ -96,32 +96,16 @@ describe( 'SettingsAdmin', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the Key Metrics card when Analytics is not connected but a site purpose answer exists and `setupFlowRefreshPhase4` is enabled', async () => {
+	it( 'renders the Key Metrics card when Analytics is not connected but a site purpose answer exists', async () => {
 		provideAnalyticsConnected( false );
 		provideSitePurpose( true );
 
 		const { getByText, waitForRegistry } = render( <SettingsAdmin />, {
 			registry,
-			features: [ 'setupFlowRefreshPhase4' ],
 		} );
 
 		await waitForRegistry();
 
 		expect( getByText( /SettingsCardKeyMetrics/i ) ).toBeInTheDocument();
-	} );
-
-	it( 'does not render the Key Metrics card when a site purpose answer exists but `setupFlowRefreshPhase4` is disabled', async () => {
-		provideAnalyticsConnected( false );
-		provideSitePurpose( true );
-
-		const { queryByText, waitForRegistry } = render( <SettingsAdmin />, {
-			registry,
-		} );
-
-		await waitForRegistry();
-
-		expect(
-			queryByText( /SettingsCardKeyMetrics/i )
-		).not.toBeInTheDocument();
 	} );
 } );
