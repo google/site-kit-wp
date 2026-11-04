@@ -38,6 +38,30 @@ class Dashboard_Widget_Enabled extends Setting {
 	}
 
 	/**
+	 * Checks whether the WordPress dashboard widget should be displayed, based on the setting and filter.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if the WordPress dashboard widget should be displayed, false otherwise.
+	 */
+	public function should_display() {
+		if ( ! $this->get() ) {
+			return false;
+		}
+
+		/**
+		 * Filters whether the Site Kit WordPress dashboard widget should be displayed.
+		 *
+		 * This only runs when the WordPress dashboard widget setting is enabled, so it can only be used to hide the widget.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param bool $display Whether to display the WordPress dashboard widget.
+		 */
+		return (bool) apply_filters( 'googlesitekit_show_wp_dashboard_widget', true );
+	}
+
+	/**
 	 * Gets the expected value type.
 	 *
 	 * @since n.e.x.t

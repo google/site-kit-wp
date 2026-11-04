@@ -88,6 +88,7 @@ final class Dashboard {
 	 *
 	 * @since 1.0.0
 	 * @since 1.172.0 Added Dismissed_Items instance.
+	 * @since n.e.x.t Added Dashboard_Widget_Enabled instance.
 	 *
 	 * @param Context         $context         Plugin context.
 	 * @param Assets          $assets          Optional. Assets API instance. Default is a new instance.
@@ -158,18 +159,7 @@ final class Dashboard {
 			return false;
 		}
 
-		if ( ! $this->dashboard_widget_enabled->get() ) {
-			return false;
-		}
-
-		/**
-		 * Filters whether the Site Kit WordPress dashboard widget should be displayed.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param bool $display Whether to display the WordPress dashboard widget.
-		 */
-		return (bool) apply_filters( 'googlesitekit_show_wp_dashboard_widget', true );
+		return $this->dashboard_widget_enabled->should_display();
 	}
 
 	/**
