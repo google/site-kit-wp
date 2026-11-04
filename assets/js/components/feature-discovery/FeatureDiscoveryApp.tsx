@@ -104,6 +104,7 @@ const FeatureDiscoveryApp: FC = () => {
 				<HelpMenu />
 			</Header>
 			<div className="googlesitekit-module-page googlesitekit-feature-discovery">
+				{ hasConsumedPendingSetup && <SetupCTAOverlays /> }
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
@@ -176,7 +177,6 @@ const FeatureDiscoveryApp: FC = () => {
 			<UserSettingsSelectionPanel />
 			<PDFSectionsSelectionPanel />
 			<PDFExportRoot />
-			{ hasConsumedPendingSetup && <SetupCTAOverlays /> }
 		</Fragment>
 	);
 };
