@@ -1,5 +1,5 @@
 /**
- * ThumbsSurveyTrigger component.
+ * ThumbsFeedback component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -53,8 +53,9 @@ import FeedbackMenu, { FeedbackMenuOption } from './FeedbackMenu';
 // Use a tighter gap for bottom-placed poppers. Top placement keeps the default (9px).
 const BOTTOM_POPPER_OFFSET = 4;
 
-interface ThumbsSurveyTriggerProps {
-	voteID: string;
+interface ThumbsFeedbackProps {
+	feedbackNamespace: string;
+	feedbackGroup: string;
 	onVote?: ( direction: VoteDirection ) => void;
 	ariaLabel?: string;
 	popperPlacement?: PopperPlacement;
@@ -64,23 +65,26 @@ interface ThumbsSurveyTriggerProps {
 }
 
 /**
- * Renders thumbs-up and thumbs-down buttons that send a survey vote
+ * Renders thumbs-up and thumbs-down buttons that send feedback
  * and show a thank-you popper after the user votes.
  *
  * @since 1.182.0
+ * @since n.e.x.t Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
  *
- * @param props                  Component props.
- * @param props.voteID           Identifier used to build the survey trigger string.
- * @param props.onVote           Optional callback run after the user votes.
- * @param props.ariaLabel        Accessible label for the button group.
- * @param props.popperPlacement  Popper position, defaults to `top-end`.
- * @param props.voteDirection    Controlled vote; null selects neither thumb. Omit to manage selection internally.
- * @param props.feedbackOptions  Feedback options for each vote direction.
- * @param props.onSelectFeedback Callback run when feedback is selected.
+ * @param props                   Component props.
+ * @param props.feedbackNamespace The product area the feedback is about.
+ * @param props.feedbackGroup     The item within the namespace the feedback is about.
+ * @param props.onVote            Optional callback run after the user votes.
+ * @param props.ariaLabel         Accessible label for the button group.
+ * @param props.popperPlacement   Popper position, defaults to `top-end`.
+ * @param props.voteDirection     Controlled vote; null selects neither thumb. Omit to manage selection internally.
+ * @param props.feedbackOptions   Feedback options for each vote direction.
+ * @param props.onSelectFeedback  Callback run when feedback is selected.
  * @return React element.
  */
-const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
-	voteID,
+const ThumbsFeedback: FC< ThumbsFeedbackProps > = ( {
+	feedbackNamespace,
+	feedbackGroup,
 	onVote,
 	ariaLabel,
 	popperPlacement = 'top-end',
@@ -88,7 +92,7 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 	feedbackOptions,
 	onSelectFeedback,
 } ) => {
-	const { triggerSurvey } = useDispatch( CORE_USER );
+	const { sendFeedback } = useDispatch( CORE_USER );
 
 	const [ feedbackDirection, setFeedbackDirection ] =
 		useState< VoteDirection | null >( null );
@@ -109,7 +113,7 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 	const sourceRef = useRef< HTMLButtonElement | null >( null );
 
 	const menuID = useInstanceId(
-		ThumbsSurveyTrigger,
+		ThumbsFeedback,
 		'thumbs-feedback-menu'
 	) as string;
 
@@ -137,7 +141,12 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 
 	function handleVote( direction: VoteDirection ) {
 		return ( event: MouseEvent< HTMLButtonElement > ) => {
-			triggerSurvey( `vote:${ voteID }:${ direction }` );
+			sendFeedback( {
+				namespace: feedbackNamespace,
+				group: feedbackGroup,
+				key: 'vote',
+				value: direction,
+			} );
 
 			if ( voteDirection === undefined ) {
 				setInternalDirection( direction );
@@ -188,9 +197,9 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 	return (
 		<Fragment>
 			<div
-				className={ classnames( 'googlesitekit-thumbs-survey-trigger', {
+				className={ classnames( 'googlesitekit-thumbs-feedback', {
 					'mdc-menu-surface--anchor': !! feedbackOptions,
-					'googlesitekit-thumbs-survey-trigger--voted':
+					'googlesitekit-thumbs-feedback--voted':
 						selectedDirection !== null,
 				} ) }
 				role="group"
@@ -220,8 +229,8 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 					}
 					aria-pressed={ isUpvote }
 					className={ classnames(
-						'googlesitekit-thumbs-survey-trigger__button',
-						'googlesitekit-thumbs-survey-trigger__button--up'
+						'googlesitekit-thumbs-feedback__button',
+						'googlesitekit-thumbs-feedback__button--up'
 					) }
 					onClick={ handleVote( VOTE_DIRECTION_UP ) }
 					tertiary
@@ -247,8 +256,8 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 					}
 					aria-pressed={ isDownvote }
 					className={ classnames(
-						'googlesitekit-thumbs-survey-trigger__button',
-						'googlesitekit-thumbs-survey-trigger__button--down'
+						'googlesitekit-thumbs-feedback__button',
+						'googlesitekit-thumbs-feedback__button--down'
 					) }
 					onClick={ handleVote( VOTE_DIRECTION_DOWN ) }
 					tertiary
@@ -273,13 +282,13 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 				placement={ popperPlacement }
 				resetKey={ voteCount }
 				offset={ popperOffset }
-				className="googlesitekit-thumbs-survey-trigger__popper"
+				className="googlesitekit-thumbs-feedback__popper"
 			>
 				<Typography
 					type="body"
 					size="small"
 					role="status"
-					className="googlesitekit-thumbs-survey-trigger__popper-text"
+					className="googlesitekit-thumbs-feedback__popper-text"
 				>
 					{ __( 'Thanks for the feedback!', 'google-site-kit' ) }
 				</Typography>
@@ -290,7 +299,7 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 						'Close feedback message',
 						'google-site-kit'
 					) }
-					className="googlesitekit-thumbs-survey-trigger__popper-close"
+					className="googlesitekit-thumbs-feedback__popper-close"
 					onClick={ handleClose }
 					hideTooltipTitle
 				/>
@@ -299,4 +308,4 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 	);
 };
 
-export default ThumbsSurveyTrigger;
+export default ThumbsFeedback;

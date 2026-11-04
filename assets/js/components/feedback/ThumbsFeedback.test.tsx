@@ -1,5 +1,5 @@
 /**
- * ThumbsSurveyTrigger component tests.
+ * ThumbsFeedback component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { surveyTriggerEndpoint } from '../../../../tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -30,13 +29,20 @@ import {
 	waitFor,
 } from '../../../../tests/js/test-utils';
 import { VoteDirection } from './constants';
-import ThumbsSurveyTrigger from './ThumbsSurveyTrigger';
+import ThumbsFeedback from './ThumbsFeedback';
 
-function mockSurveyTrigger() {
-	fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+const feedbackEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/feedback'
+);
+
+function mockSendFeedback() {
+	fetchMock.post( feedbackEndpoint, {
+		status: 200,
+		body: { success: true },
+	} );
 }
 
-describe( 'ThumbsSurveyTrigger', () => {
+describe( 'ThumbsFeedback', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
@@ -48,7 +54,10 @@ describe( 'ThumbsSurveyTrigger', () => {
 
 	it( 'renders the up and down buttons with accessible labels', () => {
 		const { getByRole } = render(
-			<ThumbsSurveyTrigger voteID="site_goals_widget_online_store" />,
+			<ThumbsFeedback
+				feedbackNamespace="analytics"
+				feedbackGroup="site_goals_widget_online_store"
+			/>,
 			{ registry }
 		);
 
@@ -60,11 +69,14 @@ describe( 'ThumbsSurveyTrigger', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'dispatches triggerSurvey with the up payload on thumbs-up click', async () => {
-		mockSurveyTrigger();
+	it( 'dispatches sendFeedback with the up payload on thumbs-up click', async () => {
+		mockSendFeedback();
 
 		const { getByRole } = render(
-			<ThumbsSurveyTrigger voteID="site_goals_widget_online_store" />,
+			<ThumbsFeedback
+				feedbackNamespace="analytics"
+				feedbackGroup="site_goals_widget_online_store"
+			/>,
 			{ registry }
 		);
 
@@ -73,21 +85,27 @@ describe( 'ThumbsSurveyTrigger', () => {
 		);
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID: 'vote:site_goals_widget_online_store:up',
+						namespace: 'analytics',
+						group: 'site_goals_widget_online_store',
+						key: 'vote',
+						value: 'up',
 					},
 				},
 			} )
 		);
 	} );
 
-	it( 'dispatches triggerSurvey with the down payload on thumbs-down click', async () => {
-		mockSurveyTrigger();
+	it( 'dispatches sendFeedback with the down payload on thumbs-down click', async () => {
+		mockSendFeedback();
 
 		const { getByRole } = render(
-			<ThumbsSurveyTrigger voteID="site_goals_widget_lead_generation" />,
+			<ThumbsFeedback
+				feedbackNamespace="analytics"
+				feedbackGroup="site_goals_widget_lead_generation"
+			/>,
 			{ registry }
 		);
 
@@ -96,22 +114,27 @@ describe( 'ThumbsSurveyTrigger', () => {
 		);
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID:
-							'vote:site_goals_widget_lead_generation:down',
+						namespace: 'analytics',
+						group: 'site_goals_widget_lead_generation',
+						key: 'vote',
+						value: 'down',
 					},
 				},
 			} )
 		);
 	} );
 
-	it( 'dispatches triggerSurvey on every click', async () => {
-		mockSurveyTrigger();
+	it( 'dispatches sendFeedback on every click', async () => {
+		mockSendFeedback();
 
 		const { getByRole } = render(
-			<ThumbsSurveyTrigger voteID="repeat_vote" />,
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="repeat_vote"
+			/>,
 			{ registry }
 		);
 
@@ -124,25 +147,28 @@ describe( 'ThumbsSurveyTrigger', () => {
 
 		fireEvent.click( upButton );
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 1, surveyTriggerEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 1, feedbackEndpoint )
 		);
 
 		fireEvent.click( upButton );
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 2, surveyTriggerEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 2, feedbackEndpoint )
 		);
 
 		fireEvent.click( downButton );
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 3, surveyTriggerEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 3, feedbackEndpoint )
 		);
 	} );
 
 	it( 'marks the clicked thumb as active via aria-pressed', async () => {
-		mockSurveyTrigger();
+		mockSendFeedback();
 
 		const { getByRole } = render(
-			<ThumbsSurveyTrigger voteID="active_vote" />,
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="active_vote"
+			/>,
 			{ registry }
 		);
 
@@ -162,7 +188,7 @@ describe( 'ThumbsSurveyTrigger', () => {
 		expect( downButton ).toHaveAttribute( 'aria-pressed', 'false' );
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 1, surveyTriggerEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 1, feedbackEndpoint )
 		);
 
 		fireEvent.click( downButton );
@@ -171,15 +197,18 @@ describe( 'ThumbsSurveyTrigger', () => {
 		expect( downButton ).toHaveAttribute( 'aria-pressed', 'true' );
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 2, surveyTriggerEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 2, feedbackEndpoint )
 		);
 	} );
 
 	it( 'shows the thank-you message on thumbs-up click', async () => {
-		mockSurveyTrigger();
+		mockSendFeedback();
 
 		const { getByRole, findByText } = render(
-			<ThumbsSurveyTrigger voteID="ack_up" />,
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="ack_up"
+			/>,
 			{ registry }
 		);
 
@@ -192,10 +221,13 @@ describe( 'ThumbsSurveyTrigger', () => {
 	} );
 
 	it( 'should show the thank-you message and close button on vote without options', async () => {
-		mockSurveyTrigger();
+		mockSendFeedback();
 
 		const { getByRole, findByText } = render(
-			<ThumbsSurveyTrigger voteID="ack_down" />,
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="ack_down"
+			/>,
 			{ registry }
 		);
 
@@ -215,11 +247,14 @@ describe( 'ThumbsSurveyTrigger', () => {
 	it( 'should intercept Escape inside the thumb controls only while the Popper is open', () => {
 		jest.spyOn(
 			registry.dispatch( CORE_USER ),
-			'triggerSurvey'
+			'sendFeedback'
 		).mockResolvedValue( {} );
 
 		const { getByRole, queryByRole } = render(
-			<ThumbsSurveyTrigger voteID="escape" />,
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="escape"
+			/>,
 			{ registry }
 		);
 
@@ -256,8 +291,9 @@ describe( 'ThumbsSurveyTrigger', () => {
 		'should select the controlled %s vote without showing feedback',
 		( voteDirection ) => {
 			const { getByRole, queryByText } = render(
-				<ThumbsSurveyTrigger
-					voteID="initial"
+				<ThumbsFeedback
+					feedbackNamespace="feature_hub"
+					feedbackGroup="initial"
 					voteDirection={ voteDirection }
 				/>,
 				{ registry }
@@ -281,7 +317,11 @@ describe( 'ThumbsSurveyTrigger', () => {
 
 	it( 'should reflect changes to the controlled vote, including clearing it', () => {
 		const { getByRole, rerender } = render(
-			<ThumbsSurveyTrigger voteID="controlled" voteDirection={ null } />,
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="controlled"
+				voteDirection={ null }
+			/>,
 			{ registry }
 		);
 
@@ -295,8 +335,9 @@ describe( 'ThumbsSurveyTrigger', () => {
 
 		for ( const direction of [ 'up', 'down', null ] as const ) {
 			rerender(
-				<ThumbsSurveyTrigger
-					voteID="controlled"
+				<ThumbsFeedback
+					feedbackNamespace="feature_hub"
+					feedbackGroup="controlled"
 					voteDirection={ direction }
 				/>
 			);
@@ -314,13 +355,14 @@ describe( 'ThumbsSurveyTrigger', () => {
 	} );
 
 	it( 'should request a controlled vote change and open its feedback without changing the selection', async () => {
-		mockSurveyTrigger();
+		mockSendFeedback();
 
 		const onVote = jest.fn();
 
 		const { getByRole, waitForRegistry } = render(
-			<ThumbsSurveyTrigger
-				voteID="controlled"
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="controlled"
 				voteDirection={ null }
 				onVote={ onVote }
 				feedbackOptions={ {
@@ -352,13 +394,14 @@ describe( 'ThumbsSurveyTrigger', () => {
 	it.each< VoteDirection >( [ 'up', 'down' ] )(
 		'should request feedback on %s and show confirmation only after selection',
 		async ( direction ) => {
-			mockSurveyTrigger();
+			mockSendFeedback();
 
 			const onSelectFeedback = jest.fn();
 
 			const { getByRole, queryByRole, queryByText, findByText } = render(
-				<ThumbsSurveyTrigger
-					voteID="feedback"
+				<ThumbsFeedback
+					feedbackNamespace="feature_hub"
+					feedbackGroup="feedback"
 					feedbackOptions={ {
 						[ direction ]: [
 							{
@@ -418,10 +461,11 @@ describe( 'ThumbsSurveyTrigger', () => {
 	);
 
 	it( 'should confirm immediately for an empty feedback option list', async () => {
-		mockSurveyTrigger();
+		mockSendFeedback();
 		const { getByRole, findByText } = render(
-			<ThumbsSurveyTrigger
-				voteID="empty"
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="empty"
 				feedbackOptions={ { down: [] } }
 			/>,
 			{ registry }
@@ -437,10 +481,13 @@ describe( 'ThumbsSurveyTrigger', () => {
 	} );
 
 	it( 'dismisses via the close button and reopens on the next vote', async () => {
-		mockSurveyTrigger();
+		mockSendFeedback();
 
 		const { getByRole, findByRole, queryByText, findByText } = render(
-			<ThumbsSurveyTrigger voteID="dismiss_vote" />,
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="dismiss_vote"
+			/>,
 			{ registry }
 		);
 
@@ -471,11 +518,15 @@ describe( 'ThumbsSurveyTrigger', () => {
 	} );
 
 	it( 'calls the optional onVote callback with the clicked direction', () => {
-		mockSurveyTrigger();
+		mockSendFeedback();
 		const onVote = jest.fn();
 
 		const { getByRole } = render(
-			<ThumbsSurveyTrigger voteID="callback_vote" onVote={ onVote } />,
+			<ThumbsFeedback
+				feedbackNamespace="feature_hub"
+				feedbackGroup="callback_vote"
+				onVote={ onVote }
+			/>,
 			{ registry }
 		);
 

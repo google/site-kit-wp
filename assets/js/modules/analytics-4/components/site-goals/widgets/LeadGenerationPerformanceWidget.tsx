@@ -59,6 +59,7 @@ import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_FEEDBACK_NAMESPACE,
 	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
@@ -749,7 +750,8 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				) }
 
 				<FeedbackPrompt
-					voteID={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
+					feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
+					feedbackGroup={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
 					gaTrackingEventArgs={ {
 						category: `${ viewContext }_site-goals-widget-survey`,
 						label: GOAL_TYPES.LEAD,

@@ -31,7 +31,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import * as tracking from '@/js/util/tracking';
-import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -44,6 +43,10 @@ import FeedbackPrompt from './FeedbackPrompt';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const feedbackEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/feedback'
+);
 
 describe( 'FeedbackPrompt', () => {
 	let registry: WPDataRegistry;
@@ -62,7 +65,8 @@ describe( 'FeedbackPrompt', () => {
 	it( 'should render the "Is this section helpful?" question with the thumbs up and down buttons', () => {
 		const { getByText, getByRole } = render(
 			<FeedbackPrompt
-				voteID="test_vote"
+				feedbackNamespace="analytics"
+				feedbackGroup="test_vote"
 				gaTrackingEventArgs={ {
 					category: 'test-feedback-survey',
 					label: 'test-label',
@@ -83,7 +87,8 @@ describe( 'FeedbackPrompt', () => {
 	it( 'should hide the "Is this section helpful?" question but still read it to a screen reader when `hideQuestion` is set', () => {
 		const { getByRole, queryByText } = render(
 			<FeedbackPrompt
-				voteID="test_vote"
+				feedbackNamespace="analytics"
+				feedbackGroup="test_vote"
 				gaTrackingEventArgs={ { category: 'test-feedback-survey' } }
 				hideQuestion
 			/>,
@@ -102,13 +107,17 @@ describe( 'FeedbackPrompt', () => {
 		[ 'vote_up', 'Yes, this was helpful', 'up' ],
 		[ 'vote_down', 'No, this was not helpful', 'down' ],
 	] )(
-		'should track `%s` with the provided category and label, and trigger the survey, when "%s" is clicked',
+		'should track `%s` with the provided category and label, and send feedback, when "%s" is clicked',
 		async ( action, buttonName, direction ) => {
-			fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+			fetchMock.post( feedbackEndpoint, {
+				status: 200,
+				body: { success: true },
+			} );
 
 			const { getByRole } = render(
 				<FeedbackPrompt
-					voteID="test_vote"
+					feedbackNamespace="analytics"
+					feedbackGroup="test_vote"
 					gaTrackingEventArgs={ {
 						category: 'test-feedback-survey',
 						label: 'test-label',
@@ -127,10 +136,13 @@ describe( 'FeedbackPrompt', () => {
 			);
 
 			await waitFor( () =>
-				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 					body: {
 						data: {
-							triggerID: `vote:test_vote:${ direction }`,
+							namespace: 'analytics',
+							group: 'test_vote',
+							key: 'vote',
+							value: direction,
 						},
 					},
 				} )

@@ -74,7 +74,7 @@ export const RelevancyFeedback = Template.bind(
 ) as Story< FeatureDetailPanelProps >;
 RelevancyFeedback.storyName = 'Relevancy Feedback';
 RelevancyFeedback.scenario = {
-	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--down',
+	clickSelector: '.googlesitekit-thumbs-feedback__button--down',
 	postInteractionWait: 200,
 };
 
@@ -83,7 +83,7 @@ export const RelevancyConfirmation = Template.bind(
 ) as Story< FeatureDetailPanelProps >;
 RelevancyConfirmation.storyName = 'Relevancy Confirmation';
 RelevancyConfirmation.scenario = {
-	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--up',
+	clickSelector: '.googlesitekit-thumbs-feedback__button--up',
 	postInteractionWait: 200,
 };
 
@@ -120,6 +120,12 @@ export default {
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
 					{ body: {} },
+					{ overwriteRoutes: true }
+				);
+
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/core\/user\/data\/feedback/,
+					{ body: { success: true } },
 					{ overwriteRoutes: true }
 				);
 

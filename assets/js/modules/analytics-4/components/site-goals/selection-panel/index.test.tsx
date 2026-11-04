@@ -62,11 +62,18 @@ import {
 	provideUserCapabilities,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
-import {
-	mockSurveyEndpoints,
-	surveyTriggerEndpoint,
-} from '../../../../../../../tests/js/mock-survey-endpoints';
 import SiteGoalsSelectionPanel from '.';
+
+const feedbackEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/feedback'
+);
+
+function mockSendFeedback() {
+	fetchMock.postOnce( feedbackEndpoint, {
+		status: 200,
+		body: { success: true },
+	} );
+}
 
 jest.mock( '@/js/googlesitekit/data/create-snapshot-store', () => ( {
 	...jest.requireActual( '@/js/googlesitekit/data/create-snapshot-store' ),
@@ -481,7 +488,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	} );
 
 	it( 'dispatches an up vote for the ecommerce key action on thumbs-up click', async () => {
-		mockSurveyEndpoints();
+		mockSendFeedback();
 
 		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
@@ -494,11 +501,13 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		fireEvent.click( upButtons[ 0 ] );
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID:
-							'vote:site_goals_primary_action_panel_online_store:up',
+						namespace: 'analytics',
+						group: 'site_goals_primary_action_panel_online_store',
+						key: 'vote',
+						value: 'up',
 					},
 				},
 			} )
@@ -506,7 +515,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	} );
 
 	it( 'dispatches a down vote for the lead key action on thumbs-down click', async () => {
-		mockSurveyEndpoints();
+		mockSendFeedback();
 
 		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
@@ -519,11 +528,13 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		fireEvent.click( downButtons[ 1 ] );
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID:
-							'vote:site_goals_primary_action_panel_lead_generation:down',
+						namespace: 'analytics',
+						group: 'site_goals_primary_action_panel_lead_generation',
+						key: 'vote',
+						value: 'down',
 					},
 				},
 			} )

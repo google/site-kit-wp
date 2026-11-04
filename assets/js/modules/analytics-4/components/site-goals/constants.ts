@@ -109,6 +109,10 @@ export const SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN =
 export const SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED =
 	'view_site_goals_breakdown_enabled';
 
+// The namespace used when sending Site Goals feedback to the `core/user`
+// `sendFeedback()` feedback endpoint.
+export const SITE_GOALS_FEEDBACK_NAMESPACE = 'analytics';
+
 export const SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE =
 	'site_goals_widget_online_store';
 export const SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION =

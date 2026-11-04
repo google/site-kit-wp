@@ -73,13 +73,16 @@ import {
 	within,
 } from '@tests/js/test-utils';
 import { provideUserCapabilities } from '@tests/js/utils';
-import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const feedbackEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/feedback'
+);
 
 describe( 'LeadGenerationPerformanceWidget', () => {
 	let registry: WPDataRegistry;
@@ -1492,7 +1495,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 	} );
 
 	it( 'should track and dispatch an up vote on thumbs-up click', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+		fetchMock.post( feedbackEndpoint, {
+			status: 200,
+			body: { success: true },
+		} );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -1531,10 +1537,13 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID: 'vote:site_goals_widget_lead_generation:up',
+						namespace: 'analytics',
+						group: 'site_goals_widget_lead_generation',
+						key: 'vote',
+						value: 'up',
 					},
 				},
 			} )
@@ -1542,7 +1551,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 	} );
 
 	it( 'should track and dispatch a down vote on thumbs-down click', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+		fetchMock.post( feedbackEndpoint, {
+			status: 200,
+			body: { success: true },
+		} );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -1581,11 +1593,13 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID:
-							'vote:site_goals_widget_lead_generation:down',
+						namespace: 'analytics',
+						group: 'site_goals_widget_lead_generation',
+						key: 'vote',
+						value: 'down',
 					},
 				},
 			} )
