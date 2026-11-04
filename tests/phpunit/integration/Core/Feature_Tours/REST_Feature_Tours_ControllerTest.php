@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Feature_Tours\Dismissed_Tours;
 use Google\Site_Kit\Core\Feature_Tours\REST_Feature_Tours_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
+use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -89,7 +89,7 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 			'Get dismissed tours should contain expected values.'
 		);
 		$this->assertTrue(
-			rest_validate_value_from_schema( $response->get_data(), Dismissed_Slugs_Schema::get() ),
+			rest_validate_value_from_schema( $response->get_data(), String_List_Schema::get() ),
 			'Get dismissed tours response should match its resource schema.'
 		);
 	}

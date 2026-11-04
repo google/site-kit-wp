@@ -99,7 +99,8 @@ trait RestTestTrait {
 	 * Asserts that response data matches the resource schema the REST index lists for its route.
 	 *
 	 * `rest_validate_value_from_schema()` accepts a key that the schema leaves out. So this also
-	 * asserts that the schema describes each key of the data, at any depth.
+	 * asserts that the schema describes each key of the data, at any depth. A schema can also open
+	 * an object to any key, with `additionalProperties` set to `true`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -116,6 +117,9 @@ trait RestTestTrait {
 
 	/**
 	 * Lists each key of a value, at any depth, that its schema does not describe.
+	 *
+	 * A schema with `additionalProperties` set to `true` allows any key with any value, so each
+	 * such key counts as described.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -137,6 +141,8 @@ trait RestTestTrait {
 				$item_schema = $schema['properties'][ $key ];
 			} elseif ( isset( $schema['additionalProperties'] ) && is_array( $schema['additionalProperties'] ) ) {
 				$item_schema = $schema['additionalProperties'];
+			} elseif ( isset( $schema['additionalProperties'] ) && true === $schema['additionalProperties'] ) {
+				continue;
 			} else {
 				$keys[] = "$path.$key";
 				continue;

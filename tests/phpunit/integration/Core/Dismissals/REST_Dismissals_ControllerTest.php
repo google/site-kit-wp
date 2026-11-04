@@ -13,7 +13,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Dismissals\REST_Dismissals_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
+use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -83,7 +83,7 @@ class REST_Dismissals_ControllerTest extends TestCase {
 			'Dismissed items response should contain non-expired items.'
 		);
 		$this->assertTrue(
-			rest_validate_value_from_schema( $response->get_data(), Dismissed_Slugs_Schema::get() ),
+			rest_validate_value_from_schema( $response->get_data(), String_List_Schema::get() ),
 			'Dismissed items response should match its resource schema.'
 		);
 	}
