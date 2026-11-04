@@ -179,6 +179,8 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	/**
 	 * Answers each request to the Site Kit service with the given reply, and adds the request's decoded body to `$service_requests`.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param string $reply JSON body of the reply, an empty object by default.
 	 */
 	private function answer_service_requests( $reply = '{}' ) {
@@ -196,6 +198,8 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 	/**
 	 * Gets a survey in the shape the Site Kit service sends it.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array Survey.
 	 */
