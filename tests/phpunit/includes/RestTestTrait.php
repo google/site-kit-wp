@@ -43,6 +43,8 @@ trait RestTestTrait {
 	 * From the given WordPress version on, it also asserts that the route's callback never ran.
 	 * An older version lets some invalid data through to the callback's own check.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param WP_REST_Request $request                       Request to dispatch.
 	 * @param string          $expected_code                 Expected error code.
 	 * @param string          $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
@@ -64,6 +66,8 @@ trait RestTestTrait {
 
 	/**
 	 * Grants every user `Permissions::VIEW_DASHBOARD`, which otherwise needs a Google sign-in or a role a module is shared with.
+	 *
+	 * @since n.e.x.t
 	 */
 	protected function grant_dashboard_permission() {
 		add_filter(
@@ -78,6 +82,8 @@ trait RestTestTrait {
 
 	/**
 	 * Gets a route's resource schema, as the REST index lists it.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string $route Route path under the Site Kit REST root.
 	 * @return array Resource schema of the route.
@@ -96,6 +102,8 @@ trait RestTestTrait {
 	 * asserts that the schema describes each key of the data, at any depth. A schema can also open
 	 * an object to any key, with `additionalProperties` set to `true`.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param mixed  $data    Response data.
 	 * @param string $route   Route path under the Site Kit REST root.
 	 * @param string $message Message for a failure.
@@ -112,6 +120,8 @@ trait RestTestTrait {
 	 *
 	 * A schema with `additionalProperties` set to `true` allows any key with any value, so each
 	 * such key counts as described.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param mixed  $value  Value to check.
 	 * @param array  $schema Schema of the value.
@@ -149,6 +159,8 @@ trait RestTestTrait {
 	 *
 	 * WordPress before 5.5 lets data with a missing or empty property through to the callback, and before 5.6 an empty object.
 	 * So a test reaches the callback's own check of such data this way on every version.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string $method HTTP method of the endpoint.
 	 * @param string $route  Route path under the Site Kit REST root.

@@ -771,6 +771,277 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Survey event should return expected response data.' );
 	}
 
+	public function test_send_feedback() {
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( Google_Proxy::FEEDBACK_URI );
+		$expected_success_response = array( 'success' => true );
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'abcd';
+		$feedback     = array(
+			'namespace' => 'feature_hub',
+			'group'     => 'feature_relevancy_analytics-4',
+			'key'       => 'vote',
+			'value'     => 'up',
+		);
+
+		$response = $this->google_proxy->send_feedback( $credentials, $access_token, $feedback );
+
+		$this->assertEquals( $expected_url, $this->request_url, 'Feedback request URL should match expected.' );
+		$this->assertEquals( 'POST', $this->request_args['method'], 'Feedback request method should be POST.' );
+
+		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Feedback request should have Authorization header.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Feedback Authorization header should match access token.' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'        => $site_id,
+				'site_secret'    => $site_secret,
+				'namespace'      => 'feature_hub',
+				'group'          => 'feature_relevancy_analytics-4',
+				'key'            => 'vote',
+				'value'          => 'up',
+				'language'       => 'en_US',
+				'plugin_version' => GOOGLESITEKIT_VERSION,
+			),
+			json_decode( $this->request_args['body'], true ),
+			'Feedback request body should contain site credentials, feedback fields, language, and plugin version.'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Feedback should return expected response data.' );
+	}
+
+	public function test_send_feedback__without_credentials() {
+		$requested = false;
+
+		add_filter(
+			'pre_http_request',
+			function ( $preempt ) use ( &$requested ) {
+				$requested = true;
+
+				return $preempt;
+			}
+		);
+
+		$credentials = new Credentials( new Options( $this->context ) );
+		$response    = $this->google_proxy->send_feedback(
+			$credentials,
+			'abcd',
+			array(
+				'namespace' => 'feature_hub',
+				'group'     => 'feature_relevancy_analytics-4',
+				'key'       => 'vote',
+				'value'     => 'up',
+			)
+		);
+
+		$this->assertWPError( $response, 'Feedback without site credentials should return an error.' );
+		$this->assertEquals( 'oauth_credentials_not_exist', $response->get_error_code(), 'The error should name the missing credentials.' );
+		$this->assertFalse( $requested, 'Feedback without site credentials should not reach the Service.' );
+	}
+
+	public function test_send_feedback__with_a_failing_request() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_failure(
+			$this->google_proxy->url( Google_Proxy::FEEDBACK_URI ),
+			new WP_Error( 'http_request_failed', 'Service unreachable.' )
+		);
+
+		$response = $this->google_proxy->send_feedback(
+			$credentials,
+			'abcd',
+			array(
+				'namespace' => 'feature_hub',
+				'group'     => 'feature_relevancy_analytics-4',
+				'key'       => 'vote',
+				'value'     => 'up',
+			)
+		);
+
+		$this->assertWPError( $response, 'A failed feedback request should come back as an error.' );
+		$this->assertEquals( 'http_request_failed', $response->get_error_code(), 'The error from the request should be passed through.' );
+	}
+
+	/**
+	 * @dataProvider data_errors
+	 */
+	public function test_send_feedback__returns_error_for_invalid_response( $params ) {
+		list ( $credentials ) = $this->get_credentials();
+
+		$error_code             = $params['error_code'];
+		$error_message          = $params['error_message'];
+		$expected_error_code    = $params['expected_error_code'];
+		$expected_error_message = $params['expected_error_message'];
+
+		$this->mock_http_request(
+			$this->google_proxy->url( Google_Proxy::FEEDBACK_URI ),
+			array(
+				'error_code' => $error_code,
+				'error'      => $error_message,
+			),
+			403
+		);
+
+		$response = $this->google_proxy->send_feedback(
+			$credentials,
+			'abcd',
+			array(
+				'namespace' => 'feature_hub',
+				'group'     => 'feature_relevancy_analytics-4',
+				'key'       => 'vote',
+				'value'     => 'up',
+			)
+		);
+
+		$this->assertWPError( $response, 'An invalid feedback response should return a WP error.' );
+		$this->assertEquals( $expected_error_code, $response->get_error_code(), 'Error response should contain error code.' );
+		$this->assertEquals( $expected_error_message, $response->get_error_message(), 'Error response should contain error message.' );
+	}
+
+	public function test_send_benchmarking_insight_request() {
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( '/v1/ai/benchmarking?hl=de-DE' );
+		$expected_success_response = array(
+			'operation_id'   => 'operation-123',
+			'interaction_id' => 'interaction-456',
+			'model_version'  => 'model-1',
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'abcd';
+		$payload      = array(
+			'metric' => 'sessions',
+			'value'  => 1200,
+		);
+		$response     = $this->google_proxy->send_benchmarking_insight_request( $credentials, $access_token, $payload, 'de-DE' );
+
+		$this->assertEquals( $expected_url, $this->request_url, 'Benchmarking insight request URL should have the language tag as the hl query parameter.' );
+		$this->assertEquals( 'POST', $this->request_args['method'], 'Benchmarking insight request method should be POST.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Benchmarking insight Authorization header should match access token.' );
+		$this->assertEquals( 'application/json', $this->request_args['headers']['Content-Type'], 'Benchmarking insight request should be sent as JSON.' );
+		$this->assertTrue( $this->request_args['blocking'], 'Benchmarking insight request should wait for the response.' );
+		$this->assertTrue( json_decode( $this->request_args['body'], true )['async'], 'Benchmarking insight request body should have async set to the boolean true.' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'     => $site_id,
+				'site_secret' => $site_secret,
+				'metric'      => 'sessions',
+				'value'       => 1200,
+				'async'       => true,
+			),
+			json_decode( $this->request_args['body'], true ),
+			'Benchmarking insight request body should contain site credentials, the payload, and async set to true.'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Benchmarking insight request should return the operation from the response.' );
+	}
+
+	public function test_send_benchmarking_insight_request__cached_insight() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$expected_response = array(
+			'scenario'       => 'above_benchmark',
+			'teaser'         => 'Your site is doing well.',
+			'text'           => 'Your site had more sessions than similar sites.',
+			'driver'         => 'organic_search',
+			'interaction_id' => 'interaction-456',
+			'model_version'  => 'model-1',
+		);
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/benchmarking?hl=de-DE' ), $expected_response );
+
+		$response = $this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de-DE' );
+
+		$this->assertEqualSetsWithIndex( $expected_response, $response, 'Benchmarking insight request should return the generated insight from the response.' );
+	}
+
+	public function test_send_benchmarking_insight_request__error_response() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/benchmarking?hl=de-DE' ),
+			array( 'error' => 'Too many requests.' ),
+			429
+		);
+
+		$response = $this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de-DE' );
+
+		$this->assertWPError( $response, 'A 429 response to the benchmarking insight request should return a WP_Error.' );
+		$this->assertEquals( 'Too many requests.', $response->get_error_message(), 'The benchmarking insight error should have the error message from the response.' );
+		$this->assertEquals( 429, $response->get_error_data()['status'], 'The benchmarking insight error should have status 429.' );
+	}
+
+	public function test_get_benchmarking_insight_operation() {
+		list ( $credentials, $site_id ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id );
+		$expected_success_response = array(
+			'done'     => true,
+			'state'    => 'SUCCEEDED',
+			'response' => array(
+				'scenario'       => 'above_benchmark',
+				'teaser'         => 'Your site is doing well.',
+				'text'           => 'Your site had more sessions than similar sites.',
+				'driver'         => 'organic_search',
+				'interaction_id' => 'interaction-456',
+				'model_version'  => 'model-1',
+			),
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'dcba';
+		$response     = $this->google_proxy->get_benchmarking_insight_operation( $credentials, $access_token, 'operation-123' );
+
+		$this->assertEquals( $expected_url, $this->request_url, 'Benchmarking insight operation request URL should have site_id as its only query parameter.' );
+		$this->assertEquals( 'GET', $this->request_args['method'], 'Benchmarking insight operation request method should be GET.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Benchmarking insight operation Authorization header should match access token.' );
+		$this->assertArrayNotHasKey( 'Content-Type', $this->request_args['headers'], 'Benchmarking insight operation request should not have a Content-Type header.' );
+		$this->assertNull( $this->request_args['body'], 'Benchmarking insight operation request should not have a body.' );
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Benchmarking insight operation should return the succeeded operation from the response.' );
+	}
+
+	public function test_get_benchmarking_insight_operation__failed_operation() {
+		list ( $credentials, $site_id ) = $this->get_credentials();
+
+		$expected_response = array(
+			'done'  => true,
+			'state' => 'FAILED',
+			'error' => array( 'message' => 'The insight could not be generated.' ),
+		);
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id ),
+			$expected_response
+		);
+
+		$response = $this->google_proxy->get_benchmarking_insight_operation( $credentials, 'dcba', 'operation-123' );
+
+		$this->assertEqualSetsWithIndex( $expected_response, $response, 'Benchmarking insight operation should return the failed operation from the response.' );
+	}
+
+	public function test_get_benchmarking_insight_operation__error_response() {
+		list ( $credentials, $site_id ) = $this->get_credentials();
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id ),
+			array(),
+			404
+		);
+
+		$response = $this->google_proxy->get_benchmarking_insight_operation( $credentials, 'dcba', 'operation-123' );
+
+		$this->assertWPError( $response, 'A 404 response to the benchmarking insight operation request should return a WP_Error.' );
+		$this->assertEquals( 404, $response->get_error_data()['status'], 'The benchmarking insight operation error should have status 404.' );
+	}
+
 	/**
 	 * @dataProvider data_errors
 	 */
