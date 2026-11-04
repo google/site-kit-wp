@@ -11,8 +11,10 @@
 namespace Google\Site_Kit\Core\Tracking;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\REST_API\Schema\On_Off_Setting_Schema;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -84,6 +86,7 @@ class REST_Tracking_Consent_Controller {
 	 * Gets tracking routes.
 	 *
 	 * @since 1.49.0
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @param array $routes Array of routes.
 	 * @return array Modified array of routes that contains tracking related routes.
@@ -115,7 +118,14 @@ class REST_Tracking_Consent_Controller {
 						array(
 							'methods'             => WP_REST_Server::CREATABLE,
 							'callback'            => function ( WP_REST_Request $request ) use ( $tracking_callback ) {
-								$data    = $request->get_param( 'data' );
+								$data = $request->get_param( 'data' );
+
+								// WordPress checks required properties only from 5.5.0,
+								// so an older version lets a request with no `enabled` through to here.
+								if ( ! isset( $data['enabled'] ) ) {
+									return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
+								}
+
 								$enabled = ! empty( $data['enabled'] );
 
 								$this->consent->set( $enabled );
@@ -125,17 +135,22 @@ class REST_Tracking_Consent_Controller {
 							'permission_callback' => $can_access_tracking,
 							'args'                => array(
 								'data' => array(
-									'type'       => 'object',
-									'required'   => true,
-									'properties' => array(
+									'type'        => 'object',
+									'description' => __( 'Tracking consent of the current user to save.', 'google-site-kit' ),
+									'required'    => true,
+									'properties'  => array(
 										'enabled' => array(
-											'type'     => 'boolean',
-											'required' => true,
+											'type'        => 'boolean',
+											'description' => __( 'Whether the current user shares anonymous usage data to help improve Site Kit.', 'google-site-kit' ),
+											'required'    => true,
 										),
 									),
 								),
 							),
 						),
+					),
+					array(
+						'schema' => array( On_Off_Setting_Schema::class, 'get' ),
 					)
 				),
 			)

@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\User;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Util\Feature_Flags;
@@ -76,6 +77,7 @@ class REST_Audience_Settings_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.134.0
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -98,35 +100,47 @@ class REST_Audience_Settings_Controller {
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function ( WP_REST_Request $request ) {
-							$settings = $request['data']['settings'];
+							$data = $request['data'];
 
-							$this->audience_settings->merge( $settings );
+							// WordPress checks required properties only from 5.5.0, and `minProperties` only
+							// from 5.6.0. So an older version lets a request with no settings, or with empty
+							// settings, through to here.
+							if ( empty( $data['settings'] ) ) {
+								return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
+							}
+
+							$this->audience_settings->merge( $data['settings'] );
 
 							return new WP_REST_Response( $this->audience_settings->get() );
 						},
 						'permission_callback' => $can_view_dashboard,
 						'args'                => array(
 							'data' => array(
-								'type'       => 'object',
-								'required'   => true,
-								'properties' => array(
+								'type'        => 'object',
+								'description' => __( 'Audience settings to save.', 'google-site-kit' ),
+								'required'    => true,
+								'properties'  => array(
 									'settings' => array(
 										'type'          => 'object',
+										'description'   => __( 'Audience settings of the current user. Each one left out keeps its saved value.', 'google-site-kit' ),
 										'required'      => true,
 										'minProperties' => 1,
 										'additionalProperties' => false,
 										'properties'    => array(
 											'configuredAudiences'               => array(
 												'type'  => 'array',
+												'description' => __( 'Resource names of the audiences to show.', 'google-site-kit' ),
 												'items' => array(
 													'type' => 'string',
 												),
 											),
 											'isAudienceSegmentationWidgetHidden' => array(
 												'type' => 'boolean',
+												'description' => __( 'Whether to hide the audience segmentation section of the dashboard.', 'google-site-kit' ),
 											),
 											'didSetAudiences'                   => array(
 												'type' => 'boolean',
+												'description' => __( 'Whether the current user has picked audiences at least once.', 'google-site-kit' ),
 											),
 										),
 									),
@@ -134,7 +148,45 @@ class REST_Audience_Settings_Controller {
 							),
 						),
 					),
+				),
+				array(
+					'schema' => function () {
+						return $this->get_audience_settings_schema();
+					},
 				)
+			),
+		);
+	}
+
+	/**
+	 * Gets the REST schema of the audience settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array REST schema.
+	 */
+	private function get_audience_settings_schema() {
+		return array(
+			'$schema'     => 'http://json-schema.org/draft-04/schema#',
+			'title'       => 'audience-settings',
+			'description' => __( 'Audience settings of the current user.', 'google-site-kit' ),
+			'type'        => 'object',
+			'properties'  => array(
+				'configuredAudiences'                => array(
+					'type'        => array( 'array', 'null' ),
+					'description' => __( 'Resource names of the audiences the current user picked, or null where none is set.', 'google-site-kit' ),
+					'items'       => array(
+						'type' => 'string',
+					),
+				),
+				'isAudienceSegmentationWidgetHidden' => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the current user hid the audience segmentation section of the dashboard.', 'google-site-kit' ),
+				),
+				'didSetAudiences'                    => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the current user has picked audiences at least once.', 'google-site-kit' ),
+				),
 			),
 		);
 	}

@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Prompts_Schema;
 use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
 use Google\Site_Kit\Core\REST_API\Schema\Expirable_Items_Schema;
+use Google\Site_Kit\Core\REST_API\Schema\On_Off_Setting_Schema;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
@@ -108,24 +109,16 @@ class REST_RoutesTest extends TestCase {
 				'core/site/data/reset-persistent',
 				'core/site/data/setup-tag',
 				'core/site/data/site-health-tag-placement-test',
-				'core/user/data/audience-settings',
 				'core/user/data/authentication',
-				'core/user/data/conversion-reporting-settings',
 				'core/user/data/disconnect',
-				'core/user/data/email-reporting-next-report',
-				'core/user/data/email-reporting-settings',
 				'core/user/data/feedback',
 				'core/user/data/get-token',
-				'core/user/data/initial-setup-settings',
-				'core/user/data/key-metrics',
 				'core/user/data/nonces',
 				'core/user/data/permissions',
 				'core/user/data/survey',
 				'core/user/data/survey-event',
 				'core/user/data/survey-timeouts',
 				'core/user/data/survey-trigger',
-				'core/user/data/tracking',
-				'core/user/data/user-input-settings',
 				'modules/(?P<slug>[a-z0-9\\-]+)/data/(?P<datapoint>[a-z\\-]+)',
 				'modules/(?P<slug>[a-z0-9\\-]+)/data/data-available',
 				'modules/(?P<slug>[a-z0-9\\-]+)/data/notifications',
@@ -172,6 +165,7 @@ class REST_RoutesTest extends TestCase {
 			'dismiss-tour'              => array( 'core/user/data/dismiss-tour', Dismissed_Slugs_Schema::class ),
 			'expirable-items'           => array( 'core/user/data/expirable-items', Expirable_Items_Schema::class ),
 			'set-expirable-item-timers' => array( 'core/user/data/set-expirable-item-timers', Expirable_Items_Schema::class ),
+			'tracking'                  => array( 'core/user/data/tracking', On_Off_Setting_Schema::class ),
 		);
 	}
 
@@ -187,7 +181,11 @@ class REST_RoutesTest extends TestCase {
 		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT );
 		$request->set_param( 'context', 'help' );
 		$routes    = rest_get_server()->dispatch( $request )->get_data()['routes'];
-		$endpoints = wp_list_filter( $routes[ '/' . REST_Routes::REST_ROOT . '/' . $route ]['endpoints'], array( 'methods' => array( $method ) ) );
+		$endpoints = array_filter(
+			$routes[ '/' . REST_Routes::REST_ROOT . '/' . $route ]['endpoints'],
+			// An endpoint of `WP_REST_Server::EDITABLE` lists POST, PUT and PATCH.
+			fn ( $endpoint ) => in_array( $method, $endpoint['methods'], true )
+		);
 		$data      = reset( $endpoints )['args']['data'];
 
 		$this->assertTrue( $data['required'], "The REST index should list the data argument of $route as required." );
@@ -200,16 +198,54 @@ class REST_RoutesTest extends TestCase {
 			// WordPress lists the properties of an object argument in the index only from 5.6.
 			$this->assertNotEmpty( $data['properties'], "The REST index should list the properties of the data argument of $route." );
 		}
+
+		$this->assertSame(
+			array(),
+			$this->get_properties_without_description( $data, 'data' ),
+			"The REST index should list a description for each property of the data argument of $route."
+		);
 	}
 
 	public function provider_routes_with_data() {
 		return array(
-			'DELETE dismissed-items'         => array( 'core/user/data/dismissed-items', 'DELETE' ),
-			'POST dismiss-item'              => array( 'core/user/data/dismiss-item', 'POST' ),
-			'POST dismiss-prompt'            => array( 'core/user/data/dismiss-prompt', 'POST' ),
-			'POST dismiss-tour'              => array( 'core/user/data/dismiss-tour', 'POST' ),
-			'POST set-expirable-item-timers' => array( 'core/user/data/set-expirable-item-timers', 'POST' ),
+			'POST audience-settings'             => array( 'core/user/data/audience-settings', 'POST' ),
+			'POST conversion-reporting-settings' => array( 'core/user/data/conversion-reporting-settings', 'POST' ),
+			'POST email-reporting-settings'      => array( 'core/user/data/email-reporting-settings', 'POST' ),
+			'POST initial-setup-settings'        => array( 'core/user/data/initial-setup-settings', 'POST' ),
+			'DELETE dismissed-items'             => array( 'core/user/data/dismissed-items', 'DELETE' ),
+			'POST dismiss-item'                  => array( 'core/user/data/dismiss-item', 'POST' ),
+			'POST dismiss-prompt'                => array( 'core/user/data/dismiss-prompt', 'POST' ),
+			'POST dismiss-tour'                  => array( 'core/user/data/dismiss-tour', 'POST' ),
+			'POST key-metrics'                   => array( 'core/user/data/key-metrics', 'POST' ),
+			'POST set-expirable-item-timers'     => array( 'core/user/data/set-expirable-item-timers', 'POST' ),
+			'POST tracking'                      => array( 'core/user/data/tracking', 'POST' ),
+			'POST user-input-settings'           => array( 'core/user/data/user-input-settings', 'POST' ),
 		);
+	}
+
+	/**
+	 * Lists each property inside a schema, at any depth, that has no description.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $schema Schema whose properties to check.
+	 * @param string $path   Where the schema sits, for the message.
+	 * @return array List of the paths of the properties with no description.
+	 */
+	private function get_properties_without_description( array $schema, $path ) {
+		$missing = array();
+		if ( isset( $schema['items'] ) && is_array( $schema['items'] ) ) {
+			$missing = $this->get_properties_without_description( $schema['items'], "$path items" );
+		}
+
+		foreach ( isset( $schema['properties'] ) ? $schema['properties'] : array() as $property => $property_schema ) {
+			if ( empty( $property_schema['description'] ) ) {
+				$missing[] = "$path.$property";
+			}
+			$missing = array_merge( $missing, $this->get_properties_without_description( $property_schema, "$path.$property" ) );
+		}
+
+		return $missing;
 	}
 
 	public function test_route_argument_schemas_are_valid() {
