@@ -145,9 +145,11 @@ class REST_RoutesTest extends TestCase {
 		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT );
 		$request->set_param( 'context', 'help' );
 		$routes = rest_get_server()->dispatch( $request )->get_data()['routes'];
+		$schema = $schema_class::get();
 
+		$this->assertArrayHasKey( 'title', $schema, "The resource schema of $route should have a title." );
 		$this->assertEquals(
-			$schema_class::get(),
+			$schema,
 			$routes[ '/' . REST_Routes::REST_ROOT . '/' . $route ]['schema'],
 			"The REST index should list the resource schema of $route."
 		);
@@ -269,6 +271,8 @@ class REST_RoutesTest extends TestCase {
 	 * WordPress from 5.5 calls a schema wrong where it has no type or one outside its seven.
 	 * WordPress 5.2 reads `type` and the `items` of an array with no check.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array  $schema Argument schema.
 	 * @param string $path   Where the schema sits, for the message.
 	 * @return array List of messages, one for each problem.
@@ -303,6 +307,8 @@ class REST_RoutesTest extends TestCase {
 
 	/**
 	 * Registers the Site Kit REST routes on a new REST server, with no other routes.
+	 *
+	 * @since n.e.x.t
 	 */
 	private function register_site_kit_routes() {
 		$rest_routes = new REST_Routes( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
