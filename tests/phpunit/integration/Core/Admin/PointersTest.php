@@ -143,11 +143,13 @@ class PointersTest extends TestCase {
 
 		$data = $this->get_pointers_data();
 
-		$this->assertSame(
-			'Title <button class="googlesitekit-pointer-cta--dismiss" data-action="dismiss"><span class="screen-reader-text">Dismiss</span></button>alert( 1 )',
+		// Only check the start of the title, because some WordPress versions keep the text inside a removed `script` tag.
+		$this->assertStringStartsWith(
+			'Title <button class="googlesitekit-pointer-cta--dismiss" data-action="dismiss"><span class="screen-reader-text">Dismiss</span></button>',
 			$data[0]['title'],
-			'Pointer title should keep the allowed markup and remove other tags.'
+			'Pointer title should keep the allowed markup.'
 		);
+		$this->assertStringNotContainsString( '<script', $data[0]['title'], 'Pointer title should not contain a script tag.' );
 		$this->assertSame(
 			'<h4>Heading</h4><p class="description">Content</p>',
 			$data[0]['content'],
