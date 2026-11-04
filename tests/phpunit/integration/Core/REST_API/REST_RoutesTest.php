@@ -114,6 +114,7 @@ class REST_RoutesTest extends TestCase {
 				'core/user/data/disconnect',
 				'core/user/data/email-reporting-next-report',
 				'core/user/data/email-reporting-settings',
+				'core/user/data/feedback',
 				'core/user/data/get-token',
 				'core/user/data/initial-setup-settings',
 				'core/user/data/key-metrics',
