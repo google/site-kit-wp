@@ -24,13 +24,19 @@ import { ComponentType, FC, Ref } from 'react';
 /**
  * WordPress dependencies
  */
-import { forwardRef, useEffect, useState } from '@wordpress/element';
+import { forwardRef, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
+import {
+	Registry,
+	Select,
+	useDispatch,
+	useRegistry,
+	useSelect,
+} from 'googlesitekit-data';
 import WidgetTabBar, { WidgetTab } from '@/js/components/WidgetTabBar';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -43,15 +49,21 @@ import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import {
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
+	RECENT_ACTIVITY_INTERACTION_TAB_OPEN_COUNT,
 	RECENT_ACTIVITY_TAB_ID,
+	RECENT_ACTIVITY_TAB_OPENED_TIMER,
+	RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
 	TRAFFIC_OVERVIEW_TAB_ID,
 	TYPICAL_TRAFFIC_TAB_ID,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useHasTypicalTrafficTab } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useHasTypicalTrafficTab';
+import { useRecentActivitySurveyTriggers } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentActivitySurveyTriggers';
+import { useRecordRecentActivityInteraction } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityInteraction';
 import RecentActivityFooter from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityFooter';
 import RecentActivityPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/RecentActivityPanel';
 import TrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TrafficOverviewPanel';
 import TypicalTrafficPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficPanel';
+import { startTimerOnce } from '@/js/modules/analytics-4/components/traffic-overview/utils/startTimerOnce';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
@@ -84,6 +96,7 @@ const TrafficOverviewWidget = forwardRef<
 		Omit< WidgetProps, 'widgetSlug' > & { ref?: Ref< HTMLDivElement > }
 	>;
 
+	const registry = useRegistry() as unknown as Registry;
 	const viewContext = useViewContext();
 	const freshDataEnabled = useFeature( 'freshData' );
 	const dashboardType = useDashboardType();
@@ -136,6 +149,19 @@ const TrafficOverviewWidget = forwardRef<
 
 	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );
 	const [ hasTrackedView, setHasTrackedView ] = useState( false );
+	const hasCountedRecentActivityTabOpen = useRef( false );
+
+	const { dismissPrompt } = useDispatch( CORE_USER );
+	const recordRecentActivityInteraction =
+		useRecordRecentActivityInteraction();
+
+	// The surveys ask about the Recent activity reports, which need Analytics.
+	useRecentActivitySurveyTriggers( {
+		isEnabled:
+			shouldShowRecentActivityTab === true &&
+			isAnalyticsConnected === true,
+		hasBeenInView,
+	} );
 
 	const tabs: TrafficOverviewTabDescriptor[] = [];
 
@@ -212,6 +238,35 @@ const TrafficOverviewWidget = forwardRef<
 	// no source to name in a footer.
 	const Footer = isAnalyticsConnected ? FooterComponent : undefined;
 
+	async function recordRecentActivityTabOpen() {
+		startTimerOnce( registry, RECENT_ACTIVITY_TAB_OPENED_TIMER );
+
+		// The count is of page loads in which the user opened the tab, so it
+		// counts only the first open in each page load.
+		if ( hasCountedRecentActivityTabOpen.current ) {
+			return;
+		}
+
+		hasCountedRecentActivityTabOpen.current = true;
+
+		// Each dismissal adds one to the prompt's dismiss count, which counts
+		// the opens. An expiry of `0` keeps the count from expiring.
+		await dismissPrompt( RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG, {
+			expiresInSeconds: 0,
+		} );
+
+		// Returning to the tab across page loads is a meaningful interaction.
+		const openCount = registry
+			.select( CORE_USER )
+			.getPromptDismissCount(
+				RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG
+			);
+
+		if ( openCount >= RECENT_ACTIVITY_INTERACTION_TAB_OPEN_COUNT ) {
+			recordRecentActivityInteraction();
+		}
+	}
+
 	function handleTabChange( tabID: string ) {
 		// The tab bar also calls this for a click on the tab already shown.
 		if ( tabID !== shownTabID ) {
@@ -220,6 +275,10 @@ const TrafficOverviewWidget = forwardRef<
 				'change_tab',
 				tabID
 			);
+
+			if ( tabID === RECENT_ACTIVITY_TAB_ID ) {
+				recordRecentActivityTabOpen();
+			}
 		}
 
 		setActiveTabID( tabID );

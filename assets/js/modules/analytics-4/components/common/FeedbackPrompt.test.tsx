@@ -137,4 +137,41 @@ describe( 'FeedbackPrompt', () => {
 			);
 		}
 	);
+
+	it.each( [
+		[ 'Yes, this was helpful', 'up', 'vote_up' ],
+		[ 'No, this was not helpful', 'down', 'vote_down' ],
+	] )(
+		'should call `onVote` with the direction after tracking the vote when "%s" is clicked',
+		async ( buttonName, direction, action ) => {
+			fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+			const onVote = jest.fn( () => {
+				// The vote event is sent before `onVote` is called.
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'test-feedback-survey',
+					action,
+					undefined
+				);
+			} );
+
+			const { getByRole } = render(
+				<FeedbackPrompt
+					voteID="test_vote"
+					gaTrackingEventArgs={ { category: 'test-feedback-survey' } }
+					onVote={ onVote }
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: buttonName } ) );
+
+			expect( onVote ).toHaveBeenCalledTimes( 1 );
+			expect( onVote ).toHaveBeenCalledWith( direction );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
+			);
+		}
+	);
 } );

@@ -32,15 +32,26 @@ import {
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	RECENT_ACTIVITY_INTERACTION_TIMER,
+	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
+	RECENT_ACTIVITY_TAB_OPENED_TIMER,
+	RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
+	TRAFFIC_OVERVIEW_WIDGET_SLUG,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { provideFreshMetricsReports } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	provideFreshMetricsReports,
+	provideRecentActivitySurveyState,
+	setExpirableItemTimersEndpoint,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -113,6 +124,12 @@ describe( 'TrafficOverviewWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+		provideRecentActivitySurveyState( registry );
+		fetchMock.post( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
+		fetchMock.post( dismissPromptEndpoint, { body: {}, status: 200 } );
 	} );
 
 	it( 'renders the widget with no header', async () => {
@@ -820,6 +837,9 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should track `view_widget` labeled `googlesitekit-traffic-overview-tab` once when the card first enters the viewport, and not again on a re-render or a second entry', async () => {
+		// Once the card is in view, the survey triggers read the latest post.
+		fetchMock.get( postsEndpoint, { body: [], status: 200 } );
+
 		const { container, rerender, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -854,6 +874,8 @@ describe( 'TrafficOverviewWidget', () => {
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		await waitForRegistry();
 	} );
 
 	it( 'should not track `view_widget` again when the user selects another tab', async () => {
@@ -1140,5 +1162,215 @@ describe( 'TrafficOverviewWidget', () => {
 			'change_tab',
 			'googlesitekit-typical-traffic-tab'
 		);
+	} );
+	describe( 'the Recent activity survey', () => {
+		const recentPost = {
+			id: 12,
+			date: '2026-09-24T10:05:00',
+			date_gmt: '2026-09-24T14:05:00',
+			link: 'http://example.com/autumn-recipes/',
+			title: { rendered: 'Autumn recipes' },
+		};
+
+		function requestedTimerSlugs(): string[] {
+			return fetchMock
+				.calls( setExpirableItemTimersEndpoint )
+				.flatMap( ( call ) =>
+					JSON.parse( String( call[ 1 ]?.body ) ).data.map(
+						( { slug }: { slug: string } ) => slug
+					)
+				);
+		}
+
+		function dismissedPromptSlugs(): string[] {
+			return fetchMock
+				.calls( dismissPromptEndpoint )
+				.map(
+					( call ) =>
+						JSON.parse( String( call[ 1 ]?.body ) ).data.slug
+				);
+		}
+
+		// The response to a counted tab open has the count after the open.
+		function mockTabOpenCount( count: number ) {
+			fetchMock.post(
+				dismissPromptEndpoint,
+				{
+					body: {
+						[ RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG ]: {
+							expires: 0,
+							count,
+						},
+					},
+					status: 200,
+				},
+				{ overwriteRoutes: true }
+			);
+		}
+
+		function renderWidget( features = [ 'freshData' ] ) {
+			return render(
+				<TrafficOverviewWidget { ...widgetComponentProps } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					features,
+				}
+			);
+		}
+
+		function clickTab( name: string ) {
+			fireEvent.click( screen.getByRole( 'tab', { name } ) );
+		}
+
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.setPropertyID( 'https://example.com/' );
+			provideFreshMetricsReports( registry, {
+				totalVisitors: 157,
+				searchPerformance: { clicks: 72, impressions: 8000 },
+			} );
+			fetchMock.get( postsEndpoint, {
+				body: [ recentPost ],
+				status: 200,
+			} );
+			fetchMock.get( searchAnalyticsEndpoint, {
+				body: [],
+				status: 200,
+			} );
+			mockTabOpenCount( 1 );
+		} );
+
+		it( 'should start the "tab available" timer when the widget shows the Recent activity tab', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+			] );
+		} );
+
+		it( 'should not start the "tab available" timer when the widget does not show the Recent activity tab', async () => {
+			const { waitForRegistry } = renderWidget( [] );
+
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [] );
+		} );
+
+		it( 'should start the "tab opened" timer and count the tab open when the user selects the Recent activity tab', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+
+			await waitForRegistry();
+			await waitFor( () =>
+				expect( dismissedPromptSlugs() ).toEqual( [
+					RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
+				] )
+			);
+
+			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint, {
+				body: {
+					data: [
+						{
+							slug: RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+							expiration:
+								RECENT_ACTIVITY_TAB_OPENED_TIMER.expiresInSeconds,
+						},
+					],
+				},
+			} );
+			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
+				body: {
+					data: {
+						slug: RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
+						expiration: 0,
+					},
+				},
+			} );
+			// The first counted open is not an interaction.
+			expect( requestedTimerSlugs() ).not.toContain(
+				RECENT_ACTIVITY_INTERACTION_TIMER.slug
+			);
+		} );
+
+		it( 'should count the tab open only once per page load', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+			await waitForRegistry();
+
+			clickTab( 'Traffic overview' );
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+			await waitForRegistry();
+
+			expect( dismissedPromptSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
+			] );
+		} );
+
+		it( 'should record an interaction when the user opens the tab in a second page load', async () => {
+			mockTabOpenCount( 2 );
+
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+
+			await waitForRegistry();
+			await waitFor( () =>
+				expect( requestedTimerSlugs() ).toContain(
+					RECENT_ACTIVITY_INTERACTION_TIMER.slug
+				)
+			);
+		} );
+
+		it( 'should record nothing when the user selects another tab', async () => {
+			fetchMock.get(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+				),
+				{ body: benchmarkingData, status: 200 }
+			);
+
+			const { waitForRegistry } = renderWidget( [
+				'freshData',
+				'typicalTraffic',
+			] );
+
+			await waitForRegistry();
+
+			clickTab( 'Typical traffic Beta' );
+			await waitForRegistry();
+
+			expect( dismissedPromptSlugs() ).toEqual( [] );
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+			] );
+		} );
+
+		it( 'should record nothing when the user clicks the tab already shown', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Traffic overview' );
+			await waitForRegistry();
+
+			expect( dismissedPromptSlugs() ).toEqual( [] );
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+			] );
+		} );
 	} );
 } );

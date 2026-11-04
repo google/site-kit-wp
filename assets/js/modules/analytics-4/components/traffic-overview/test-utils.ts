@@ -704,3 +704,56 @@ export function createDailyTrafficRows(
 		return { date, visits: getVisits( dayIndex ) };
 	} );
 }
+
+/** The endpoint that `setExpirableItemTimers()` posts to. */
+export const setExpirableItemTimersEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+);
+
+interface RecentActivitySurveyState {
+	/** The expirable items, as expiry times in seconds, keyed by slug. */
+	expirableItems?: Record< string, number >;
+	/** The dismissed prompts, keyed by slug. */
+	dismissedPrompts?: Record< string, { expires: number; count: number } >;
+}
+
+/**
+ * Gets the expiry time of an expirable item, in seconds, a number of seconds
+ * from now.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} secondsFromNow The seconds from now, negative for a time in the past.
+ * @return {number} The expiry time, in seconds since the epoch.
+ */
+export function getExpiryFromNow( secondsFromNow: number ): number {
+	// `isExpirableItemActive()` compares the expiry with the current time,
+	// not the reference date.
+	// eslint-disable-next-line sitekit/no-direct-date
+	return Math.floor( Date.now() / 1000 ) + secondsFromNow;
+}
+
+/**
+ * Stores the expirable items and the dismissed prompts that the Recent
+ * activity survey triggers read, so the store sends no request for them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry                 The registry to put the state in.
+ * @param {Object} [state]                  Optional. The state to put in the store.
+ * @param {Object} [state.expirableItems]   Optional. The expirable items. Default `{}`.
+ * @param {Object} [state.dismissedPrompts] Optional. The dismissed prompts. Default `{}`.
+ * @return {void}
+ */
+export function provideRecentActivitySurveyState(
+	registry: WPDataRegistry,
+	{
+		expirableItems = {},
+		dismissedPrompts = {},
+	}: RecentActivitySurveyState = {}
+) {
+	registry.dispatch( CORE_USER ).receiveGetExpirableItems( expirableItems );
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetDismissedPrompts( dismissedPrompts );
+}
