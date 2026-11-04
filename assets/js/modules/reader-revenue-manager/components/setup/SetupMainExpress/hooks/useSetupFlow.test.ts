@@ -46,6 +46,8 @@ import useSetupFlow, { findBlockingStep, resolveStep } from './useSetupFlow';
 
 // eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
 const PUBLICATION_ID = publications[ 0 ].publicationId;
+// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+const ORGANIZATION_ID = publications[ 0 ].organizationId;
 
 const settingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
@@ -412,7 +414,10 @@ describe( 'useSetupFlow', () => {
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( { publicationID: PUBLICATION_ID } );
+				.receiveGetSettings( {
+					publicationID: PUBLICATION_ID,
+					organizationID: ORGANIZATION_ID,
+				} );
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )

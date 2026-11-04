@@ -1320,16 +1320,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			describe( 'with legacy settings missing an organization ID', () => {
-				beforeEach( () => {
-					enabledFeatures.add( 'rrmExpressSetup' );
-				} );
-
 				const legacySettings = {
 					publicationID: params.publicationID,
 					organizationID: '',
 				};
 
-				it( 'should wait for publications before requesting the publication', async () => {
+				it( 'should fetch publications before requesting the publication and not request it when it is then available', async () => {
 					const publication = {
 						...fixtures.publications[ 0 ],
 						publicationId: params.publicationID,
@@ -1356,31 +1352,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						1,
 						publicationsEndpoint
 					);
-				} );
-
-				it( 'should not request the publication when it is available after publications are fetched', async () => {
-					const publication = {
-						...fixtures.publications[ 0 ],
-						publicationId: params.publicationID,
-					};
-					fetchMock.getOnce( publicationsEndpoint, {
-						body: [ publication ],
-						status: 200,
-					} );
-
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.receiveGetSettings( legacySettings );
-
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication();
-
-					await untilResolved(
-						registry,
-						MODULES_READER_REVENUE_MANAGER
-					).getPublication();
-
 					expect( fetchMock ).not.toHaveFetched(
 						publicationEndpoint
 					);
@@ -1424,8 +1395,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should request the publication without fetching publications when the organization ID is in settings', async () => {
-				enabledFeatures.add( 'rrmExpressSetup' );
-
 				fetchMock.getOnce( publicationEndpoint, {
 					body: { publicationId: params.publicationID },
 					status: 200,
@@ -1449,8 +1418,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should request the publication without fetching publications when an organization ID is passed', async () => {
-				enabledFeatures.add( 'rrmExpressSetup' );
-
 				fetchMock.getOnce( publicationEndpoint, {
 					body: { publicationId: params.publicationID },
 					status: 200,
