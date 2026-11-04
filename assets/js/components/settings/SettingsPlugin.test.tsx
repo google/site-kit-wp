@@ -71,7 +71,7 @@ describe( 'SettingsPlugin', () => {
 		).toBeChecked();
 		expect(
 			getByRole( 'checkbox', {
-				name: 'Display summary stats in the WordPress dashboard',
+				name: 'Display the Site Kit summary widget on the WordPress Dashboard',
 			} )
 		).not.toBeChecked();
 	} );
@@ -94,11 +94,13 @@ describe( 'SettingsPlugin', () => {
 		).toBeInTheDocument();
 		expect(
 			queryByRole( 'checkbox', {
-				name: 'Display summary stats in the WordPress dashboard',
+				name: 'Display the Site Kit summary widget on the WordPress Dashboard',
 			} )
 		).not.toBeInTheDocument();
 		expect(
-			getByText( 'Display summary stats in the WordPress dashboard' )
+			getByText(
+				'Display the Site Kit summary widget on the WordPress Dashboard'
+			)
 		).toBeInTheDocument();
 	} );
 
@@ -106,7 +108,7 @@ describe( 'SettingsPlugin', () => {
 		[ 'off', true, false, 'disable_wp_dashboard_widget' ],
 		[ 'on', false, true, 'enable_wp_dashboard_widget' ],
 	] )(
-		'should save and track the WordPress dashboard widget setting when "Display summary stats in the WordPress dashboard" is toggled %s',
+		'should save and track the WordPress dashboard widget setting when "Display the Site Kit summary widget on the WordPress Dashboard" is toggled %s',
 		async ( _, initial, expected, action ) => {
 			registry
 				.dispatch( CORE_SITE )
@@ -125,7 +127,7 @@ describe( 'SettingsPlugin', () => {
 			} );
 
 			const checkbox = getByRole( 'checkbox', {
-				name: 'Display summary stats in the WordPress dashboard',
+				name: 'Display the Site Kit summary widget on the WordPress Dashboard',
 			} );
 
 			fireEvent.click( checkbox );

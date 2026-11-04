@@ -128,7 +128,7 @@ const SettingsPlugin: FC = () => {
 									>
 										<span>
 											{ __(
-												'Display summary stats in the WordPress dashboard',
+												'Display the Site Kit summary widget on the WordPress Dashboard',
 												'google-site-kit'
 											) }
 										</span>
