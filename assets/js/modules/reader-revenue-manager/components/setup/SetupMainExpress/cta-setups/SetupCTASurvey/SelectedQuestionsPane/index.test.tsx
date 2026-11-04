@@ -24,6 +24,7 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { mockUseInstanceID } from '@tests/js/mock-use-instance-id';
 import { fireEvent, render, screen, within } from '@tests/js/test-utils';
 import { SelectedSurveyQuestion } from './types';
 import SelectedQuestionsPane, { SelectedQuestionsPaneProps } from '.';
@@ -77,6 +78,9 @@ function getListItemTexts() {
 }
 
 describe( 'SelectedQuestionsPane', () => {
+	// Provide our own version of the `useInstanceId()` hook to avoid instability in test snapshots.
+	mockUseInstanceID();
+
 	it( 'renders the title, description and illustration with no list when there are no questions', () => {
 		const { container } = renderPane( { questions: [] } );
 
@@ -95,6 +99,8 @@ describe( 'SelectedQuestionsPane', () => {
 		).toBeInTheDocument();
 
 		expect( screen.queryByRole( 'list' ) ).not.toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'renders the questions in the order given, each with a drag handle and a remove action and no expand control', () => {
@@ -129,6 +135,8 @@ describe( 'SelectedQuestionsPane', () => {
 		expect(
 			container.querySelector( '[aria-expanded]' )
 		).not.toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'reports the removed question and moves focus to the remove action that takes its place', () => {
