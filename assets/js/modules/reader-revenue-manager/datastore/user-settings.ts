@@ -45,6 +45,7 @@ const { setErrorForAction, clearActionError } = errorStoreActions;
 
 interface UserSettings {
 	lastActionedExpressSetups?: Record< string, number | null >;
+	completedExpressSetups?: Record< string, number >;
 }
 
 interface UserSettingsState {
@@ -55,6 +56,7 @@ interface UserSettingsState {
  * Validates Reader Revenue Manager user settings.
  *
  * @since 1.186.0
+ * @since n.e.x.t Validates `completedExpressSetups`.
  *
  * @param  settings User settings to validate.
  * @return {void}
@@ -62,7 +64,10 @@ interface UserSettingsState {
 function validateUserSettings( settings: unknown ): void {
 	invariant( isPlainObject( settings ), 'settings should be an object.' );
 
-	const settingKeys = [ 'lastActionedExpressSetups' ];
+	const settingKeys = [
+		'lastActionedExpressSetups',
+		'completedExpressSetups',
+	];
 	const userSettings = settings as Record< string, unknown >;
 
 	invariant(
@@ -72,23 +77,37 @@ function validateUserSettings( settings: unknown ): void {
 		'settings contains invalid keys.'
 	);
 
-	if ( userSettings.lastActionedExpressSetups === undefined ) {
-		return;
+	if ( userSettings.lastActionedExpressSetups !== undefined ) {
+		invariant(
+			isPlainObject( userSettings.lastActionedExpressSetups ),
+			'lastActionedExpressSetups should be an object.'
+		);
+
+		Object.values(
+			userSettings.lastActionedExpressSetups as Record< string, unknown >
+		).forEach( ( timestamp ) => {
+			invariant(
+				timestamp === null || Number.isInteger( timestamp ),
+				'lastActionedExpressSetups timestamps should be integers or null.'
+			);
+		} );
 	}
 
-	invariant(
-		isPlainObject( userSettings.lastActionedExpressSetups ),
-		'lastActionedExpressSetups should be an object.'
-	);
-
-	Object.values(
-		userSettings.lastActionedExpressSetups as Record< string, unknown >
-	).forEach( ( timestamp ) => {
+	if ( userSettings.completedExpressSetups !== undefined ) {
 		invariant(
-			timestamp === null || Number.isInteger( timestamp ),
-			'lastActionedExpressSetups timestamps should be integers or null.'
+			isPlainObject( userSettings.completedExpressSetups ),
+			'completedExpressSetups should be an object.'
 		);
-	} );
+
+		Object.values(
+			userSettings.completedExpressSetups as Record< string, unknown >
+		).forEach( ( timestamp ) => {
+			invariant(
+				Number.isInteger( timestamp ),
+				'completedExpressSetups timestamps should be integers.'
+			);
+		} );
+	}
 }
 
 const fetchStoreReducerCallback = createReducer(

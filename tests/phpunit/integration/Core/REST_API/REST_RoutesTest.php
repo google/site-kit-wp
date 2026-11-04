@@ -111,6 +111,7 @@ class REST_RoutesTest extends TestCase {
 				'core/site/data/site-health-tag-placement-test',
 				'core/user/data/authentication',
 				'core/user/data/disconnect',
+				'core/user/data/feedback',
 				'core/user/data/get-token',
 				'core/user/data/nonces',
 				'core/user/data/permissions',

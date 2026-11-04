@@ -29,11 +29,23 @@ import {
 	sampleFeatures,
 	sampleModules,
 } from '@/js/components/feature-discovery/__fixtures__/all-services';
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import Layout from '@/js/components/layout/Layout';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_SETUP_TYPES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
-import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideNotifications,
+	provideSiteInfo,
+} from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AllServicesTab from './AllServicesTab';
 
@@ -54,12 +66,41 @@ function Template() {
 export const Default = Template.bind( {} ) as Story;
 Default.storyName = 'Default';
 
+export const WithSetupSuccessNotice = Template.bind( {} ) as Story;
+WithSetupSuccessNotice.storyName = 'With Setup Success Notice';
+WithSetupSuccessNotice.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideSiteInfo( registry );
+		provideFeatures( registry, [
+			{
+				slug: 'set-up-feature',
+				title: 'Set up feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up now',
+					isEnabled: () => true,
+				},
+				successNotice: {
+					title: 'Success! AdSense is set up',
+					description:
+						'You are now monetizing your website with relevant ads',
+				},
+			},
+		] );
+		provideNotifications( registry, [] );
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+			featureSlug: 'set-up-feature',
+			returnTab: ALL_SERVICES_TAB_PATH,
+		} );
+	},
+};
+
 export default {
 	title: 'Components/Feature Discovery/AllServicesTab',
 	component: AllServicesTab,
 	parameters: { padding: 0 },
 	decorators: [
-		( StoryComponent: Story ) => {
+		( StoryComponent: Story, { args }: { args: Story[ 'args' ] } ) => {
 			function setupRegistry( registry: WPDataRegistry ) {
 				// Seeded so the cards resolve their newness state without a
 				// request.
@@ -73,11 +114,17 @@ export default {
 				provideModuleRegistrations( registry );
 
 				provideFeatures( registry, sampleFeatures );
+
+				args?.setupRegistry?.( registry );
 			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<StoryComponent />
+					<ViewContextProvider
+						value={ VIEW_CONTEXT_FEATURE_DISCOVERY }
+					>
+						<StoryComponent />
+					</ViewContextProvider>
 				</WithRegistrySetup>
 			);
 		},

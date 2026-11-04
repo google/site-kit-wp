@@ -25,12 +25,17 @@ import { FC, useState } from 'react';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import Notifications from '@/js/components/notifications/Notifications';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type {
 	Feature,
 	FeatureCategory,
 	FeatureCategorySlug,
 } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 import CategoryFilterChips from './CategoryFilterChips';
 import FeatureGoalGroup from './FeatureGoalGroup';
 
@@ -86,6 +91,15 @@ const AllServicesTab: FC = () => {
 				onToggleCategory={ onToggleCategory }
 				selectedCategories={ selectedCategories }
 			/>
+
+			<div className="googlesitekit-all-services-tab__notifications">
+				<Notifications
+					areaSlug={
+						NOTIFICATION_AREAS.FEATURE_DISCOVERY_ALL_SERVICES_TOP
+					}
+					groupID={ NOTIFICATION_GROUPS.DEFAULT }
+				/>
+			</div>
 
 			{ goalGroups.map( ( { category, features } ) => (
 				<FeatureGoalGroup

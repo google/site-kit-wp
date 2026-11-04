@@ -760,6 +760,7 @@ abstract class Module {
 	 * @since 1.0.0
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 * @since 1.70.0 $datapoint parameter is optional.
+	 * @since 1.191.0 Reconnect URL for proxy code exceptions points at setup start on the site.
 	 *
 	 * @param Exception $e         Exception object.
 	 * @param string    $datapoint Optional. Datapoint originally requested. Default is an empty string.
@@ -786,18 +787,12 @@ abstract class Module {
 				$reason = $errors[0]['reason'];
 			}
 		} elseif ( $e instanceof Google_Proxy_Code_Exception ) {
+			// Reconnect through a new setup, not the access code: its proxy session has no nonce for the site to check.
 			$status        = 401;
 			$code          = $message;
 			$auth_client   = $this->authentication->get_oauth_client();
 			$message       = $auth_client->get_error_message( $code );
-			$google_proxy  = $this->authentication->get_google_proxy();
-			$credentials   = $this->authentication->credentials()->get();
-			$params        = array(
-				'code'    => $e->getAccessCode(),
-				'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
-			);
-			$params        = $google_proxy->add_setup_step_from_error_code( $params, $code );
-			$reconnect_url = $google_proxy->setup_url( $params );
+			$reconnect_url = $this->authentication->get_proxy_setup_url();
 		}
 
 		if ( empty( $code ) ) {
