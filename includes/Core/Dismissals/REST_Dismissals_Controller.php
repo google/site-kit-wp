@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
+use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -98,7 +98,7 @@ class REST_Dismissals_Controller {
 					'permission_callback' => $can_dismiss_item,
 				),
 				array(
-					'schema' => array( Dismissed_Slugs_Schema::class, 'get' ),
+					'schema' => array( String_List_Schema::class, 'get' ),
 				)
 			),
 			// WordPress merges this endpoint into the route above, and keeps that route's schema.
@@ -186,7 +186,7 @@ class REST_Dismissals_Controller {
 					),
 				),
 				array(
-					'schema' => array( Dismissed_Slugs_Schema::class, 'get' ),
+					'schema' => array( String_List_Schema::class, 'get' ),
 				)
 			),
 		);
