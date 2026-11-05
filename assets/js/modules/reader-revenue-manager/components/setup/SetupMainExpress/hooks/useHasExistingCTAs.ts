@@ -59,8 +59,8 @@ const EXPRESS_SETUP_CTA_TO_CTA_TYPE: Partial<
  * @param {string} publicationID The publication ID.
  * @param {string} ctaType       The express setup CTA type, one of `EXPRESS_SETUP_CTAS`.
  * @return {(boolean|undefined)} `true` when the publication has a CTA of the type, `false` when it
- *                               doesn't or `publicationID` or `ctaType` is missing, `undefined`
- *                               while the CTAs are loading.
+ *                               doesn't, or when `publicationID` is missing or `ctaType` can't be
+ *                               checked, `undefined` while the CTAs are loading.
  */
 export default function useHasExistingCTAs(
 	publicationID?: string,
@@ -68,32 +68,33 @@ export default function useHasExistingCTAs(
 ): boolean | undefined {
 	const [ record, setRecord ] = useState< Record< string, boolean > >( {} );
 
+	const type = ctaType ? EXPRESS_SETUP_CTA_TO_CTA_TYPE[ ctaType ] : undefined;
+
 	const ctas: CTA[] | undefined = useSelect(
 		( select: Select ) =>
-			publicationID && ctaType
+			publicationID && type
 				? select( MODULES_READER_REVENUE_MANAGER ).getCTAs( {
 						publicationID,
 				  } )
 				: undefined,
-		[ ctaType, publicationID ]
+		[ publicationID, type ]
 	);
 
 	const key = `${ publicationID }:${ ctaType }`;
 
 	useEffect( () => {
-		if ( ! publicationID || ! ctaType || ctas === undefined ) {
+		if ( ! publicationID || ! type || ctas === undefined ) {
 			return;
 		}
 
-		const type = EXPRESS_SETUP_CTA_TO_CTA_TYPE[ ctaType ];
 		const hasExistingCTA = ctas.some( ( cta ) => cta.type === type );
 
 		setRecord( ( current ) =>
 			key in current ? current : { ...current, [ key ]: hasExistingCTA }
 		);
-	}, [ ctas, ctaType, key, publicationID ] );
+	}, [ ctas, key, publicationID, type ] );
 
-	if ( ! publicationID || ! ctaType ) {
+	if ( ! publicationID || ! type ) {
 		return false;
 	}
 
