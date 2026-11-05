@@ -582,7 +582,7 @@ Represents a WordPress pointer: a small popup attached to an element in the Word
 
 **Location**: `includes/Core/Admin/Pointers.php`
 
-`Pointers` collects every `Pointer` from the `googlesitekit_admin_pointers` filter. On each admin screen it passes the active pointers to the `googlesitekit-admin-pointers` script, which opens them. Feature code never calls `Pointers` directly. `Pointers` must be registered before `Assets`, because it adds its data script through the `googlesitekit_assets` filter.
+`Pointers` collects every `Pointer` from the `googlesitekit_admin_pointers` filter. On each admin screen it passes the active pointers to the `googlesitekit-admin-pointers` script, which opens them. Feature code never calls `Pointers` directly.
 
 ### Adding a Pointer
 
