@@ -325,10 +325,6 @@ describe( 'InsightNotice', () => {
 
 		await act( waitForVote );
 
-		// Unlike the survey-trigger request it replaces, `sendFeedback()` has
-		// no client-side authentication gate; the server enforces the same
-		// access rules as the survey routes. Gating this client-side too is
-		// tracked in #14088.
 		expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 			body: {
 				data: {
