@@ -32,6 +32,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import { provideSiteInfo, provideUserAuthentication } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ThumbsFeedback from './ThumbsFeedback';
@@ -85,7 +86,7 @@ export default {
 		( StoryComponent: Story ) => {
 			function setupRegistry( registry: WPDataRegistry ) {
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/core\/user\/data\/feedback/,
+					feedbackEndpoint,
 					{ body: { success: true } },
 					{ overwriteRoutes: true }
 				);

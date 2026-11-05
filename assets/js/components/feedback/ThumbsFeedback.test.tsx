@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -30,10 +31,6 @@ import {
 } from '../../../../tests/js/test-utils';
 import { VoteDirection } from './constants';
 import ThumbsFeedback from './ThumbsFeedback';
-
-const feedbackEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/feedback'
-);
 
 function mockSendFeedback() {
 	fetchMock.post( feedbackEndpoint, {

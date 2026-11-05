@@ -44,6 +44,7 @@ import CloseIcon from '@/svg/icons/close.svg';
 import ThumbDownIcon from '@/svg/icons/thumb-down.svg';
 import ThumbUpIcon from '@/svg/icons/thumb-up.svg';
 import {
+	FEEDBACK_KEY_VOTE,
 	VOTE_DIRECTION_DOWN,
 	VOTE_DIRECTION_UP,
 	VoteDirection,
@@ -144,7 +145,7 @@ const ThumbsFeedback: FC< ThumbsFeedbackProps > = ( {
 			sendFeedback( {
 				namespace: feedbackNamespace,
 				group: feedbackGroup,
-				key: 'vote',
+				key: FEEDBACK_KEY_VOTE,
 				value: direction,
 			} );
 

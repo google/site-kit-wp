@@ -107,7 +107,6 @@ export const FEATURE_RELEVANCY_REASONS = {
 export const FEATURE_HUB_FEEDBACK_NAMESPACE = 'feature_hub';
 
 export const FEATURE_RELEVANCY_FEEDBACK_KEYS = {
-	VOTE: 'vote',
 	VOTE_REASON: 'vote_reason',
 	DISMISS_REASON: 'dismiss_reason',
 } as const;

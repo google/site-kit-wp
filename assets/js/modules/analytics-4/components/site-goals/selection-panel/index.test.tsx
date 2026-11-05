@@ -53,6 +53,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import { fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -63,10 +64,6 @@ import {
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import SiteGoalsSelectionPanel from '.';
-
-const feedbackEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/feedback'
-);
 
 function mockSendFeedback() {
 	fetchMock.postOnce( feedbackEndpoint, {

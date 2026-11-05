@@ -35,6 +35,7 @@ import { getFreshDataDateRange } from '@/js/modules/analytics-4/components/traff
 import { provideInsightReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import { provideSiteInfo, provideUserAuthentication } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import InsightNotice from './InsightNotice';
@@ -126,7 +127,7 @@ Voted.args = {
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/feedback/,
+			feedbackEndpoint,
 			{ body: { success: true } },
 			{ overwriteRoutes: true }
 		);

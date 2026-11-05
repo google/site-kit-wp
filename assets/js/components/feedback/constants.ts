@@ -22,3 +22,6 @@ export const VOTE_DIRECTION_DOWN = 'down';
 export type VoteDirection =
 	| typeof VOTE_DIRECTION_UP
 	| typeof VOTE_DIRECTION_DOWN;
+
+/** The `key` sent to the feedback endpoint for a thumbs up/down vote. */
+export const FEEDBACK_KEY_VOTE = 'vote';

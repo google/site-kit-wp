@@ -36,7 +36,7 @@ import Typography from '@/js/components/Typography';
 import useViewContext from '@/js/hooks/useViewContext';
 import {
 	SITE_GOALS_FEEDBACK_NAMESPACE,
-	SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE,
+	SITE_GOALS_PANEL_FEEDBACK_GROUPS_BY_GOAL_TYPE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -77,7 +77,8 @@ const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
 		return null;
 	}
 
-	const feedbackGroup = SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE[ goalType ];
+	const feedbackGroup =
+		SITE_GOALS_PANEL_FEEDBACK_GROUPS_BY_GOAL_TYPE[ goalType ];
 
 	function handleVote( direction: VoteDirection ) {
 		trackEvent(

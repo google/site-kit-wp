@@ -35,6 +35,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFeatureDiscovery } from '@/js/googlesitekit/feature-discovery';
 import { registerFeatures } from '@/js/modules/analytics-4/feature-discovery';
 import { Story } from '@/js/types/Story';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -124,7 +125,7 @@ export default {
 				);
 
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/core\/user\/data\/feedback/,
+					feedbackEndpoint,
 					{ body: { success: true } },
 					{ overwriteRoutes: true }
 				);

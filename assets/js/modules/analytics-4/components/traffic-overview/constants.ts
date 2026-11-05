@@ -45,7 +45,8 @@ export const RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG =
 export const FRESH_DATA_FEEDBACK_NAMESPACE = 'fresh_data';
 
 /** The feedback group of the feedback thumbs in the Recent activity tab. */
-export const FRESH_DATA_VOTE_ID_RECENT_ACTIVITY = 'recent_activity_widget';
+export const FRESH_DATA_FEEDBACK_GROUP_RECENT_ACTIVITY =
+	'recent_activity_widget';
 
 /**
  * How long the Recent activity tab stays shown, in milliseconds, before the

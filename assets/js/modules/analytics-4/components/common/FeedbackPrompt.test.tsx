@@ -31,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import * as tracking from '@/js/util/tracking';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -43,10 +44,6 @@ import FeedbackPrompt from './FeedbackPrompt';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
-
-const feedbackEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/feedback'
-);
 
 describe( 'FeedbackPrompt', () => {
 	let registry: WPDataRegistry;

@@ -62,6 +62,7 @@ import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data
 import { getPreviousDate } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -79,10 +80,6 @@ type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
-
-const feedbackEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/feedback'
-);
 
 describe( 'LeadGenerationPerformanceWidget', () => {
 	let registry: WPDataRegistry;

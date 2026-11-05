@@ -36,6 +36,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import {
 	act,
 	createTestRegistry,
@@ -60,10 +61,6 @@ jest.mock( 'googlesitekit-api', () =>
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
-
-const feedbackEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/feedback'
-);
 
 describe( 'InsightNotice', () => {
 	let registry: WPDataRegistry;
@@ -330,7 +327,8 @@ describe( 'InsightNotice', () => {
 
 		// Unlike the survey-trigger request it replaces, `sendFeedback()` has
 		// no client-side authentication gate; the server enforces the same
-		// access rules as the survey routes.
+		// access rules as the survey routes. Gating this client-side too is
+		// tracked in #14088.
 		expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 			body: {
 				data: {
