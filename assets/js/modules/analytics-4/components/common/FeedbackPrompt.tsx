@@ -50,7 +50,7 @@ interface FeedbackPromptProps {
 	 * keep as their accessible name.
 	 */
 	hideQuestion?: boolean;
-	/** Called with the vote's direction, after the vote event is sent. */
+	/** Called with the vote's direction, after the vote is tracked. */
 	onVote?: ( direction: VoteDirection ) => void;
 }
 
@@ -66,7 +66,7 @@ interface FeedbackPromptProps {
  * @param props.voteID              Identifier used to build the survey trigger string.
  * @param props.gaTrackingEventArgs Category and label used to track the vote event.
  * @param [props.hideQuestion]      Optional. Whether to hide the "Is this section helpful?" text.
- * @param [props.onVote]            Optional. Called with the vote's direction, after the vote event is sent.
+ * @param [props.onVote]            Optional. Called with the vote's direction, after the vote is tracked.
  * @return React element.
  */
 const FeedbackPrompt: FC< FeedbackPromptProps > = ( {

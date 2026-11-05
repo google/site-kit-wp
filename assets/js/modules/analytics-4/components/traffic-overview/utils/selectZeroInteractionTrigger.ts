@@ -59,7 +59,11 @@ export function selectZeroInteractionTrigger(
 	}
 
 	// `publishedAt` is in ISO 8601 format, so its first ten characters are
-	// its date, which `getDayCount()` takes.
+	// its date, which `getDayCount()` uses.
+	//
+	// getDayCount() counts days inclusively, so to accurately reflect a post
+	// published the same day as the reference date as being "0 days old", we
+	// subject one from the post age.
 	const postAgeInDays =
 		getDayCount(
 			latestPost[ 0 ].publishedAt.slice( 0, 10 ),

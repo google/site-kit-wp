@@ -25,11 +25,11 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import useViewContext from '@/js/hooks/useViewContext';
-import { useRecordRecentActivityInteraction } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityInteraction';
 import { trackEvent } from '@/js/util';
+import { useRecordRecentActivityInteraction } from './useRecordRecentActivityInteraction';
 
 /** The section of the Recent activity tab that a post link is in. */
-export type RecentActivityPostLinkSection = 'latest-post-header' | 'top-posts';
+type RecentActivityPostLinkSection = 'latest-post-header' | 'top-posts';
 
 /**
  * Gets a handler for a click on a post link in the Recent activity tab.
