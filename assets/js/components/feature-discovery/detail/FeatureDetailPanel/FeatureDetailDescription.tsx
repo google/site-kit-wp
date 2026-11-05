@@ -57,7 +57,11 @@ const FeatureDetailDescription: FC< FeatureDetailDescriptionProps > = ( {
 						{ __( 'What is this feature?', 'google-site-kit' ) }
 					</Typography>
 
-					<P size={ SIZE_MEDIUM }>{ whatIs }</P>
+					{ typeof whatIs === 'string' ? (
+						<P size={ SIZE_MEDIUM }>{ whatIs }</P>
+					) : (
+						whatIs
+					) }
 				</section>
 			) : null }
 

@@ -20,7 +20,6 @@
 
 	.googlesitekit-effort-indicator {
 		align-items: center;
-		color: $c-surfaces-on-background-variant;
 		display: flex;
 		flex-wrap: nowrap;
 		gap: 10px;
@@ -29,6 +28,7 @@
 
 	.googlesitekit-effort-indicator__icons {
 		align-items: center;
+		color: $c-surfaces-on-background-variant;
 		display: flex;
 		gap: 1px;
 		padding-block: 2px;
@@ -41,5 +41,9 @@
 
 	.googlesitekit-effort-indicator__icon--inactive {
 		fill: $c-surfaces-surface-2;
+	}
+
+	.googlesitekit-feature-card .googlesitekit-effort-indicator__label {
+		color: $c-surfaces-on-background-variant;
 	}
 }

@@ -23,6 +23,11 @@ import classnames from 'classnames';
 import { FC, ReactNode } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { useInstanceId } from '@wordpress/compose';
+
+/**
  * Internal dependencies
  */
 import { Tooltip } from 'googlesitekit-components';
@@ -39,6 +44,11 @@ const InfoTooltip: FC< InfoTooltipProps > = ( {
 	title,
 	tooltipClassName,
 } ) => {
+	const labelID = useInstanceId(
+		InfoTooltip,
+		'googlesitekit-info-tooltip-label'
+	) as string;
+
 	if ( ! title ) {
 		return null;
 	}
@@ -58,8 +68,25 @@ const InfoTooltip: FC< InfoTooltipProps > = ( {
 			onOpen={ onOpen }
 			interactive
 		>
-			<span tabIndex={ 0 } role="tooltip">
+			<span
+				tabIndex={ 0 }
+				role="button"
+				aria-labelledby={ labelID }
+				// Stops `Tooltip` from also using the text as a description, as a
+				// native `title` while closed and as an `aria-describedby` reference
+				// once open, so a screen reader reads it only once.
+				title={ undefined }
+				aria-describedby={ undefined }
+			>
 				<InfoIcon width="16" height="16" />
+				<span
+					id={ labelID }
+					// The tooltip content exists only while the tooltip is open,
+					// so this hidden copy of the text names the icon at all times.
+					hidden
+				>
+					{ title }
+				</span>
 			</span>
 		</Tooltip>
 	);

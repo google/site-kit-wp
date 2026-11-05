@@ -26,7 +26,12 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
-import { createTestRegistry, renderHook } from '@tests/js/test-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	actHook as act,
+	createTestRegistry,
+	renderHook,
+} from '@tests/js/test-utils';
 import useCreateExpressSetupCTA from './useCreateExpressSetupCTA';
 
 const settingsEndpoint = new RegExp(
@@ -45,6 +50,8 @@ const createCTAEndpoint = new RegExp(
 const createdCTA = {
 	name: 'organizations/ABCD1234/publications/ABCDEFGH/ctas/1',
 	type: CTA_TYPES.NEWSLETTER_SIGNUP,
+	state: 'ACTIVE',
+	displayName: 'Newsletter signup',
 };
 
 const params = {
@@ -73,6 +80,8 @@ const livePublication = {
 };
 
 describe( 'useCreateExpressSetupCTA', () => {
+	mockLocation();
+
 	let registry: Registry;
 
 	beforeEach( () => {
@@ -153,7 +162,13 @@ describe( 'useCreateExpressSetupCTA', () => {
 			publicationOnboardingState:
 				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 			publicationOnboardingStateChanged: false,
-			configuredCTAs: { 1: 'newsletter-signup' },
+			configuredCTAs: {
+				1: {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: 'Newsletter signup',
+				},
+			},
 		} );
 	} );
 
@@ -223,5 +238,77 @@ describe( 'useCreateExpressSetupCTA', () => {
 		expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
 		expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
 		expect( console ).toHaveErrored();
+	} );
+
+	describe( 'ctaID', () => {
+		it( 'should set the ctaID query argument from the created CTA name', async () => {
+			global.location.href = 'http://example.com/?cta=newsletter-signup';
+			mockSuccessfulRequests();
+
+			const { result } = renderHook( () => useCreateExpressSetupCTA(), {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			} );
+
+			await act( async () => {
+				await result.current( params );
+			} );
+
+			expect( global.location.href ).toContain( 'ctaID=1' );
+		} );
+
+		it( 'should not set the ctaID query argument when the response has no usable identifier', async () => {
+			global.location.href = 'http://example.com/?cta=newsletter-signup';
+
+			fetchMock.postOnce( createCTAEndpoint, {
+				body: { type: CTA_TYPES.NEWSLETTER_SIGNUP },
+				status: 200,
+			} );
+			fetchMock.getOnce( publicationEndpoint, {
+				body: livePublication,
+				status: 200,
+			} );
+			fetchMock.getOnce( ctasEndpoint, { body: [], status: 200 } );
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body as string ).data,
+				status: 200,
+			} ) );
+
+			const { result } = renderHook( () => useCreateExpressSetupCTA(), {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			} );
+
+			await act( async () => {
+				await result.current( params );
+			} );
+
+			expect( global.location.href ).not.toContain( 'ctaID' );
+		} );
+
+		it( 'should not set the ctaID query argument when creating the CTA fails', async () => {
+			global.location.href = 'http://example.com/?cta=newsletter-signup';
+
+			fetchMock.postOnce( createCTAEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'CTA creation failed',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			const { result } = renderHook( () => useCreateExpressSetupCTA(), {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			} );
+
+			await act( async () => {
+				await result.current( params );
+			} );
+
+			expect( global.location.href ).not.toContain( 'ctaID' );
+			expect( console ).toHaveErrored();
+		} );
 	} );
 } );

@@ -17,14 +17,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
-import { setupSiteKit } from '../../utils';
+import { setupSiteKit, visitAdminPage } from '../../utils';
 
 describe( 'Site Health', () => {
 	it( 'adds debug data to the info tab when Site Kit is active but not setup', async () => {

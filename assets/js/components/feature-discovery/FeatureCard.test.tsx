@@ -136,7 +136,7 @@ describe( 'FeatureCard', () => {
 			getByText( 'Collect enhanced measurement events.' )
 		).toBeInTheDocument();
 
-		expect( getByText( 'A short setup' ) ).toBeInTheDocument();
+		expect( getByText( 'Guided setup' ) ).toBeInTheDocument();
 		expect( getByText( 'Analytics' ) ).toBeInTheDocument();
 
 		expect( AnalyticsIconSpy ).toHaveBeenCalled();
@@ -299,6 +299,33 @@ describe( 'FeatureCard', () => {
 		expect(
 			getByRole( 'button', { name: 'Try it now' } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should render the CTA given by ctaButton in place of the default one', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Try it now',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard
+				slug="test-feature"
+				ctaButton={ <button>Custom CTA</button> }
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Custom CTA' } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Try it now' } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should render the dismiss control only when the card is dismissible', () => {

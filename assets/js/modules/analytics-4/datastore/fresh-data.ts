@@ -93,9 +93,9 @@ export type ExcludedProducts =
 	  };
 
 /**
- * One of the published single posts with the most views on a site with plain permalinks, as `GET:plain-permalink-top-posts` returns it.
+ * One of the published single posts with the most visitors on a site with plain permalinks, as `GET:plain-permalink-top-posts` returns it.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface PlainPermalinkTopPost {
 	/** The ID of the post. */
@@ -106,26 +106,26 @@ export interface PlainPermalinkTopPost {
 	url: string;
 	/** The permalink with no scheme or host, such as `/?p=123`. */
 	pagePath: string;
-	/** The views of the report's URLs that show the post, at least `1`. */
-	views: number;
+	/** The visitors of the report's URLs that show the post, at least `1`. A visitor who opened the post through two URLs counts twice. */
+	visitors: number;
 }
 
 /**
- * The response of `GET:plain-permalink-top-posts`, with the most viewed posts and the report's total views.
+ * The response of `GET:plain-permalink-top-posts`, with the posts with the most visitors and the report's total visitors.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface PlainPermalinkTopPosts {
-	/** The posts, most viewed first. */
+	/** The posts, most visitors first. */
 	rows: PlainPermalinkTopPost[];
-	/** The views of every URL of the report, including the URLs that show no single post. */
+	/** The visitors of every URL of the report, each counted once, including the URLs that show no single post. */
 	total: number;
 }
 
 /**
  * The options of `getPlainPermalinkTopPosts()`.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface PlainPermalinkTopPostsOptions {
 	/** The first day of the report, such as `2026-10-21`. */
@@ -363,12 +363,12 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the published single posts with the most views on a site with plain permalinks, which has no permalink structure.
+	 * Gets the published single posts with the most visitors on a site with plain permalinks, which has no permalink structure.
 	 *
 	 * Read a request error with
 	 * `getErrorForSelector( 'getPlainPermalinkTopPosts', [ options ] )`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} state             The data store's state.
 	 * @param {Object} options           The options of the report.
@@ -376,7 +376,7 @@ const baseSelectors = {
 	 * @param {string} options.endDate   The last day of the report, such as `2026-10-22`.
 	 * @param {number} options.limit     The maximum number of posts, from 1 to `Plain_Permalink_Top_Posts::MAX_PAGE_PATHS`, which is 50. The server refuses any other limit.
 	 * @param {Object} [fetchOptions]    Optional. Fetch options that change how the request runs, such as `{ cacheTTL }`, the seconds the response stays cached.
-	 * @return {(Object|undefined)} The posts, most viewed first, as `rows`, and the views of every URL of the report as `total`. Returns `undefined` until the request succeeds.
+	 * @return {(Object|undefined)} The posts, most visitors first, as `rows`, and the visitors of every URL of the report as `total`. Returns `undefined` until the request succeeds.
 	 */
 	getPlainPermalinkTopPosts(
 		state: FreshDataState,
@@ -427,19 +427,20 @@ const baseSelectors = {
 
 	/**
 	 * Gets the way the Recent activity tab recognizes the product pages that
-	 * it hides from its list of posts.
+	 * the columns of its traffic breakdown leave out.
 	 *
-	 * The tab hides products only while WooCommerce is active and the setting
-	 * to include products is off. Without WooCommerce, the setting doesn't
-	 * show, so the tab lists every page. The tab recognizes a product page:
+	 * The tab leaves products out only while WooCommerce is active and the
+	 * setting to include products is off. Without WooCommerce, the setting
+	 * doesn't show, so the tab counts every page. The tab recognizes a product
+	 * page:
 	 *
 	 * 1. By the path that every product URL starts with, such as `/product/`.
 	 * 2. When product URLs share no such path, by the `googlesitekit_post_type`
 	 *    custom dimension, if the Analytics property has it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
-	 * @return {(Object|null|undefined)} The way to recognize a product page, or `null` when the tab lists products or can't recognize them. Returns `undefined` if not yet loaded.
+	 * @return {(Object|null|undefined)} The way to recognize a product page, or `null` when the tab counts products or can't recognize them. Returns `undefined` if not yet loaded.
 	 */
 	getExcludedProducts: createRegistrySelector(
 		( select: Select ) => (): ExcludedProducts | null | undefined => {

@@ -16,24 +16,24 @@ use Google\Site_Kit\Core\Util\WP_Query_Factory;
 use WP_Post;
 
 /**
- * Class for finding the most viewed posts on a site with plain permalinks, where the query string tells posts apart, such as `/?p=123`.
+ * Class for finding the posts with the most visitors on a site with plain permalinks, where the query string tells posts apart, such as `/?p=123`.
  *
  * The class asks WordPress which published post each URL of an Analytics
- * report shows, and adds up the views of each post.
+ * report shows, and adds up the visitors of each post.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @access private
  * @ignore
  */
 final class Plain_Permalink_Top_Posts {
 
 	/**
-	 * The maximum number of the most viewed page paths whose post the class looks up.
+	 * The maximum number of the page paths with the most visitors whose post the class looks up.
 	 *
-	 * Each lookup can run a database query. The views of the other page paths
+	 * Each lookup can run a database query. The visitors of the other page paths
 	 * count for no post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @var int
 	 */
 	const MAX_PAGE_PATHS = 50;
@@ -41,7 +41,7 @@ final class Plain_Permalink_Top_Posts {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @var Context
 	 */
 	private $context;
@@ -49,7 +49,7 @@ final class Plain_Permalink_Top_Posts {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -58,35 +58,35 @@ final class Plain_Permalink_Top_Posts {
 	}
 
 	/**
-	 * Gets the published single posts with the most views.
+	 * Gets the published single posts with the most visitors.
 	 *
-	 * A post's views add up over all its URLs, such as `/?p=123` and
-	 * `/?p=123&utm_source=newsletter`.
+	 * A post's visitors add up over all its URLs, such as `/?p=123` and
+	 * `/?p=123&utm_source=newsletter`, so a visitor who opened both counts twice.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
-	 * @param array $url_rows The report rows, each with a `url`, a path with its query string, and its `views`.
+	 * @param array $url_rows The report rows, each with a `url`, a path with its query string, and its `visitors`.
 	 * @param int   $limit    The maximum number of posts to return.
-	 * @return array The posts, most viewed first, each with its `id`, `title`, `url`, `pagePath` and `views`. The `url` is the permalink, `pagePath` is the permalink with no scheme or host, and `title` is plain text.
+	 * @return array The posts, most visitors first, each with its `id`, `title`, `url`, `pagePath` and `visitors`. The `url` is the permalink, `pagePath` is the permalink with no scheme or host, and `title` is plain text.
 	 */
 	public function get( array $url_rows, $limit ) {
-		$views_by_post_id = array();
-		$posts_by_id      = array();
+		$visitors_by_post_id = array();
+		$posts_by_id         = array();
 
-		foreach ( $this->get_most_viewed_page_paths( $url_rows ) as $page_path => $views ) {
+		foreach ( $this->get_page_paths_with_most_visitors( $url_rows ) as $page_path => $visitors ) {
 			$post = $this->get_post( $page_path );
 
 			if ( ! $post ) {
 				continue;
 			}
 
-			$posts_by_id[ $post->ID ]      = $post;
-			$views_by_post_id[ $post->ID ] = ( $views_by_post_id[ $post->ID ] ?? 0 ) + $views;
+			$posts_by_id[ $post->ID ]         = $post;
+			$visitors_by_post_id[ $post->ID ] = ( $visitors_by_post_id[ $post->ID ] ?? 0 ) + $visitors;
 		}
 
 		$top_posts = array();
 
-		foreach ( array_slice( $this->sort_by_views( $views_by_post_id ), 0, $limit, true ) as $post_id => $views ) {
+		foreach ( array_slice( $this->sort_by_visitors( $visitors_by_post_id ), 0, $limit, true ) as $post_id => $visitors ) {
 			$post      = $posts_by_id[ $post_id ];
 			$permalink = get_permalink( $post );
 
@@ -97,7 +97,7 @@ final class Plain_Permalink_Top_Posts {
 				// A page path of the report can have extra public query vars, such
 				// as `order-received`, so `pagePath` comes from the permalink.
 				'pagePath' => wp_make_link_relative( $permalink ),
-				'views'    => $views,
+				'visitors' => $visitors,
 			);
 		}
 
@@ -105,35 +105,35 @@ final class Plain_Permalink_Top_Posts {
 	}
 
 	/**
-	 * Gets the views of the most viewed page paths, at most `MAX_PAGE_PATHS` of them.
+	 * Gets the visitors of the page paths with the most visitors, at most `MAX_PAGE_PATHS` of them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $url_rows The report rows, as `get()` takes them.
-	 * @return array The views keyed by page path, such as `/?p=123`, most first.
+	 * @return array The visitors keyed by page path, such as `/?p=123`, most first.
 	 */
-	private function get_most_viewed_page_paths( array $url_rows ) {
+	private function get_page_paths_with_most_visitors( array $url_rows ) {
 		// The report filters by the host of the reference site URL, which isn't
 		// always the home URL. So the home path comes from that URL too.
 		$home_path         = trailingslashit( (string) URL::parse( $this->context->get_reference_site_url(), PHP_URL_PATH ) );
 		$public_query_vars = WP_Query_Factory::get_public_query_vars();
-		$views_by_path     = array();
+		$visitors_by_path  = array();
 
 		foreach ( $url_rows as $url_row ) {
 			$page_path = $this->get_page_path( $url_row['url'], $home_path, $public_query_vars );
 
 			if ( null !== $page_path ) {
-				$views_by_path[ $page_path ] = ( $views_by_path[ $page_path ] ?? 0 ) + $url_row['views'];
+				$visitors_by_path[ $page_path ] = ( $visitors_by_path[ $page_path ] ?? 0 ) + $url_row['visitors'];
 			}
 		}
 
-		return array_slice( $this->sort_by_views( $views_by_path ), 0, self::MAX_PAGE_PATHS, true );
+		return array_slice( $this->sort_by_visitors( $visitors_by_path ), 0, self::MAX_PAGE_PATHS, true );
 	}
 
 	/**
 	 * Gets the page path that WordPress reads from a URL of the report, such as `/?p=123` for `/index.php?p=123&utm_source=newsletter`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param string   $url               The URL of the report, a path with its query string.
 	 * @param string   $home_path         The path of the site, with a trailing slash, such as `/blog/`.
@@ -172,32 +172,32 @@ final class Plain_Permalink_Top_Posts {
 	}
 
 	/**
-	 * Sorts the views of each key, most first, and keeps keys with equal views in the order they come in.
+	 * Sorts the visitors of each key, most first, and keeps keys with equal visitors in the order they come in.
 	 *
 	 * `uksort()` isn't stable before PHP 8.0, so the position of each key orders
-	 * keys with equal views.
+	 * keys with equal visitors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
-	 * @param array $views The views of each key, such as a page path or a post ID.
-	 * @return array The same views, most first, with their keys.
+	 * @param array $visitors The visitors of each key, such as a page path or a post ID.
+	 * @return array The same visitors, most first, with their keys.
 	 */
-	private function sort_by_views( array $views ) {
-		$positions = array_flip( array_keys( $views ) );
+	private function sort_by_visitors( array $visitors ) {
+		$positions = array_flip( array_keys( $visitors ) );
 
 		uksort(
-			$views,
-			fn( $first_key, $second_key ) => ( $views[ $second_key ] <=> $views[ $first_key ] )
+			$visitors,
+			fn( $first_key, $second_key ) => ( $visitors[ $second_key ] <=> $visitors[ $first_key ] )
 				?: $positions[ $first_key ] - $positions[ $second_key ]
 		);
 
-		return $views;
+		return $visitors;
 	}
 
 	/**
 	 * Gets the published single post that WordPress shows at a page path, such as the static homepage at `/`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param string $page_path The page path, such as `/?p=123`.
 	 * @return WP_Post|null The post, or `null` where the page path shows no single published post, such as the posts page.
@@ -247,7 +247,7 @@ final class Plain_Permalink_Top_Posts {
 	 * `get_the_title()` adds that prefix to a post with a password in a REST
 	 * request, so we run the `the_title` filters here.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param WP_Post $post The post.
 	 * @return string The title, or an empty string for a post with no title.

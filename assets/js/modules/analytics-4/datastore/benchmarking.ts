@@ -251,11 +251,12 @@ const baseSelectors = {
 	 * Gets the decoded benchmarking response for a date range.
 	 *
 	 * @since 1.190.0
+	 * @since 1.191.0 Returns `visits` and `keyFactors` in place of `visitors`, `dimensions`, and `contextualData`.
 	 *
 	 * @param {Object} state     The data store's state.
 	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
 	 * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
-	 * @return {(Object|undefined)} The decoded response with `visitors`, `dailyTraffic`, `dimensions`, and `contextualData`, or `undefined` while the store has none, like during the request or after it fails.
+	 * @return {(Object|undefined)} The decoded response with `visits`, `dailyTraffic`, and `keyFactors`, or `undefined` while the store has none, like during the request or after it fails.
 	 */
 	getBenchmarkingData(
 		state: BenchmarkingState,

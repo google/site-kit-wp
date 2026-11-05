@@ -20,12 +20,18 @@ exports[`ReturningVisitorsWidget should render correctly with the expected metri
             Returning visitors
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Portion of your site’s visitors that returned at least once in this timeframe"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Portion of your site’s visitors that returned at least once in this timeframe
+            </span>
           </span>
         </div>
         <div
@@ -78,12 +84,18 @@ exports[`ReturningVisitorsWidget should render the generic error variant when th
           Returning visitors
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Portion of your site’s visitors that returned at least once in this timeframe"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Portion of your site’s visitors that returned at least once in this timeframe
+          </span>
         </span>
       </div>
       <div
@@ -153,12 +165,18 @@ exports[`ReturningVisitorsWidget should render the insufficient permissions erro
           Returning visitors
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Portion of your site’s visitors that returned at least once in this timeframe"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Portion of your site’s visitors that returned at least once in this timeframe
+          </span>
         </span>
       </div>
       <div
@@ -224,12 +242,18 @@ exports[`ReturningVisitorsWidget should render the loading state while resolving
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Portion of your site’s visitors that returned at least once in this timeframe"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Portion of your site’s visitors that returned at least once in this timeframe
+              </span>
             </span>
           </span>
         </div>

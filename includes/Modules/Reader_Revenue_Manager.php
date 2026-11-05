@@ -68,6 +68,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\User_Settings;
@@ -258,7 +259,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
-		// If the publication ID changes, clear the dismissed state for notifications.
+		// If the publication ID changes, clear the dismissed state for notifications and reset saved CTAs.
 		$this->get_settings()->on_change(
 			function ( $old_value, $new_value ) {
 				if ( $old_value['publicationID'] !== $new_value['publicationID'] ) {
@@ -270,6 +271,16 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 					foreach ( self::POLICY_VIOLATION_NOTIFICATIONS as $notification ) {
 						$dismissed_items->remove( $notification );
+					}
+
+					if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+						// Clear the previous publication's CTAs immediately so neither
+						// settings screen shows stale data while the sync runs.
+						$this->get_settings()->merge( array( 'configuredCTAs' => array() ) );
+
+						if ( ! empty( $new_value['publicationID'] ) && ! empty( $new_value['organizationID'] ) ) {
+							do_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+						}
 					}
 				}
 			}
@@ -635,6 +646,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',
+						'googlesitekit-widgets',
 					),
 				)
 			),
@@ -841,6 +853,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.132.0
+	 * @since n.e.x.t Lists the type and state of each configured CTA.
 	 *
 	 * @return array An array of all debug fields.
 	 */
@@ -914,7 +927,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'debug' => Debug_Data::redact_debug_value( $settings['organizationID'] ),
 			);
 
-			$configured_ctas = implode( ', ', array_keys( (array) $settings['configuredCTAs'] ) );
+			$configured_ctas = array();
+
+			foreach ( (array) $settings['configuredCTAs'] as $cta_id => $cta ) {
+				$configured_ctas[] = sprintf( '%s (%s, %s)', $cta_id, $cta['type'], $cta['state'] );
+			}
+
+			$configured_ctas = implode( ', ', $configured_ctas );
 
 			$debug_fields['reader_revenue_manager_configured_ctas'] = array(
 				'label' => __( 'Reader Revenue Manager: Configured CTAs', 'google-site-kit' ),
@@ -939,6 +958,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * Gets an array of internal feature metrics.
 	 *
 	 * @since 1.163.0
+	 * @since n.e.x.t Lists the type and state of each configured CTA.
 	 *
 	 * @return array
 	 */
@@ -950,8 +970,14 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		);
 
 		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
-			$configured_ctas                            = (array) $settings['configuredCTAs'];
-			$metrics['rrm_publication_configured_ctas'] = array_values( array_unique( $configured_ctas ) );
+			$metrics['rrm_publication_configured_ctas'] = array_values(
+				array_map(
+					function ( $cta ) {
+						return $cta['type'] . ':' . $cta['state'];
+					},
+					(array) $settings['configuredCTAs']
+				)
+			);
 		}
 
 		return $metrics;

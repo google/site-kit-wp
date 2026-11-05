@@ -137,20 +137,24 @@ export function mockElementOffsets() {
  * @since 1.179.0
  */
 export function mockBrowserScrolling() {
-	let oldScrollIntoView;
+	let oldScrollIntoView, oldScrollTo;
 
 	beforeAll( () => {
 		oldScrollIntoView = Element.prototype.scrollIntoView;
+		oldScrollTo = Element.prototype.scrollTo;
 
 		Element.prototype.scrollIntoView = jest.fn();
+		Element.prototype.scrollTo = jest.fn();
 	} );
 
 	afterAll( () => {
 		Element.prototype.scrollIntoView = oldScrollIntoView;
+		Element.prototype.scrollTo = oldScrollTo;
 	} );
 
 	beforeEach( () => {
 		Element.prototype.scrollIntoView.mockReset();
+		Element.prototype.scrollTo.mockReset();
 	} );
 }
 

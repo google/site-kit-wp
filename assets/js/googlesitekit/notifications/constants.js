@@ -30,6 +30,12 @@ export const ACTIVATE_ANALYTICS_NOTIFICATION =
 export const CONNECT_MORE_SERVICES_NOTIFICATION =
 	'connect-more-services-notification';
 
+export const FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION =
+	'feature-discovery-setup-success-whats-new';
+
+export const FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION =
+	'feature-discovery-setup-success-all-services';
+
 export const PRIORITY = {
 	ERROR_HIGH: 30,
 	ERROR_LOW: 60,
@@ -52,6 +58,8 @@ export const NOTIFICATION_AREAS = {
 	DASHBOARD_TOP: 'notification-area-dashboard-top',
 	FEATURE_DISCOVERY_WHATS_NEW_TOP:
 		'notification-area-feature-discovery-whats-new-top',
+	FEATURE_DISCOVERY_ALL_SERVICES_TOP:
+		'notification-area-feature-discovery-all-services-top',
 	OVERLAYS: 'notification-area-overlays',
 	SPLASH_CONTENT: 'notification-area-splash-content',
 };

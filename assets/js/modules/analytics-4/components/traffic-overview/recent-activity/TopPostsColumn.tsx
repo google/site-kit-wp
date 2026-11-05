@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback, useMemo } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,34 +32,21 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
-import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
 import { useReportPageTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportPageTitles';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 import { getTopPostsReportOptions } from './reportOptions';
 import { getPageURL } from './utils/getPageURL';
 
 const TopPostsColumn: FC = () => {
-	const excludedProducts = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getExcludedProducts(),
-		[]
-	);
+	const viewContext = useViewContext();
 
 	const siteURL = useSelect(
 		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
 		[]
-	);
-
-	// The options wait for the product pages to leave out, so the report isn't
-	// requested first without its product filter.
-	const buildReportOptions = useCallback(
-		( dateRange: FreshDataDateRange ) =>
-			excludedProducts === undefined
-				? undefined
-				: getTopPostsReportOptions( dateRange, excludedProducts ),
-		[ excludedProducts ]
 	);
 
 	const {
@@ -68,7 +55,7 @@ const TopPostsColumn: FC = () => {
 		loading,
 		error,
 		retry,
-	} = useRecentTrafficBreakdownColumn( buildReportOptions );
+	} = useRecentTrafficBreakdownColumn( getTopPostsReportOptions );
 
 	const pagePaths = useMemo(
 		() => pathRows.map( ( { label } ) => label ),
@@ -79,6 +66,14 @@ const TopPostsColumn: FC = () => {
 		pagePaths,
 		reportOptions
 	);
+
+	function trackPostLinkClick() {
+		trackEvent(
+			`${ viewContext }_recent-activity`,
+			'click_post_link',
+			'top-posts'
+		);
+	}
 
 	const rows = pathRows.map( ( row ) => ( {
 		...row,
@@ -96,6 +91,8 @@ const TopPostsColumn: FC = () => {
 			loading={ loading || titlesLoading }
 			error={ error }
 			onRetry={ retry }
+			onLinkClick={ trackPostLinkClick }
+			ErrorComponent={ RecentActivityErrorNotice }
 		/>
 	);
 };

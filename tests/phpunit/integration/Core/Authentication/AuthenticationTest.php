@@ -14,6 +14,7 @@ namespace Google\Site_Kit\Tests\Core\Authentication;
 
 use Exception;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Admin\Dashboard_Widget_Enabled;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
@@ -212,7 +213,7 @@ class AuthenticationTest extends TestCase {
 	 * @dataProvider data_plugin_version_writes
 	 * @param string|null $stored_version Version stored before the write, or null for none.
 	 */
-	public function test_register__syncs_site_fields_when_the_plugin_version_is_written( $stored_version ) {
+	public function test_register__does_not_sync_site_fields_when_the_plugin_version_is_written( $stored_version ) {
 		$this->fake_proxy_site_connection();
 
 		// Set up the stored version before registering the listeners, so they only see the write
@@ -256,8 +257,68 @@ class AuthenticationTest extends TestCase {
 
 		do_action( 'shutdown' );
 
-		$this->assertCount( 1, $synced_bodies, 'Writing the plugin version should send the site fields once.' );
-		$this->assertArrayHasKey( 'intent_uri', $synced_bodies[0], 'The synced site fields should include the intent URI.' );
+		$this->assertCount( 0, $synced_bodies, 'Writing the plugin version should not send the site fields.' );
+	}
+
+	public function data_connected_proxy_urls() {
+		return array(
+			'matching the site URL' => array( 'site', 1 ),
+			'not stored'            => array( null, 1 ),
+			'for a different site'  => array( 'https://other.example.com/', 0 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_connected_proxy_urls
+	 * @param string|null $connected_url  Connected proxy URL to store, `site` for the site's URL, or null for none.
+	 * @param int         $expected_syncs Number of site field syncs expected.
+	 */
+	public function test_register__syncs_site_fields_only_from_the_connected_url( $connected_url, $expected_syncs ) {
+		$this->fake_proxy_site_connection();
+
+		$context             = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$connected_proxy_url = new Connected_Proxy_URL( new Options( $context ) );
+		if ( 'site' === $connected_url ) {
+			$connected_proxy_url->set( $context->get_canonical_home_url() );
+		} elseif ( null === $connected_url ) {
+			$connected_proxy_url->delete();
+		} else {
+			$connected_proxy_url->set( $connected_url );
+		}
+
+		$auth = new Authentication( $context );
+		remove_all_actions( 'update_option_blogname' );
+		remove_all_actions( 'shutdown' );
+		$auth->register();
+
+		$synced_bodies = array();
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( &$synced_bodies ) {
+				if ( false === strpos( $url, Google_Proxy::OAUTH2_SITE_URI ) ) {
+					return $preempt;
+				}
+
+				$synced_bodies[] = $args['body'];
+
+				return array(
+					'headers'  => array(),
+					'body'     => '{}',
+					'response' => array(
+						'code'    => 200,
+						'message' => get_status_header_desc( 200 ),
+					),
+				);
+			},
+			10,
+			3
+		);
+
+		update_option( 'blogname', 'A new site title ' . wp_generate_password( 6, false ) );
+
+		do_action( 'shutdown' );
+
+		$this->assertCount( $expected_syncs, $synced_bodies, 'The site fields should only be sent when the connected URL is not stored or matches the site URL.' );
 	}
 
 	protected function assertAdminDataExtended() {
@@ -386,6 +447,68 @@ class AuthenticationTest extends TestCase {
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ), 'Should have no errors after successful token refresh.' );
 		// Make sure the access token was updated.
 		$this->assertEquals( 'new-test-access-token', $oauth_client->get_access_token(), 'Access token should be updated after refresh.' );
+	}
+
+	/**
+	 * @dataProvider data_wp_dashboard_widget_states
+	 */
+	public function test_register_maybe_refresh_token_for_screen__wp_dashboard( $setting_enabled, $filter_enabled, $expected_token ) {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+
+		update_option( Dashboard_Widget_Enabled::OPTION, $setting_enabled );
+		if ( ! $filter_enabled ) {
+			add_filter( 'googlesitekit_show_wp_dashboard_widget', '__return_false' );
+		}
+
+		$auth = new Authentication( $context, null, $user_options );
+
+		remove_all_actions( 'current_screen' );
+		$auth->register();
+
+		$this->fake_proxy_site_connection();
+
+		$oauth_client = $auth->get_oauth_client();
+		$oauth_client->set_token(
+			array(
+				'access_token'  => 'test-access-token',
+				'refresh_token' => 'test-refresh-token',
+			)
+		);
+		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
+
+		FakeHttp::fake_google_http_handler(
+			$oauth_client->get_client(),
+			function () {
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
+						)
+					)
+				);
+			}
+		);
+
+		do_action( 'current_screen', WP_Screen::get( 'dashboard' ) );
+
+		$this->assertEquals( $expected_token, $oauth_client->get_access_token(), 'Access token should only be refreshed on the WordPress dashboard when the widget is enabled.' );
+	}
+
+	public function data_wp_dashboard_widget_states() {
+		return array(
+			'widget enabled'             => array( true, true, 'new-test-access-token' ),
+			'widget disabled by setting' => array( false, true, 'test-access-token' ),
+			'widget disabled by filter'  => array( true, false, 'test-access-token' ),
+		);
 	}
 
 	public function test_register_maybe_refresh_token_for_screen__editor_with_shared_modules() {
@@ -1110,6 +1233,31 @@ class AuthenticationTest extends TestCase {
 		$query_args = $this->get_proxy_setup_url_query_args();
 
 		$this->assertArrayNotHasKey( 'purpose', $query_args, 'The proxy setup URL should not include `purpose` when the request has a value other than `intent`.' );
+	}
+
+	public function test_googlesitekit_inline_base_data__setup_error_redo_url_after_proxy_code_exception() {
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		// The proxy rejected a token request for a missing requirement and returned an access code.
+		update_user_option( $admin_id, OAuth_Client::OPTION_ERROR_CODE, 'missing_delegation_consent' );
+		update_user_option( $admin_id, OAuth_Client::OPTION_PROXY_ACCESS_CODE, 'test-access-code' );
+
+		remove_all_filters( 'googlesitekit_inline_base_data' );
+		$this->fake_proxy_site_connection();
+
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$auth->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		wp_parse_str( wp_parse_url( $data['setupErrorRedoURL'], PHP_URL_QUERY ), $query_args );
+
+		$this->assertEquals( 'missing_delegation_consent', $data['setupErrorCode'], 'The setup error code should be passed to JS.' );
+		$this->assertEquals( $data['proxySetupURL'], $data['setupErrorRedoURL'], 'The redo URL should start a new setup from the site.' );
+		$this->assertEquals( Google_Proxy::ACTION_SETUP_START, $query_args['action'], 'The redo URL should point at the setup-start action.' );
+		$this->assertNotEmpty( $query_args['nonce'], 'The redo URL should carry a nonce.' );
+		$this->assertArrayNotHasKey( 'code', $query_args, 'The redo URL should not reuse the access code.' );
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_PROXY_ACCESS_CODE, $admin_id ), 'The access code should be deleted.' );
 	}
 
 	public function test_googlesitekit_inline_js_wp_version_non_standard_version() {

@@ -86,7 +86,7 @@ function formatPublishedTime( item: RecentContentItem ): string {
 /**
  * Props for the Latest content table.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface LatestContentTableProps {
 	/** The component the table renders when a request fails. */

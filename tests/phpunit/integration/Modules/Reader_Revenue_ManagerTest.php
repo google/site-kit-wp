@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -218,6 +219,139 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		foreach ( Reader_Revenue_Manager::PRODUCT_ID_NOTIFICATIONS as $notification ) {
 			$this->assertFalse( $dismissed_items->is_dismissed( $notification ), 'Product ID notification dismissals should be reset when publication ID changes.' );
 		}
+	}
+
+	/**
+	 * @dataProvider data_triggers_cta_sync_on_publication_change
+	 */
+	public function test_register__triggers_cta_sync_on_publication_change( $new_publication_id, $new_organization_id, $expected_sync_count ) {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		// Establish the existing settings before the on_change listener is registered,
+		// so setting up this initial state does not itself trigger the reset below.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'  => 'OLD_PUBLICATION',
+				'organizationID' => 'test-organization-id',
+				'configuredCTAs' => array(
+					'old-cta-id' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Newsletter sign-up',
+					),
+				),
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID'  => $new_publication_id,
+				'organizationID' => $new_organization_id,
+			)
+		);
+
+		$this->assertSame(
+			$expected_sync_count,
+			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA synchronization should only be triggered when both the publication and organization IDs are set.'
+		);
+
+		$this->assertEquals(
+			(object) array(),
+			$this->reader_revenue_manager->get_settings()->get()['configuredCTAs'],
+			'configuredCTAs should be cleared immediately when the publication ID changes, regardless of whether the sync runs.'
+		);
+	}
+
+	public function data_triggers_cta_sync_on_publication_change() {
+		return array(
+			'both publication and organization IDs set' => array( 'NEW_PUBLICATION', 'test-organization-id', 1 ),
+			'organization ID cleared'                   => array( 'NEW_PUBLICATION', '', 0 ),
+			'publication ID cleared'                    => array( '', 'test-organization-id', 0 ),
+		);
+	}
+
+	public function test_register__triggers_cta_sync_on_fresh_setup() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		// Register before any settings exist, so the first write below goes through
+		// the `add_option_{option}` hook rather than `update_option_{option}`. This is
+		// the path taken when connecting Reader Revenue Manager for the first time,
+		// e.g. after disconnecting and setting up again from "Connect More Services".
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		$this->assertFalse( $this->reader_revenue_manager->get_settings()->has(), 'Settings should not exist yet for a fresh setup.' );
+
+		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID'  => 'NEW_PUBLICATION',
+				'organizationID' => 'test-organization-id',
+			)
+		);
+
+		$this->assertSame(
+			1,
+			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA synchronization should be triggered immediately when connecting to a publication for the first time.'
+		);
+	}
+
+	public function test_register__does_not_trigger_cta_sync_when_publication_unchanged() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'  => 'SAME_PUBLICATION',
+				'organizationID' => 'test-organization-id',
+				'configuredCTAs' => array(
+					'existing-cta-id' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Newsletter sign-up',
+					),
+				),
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => 'SAME_PUBLICATION',
+			)
+		);
+
+		$this->assertSame(
+			0,
+			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA synchronization should not be triggered when the publication ID is unchanged.'
+		);
+
+		$this->assertSame(
+			array(
+				'existing-cta-id' => array(
+					'type'        => 'newsletter-signup',
+					'state'       => 'ACTIVE',
+					'displayName' => 'Newsletter sign-up',
+				),
+			),
+			$this->reader_revenue_manager->get_settings()->get()['configuredCTAs'],
+			'configuredCTAs should be unchanged when confirming settings without changing the publication.'
+		);
 	}
 
 	public function test_magic_methods() {
@@ -632,8 +766,16 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'productID'      => 'test-publication-id:main-product',  // Main product in combined format.
 				'organizationID' => 'test-organization-id',
 				'configuredCTAs' => array(
-					'lower_left_cta' => 'lower_left',
-					'higher_cta'     => 'higher',
+					'9d2418415-ab3a' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Weekly newsletter',
+					),
+					'8j8152411-cd4b' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'DRAFT',
+						'displayName' => '',
+					),
 				),
 			)
 		);
@@ -677,7 +819,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'Organization ID should be redacted in debug output'
 		);
 
-		// Test configured CTAs are exposed as a comma-separated list of their keys (names).
+		// Test configured CTAs are exposed as a comma-separated list of their IDs, types and states.
 		$this->assertEquals(
 			'Reader Revenue Manager: Configured CTAs',
 			$debug_fields['reader_revenue_manager_configured_ctas']['label'],
@@ -685,13 +827,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			'lower_left_cta, higher_cta',
+			'9d2418415-ab3a (newsletter-signup, ACTIVE), 8j8152411-cd4b (newsletter-signup, DRAFT)',
 			$debug_fields['reader_revenue_manager_configured_ctas']['value'],
-			'Configured CTAs should list the configured CTA names'
+			'Configured CTAs should list the ID, type and state of each CTA, without display names'
 		);
 
 		$this->assertEquals(
-			'lower_left_cta, higher_cta',
+			'9d2418415-ab3a (newsletter-signup, ACTIVE), 8j8152411-cd4b (newsletter-signup, DRAFT)',
 			$debug_fields['reader_revenue_manager_configured_ctas']['debug'],
 			'Configured CTAs debug output should match the value'
 		);
@@ -880,6 +1022,31 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
 
 		$this->assertFalse( $registered, 'Product ID meta key should not be registered when publication ID is empty.' );
+	}
+
+	public function test_get_assets() {
+		$script = $this->reader_revenue_manager->get_assets()[0];
+		$script->register( $this->context );
+
+		$dependency = wp_scripts()->registered['googlesitekit-modules-reader-revenue-manager'];
+
+		$this->assertEqualSets(
+			array(
+				'googlesitekit-vendor',
+				'googlesitekit-api',
+				'googlesitekit-data',
+				'googlesitekit-feature-discovery',
+				'googlesitekit-modules',
+				'googlesitekit-notifications',
+				'googlesitekit-datastore-site',
+				'googlesitekit-datastore-user',
+				'googlesitekit-components',
+				// Needed in the block editor too, where nothing else loads it.
+				'googlesitekit-widgets',
+			),
+			$dependency->deps,
+			'Reader Revenue Manager script should have the correct dependencies.'
+		);
 	}
 
 	public function test_block_editor_assets_set_up() {
@@ -1082,7 +1249,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'when feature flag is off, configured CTAs metric is not reported'                          => array(
 				array(
 					'configuredCTAs' => array(
-						'cta-1' => 'newsletter-signup',
+						'cta-1' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'ACTIVE',
+							'displayName' => 'Newsletter sign-up',
+						),
 					),
 				),
 				array(
@@ -1101,46 +1272,48 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'When configuredCTAs is empty, the metric should be an empty array.',
 				true,
 			),
-			'when configuredCTAs contains one CTA type, the metric is an array with that type'          => array(
+			'when configuredCTAs contains one CTA, the metric lists its type and state'                => array(
 				array(
 					'configuredCTAs' => array(
-						'cta-1' => 'newsletter-signup',
+						'cta-1' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'ACTIVE',
+							'displayName' => 'Weekly newsletter',
+						),
 					),
 				),
 				array(
 					'rrm_publication_onboarding_state' => '',
-					'rrm_publication_configured_ctas'  => array( 'newsletter-signup' ),
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup:ACTIVE' ),
 				),
-				'When configuredCTAs contains one CTA type, the metric should be an array with that single type.',
+				'When configuredCTAs contains one CTA, the metric should list its type and state, without its display name.',
 				true, // Enable feature flag.
 			),
-			'when configuredCTAs contains multiple distinct CTA types, the metric is an array of those types' => array(
+			'when configuredCTAs contains CTAs of the same type, the metric has one entry per CTA'      => array(
 				array(
 					'configuredCTAs' => array(
-						'cta-1' => 'newsletter-signup',
-						'cta-2' => 'survey',
+						'cta-1' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'ACTIVE',
+							'displayName' => 'Newsletter sign-up',
+						),
+						'cta-2' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'ACTIVE',
+							'displayName' => 'Newsletter sign-up',
+						),
+						'cta-3' => array(
+							'type'        => 'newsletter-signup',
+							'state'       => 'DRAFT',
+							'displayName' => 'Newsletter sign-up',
+						),
 					),
 				),
 				array(
 					'rrm_publication_onboarding_state' => '',
-					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup:ACTIVE', 'newsletter-signup:ACTIVE', 'newsletter-signup:DRAFT' ),
 				),
-				'When configuredCTAs contains multiple distinct types, the metric should be an array of those distinct types.',
-				true, // Enable feature flag.
-			),
-			'when configuredCTAs contains duplicates, the metric contains each type only once'         => array(
-				array(
-					'configuredCTAs' => array(
-						'cta-1' => 'newsletter-signup',
-						'cta-2' => 'newsletter-signup',
-						'cta-3' => 'survey',
-					),
-				),
-				array(
-					'rrm_publication_onboarding_state' => '',
-					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
-				),
-				'When configuredCTAs contains duplicate types, each type should appear only once in the metric.',
+				'When configuredCTAs contains several CTAs of the same type, the metric should have one entry per CTA.',
 				true, // Enable feature flag.
 			),
 		);

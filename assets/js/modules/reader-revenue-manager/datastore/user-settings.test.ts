@@ -150,6 +150,68 @@ describe( 'modules/reader-revenue-manager user settings', () => {
 				);
 			} );
 
+			it( 'should validate the completed express setups', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.saveUserSettings( { completedExpressSetups: [] } )
+				).toThrow( 'completedExpressSetups should be an object.' );
+
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.saveUserSettings( {
+							completedExpressSetups: {
+								'newsletter-signup:a1b2c3': null,
+							},
+						} )
+				).toThrow(
+					'completedExpressSetups timestamps should be integers.'
+				);
+			} );
+
+			it( 'should save each key independently of the other', async () => {
+				const completed = {
+					completedExpressSetups: {
+						'newsletter-signup:a1b2c3': 1752451200,
+					},
+				};
+				const lastActioned = {
+					lastActionedExpressSetups: {
+						'newsletter-signup:new': 1752537600,
+					},
+				};
+
+				fetchMock.postOnce( userSettingsEndpoint, {
+					body: completed,
+					status: 200,
+				} );
+
+				const { error: completedError } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.saveUserSettings( completed );
+
+				expect( completedError ).toBeUndefined();
+				expect( fetchMock ).toHaveLastFetched( userSettingsEndpoint, {
+					body: { data: completed },
+				} );
+
+				fetchMock.postOnce(
+					userSettingsEndpoint,
+					{ body: lastActioned, status: 200 },
+					{ overwriteRoutes: false }
+				);
+
+				const { error: lastActionedError } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.saveUserSettings( lastActioned );
+
+				expect( lastActionedError ).toBeUndefined();
+				expect( fetchMock ).toHaveLastFetched( userSettingsEndpoint, {
+					body: { data: lastActioned },
+				} );
+			} );
+
 			it( 'should accept null timestamps', async () => {
 				const settingsWithNull = {
 					lastActionedExpressSetups: {

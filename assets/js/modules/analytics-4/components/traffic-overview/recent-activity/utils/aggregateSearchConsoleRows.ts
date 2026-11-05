@@ -48,7 +48,7 @@ export interface SearchPerformanceTotals {
  * The report covers whole days in Pacific Time, so it also has hours from
  * before the window, which this leaves out.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Array}  rows        The rows of the report, one for each hour, each with `keys`, `clicks` and `impressions`.
  * @param {number} windowStart The start of the window, in milliseconds since the epoch.

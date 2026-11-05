@@ -7,5 +7,6 @@
 	[ "people", "v1" ],
 	[ "searchconsole", "v1" ],
 	[ "siteverification", "v1" ],
-	[ "tagmanager", "v2" ]
+	[ "tagmanager", "v2" ],
+	[ "webcontentpublisher", "v1" ]
 ]

@@ -25,10 +25,10 @@ import { FC, ReactNode } from 'react';
  * Internal dependencies
  */
 import InfoTooltip from '@/js/components/InfoTooltip';
-import ReportError from '@/js/components/ReportError';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { ErrorObject } from '@/js/util/errors';
+import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 
 export interface FreshMetricsGroupProps {
 	/** The heading of the group, e.g. `Search performance`. */
@@ -68,7 +68,7 @@ const FreshMetricsGroup: FC< FreshMetricsGroupProps > = ( {
 				/>
 			</div>
 			{ error ? (
-				<ReportError
+				<RecentActivityErrorNotice
 					moduleSlug={ moduleSlug }
 					error={ error }
 					onRetry={ onRetry }

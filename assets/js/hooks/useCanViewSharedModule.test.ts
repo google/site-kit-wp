@@ -50,7 +50,7 @@ describe( 'useCanViewSharedModule', () => {
 	/**
 	 * Sets whether the user can view the shared Search Console data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object}  options         Options.
 	 * @param {boolean} options.canView Whether the user can view the data.

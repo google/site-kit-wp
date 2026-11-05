@@ -15,7 +15,7 @@ use WP_Post_Type;
 /**
  * Class for the post type of the site's products, such as WooCommerce's `product`.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ final class Product_Post_Type {
 	 * Gets the post type of the site's products, which the `googlesitekit_product_post_type` filter names.
 	 *
 	 * @since 1.116.0
-	 * @since n.e.x.t Moved from `Assets::get_product_post_type()`, and returns the post type object instead of its name.
+	 * @since 1.191.0 Moved from `Assets::get_product_post_type()`, and returns the post type object instead of its name.
 	 *
 	 * @return WP_Post_Type|null The post type, or `null` where no public post type has that name.
 	 */

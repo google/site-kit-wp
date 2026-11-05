@@ -63,7 +63,7 @@ export const FEATURE_EFFORTS = {
 
 export const FEATURE_EFFORT_LABELS: Record< FeatureEffort, string > = {
 	[ FEATURE_EFFORTS.LOW ]: __( 'Just a few clicks', 'google-site-kit' ),
-	[ FEATURE_EFFORTS.MEDIUM ]: __( 'A short setup', 'google-site-kit' ),
+	[ FEATURE_EFFORTS.MEDIUM ]: __( 'Guided setup', 'google-site-kit' ),
 	[ FEATURE_EFFORTS.HIGH ]: __( 'In depth setup', 'google-site-kit' ),
 };
 

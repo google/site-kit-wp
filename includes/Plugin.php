@@ -209,6 +209,8 @@ final class Plugin {
 				$user_surveys = new Core\User_Surveys\User_Surveys( $authentication, $user_options, $survey_queue );
 				$user_surveys->register();
 
+				( new Core\User_Feedback\REST_User_Feedback_Controller( $authentication ) )->register();
+
 				( new Core\Authentication\Setup( $this->context, $user_options, $authentication ) )->register();
 
 				( new Core\Util\Reset( $this->context ) )->register();
@@ -237,6 +239,7 @@ final class Plugin {
 				( new Core\Util\Migration_1_163_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_177_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_185_0( $this->context, $options ) )->register();
+				( new Core\Util\Migration_N_E_X_T( $this->context, $options ) )->register();
 				( new Core\Util\Plugin_Update( $this->context, $options ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context ) )->register();
 				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();

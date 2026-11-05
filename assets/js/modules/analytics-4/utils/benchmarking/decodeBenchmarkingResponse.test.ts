@@ -20,136 +20,130 @@
  * Internal dependencies
  */
 import benchmarkingData from '@/js/modules/analytics-4/datastore/__fixtures__/benchmarking-data.json';
+import { provideTimezone } from '@tests/js/test-utils';
 import { decodeBenchmarkingResponse } from './decodeBenchmarkingResponse';
 
 describe( 'decodeBenchmarkingResponse', () => {
-	it( 'decodes the checked-in response to the four fields', () => {
+	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, and `keyFactors`', () => {
 		expect( decodeBenchmarkingResponse( benchmarkingData ) ).toEqual( {
-			visitors: { current: 412, previous: 388 },
+			visits: { current: 412, previous: 388 },
 			dailyTraffic: [
-				{ date: '2025-08-18', visitors: 132 },
-				{ date: '2025-08-19', visitors: 0 },
-				{ date: '2025-08-20', visitors: 147 },
-				{ date: '2025-08-21', visitors: 96 },
+				{ date: '2025-08-18', visits: 132 },
+				{ date: '2025-08-19', visits: 0 },
+				{ date: '2025-08-20', visits: 147 },
+				{ date: '2025-08-21', visits: 96 },
 			],
-			dimensions: [
-				'CONTENT',
-				'SEARCH_QUERIES',
-				'REFERRERS',
-				'CHANNELS',
+			keyFactors: [
+				{
+					kind: 'REFERRING_SITE',
+					label: 'Facebook',
+					current: 96,
+					previous: 31,
+					sharePct: 21.4,
+					attributes: [
+						{
+							kind: 'LANDING_PAGE',
+							label: '/how-to-plant-garlic/',
+							current: 58,
+							previous: 12,
+							sharePct: 15.1,
+						},
+						{
+							kind: 'DEVICE',
+							label: 'mobile',
+							current: 71,
+							previous: 20,
+							sharePct: 16.8,
+						},
+					],
+				},
+				{
+					kind: 'CHANNEL',
+					label: 'Organic Search',
+					current: 210,
+					previous: 222,
+					sharePct: 40.3,
+					attributes: [],
+				},
+				{
+					kind: 'CONTENT',
+					label: '/how-to-plant-garlic/',
+					current: 64,
+					previous: 15,
+					sharePct: 12.6,
+					attributes: [
+						{
+							kind: 'TRAFFIC_CHANNEL',
+							label: 'Organic Social',
+							current: 61,
+							previous: 13,
+							sharePct: 15.9,
+						},
+					],
+				},
 			],
-			contextualData: {
-				content: [
-					{
-						url: '/how-to-plant-garlic/',
-						title: 'How to plant garlic',
-						visitors: 96,
-						publishedDaysAgo: 14,
-					},
-					{
-						url: '/mulching-in-autumn/',
-						title: null,
-						visitors: 0,
-						publishedDaysAgo: 3,
-					},
-				],
-				searchQueries: [
-					{
-						label: 'how to plant garlic',
-						current: 74,
-						previous: 31,
-						positionCurrent: 8.4,
-						positionPrevious: 14.2,
-					},
-					{
-						label: 'mulching',
-						current: 12,
-						previous: 0,
-						positionCurrent: 3.5,
-						positionPrevious: null,
-					},
-				],
-				referrers: [
-					{
-						label: 'garden.example.com',
-						current: 58,
-						previous: 44,
-					},
-					{
-						label: '/how-to-plant-garlic/',
-						current: 21,
-						previous: 19,
-					},
-				],
-				channels: [
-					{ label: 'Organic Search', current: 210, previous: 168 },
-					{ label: 'Direct', current: 132, previous: 120 },
-				],
-			},
 		} );
 	} );
 
-	it( 'dates a thirteen-month series from its first day, with no day missing', () => {
-		const dailyVisitors = new Array( 395 ).fill( 1 );
-		dailyVisitors[ 200 ] = 0;
+	// Sydney's clocks go back an hour on `2026-04-05`, so that day lasts 25
+	// hours, and a walk that adds 24 hours to its midnight stays on the same
+	// date.
+	describe( 'in the Australia/Sydney time zone', () => {
+		let originalTimezone: string | undefined;
 
-		const decoded = decodeBenchmarkingResponse( [
-			1,
-			[],
-			'2025-08-18',
-			dailyVisitors,
-			[ 0, 0 ],
-			{},
-			[],
-		] );
-		const dates = decoded?.dailyTraffic.map( ( { date } ) => date ) ?? [];
+		beforeEach( () => {
+			originalTimezone = provideTimezone( 'Australia/Sydney' );
+		} );
 
-		expect( dates ).toHaveLength( 395 );
-		expect( new Set( dates ).size ).toBe( 395 );
-		expect( dates[ 0 ] ).toBe( '2025-08-18' );
-		expect( dates[ dates.length - 1 ] ).toBe( '2026-09-16' );
-		// The zero day keeps its own date rather than being skipped.
-		expect( decoded?.dailyTraffic[ 200 ] ).toEqual( {
-			date: '2026-03-06',
-			visitors: 0,
+		afterEach( () => {
+			provideTimezone( originalTimezone );
+		} );
+
+		it( 'should date a 90-day series from its first day, with no day missing', () => {
+			// The longest series the server sends, over the clock change.
+			const dailyVisits = new Array( 90 ).fill( 1 );
+			dailyVisits[ 45 ] = 0;
+
+			const decoded = decodeBenchmarkingResponse( [
+				1,
+				[],
+				'2026-02-01',
+				dailyVisits,
+				[ 0, 0 ],
+				[],
+				[],
+			] );
+			const dates =
+				decoded?.dailyTraffic.map( ( { date } ) => date ) ?? [];
+
+			expect( dates ).toHaveLength( 90 );
+			expect( new Set( dates ).size ).toBe( 90 );
+			expect( dates[ 0 ] ).toBe( '2026-02-01' );
+			expect( dates[ 64 ] ).toBe( '2026-04-06' );
+			expect( dates[ dates.length - 1 ] ).toBe( '2026-05-01' );
+			// The zero day keeps its own date rather than being skipped.
+			expect( decoded?.dailyTraffic[ 45 ] ).toEqual( {
+				date: '2026-03-18',
+				visits: 0,
+			} );
 		} );
 	} );
 
-	it( 'gives two rows that point at one string-table index the same string', () => {
-		const decoded = decodeBenchmarkingResponse( benchmarkingData );
-
-		expect( decoded?.contextualData.referrers?.[ 1 ].label ).toBe(
-			decoded?.contextualData.content?.[ 0 ].url
-		);
-	} );
-
-	it( 'decodes a string index the table does not hold to null, not undefined', () => {
+	it.each( [
+		[ 'a string index the table does not hold', 9 ],
+		[ 'a null label', null ],
+	] )( 'should decode %s to null, not undefined', ( _label, labelIndex ) => {
 		const decoded = decodeBenchmarkingResponse( [
 			1,
 			[ 'Organic Search' ],
 			'2025-08-18',
 			[ 132 ],
 			[ 412, 388 ],
-			{ 0: [ [ 9, 210, 168 ] ] },
-			[ 0 ],
+			[ [ 0, labelIndex, 210, 222, 40.3 ] ],
+			[ [] ],
 		] );
 
-		expect( decoded?.contextualData.channels?.[ 0 ].label ).toBeNull();
-	} );
-
-	it( 'decodes a null string field to null', () => {
-		const decoded = decodeBenchmarkingResponse( benchmarkingData );
-
-		expect( decoded?.contextualData.content?.[ 1 ].title ).toBeNull();
-	} );
-
-	it( 'returns every number as it arrives', () => {
-		const decoded = decodeBenchmarkingResponse( benchmarkingData );
-
-		expect(
-			decoded?.contextualData.searchQueries?.[ 0 ].positionCurrent
-		).toBe( 8.4 );
-		expect( decoded?.contextualData.content?.[ 1 ].visitors ).toBe( 0 );
+		expect( decoded?.keyFactors[ 0 ].label ).toBeNull();
 	} );
 
 	it( 'decodes a response whose version it was not written against to null', () => {
@@ -169,17 +163,16 @@ describe( 'decodeBenchmarkingResponse', () => {
 		expect( decodeBenchmarkingResponse( encoded ) ).toBeNull();
 	} );
 
-	it( "decodes the encoder's output for an empty series without throwing", () => {
+	it( "should decode the encoder's output for an empty series without throwing", () => {
 		// What Response_Encoder writes when `dailyTraffic` is empty: no first
 		// date, because there is no day to write.
-		const encoded = [ 1, [], null, [], [ 0, 0 ], {}, [] ];
+		const encoded = [ 1, [], null, [], [ 0, 0 ], [], [] ];
 
 		expect( () => decodeBenchmarkingResponse( encoded ) ).not.toThrow();
 		expect( decodeBenchmarkingResponse( encoded ) ).toEqual( {
-			visitors: { current: 0, previous: 0 },
+			visits: { current: 0, previous: 0 },
 			dailyTraffic: [],
-			dimensions: [],
-			contextualData: {},
+			keyFactors: [],
 		} );
 	} );
 
@@ -188,7 +181,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 		[ 'not a date', 'yesterday' ],
 		[ 'not a string', 20250818 ],
 	] )(
-		'decodes a dated series whose first day is %s to null',
+		'should decode a dated series whose first day is %s to null',
 		( _label, firstDate ) => {
 			expect(
 				decodeBenchmarkingResponse( [
@@ -197,7 +190,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					firstDate,
 					[ 132, 147 ],
 					[ 412, 388 ],
-					{},
+					[],
 					[],
 				] )
 			).toBeNull();
@@ -209,10 +202,11 @@ describe( 'decodeBenchmarkingResponse', () => {
 	it.each( [
 		[ 'string table', 1 ],
 		[ 'daily counts', 3 ],
-		[ 'visitor totals', 4 ],
-		[ 'dimension order', 6 ],
+		[ 'visit totals', 4 ],
+		[ 'key factor cards', 5 ],
+		[ 'key factor attributes', 6 ],
 	] )(
-		'decodes a response whose %s is not a list to null',
+		'should decode a response whose %s is not a list to null',
 		( _label, member ) => {
 			const encoded: unknown[] = [
 				1,
@@ -220,8 +214,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 				'2025-08-18',
 				[ 132 ],
 				[ 412, 388 ],
-				{ 0: [ [ 0, 1, 2 ] ] },
-				[ 0 ],
+				[ [ 0, 0, 1, 2, 3.5 ] ],
+				[ [] ],
 			];
 
 			[ null, 5, 'x', {} ].forEach( ( hostile ) => {
@@ -234,27 +228,50 @@ describe( 'decodeBenchmarkingResponse', () => {
 	);
 
 	it.each( [
+		[ 'one list of attributes more', [ [], [], [] ] ],
+		[ 'one list of attributes fewer', [ [] ] ],
+	] )(
+		'should decode a response with %s than key factor cards to null',
+		( _label, attributes ) => {
+			expect(
+				decodeBenchmarkingResponse( [
+					1,
+					[ 'a label' ],
+					'2025-08-18',
+					[ 132 ],
+					[ 412, 388 ],
+					[
+						[ 0, 0, 1, 2, 3.5 ],
+						[ 1, 0, 1, 2, 3.5 ],
+					],
+					attributes,
+				] )
+			).toBeNull();
+		}
+	);
+
+	it.each( [
 		[ 'neither total', [] ],
 		[ 'only one total', [ 5 ] ],
 	] )(
-		'decodes a response carrying %s to null, rather than to a missing figure',
-		( _label, visitorTotals ) => {
+		'should decode a response carrying %s to null, rather than to a missing figure',
+		( _label, visitTotals ) => {
 			expect(
 				decodeBenchmarkingResponse( [
 					1,
 					[],
 					'2025-08-18',
 					[ 132 ],
-					visitorTotals,
-					{},
+					visitTotals,
+					[],
 					[],
 				] )
 			).toBeNull();
 		}
 	);
 
-	// Destructuring a row that is not iterable throws, so a corrupt row must be
-	// dropped rather than read.
+	// Destructuring a card that is not iterable throws, so a corrupt card must
+	// be left out rather than read.
 	it.each( [
 		[ 'null', null ],
 		[ 'undefined', undefined ],
@@ -262,154 +279,164 @@ describe( 'decodeBenchmarkingResponse', () => {
 		[ 'a string', 'xy' ],
 		[ 'an object', {} ],
 		[ 'a boolean', true ],
-		[ 'a list shorter than its layout', [ 0 ] ],
+		[ 'a list of four fields', [ 0, 0, 1, 2 ] ],
 	] )(
-		'drops a row that is %s, and keeps the rows beside it',
-		( _label, row ) => {
+		'should leave out a key factor card that is %s, and keep the cards beside it',
+		( _label, card ) => {
 			const decoded = decodeBenchmarkingResponse( [
 				1,
 				[ 'a label' ],
 				'2025-08-18',
 				[ 132 ],
 				[ 412, 388 ],
-				{ 0: [ row, [ 0, 1, 2 ] ] },
-				[ 0 ],
+				[ card, [ 0, 0, 1, 2, 3.5 ] ],
+				[ [], [] ],
 			] );
 
-			expect( decoded?.contextualData.channels ).toEqual( [
-				{ label: 'a label', current: 1, previous: 2 },
+			expect( decoded?.keyFactors ).toEqual( [
+				{
+					kind: 'CHANNEL',
+					label: 'a label',
+					current: 1,
+					previous: 2,
+					sharePct: 3.5,
+					attributes: [],
+				},
 			] );
 		}
 	);
 
-	it( 'drops a search query row shorter than its own layout', () => {
+	it( 'should leave out an attribute that is not a list of five fields, and keep the attributes beside it', () => {
 		const decoded = decodeBenchmarkingResponse( [
 			1,
 			[ 'a label' ],
 			'2025-08-18',
 			[ 132 ],
 			[ 412, 388 ],
-			// A value row's three fields are not enough for a search query row.
-			{
-				4: [
-					[ 0, 1, 2 ],
-					[ 0, 1, 2, 3.5, 4.5 ],
-				],
-			},
-			[ 4 ],
+			[ [ 0, 0, 1, 2, 3.5 ] ],
+			[ [ [ 6, 0, 1, 2 ], null, [ 6, 0, 3, 4, 5.5 ] ] ],
 		] );
 
-		expect( decoded?.contextualData.searchQueries ).toEqual( [
+		expect( decoded?.keyFactors[ 0 ].attributes ).toEqual( [
 			{
+				kind: 'DEVICE',
+				label: 'a label',
+				current: 3,
+				previous: 4,
+				sharePct: 5.5,
+			},
+		] );
+	} );
+
+	it( 'should decode a key factor card with no attributes when its entry in the attribute lists is not a list', () => {
+		const decoded = decodeBenchmarkingResponse( [
+			1,
+			[ 'a label' ],
+			'2025-08-18',
+			[ 132 ],
+			[ 412, 388 ],
+			[ [ 0, 0, 1, 2, 3.5 ] ],
+			[ 'not a list' ],
+		] );
+
+		expect( decoded?.keyFactors ).toEqual( [
+			{
+				kind: 'CHANNEL',
 				label: 'a label',
 				current: 1,
 				previous: 2,
-				positionCurrent: 3.5,
-				positionPrevious: 4.5,
+				sharePct: 3.5,
+				attributes: [],
 			},
 		] );
 	} );
 
-	it( 'drops a content row shorter than its own layout', () => {
-		const decoded = decodeBenchmarkingResponse( [
-			1,
-			[ 'a label' ],
-			'2025-08-18',
-			[ 132 ],
-			[ 412, 388 ],
-			// A value row's three fields are not enough for a content row.
-			{
-				5: [
-					[ 0, 1, 2 ],
-					[ 0, 0, 1, 2 ],
-				],
-			},
-			[ 5 ],
-		] );
-
-		expect( decoded?.contextualData.content ).toEqual( [
-			{
-				url: 'a label',
-				title: 'a label',
-				visitors: 1,
-				publishedDaysAgo: 2,
-			},
-		] );
-	} );
-
-	it( 'decodes a dimension whose rows are not a list to no rows', () => {
-		const decoded = decodeBenchmarkingResponse( [
-			1,
-			[ 'a label' ],
-			'2025-08-18',
-			[ 132 ],
-			[ 412, 388 ],
-			// The order names one dimension; its rows are not a list.
-			{ 0: 'not a list' },
-			[ 0 ],
-		] );
-
-		expect( decoded?.contextualData ).toEqual( { channels: [] } );
-	} );
-
-	it( 'decodes every dimension code to its own contextual data key', () => {
+	it( 'should decode every kind index to its kind, in the order of the driver kinds and of the attribute kinds', () => {
 		const decoded = decodeBenchmarkingResponse( [
 			1,
 			[ 'a label' ],
 			'2025-08-18',
 			[ 1 ],
 			[ 1, 1 ],
-			{
-				0: [ [ 0, 1, 2 ] ],
-				1: [ [ 0, 1, 2 ] ],
-				2: [ [ 0, 1, 2 ] ],
-				3: [ [ 0, 1, 2 ] ],
-				4: [ [ 0, 1, 2, 3.5, 4.5 ] ],
-				5: [ [ 0, 0, 1, 2 ] ],
-				6: [ [ 0, 1, 2 ] ],
-			},
-			[ 0, 1, 2, 3, 4, 5, 6 ],
+			[ 0, 1, 2, 3, 4 ].map( ( kind ) => [ kind, 0, 1, 2, 3.5 ] ),
+			[
+				[ 0, 1, 2, 3, 4, 5, 6, 7 ].map( ( kind ) => [
+					kind,
+					0,
+					1,
+					2,
+					3.5,
+				] ),
+				[],
+				[],
+				[],
+				[],
+			],
 		] );
 
-		expect( decoded?.dimensions ).toEqual( [
-			'CHANNELS',
-			'DEVICES',
-			'VISITOR_MIX',
-			'REFERRERS',
-			'SEARCH_QUERIES',
+		expect( decoded?.keyFactors.map( ( { kind } ) => kind ) ).toEqual( [
+			'CHANNEL',
 			'CONTENT',
-			'CATEGORIES',
+			'SEARCH_KEYWORD',
+			'REFERRING_SITE',
+			'CAMPAIGN',
 		] );
-		expect( Object.keys( decoded?.contextualData ?? {} ) ).toEqual( [
-			'channels',
-			'devices',
-			'visitorMix',
-			'referrers',
-			'searchQueries',
-			'content',
-			'categories',
+		expect(
+			decoded?.keyFactors[ 0 ].attributes.map( ( { kind } ) => kind )
+		).toEqual( [
+			'TRAFFIC_CHANNEL',
+			'LANDING_PAGE',
+			'SEARCH_KEYWORD',
+			'REFERRING_SITE',
+			'PLATFORM',
+			'CAMPAIGN',
+			'DEVICE',
+			'USER_TYPE',
 		] );
 	} );
 
-	it( 'drops a dimension index it does not know, and decodes the rest', () => {
+	it( 'should leave out a key factor card or an attribute whose kind index it does not know, and decode the rest', () => {
 		const decoded = decodeBenchmarkingResponse( [
 			1,
-			[ 'Organic Search' ],
+			[ 'Facebook', '/how-to-plant-garlic/', 'Organic Search' ],
 			'2025-08-18',
 			[ 132 ],
 			[ 412, 388 ],
-			{
-				0: [ [ 0, 210, 168 ] ],
-				9: [ [ 0, 1, 1 ] ],
-			},
-			[ 9, 0 ],
+			[
+				[ 9, 0, 96, 31, 21.4 ],
+				[ 'length', 0, 96, 31, 21.4 ],
+				[ 0, 2, 210, 222, 40.3 ],
+			],
+			[
+				[ [ 6, 0, 71, 20, 16.8 ] ],
+				[],
+				[
+					[ 9, 0, 1, 1, 0.5 ],
+					[ 1, 1, 58, 12, 15.1 ],
+				],
+			],
 		] );
 
-		expect( decoded?.dimensions ).toEqual( [ 'CHANNELS' ] );
-		expect( decoded?.contextualData ).toEqual( {
-			channels: [
-				{ label: 'Organic Search', current: 210, previous: 168 },
-			],
-		} );
+		// Both cards with an unknown kind are left out with their own
+		// attributes, so the `CHANNEL` card still gets the attributes at its
+		// own position.
+		expect( decoded?.keyFactors ).toEqual( [
+			{
+				kind: 'CHANNEL',
+				label: 'Organic Search',
+				current: 210,
+				previous: 222,
+				sharePct: 40.3,
+				attributes: [
+					{
+						kind: 'LANDING_PAGE',
+						label: '/how-to-plant-garlic/',
+						current: 58,
+						previous: 12,
+						sharePct: 15.1,
+					},
+				],
+			},
+		] );
 	} );
 } );

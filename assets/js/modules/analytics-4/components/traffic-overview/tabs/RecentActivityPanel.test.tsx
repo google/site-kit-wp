@@ -33,16 +33,28 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { FRESH_DATA_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
+	INSUFFICIENT_PERMISSIONS_ERROR,
+	INTERNAL_SERVER_ERROR,
+	RATE_LIMIT_ERROR,
+	createBreakdownReport,
+	forDimensions,
+	getRecentTrafficBreakdownReportOptions,
 	getSectionClassNames,
 	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
+	provideRecentTrafficBreakdownReports,
+	provideSiteVisitorsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
+import { ErrorObject } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
@@ -51,6 +63,7 @@ import {
 	render,
 	screen,
 	waitFor,
+	within,
 } from '@tests/js/test-utils';
 import {
 	freezeFetch,
@@ -65,6 +78,7 @@ import RecentActivityPanel from './RecentActivityPanel';
 
 describe( 'RecentActivityPanel', () => {
 	let registry: WPDataRegistry;
+	let dateNowSpy: jest.SpyInstance;
 
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
 
@@ -97,10 +111,29 @@ describe( 'RecentActivityPanel', () => {
 	 * mocks are added after the existing ones, so a report response that the
 	 * test has already set up takes precedence.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @return {void}
 	 */
+	/**
+	 * Puts an error for the channels report in the store, as if its request
+	 * had failed. The report is already in the store from `beforeEach()`, so
+	 * a mocked request wouldn't be sent.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} error The error of the report.
+	 * @return {void}
+	 */
+	function provideChannelsReportError( error: ErrorObject ) {
+		const { channels } = getRecentTrafficBreakdownReportOptions( registry );
+		const { setErrorForSelector, finishResolution } =
+			registry.dispatch( MODULES_ANALYTICS_4 );
+
+		setErrorForSelector( error, 'getReport', [ channels ] );
+		finishResolution( 'getReport', [ channels, FRESH_DATA_FETCH_OPTIONS ] );
+	}
+
 	function mockLatestPostReports() {
 		fetchMock.get(
 			reportEndpoint,
@@ -119,6 +152,14 @@ describe( 'RecentActivityPanel', () => {
 	mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 	beforeEach( () => {
+		// The clock starts at 09:30 UTC on February 5. So the reports each test
+		// puts in the store and the panel count the same last 24 hours.
+		const realDateNow = Date.now;
+		const offset = Date.parse( '2025-02-05T09:30:00Z' ) - realDateNow();
+		dateNowSpy = jest
+			.spyOn( Date, 'now' )
+			.mockImplementation( () => realDateNow() + offset );
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideModules( registry, [
@@ -141,6 +182,11 @@ describe( 'RecentActivityPanel', () => {
 			totalVisitors: 157,
 			searchPerformance: { clicks: 72, impressions: 8000 },
 		} );
+		// The recent traffic breakdown doesn't render once its channels report
+		// has loaded with no visits.
+		provideRecentTrafficBreakdownReports( registry, {
+			channels: createBreakdownReport( [ [ 'Direct', 157 ] ], 157 ),
+		} );
 		fetchMock.get( postsEndpoint, {
 			body: [ autumnRecipesPost ],
 			status: 200,
@@ -149,6 +195,7 @@ describe( 'RecentActivityPanel', () => {
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
+		dateNowSpy.mockRestore();
 	} );
 
 	it( 'should mark the panel as a tab panel and name it using the content in the "Recent activity" tab', async () => {
@@ -348,6 +395,9 @@ describe( 'RecentActivityPanel', () => {
 			totalVisitors: 157,
 			searchPerformance: { clicks: 72, impressions: 8000 },
 		} );
+		// With the site visitors report in the store, the one report request
+		// is the one that tells whether Analytics is gathering data.
+		provideSiteVisitorsReport( registry, 157 );
 		freezeFetch( reportEndpoint );
 		provideLatestPost( registry );
 		provideLatestPostAnalyticsReports( registry );
@@ -493,7 +543,130 @@ describe( 'RecentActivityPanel', () => {
 		expect( fetchMock ).not.toHaveFetched( postsEndpoint );
 	} );
 
-	it( 'should render the fresh metrics row alone, and should not request a report, for a view-only user who cannot view Analytics', async () => {
+	it( 'should render only the access error, in place of the "Gathering data…" notice and every section, when the site visitors report fails with the reason `insufficientPermissions`', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+		fetchMock.get( forDimensions(), {
+			body: INSUFFICIENT_PERMISSIONS_ERROR,
+			status: 403,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<RecentActivityPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__recent-activity-message googlesitekit-traffic-overview__recent-activity-access-error',
+		] );
+	} );
+
+	it( 'should render the zero data message in place of the insight notice, fresh figures and recent traffic breakdown, above the latest post and its link', async () => {
+		provideSiteVisitorsReport( registry, 0 );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 0,
+			searchPerformance: { clicks: 0, impressions: 0 },
+		} );
+		fetchMock.get(
+			postsEndpoint,
+			{
+				body: [ autumnRecipesPost, summerRecipesPost ],
+				status: 200,
+			},
+			{ overwriteRoutes: true }
+		);
+		mockLatestPostReports();
+
+		const { container, waitForRegistry } = render(
+			<RecentActivityPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__recent-activity-message googlesitekit-traffic-overview__recent-activity-zero-data',
+			'googlesitekit-traffic-overview__latest-post-performance',
+			expect.stringContaining(
+				'googlesitekit-traffic-overview__see-all-recent-posts'
+			),
+		] );
+	} );
+
+	it( 'should render the fresh figures, not the zero data message, when only "Total visitors" counts visitors', async () => {
+		provideSiteVisitorsReport( registry, 0 );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 1,
+			searchPerformance: { clicks: 0, impressions: 0 },
+		} );
+		mockLatestPostReports();
+
+		const { container, waitForRegistry } = render(
+			<RecentActivityPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			screen.getByText( 'Site traffic since yesterday' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__recent-activity-zero-data'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should keep the other sections and render "Retry" in "Top channels by visitors" when its report fails with an internal server error', async () => {
+		provideChannelsReportError( INTERNAL_SERVER_ERROR );
+		mockLatestPostReports();
+
+		const { container, waitForRegistry } = render(
+			<RecentActivityPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			within(
+				screen
+					.getByRole( 'heading', {
+						name: 'Top channels by visitors',
+					} )
+					.closest( '.googlesitekit-table-tile' ) as HTMLDivElement
+			).getByRole( 'button', { name: 'Retry' } )
+		).toBeInTheDocument();
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__insight-notice',
+			'googlesitekit-traffic-overview__fresh-metrics-row',
+			'googlesitekit-traffic-overview__recent-traffic-breakdown',
+			'googlesitekit-traffic-overview__latest-post-performance',
+		] );
+	} );
+
+	it( 'should not render "Retry" in the "Top channels by visitors" column when its report fails with a rate limit error', async () => {
+		provideChannelsReportError( RATE_LIMIT_ERROR );
+		mockLatestPostReports();
+
+		const { waitForRegistry } = render( <RecentActivityPanel />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			screen.getByText( 'Something went wrong' )
+		).toBeInTheDocument();
+		expect(
+			screen.queryByRole( 'button', { name: 'Retry' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the access error alone, and should not request a report, for a view-only user who cannot view Analytics', async () => {
 		// We create a registry that doesn't know whether Analytics is gathering
 		// data, so that calling `isGatheringData()` would request a report.
 		registry = createTestRegistry();
@@ -524,8 +697,200 @@ describe( 'RecentActivityPanel', () => {
 		await waitForDefaultTimeouts();
 
 		expect( getSectionClassNames( container ) ).toEqual( [
-			'googlesitekit-traffic-overview__fresh-metrics-row',
+			'googlesitekit-traffic-overview__recent-activity-message googlesitekit-traffic-overview__recent-activity-access-error',
 		] );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+	} );
+
+	describe( 'the `view_all_recent_posts` event', () => {
+		let mockTrackEventOnce: jest.SpiedFunction<
+			typeof tracking.trackEventOnce
+		>;
+
+		beforeEach( () => {
+			// The fake timers replace `Date`, and so the `Date.now()` spy of the
+			// outer `beforeEach()`. Starting the fake clock at the same time keeps
+			// the fresh metrics reports in the store for the last 24 hours that
+			// the panel counts, so it doesn't request them.
+			const now = Date.now();
+			jest.useFakeTimers();
+			jest.setSystemTime( now );
+
+			mockTrackEventOnce = jest.spyOn( tracking, 'trackEventOnce' );
+			mockTrackEventOnce.mockImplementation( () => {} );
+
+			// While Analytics gathers data, and with no published posts and the
+			// site visitors report in the store, the panel makes no request. So
+			// these tests need no `waitForRegistry()`, which fails with fake
+			// timers.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+			provideSiteVisitorsReport( registry, 157 );
+			provideRecentContent(
+				registry,
+				[],
+				LATEST_POST_RECENT_CONTENT_OPTIONS
+			);
+		} );
+
+		afterEach( () => {
+			mockTrackEventOnce.mockRestore();
+			jest.useRealTimers();
+		} );
+
+		it( 'should track `view_all_recent_posts` under `mainDashboard_recent-activity` 3 seconds after the panel mounts in view', async () => {
+			render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 2999 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 1 );
+			} );
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				'mainDashboard_recent-activity',
+				'view_all_recent_posts'
+			);
+		} );
+
+		it( 'should not track `view_all_recent_posts` when the panel unmounts before 3 seconds', async () => {
+			const { unmount } = render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 2999 );
+			} );
+
+			unmount();
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 1 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should not track `view_all_recent_posts` when the panel mounts out of view', async () => {
+			render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				inView: false,
+			} );
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 3000 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should not track `view_all_recent_posts` when the panel leaves the view before 3 seconds', async () => {
+			const { setInView } = render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 2999 );
+			} );
+			act( () => {
+				setInView!( false );
+			} );
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 3000 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should track `view_all_recent_posts` 3 seconds after the panel comes back into view', async () => {
+			const { setInView } = render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 2000 );
+			} );
+			act( () => {
+				setInView!( false );
+			} );
+			act( () => {
+				setInView!( true );
+			} );
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 2999 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 1 );
+			} );
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				'mainDashboard_recent-activity',
+				'view_all_recent_posts'
+			);
+		} );
+
+		it( 'should not track `view_all_recent_posts` while Analytics is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+					connected: false,
+				},
+			] );
+			provideModuleRegistrations( registry );
+			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 3000 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should track `view_all_recent_posts` under `mainDashboardViewOnly_recent-activity` for a view-only user', async () => {
+			provideUserCapabilities( registry, {
+				[ getMetaCapabilityPropertyName(
+					PERMISSION_READ_SHARED_MODULE_DATA,
+					MODULE_SLUG_ANALYTICS_4
+				) ]: true,
+			} );
+
+			render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			} );
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 3000 );
+			} );
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				'mainDashboardViewOnly_recent-activity',
+				'view_all_recent_posts'
+			);
+		} );
 	} );
 } );

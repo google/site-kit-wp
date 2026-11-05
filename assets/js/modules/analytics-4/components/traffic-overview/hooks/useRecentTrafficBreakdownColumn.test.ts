@@ -25,7 +25,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getTopChannelsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import {
+	getTopChannelsReportOptions,
+	getTopReferralsReportOptions,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	createBreakdownReport,
 	forDimensions,
@@ -46,9 +49,9 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 	);
 
 	const channelsRequest = forDimensions( 'sessionDefaultChannelGroup' );
+	const referralsRequest = forDimensions( 'sessionSource' );
 
-	// The site had 157 visits, and 63 of them came from channels the report
-	// leaves out.
+	// The site had 157 visitors, more than the two rows count.
 	const channelsReport = createBreakdownReport(
 		[
 			[ 'Direct', 82 ],
@@ -68,7 +71,17 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 	} );
 
-	it( "should return the column's rows, each with its share of the report's total", async () => {
+	it( "should return the column's rows, each with its share of the site's visitors, the total of the channels report", async () => {
+		fetchMock.get( referralsRequest, {
+			body: createBreakdownReport(
+				[
+					[ 'news.example.com', 8 ],
+					[ 'forum.example.com', 4 ],
+				],
+				12
+			),
+			status: 200,
+		} );
 		fetchMock.get( channelsRequest, {
 			body: channelsReport,
 			status: 200,
@@ -76,17 +89,27 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 
 		const { result, waitForRegistry } = renderHook(
 			() =>
-				useRecentTrafficBreakdownColumn( getTopChannelsReportOptions ),
+				useRecentTrafficBreakdownColumn( getTopReferralsReportOptions ),
 			{ registry }
 		);
 
 		await waitForRegistry();
 
+		expect( fetchMock ).toHaveFetchedTimes( 1, referralsRequest );
 		expect( fetchMock ).toHaveFetchedTimes( 1, channelsRequest );
+		// Each share is of the channels report's 157 visitors, not of these 12.
 		expect( result.current ).toMatchObject( {
 			rows: [
-				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
-				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
+				{
+					label: 'news.example.com',
+					value: '8',
+					secondaryValue: '(5.1%)',
+				},
+				{
+					label: 'forum.example.com',
+					value: '4',
+					secondaryValue: '(2.5%)',
+				},
 			],
 			loading: false,
 			error: undefined,
@@ -173,7 +196,7 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		expect( result.current ).toMatchObject( {
 			rows: [
 				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
-				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
+				{ label: 'Referral', value: '12', secondaryValue: '(7.6%)' },
 			],
 			loading: false,
 			error: undefined,

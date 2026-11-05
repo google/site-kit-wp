@@ -85,7 +85,7 @@ export function findBlockingStep(
  * The current step stays `undefined` until the initial step resolves.
  *
  * @since 1.190.0
- * @since n.e.x.t Returns no current step until the initial step resolves.
+ * @since 1.191.0 Returns no current step until the initial step resolves.
  *
  * @param {Array.<Object>} steps Ordered step definitions. Must be referentially stable.
  * @return {Object} The current step definition, and a callback that advances to the next step that is not yet complete.
@@ -183,6 +183,14 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 		);
 
 		if ( nextStep ) {
+			// A stored error clears only when the same request runs again, so drop
+			// any errors the completed step left, or the next step shows them.
+			const { clearActionErrors, clearSelectorErrors } =
+				registry.dispatch( MODULES_READER_REVENUE_MANAGER );
+
+			clearActionErrors();
+			clearSelectorErrors();
+
 			setStep( nextStep.slug );
 		}
 	}, [ currentIndex, registry, setStep, steps ] );

@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { ANCHOR_ID_MONETIZATION } from '@/js/googlesitekit/constants';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -64,7 +65,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				whyUseList: [
 					{
 						term: __(
-							'Generate consistent revenue:',
+							'Generate consistent revenue',
 							'google-site-kit'
 						),
 						description: __(
@@ -73,14 +74,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						),
 					},
 					{
-						term: __( 'Show relevant ads:', 'google-site-kit' ),
+						term: __( 'Show relevant ads', 'google-site-kit' ),
 						description: __(
 							'Display interest-based ads that maintain your professional look',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Save time:', 'google-site-kit' ),
+						term: __( 'Save time', 'google-site-kit' ),
 						description: __(
 							'Let automation handle ad management so you can focus on content',
 							'google-site-kit'
@@ -97,15 +98,15 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				setupList: [
 					__(
-						'Create a new AdSense account or use your existing account.',
+						'Create a new AdSense account or use your existing account',
 						'google-site-kit'
 					),
 					__(
-						'Wait for your AdSense account and site to be approved.',
+						'Wait for your AdSense account and site to be approved',
 						'google-site-kit'
 					),
 					__(
-						'Enable ad blocking recovery (optional).',
+						'Enable ad blocking recovery (optional)',
 						'google-site-kit'
 					),
 					__(
@@ -134,6 +135,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			),
 			cta: {
 				label: __( 'Show me', 'google-site-kit' ),
+				getURL: ( select ) =>
+					`${ select( CORE_SITE ).getAdminURL(
+						'googlesitekit-dashboard'
+					) }#${ ANCHOR_ID_MONETIZATION }`,
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
@@ -167,35 +172,35 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Reclaims lost revenue:', 'google-site-kit' ),
+						term: __( 'Reclaims lost revenue', 'google-site-kit' ),
 						description: __(
 							'Prompts ad-blocking visitors to whitelist your site or allow ads to recover earnings',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Zero custom coding:', 'google-site-kit' ),
+						term: __( 'Zero custom coding', 'google-site-kit' ),
 						description: __(
 							"Deploys easily via WordPress without altering your site's codebase",
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Flexible enforcement:', 'google-site-kit' ),
+						term: __( 'Flexible enforcement', 'google-site-kit' ),
 						description: __(
 							'Customize your recovery messaging and rules directly inside AdSense',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Seamless integration:', 'google-site-kit' ),
+						term: __( 'Seamless integration', 'google-site-kit' ),
 						description: __(
 							'Works smoothly alongside your existing privacy and consent tools',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Error protection:', 'google-site-kit' ),
+						term: __( 'Error protection', 'google-site-kit' ),
 						description: __(
 							'Includes fallback code to ensure messages appear even if ad blockers try to hide the prompt',
 							'google-site-kit'
@@ -240,12 +245,12 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				'google-site-kit'
 			),
 			description: __(
-				"Make sure to also create the message in AdSense, otherwise this feature won't work.",
+				"Make sure to also create the message in AdSense, otherwise this feature won't work",
 				'google-site-kit'
 			),
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
-		effort: FEATURE_EFFORTS.MEDIUM,
+		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.MONETIZATION ],
 		prerequisiteModules: [ 'adsense' ],
 		addedInVersion: '1.107.0',

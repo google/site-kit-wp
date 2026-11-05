@@ -24,20 +24,46 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import TypicalTrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart';
 import { TYPICAL_TRAFFIC_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useBenchmarkingData } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingData';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 
 const TypicalTrafficPanel: FC = () => {
-	// TODO: #13600 -- Show the response in the chart, and in the key factors from
-	// #13601, with the loading and error states from #13602.
-	useBenchmarkingData();
+	// TODO: #13601 -- Show the key factors from the response.
+	// TODO: #13602 -- Show the loading and error states.
+	const { response } = useBenchmarkingData();
+
+	const daysInSelectedRange = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
+		[]
+	);
+
+	const propertyCreateTime = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getPropertyCreateTime(),
+		[]
+	);
 
 	return (
 		<div
 			className="googlesitekit-traffic-overview__panel"
 			role="tabpanel"
 			aria-labelledby={ TYPICAL_TRAFFIC_TAB_ID }
-		/>
+		>
+			{ response && (
+				<TypicalTrafficChart
+					dailyTraffic={ response.dailyTraffic }
+					daysInSelectedRange={ daysInSelectedRange }
+					propertyCreateDate={ getPropertyCreateDate(
+						propertyCreateTime
+					) }
+				/>
+			) }
+		</div>
 	);
 };
 

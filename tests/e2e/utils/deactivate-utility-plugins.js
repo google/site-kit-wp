@@ -1,12 +1,9 @@
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import {
-	isCurrentURL,
-	switchUserToAdmin,
-	switchUserToTest,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
+import { isCurrentURL } from './create-url';
+import { switchUserToAdmin, switchUserToTest } from './login-user';
+import { visitAdminPage } from './visit-admin-page';
 
 /**
  * Deactivates all Site Kit utility plugins.

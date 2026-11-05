@@ -19,7 +19,9 @@
 /**
  * Internal dependencies
  */
+import Null from '@/js/components/Null';
 import {
+	ANCHOR_ID_SPEED,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
@@ -36,8 +38,11 @@ import {
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import * as scrollUtils from '@/js/util/scroll';
 import {
+	act,
 	createTestRegistry,
+	fireEvent,
 	provideUserAuthentication,
 	render,
 } from '@tests/js/test-utils';
@@ -253,5 +258,173 @@ describe( 'Dashboard Navigation', () => {
 		await waitForRegistry();
 
 		expect( container ).toHaveTextContent( 'Site goals' );
+	} );
+
+	describe( 'URL hash scrolling', () => {
+		const speedWidgetMetadata = {};
+		const getNavigationalScrollTopSpy = jest.spyOn(
+			scrollUtils,
+			'getNavigationalScrollTop'
+		);
+		const scrollToSpy = jest.spyOn( global, 'scrollTo' );
+		let savedLocationHash;
+
+		beforeAll( () => {
+			savedLocationHash = global.location.hash;
+		} );
+
+		beforeEach( () => {
+			getNavigationalScrollTopSpy.mockReturnValue( 1000 );
+			scrollToSpy.mockClear();
+		} );
+
+		afterAll( () => {
+			global.location.hash = savedLocationHash;
+		} );
+
+		it( 'should scroll to the initial hash section once it becomes visible after the navigation has mounted', async () => {
+			global.location.hash = ANCHOR_ID_SPEED;
+			setupDefaultChips( registry );
+
+			// Keep the Speed section hidden while the navigation mounts, as
+			// happens while its widgets are loading.
+			registry
+				.dispatch( CORE_WIDGETS )
+				.setWidgetState( 'SpeedWidget', Null, speedWidgetMetadata );
+
+			const { container, waitForRegistry } = render(
+				<DashboardNavigation />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( '.mdc-chip--selected' )
+			).toHaveTextContent( 'Traffic' );
+
+			jest.useFakeTimers();
+
+			act( () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.unsetWidgetState(
+						'SpeedWidget',
+						Null,
+						speedWidgetMetadata
+					);
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 50 );
+			} );
+
+			expect(
+				container.querySelector( '.mdc-chip--selected' )
+			).toHaveTextContent( 'Speed' );
+
+			// Changing the visible sections again should not scroll again.
+			act( () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'ContentWidget', Null, {} );
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 50 );
+			} );
+
+			expect( scrollToSpy ).toHaveBeenCalledTimes( 1 );
+			expect( scrollToSpy ).toHaveBeenCalledWith( {
+				top: 1000,
+				behavior: 'smooth',
+			} );
+		} );
+
+		it( 'should not scroll to the initial hash section once it becomes visible if a chip was selected', async () => {
+			global.location.hash = ANCHOR_ID_SPEED;
+			setupDefaultChips( registry );
+
+			registry
+				.dispatch( CORE_WIDGETS )
+				.setWidgetState( 'SpeedWidget', Null, speedWidgetMetadata );
+
+			const { getByText, container, waitForRegistry } = render(
+				<DashboardNavigation />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+			await waitForRegistry();
+
+			jest.useFakeTimers();
+
+			fireEvent.click( getByText( 'Content' ) );
+			scrollToSpy.mockClear();
+
+			act( () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.unsetWidgetState(
+						'SpeedWidget',
+						Null,
+						speedWidgetMetadata
+					);
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 50 );
+			} );
+
+			expect( scrollToSpy ).not.toHaveBeenCalled();
+			expect(
+				container.querySelector( '.mdc-chip--selected' )
+			).not.toHaveTextContent( 'Speed' );
+		} );
+
+		it( 'should not scroll when the URL hash changes after the navigation has mounted', async () => {
+			global.location.hash = '';
+			setupDefaultChips( registry );
+
+			const { waitForRegistry } = render( <DashboardNavigation />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+			await waitForRegistry();
+
+			jest.useFakeTimers();
+
+			act( () => {
+				global.history.replaceState( {}, '', `#${ ANCHOR_ID_SPEED }` );
+
+				// Re-render the navigation by changing the visible sections.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'ContentWidget', Null, {} );
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 50 );
+			} );
+
+			expect( scrollToSpy ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should update the URL hash on scroll when the initial hash does not match a section', async () => {
+			global.location.hash = 'foo';
+			setupDefaultChips( registry );
+
+			const { waitForRegistry } = render( <DashboardNavigation />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+			await waitForRegistry();
+
+			jest.useFakeTimers();
+
+			act( () => {
+				fireEvent.scroll( global );
+				jest.advanceTimersByTime( 150 );
+			} );
+
+			expect( global.location.hash ).toBe( '#traffic' );
+		} );
 	} );
 } );
