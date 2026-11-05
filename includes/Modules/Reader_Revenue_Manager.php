@@ -929,7 +929,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$configured_ctas = array();
 
-			foreach ( $this->get_configured_ctas( $settings ) as $cta_id => $cta ) {
+			foreach ( (array) $settings['configuredCTAs'] as $cta_id => $cta ) {
 				$configured_ctas[] = sprintf( '%s (%s, %s)', $cta_id, $cta['type'], $cta['state'] );
 			}
 
@@ -975,27 +975,11 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 					function ( $cta ) {
 						return $cta['type'] . ':' . $cta['state'];
 					},
-					$this->get_configured_ctas( $settings )
+					(array) $settings['configuredCTAs']
 				)
 			);
 		}
 
 		return $metrics;
-	}
-
-	/**
-	 * Gets the configured CTAs from the module settings.
-	 *
-	 * Entries saved in an earlier format, before each CTA was stored with its
-	 * type, state and display name, are skipped until the next CTA sync
-	 * replaces them.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $settings Module settings.
-	 * @return array Configured CTAs, keyed by CTA ID.
-	 */
-	private function get_configured_ctas( array $settings ) {
-		return array_filter( (array) $settings['configuredCTAs'], 'is_array' );
 	}
 }
