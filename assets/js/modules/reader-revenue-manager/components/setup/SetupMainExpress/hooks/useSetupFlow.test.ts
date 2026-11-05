@@ -21,6 +21,7 @@
  */
 import { Registry, Select } from '@/js/googlesitekit-data';
 import {
+	existingCTAStep,
 	publicationPoliciesStep,
 	publicationSetupStep,
 	setupCompleteStep,
@@ -30,9 +31,11 @@ import { signupFormStep } from '@/js/modules/reader-revenue-manager/components/s
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
+	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
@@ -604,6 +607,102 @@ describe( 'useSetupFlow', () => {
 			actHook( () => result.current.advance() );
 
 			expect( result.current.currentStep ).toBe( setupCompleteStep );
+		} );
+	} );
+
+	describe( 'existing CTAs', () => {
+		function renderNewsletterFlow() {
+			return renderHook(
+				() =>
+					useSetupFlow(
+						NEWSLETTER_FLOW,
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+					),
+				{ registry }
+			);
+		}
+
+		function provideCTAs( ctas: { name: string; type: string }[] ) {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetCTAs( {
+					ctas,
+					params: { publicationID: PUBLICATION_ID },
+				} );
+		}
+
+		const newsletterCTA = {
+			name: `organizations/ABCD1234/publications/${ PUBLICATION_ID }/ctas/1`,
+			type: CTA_TYPES.NEWSLETTER_SIGNUP,
+		};
+
+		beforeEach( () => {
+			provideConnectedPublication( registry, publicationWithPolicies );
+		} );
+
+		it( 'should open the existing CTA step when entering the flow with an existing CTA', () => {
+			global.location.href = 'http://example.com/';
+			provideCTAs( [ newsletterCTA ] );
+
+			const { result } = renderNewsletterFlow();
+
+			expect( result.current.currentStep ).toBe( existingCTAStep );
+		} );
+
+		it( 'should open the existing CTA step from the sign-up form step', () => {
+			global.location.href = `http://example.com/?step=${ signupFormStep.slug }`;
+			provideCTAs( [ newsletterCTA ] );
+
+			const { result } = renderNewsletterFlow();
+
+			expect( result.current.currentStep ).toBe( existingCTAStep );
+		} );
+
+		it( 'should not check for existing CTAs on the publication setup step', () => {
+			global.location.href = `http://example.com/?step=${ publicationSetupStep.slug }`;
+			provideCTAs( [ newsletterCTA ] );
+
+			const { result } = renderNewsletterFlow();
+
+			expect( result.current.currentStep ).toBe( publicationSetupStep );
+		} );
+
+		it( 'should not request the CTAs on the publication setup step', () => {
+			global.location.href = `http://example.com/?step=${ publicationSetupStep.slug }`;
+
+			renderNewsletterFlow();
+
+			expect( fetchMock ).not.toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+				)
+			);
+		} );
+
+		it( 'should not check for existing CTAs on the setup complete step', () => {
+			global.location.href = `http://example.com/?step=${ setupCompleteStep.slug }`;
+			provideCTAs( [ newsletterCTA ] );
+
+			const { result } = renderNewsletterFlow();
+
+			expect( result.current.currentStep ).toBe( setupCompleteStep );
+		} );
+
+		it( 'should not open the existing CTA step in a flow without a CTA type', () => {
+			global.location.href = `http://example.com/?step=${ existingCTAStep.slug }`;
+
+			const { result } = renderUseSetupFlow( NEWSLETTER_FLOW );
+
+			expect( result.current.currentStep ).toBe( signupFormStep );
+		} );
+
+		it( 'should not open the existing CTA step when the publication has no CTAs', () => {
+			global.location.href = 'http://example.com/';
+			provideCTAs( [] );
+
+			const { result } = renderNewsletterFlow();
+
+			expect( result.current.currentStep ).toBe( signupFormStep );
 		} );
 	} );
 

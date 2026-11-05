@@ -93,6 +93,7 @@ export const enum EXPRESS_SETUP_STEPS {
 	SURVEY_QUESTIONS = 'survey-questions',
 	SURVEY_CTA = 'survey-cta',
 	SETUP_COMPLETE = 'setup-complete',
+	EXISTING_CTA = 'existing-cta',
 }
 
 export const enum PUBLICATION_POLICIES_FORM {
