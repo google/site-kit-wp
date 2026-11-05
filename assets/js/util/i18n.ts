@@ -540,9 +540,8 @@ export function listFormat(
  */
 const isValidLanguageTag = memize( ( tag: string ): boolean => {
 	try {
-		// `Intl.getCanonicalLocales()` is not in the configured TS `lib`, so
-		// `Intl.NumberFormat` is used instead, which throws for invalid tags.
-		new Intl.NumberFormat( tag ); // eslint-disable-line no-new
+		// Throws a `RangeError` for an invalid language tag.
+		new Intl.NumberFormat( tag );
 		return true;
 	} catch {
 		return false;
