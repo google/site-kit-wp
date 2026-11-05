@@ -27,7 +27,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { Registry } from 'googlesitekit-data';
 import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import {
+	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+	FEATURE_DISCOVERY_SETUP_REQUEST_KEY,
+} from '@/js/components/feature-discovery/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { getItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
@@ -276,6 +279,180 @@ describe( 'core/feature-discovery features', () => {
 				expect( () =>
 					registry.dispatch( CORE_FEATURE_DISCOVERY ).setupFeature()
 				).toThrow( 'slug is required to set up a feature.' );
+			} );
+
+			it( 'should omit the detail panel from UI snapshots so that it does not reopen on return', async () => {
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+							activate: () => Promise.resolve( {} ),
+						},
+					} )
+				);
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue(
+						FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+						'test-feature'
+					);
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.setupFeature( 'test-feature' );
+
+				await registry.dispatch( CORE_UI ).createSnapshot();
+
+				const { value: snapshot } = await getItem(
+					`datastore::cache::${ CORE_UI }`
+				);
+
+				expect( snapshot ).not.toHaveProperty(
+					FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
+				);
+			} );
+
+			describe.each( [
+				FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+				FEATURE_SETUP_TYPES.SETUP_FLOW,
+			] )( '%s setup progress', ( setupType ) => {
+				it.each( [ 'success', 'error', 'rejection' ] )(
+					'should track progress for the feature and clear it on %s',
+					async ( outcome ) => {
+						const error = new Error( 'Setup failed' );
+
+						let resolveSetup!: ( result: {
+							error?: Error;
+						} ) => void;
+
+						let rejectSetup!: ( reason: Error ) => void;
+
+						const activation = new Promise< { error?: Error } >(
+							( resolve, reject ) => {
+								resolveSetup = resolve;
+								rejectSetup = reject;
+							}
+						);
+
+						function activate() {
+							return activation;
+						}
+
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.registerFeature(
+								'test-feature',
+								createSettings( {
+									setup: {
+										type: setupType,
+										moduleSlug: 'test-module',
+										activate,
+									},
+								} )
+							);
+
+						jest.spyOn(
+							registry.dispatch( CORE_MODULES ),
+							'activateModule'
+						).mockImplementation( activate );
+
+						const { isSetupInProgress } = registry.select(
+							CORE_FEATURE_DISCOVERY
+						);
+
+						expect( isSetupInProgress( 'test-feature' ) ).toBe(
+							false
+						);
+
+						const setup = registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' );
+
+						expect( isSetupInProgress( 'test-feature' ) ).toBe(
+							true
+						);
+
+						expect( isSetupInProgress( 'other-feature' ) ).toBe(
+							false
+						);
+
+						if ( outcome === 'rejection' ) {
+							rejectSetup( error );
+
+							await expect( setup ).resolves.toEqual( { error } );
+						} else {
+							const result = outcome === 'error' ? { error } : {};
+
+							resolveSetup( result );
+
+							await expect( setup ).resolves.toEqual( result );
+						}
+
+						expect( isSetupInProgress( 'test-feature' ) ).toBe(
+							false
+						);
+
+						expect(
+							registry
+								.select( CORE_FEATURE_DISCOVERY )
+								.getErrorForAction( 'setupFeature', [
+									'test-feature',
+								] )
+						).toEqual( outcome === 'success' ? undefined : error );
+					}
+				);
+			} );
+
+			it( 'should store a synchronous activation error and clear it after a successful retry', async () => {
+				const error = new Error( 'Activation failed' );
+
+				const activate = jest
+					.fn()
+					.mockResolvedValue( {} )
+					.mockImplementationOnce( () => {
+						throw error;
+					} );
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+							activate,
+						},
+					} )
+				);
+
+				const { setupFeature } = registry.dispatch(
+					CORE_FEATURE_DISCOVERY
+				);
+
+				const { getErrorForAction, isSetupInProgress } =
+					registry.select( CORE_FEATURE_DISCOVERY );
+
+				await expect( setupFeature( 'test-feature' ) ).resolves.toEqual(
+					{
+						error,
+					}
+				);
+
+				expect(
+					getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBe( error );
+
+				expect( isSetupInProgress( 'test-feature' ) ).toBe( false );
+
+				await expect( setupFeature( 'test-feature' ) ).resolves.toEqual(
+					{}
+				);
+
+				expect(
+					getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeUndefined();
+
+				expect( isSetupInProgress( 'test-feature' ) ).toBe( false );
 			} );
 
 			it( 'should resolve for a registered feature', async () => {
@@ -740,6 +917,72 @@ describe( 'core/feature-discovery features', () => {
 							.dispatch( CORE_FEATURE_DISCOVERY )
 							.setupFeature( 'test-feature' )
 					).resolves.toEqual( {} );
+				} );
+
+				describe( 'with a setup component', () => {
+					let activate: jest.Mock;
+
+					beforeEach( () => {
+						activate = jest.fn().mockResolvedValue( {} );
+
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.registerFeature(
+								'test-feature',
+								createSettings( {
+									setup: {
+										type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+										activate,
+										SetupComponent: () => null,
+									},
+								} )
+							);
+					} );
+
+					it( 'should request the setup from the setup component and resolve to an empty object', async () => {
+						await expect(
+							registry
+								.dispatch( CORE_FEATURE_DISCOVERY )
+								.setupFeature( 'test-feature' )
+						).resolves.toEqual( {} );
+
+						expect(
+							registry
+								.select( CORE_UI )
+								.getValue( FEATURE_DISCOVERY_SETUP_REQUEST_KEY )
+						).toBe( 'test-feature' );
+					} );
+
+					it( 'should close the feature detail panel', async () => {
+						registry
+							.dispatch( CORE_UI )
+							.setValue(
+								FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+								'test-feature'
+							);
+
+						await registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' );
+
+						expect(
+							registry
+								.select( CORE_UI )
+								.getValue(
+									FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
+								)
+						).toBe( false );
+					} );
+
+					it( 'should not run the activate routine or navigate', async () => {
+						await registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' );
+
+						expect( activate ).not.toHaveBeenCalled();
+						expect( navigateTo ).not.toHaveBeenCalled();
+						expect( await consumePendingSetup() ).toBeNull();
+					} );
 				} );
 			} );
 

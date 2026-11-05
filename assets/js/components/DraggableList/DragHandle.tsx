@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { FC } from 'react';
 
 /**
@@ -29,35 +30,28 @@ import { useContext } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import ActionButton, { ActionButtonProps } from '@/js/components/ActionButton';
 import DragHandleIcon from '@/svg/icons/drag-handle.svg';
 import { DragHandleContext } from './DragHandleContext';
 
-export interface DragHandleProps {
-	'aria-label': string;
-	disabled?: boolean;
-}
+export type DragHandleProps = Omit< ActionButtonProps, 'Icon' >;
 
-const DragHandle: FC< DragHandleProps > = ( {
-	'aria-label': label,
-	disabled,
-} ) => {
+const DragHandle: FC< DragHandleProps > = ( { className, ...props } ) => {
 	const handleProps = useContext( DragHandleContext );
 
+	const classNames = classnames(
+		'googlesitekit-draggable-list__handle',
+		className
+	);
+
 	return (
-		<button
+		<ActionButton
+			className={ classNames }
+			Icon={ DragHandleIcon }
+			iconSize={ 18 }
+			{ ...props }
 			{ ...handleProps }
-			aria-label={ label }
-			className="googlesitekit-draggable-list__handle"
-			disabled={ disabled }
-			type="button"
-		>
-			<DragHandleIcon
-				aria-hidden="true"
-				focusable="false"
-				height={ 18 }
-				width={ 18 }
-			/>
-		</button>
+		/>
 	);
 };
 

@@ -995,6 +995,7 @@ final class Assets {
 	 * Gets the inline dashboard sharing data.
 	 *
 	 * @since 1.49.0
+	 * @since n.e.x.t Outputs `settings` as an object, also when no module has sharing settings.
 	 *
 	 * @return array The dashboard sharing inline data to be output.
 	 */
@@ -1014,8 +1015,10 @@ final class Assets {
 			}
 		}
 
-		$settings                = new Module_Sharing_Settings( new Options( $this->context ) );
-		$inline_data['settings'] = $settings->get();
+		$settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		// Cast to an object so that empty settings are output as `{}` and not `[]`,
+		// because JS adds module keys to this value when sharing settings change.
+		$inline_data['settings'] = (object) $settings->get();
 
 		/**
 		 * Filters the dashboard sharing inline data to pass to JS.

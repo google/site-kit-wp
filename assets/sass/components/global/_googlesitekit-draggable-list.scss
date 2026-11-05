@@ -47,22 +47,10 @@
 	}
 
 	.googlesitekit-draggable-list__handle {
-		background: none;
-		border: 0;
-		border-radius: $br-xxs;
-		color: inherit;
 		cursor: grab;
-		flex-shrink: 0;
-		padding: 0;
 
 		&:active {
 			cursor: grabbing;
-			outline: none;
-		}
-
-		svg {
-			display: block;
-			fill: currentcolor;
 		}
 	}
 
