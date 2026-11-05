@@ -48,7 +48,7 @@ function Template( { showHandle, withFields }: TemplateProps ) {
 			showHandle={ showHandle }
 			renderItem={ ( { item, DragHandle }, index ) => {
 				const handle = (
-					<DragHandle aria-label={ `Move Answer ${ index + 1 }` } />
+					<DragHandle label={ `Move Answer ${ index + 1 }` } />
 				);
 
 				return (

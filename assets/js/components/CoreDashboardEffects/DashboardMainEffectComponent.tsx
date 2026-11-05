@@ -25,9 +25,11 @@ import { FC } from 'react';
  * Internal dependencies
  */
 import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
+import useExpressSetupDashboardSurveyTriggers from '@/js/modules/reader-revenue-manager/hooks/useExpressSetupDashboardSurveyTriggers';
 
 const DashboardMainEffectComponent: FC = () => {
 	useOpenEmailReportingSelectionPanelEffect();
+	useExpressSetupDashboardSurveyTriggers();
 
 	return null;
 };

@@ -86,10 +86,12 @@ class Save_User_SettingsTest extends TestCase {
 				'publicationSetup' => 1752451200,
 				'productSetup'     => 1752537600,
 			),
+			'completedExpressSetups'    => array(),
 		);
 		$expected_response = $expected;
 
 		$expected_response['lastActionedExpressSetups'] = (object) $expected_response['lastActionedExpressSetups'];
+		$expected_response['completedExpressSetups']    = (object) $expected_response['completedExpressSetups'];
 
 		$this->assertEquals(
 			$expected_response,
@@ -108,9 +110,70 @@ class Save_User_SettingsTest extends TestCase {
 		$request      = $this->datapoint->create_request( $data_request );
 
 		$this->assertEquals(
-			array( 'lastActionedExpressSetups' => (object) array() ),
+			array(
+				'lastActionedExpressSetups' => (object) array(),
+				'completedExpressSetups'    => (object) array(),
+			),
 			$request(),
 			'The datapoint should return an empty object for the default express setup timestamps.'
+		);
+	}
+
+	public function test_create_request__saves_each_key_independently() {
+		$data_request = new Data_Request(
+			'POST',
+			'modules',
+			'reader-revenue-manager',
+			'user-settings',
+			array(
+				'lastActionedExpressSetups' => array( 'newsletter-signup:new' => 1752451200 ),
+			)
+		);
+		$request      = $this->datapoint->create_request( $data_request );
+		$request();
+
+		$data_request = new Data_Request(
+			'POST',
+			'modules',
+			'reader-revenue-manager',
+			'user-settings',
+			array(
+				'completedExpressSetups' => array( 'newsletter-signup:a1b2c3' => 1752537600 ),
+			)
+		);
+		$request      = $this->datapoint->create_request( $data_request );
+
+		$this->assertEquals(
+			array(
+				'lastActionedExpressSetups' => (object) array( 'newsletter-signup:new' => 1752451200 ),
+				'completedExpressSetups'    => (object) array( 'newsletter-signup:a1b2c3' => 1752537600 ),
+			),
+			$request(),
+			'Saving one key should not remove or affect the other.'
+		);
+
+		$data_request = new Data_Request(
+			'POST',
+			'modules',
+			'reader-revenue-manager',
+			'user-settings',
+			array(
+				'lastActionedExpressSetups' => array( 'newsletter-signup:new' => null ),
+				'completedExpressSetups'    => array( 'newsletter-signup:d4e5f6' => 1752624000 ),
+			)
+		);
+		$request      = $this->datapoint->create_request( $data_request );
+
+		$this->assertEquals(
+			array(
+				'lastActionedExpressSetups' => (object) array(),
+				'completedExpressSetups'    => (object) array(
+					'newsletter-signup:a1b2c3' => 1752537600,
+					'newsletter-signup:d4e5f6' => 1752624000,
+				),
+			),
+			$request(),
+			'Both keys should be updated by a single save.'
 		);
 	}
 
@@ -135,6 +198,7 @@ class Save_User_SettingsTest extends TestCase {
 				'lastActionedExpressSetups' => (object) array(
 					'publicationSetup' => 1752451200,
 				),
+				'completedExpressSetups'    => (object) array(),
 			),
 			$request(),
 			'The datapoint should rely on User_Settings to sanitize values and ignore unknown keys.'

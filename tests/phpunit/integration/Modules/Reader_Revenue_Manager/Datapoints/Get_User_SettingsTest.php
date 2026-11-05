@@ -62,7 +62,10 @@ class Get_User_SettingsTest extends TestCase {
 		$request      = $this->datapoint->create_request( $data_request );
 
 		$this->assertEquals(
-			array( 'lastActionedExpressSetups' => (object) array() ),
+			array(
+				'lastActionedExpressSetups' => (object) array(),
+				'completedExpressSetups'    => (object) array(),
+			),
 			$request(),
 			'The datapoint should return an empty object for the default express setup timestamps.'
 		);
@@ -73,6 +76,9 @@ class Get_User_SettingsTest extends TestCase {
 			'lastActionedExpressSetups' => array(
 				'publicationSetup' => 1752451200,
 			),
+			'completedExpressSetups'    => array(
+				'newsletter-signup:a1b2c3' => 1752537600,
+			),
 		);
 		$this->user_settings->merge( $settings );
 
@@ -81,6 +87,7 @@ class Get_User_SettingsTest extends TestCase {
 		$expected     = $settings;
 
 		$expected['lastActionedExpressSetups'] = (object) $expected['lastActionedExpressSetups'];
+		$expected['completedExpressSetups']    = (object) $expected['completedExpressSetups'];
 
 		$this->assertEquals(
 			$expected,

@@ -317,6 +317,60 @@ describe( 'core/user dismissed-prompts', () => {
 			} );
 		} );
 
+		describe( 'isPromptDismissedPermanently', () => {
+			it( 'should return undefined if getDismissedPrompts selector is not resolved yet', async () => {
+				fetchMock.getOnce( dismissedPromptsEndpoint, { body: {} } );
+				expect(
+					registry
+						.select( CORE_USER )
+						.isPromptDismissedPermanently( 'foo' )
+				).toBeUndefined();
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getDismissedPrompts();
+			} );
+
+			it( 'should return TRUE if the prompt is dismissed with an expiry of 0', () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+					foo: { expires: 0, count: 1 },
+				} );
+				expect(
+					registry
+						.select( CORE_USER )
+						.isPromptDismissedPermanently( 'foo' )
+				).toBe( true );
+			} );
+
+			it( 'should return FALSE if the prompt is dismissed temporarily', () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+					foo: {
+						expires: Math.floor( Date.now() / 1000 ) + 3600,
+						count: 1,
+					},
+				} );
+				expect(
+					registry.select( CORE_USER ).isPromptDismissed( 'foo' )
+				).toBe( true );
+				expect(
+					registry
+						.select( CORE_USER )
+						.isPromptDismissedPermanently( 'foo' )
+				).toBe( false );
+			} );
+
+			it( 'should return FALSE if the prompt is not dismissed', () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+					foo: { expires: 0, count: 1 },
+				} );
+				expect(
+					registry
+						.select( CORE_USER )
+						.isPromptDismissedPermanently( 'bar' )
+				).toBe( false );
+			} );
+		} );
+
 		describe( 'isDismissingPrompt', () => {
 			it( 'returns true while prompt dismissal is in progress', () => {
 				const slug = 'foo-bar';

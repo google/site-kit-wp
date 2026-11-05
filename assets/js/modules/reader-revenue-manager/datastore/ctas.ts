@@ -39,6 +39,7 @@ import {
 	createValidatedAction,
 } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { getCTAID } from '@/js/modules/reader-revenue-manager/utils/ctas';
 import {
 	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
@@ -73,22 +74,6 @@ interface CTAsState {
 type Registry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
-
-/**
- * Gets the CTA ID from a WCP CTA resource name.
- *
- * @since 1.188.0
- *
- * @param  name Optional CTA resource name.
- * @return {string|undefined} CTA ID, or undefined if none can be determined.
- */
-function getCTAID( name?: string ): string | undefined {
-	if ( ! name ) {
-		return undefined;
-	}
-
-	return name.split( '/' ).pop() || undefined;
-}
 
 /**
  * Syncs configured CTAs into settings and savedSettings.
