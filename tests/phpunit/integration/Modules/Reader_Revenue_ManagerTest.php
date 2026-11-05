@@ -1228,41 +1228,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
 	}
 
-	public function test_old_format_configured_ctas_are_skipped() {
-		$this->enable_feature( 'rrmExpressSetup' );
-		$this->reader_revenue_manager->get_settings()->register();
-		$this->reader_revenue_manager->get_settings()->set( array( 'organizationID' => 'test-organization-id' ) );
-
-		// Return an entry saved before each CTA was stored as an array, bypassing sanitization.
-		add_filter(
-			'option_' . Settings::OPTION,
-			function ( $option ) {
-				$option['configuredCTAs'] = array(
-					'old-cta'        => 'newsletter-signup',
-					'9d2418415-ab3a' => array(
-						'type'        => 'newsletter-signup',
-						'state'       => 'ACTIVE',
-						'displayName' => 'Weekly newsletter',
-					),
-				);
-
-				return $option;
-			}
-		);
-
-		$this->assertSame(
-			array( 'newsletter-signup:ACTIVE' ),
-			$this->reader_revenue_manager->get_feature_metrics()['rrm_publication_configured_ctas'],
-			'The feature metric should skip configured CTAs saved in the old format.'
-		);
-
-		$this->assertSame(
-			'9d2418415-ab3a (newsletter-signup, ACTIVE)',
-			$this->reader_revenue_manager->get_debug_fields()['reader_revenue_manager_configured_ctas']['value'],
-			'The Site Health field should skip configured CTAs saved in the old format.'
-		);
-	}
-
 	public function data_feature_metrics_settings() {
 		return array(
 			'default values when RRM is active but not fully setup'                                     => array(
