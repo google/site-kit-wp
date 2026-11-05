@@ -38,6 +38,9 @@ describe( 'core/site urls', () => {
 	const adminBarSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/site/data/admin-bar-settings'
 	);
+	const wpDashboardWidgetSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/site/data/wp-dashboard-widget-settings'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -68,6 +71,49 @@ describe( 'core/site urls', () => {
 						data: { enabled },
 					},
 				} );
+			} );
+		} );
+
+		describe( 'setShowWPDashboardWidget', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetWPDashboardWidgetSettings( {} );
+			} );
+
+			it.each( [
+				[ 'true', true ],
+				[ 'false', false ],
+			] )( 'should set "enabled" setting to %s', async ( _, enabled ) => {
+				fetchMock.postOnce( wpDashboardWidgetSettingsEndpoint, {
+					body: { enabled },
+				} );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.setShowWPDashboardWidget( enabled );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					wpDashboardWidgetSettingsEndpoint,
+					{
+						body: {
+							data: { enabled },
+						},
+					}
+				);
+				expect(
+					registry.select( CORE_SITE ).getShowWPDashboardWidget()
+				).toBe( enabled );
+			} );
+
+			it( 'should require a boolean "enabled" value', async () => {
+				await expect(
+					registry
+						.dispatch( CORE_SITE )
+						.setShowWPDashboardWidget( 'yes' )
+				).rejects.toThrow( 'enabled must be of boolean type' );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 		} );
 	} );
@@ -164,6 +210,98 @@ describe( 'core/site urls', () => {
 					enabled
 				);
 			} );
+		} );
+
+		describe( 'getWPDashboardWidgetSettings', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.getOnce( wpDashboardWidgetSettingsEndpoint, {
+					body: { enabled: true },
+				} );
+
+				expect(
+					registry.select( CORE_SITE ).getWPDashboardWidgetSettings()
+				).toBeUndefined();
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getWPDashboardWidgetSettings();
+
+				expect(
+					registry.select( CORE_SITE ).getWPDashboardWidgetSettings()
+				).toEqual( { enabled: true } );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not make a network request if data is already in state', async () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetWPDashboardWidgetSettings( { enabled: false } );
+
+				registry.select( CORE_SITE ).getWPDashboardWidgetSettings();
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getWPDashboardWidgetSettings();
+
+				expect(
+					registry.select( CORE_SITE ).getWPDashboardWidgetSettings()
+				).toEqual( { enabled: false } );
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( wpDashboardWidgetSettingsEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				registry.select( CORE_SITE ).getWPDashboardWidgetSettings();
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getWPDashboardWidgetSettings();
+
+				expect(
+					registry.select( CORE_SITE ).getWPDashboardWidgetSettings()
+				).toBeUndefined();
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getShowWPDashboardWidget', () => {
+			it( 'should return undefined when WordPress dashboard widget settings are being resolved still', async () => {
+				muteFetch( wpDashboardWidgetSettingsEndpoint );
+				expect(
+					registry.select( CORE_SITE ).getShowWPDashboardWidget()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getWPDashboardWidgetSettings();
+			} );
+
+			it.each( [
+				[ 'false', false ],
+				[ 'true', true ],
+			] )(
+				'should return %s from WordPress dashboard widget settings',
+				( _, enabled ) => {
+					registry
+						.dispatch( CORE_SITE )
+						.receiveGetWPDashboardWidgetSettings( { enabled } );
+					expect(
+						registry.select( CORE_SITE ).getShowWPDashboardWidget()
+					).toBe( enabled );
+				}
+			);
 		} );
 
 		describe( 'getModuleSettingsURL', () => {
