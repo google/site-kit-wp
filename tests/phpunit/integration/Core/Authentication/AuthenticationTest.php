@@ -14,6 +14,7 @@ namespace Google\Site_Kit\Tests\Core\Authentication;
 
 use Exception;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Admin\Dashboard_Widget_Enabled;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
@@ -446,6 +447,68 @@ class AuthenticationTest extends TestCase {
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ), 'Should have no errors after successful token refresh.' );
 		// Make sure the access token was updated.
 		$this->assertEquals( 'new-test-access-token', $oauth_client->get_access_token(), 'Access token should be updated after refresh.' );
+	}
+
+	/**
+	 * @dataProvider data_wp_dashboard_widget_states
+	 */
+	public function test_register_maybe_refresh_token_for_screen__wp_dashboard( $setting_enabled, $filter_enabled, $expected_token ) {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+
+		update_option( Dashboard_Widget_Enabled::OPTION, $setting_enabled );
+		if ( ! $filter_enabled ) {
+			add_filter( 'googlesitekit_show_wp_dashboard_widget', '__return_false' );
+		}
+
+		$auth = new Authentication( $context, null, $user_options );
+
+		remove_all_actions( 'current_screen' );
+		$auth->register();
+
+		$this->fake_proxy_site_connection();
+
+		$oauth_client = $auth->get_oauth_client();
+		$oauth_client->set_token(
+			array(
+				'access_token'  => 'test-access-token',
+				'refresh_token' => 'test-refresh-token',
+			)
+		);
+		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
+
+		FakeHttp::fake_google_http_handler(
+			$oauth_client->get_client(),
+			function () {
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
+						)
+					)
+				);
+			}
+		);
+
+		do_action( 'current_screen', WP_Screen::get( 'dashboard' ) );
+
+		$this->assertEquals( $expected_token, $oauth_client->get_access_token(), 'Access token should only be refreshed on the WordPress dashboard when the widget is enabled.' );
+	}
+
+	public function data_wp_dashboard_widget_states() {
+		return array(
+			'widget enabled'             => array( true, true, 'new-test-access-token' ),
+			'widget disabled by setting' => array( false, true, 'test-access-token' ),
+			'widget disabled by filter'  => array( true, false, 'test-access-token' ),
+		);
 	}
 
 	public function test_register_maybe_refresh_token_for_screen__editor_with_shared_modules() {
