@@ -67,6 +67,7 @@ export interface Publication {
 		contentPolicyState: string;
 		policyInfoLink?: string;
 	};
+	displayName?: string;
 	languageCode?: string;
 	regionCode?: string;
 	rrmProduct?: {
