@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import type { FC, ReactNode } from 'react';
 
 /**
@@ -57,6 +58,7 @@ const INLINE_TAB_ID = 'googlesitekit-rrm-cta-preview-tab-inline';
 
 const CTAPreview: FC< Props > = ( {
 	children,
+	className = '',
 	title = __( 'See how it looks', 'google-site-kit' ),
 	description = __(
 		'The CTA will be implemented automatically as a pop-up. To display it inline, you will need to add a code snippet to the relevant page.',
@@ -76,7 +78,12 @@ const CTAPreview: FC< Props > = ( {
 	}
 
 	return (
-		<div className="googlesitekit-rrm-cta-preview">
+		<div
+			className={ classnames(
+				'googlesitekit-rrm-cta-preview',
+				className
+			) }
+		>
 			<div className="googlesitekit-rrm-cta-preview__header">
 				<Typography
 					as="h3"

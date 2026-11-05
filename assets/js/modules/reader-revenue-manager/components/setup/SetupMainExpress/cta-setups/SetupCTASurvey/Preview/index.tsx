@@ -108,6 +108,7 @@ const Preview: FC< PreviewProps > = ( {
 									<input
 										className="googlesitekit-rrm-cta-preview-pane__radio"
 										id={ `${ instanceID }-${ index }` }
+										name={ `${ instanceID }` }
 										type="radio"
 										disabled
 										readOnly

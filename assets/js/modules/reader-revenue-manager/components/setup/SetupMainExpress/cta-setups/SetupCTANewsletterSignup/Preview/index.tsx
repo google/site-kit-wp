@@ -24,6 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
+import { useInstanceId } from '@wordpress/compose';
 import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -54,18 +55,21 @@ const Preview: FC< PreviewProps > = ( {
 	ctaTitle,
 	publicationName,
 } ) => {
+	const instanceID = useInstanceId(
+		Preview,
+		'googlesitekit-rrm-cta-preview-pane'
+	);
+
 	return (
 		<div className="googlesitekit-rrm-cta-preview-pane">
 			<div className="googlesitekit-rrm-cta-preview-pane__header">
-				{ publicationName && (
-					<P
-						className="googlesitekit-rrm-cta-preview-pane__publication"
-						size={ SIZE_SMALL }
-					>
-						{ publicationName ||
-							__( 'Publication name', 'google-site-kit' ) }
-					</P>
-				) }
+				<P
+					className="googlesitekit-rrm-cta-preview-pane__publication"
+					size={ SIZE_SMALL }
+				>
+					{ publicationName ||
+						__( 'Publication name', 'google-site-kit' ) }
+				</P>
 				{ ctaTitle && (
 					<Typography as="h4" size={ SIZE_LARGE } type={ TYPE_TITLE }>
 						{ ctaTitle }
@@ -81,11 +85,12 @@ const Preview: FC< PreviewProps > = ( {
 				{ consentEnabled && (
 					<label
 						className="googlesitekit-rrm-cta-preview-pane__newsletter-consent"
-						htmlFor="consent"
+						htmlFor={ `${ instanceID }` }
 					>
 						<input
 							className="googlesitekit-rrm-cta-preview-pane__checkbox"
-							id="consent"
+							id={ `${ instanceID }` }
+							name={ `${ instanceID }` }
 							type="checkbox"
 							disabled
 							readOnly
