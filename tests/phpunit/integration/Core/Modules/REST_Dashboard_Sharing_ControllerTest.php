@@ -131,7 +131,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$expected_response = array(
-			'settings'    => array(
+			'settings'    => (object) array(
 				// admin_1 is the owner and can add/edit search-console settings but
 				// NOT analytics settings.
 				'search-console'     => array(
@@ -198,7 +198,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$expected_response = array(
-			'settings'    => array(
+			'settings'    => (object) array(
 				'search-console'     => array(
 					'sharedRoles' => array(),
 					'management'  => 'owner',
@@ -267,7 +267,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$expected_response = array(
-			'settings'    => array(
+			'settings'    => (object) array(
 				'search-console'     => array(
 					'sharedRoles' => array( 'contributor' ),
 					'management'  => 'all_admins',
