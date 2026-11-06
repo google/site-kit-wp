@@ -52,7 +52,11 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
-import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
+import {
+	dismissPromptEndpoint,
+	dismissedPromptsEndpoint,
+} from '@tests/js/mock-dismiss-prompt-endpoints';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -85,6 +89,10 @@ describe( 'TrafficOverviewWidget', () => {
 	);
 
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
+
+	const expirableItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/expirable-items'
+	);
 
 	const searchAnalyticsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
@@ -1362,6 +1370,64 @@ describe( 'TrafficOverviewWidget', () => {
 			expect( requestedTimerSlugs() ).toEqual( [
 				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
 			] );
+		} );
+
+		it( 'should not start the timers, count the visit or trigger a survey when Analytics is not connected', async () => {
+			// A new registry, without the expirable items and the dismissed
+			// prompts that the outer `beforeEach()` stores, so the survey
+			// triggers would have to request them.
+			registry = createTestRegistry();
+			registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+			provideUserInfo( registry );
+			provideSiteInfo( registry );
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+					connected: false,
+				},
+			] );
+			provideModuleRegistrations( registry );
+			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			fetchMock.get( expirableItemsEndpoint, { body: {}, status: 200 } );
+			fetchMock.get( dismissedPromptsEndpoint, {
+				body: {},
+				status: 200,
+			} );
+			fetchMock.post( surveyTriggerEndpoint, { body: {}, status: 200 } );
+
+			const { container, waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			act( () => {
+				simulateIntersection(
+					container.querySelector(
+						'.googlesitekit-widget--analyticsTrafficOverview'
+					) as Element,
+					true
+				);
+			} );
+
+			await waitForRegistry();
+
+			// The Recent activity tab still shows, with its Analytics setup CTA.
+			expect(
+				screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole( 'button', { name: 'Set up Analytics' } )
+			).toBeInTheDocument();
+
+			expect( fetchMock ).not.toHaveFetched( expirableItemsEndpoint );
+			expect( fetchMock ).not.toHaveFetched(
+				setExpirableItemTimersEndpoint
+			);
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+			expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 		} );
 	} );
 } );
