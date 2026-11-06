@@ -36,7 +36,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import {
 	act,
 	createTestRegistry,
@@ -173,8 +173,11 @@ describe( 'InsightNotice', () => {
 		).toBe( 0 );
 	} );
 
-	it( 'should trigger the survey and track `vote_up` with no label when "Yes, this was helpful" is clicked', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+	it( 'should send feedback and track `vote_up` with no label when "Yes, this was helpful" is clicked', async () => {
+		fetchMock.post( feedbackEndpoint, {
+			status: 200,
+			body: { success: true },
+		} );
 
 		provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
 
@@ -197,18 +200,24 @@ describe( 'InsightNotice', () => {
 		);
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID: 'vote:fresh_data_recent_activity_widget:up',
+						namespace: 'fresh_data',
+						group: 'recent_activity_widget',
+						key: 'vote',
+						value: 'up',
 					},
 				},
 			} )
 		);
 	} );
 
-	it( 'should trigger the survey and track `vote_down` with no label when "No, this was not helpful" is clicked', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+	it( 'should send feedback and track `vote_down` with no label when "No, this was not helpful" is clicked', async () => {
+		fetchMock.post( feedbackEndpoint, {
+			status: 200,
+			body: { success: true },
+		} );
 
 		provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
 
@@ -231,11 +240,13 @@ describe( 'InsightNotice', () => {
 		);
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID:
-							'vote:fresh_data_recent_activity_widget:down',
+						namespace: 'fresh_data',
+						group: 'recent_activity_widget',
+						key: 'vote',
+						value: 'down',
 					},
 				},
 			} )
@@ -243,7 +254,10 @@ describe( 'InsightNotice', () => {
 	} );
 
 	it( 'should keep the clicked thumb selected when the report updates', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+		fetchMock.post( feedbackEndpoint, {
+			status: 200,
+			body: { success: true },
+		} );
 
 		provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
 
@@ -259,7 +273,7 @@ describe( 'InsightNotice', () => {
 		);
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 1, surveyTriggerEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 1, feedbackEndpoint )
 		);
 
 		act( () => {
@@ -277,8 +291,11 @@ describe( 'InsightNotice', () => {
 		).toHaveAttribute( 'aria-pressed', 'false' );
 	} );
 
-	it( 'should track `vote_up` with the category `mainDashboardViewOnly_recent-activity-survey` and not send the `survey-trigger` request when a view-only user clicks "Yes, this was helpful"', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+	it( 'should track `vote_up` with the category `mainDashboardViewOnly_recent-activity-survey` and still send feedback when a view-only user clicks "Yes, this was helpful"', async () => {
+		fetchMock.post( feedbackEndpoint, {
+			status: 200,
+			body: { success: true },
+		} );
 
 		provideUserAuthentication( registry, { authenticated: false } );
 
@@ -308,7 +325,16 @@ describe( 'InsightNotice', () => {
 
 		await act( waitForVote );
 
-		expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
+		expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
+			body: {
+				data: {
+					namespace: 'fresh_data',
+					group: 'recent_activity_widget',
+					key: 'vote',
+					value: 'up',
+				},
+			},
+		} );
 	} );
 
 	it( 'should render a placeholder in place of the notice while the report is resolving', () => {

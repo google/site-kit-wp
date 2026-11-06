@@ -24,7 +24,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import { PERMISSION_READ_SHARED_MODULE_DATA } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
@@ -36,6 +39,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import * as scrollUtils from '@/js/util/scroll';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -62,7 +66,12 @@ describe( 'SeeAllRecentPostsLink', () => {
 	);
 	const scrollToSpy = jest.spyOn( global, 'scrollTo' );
 
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideModules( registry, [
@@ -195,5 +204,50 @@ describe( 'SeeAllRecentPostsLink', () => {
 			top: 100,
 			behavior: 'smooth',
 		} );
+	} );
+
+	it( 'should track `change_tab` under `mainDashboard_content-tabs` labeled `googlesitekit-latest-content-tab` when clicked', () => {
+		provideRecentContent(
+			registry,
+			[ LATEST_POST, EARLIER_POST ],
+			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+		);
+
+		render( <SeeAllRecentPostsLink />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click(
+			screen.getByRole( 'link', { name: 'See all recent posts' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_content-tabs',
+			'change_tab',
+			'googlesitekit-latest-content-tab'
+		);
+	} );
+
+	it( 'should not track `change_tab` when the Latest content tab is already active', () => {
+		provideRecentContent(
+			registry,
+			[ LATEST_POST, EARLIER_POST ],
+			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setActiveContentTab( 'googlesitekit-latest-content-tab' );
+
+		render( <SeeAllRecentPostsLink />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click(
+			screen.getByRole( 'link', { name: 'See all recent posts' } )
+		);
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 } );

@@ -26,7 +26,10 @@ import { isObject, isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import { Registry, commonActions, createReducer } from 'googlesitekit-data';
-import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import {
+	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+	FEATURE_DISCOVERY_SETUP_REQUEST_KEY,
+} from '@/js/components/feature-discovery/constants';
 import { isFeatureEnabled } from '@/js/features';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
@@ -83,6 +86,45 @@ const setupTypes = Object.values( FEATURE_SETUP_TYPES );
 const { clearActionError, setErrorForAction } = errorStoreActions;
 
 type SetupFeatureResult = { error?: unknown };
+
+// Sets up a `background-toggle` feature, either by handing the setup over to
+// the feature's own setup component or by running its enable routine.
+async function setupBackgroundToggleFeature(
+	registry: Registry,
+	feature: Feature,
+	slug: string
+): Promise< SetupFeatureResult > {
+	// A feature with its own setup component runs its setup in the list, so the
+	// request is handed over and the detail panel this was triggered from is
+	// closed.
+	if ( feature.setup.SetupComponent ) {
+		const { setValue } = registry.dispatch( CORE_UI );
+
+		setValue( FEATURE_DISCOVERY_SETUP_REQUEST_KEY, slug );
+		setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, false );
+
+		return {};
+	}
+
+	if ( ! feature.setup.activate ) {
+		return {};
+	}
+
+	const { error } = await feature.setup.activate( registry );
+
+	if ( error ) {
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.setErrorForAction( error, 'setupFeature', [ slug ] );
+		return { error };
+	}
+
+	registry
+		.dispatch( CORE_FEATURE_DISCOVERY )
+		.clearActionError( 'setupFeature', [ slug ] );
+
+	return {};
+}
 
 export const actions = {
 	/**
@@ -228,7 +270,9 @@ export const actions = {
 	 * opens the feature's existing panel over the hub.
 	 *
 	 * For `background-toggle` features, this runs the feature's own enable
-	 * routine, and the user stays on the hub.
+	 * routine, and the user stays on the hub. Where the feature brings its own
+	 * setup component, this instead requests that component to run the setup
+	 * and closes the feature detail panel.
 	 *
 	 * @since 1.189.0
 	 * @since 1.190.0 Implemented the `setup-flow` setup type.
@@ -289,24 +333,9 @@ export const actions = {
 				if (
 					feature.setup.type === FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE
 				) {
-					if ( ! feature.setup.activate ) {
-						return {};
-					}
-
-					const { error } = ( yield commonActions.await(
-						feature.setup.activate( registry )
+					return ( yield commonActions.await(
+						setupBackgroundToggleFeature( registry, feature, slug )
 					) ) as SetupFeatureResult;
-
-					if ( error ) {
-						yield setErrorForAction( error, 'setupFeature', [
-							slug,
-						] );
-						return { error };
-					}
-
-					yield clearActionError( 'setupFeature', [ slug ] );
-
-					return {};
 				}
 
 				if ( feature.setup.type !== FEATURE_SETUP_TYPES.SETUP_FLOW ) {

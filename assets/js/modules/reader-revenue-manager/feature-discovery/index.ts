@@ -39,6 +39,7 @@ import {
 	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import type { ConfiguredCTA } from '@/js/modules/reader-revenue-manager/datastore/types';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 import { FEATURE_SLUG_NEWSLETTER_SIGNUP } from './constants';
 
@@ -335,14 +336,17 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 
 					const configuredCTAs = select(
 						MODULES_READER_REVENUE_MANAGER
-					).getConfiguredCTAs();
+					).getConfiguredCTAs() as
+						| Record< string, ConfiguredCTA >
+						| undefined;
 
 					if ( configuredCTAs === undefined ) {
 						return undefined;
 					}
 
-					return Object.values( configuredCTAs ).includes(
-						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+					return Object.values( configuredCTAs ).some(
+						( { type } ) =>
+							type === EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
 					);
 				},
 			},

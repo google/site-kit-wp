@@ -1,5 +1,5 @@
 /**
- * ThumbsSurveyTrigger stories.
+ * ThumbsFeedback stories.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -32,12 +32,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import { provideSiteInfo, provideUserAuthentication } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import ThumbsSurveyTrigger from './ThumbsSurveyTrigger';
+import ThumbsFeedback from './ThumbsFeedback';
 
-function Template( args: ComponentProps< typeof ThumbsSurveyTrigger > ) {
-	return <ThumbsSurveyTrigger { ...args } />;
+function Template( args: ComponentProps< typeof ThumbsFeedback > ) {
+	return <ThumbsFeedback { ...args } />;
 }
 
 export const Default = Template.bind( {} ) as Story;
@@ -73,10 +74,11 @@ Feedback.args = {
 };
 
 export default {
-	title: 'Components/Surveys/ThumbsSurveyTrigger',
-	component: ThumbsSurveyTrigger,
+	title: 'Components/Feedback/ThumbsFeedback',
+	component: ThumbsFeedback,
 	args: {
-		voteID: 'example',
+		feedbackNamespace: 'feature_hub',
+		feedbackGroup: 'example',
 		popperPlacement: 'top-start',
 	},
 	parameters: { padding: '300px 24px 24px' },
@@ -84,8 +86,8 @@ export default {
 		( StoryComponent: Story ) => {
 			function setupRegistry( registry: WPDataRegistry ) {
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
-					{ body: {} },
+					feedbackEndpoint,
+					{ body: { success: true } },
 					{ overwriteRoutes: true }
 				);
 				provideSiteInfo( registry );

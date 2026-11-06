@@ -62,6 +62,6 @@ Default.parameters = {
 Default.scenario = {};
 
 export default {
-	title: 'Components/Surveys/FeedbackMenu',
+	title: 'Components/Feedback/FeedbackMenu',
 	component: FeedbackMenu,
 };

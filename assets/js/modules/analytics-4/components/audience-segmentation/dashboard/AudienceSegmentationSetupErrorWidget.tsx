@@ -58,6 +58,7 @@ export interface AudienceSegmentationSetupErrorWidgetProps {
 	isAudienceCreationVariant?: boolean;
 	onRetry: () => void;
 	onDismiss: () => void;
+	dismissLabel?: string;
 }
 
 const AudienceSegmentationSetupErrorNoticeWithObserver =
@@ -73,6 +74,7 @@ const AudienceSegmentationSetupErrorWidget: FC<
 	isAudienceCreationVariant = false,
 	onRetry,
 	onDismiss,
+	dismissLabel = __( 'No thanks', 'google-site-kit' ),
 } ) => {
 	const normalizedErrors = Array.isArray( errors ) ? errors : [ errors ];
 	const isPermissionsError = isInsufficientPermissionsError(
@@ -172,7 +174,7 @@ const AudienceSegmentationSetupErrorWidget: FC<
 					onClick: () => handleRetry( label ),
 				} }
 				dismissButton={ {
-					label: __( 'No thanks', 'google-site-kit' ),
+					label: dismissLabel,
 					onClick: () => handleDismiss( label ),
 				} }
 				onInView={ () => trackEvents.view( label ) }

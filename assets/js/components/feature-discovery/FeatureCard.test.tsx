@@ -301,6 +301,33 @@ describe( 'FeatureCard', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should render the CTA given by ctaButton in place of the default one', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Try it now',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard
+				slug="test-feature"
+				ctaButton={ <button>Custom CTA</button> }
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Custom CTA' } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Try it now' } )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'should render the dismiss control only when the card is dismissible', () => {
 		provideFeatures( registry, [ TEST_FEATURE ] );
 
@@ -371,8 +398,8 @@ describe( 'FeatureCard', () => {
 		async ( label, reason ) => {
 			provideFeatures( registry, [ TEST_FEATURE ] );
 
-			const triggerSurvey = jest
-				.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+			const sendFeedback = jest
+				.spyOn( registry.dispatch( CORE_USER ), 'sendFeedback' )
 				.mockResolvedValue( {} );
 
 			const endpoint = new RegExp(
@@ -406,11 +433,14 @@ describe( 'FeatureCard', () => {
 			} );
 
 			if ( reason ) {
-				expect( triggerSurvey ).toHaveBeenCalledWith(
-					`feedback:feature_relevancy_test-feature:${ reason }`
-				);
+				expect( sendFeedback ).toHaveBeenCalledWith( {
+					namespace: 'feature_hub',
+					group: 'feature_relevancy_test-feature',
+					key: 'dismiss_reason',
+					value: reason,
+				} );
 			} else {
-				expect( triggerSurvey ).not.toHaveBeenCalled();
+				expect( sendFeedback ).not.toHaveBeenCalled();
 			}
 
 			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
