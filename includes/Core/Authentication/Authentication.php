@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
+use Google\Site_Kit\Core\Admin\Dashboard_Widget_Enabled;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
@@ -221,9 +222,18 @@ final class Authentication implements Provides_Feature_Metrics {
 	protected $rest_authentication_controller;
 
 	/**
+	 * Dashboard_Widget_Enabled instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Dashboard_Widget_Enabled
+	 */
+	private $dashboard_widget_enabled;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added Dashboard_Widget_Enabled instance.
 	 *
 	 * @param Context      $context      Plugin context.
 	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
@@ -257,6 +267,7 @@ final class Authentication implements Provides_Feature_Metrics {
 		$this->disconnected_reason            = new Disconnected_Reason( $this->user_options );
 		$this->initial_version                = new Initial_Version( $this->user_options );
 		$this->rest_authentication_controller = new REST_Authentication_Controller( $this );
+		$this->dashboard_widget_enabled       = new Dashboard_Widget_Enabled( $this->options );
 	}
 
 	/**
@@ -650,6 +661,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.42.0
 	 * @since 1.70.0 Moved the closure within regiser() to this method.
+	 * @since n.e.x.t Skips the WordPress dashboard screen when the WordPress dashboard widget is disabled.
 	 *
 	 * @param string $screen_id The unique ID of the current WP_Screen.
 	 *
@@ -657,6 +669,10 @@ final class Authentication implements Provides_Feature_Metrics {
 	 */
 	private function maybe_refresh_token_for_screen( $screen_id ) {
 		if ( 'dashboard' !== $screen_id && 'toplevel_page_googlesitekit-dashboard' !== $screen_id ) {
+			return;
+		}
+
+		if ( 'dashboard' === $screen_id && ! $this->dashboard_widget_enabled->should_display() ) {
 			return;
 		}
 

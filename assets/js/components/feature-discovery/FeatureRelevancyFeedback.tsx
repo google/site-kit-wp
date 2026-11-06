@@ -1,5 +1,5 @@
 /**
- * FeatureThumbsSurveyTrigger component.
+ * FeatureRelevancyFeedback component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -34,24 +34,26 @@ import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import {
 	VOTE_DIRECTION_DOWN,
 	VoteDirection,
-} from '@/js/components/surveys/constants';
-import { FeedbackMenuOption } from '@/js/components/surveys/FeedbackMenu';
-import ThumbsSurveyTrigger from '@/js/components/surveys/ThumbsSurveyTrigger';
+} from '@/js/components/feedback/constants';
+import { FeedbackMenuOption } from '@/js/components/feedback/FeedbackMenu';
+import ThumbsFeedback from '@/js/components/feedback/ThumbsFeedback';
 import {
 	CORE_FEATURE_DISCOVERY,
+	FEATURE_HUB_FEEDBACK_NAMESPACE,
+	FEATURE_RELEVANCY_FEEDBACK_KEYS,
 	FEATURE_RELEVANCY_REASONS,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import { getFeatureRelevancyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { getFeatureRelevancyFeedbackGroup } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
-interface FeatureThumbsSurveyTriggerProps {
+interface FeatureRelevancyFeedbackProps {
 	slug: string;
 }
 
-const FeatureThumbsSurveyTrigger: FC< FeatureThumbsSurveyTriggerProps > = ( {
+const FeatureRelevancyFeedback: FC< FeatureRelevancyFeedbackProps > = ( {
 	slug,
 } ) => {
-	const { triggerSurvey } = useDispatch( CORE_USER );
+	const { sendFeedback } = useDispatch( CORE_USER );
 	const { setFeatureRelevancyVote } = useDispatch( CORE_FEATURE_DISCOVERY );
 
 	const [ voteDirection, setVoteDirection ] =
@@ -71,10 +73,7 @@ const FeatureThumbsSurveyTrigger: FC< FeatureThumbsSurveyTriggerProps > = ( {
 					'It’s not relevant to my site goals',
 					'google-site-kit'
 				),
-				value: getFeatureRelevancyTriggerID(
-					slug,
-					FEATURE_RELEVANCY_REASONS.NOT_RELEVANT
-				),
+				value: FEATURE_RELEVANCY_REASONS.NOT_RELEVANT,
 			},
 			{
 				id: FEATURE_RELEVANCY_REASONS.ALREADY_USING,
@@ -82,38 +81,34 @@ const FeatureThumbsSurveyTrigger: FC< FeatureThumbsSurveyTriggerProps > = ( {
 					'I’m already using another tool',
 					'google-site-kit'
 				),
-				value: getFeatureRelevancyTriggerID(
-					slug,
-					FEATURE_RELEVANCY_REASONS.ALREADY_USING
-				),
+				value: FEATURE_RELEVANCY_REASONS.ALREADY_USING,
 			},
 			{
 				id: FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED,
 				label: __( 'Setup seems complex', 'google-site-kit' ),
-				value: getFeatureRelevancyTriggerID(
-					slug,
-					FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED
-				),
+				value: FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED,
 			},
 			{
 				id: FEATURE_RELEVANCY_REASONS.SOMETHING_ELSE,
 				label: __( 'Something else', 'google-site-kit' ),
-				value: getFeatureRelevancyTriggerID(
-					slug,
-					FEATURE_RELEVANCY_REASONS.SOMETHING_ELSE
-				),
+				value: FEATURE_RELEVANCY_REASONS.SOMETHING_ELSE,
 			},
 		],
-		[ slug ]
+		[]
 	);
 
 	const onSelectFeedback = useCallback(
 		( value: string | undefined ) => {
 			if ( value ) {
-				triggerSurvey( value );
+				sendFeedback( {
+					namespace: FEATURE_HUB_FEEDBACK_NAMESPACE,
+					group: getFeatureRelevancyFeedbackGroup( slug ),
+					key: FEATURE_RELEVANCY_FEEDBACK_KEYS.VOTE_REASON,
+					value,
+				} );
 			}
 		},
-		[ triggerSurvey ]
+		[ sendFeedback, slug ]
 	);
 
 	const onVote = useCallback(
@@ -125,11 +120,13 @@ const FeatureThumbsSurveyTrigger: FC< FeatureThumbsSurveyTriggerProps > = ( {
 	);
 
 	return (
-		<ThumbsSurveyTrigger
+		<ThumbsFeedback
 			ariaLabel={ __(
 				'Is this service relevant to you?',
 				'google-site-kit'
 			) }
+			feedbackNamespace={ FEATURE_HUB_FEEDBACK_NAMESPACE }
+			feedbackGroup={ getFeatureRelevancyFeedbackGroup( slug ) }
 			feedbackOptions={ {
 				[ VOTE_DIRECTION_DOWN ]: feedbackOptions,
 			} }
@@ -137,9 +134,8 @@ const FeatureThumbsSurveyTrigger: FC< FeatureThumbsSurveyTriggerProps > = ( {
 			onVote={ onVote }
 			popperPlacement="top-start"
 			voteDirection={ voteDirection || relevancyVote }
-			voteID={ `feature_relevancy_${ slug }` }
 		/>
 	);
 };
 
-export default FeatureThumbsSurveyTrigger;
+export default FeatureRelevancyFeedback;
