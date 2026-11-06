@@ -78,6 +78,7 @@ export default function createTrackEvent(
 				resolve();
 			}
 
+			// eslint-disable-next-line camelcase
 			dataLayerPush( 'event', action, { ...eventData, event_callback } );
 
 			// If the client-side opt-out is present, the event_callback will never be called

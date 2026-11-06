@@ -104,8 +104,6 @@ class SiteVerification extends Component {
 					loading: false,
 					siteURL: identifier,
 				} );
-
-				return;
 			} catch ( err ) {
 				let message = err.message;
 

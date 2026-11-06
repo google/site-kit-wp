@@ -121,6 +121,7 @@ describe( 'test utilities', () => {
 			expect( listener_b ).toHaveBeenCalledTimes( 1 ); // false
 			expect( listener_c ).toHaveBeenCalledTimes( 0 ); // not called (iteration stops at first false)
 
+			// eslint-disable-next-line camelcase
 			listener_b.mockImplementation( () => true );
 			await updateRegistry(); // call 2
 			expect( subscribeResolved ).toBe( false );
@@ -128,6 +129,7 @@ describe( 'test utilities', () => {
 			expect( listener_b ).toHaveBeenCalledTimes( 2 ); // true
 			expect( listener_c ).toHaveBeenCalledTimes( 1 ); // false
 
+			// eslint-disable-next-line camelcase
 			listener_c.mockImplementation( () => true );
 			await updateRegistry(); // call 3
 			expect( subscribeResolved ).toBe( true );

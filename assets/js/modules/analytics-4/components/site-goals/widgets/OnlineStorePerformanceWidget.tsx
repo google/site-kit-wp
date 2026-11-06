@@ -105,25 +105,20 @@ interface DateRange {
 	compareEndDate?: string;
 }
 
-const EVENT_TOTAL_LABELS = {
-	purchase: __( 'Total sales', 'google-site-kit' ),
-	add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
-};
-
 /**
  * Builds the chart tile's title from the primary event and the date range.
  *
- * An event added to `EVENT_TOTAL_LABELS` needs a branch here too, or its chart
- * tile falls back to the sales title.
+ * An event added to `EcommerceKeyActionEvent` needs a branch here too, or its
+ * chart tile falls back to the sales title.
  *
  * @since 1.188.0
  *
- * @param {string} primaryEvent  The Key action's event, a key of `EVENT_TOTAL_LABELS`.
+ * @param {string} primaryEvent  The Key action's event.
  * @param {number} dateRangeDays The number of days the selected date range covers.
  * @return {string} The chart tile's title.
  */
 function getChartTitle(
-	primaryEvent: keyof typeof EVENT_TOTAL_LABELS,
+	primaryEvent: EcommerceKeyActionEvent,
 	dateRangeDays: number
 ) {
 	if ( primaryEvent === 'add_to_cart' ) {

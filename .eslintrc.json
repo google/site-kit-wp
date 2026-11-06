@@ -1,4 +1,5 @@
 {
+	"root": true,
 	"extends": [
 		"plugin:@wordpress/eslint-plugin/recommended",
 		"plugin:jest/recommended",
@@ -14,6 +15,21 @@
 		"fetchMock": false
 	},
 	"rules": {
+		"import/no-extraneous-dependencies": [
+			"error",
+			{
+				"peerDependencies": true,
+				"packageDir": [
+					"./",
+					"./assets",
+					"./storybook",
+					"./tests/e2e",
+					"./tests/js",
+					"./tests/playwright",
+					"./tests/vrt"
+				]
+			}
+		],
 		"import/no-unresolved": [
 			"error",
 			{
@@ -63,6 +79,10 @@
 		"lodash/import-scope": [
 			"error",
 			"member"
+		],
+		"react-hooks/exhaustive-deps": [
+			"warn",
+			{}
 		],
 		"require-await": "error",
 		"react/function-component-definition": [
@@ -181,6 +201,7 @@
 			"@wordpress/i18n__non-shim",
 			"@wordpress/api-fetch__non-shim"
 		],
+		"import/internal-regex": "^(@wordpress/(?!(icons|interface|style-engine))|@/|@tests/)",
 		"import/parsers": {
 			"@typescript-eslint/parser": [
 				".ts",
@@ -239,7 +260,9 @@
 			},
 			"rules": {
 				"@typescript-eslint/ban-ts-comment": "off",
+				"@typescript-eslint/no-duplicate-imports": "off",
 				"@typescript-eslint/no-shadow": "error",
+				"no-duplicate-imports": "error",
 				"jsdoc/require-param-type": "off",
 				"jsdoc/require-returns-type": "off",
 				"no-shadow": "off",

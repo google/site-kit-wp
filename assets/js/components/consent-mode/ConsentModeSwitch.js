@@ -144,46 +144,44 @@ export default function ConsentModeSwitch( { loading } ) {
 						) }
 					</P>
 				) }
-				{
-					<LoadingWrapper
-						className="googlesitekit-settings-consent-mode-switch-description--loading"
-						loading={ loading }
-						width="750px"
-						height="42px"
-						smallWidth="386px"
-						smallHeight="84px"
-						tabletWidth="540px"
-						tabletHeight="84px"
-					>
-						<P className="googlesitekit-settings-consent-mode-switch-description">
-							{ createInterpolateElement(
-								__(
-									'Consent mode will help adjust tracking on your site, so only visitors who have explicitly given consent are tracked. <br />This is required in some parts of the world, like the European Economic Area. <a>Learn more</a>',
-									'google-site-kit'
+				<LoadingWrapper
+					className="googlesitekit-settings-consent-mode-switch-description--loading"
+					loading={ loading }
+					width="750px"
+					height="42px"
+					smallWidth="386px"
+					smallHeight="84px"
+					tabletWidth="540px"
+					tabletHeight="84px"
+				>
+					<P className="googlesitekit-settings-consent-mode-switch-description">
+						{ createInterpolateElement(
+							__(
+								'Consent mode will help adjust tracking on your site, so only visitors who have explicitly given consent are tracked. <br />This is required in some parts of the world, like the European Economic Area. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								br: <br />,
+								a: (
+									<Link
+										href={ consentModeDocumentationURL }
+										aria-label={ __(
+											'Learn more about consent mode',
+											'google-site-kit'
+										) }
+										onClick={ async () => {
+											await trackEvent(
+												`${ viewContext }_CoMo`,
+												'como_learn_more'
+											);
+										} }
+										external
+									/>
 								),
-								{
-									br: <br />,
-									a: (
-										<Link
-											href={ consentModeDocumentationURL }
-											aria-label={ __(
-												'Learn more about consent mode',
-												'google-site-kit'
-											) }
-											onClick={ async () => {
-												await trackEvent(
-													`${ viewContext }_CoMo`,
-													'como_learn_more'
-												);
-											} }
-											external
-										/>
-									),
-								}
-							) }
-						</P>
-					</LoadingWrapper>
-				}
+							}
+						) }
+					</P>
+				</LoadingWrapper>
 			</div>
 			{ showConfirmDialog && (
 				<ConfirmDisableConsentModeDialog
