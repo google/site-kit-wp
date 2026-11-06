@@ -132,7 +132,7 @@ const Preview: FC< PreviewProps > = ( {
 					sprintf(
 						/* translators: %s is the publication name. */
 						__(
-							"Your responses to this survey are anonymous. Please see the %1$s's <a>Privacy Policy</a> to learn more about how they use this information. Google collects aggregated anonymous data for performance measurement purposes.",
+							"Your responses to this survey are anonymous. Please see the %1$s’s <a>Privacy Policy</a> to learn more about how they use this information. Google collects aggregated anonymous data for performance measurement purposes.",
 							'google-site-kit'
 						),
 						publicationName ||
