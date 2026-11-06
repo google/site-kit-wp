@@ -32,6 +32,7 @@ import {
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	buildSiteGoalsBreakdownValuesReportOptions,
+	buildSiteGoalsEventCountReportOptions,
 	seedSiteGoalsBreakdownValuesReport,
 	seedSiteGoalsEventCountReport,
 } from '@/js/modules/analytics-4/components/site-goals/test-utils';
@@ -265,6 +266,9 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 
 	it( 'should return false without requesting a report when the breakdown dimensions are missing', async () => {
 		provideState( { availableCustomDimensions: [] } );
+		// With no form plugin active, the lead widget would otherwise request
+		// its event count report to check for the removal notice.
+		provideSiteInfo( registry, { hasActiveLeadEventProviders: false } );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useShouldShowConversionTrackingDisabledNotice(),
@@ -278,6 +282,16 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 			false
 		);
 		expect( hasRequestedBreakdownValues( GOAL_TYPES.LEAD ) ).toBe( false );
+		expect(
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.hasStartedResolution( 'getReport', [
+					buildSiteGoalsEventCountReportOptions(
+						registry,
+						GOAL_TYPES.LEAD
+					),
+				] )
+		).toBe( false );
 	} );
 
 	it( 'should return undefined while a breakdown values report loads', () => {

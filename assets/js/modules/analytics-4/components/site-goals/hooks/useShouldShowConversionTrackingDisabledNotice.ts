@@ -49,6 +49,18 @@ function hasBreakdownTabs(
 	select: Select,
 	goalType: GoalType
 ): boolean | undefined {
+	const breakdownDimension =
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ goalType ];
+
+	const hasBreakdownDimension =
+		select( MODULES_ANALYTICS_4 ).hasCustomDimensions( breakdownDimension );
+
+	// Without the dimension the widget has no tabs, so no report is needed.
+	// Analytics also answers 400 for a dimension the property does not have.
+	if ( hasBreakdownDimension !== true ) {
+		return hasBreakdownDimension;
+	}
+
 	// A widget that shows the removal notice shows no tabs, even when the
 	// 90-day discovery window still holds breakdown values.
 	const isShowingContent = isSiteGoalsWidgetShowingContent(
@@ -58,18 +70,6 @@ function hasBreakdownTabs(
 
 	if ( isShowingContent !== true ) {
 		return isShowingContent;
-	}
-
-	const breakdownDimension =
-		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ goalType ];
-
-	const hasBreakdownDimension =
-		select( MODULES_ANALYTICS_4 ).hasCustomDimensions( breakdownDimension );
-
-	// Analytics answers 400 for a dimension the property does not have, so the
-	// report is only requested once the dimension exists.
-	if ( hasBreakdownDimension !== true ) {
-		return hasBreakdownDimension;
 	}
 
 	const isEcommerce = goalType === GOAL_TYPES.ECOMMERCE;
