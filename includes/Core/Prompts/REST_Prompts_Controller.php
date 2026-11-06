@@ -11,9 +11,10 @@
 namespace Google\Site_Kit\Core\Prompts;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use WP_Error;
+use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Prompts_Schema;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -76,6 +77,7 @@ class REST_Prompts_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.121.0
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -93,6 +95,9 @@ class REST_Prompts_Controller {
 						return new WP_REST_Response( $this->dismissed_prompts->get() );
 					},
 					'permission_callback' => $can_dismiss_prompt,
+				),
+				array(
+					'schema' => array( Dismissed_Prompts_Schema::class, 'get' ),
 				)
 			),
 			new REST_Route(
@@ -102,13 +107,10 @@ class REST_Prompts_Controller {
 					'callback'            => function ( WP_REST_Request $request ) {
 						$data = $request['data'];
 
+						// WordPress checks required properties and `minLength` only from 5.5.0,
+						// so an older version lets a request with no slug through to here.
 						if ( empty( $data['slug'] ) ) {
-							return new WP_Error(
-								'missing_required_param',
-								/* translators: %s: Missing parameter name */
-								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
-								array( 'status' => 400 )
-							);
+							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
 						}
 
 						$expiration = Dismissed_Prompts::DISMISS_PROMPT_PERMANENTLY;
@@ -123,10 +125,26 @@ class REST_Prompts_Controller {
 					'permission_callback' => $can_dismiss_prompt,
 					'args'                => array(
 						'data' => array(
-							'type'     => 'object',
-							'required' => true,
+							'type'        => 'object',
+							'description' => __( 'The prompt to dismiss.', 'google-site-kit' ),
+							'required'    => true,
+							'properties'  => array(
+								'slug'       => array(
+									'type'        => 'string',
+									'description' => __( 'Slug of the prompt.', 'google-site-kit' ),
+									'required'    => true,
+									'minLength'   => 1,
+								),
+								'expiration' => array(
+									'type'        => 'integer',
+									'description' => __( 'Seconds until the dismissal expires. Zero or less dismisses the prompt permanently.', 'google-site-kit' ),
+								),
+							),
 						),
 					),
+				),
+				array(
+					'schema' => array( Dismissed_Prompts_Schema::class, 'get' ),
 				)
 			),
 		);
