@@ -89,11 +89,9 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 		[ showFeatureTour ]
 	);
 
-	const { isTooltipVisible = false, target } = useSelect(
+	const tooltipTarget = useSelect(
 		( select ) =>
-			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
-				isTooltipVisible: false,
-			}
+			select( CORE_UI ).getValue( 'admin-screen-tooltip' )?.target
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -102,16 +100,13 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 		if ( ! menuOpen ) {
 			trackEvent( `${ viewContext }_headerbar`, 'open_helpmenu' );
 
-			if (
-				isTooltipVisible &&
-				target === `.${ HELP_MENU_BUTTON_CLASS }`
-			) {
+			if ( tooltipTarget === `.${ HELP_MENU_BUTTON_CLASS }` ) {
 				setValue( 'admin-screen-tooltip', undefined );
 			}
 		}
 
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen, viewContext, isTooltipVisible, target, setValue ] );
+	}, [ menuOpen, viewContext, tooltipTarget, setValue ] );
 
 	const handleMenuSelected = useCallback( () => {
 		setMenuOpen( false );
