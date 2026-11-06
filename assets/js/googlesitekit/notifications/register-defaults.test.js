@@ -48,7 +48,6 @@ import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import {
@@ -610,24 +609,6 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 				},
 			] );
 			providePendingSetup( { featureSlug: 'test-feature', returnTab } );
-
-			expect( await checkRequirements( registry ) ).toBe( false );
-		} );
-
-		it( 'should not be active when the pending feature is Reader Revenue Manager (full setup), which confirms itself through its own setup success surfaces instead', async () => {
-			// Registered with a success notice so that, were it not for the
-			// explicit exclusion, the notice would otherwise be shown.
-			provideFeatures( registry, [
-				{
-					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
-					setup: { isEnabled: () => true },
-					successNotice,
-				},
-			] );
-			providePendingSetup( {
-				featureSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
-				returnTab,
-			} );
 
 			expect( await checkRequirements( registry ) ).toBe( false );
 		} );

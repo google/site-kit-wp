@@ -119,7 +119,6 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { requireAdSenseLinked } from '@/js/modules/analytics-4/data-requirements';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
@@ -224,10 +223,6 @@ function requireFeatureDiscoverySetupSuccess( returnTab ) {
 		}
 
 		const { featureSlug } = pendingSetup;
-
-		if ( featureSlug === MODULE_SLUG_READER_REVENUE_MANAGER ) {
-			return false;
-		}
 
 		const feature = select( CORE_FEATURE_DISCOVERY ).getFeature(
 			featureSlug
