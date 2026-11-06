@@ -24,48 +24,27 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	RECENT_ACTIVITY_INTERACTION_TIMER,
 	RECENT_ACTIVITY_TAB_OPENED_TIMER,
-	RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
+	getExpiryFromNow,
 	provideRecentActivitySurveyState,
 	requestedTimerSlugs,
 	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import {
-	dismissPromptEndpoint,
-	dismissedPromptsEndpoint,
-} from '@tests/js/mock-dismiss-prompt-endpoints';
-import {
-	act,
-	createTestRegistry,
-	renderHook,
-	waitFor,
-} from '@tests/js/test-utils';
+import { DAY_IN_SECONDS } from '@/js/util/dates';
+import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
+import { act, createTestRegistry, renderHook } from '@tests/js/test-utils';
 import { useRecordRecentActivityTabOpen } from './useRecordRecentActivityTabOpen';
 
 describe( 'useRecordRecentActivityTabOpen', () => {
+	const expirableItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/expirable-items'
+	);
+
 	let registry: WPDataRegistry;
-
-	function tabOpenCount( count: number ) {
-		return {
-			[ RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG ]: {
-				expires: 0,
-				count,
-			},
-		};
-	}
-
-	// The response to a counted tab open has the count after the open.
-	function mockTabOpenCount( count: number ) {
-		fetchMock.post( dismissPromptEndpoint, {
-			body: tabOpenCount( count ),
-			status: 200,
-		} );
-	}
 
 	function render() {
 		return renderHook( () => useRecordRecentActivityTabOpen(), {
@@ -75,126 +54,112 @@ describe( 'useRecordRecentActivityTabOpen', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		// The response has the "tab opened" timer, the way it does after the
+		// first open, so a second open in the same page load would record an
+		// interaction if the callback ran again.
 		fetchMock.post( setExpirableItemTimersEndpoint, {
-			body: {},
+			body: {
+				[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: getExpiryFromNow(
+					RECENT_ACTIVITY_TAB_OPENED_TIMER.expiresInSeconds
+				),
+			},
 			status: 200,
 		} );
+		// A route for a request the hook must not send, so the assertions
+		// that it sends none can fail.
+		fetchMock.post( dismissPromptEndpoint, { body: {}, status: 200 } );
 	} );
 
-	it( 'should start the "tab opened" timer and count the tab open', async () => {
+	it( 'should start the "tab opened" timer, and record no interaction, when the user opens the tab for the first time', async () => {
 		provideRecentActivitySurveyState( registry );
-		mockTabOpenCount( 1 );
 
 		const { result } = render();
 
 		await act( () => result.current() );
 
-		// The callback does not wait for the timer to start.
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint, {
-				body: {
-					data: [
-						{
-							slug: RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
-							expiration:
-								RECENT_ACTIVITY_TAB_OPENED_TIMER.expiresInSeconds,
-						},
-					],
-				},
-			} )
-		);
-		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
+		expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint, {
 			body: {
-				data: {
-					slug: RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
-					expiration: 0,
-				},
+				data: [
+					{
+						slug: RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+						expiration:
+							RECENT_ACTIVITY_TAB_OPENED_TIMER.expiresInSeconds,
+					},
+				],
 			},
 		} );
-	} );
-
-	it( 'should count the tab open only once per page load', async () => {
-		provideRecentActivitySurveyState( registry );
-		mockTabOpenCount( 1 );
-
-		const { result } = render();
-
-		await act( () => result.current() );
-		await act( () => result.current() );
-
-		expect( fetchMock ).toHaveFetchedTimes( 1, dismissPromptEndpoint );
-	} );
-
-	it( 'should not record an interaction when the user opens the tab in the first page load', async () => {
-		provideRecentActivitySurveyState( registry );
-		mockTabOpenCount( 1 );
-
-		const { result } = render();
-
-		await act( () => result.current() );
-
-		expect( requestedTimerSlugs() ).not.toContain(
-			RECENT_ACTIVITY_INTERACTION_TIMER.slug
-		);
-	} );
-
-	it( 'should record an interaction when the user opens the tab in the second page load', async () => {
-		provideRecentActivitySurveyState( registry );
-		mockTabOpenCount( 2 );
-
-		const { result } = render();
-
-		await act( () => result.current() );
-
-		expect( requestedTimerSlugs() ).toContain(
-			RECENT_ACTIVITY_INTERACTION_TIMER.slug
-		);
-	} );
-
-	it( 'should load the dismissed prompts before counting the tab open, so their response cannot replace the count', async () => {
-		// The expirable items load, but the dismissed prompts do not.
-		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
-
-		// The dismissed prompts, from before this open.
-		let resolveDismissedPrompts: ( () => void ) | undefined;
-		fetchMock.getOnce(
-			dismissedPromptsEndpoint,
-			new Promise( ( resolve ) => {
-				resolveDismissedPrompts = () =>
-					resolve( { body: tabOpenCount( 1 ), status: 200 } );
-			} )
-		);
-		mockTabOpenCount( 2 );
-
-		const { result } = render();
-
-		let promise: Promise< void > | undefined;
-
-		act( () => {
-			promise = result.current();
-		} );
-
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( dismissedPromptsEndpoint )
-		);
-
+		expect( requestedTimerSlugs() ).toEqual( [
+			RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+		] );
 		expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+	} );
 
-		await act( async () => {
-			resolveDismissedPrompts?.();
-			await promise;
+	it.each( [
+		[ 'active', DAY_IN_SECONDS ],
+		[ 'expired', -DAY_IN_SECONDS ],
+	] )(
+		'should record an interaction, and not restart the "tab opened" timer, when the user opens the tab in a later page load, with the timer %s',
+		async ( _state, secondsFromNow ) => {
+			provideRecentActivitySurveyState( registry, {
+				expirableItems: {
+					[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]:
+						getExpiryFromNow( secondsFromNow ),
+				},
+			} );
+
+			const { result } = render();
+
+			await act( () => result.current() );
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+			] );
+		}
+	);
+
+	it( 'should record only the first open in a page load', async () => {
+		provideRecentActivitySurveyState( registry );
+
+		const { result } = render();
+
+		await act( () => result.current() );
+		await act( () => result.current() );
+
+		expect( requestedTimerSlugs() ).toEqual( [
+			RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+		] );
+	} );
+
+	it( 'should load the expirable items before deciding whether the open is an interaction', async () => {
+		fetchMock.getOnce( expirableItemsEndpoint, {
+			body: {
+				[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]:
+					getExpiryFromNow( DAY_IN_SECONDS ),
+			},
+			status: 200,
 		} );
 
-		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
-		expect(
-			registry
-				.select( CORE_USER )
-				.getPromptDismissCount(
-					RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG
-				)
-		).toBe( 2 );
-		expect( requestedTimerSlugs() ).toContain(
-			RECENT_ACTIVITY_INTERACTION_TIMER.slug
-		);
+		const { result } = render();
+
+		await act( () => result.current() );
+
+		expect( fetchMock ).toHaveFetched( expirableItemsEndpoint );
+		expect( requestedTimerSlugs() ).toEqual( [
+			RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+		] );
+	} );
+
+	it( 'should start no timer when the expirable items fail to load', async () => {
+		fetchMock.getOnce( expirableItemsEndpoint, {
+			body: { code: 'internal_server_error', message: 'Error' },
+			status: 500,
+		} );
+
+		const { result } = render();
+
+		await act( () => result.current() );
+
+		expect( console ).toHaveErrored();
+		expect( fetchMock ).not.toHaveFetched( setExpirableItemTimersEndpoint );
 	} );
 } );

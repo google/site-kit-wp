@@ -292,6 +292,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		freezeFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/expirable-items' )
 		);
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		provideLatestPost( registry, RECENT_POST );
 		mockVisit( 1 );
 
@@ -337,9 +338,9 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		provideRecentActivitySurveyState( registry, {
 			expirableItems: {
 				[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-				[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: ACTIVE,
 			},
 		} );
+		provideLatestPost( registry );
 		mockVisit( 1 );
 
 		const { rerender, waitForRegistry } = render( {
@@ -366,6 +367,86 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 			},
 		} );
 	} );
+
+	it.each( [
+		[ 'active', ACTIVE ],
+		[ 'expired', EXPIRED ],
+	] )(
+		'should not count a visit when the user has opened the tab, with the "tab opened" timer %s',
+		async ( _state, tabOpenedExpiry ) => {
+			provideRecentActivitySurveyState( registry, {
+				expirableItems: {
+					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
+					[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: tabOpenedExpiry,
+					[ RECENT_ACTIVITY_INTERACTION_TIMER.slug ]: ACTIVE,
+				},
+			} );
+			mockVisit( 1 );
+
+			const { waitForRegistry } = render();
+			await waitForRegistry();
+			await waitForDefaultTimeouts();
+
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+		}
+	);
+
+	it( 'should not count a visit once the count has reached 3', async () => {
+		provideRecentActivitySurveyState( registry, {
+			expirableItems: {
+				[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
+			},
+			dismissedPrompts: {
+				[ TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ]: {
+					expires: 0,
+					count: 3,
+				},
+			},
+		} );
+		provideLatestPost( registry );
+		mockVisit( 4 );
+
+		const { waitForRegistry } = render();
+		await waitForRegistry();
+		await waitForDefaultTimeouts();
+
+		expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+	} );
+
+	it.each( [
+		[
+			'expirable items',
+			'^/google-site-kit/v1/core/user/data/expirable-items',
+			() =>
+				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} ),
+		],
+		[
+			'dismissed prompts',
+			'^/google-site-kit/v1/core/user/data/dismissed-prompts',
+			() =>
+				registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
+				} ),
+		],
+	] )(
+		'should not count a visit when the %s fail to load',
+		async ( _name, failingEndpoint, provideOtherState ) => {
+			provideOtherState();
+			fetchMock.get( new RegExp( failingEndpoint ), {
+				body: { code: 'internal_server_error', message: 'Error' },
+				status: 500,
+			} );
+			provideLatestPost( registry );
+			mockVisit( 1 );
+
+			const { waitForRegistry } = render();
+			await waitForRegistry();
+			await waitForDefaultTimeouts();
+
+			expect( console ).toHaveErrored();
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+		}
+	);
 
 	it( 'should start the "tab available" timer for 14 days when the user does not have it', async () => {
 		provideRecentActivitySurveyState( registry );

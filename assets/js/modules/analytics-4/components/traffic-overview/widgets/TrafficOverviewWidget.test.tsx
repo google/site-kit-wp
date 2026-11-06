@@ -36,11 +36,11 @@ import {
 	RECENT_ACTIVITY_INTERACTION_TIMER,
 	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
 	RECENT_ACTIVITY_TAB_OPENED_TIMER,
-	RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
+	getExpiryFromNow,
 	provideFreshMetricsReports,
 	provideRecentActivitySurveyState,
 	requestedTimerSlugs,
@@ -50,6 +50,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util/dates';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
@@ -1181,32 +1182,6 @@ describe( 'TrafficOverviewWidget', () => {
 			title: { rendered: 'Autumn recipes' },
 		};
 
-		function dismissedPromptSlugs(): string[] {
-			return fetchMock
-				.calls( dismissPromptEndpoint )
-				.map(
-					( call ) =>
-						JSON.parse( String( call[ 1 ]?.body ) ).data.slug
-				);
-		}
-
-		// The response to a counted tab open has the count after the open.
-		function mockTabOpenCount( count: number ) {
-			fetchMock.post(
-				dismissPromptEndpoint,
-				{
-					body: {
-						[ RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG ]: {
-							expires: 0,
-							count,
-						},
-					},
-					status: 200,
-				},
-				{ overwriteRoutes: true }
-			);
-		}
-
 		function renderWidget( features = [ 'freshData' ] ) {
 			return render(
 				<TrafficOverviewWidget { ...widgetComponentProps } />,
@@ -1238,7 +1213,6 @@ describe( 'TrafficOverviewWidget', () => {
 				body: [],
 				status: 200,
 			} );
-			mockTabOpenCount( 1 );
 		} );
 
 		it( 'should start the "tab available" timer when the widget shows the Recent activity tab', async () => {
@@ -1259,7 +1233,7 @@ describe( 'TrafficOverviewWidget', () => {
 			expect( requestedTimerSlugs() ).toEqual( [] );
 		} );
 
-		it( 'should start the "tab opened" timer and count the tab open when the user selects the Recent activity tab', async () => {
+		it( 'should start the "tab opened" timer, and record no interaction, when the user selects the Recent activity tab for the first time', async () => {
 			const { waitForRegistry } = renderWidget();
 
 			await waitForRegistry();
@@ -1268,8 +1242,9 @@ describe( 'TrafficOverviewWidget', () => {
 
 			await waitForRegistry();
 			await waitFor( () =>
-				expect( dismissedPromptSlugs() ).toEqual( [
-					RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
+				expect( requestedTimerSlugs() ).toEqual( [
+					RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+					RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
 				] )
 			);
 
@@ -1284,21 +1259,9 @@ describe( 'TrafficOverviewWidget', () => {
 					],
 				},
 			} );
-			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
-				body: {
-					data: {
-						slug: RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
-						expiration: 0,
-					},
-				},
-			} );
-			// The first counted open is not an interaction.
-			expect( requestedTimerSlugs() ).not.toContain(
-				RECENT_ACTIVITY_INTERACTION_TIMER.slug
-			);
 		} );
 
-		it( 'should count the tab open only once per page load', async () => {
+		it( 'should record the tab open only once per page load', async () => {
 			const { waitForRegistry } = renderWidget();
 
 			await waitForRegistry();
@@ -1312,13 +1275,28 @@ describe( 'TrafficOverviewWidget', () => {
 			clickTab( 'Recent activity Beta' );
 			await waitForRegistry();
 
-			expect( dismissedPromptSlugs() ).toEqual( [
-				RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+				RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
 			] );
 		} );
 
-		it( 'should record an interaction when the user opens the tab in a second page load', async () => {
-			mockTabOpenCount( 2 );
+		it( 'should record an interaction when the user opens the tab in a later page load', async () => {
+			// The user opened the tab in an earlier page load.
+			const tabOpenedTimer = {
+				[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]:
+					getExpiryFromNow( DAY_IN_SECONDS ),
+			};
+			provideRecentActivitySurveyState( registry, {
+				expirableItems: tabOpenedTimer,
+			} );
+			// The response to a timer request has all the user's expirable
+			// items, so the "tab available" timer keeps the "tab opened" one.
+			fetchMock.post(
+				setExpirableItemTimersEndpoint,
+				{ body: tabOpenedTimer, status: 200 },
+				{ overwriteRoutes: true }
+			);
 
 			const { waitForRegistry } = renderWidget();
 
@@ -1328,9 +1306,10 @@ describe( 'TrafficOverviewWidget', () => {
 
 			await waitForRegistry();
 			await waitFor( () =>
-				expect( requestedTimerSlugs() ).toContain(
-					RECENT_ACTIVITY_INTERACTION_TIMER.slug
-				)
+				expect( requestedTimerSlugs() ).toEqual( [
+					RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+					RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+				] )
 			);
 		} );
 
@@ -1352,7 +1331,6 @@ describe( 'TrafficOverviewWidget', () => {
 			clickTab( 'Typical traffic Beta' );
 			await waitForRegistry();
 
-			expect( dismissedPromptSlugs() ).toEqual( [] );
 			expect( requestedTimerSlugs() ).toEqual( [
 				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
 			] );
@@ -1366,7 +1344,6 @@ describe( 'TrafficOverviewWidget', () => {
 			clickTab( 'Traffic overview' );
 			await waitForRegistry();
 
-			expect( dismissedPromptSlugs() ).toEqual( [] );
 			expect( requestedTimerSlugs() ).toEqual( [
 				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
 			] );

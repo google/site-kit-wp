@@ -24,64 +24,53 @@ import { useCallback, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Registry, useDispatch, useRegistry } from 'googlesitekit-data';
+import { Registry, useRegistry } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	RECENT_ACTIVITY_INTERACTION_TAB_OPEN_COUNT,
-	RECENT_ACTIVITY_TAB_OPENED_TIMER,
-	RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG,
-} from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { RECENT_ACTIVITY_TAB_OPENED_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useRecordRecentActivityInteraction } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityInteraction';
 import { startTimerOnce } from '@/js/modules/analytics-4/components/traffic-overview/utils/startTimerOnce';
 
 /**
  * Gets a callback that records that the user opened the Recent activity tab.
  *
- * The callback starts the "tab opened" timer, at the first open only, and
- * counts the page loads in which the user opened the tab. An open in a second
- * page load is a meaningful interaction, so the callback then records one.
+ * At the first open in a page load, the callback starts the "tab opened"
+ * timer when the user doesn't have it yet. When the user already has it, they
+ * opened the tab in an earlier page load, which is a meaningful interaction,
+ * so the callback records one instead. Later opens in the same page load
+ * record nothing.
  *
  * @since n.e.x.t
  *
- * @return {Function} A callback that returns a promise, which resolves once the open is counted.
+ * @return {Function} A callback that returns a promise, which resolves once the open is saved.
  */
 export function useRecordRecentActivityTabOpen(): () => Promise< void > {
 	const registry = useRegistry() as unknown as Registry;
-	const { dismissPrompt } = useDispatch( CORE_USER );
 	const recordInteraction = useRecordRecentActivityInteraction();
-	const hasCountedOpen = useRef( false );
+	const hasRecordedOpen = useRef( false );
 
 	return useCallback( async () => {
-		startTimerOnce( registry, RECENT_ACTIVITY_TAB_OPENED_TIMER );
-
-		// The count is of page loads in which the user opened the tab, so it
-		// counts only the first open in each page load.
-		if ( hasCountedOpen.current ) {
+		if ( hasRecordedOpen.current ) {
 			return;
 		}
 
-		hasCountedOpen.current = true;
+		hasRecordedOpen.current = true;
 
-		// `getPromptDismissCount()` has no resolver of its own. Loading the
-		// dismissed prompts before the dismissal also stops a request for
-		// them that is still running from replacing the count it returns.
-		await registry.resolveSelect( CORE_USER ).getDismissedPrompts();
+		await registry.resolveSelect( CORE_USER ).getExpirableItems();
 
-		// Each dismissal adds one to the prompt's dismiss count, which counts
-		// the opens. An expiry of `0` keeps the count from expiring.
-		await dismissPrompt( RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG, {
-			expiresInSeconds: 0,
-		} );
-
-		// Returning to the tab across page loads is a meaningful interaction.
-		const openCount = registry
-			.select( CORE_USER )
-			.getPromptDismissCount(
-				RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG
-			);
-
-		if ( openCount >= RECENT_ACTIVITY_INTERACTION_TAB_OPEN_COUNT ) {
+		// The timer starts at the first open and stays in the expirable items
+		// after it expires, so having it means the user opened the tab in an
+		// earlier page load. Opening the tab again in a later page load is a
+		// meaningful interaction.
+		if (
+			registry
+				.select( CORE_USER )
+				.hasExpirableItem( RECENT_ACTIVITY_TAB_OPENED_TIMER.slug )
+		) {
 			await recordInteraction();
+			return;
 		}
-	}, [ dismissPrompt, recordInteraction, registry ] );
+
+		// When the expirable items fail to load, this starts no timer.
+		await startTimerOnce( registry, RECENT_ACTIVITY_TAB_OPENED_TIMER );
+	}, [ recordInteraction, registry ] );
 }

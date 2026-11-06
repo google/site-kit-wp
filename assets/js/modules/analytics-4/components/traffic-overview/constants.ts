@@ -144,23 +144,6 @@ export const TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG =
 	'fresh-data-traffic-card-visit';
 
 /**
- * The prompt slug whose dismiss count counts the page loads in which the
- * user opened the Recent activity tab.
- *
- * @since n.e.x.t
- */
-export const RECENT_ACTIVITY_TAB_OPEN_COUNT_PROMPT_SLUG =
-	'fresh-data-recent-activity-tab-open';
-
-/**
- * The number of page loads with the Recent activity tab opened that counts as
- * a meaningful interaction.
- *
- * @since n.e.x.t
- */
-export const RECENT_ACTIVITY_INTERACTION_TAB_OPEN_COUNT = 2;
-
-/**
  * The number of Traffic card visits after which a user who never opened the
  * Recent activity tab can get the zero interaction survey.
  *

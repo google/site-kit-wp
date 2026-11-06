@@ -38,6 +38,7 @@ import {
 	RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED,
 	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
 	RECENT_ACTIVITY_TAB_OPENED_TIMER,
+	RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT,
 	TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { selectZeroInteractionTrigger } from '@/js/modules/analytics-4/components/traffic-overview/utils/selectZeroInteractionTrigger';
@@ -55,7 +56,8 @@ interface RecentActivitySurveyTriggersOptions {
  * Triggers the Recent activity survey matching the user's use of the tab.
  *
  * While enabled, the hook starts the "tab available" timer, counts one
- * Traffic card visit per page load once the card has been in view, and sends
+ * Traffic card visit per page load once the card has been in view, until the
+ * user opens the tab or the count reaches 3, and sends
  * at most one of the three Recent activity survey triggers, at most once a
  * day:
  *
@@ -94,12 +96,46 @@ export function useRecentActivitySurveyTriggers( {
 
 		hasCountedVisit.current = true;
 
-		// Each dismissal adds one to the prompt's dismiss count, which counts
-		// the visits. An expiry of `0` keeps the count from expiring.
-		dismissPrompt( TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG, {
-			expiresInSeconds: 0,
-		} );
-	}, [ dismissPrompt, hasBeenInView, isEnabled ] );
+		async function countVisit() {
+			// `getPromptDismissCount()` has no resolver of its own. Loading the
+			// dismissed prompts before the dismissal also stops a request for
+			// them that is still running from replacing the count it returns.
+			await Promise.all( [
+				registry.resolveSelect( CORE_USER ).getExpirableItems(),
+				registry.resolveSelect( CORE_USER ).getDismissedPrompts(),
+			] );
+
+			const {
+				getDismissedPrompts,
+				getPromptDismissCount,
+				hasExpirableItem,
+			} = registry.select( CORE_USER );
+
+			// Only the zero interaction survey reads the count, for users who
+			// never opened the tab, and only to check that it reached the
+			// visit count. So the count stops once the user opens the tab or
+			// the count reaches it, and when either is unknown because its
+			// request failed.
+			if (
+				hasExpirableItem( RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ) !==
+					false ||
+				getDismissedPrompts() === undefined ||
+				getPromptDismissCount( TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ) >=
+					RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT
+			) {
+				return;
+			}
+
+			// Each dismissal adds one to the prompt's dismiss count, which
+			// counts the visits. An expiry of `0` keeps the count from
+			// expiring.
+			await dismissPrompt( TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG, {
+				expiresInSeconds: 0,
+			} );
+		}
+
+		countVisit();
+	}, [ dismissPrompt, hasBeenInView, isEnabled, registry ] );
 
 	const triggerID = useSelect(
 		( select: Select ): string | null | undefined => {
