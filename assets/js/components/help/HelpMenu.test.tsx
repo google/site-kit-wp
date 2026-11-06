@@ -31,6 +31,7 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import * as tracking from '@/js/util/tracking';
 import { provideGatheringDataState } from '@tests/js/gathering-data-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
@@ -196,14 +197,16 @@ describe( 'HelpMenu', () => {
 	} );
 
 	it( 'should clear the admin screen tooltip when the help menu is opened and the tooltip targets the help menu button', () => {
-		registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
-			isTooltipVisible: true,
-			target: `.${ HELP_MENU_BUTTON_CLASS }`,
-		} );
-
 		const { getByRole } = render( <HelpMenu showFeatureTour />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		act( () => {
+			registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+				isTooltipVisible: true,
+				target: `.${ HELP_MENU_BUTTON_CLASS }`,
+			} );
 		} );
 
 		fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
