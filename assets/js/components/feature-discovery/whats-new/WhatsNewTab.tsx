@@ -42,9 +42,13 @@ import {
 	TYPE_HEADLINE,
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	SUCCEEDED_FEATURES_UI_KEY,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
@@ -70,14 +74,33 @@ const WhatsNewTab: FC = () => {
 	);
 
 	const visibleFeatures = useSelect(
-		( select: Select ) =>
-			features?.filter( ( feature ) => {
+		( select: Select ) => {
+			const succeededFeatures: string[] =
+				select( CORE_UI ).getValue( SUCCEEDED_FEATURES_UI_KEY ) || [];
+
+			return features?.filter( ( feature ) => {
 				const key = getFeatureDismissalKey( feature.slug );
+
+				if (
+					select( CORE_USER ).isItemDismissed( key ) ||
+					select( CORE_USER ).isDismissingItem( key )
+				) {
+					return false;
+				}
+
+				// A feature set up from this tab is kept only while its
+				// success notice shows, and drops out once it is dismissed.
+				const isConnected = select(
+					CORE_FEATURE_DISCOVERY
+				).isFeatureConnected( feature.slug );
+
 				return (
-					! select( CORE_USER ).isItemDismissed( key ) &&
-					! select( CORE_USER ).isDismissingItem( key )
+					isConnected === false ||
+					( isConnected === true &&
+						succeededFeatures.includes( feature.slug ) )
 				);
-			} ),
+			} );
+		},
 		[ features ]
 	);
 

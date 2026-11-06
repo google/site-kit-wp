@@ -23,5 +23,13 @@
 		.googlesitekit-feature-setup-error-notice {
 			margin-top: 20px;
 		}
+
+		// A success notice in a feature's place in the list is spaced as the
+		// setup error notice that can take the same place, but not where it is
+		// shown at the top of the list on return from a setup flow.
+		.googlesitekit-feature-goal-group > .googlesitekit-feature-success-notice,
+		.googlesitekit-whats-new > .googlesitekit-feature-success-notice {
+			margin-top: 20px;
+		}
 	}
 }
