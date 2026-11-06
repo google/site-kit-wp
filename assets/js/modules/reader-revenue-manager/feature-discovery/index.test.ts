@@ -179,7 +179,13 @@ describe( 'Reader Revenue Manager feature discovery', () => {
 				[ { 'newsletter-signup:new': 123 }, {}, true ],
 				[
 					{ 'newsletter-signup:new': 123 },
-					{ cta: 'newsletter-signup' },
+					{
+						cta: {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+					},
 					false,
 				],
 			] )(
