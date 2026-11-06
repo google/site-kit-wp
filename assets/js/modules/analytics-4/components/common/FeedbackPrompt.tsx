@@ -52,6 +52,8 @@ interface FeedbackPromptProps {
 	 * keep as their accessible name.
 	 */
 	hideQuestion?: boolean;
+	/** Called with the vote's direction, after the vote is tracked. */
+	onVote?: ( direction: VoteDirection ) => void;
 }
 
 /**
@@ -60,13 +62,14 @@ interface FeedbackPromptProps {
  * @since 1.182.0
  * @since 1.190.0 Replaced the `goalType` prop with `gaTrackingEventArgs`.
  * @since 1.191.0 Added the `hideQuestion` prop to show only the thumbs.
- * @since n.e.x.t Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
+ * @since n.e.x.t Added the `onVote` prop. Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
  *
  * @param props                     Component props.
  * @param props.feedbackNamespace   The product area the feedback is about.
  * @param props.feedbackGroup       The item within the namespace the feedback is about.
  * @param props.gaTrackingEventArgs Category and label used to track the vote event.
  * @param [props.hideQuestion]      Optional. Whether to hide the "Is this section helpful?" text.
+ * @param [props.onVote]            Optional. Called with the vote's direction, after the vote is tracked.
  * @return React element.
  */
 const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
@@ -74,6 +77,7 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 	feedbackGroup,
 	gaTrackingEventArgs,
 	hideQuestion,
+	onVote,
 } ) => {
 	const breakpoint = useBreakpoint();
 	// On mobile the feedback row isn't right-aligned, so `top-end` pushes the
@@ -87,6 +91,8 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 			direction === 'up' ? 'vote_up' : 'vote_down',
 			gaTrackingEventArgs.label
 		);
+
+		onVote?.( direction );
 	}
 
 	const thumbsFeedback = (

@@ -29,14 +29,15 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useViewContext from '@/js/hooks/useViewContext';
+import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
-import { formatDate, trackEvent } from '@/js/util';
+import { formatDate } from '@/js/util';
 import PushPinIcon from '@/svg/icons/push-pin.svg';
 
 interface LatestPostHeaderProps {
@@ -45,7 +46,8 @@ interface LatestPostHeaderProps {
 }
 
 const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
-	const viewContext = useViewContext();
+	const trackPostLinkClick = useTrackPostLinkClick( 'latest-post-header' );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const entityDashboardURL = useSelect(
 		( select: Select ) =>
@@ -59,25 +61,20 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
 	) {
 		// A Command or Control click opens the link in a new tab or window, so
-		// this page stays open to send the event, and the browser handles the
+		// this page stays open to save the click, and the browser handles the
 		// click.
-		const opensInNewTab = event.metaKey || event.ctrlKey;
+		if ( event.metaKey || event.ctrlKey ) {
+			trackPostLinkClick();
+			return;
+		}
 
 		// The default must be prevented before the `await`, or the browser
-		// leaves the page before the event is sent.
-		if ( ! opensInNewTab ) {
-			event.preventDefault();
-		}
+		// leaves the page before the click is saved.
+		event.preventDefault();
 
-		await trackEvent(
-			`${ viewContext }_recent-activity`,
-			'click_post_link',
-			'latest-post-header'
-		);
+		await trackPostLinkClick();
 
-		if ( ! opensInNewTab ) {
-			global.location.assign( entityDashboardURL );
-		}
+		navigateTo( entityDashboardURL );
 	}
 
 	// The site time has no time zone suffix, so reading it as UTC and
