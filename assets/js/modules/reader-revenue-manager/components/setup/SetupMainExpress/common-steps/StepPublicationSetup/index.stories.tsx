@@ -50,7 +50,7 @@ const PUBLICATION_WITH_LONG_NAME = {
 	publicationId: 'LONGNAME',
 	displayName:
 		'The Extraordinarily Long Weekly Gazette of Local Community News, Culture, Sports and Weather Reports',
-} as Publication & { displayName: string };
+} as Publication;
 /* eslint-enable sitekit/acronym-case */
 
 type Decorator = {
