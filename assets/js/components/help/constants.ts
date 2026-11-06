@@ -16,4 +16,12 @@
  * limitations under the License.
  */
 
+/**
+ * Class name on the header button that opens the help menu.
+ *
+ * The Welcome modal tooltip anchors to this button, so the class is shared
+ * rather than repeated as a selector string.
+ *
+ * @since n.e.x.t
+ */
 export const HELP_MENU_BUTTON_CLASS = 'googlesitekit-help-menu__button';
