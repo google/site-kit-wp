@@ -30,10 +30,8 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { seedSiteGoalsBreakdownValuesReport } from '@/js/modules/analytics-4/components/site-goals/test-utils';
+import { provideSiteGoalsBreakdownInUse } from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -75,27 +73,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
 			enabled: conversionTracking,
 		} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
-			activeWidgets: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
-		} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			propertyID: '12345',
-			availableCustomDimensions: [
-				'googlesitekit_event_provider',
-				'googlesitekit_form_id',
-			],
-			detectedEvents: [ 'purchase', 'contact' ],
-		} );
-		seedSiteGoalsBreakdownValuesReport(
-			registry,
-			GOAL_TYPES.ECOMMERCE,
-			[]
-		);
-		seedSiteGoalsBreakdownValuesReport(
-			registry,
-			GOAL_TYPES.LEAD,
-			leadBreakdownValues
-		);
+		provideSiteGoalsBreakdownInUse( registry, leadBreakdownValues );
 	}
 
 	function renderNotice() {

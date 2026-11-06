@@ -35,10 +35,8 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { seedSiteGoalsBreakdownValuesReport } from '@/js/modules/analytics-4/components/site-goals/test-utils';
+import { provideSiteGoalsBreakdownInUse } from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
 import { provideModules, provideUserCapabilities } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
@@ -85,25 +83,7 @@ function Template( { canManageOptions, saveFails }: TemplateProps ) {
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetConversionTrackingSettings( { enabled: false } );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
-			activeWidgets: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
-		} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			propertyID: '12345',
-			availableCustomDimensions: [
-				'googlesitekit_event_provider',
-				'googlesitekit_form_id',
-			],
-			detectedEvents: [ 'purchase', 'contact' ],
-		} );
-		seedSiteGoalsBreakdownValuesReport(
-			registry,
-			GOAL_TYPES.ECOMMERCE,
-			[]
-		);
-		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [
-			'5',
-		] );
+		provideSiteGoalsBreakdownInUse( registry, [ '5' ] );
 	}
 
 	return (

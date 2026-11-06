@@ -175,3 +175,36 @@ export function seedSiteGoalsBreakdownValuesReport(
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ options ] );
 }
+
+/**
+ * Sets up both Site Goals widgets with the breakdown dimensions, and the lead
+ * generation widget with breakdown values, so it shows breakdown tabs.
+ *
+ * @since n.e.x.t
+ *
+ * @param {WPDataRegistry} registry            Test registry whose reference date ends the 90-day discovery window.
+ * @param {Array<string>}  leadBreakdownValues Form IDs the lead breakdown values report returns.
+ * @return {void}
+ */
+export function provideSiteGoalsBreakdownInUse(
+	registry: WPDataRegistry,
+	leadBreakdownValues: string[]
+): void {
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+		activeWidgets: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
+	} );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		propertyID: '12345',
+		availableCustomDimensions: [
+			'googlesitekit_event_provider',
+			'googlesitekit_form_id',
+		],
+		detectedEvents: [ 'purchase', 'contact' ],
+	} );
+	seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.ECOMMERCE, [] );
+	seedSiteGoalsBreakdownValuesReport(
+		registry,
+		GOAL_TYPES.LEAD,
+		leadBreakdownValues
+	);
+}

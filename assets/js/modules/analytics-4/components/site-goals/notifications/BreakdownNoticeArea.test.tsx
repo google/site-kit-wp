@@ -42,7 +42,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
-import { seedSiteGoalsBreakdownValuesReport } from '@/js/modules/analytics-4/components/site-goals/test-utils';
+import { provideSiteGoalsBreakdownInUse } from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import {
 	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
@@ -1265,29 +1265,7 @@ describe( 'BreakdownNoticeArea', () => {
 			// widget renders, its dimension exists and holds values.
 			function provideBreakdownInUse( leadBreakdownValues: string[] ) {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSettings( {
-						activeWidgets: [
-							GOAL_TYPES.ECOMMERCE,
-							GOAL_TYPES.LEAD,
-						],
-					} );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					propertyID: '12345',
-					availableCustomDimensions: ALL_CUSTOM_DIMENSIONS,
-					detectedEvents: [ 'purchase', 'contact' ],
-				} );
-				seedSiteGoalsBreakdownValuesReport(
-					registry,
-					GOAL_TYPES.ECOMMERCE,
-					[]
-				);
-				seedSiteGoalsBreakdownValuesReport(
-					registry,
-					GOAL_TYPES.LEAD,
-					leadBreakdownValues
-				);
+				provideSiteGoalsBreakdownInUse( registry, leadBreakdownValues );
 			}
 
 			it.each( [
