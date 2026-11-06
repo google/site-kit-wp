@@ -249,6 +249,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 			status: 200,
 		} );
 
+		// By default, the publication has no CTAs.
+		fetchMock.get( ctasEndpoint, { body: [], status: 200 } );
+
 		registry = createTestRegistry() as Registry;
 		provideUserAuthentication( registry, {
 			grantedScopes: EXPRESS_SETUP_SCOPES,
@@ -302,6 +305,84 @@ describe( 'SetupCTANewsletterSignup', () => {
 		expect( steps[ 2 ] ).toHaveTextContent( 'Add publication policies' );
 		expect( steps[ 3 ] ).toHaveTextContent( 'Set up a sign-up form' );
 		expect( steps[ 4 ] ).toHaveTextContent( 'Setup complete' );
+	} );
+
+	describe( 'existing CTA step', () => {
+		const EXISTING_CTA_TITLE =
+			'We found an existing newsletter sign-up form for this publication';
+
+		it.each( [
+			[ 'terms-of-service' ],
+			[ 'publication-policies' ],
+			[ 'newsletter-signup-form' ],
+		] )(
+			'shows the existing CTA screen without the stepper in place of the %s step when the publication has a newsletter sign-up CTA',
+			async ( step ) => {
+				global.location.href = `http://example.com/?cta=newsletter-signup&step=${ step }`;
+
+				setupRegistryWithReadyPublication( {
+					ctas: [ preExistingCTA ],
+				} );
+
+				const { container, getByText, waitForRegistry } = render(
+					<SetupCTANewsletterSignup />,
+					{ registry }
+				);
+
+				await waitForRegistry();
+
+				await waitFor( () => {
+					expect(
+						getByText( EXISTING_CTA_TITLE )
+					).toBeInTheDocument();
+				} );
+
+				expect(
+					getByText(
+						/Site Kit can’t create a newsletter sign-up form/
+					)
+				).toBeInTheDocument();
+				expect(
+					getByText(
+						/To change who sees your newsletter sign-up form/
+					)
+				).toBeInTheDocument();
+				expect(
+					container.querySelector( '.googlesitekit-stepper' )
+				).not.toBeInTheDocument();
+			}
+		);
+
+		it( 'shows the stepper and the next step when the publication has no newsletter sign-up CTA', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=newsletter-signup-form';
+
+			setupRegistryWithReadyPublication( { ctas: [] } );
+
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			const { container, getByText, queryByText, waitForRegistry } =
+				render( <SetupCTANewsletterSignup />, { registry } );
+
+			await waitForRegistry();
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'newsletter-signup-form' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( queryByText( EXISTING_CTA_TITLE ) ).not.toBeInTheDocument();
+			expect(
+				container.querySelector( '.googlesitekit-stepper' )
+			).toBeInTheDocument();
+		} );
 	} );
 
 	describe( 'completing a step', () => {
@@ -501,6 +582,10 @@ describe( 'SetupCTANewsletterSignup', () => {
 			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
 			provideSettings( publicationWithoutTerms.publicationId );
 			freezeFetch( publicationEndpoint );
+			// Don't let the CTAs resolve after the test has finished.
+			fetchMock.get( ctasEndpoint, () => new Promise( () => {} ), {
+				overwriteRoutes: true,
+			} );
 
 			const { container } = render( <SetupCTANewsletterSignup />, {
 				registry,
@@ -1162,7 +1247,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 			global.location.href =
 				'http://example.com/?cta=newsletter-signup&step=newsletter-signup-form';
 
-			const settings = setupRegistryWithReadyPublication();
+			const settings = setupRegistryWithReadyPublication( {
+				ctas: [],
+			} );
 
 			// Publishing saves the module settings, which needs the module.
 			provideModules( registry, [
@@ -1408,6 +1495,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 				'complete_step',
 				'connect-publication'
 			);
+
+			// Advancing starts the existing CTA check, so let it settle.
+			await waitForRegistry();
 		} );
 
 		it( 'should not track any events outside a CTA setup flow', async () => {
@@ -1415,10 +1505,15 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 			connectPublication( registry, publicationWithoutTerms );
 
-			const { getByText } = render( <SetupCTANewsletterSignup />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MODULE_SETUP,
-			} );
+			const { getByText, waitForRegistry } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				}
+			);
+
+			await waitForRegistry();
 
 			await waitFor( () => {
 				expect(
