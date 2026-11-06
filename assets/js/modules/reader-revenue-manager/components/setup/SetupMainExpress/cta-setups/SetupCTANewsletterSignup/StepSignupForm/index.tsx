@@ -102,6 +102,7 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 			...( trimmedTitle && { title: trimmedTitle } ),
 			...( trimmedBody && { customMessage: trimmedBody } ),
 			nameRequired: !! nameRequired,
+			optInRequired: !! consentEnabled,
 			...( consentEnabled &&
 				trimmedConsentText && {
 					customConsentText: trimmedConsentText,
