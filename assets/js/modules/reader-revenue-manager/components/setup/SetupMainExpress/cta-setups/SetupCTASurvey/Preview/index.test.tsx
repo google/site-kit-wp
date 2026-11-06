@@ -51,7 +51,7 @@ describe( 'Survey Preview', () => {
 		expect(
 			screen.getByText( /Your responses to this survey are anonymous/ )
 		).toHaveTextContent(
-			"Please see the Example Publication's Privacy Policy to learn more about how they use this information."
+			'Please see the Example Publication’s Privacy Policy to learn more about how they use this information.'
 		);
 
 		expect(
@@ -69,7 +69,7 @@ describe( 'Survey Preview', () => {
 		expect(
 			screen.getByText( /Your responses to this survey are anonymous/ )
 		).toHaveTextContent(
-			"Please see the Publication name's Privacy Policy"
+			'Please see the Publication name’s Privacy Policy'
 		);
 	} );
 
