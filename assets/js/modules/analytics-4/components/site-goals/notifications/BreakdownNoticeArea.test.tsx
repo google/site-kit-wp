@@ -941,7 +941,8 @@ describe( 'BreakdownNoticeArea', () => {
 			typeof tracking.trackEventOnce
 		>;
 
-		const { simulateAllIntersections } = mockIntersectionObserver();
+		const { getObservedElements, simulateAllIntersections } =
+			mockIntersectionObserver();
 
 		beforeEach( () => {
 			mockTrackEventOnce = jest.spyOn( tracking, 'trackEventOnce' );
@@ -952,6 +953,8 @@ describe( 'BreakdownNoticeArea', () => {
 		} );
 
 		function simulateInView() {
+			expect( getObservedElements().length ).toBeGreaterThan( 0 );
+
 			act( () => {
 				simulateAllIntersections( true );
 			} );
