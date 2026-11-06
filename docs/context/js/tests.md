@@ -268,6 +268,71 @@ describe( 'Complex Component', () => {
 > `console.error` must assert it or the test fails. There is no `muteConsole`
 > helper.
 
+### Reusing Test Helpers
+
+Before writing a test helper, a mock or a `jest.mock()` factory, search `assets/js` and
+`tests/js` for a line of its code; many already exist (for example `mockLocation()`
+in `tests/js/mock-browser-utils.js`). Use the existing one, and add an option to it when
+you need one. When the same function is needed in a second test file, move it into a shared
+module (`tests/js/*-utils`, or the feature's `test-utils`) rather than copying it.
+
+When a test creates and loads a report with `receiveGetReport()`, get the report
+options from the same function that the code uses to request the report, instead of writing
+the options out again in the test. For example, the Traffic Overview PDF tests use
+`getTotalsReportArgs()` from `traffic-overview/reportOptions.ts`:
+
+```javascript
+registry
+    .dispatch( MODULES_ANALYTICS_4 )
+    .receiveGetReport(
+        { totals: [ { metricValues: [ { value: '100' } ] } ] },
+        { options: getTotalsReportArgs( DATES ) }
+    );
+```
+
+The datastore keeps each report under the options it was requested with, and the code only
+finds a report stored under exactly the options it asks for. If the test writes the options
+out by hand and someone later changes them in the production code (for example by adding a
+metric), the code asks for the report under the new options, doesn't find the one the test
+loaded, and the test fails even though nothing is broken. Taking the options from the same
+function keeps the two in step, so the test doesn't need updating.
+
+The exception is a test of the options function itself, such as a test of
+`getTotalsReportArgs()`. That test writes the expected options out by hand, because comparing
+the function with its own output would always pass and check nothing.
+
+Sharing a `jest.mock()` factory between test files needs one extra step. Jest runs
+`jest.mock()` calls before the imports at the top of the test file, so the factory can't use a
+function imported there. Load the shared function inside the factory with `require()` instead
+(or `jest.requireActual()` in `.ts` files):
+
+```javascript
+jest.mock( 'googlesitekit-api', () =>
+    require( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
+```
+
+Sharing applies to functions, not to data. Write test data (fixtures, expected values, URLs,
+error responses) directly in each test, even when the same values appear in other tests, so
+each test can be read on its own.
+
+### Test Setup and Assertions
+
+- A test for a loading or empty state also asserts that the normal content is **not**
+  rendered.
+- Only set up the reports and settings that the code being tested requires.
+- A negative assertion must be able to fail. `expect( fetchMock ).not.toHaveFetched( … )`
+  passes even when the code sends the request if no route is registered for that endpoint: the
+  request fails before `fetchMock` records it. Register the route (for example with
+  `fetchMock.get()`), then assert it wasn't called.
+- A test for a fix asserts what is shown afterwards, not only that the symptom is gone. A test
+  that only checks that a spinner or an error went away still passes when the component now
+  shows a wrong value, such as `0%`.
+- Each test protects something no other test does. Don't test the same behaviour several times,
+  or behaviour that belongs to another unit (a child component, WordPress, the Google client).
+  Keep one test per acceptance criterion, both sides of each boundary, and a regression test for
+  each real bug.
+
 ### Mock Data Patterns
 
 Mock data follows consistent patterns:
