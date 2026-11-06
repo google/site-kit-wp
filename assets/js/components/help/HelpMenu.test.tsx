@@ -248,9 +248,11 @@ describe( 'HelpMenu', () => {
 		// Open the menu before any tooltip is shown.
 		fireEvent.click( helpButton );
 
-		registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
-			isTooltipVisible: true,
-			target: `.${ HELP_MENU_BUTTON_CLASS }`,
+		act( () => {
+			registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+				isTooltipVisible: true,
+				target: `.${ HELP_MENU_BUTTON_CLASS }`,
+			} );
 		} );
 
 		fireEvent.click( helpButton );
