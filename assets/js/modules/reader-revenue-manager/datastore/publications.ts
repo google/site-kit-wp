@@ -769,28 +769,31 @@ const baseResolvers = {
 			return;
 		}
 
-		// Legacy settings (saved before express setup) have a publication ID
-		// but no organization ID. The publications list synchronizes the
-		// connected publication's organization ID into settings, so resolve
-		// it first rather than requesting the publication without one.
-		const organizationID =
-			params?.organizationID ||
-			registry.select( MODULES_READER_REVENUE_MANAGER ).getSettings()
-				?.organizationID;
-
-		if ( ! organizationID ) {
-			yield commonActions.await(
+		if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+			// Legacy settings (saved before express setup) have a publication ID
+			// but no organization ID. The publications list synchronizes the
+			// connected publication's organization ID into settings, so resolve
+			// it first rather than requesting the publication without one.
+			const organizationID =
+				params?.organizationID ||
 				registry
-					.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-					.getPublications()
-			);
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getOrganizationID();
 
-			const resolvedPublication = registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getPublication( params );
+			if ( ! organizationID ) {
+				yield commonActions.await(
+					registry
+						.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+						.getPublications()
+				);
 
-			if ( resolvedPublication !== undefined ) {
-				return;
+				const resolvedPublication = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublication( params );
+
+				if ( resolvedPublication !== undefined ) {
+					return;
+				}
 			}
 		}
 

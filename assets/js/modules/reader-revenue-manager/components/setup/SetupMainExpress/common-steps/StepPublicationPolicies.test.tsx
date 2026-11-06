@@ -233,8 +233,6 @@ describe( 'StepPublicationPolicies', () => {
 			.receiveGetSettings( {
 				publicationID:
 					TEST_PUBLICATION_WITH_EXISTING_VALUES.publicationId, // eslint-disable-line sitekit/acronym-case
-				organizationID:
-					TEST_PUBLICATION_WITH_EXISTING_VALUES.organizationId, // eslint-disable-line sitekit/acronym-case
 			} );
 
 		fetchMock

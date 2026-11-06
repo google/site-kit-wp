@@ -35,6 +35,7 @@ import { setUsingCache } from 'googlesitekit-api';
 import { enabledFeatures } from '@/js/features';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { createTestRegistryWithFeatures } from '@tests/js/feature-flag-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -1319,128 +1320,145 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toBeUndefined();
 			} );
 
-			describe( 'with legacy settings missing an organization ID', () => {
-				const legacySettings = {
-					publicationID: params.publicationID,
-					organizationID: '',
-				};
-
-				it( 'should fetch publications before requesting the publication and not request it when it is then available', async () => {
-					const publication = {
-						...fixtures.publications[ 0 ],
-						publicationId: params.publicationID,
-					};
-					fetchMock.getOnce( publicationsEndpoint, {
-						body: [ publication ],
-						status: 200,
-					} );
-
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.receiveGetSettings( legacySettings );
-
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication();
-
-					await untilResolved(
-						registry,
-						MODULES_READER_REVENUE_MANAGER
-					).getPublication();
-
-					expect( fetchMock ).toHaveFetchedTimes(
-						1,
-						publicationsEndpoint
-					);
-					expect( fetchMock ).not.toHaveFetched(
-						publicationEndpoint
-					);
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getPublication()
-					).toMatchObject( publication );
+			describe( 'with the rrmExpressSetup feature flag enabled', () => {
+				beforeEach( () => {
+					registry = createTestRegistryWithFeatures( [
+						'rrmExpressSetup',
+					] );
+					provideUserInfo( registry );
 				} );
 
-				it( 'should request the publication when it is still unavailable after publications are fetched', async () => {
-					const publication = {
-						displayName: 'Example Publication',
-						publicationId: params.publicationID,
-					};
-					fetchMock.getOnce( publicationsEndpoint, {
-						body: [],
-						status: 200,
-					} );
-					fetchMock.getOnce( publicationEndpoint, {
-						body: publication,
-						status: 200,
-					} );
-
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.receiveGetSettings( legacySettings );
-
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication();
-
-					await untilResolved(
-						registry,
-						MODULES_READER_REVENUE_MANAGER
-					).getPublication();
-
-					expect( fetchMock ).toHaveFetched( publicationsEndpoint );
-					expect( fetchMock ).toHaveFetched( publicationEndpoint );
-				} );
-			} );
-
-			it( 'should request the publication without fetching publications when the organization ID is in settings', async () => {
-				fetchMock.getOnce( publicationEndpoint, {
-					body: { publicationId: params.publicationID },
-					status: 200,
-				} );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( params );
-
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getPublication();
-
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
-
-				expect( fetchMock ).not.toHaveFetched( publicationsEndpoint );
-				expect( fetchMock ).toHaveFetched( publicationEndpoint );
-			} );
-
-			it( 'should request the publication without fetching publications when an organization ID is passed', async () => {
-				fetchMock.getOnce( publicationEndpoint, {
-					body: { publicationId: params.publicationID },
-					status: 200,
-				} );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( {
+				describe( 'with legacy settings missing an organization ID', () => {
+					const legacySettings = {
 						publicationID: params.publicationID,
 						organizationID: '',
+					};
+
+					it( 'should fetch publications before requesting the publication and not request it when it is then available', async () => {
+						const publication = {
+							...fixtures.publications[ 0 ],
+							publicationId: params.publicationID,
+						};
+						fetchMock.getOnce( publicationsEndpoint, {
+							body: [ publication ],
+							status: 200,
+						} );
+
+						registry
+							.dispatch( MODULES_READER_REVENUE_MANAGER )
+							.receiveGetSettings( legacySettings );
+
+						registry
+							.select( MODULES_READER_REVENUE_MANAGER )
+							.getPublication();
+
+						await untilResolved(
+							registry,
+							MODULES_READER_REVENUE_MANAGER
+						).getPublication();
+
+						expect( fetchMock ).toHaveFetchedTimes(
+							1,
+							publicationsEndpoint
+						);
+						expect( fetchMock ).not.toHaveFetched(
+							publicationEndpoint
+						);
+						expect(
+							registry
+								.select( MODULES_READER_REVENUE_MANAGER )
+								.getPublication()
+						).toMatchObject( publication );
 					} );
 
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getPublication( params );
+					it( 'should request the publication when it is still unavailable after publications are fetched', async () => {
+						const publication = {
+							displayName: 'Example Publication',
+							publicationId: params.publicationID,
+						};
+						fetchMock.getOnce( publicationsEndpoint, {
+							body: [],
+							status: 200,
+						} );
+						fetchMock.getOnce( publicationEndpoint, {
+							body: publication,
+							status: 200,
+						} );
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getPublication( params );
+						registry
+							.dispatch( MODULES_READER_REVENUE_MANAGER )
+							.receiveGetSettings( legacySettings );
 
-				expect( fetchMock ).not.toHaveFetched( publicationsEndpoint );
-				expect( fetchMock ).toHaveFetched( publicationEndpoint );
+						registry
+							.select( MODULES_READER_REVENUE_MANAGER )
+							.getPublication();
+
+						await untilResolved(
+							registry,
+							MODULES_READER_REVENUE_MANAGER
+						).getPublication();
+
+						expect( fetchMock ).toHaveFetched(
+							publicationsEndpoint
+						);
+						expect( fetchMock ).toHaveFetched(
+							publicationEndpoint
+						);
+					} );
+				} );
+
+				it( 'should request the publication without fetching publications when the organization ID is in settings', async () => {
+					fetchMock.getOnce( publicationEndpoint, {
+						body: { publicationId: params.publicationID },
+						status: 200,
+					} );
+
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.receiveGetSettings( params );
+
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublication();
+
+					await untilResolved(
+						registry,
+						MODULES_READER_REVENUE_MANAGER
+					).getPublication();
+
+					expect( fetchMock ).not.toHaveFetched(
+						publicationsEndpoint
+					);
+					expect( fetchMock ).toHaveFetched( publicationEndpoint );
+				} );
+
+				it( 'should request the publication without fetching publications when an organization ID is passed', async () => {
+					fetchMock.getOnce( publicationEndpoint, {
+						body: { publicationId: params.publicationID },
+						status: 200,
+					} );
+
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.receiveGetSettings( {
+							publicationID: params.publicationID,
+							organizationID: '',
+						} );
+
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublication( params );
+
+					await untilResolved(
+						registry,
+						MODULES_READER_REVENUE_MANAGER
+					).getPublication( params );
+
+					expect( fetchMock ).not.toHaveFetched(
+						publicationsEndpoint
+					);
+					expect( fetchMock ).toHaveFetched( publicationEndpoint );
+				} );
 			} );
 
 			it( 'should not fetch a publication already in state', async () => {
