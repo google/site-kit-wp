@@ -262,6 +262,38 @@ describe( 'Analytics 4 widget registrations', () => {
 			}
 		);
 
+		it.each( [
+			[ 'only ecommerce is active', [ 'ecommerce' ], true ],
+			[ 'only lead is active', [ 'lead' ], true ],
+			[ 'both are active', [ 'ecommerce', 'lead' ], true ],
+			[ 'neither is active', [], false ],
+		] )(
+			'should register the conversion tracking disabled notice above the Site Goals widgets only when %s',
+			( _, activeWidgets, expectedActive ) => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( { activeWidgets } );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					detectedEvents: [ 'purchase', 'contact' ],
+				} );
+				registerWidgets( widgets );
+
+				const slugs = getWidgetSlugsInArea(
+					AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY
+				);
+
+				if ( expectedActive ) {
+					expect( slugs[ 0 ] ).toBe(
+						'analyticsSiteGoalsConversionTrackingDisabledNotice'
+					);
+				} else {
+					expect( slugs ).not.toContain(
+						'analyticsSiteGoalsConversionTrackingDisabledNotice'
+					);
+				}
+			}
+		);
+
 		it( 'should keep only the lead generation widget in the Site Goals area after the online store widget is removed', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -285,7 +317,10 @@ describe( 'Analytics 4 widget registrations', () => {
 
 			expect(
 				getWidgetSlugsInArea( AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY )
-			).toEqual( [ 'analyticsLeadGenerationPerformance' ] );
+			).toEqual( [
+				'analyticsSiteGoalsConversionTrackingDisabledNotice',
+				'analyticsLeadGenerationPerformance',
+			] );
 		} );
 
 		it( 'should leave the Site Goals area empty after the online store and lead generation widgets are removed', async () => {
