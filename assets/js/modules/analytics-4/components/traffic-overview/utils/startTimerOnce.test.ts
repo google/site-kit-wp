@@ -37,16 +37,22 @@ describe( 'startTimerOnce', () => {
 
 	let registry: Registry;
 
+	// A route for the timer request, so a test that expects no timer request
+	// fails on its own assertion, not on an unmatched request.
+	function mockSetExpirableItemTimers() {
+		fetchMock.postOnce( setExpirableItemTimersEndpoint, {
+			body: { [ TIMER.slug ]: getExpiryFromNow( 3600 ) },
+			status: 200,
+		} );
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry() as unknown as Registry;
 	} );
 
 	it( 'should load the expirable items, then start the timer when the user does not have it', async () => {
 		fetchMock.getOnce( expirableItemsEndpoint, { body: {}, status: 200 } );
-		fetchMock.postOnce( setExpirableItemTimersEndpoint, {
-			body: { [ TIMER.slug ]: getExpiryFromNow( 3600 ) },
-			status: 200,
-		} );
+		mockSetExpirableItemTimers();
 
 		await startTimerOnce( registry, TIMER );
 
@@ -67,6 +73,7 @@ describe( 'startTimerOnce', () => {
 			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
 				[ TIMER.slug ]: getExpiryFromNow( secondsFromNow ),
 			} );
+			mockSetExpirableItemTimers();
 
 			await startTimerOnce( registry, TIMER );
 
@@ -81,6 +88,7 @@ describe( 'startTimerOnce', () => {
 			body: { code: 'internal_server_error', message: 'Error' },
 			status: 500,
 		} );
+		mockSetExpirableItemTimers();
 
 		await startTimerOnce( registry, TIMER );
 

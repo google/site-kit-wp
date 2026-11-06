@@ -278,6 +278,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 				[ RECENT_ACTIVITY_INTERACTION_TIMER.slug ]: EXPIRED,
 			},
 		} );
+		mockVisit( 1 );
 
 		render( { isEnabled: false } );
 		await waitForDefaultTimeouts();
