@@ -59,6 +59,7 @@ export interface Publication {
 	publicationId: string;
 	organizationId?: string;
 	/* eslint-enable sitekit/acronym-case */
+	displayName: string;
 	onboardingState: string;
 	publicationType?: string;
 	paymentOptions?: Record< string, boolean >;
