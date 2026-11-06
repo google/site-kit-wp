@@ -122,7 +122,7 @@ describe( 'BreakdownNoticeArea', () => {
 			.receiveGetAdvancedDataBreakdownsSettings( {} );
 		// No Site Goals widget renders by default, so none shows breakdown
 		// tabs and the conversion tracking disabled notice never applies
-		// (tests that need it seed the widgets).
+		// (tests that need it set up the widgets).
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSiteGoalsSettings( { activeWidgets: [] } );
