@@ -13,6 +13,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Abilities\Connect_Module;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
@@ -204,6 +205,21 @@ final class Modules implements Provides_Feature_Metrics {
 	 * @since 1.0.0
 	 */
 	public function register() {
+		add_filter(
+			'googlesitekit_abilities',
+			function ( $abilities ) {
+				$abilities[] = new Connect_Module( $this->context, $this );
+
+				foreach ( $this->get_active_modules() as $module ) {
+					if ( $module instanceof Module_With_Abilities ) {
+						$abilities = array_merge( $abilities, $module->get_abilities() );
+					}
+				}
+
+				return $abilities;
+			}
+		);
+
 		add_filter(
 			'googlesitekit_features_request_data',
 			function ( $body ) {
