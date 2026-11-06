@@ -34,13 +34,14 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { createTestRegistry } from '@tests/js/utils';
+import { createTestRegistry, provideUserCapabilities } from '@tests/js/utils';
 import { createFeatureDiscovery } from './index';
 
 describe( 'createFeatureDiscovery', () => {
@@ -109,6 +110,87 @@ describe( 'createFeatureDiscovery', () => {
 						getFeatureIncompleteSetupReminderKey( slug )
 					)
 			).toBeUndefined();
+		} );
+
+		describe( 'checkRequirements', () => {
+			let checkRequirements: (
+				registry: WPDataRegistry
+			) => Promise< boolean >;
+
+			let resolveRequirements: jest.Mock;
+			let isInProgress: jest.Mock;
+
+			beforeEach( () => {
+				provideUserCapabilities( registry, {
+					[ PERMISSION_MANAGE_OPTIONS ]: true,
+				} );
+
+				resolveRequirements = jest.fn().mockResolvedValue( undefined );
+				isInProgress = jest.fn().mockReturnValue( true );
+
+				createFeatureDiscovery( registry ).registerFeature( slug, {
+					...settings,
+					setup: {
+						...settings.setup,
+						isEnabled: () => false,
+						isInProgress,
+					},
+					incompleteSetupReminder: {
+						title: 'Finish setting up this feature',
+						description: 'Complete setup to start using it.',
+						tooltip: '',
+						resolveRequirements,
+					},
+				} );
+
+				( { checkRequirements } = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotification(
+						getFeatureIncompleteSetupReminderKey( slug )
+					) );
+			} );
+
+			it( 'returns false without permission to manage options', async () => {
+				provideUserCapabilities( registry, {
+					[ PERMISSION_MANAGE_OPTIONS ]: false,
+				} );
+
+				await expect( checkRequirements( registry ) ).resolves.toBe(
+					false
+				);
+
+				expect( resolveRequirements ).not.toHaveBeenCalled();
+			} );
+
+			it( 'resolves requirements before checking feature progress', async () => {
+				isInProgress.mockReturnValue( undefined );
+
+				resolveRequirements.mockImplementation( async () => {
+					await Promise.resolve();
+					isInProgress.mockReturnValue( true );
+				} );
+
+				await expect( checkRequirements( registry ) ).resolves.toBe(
+					true
+				);
+
+				expect( resolveRequirements ).toHaveBeenCalledWith( registry );
+			} );
+
+			it.each( [
+				[ true, true ],
+				[ false, false ],
+				[ undefined, false ],
+			] )(
+				'returns the expected eligibility for feature progress %s',
+				async ( progress, expected ) => {
+					isInProgress.mockReturnValue( progress );
+
+					await expect( checkRequirements( registry ) ).resolves.toBe(
+						expected
+					);
+				}
+			);
 		} );
 	} );
 } );
