@@ -219,7 +219,7 @@ describe( 'HelpMenu', () => {
 	it( 'should not clear the admin screen tooltip when the help menu is opened and the tooltip targets another element', () => {
 		registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
 			isTooltipVisible: true,
-			target: '#adminmenu [href*="page=googlesitekit-settings"]',
+			tooltipSlug: 'test-tooltip-slug',
 		} );
 
 		const { getByRole } = render( <HelpMenu showFeatureTour />, {
@@ -233,7 +233,7 @@ describe( 'HelpMenu', () => {
 			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
 		).toEqual( {
 			isTooltipVisible: true,
-			target: '#adminmenu [href*="page=googlesitekit-settings"]',
+			tooltipSlug: 'test-tooltip-slug',
 		} );
 	} );
 
