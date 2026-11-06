@@ -63,6 +63,7 @@ import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { KEY_METRICS_FEATURE_SLUG } from '@/js/modules/analytics-4/feature-discovery/constants';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamID,
@@ -332,7 +333,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		},
 	} );
-	registerFeature( 'key-metrics', {
+	registerFeature( KEY_METRICS_FEATURE_SLUG, {
 		name: __( 'Key metrics', 'google-site-kit' ),
 		title: __(
 			'Get personalized suggestions for user interaction metrics based on your goals',
@@ -444,6 +445,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 			ctaLabel: __( 'Set up Key metrics', 'google-site-kit' ),
+			getSetupURL: ( select ) =>
+				select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ),
+			isEnabled: ( select ) =>
+				select( CORE_SITE ).isKeyMetricsSetupCompleted(),
 		},
 	} );
 
@@ -640,7 +645,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				setupList: [
 					__(
-						'Enable visitor groups here [CTA for setup]',
+						'Enable visitor groups using the button at the bottom of this screen',
 						'google-site-kit'
 					),
 					__(

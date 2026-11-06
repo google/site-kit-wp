@@ -70,6 +70,14 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 	const cta = {
 		name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/9d2418415-ab3a',
 		type: 'NEWSLETTER_SIGNUP',
+		state: 'ACTIVE',
+		displayName: 'Weekly newsletter',
+	};
+
+	const configuredCTA = {
+		type: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+		state: 'ACTIVE',
+		displayName: 'Weekly newsletter',
 	};
 
 	const otherCTA = {
@@ -410,7 +418,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSettings().configuredCTAs
 				).toEqual( {
-					'9d2418415-ab3a': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+					'9d2418415-ab3a': configuredCTA,
 				} );
 				expect(
 					registry
@@ -426,7 +434,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					.receiveGetSettings( {
 						...params,
 						configuredCTAs: {
-							existing: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+							existing: configuredCTA,
 						},
 					} );
 
@@ -439,7 +447,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSettings().configuredCTAs
 				).toEqual( {
-					existing: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+					existing: configuredCTA,
 				} );
 			} );
 
@@ -452,6 +460,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 							{
 								name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/unknown-type',
 								type: 'UNKNOWN_TYPE',
+								state: 'ACTIVE',
 							},
 						],
 						params,
@@ -462,7 +471,48 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSettings().configuredCTAs
 				).toEqual( {
-					'9d2418415-ab3a': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+					'9d2418415-ab3a': configuredCTA,
+				} );
+			} );
+
+			it( 'should skip CTAs without a supported state when synchronizing configured CTAs', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( {
+						ctas: [
+							cta,
+							{
+								name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/deleted',
+								type: 'NEWSLETTER_SIGNUP',
+								state: 'STATE_UNSPECIFIED',
+							},
+						],
+						params,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings().configuredCTAs
+				).toEqual( {
+					'9d2418415-ab3a': configuredCTA,
+				} );
+			} );
+
+			it( 'should store an empty display name for a CTA without one when synchronizing configured CTAs', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( {
+						ctas: [ { ...cta, displayName: undefined } ],
+						params,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings().configuredCTAs
+				).toEqual( {
+					'9d2418415-ab3a': { ...configuredCTA, displayName: '' },
 				} );
 			} );
 

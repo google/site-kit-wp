@@ -24,6 +24,7 @@ import { Registry, Select } from '@/js/googlesitekit-data';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFeatureDiscovery } from '@/js/googlesitekit/feature-discovery';
 import { consumePendingSetup } from '@/js/googlesitekit/feature-discovery/pending-setup';
@@ -34,17 +35,75 @@ import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { KEY_METRICS_FEATURE_SLUG } from '@/js/modules/analytics-4/feature-discovery/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import { registerFeatures } from './index';
 
 describe( 'Analytics feature discovery', () => {
+	describe( 'key-metrics', () => {
+		let registry: Registry;
+
+		function getFeature(): Feature {
+			return registry
+				.select( CORE_FEATURE_DISCOVERY )
+				.getFeature( KEY_METRICS_FEATURE_SLUG );
+		}
+
+		beforeEach( () => {
+			registry = createTestRegistry() as Registry;
+
+			provideSiteInfo( registry );
+
+			registerFeatures( createFeatureDiscovery( registry ) );
+		} );
+
+		describe( 'getSetupURL', () => {
+			it( 'should return the user input questionnaire URL', () => {
+				expect(
+					getFeature().setup.getSetupURL?.(
+						registry.select as Select
+					)
+				).toBe(
+					registry
+						.select( CORE_SITE )
+						.getAdminURL( 'googlesitekit-user-input' )
+				);
+			} );
+		} );
+
+		describe( 'isEnabled', () => {
+			function isEnabled() {
+				return getFeature().setup.isEnabled?.(
+					registry.select as Select
+				);
+			}
+
+			it( 'should return false when key metrics setup is not completed', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 0 );
+
+				expect( isEnabled() ).toBe( false );
+			} );
+
+			it( 'should return true when key metrics setup is completed', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 1 );
+
+				expect( isEnabled() ).toBe( true );
+			} );
+		} );
+	} );
+
 	describe( 'enhanced-measurement', () => {
 		const propertyID = '1000';
 		const webDataStreamID = '2000';
