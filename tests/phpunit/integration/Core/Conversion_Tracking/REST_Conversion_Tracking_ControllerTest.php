@@ -125,7 +125,7 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		$this->switch_to_view_only_user();
 
 		$original_settings = array(
-			'enabled' => false,
+			'enabled' => true,
 		);
 
 		$this->settings->register();
