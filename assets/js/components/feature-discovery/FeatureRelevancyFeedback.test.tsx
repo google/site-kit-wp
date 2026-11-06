@@ -1,5 +1,5 @@
 /**
- * FeatureThumbsSurveyTrigger tests.
+ * FeatureRelevancyFeedback tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
-import { VoteDirection } from '@/js/components/surveys/constants';
+import { VoteDirection } from '@/js/components/feedback/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -29,12 +29,12 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
-import FeatureThumbsSurveyTrigger from './FeatureThumbsSurveyTrigger';
+import FeatureRelevancyFeedback from './FeatureRelevancyFeedback';
 
-describe( 'FeatureThumbsSurveyTrigger', () => {
+describe( 'FeatureRelevancyFeedback', () => {
 	let registry: Registry;
 	let setFeatureRelevancyVote: jest.SpyInstance;
-	let triggerSurvey: jest.SpyInstance;
+	let sendFeedback: jest.SpyInstance;
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
@@ -51,8 +51,8 @@ describe( 'FeatureThumbsSurveyTrigger', () => {
 			)
 			.mockResolvedValue( {} );
 
-		triggerSurvey = jest
-			.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+		sendFeedback = jest
+			.spyOn( registry.dispatch( CORE_USER ), 'sendFeedback' )
 			.mockResolvedValue( {} );
 	} );
 
@@ -63,7 +63,7 @@ describe( 'FeatureThumbsSurveyTrigger', () => {
 		).mockReturnValue( undefined );
 
 		const { getByRole } = render(
-			<FeatureThumbsSurveyTrigger slug="first" />,
+			<FeatureRelevancyFeedback slug="first" />,
 			{ registry }
 		);
 
@@ -95,7 +95,7 @@ describe( 'FeatureThumbsSurveyTrigger', () => {
 				.mockReturnValue( direction );
 
 			const { getByRole } = render(
-				<FeatureThumbsSurveyTrigger slug="first" />,
+				<FeatureRelevancyFeedback slug="first" />,
 				{ registry }
 			);
 
@@ -114,10 +114,10 @@ describe( 'FeatureThumbsSurveyTrigger', () => {
 	);
 
 	it.each< VoteDirection >( [ 'up', 'down' ] )(
-		'should save the %s vote and use the feature survey ID',
+		'should save the %s vote and send the feature’s feedback group',
 		( direction ) => {
 			const { getByRole } = render(
-				<FeatureThumbsSurveyTrigger slug="first" />,
+				<FeatureRelevancyFeedback slug="first" />,
 				{ registry }
 			);
 
@@ -135,9 +135,12 @@ describe( 'FeatureThumbsSurveyTrigger', () => {
 				direction
 			);
 
-			expect( triggerSurvey ).toHaveBeenCalledWith(
-				`vote:feature_relevancy_first:${ direction }`
-			);
+			expect( sendFeedback ).toHaveBeenCalledWith( {
+				namespace: 'feature_hub',
+				group: 'feature_relevancy_first',
+				key: 'vote',
+				value: direction,
+			} );
 		}
 	);
 
@@ -150,7 +153,7 @@ describe( 'FeatureThumbsSurveyTrigger', () => {
 		'should send the feature feedback for "%s"',
 		async ( label, reason ) => {
 			const { getByRole } = render(
-				<FeatureThumbsSurveyTrigger slug="first" />,
+				<FeatureRelevancyFeedback slug="first" />,
 				{ registry }
 			);
 
@@ -161,9 +164,12 @@ describe( 'FeatureThumbsSurveyTrigger', () => {
 			fireEvent.click( getByRole( 'menuitem', { name: label } ) );
 
 			await waitFor( () =>
-				expect( triggerSurvey ).toHaveBeenCalledWith(
-					`feedback:feature_relevancy_first:${ reason }`
-				)
+				expect( sendFeedback ).toHaveBeenCalledWith( {
+					namespace: 'feature_hub',
+					group: 'feature_relevancy_first',
+					key: 'vote_reason',
+					value: reason,
+				} )
 			);
 		}
 	);

@@ -351,7 +351,47 @@ describe( 'StepSignupForm', () => {
 								title: 'Subscribe',
 								customMessage: 'Join us',
 								nameRequired: true,
+								optInRequired: true,
 								customConsentText: 'I agree',
+							},
+						},
+					},
+				},
+			} );
+		} );
+	} );
+
+	it( 'should not require consent or send the consent text when consent is disabled', async () => {
+		fetchMock.postOnce( createCTAEndpoint, {
+			body: createdCTA,
+			status: 200,
+		} );
+		mockPostCreateRequests();
+
+		renderStepSignupForm(
+			{
+				[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]: 'My newsletter',
+				[ NEWSLETTER_SIGNUP_FORM.CONSENT_ENABLED ]: false,
+				[ NEWSLETTER_SIGNUP_FORM.CONSENT_TEXT ]: 'I agree',
+			},
+			registry
+		);
+
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Publish to your site' } )
+		);
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( createCTAEndpoint, {
+				body: {
+					data: {
+						data: {
+							displayName: 'My newsletter',
+							type: CTA_TYPES.NEWSLETTER_SIGNUP,
+							state: CTA_STATES.ACTIVE,
+							config: {
+								nameRequired: false,
+								optInRequired: false,
 							},
 						},
 					},
