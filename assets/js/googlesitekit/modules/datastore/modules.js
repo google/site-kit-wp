@@ -237,15 +237,20 @@ const baseActions = {
 	 * Activate a module (based on the slug provided).
 	 *
 	 * @since 1.8.0
+	 * @since n.e.x.t Added the `errorRedirectURL` option.
 	 *
 	 * @param {string} slug      Slug of the module to activate.
-	 * @param {Object} [options] Optional. Activation options with `redirectQueryArgs` and `additionalScopes`.
+	 * @param {Object} [options] Optional. Activation options with `redirectQueryArgs`, `additionalScopes` and `errorRedirectURL`.
 	 * @return {Object} Object with `{response, error}`. On success, `response.moduleReauthURL`
 	 *                  is set to redirect the user to the corresponding module setup or OAuth
 	 *                  consent screen.
 	 */
 	*activateModule( slug, options = {} ) {
-		const { redirectQueryArgs = {}, additionalScopes = [] } = options;
+		const {
+			redirectQueryArgs = {},
+			additionalScopes = [],
+			errorRedirectURL,
+		} = options;
 
 		const { response, error } = yield baseActions.setModuleActivation( {
 			slug,
@@ -254,7 +259,12 @@ const baseActions = {
 
 		if ( response?.success === true ) {
 			const moduleReauthURL = yield {
-				payload: { slug, redirectQueryArgs, additionalScopes },
+				payload: {
+					slug,
+					redirectQueryArgs,
+					additionalScopes,
+					errorRedirectURL,
+				},
 				type: SELECT_MODULE_REAUTH_URL,
 			};
 			return {
@@ -624,6 +634,7 @@ export const baseControls = {
 					slug,
 					redirectQueryArgs = {},
 					additionalScopes = [],
+					errorRedirectURL,
 				} = payload;
 				// Ensure the module is loaded before selecting the store name.
 				await resolveSelect( CORE_MODULES ).getModule( slug );
@@ -640,6 +651,7 @@ export const baseControls = {
 					return await resolveSelect( storeName ).getAdminReauthURL( {
 						redirectQueryArgs,
 						additionalScopes,
+						errorRedirectURL,
 					} );
 				}
 				return select( CORE_SITE ).getAdminURL(

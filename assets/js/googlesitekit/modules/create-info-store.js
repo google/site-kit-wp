@@ -111,11 +111,13 @@ export function createInfoStore(
 		 * Returns admin reauthentication URL.
 		 *
 		 * @since 1.10.0
+		 * @since n.e.x.t Added the `errorRedirectURL` option.
 		 *
 		 * @param {Object}   options                     Options object.
 		 * @param {boolean}  options.reAuth              The module activation status. Default is true.
 		 * @param {Object}   [options.redirectQueryArgs] Optional. Additional query arguments to add to the redirect URL.
 		 * @param {string[]} [options.additionalScopes]  Optional. Additional scopes required for setup.
+		 * @param {string}   [options.errorRedirectURL]  Optional. URL to redirect to if the consent screen is cancelled or denied.
 		 * @return {(string|undefined)} The admin reauthentication URL, or
 		 *                              undefined if not loaded yet.
 		 */
@@ -127,6 +129,7 @@ export function createInfoStore(
 						reAuth = true,
 						redirectQueryArgs = {},
 						additionalScopes = [],
+						errorRedirectURL = undefined,
 					} = {}
 				) => {
 					const needsReauthentication =
@@ -166,6 +169,7 @@ export function createInfoStore(
 					const connectURL = select( CORE_USER ).getConnectURL( {
 						additionalScopes: unsatisfiedAdditionalScopes,
 						redirectURL,
+						errorRedirectURL,
 					} );
 
 					return addQueryArgs( connectURL, { status: reAuth } );
