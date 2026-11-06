@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IncompleteSetupReminderNotification should render the matching feature copy with reminder markup 1`] = `
+<div>
+  <section
+    id="feature-discovery-incomplete-setup-newsletter-signup"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-notice-container"
+          >
+            <div
+              class="googlesitekit-notice googlesitekit-notice--reminder googlesitekit-notice--default"
+              role="status"
+            >
+              <div
+                class="googlesitekit-notice__icon"
+              >
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
+              >
+                <p
+                  class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
+                >
+                  Almost there! Finish your newsletter sign-up form
+                </p>
+                <p
+                  class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
+                >
+                  Complete setup to make it live and start building a list of your most interested visitors
+                </p>
+              </div>
+              <div
+                class="googlesitekit-notice__action"
+              >
+                <button
+                  class="mdc-button mdc-button--tertiary"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Maybe later
+                  </span>
+                </button>
+                <button
+                  class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Complete setup
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

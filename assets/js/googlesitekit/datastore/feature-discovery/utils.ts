@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { escapeRegExp } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import { VoteDirection } from '@/js/components/feedback/constants';
@@ -43,6 +48,23 @@ export function getFeatureDismissalKey( slug: string ) {
  */
 export function getFeatureIncompleteSetupReminderKey( slug: string ) {
 	return `feature-discovery-incomplete-setup-${ slug }`;
+}
+
+/**
+ * Returns whether the provided key is a feature incomplete setup reminder key.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} key Key to check.
+ * @return {boolean} Whether the provided key is a feature incomplete setup reminder key.
+ */
+export function isFeatureIncompleteSetupReminderKey( key: string ) {
+	const placeholder = '__SLUG__';
+
+	const example = getFeatureIncompleteSetupReminderKey( placeholder );
+	const pattern = escapeRegExp( example ).replace( placeholder, '.+' );
+
+	return new RegExp( `^${ pattern }$` ).test( key );
 }
 
 /**

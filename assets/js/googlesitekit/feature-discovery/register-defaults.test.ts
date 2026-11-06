@@ -42,7 +42,6 @@ describe( 'registerDefaults', () => {
 	it( 'registers the PDF report feature in the catalog', () => {
 		const featureDiscoveryAPI = {
 			registerFeature: jest.fn(),
-			resetIncompleteSetupReminder: jest.fn(),
 		};
 
 		registerDefaults( featureDiscoveryAPI );

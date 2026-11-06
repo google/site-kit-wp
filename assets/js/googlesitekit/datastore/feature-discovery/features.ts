@@ -30,10 +30,12 @@ import {
 	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
 	FEATURE_DISCOVERY_SETUP_REQUEST_KEY,
 } from '@/js/components/feature-discovery/constants';
+import { isFeatureEnabled } from '@/js/features';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	getCurrentFeatureDiscoveryTabPath,
 	setPendingSetup,
@@ -52,6 +54,7 @@ import type {
 	FeatureSettings,
 	PendingSetup,
 } from './types';
+import { getFeatureIncompleteSetupReminderKey } from './utils';
 
 const REGISTER_FEATURE = 'REGISTER_FEATURE' as const;
 const RECEIVE_PENDING_SETUP = 'RECEIVE_PENDING_SETUP' as const;
@@ -218,6 +221,39 @@ export const actions = {
 			},
 			type: REGISTER_FEATURE,
 		};
+	},
+
+	/**
+	 * Removes the dismissed-item mark for a feature's incomplete setup reminder.
+	 *
+	 * @since 1.191.0
+	 *
+	 * @param {string} slug Feature's slug.
+	 * @return {Object} Generator object.
+	 */
+	*resetIncompleteSetupReminder(
+		slug: string
+	): Generator< unknown, void, unknown > {
+		if ( ! isFeatureEnabled( 'featureDiscoveryHub' ) ) {
+			return;
+		}
+
+		const registry = ( yield commonActions.getRegistry() ) as Registry;
+
+		yield commonActions.await(
+			registry.resolveSelect( CORE_USER ).getDismissedItems()
+		);
+
+		const key = getFeatureIncompleteSetupReminderKey( slug );
+		const dismissed = registry.select( CORE_USER ).isItemDismissed( key );
+
+		if ( dismissed !== true ) {
+			return;
+		}
+
+		yield commonActions.await(
+			registry.dispatch( CORE_USER ).removeDismissedItems( key )
+		);
 	},
 
 	/**

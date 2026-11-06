@@ -121,7 +121,9 @@ async function isPromiseResolved(
 	);
 }
 
-type AsyncPredicate = ( ...args: unknown[] ) => boolean | Promise< boolean >;
+type AsyncPredicate< Args extends unknown[] = unknown[] > = (
+	...args: Args
+) => boolean | Promise< boolean >;
 
 /**
  * Returns a function which can process N asynchronous requirements in sequence, stopping at the first to return false.
@@ -131,8 +133,10 @@ type AsyncPredicate = ( ...args: unknown[] ) => boolean | Promise< boolean >;
  * @param {...Function} requirements Async requirement function checks.
  * @return {function(...*): Promise<boolean>} Function which processes all requirements in sequence.
  */
-export function asyncRequireAll( ...requirements: AsyncPredicate[] ) {
-	return async function ( ...args: unknown[] ): Promise< boolean > {
+export function asyncRequireAll< Args extends unknown[] >(
+	...requirements: AsyncPredicate< Args >[]
+) {
+	return async function ( ...args: Args ): Promise< boolean > {
 		for ( const predicate of requirements ) {
 			if ( false === ( await predicate( ...args ) ) ) {
 				return false;

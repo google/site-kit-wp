@@ -40,6 +40,7 @@ export const PRIORITY = {
 	ERROR_HIGH: 30,
 	ERROR_LOW: 60,
 	WARNING: 100,
+	REMINDER: 120,
 	INFO: 150,
 	// The welcome modal and the Site Goals intro modal have their own priority
 	// values, distinct from the `SETUP_CTA_HIGH`/`SETUP_CTA_LOW` group, so that

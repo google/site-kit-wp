@@ -50,7 +50,7 @@ function vrtHead() {
 // so we need to convert those to aliases for Storybook to be able to resolve them.
 const siteKitPackageAliases = mapValues(
 	siteKitExternals,
-	( [ global, api ] ) => {
+	( [ global, api ], packageName ) => {
 		if ( global === 'googlesitekit' ) {
 			// Revert "@wordpress/i18n: [ googlesitekit, i18n ]" external back to the original @wordpress/i18n.
 			if ( api === 'i18n' ) {
@@ -58,7 +58,7 @@ const siteKitPackageAliases = mapValues(
 			}
 		}
 
-		return path.resolve( rootDir, `assets/js/${ global }-${ api }.ts` );
+		return path.resolve( rootDir, `assets/js/${ packageName }.ts` );
 	}
 );
 

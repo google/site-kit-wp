@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import type { Select } from 'googlesitekit-data';
+import type { Registry, Select } from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	FEATURE_CATEGORIES,
@@ -156,6 +156,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 
 	// Newsletter sign-up sub-feature (only if rrmExpressSetup feature flag is enabled).
 	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+		const newsletterSignupReauthOptions = {
+			additionalScopes: EXPRESS_SETUP_SCOPES,
+			redirectQueryArgs: {
+				cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+				expressSetup: 'true',
+			},
+		};
+
 		registerFeature( FEATURE_SLUG_NEWSLETTER_SIGNUP, {
 			name: __( 'Newsletter sign-up form', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -285,17 +293,47 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				getSetupURL: ( select: Select ) =>
 					select( MODULES_READER_REVENUE_MANAGER ).getAdminReauthURL(
-						{
-							redirectQueryArgs: {
-								expressSetup: 'true',
-								cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
-							},
-							additionalScopes: EXPRESS_SETUP_SCOPES,
-						}
+						newsletterSignupReauthOptions
 					),
+				getResumeURL: ( select: Select ) =>
+					select( MODULES_READER_REVENUE_MANAGER ).getAdminReauthURL(
+						newsletterSignupReauthOptions
+					),
+				isInProgress: ( select: Select ) => {
+					const isModuleActive = select(
+						CORE_MODULES
+					).isModuleActive( MODULE_SLUG_READER_REVENUE_MANAGER );
+
+					if ( isModuleActive !== true ) {
+						return isModuleActive;
+					}
+
+					const userSettings = select(
+						MODULES_READER_REVENUE_MANAGER
+					).getUserSettings();
+
+					if ( userSettings === undefined ) {
+						return undefined;
+					}
+
+					const { lastActionedExpressSetups = {} } = userSettings;
+
+					return (
+						`${ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP }:new` in
+						lastActionedExpressSetups
+					);
+				},
 				// Connecting RRM doesn't mean a newsletter form exists, so
 				// completion is based on the publication's configured CTAs.
 				isEnabled: ( select: Select ) => {
+					const isModuleActive = select(
+						CORE_MODULES
+					).isModuleActive( MODULE_SLUG_READER_REVENUE_MANAGER );
+
+					if ( isModuleActive !== true ) {
+						return isModuleActive;
+					}
+
 					const configuredCTAs = select(
 						MODULES_READER_REVENUE_MANAGER
 					).getConfiguredCTAs() as
@@ -310,6 +348,52 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						( { type } ) =>
 							type === EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
 					);
+				},
+			},
+			incompleteSetupReminder: {
+				title: __(
+					'Almost there! Finish your newsletter sign-up form',
+					'google-site-kit'
+				),
+				description: __(
+					'Complete setup to make it live and start building a list of your most interested visitors',
+					'google-site-kit'
+				),
+				tooltip: __(
+					'You can always complete your sign-up form setup from the “Add features” page',
+					'google-site-kit'
+				),
+				resolveRequirements: async ( {
+					select,
+					resolveSelect,
+				}: Registry ) => {
+					await resolveSelect( CORE_MODULES ).getModules();
+
+					const isModuleActive = select(
+						CORE_MODULES
+					).isModuleActive( MODULE_SLUG_READER_REVENUE_MANAGER );
+
+					if ( ! isModuleActive ) {
+						return;
+					}
+
+					const resolveAdminReauthURL = resolveSelect(
+						MODULES_READER_REVENUE_MANAGER
+					).getAdminReauthURL( newsletterSignupReauthOptions );
+
+					const resolveSettings = resolveSelect(
+						MODULES_READER_REVENUE_MANAGER
+					).getSettings();
+
+					const resolveUserSettings = resolveSelect(
+						MODULES_READER_REVENUE_MANAGER
+					).getUserSettings();
+
+					await Promise.all( [
+						resolveAdminReauthURL,
+						resolveSettings,
+						resolveUserSettings,
+					] );
 				},
 			},
 		} );
