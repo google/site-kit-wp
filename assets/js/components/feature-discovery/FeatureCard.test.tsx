@@ -398,8 +398,8 @@ describe( 'FeatureCard', () => {
 		async ( label, reason ) => {
 			provideFeatures( registry, [ TEST_FEATURE ] );
 
-			const triggerSurvey = jest
-				.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+			const sendFeedback = jest
+				.spyOn( registry.dispatch( CORE_USER ), 'sendFeedback' )
 				.mockResolvedValue( {} );
 
 			const endpoint = new RegExp(
@@ -433,11 +433,14 @@ describe( 'FeatureCard', () => {
 			} );
 
 			if ( reason ) {
-				expect( triggerSurvey ).toHaveBeenCalledWith(
-					`feedback:feature_relevancy_test-feature:${ reason }`
-				);
+				expect( sendFeedback ).toHaveBeenCalledWith( {
+					namespace: 'feature_hub',
+					group: 'feature_relevancy_test-feature',
+					key: 'dismiss_reason',
+					value: reason,
+				} );
 			} else {
-				expect( triggerSurvey ).not.toHaveBeenCalled();
+				expect( sendFeedback ).not.toHaveBeenCalled();
 			}
 
 			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
