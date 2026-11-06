@@ -1,0 +1,77 @@
+# Site Kit OpenTelemetry PoC: collector configuration.
+#
+# Stands in for the Site Kit Service. It receives OTLP from the plugin, shapes
+# errors for Error Reporting, and forwards them to Google Cloud with
+# credentials the plugin never sees.
+
+extensions:
+  googleclientauth:
+    project: ${env:GOOGLE_CLOUD_PROJECT}
+    quota_project: ${env:GOOGLE_CLOUD_PROJECT}
+
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+        # The plugin posts from the WordPress admin, so its origin must be
+        # allowed.
+        cors:
+          allowed_origins:
+            - 'http://localhost:9002'
+
+processors:
+  # Tells Google's Telemetry API which project to write to.
+  resource/gcp_project_id:
+    attributes:
+      - action: insert
+        key: gcp.project_id
+        value: ${env:GOOGLE_CLOUD_PROJECT}
+
+  # Shapes records for Google Cloud.
+  transform/google:
+    error_mode: ignore
+    log_statements:
+      # The Telemetry API names the log after each record's `service.name`
+      # attribute. Without this, every entry lands in a log called `otlp`.
+      - context: log
+        statements:
+          - set(log.attributes["service.name"], resource.attributes["service.name"])
+
+      # Error Reporting only groups entries in its ReportedErrorEvent format:
+      # the stack trace as `message`, and the service and plugin version as
+      # `serviceContext`. A plain stack trace in the payload is not picked up,
+      # because that detection relies on the log's resource type, and OTLP
+      # records arrive as `generic_node`.
+      - context: log
+        conditions:
+          - log.attributes["exception.stacktrace"] != nil
+        statements:
+          - 'set(log.body, {"@type": "type.googleapis.com/google.devtools.clouderrorreporting.v1beta1.ReportedErrorEvent"})'
+          - 'set(log.body["message"], log.attributes["exception.stacktrace"])'
+          - 'set(log.body["serviceContext"], {})'
+          - 'set(log.body["serviceContext"]["service"], resource.attributes["service.name"])'
+          - 'set(log.body["serviceContext"]["version"], resource.attributes["service.version"])'
+
+  batch:
+    send_batch_size: 200
+    send_batch_max_size: 200
+
+exporters:
+  otlp_grpc/google:
+    endpoint: telemetry.googleapis.com:443
+    balancer_name: pick_first
+    auth:
+      authenticator: googleclientauth
+
+  # Prints each record, to confirm the plugin is emitting.
+  debug:
+    verbosity: detailed
+
+service:
+  extensions: [ googleclientauth ]
+  pipelines:
+    logs:
+      receivers: [ otlp ]
+      processors: [ resource/gcp_project_id, transform/google, batch ]
+      exporters: [ otlp_grpc/google, debug ]

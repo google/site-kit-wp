@@ -42,6 +42,7 @@ import ErrorHandler from '@/js/components/ErrorHandler';
 import FeaturesProvider from '@/js/components/FeaturesProvider';
 import FeatureTours from '@/js/components/FeatureTours';
 import InViewProvider from '@/js/components/InViewProvider';
+import OTLPTestError from '@/js/components/OTLPTestError';
 import PermissionsModal from '@/js/components/PermissionsModal';
 import RestoreSnapshots from '@/js/components/RestoreSnapshots';
 import { enabledFeatures } from '@/js/features';
@@ -67,6 +68,7 @@ export default function Root( { children, registry, viewContext = null } ) {
 						<ViewContextProvider value={ viewContext }>
 							<ThemeProvider theme={ theme() }>
 								<ErrorHandler>
+									<OTLPTestError />
 									<RestoreSnapshots>
 										{ children }
 										{ viewContext && <FeatureTours /> }
