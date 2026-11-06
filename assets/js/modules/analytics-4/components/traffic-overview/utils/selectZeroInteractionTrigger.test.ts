@@ -35,6 +35,7 @@ import {
 import {
 	LATEST_POST,
 	getExpiryFromNow,
+	provideLatestPost,
 	provideRecentActivitySurveyState,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import {
@@ -50,8 +51,7 @@ import { selectZeroInteractionTrigger } from './selectZeroInteractionTrigger';
 describe( 'selectZeroInteractionTrigger', () => {
 	const REFERENCE_DATE = '2026-10-01';
 
-	// Published 14 days before the reference date.
-	const OLD_POST = { ...LATEST_POST, publishedAt: '2026-09-17T12:30:00Z' };
+	// `LATEST_POST` was published 14 days before the reference date.
 	// Published 7 days before the reference date.
 	const RECENT_POST = { ...LATEST_POST, publishedAt: '2026-09-24T12:30:00Z' };
 
@@ -61,14 +61,6 @@ describe( 'selectZeroInteractionTrigger', () => {
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
 
 	let registry: WPDataRegistry;
-
-	function provideLatestPost( post = OLD_POST ) {
-		provideRecentContent(
-			registry,
-			[ post ],
-			LATEST_POST_RECENT_CONTENT_OPTIONS
-		);
-	}
 
 	function visitCount( count: number ) {
 		return {
@@ -86,7 +78,7 @@ describe( 'selectZeroInteractionTrigger', () => {
 	} );
 
 	it( 'should select the trigger when the latest post was published 7 days or less before the reference date', () => {
-		provideLatestPost( RECENT_POST );
+		provideLatestPost( registry, RECENT_POST );
 
 		expect( select() ).toBe(
 			RECENT_ACTIVITY_SURVEY_TRIGGER_ZERO_INTERACTION
@@ -94,7 +86,7 @@ describe( 'selectZeroInteractionTrigger', () => {
 	} );
 
 	it( 'should select the trigger from the third visit when the "tab available" timer has 4 days or less left', () => {
-		provideLatestPost();
+		provideLatestPost( registry );
 		provideRecentActivitySurveyState( registry, {
 			expirableItems: {
 				[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: getExpiryFromNow(
@@ -120,7 +112,7 @@ describe( 'selectZeroInteractionTrigger', () => {
 	] )(
 		'should select no trigger %s',
 		( _description, count, secondsLeft ) => {
-			provideLatestPost();
+			provideLatestPost( registry );
 			provideRecentActivitySurveyState( registry, {
 				expirableItems: {
 					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]:
@@ -134,7 +126,7 @@ describe( 'selectZeroInteractionTrigger', () => {
 	);
 
 	it( 'should select no trigger when the user does not have the "tab available" timer', () => {
-		provideLatestPost();
+		provideLatestPost( registry );
 		provideRecentActivitySurveyState( registry, {
 			dismissedPrompts: visitCount( 3 ),
 		} );
@@ -164,7 +156,7 @@ describe( 'selectZeroInteractionTrigger', () => {
 	} );
 
 	it( 'should return `null` while the dismissed prompts load', async () => {
-		provideLatestPost();
+		provideLatestPost( registry );
 		freezeFetch( dismissedPromptsEndpoint );
 
 		expect( select() ).toBeNull();
@@ -175,7 +167,7 @@ describe( 'selectZeroInteractionTrigger', () => {
 	} );
 
 	it( 'should return `null` while the expirable items load', async () => {
-		provideLatestPost();
+		provideLatestPost( registry );
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedPrompts( visitCount( 3 ) );

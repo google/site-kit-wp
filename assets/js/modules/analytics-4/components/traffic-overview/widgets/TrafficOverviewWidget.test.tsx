@@ -43,6 +43,7 @@ import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-
 import {
 	provideFreshMetricsReports,
 	provideRecentActivitySurveyState,
+	requestedTimerSlugs,
 	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -1171,16 +1172,6 @@ describe( 'TrafficOverviewWidget', () => {
 			link: 'http://example.com/autumn-recipes/',
 			title: { rendered: 'Autumn recipes' },
 		};
-
-		function requestedTimerSlugs(): string[] {
-			return fetchMock
-				.calls( setExpirableItemTimersEndpoint )
-				.flatMap( ( call ) =>
-					JSON.parse( String( call[ 1 ]?.body ) ).data.map(
-						( { slug }: { slug: string } ) => slug
-					)
-				);
-		}
 
 		function dismissedPromptSlugs(): string[] {
 			return fetchMock

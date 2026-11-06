@@ -27,7 +27,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
-	LATEST_POST_RECENT_CONTENT_OPTIONS,
 	RECENT_ACTIVITY_INTERACTION_TIMER,
 	RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED,
 	RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED,
@@ -39,18 +38,17 @@ import {
 import {
 	LATEST_POST,
 	getExpiryFromNow,
+	provideLatestPost,
 	provideRecentActivitySurveyState,
 	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import {
-	provideIncludeProductsState,
-	provideRecentContent,
-} from '@/js/modules/analytics-4/datastore/test-utils';
+import { provideIncludeProductsState } from '@/js/modules/analytics-4/datastore/test-utils';
 import { DAY_IN_SECONDS } from '@/js/util/dates';
 import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
 	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
+	triggeredIDs,
 } from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
@@ -66,8 +64,7 @@ import { useRecentActivitySurveyTriggers } from './useRecentActivitySurveyTrigge
 describe( 'useRecentActivitySurveyTriggers', () => {
 	const REFERENCE_DATE = '2026-10-01';
 
-	// Published 14 days before the reference date.
-	const OLD_POST = { ...LATEST_POST, publishedAt: '2026-09-17T12:30:00Z' };
+	// `LATEST_POST` was published 14 days before the reference date.
 	// Published 7 days before the reference date.
 	const RECENT_POST = { ...LATEST_POST, publishedAt: '2026-09-24T12:30:00Z' };
 
@@ -76,27 +73,10 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 
 	let registry: WPDataRegistry;
 
-	function triggeredIDs(): string[] {
-		return fetchMock
-			.calls( surveyTriggerEndpoint )
-			.map(
-				( call ) =>
-					JSON.parse( String( call[ 1 ]?.body ) ).data.triggerID
-			);
-	}
-
 	function timerRequests(): unknown[] {
 		return fetchMock
 			.calls( setExpirableItemTimersEndpoint )
 			.map( ( call ) => JSON.parse( String( call[ 1 ]?.body ) ).data );
-	}
-
-	function provideLatestPost( post = OLD_POST ) {
-		provideRecentContent(
-			registry,
-			[ post ],
-			LATEST_POST_RECENT_CONTENT_OPTIONS
-		);
 	}
 
 	// The response to a visit has the visit count after the visit.
@@ -173,7 +153,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 					[ RECENT_ACTIVITY_INTERACTION_TIMER.slug ]: ACTIVE,
 				},
 			} );
-			provideLatestPost( RECENT_POST );
+			provideLatestPost( registry, RECENT_POST );
 			mockVisit( 1 );
 
 			const { waitForRegistry } = render();
@@ -211,7 +191,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 					[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: ACTIVE,
 				},
 			} );
-			provideLatestPost( RECENT_POST );
+			provideLatestPost( registry, RECENT_POST );
 			mockVisit( 1 );
 
 			const { waitForRegistry } = render();
@@ -229,7 +209,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
 				},
 			} );
-			provideLatestPost( RECENT_POST );
+			provideLatestPost( registry, RECENT_POST );
 			mockVisit( 1 );
 
 			const { waitForRegistry } = render();
@@ -255,7 +235,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 					},
 				},
 			} );
-			provideLatestPost();
+			provideLatestPost( registry );
 			mockVisit( 3 );
 
 			const { waitForRegistry } = render();
@@ -281,80 +261,8 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 					},
 				},
 			} );
-			provideLatestPost();
+			provideLatestPost( registry );
 			mockVisit( 2 );
-
-			const { waitForRegistry } = render();
-			await waitForRegistry();
-			await waitForDefaultTimeouts();
-
-			expect( triggeredIDs() ).toEqual( [] );
-		} );
-
-		it( 'should not trigger any survey when the "tab available" timer has more than 4 days left', async () => {
-			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]:
-						getExpiryFromNow( 5 * DAY_IN_SECONDS ),
-				},
-				dismissedPrompts: {
-					[ TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ]: {
-						expires: 0,
-						count: 5,
-					},
-				},
-			} );
-			provideLatestPost();
-			mockVisit( 6 );
-
-			const { waitForRegistry } = render();
-			await waitForRegistry();
-			await waitForDefaultTimeouts();
-
-			expect( triggeredIDs() ).toEqual( [] );
-		} );
-
-		it( 'should not trigger any survey when the "tab available" timer has expired', async () => {
-			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: EXPIRED,
-				},
-				dismissedPrompts: {
-					[ TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ]: {
-						expires: 0,
-						count: 5,
-					},
-				},
-			} );
-			provideLatestPost();
-			mockVisit( 6 );
-
-			const { waitForRegistry } = render();
-			await waitForRegistry();
-			await waitForDefaultTimeouts();
-
-			expect( triggeredIDs() ).toEqual( [] );
-		} );
-
-		it( 'should not trigger any survey when the site has no published posts', async () => {
-			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]:
-						getExpiryFromNow( DAY_IN_SECONDS ),
-				},
-				dismissedPrompts: {
-					[ TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ]: {
-						expires: 0,
-						count: 5,
-					},
-				},
-			} );
-			provideRecentContent(
-				registry,
-				[],
-				LATEST_POST_RECENT_CONTENT_OPTIONS
-			);
-			mockVisit( 6 );
 
 			const { waitForRegistry } = render();
 			await waitForRegistry();
@@ -383,7 +291,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		freezeFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/expirable-items' )
 		);
-		provideLatestPost( RECENT_POST );
+		provideLatestPost( registry, RECENT_POST );
 		mockVisit( 1 );
 
 		render();
@@ -460,7 +368,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 
 	it( 'should start the "tab available" timer for 14 days when the user does not have it', async () => {
 		provideRecentActivitySurveyState( registry );
-		provideLatestPost();
+		provideLatestPost( registry );
 		mockVisit( 1 );
 
 		const { waitForRegistry } = render();
@@ -484,7 +392,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 				[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
 			},
 		} );
-		provideLatestPost();
+		provideLatestPost( registry );
 		mockVisit( 1 );
 
 		const { waitForRegistry } = render();

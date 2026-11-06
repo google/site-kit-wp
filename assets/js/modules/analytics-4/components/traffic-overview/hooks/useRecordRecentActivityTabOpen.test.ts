@@ -32,6 +32,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	provideRecentActivitySurveyState,
+	requestedTimerSlugs,
 	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import {
@@ -48,16 +49,6 @@ import { useRecordRecentActivityTabOpen } from './useRecordRecentActivityTabOpen
 
 describe( 'useRecordRecentActivityTabOpen', () => {
 	let registry: WPDataRegistry;
-
-	function requestedTimerSlugs(): string[] {
-		return fetchMock
-			.calls( setExpirableItemTimersEndpoint )
-			.flatMap( ( call ) =>
-				JSON.parse( String( call[ 1 ]?.body ) ).data.map(
-					( { slug }: { slug: string } ) => slug
-				)
-			);
-	}
 
 	function tabOpenCount( count: number ) {
 		return {
@@ -134,26 +125,31 @@ describe( 'useRecordRecentActivityTabOpen', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 1, dismissPromptEndpoint );
 	} );
 
-	it.each( [
-		[ 'should not record', 'the first', 1, false ],
-		[ 'should record', 'the second', 2, true ],
-	] )(
-		'%s an interaction when the user opens the tab in %s page load',
-		async ( _description, _pageLoad, count, shouldRecord ) => {
-			provideRecentActivitySurveyState( registry );
-			mockTabOpenCount( count );
+	it( 'should not record an interaction when the user opens the tab in the first page load', async () => {
+		provideRecentActivitySurveyState( registry );
+		mockTabOpenCount( 1 );
 
-			const { result } = render();
+		const { result } = render();
 
-			await act( () => result.current() );
+		await act( () => result.current() );
 
-			expect(
-				requestedTimerSlugs().includes(
-					RECENT_ACTIVITY_INTERACTION_TIMER.slug
-				)
-			).toBe( shouldRecord );
-		}
-	);
+		expect( requestedTimerSlugs() ).not.toContain(
+			RECENT_ACTIVITY_INTERACTION_TIMER.slug
+		);
+	} );
+
+	it( 'should record an interaction when the user opens the tab in the second page load', async () => {
+		provideRecentActivitySurveyState( registry );
+		mockTabOpenCount( 2 );
+
+		const { result } = render();
+
+		await act( () => result.current() );
+
+		expect( requestedTimerSlugs() ).toContain(
+			RECENT_ACTIVITY_INTERACTION_TIMER.slug
+		);
+	} );
 
 	it( 'should load the dismissed prompts before counting the tab open, so their response cannot replace the count', async () => {
 		// The expirable items load, but the dismissed prompts do not.

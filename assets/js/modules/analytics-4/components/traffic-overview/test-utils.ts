@@ -174,18 +174,23 @@ export function getLatestPostReportArgs(
 }
 
 /**
- * Stores `LATEST_POST` as the most recent post, so the latest post
- * performance section renders without a request.
+ * Stores a post as the most recent post, so the latest post performance
+ * section renders without a request.
  *
  * @since 1.191.0
+ * @since n.e.x.t Takes an optional post.
  *
  * @param {Object} registry The registry to put the post in.
+ * @param {Object} [post]   Optional. The post. Default `LATEST_POST`.
  * @return {void}
  */
-export function provideLatestPost( registry: WPDataRegistry ) {
+export function provideLatestPost(
+	registry: WPDataRegistry,
+	post: RecentContentItem = LATEST_POST
+) {
 	provideRecentContent(
 		registry,
-		[ LATEST_POST ],
+		[ post ],
 		LATEST_POST_RECENT_CONTENT_OPTIONS
 	);
 }
@@ -709,6 +714,24 @@ export function createDailyTrafficRows(
 export const setExpirableItemTimersEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 );
+
+/**
+ * Gets the slugs of the timers in the requests to the endpoint that
+ * `setExpirableItemTimers()` posts to, in the order they were sent.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Array<string>} The timer slugs.
+ */
+export function requestedTimerSlugs(): string[] {
+	return fetchMock
+		.calls( setExpirableItemTimersEndpoint )
+		.flatMap( ( call ) =>
+			JSON.parse( String( call[ 1 ]?.body ) ).data.map(
+				( { slug }: { slug: string } ) => slug
+			)
+		);
+}
 
 interface RecentActivitySurveyState {
 	/** The expirable items, as expiry times in seconds, keyed by slug. */
