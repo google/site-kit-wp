@@ -24,17 +24,19 @@ import { useCallback, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
 import ProgressSegments from '@/js/components/ProgressSegments';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPendingSetupReturnURL } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { KEY_METRICS_FEATURE_SLUG } from '@/js/modules/analytics-4/feature-discovery/constants';
 import { trackEvent } from '@/js/util';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
@@ -51,6 +53,7 @@ import {
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
+	const registry = useRegistry();
 	const [ activeSlug, setActiveSlug ] = useQueryArg(
 		'question',
 		USER_INPUT_QUESTIONS_LIST[ 0 ]
@@ -179,10 +182,15 @@ export default function UserInputQuestionnaire() {
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			const url = new URL( dashboardURL );
-			navigateTo( url.toString() );
+			const returnURL = await getPendingSetupReturnURL(
+				registry.select,
+				KEY_METRICS_FEATURE_SLUG
+			);
+
+			navigateTo( returnURL || dashboardURL );
 		}
 	}, [
+		registry,
 		gaEventCategory,
 		saveUserInputSettings,
 		userInputPurposeConversionEvents,

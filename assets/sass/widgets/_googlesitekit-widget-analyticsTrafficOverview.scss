@@ -327,7 +327,7 @@ $traffic-overview-column-gap: 42px;
 				padding: 16px $grid-gap-desktop;
 			}
 
-			.googlesitekit-thumbs-survey-trigger {
+			.googlesitekit-thumbs-feedback {
 				align-self: flex-end;
 
 				// The thumb buttons are 32px around 20px icons. This margin
@@ -339,7 +339,7 @@ $traffic-overview-column-gap: 42px;
 				}
 			}
 
-			.googlesitekit-thumbs-survey-trigger__button.mdc-button {
+			.googlesitekit-thumbs-feedback__button.mdc-button {
 				@include mdc-button-ink-color( $c-blue-b-700 );
 			}
 		}

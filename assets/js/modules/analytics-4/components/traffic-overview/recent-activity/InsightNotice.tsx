@@ -35,7 +35,10 @@ import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import useViewContext from '@/js/hooks/useViewContext';
 import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
-import { FRESH_DATA_VOTE_ID_RECENT_ACTIVITY } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	FRESH_DATA_FEEDBACK_GROUP_RECENT_ACTIVITY,
+	FRESH_DATA_FEEDBACK_NAMESPACE,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
 import { getInsightReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
@@ -133,7 +136,8 @@ const InsightNotice: FC = () => {
 					</P>
 				</div>
 				<FeedbackPrompt
-					voteID={ FRESH_DATA_VOTE_ID_RECENT_ACTIVITY }
+					feedbackNamespace={ FRESH_DATA_FEEDBACK_NAMESPACE }
+					feedbackGroup={ FRESH_DATA_FEEDBACK_GROUP_RECENT_ACTIVITY }
 					gaTrackingEventArgs={ {
 						category: `${ viewContext }_recent-activity-survey`,
 					} }

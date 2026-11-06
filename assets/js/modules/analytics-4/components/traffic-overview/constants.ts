@@ -38,9 +38,23 @@ export const RECENT_ACTIVITY_TAB_ID = 'googlesitekit-recent-activity-tab';
 export const RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG =
 	'analytics-setup-cta-recent-activity';
 
-/** The vote ID of the feedback thumbs in the Recent activity tab. */
-export const FRESH_DATA_VOTE_ID_RECENT_ACTIVITY =
-	'fresh_data_recent_activity_widget';
+/**
+ * The namespace used when sending Recent activity tab feedback to the
+ * `core/user` `sendFeedback()` feedback endpoint.
+ */
+export const FRESH_DATA_FEEDBACK_NAMESPACE = 'fresh_data';
+
+/** The feedback group of the feedback thumbs in the Recent activity tab. */
+export const FRESH_DATA_FEEDBACK_GROUP_RECENT_ACTIVITY =
+	'recent_activity_widget';
+
+/**
+ * How long the Recent activity tab stays shown, in milliseconds, before the
+ * `view_all_recent_posts` event fires.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_MINIMUM_VIEW_TIME_MILLISECONDS = 3000;
 
 /** The slug the Traffic Overview widget registers under. */
 export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';

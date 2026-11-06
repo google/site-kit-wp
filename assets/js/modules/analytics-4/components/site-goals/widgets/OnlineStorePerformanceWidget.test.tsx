@@ -61,6 +61,7 @@ import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data
 import { getPreviousDate } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import { fireEvent, render, waitFor, within } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -69,7 +70,6 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '@tests/js/utils';
-import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -1667,7 +1667,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 	} );
 
 	it( 'should track and dispatch an up vote on thumbs-up click', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+		fetchMock.post( feedbackEndpoint, {
+			status: 200,
+			body: { success: true },
+		} );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -1707,10 +1710,13 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID: 'vote:site_goals_widget_online_store:up',
+						namespace: 'analytics',
+						group: 'site_goals_widget_online_store',
+						key: 'vote',
+						value: 'up',
 					},
 				},
 			} )
@@ -1718,7 +1724,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 	} );
 
 	it( 'should track and dispatch a down vote on thumbs-down click', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+		fetchMock.post( feedbackEndpoint, {
+			status: 200,
+			body: { success: true },
+		} );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -1758,10 +1767,13 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 				body: {
 					data: {
-						triggerID: 'vote:site_goals_widget_online_store:down',
+						namespace: 'analytics',
+						group: 'site_goals_widget_online_store',
+						key: 'vote',
+						value: 'down',
 					},
 				},
 			} )

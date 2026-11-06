@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, MouseEvent } from 'react';
 
 /**
  * WordPress dependencies
@@ -34,8 +34,9 @@ import Link from '@/js/components/Link';
 import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
-import { formatDate } from '@/js/util';
+import { formatDate, trackEvent } from '@/js/util';
 import PushPinIcon from '@/svg/icons/push-pin.svg';
 
 interface LatestPostHeaderProps {
@@ -44,6 +45,8 @@ interface LatestPostHeaderProps {
 }
 
 const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
+	const viewContext = useViewContext();
+
 	const entityDashboardURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
@@ -51,6 +54,31 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 			} ),
 		[ post.permalink ]
 	);
+
+	async function handlePostLinkClick(
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) {
+		// A Command or Control click opens the link in a new tab or window, so
+		// this page stays open to send the event, and the browser handles the
+		// click.
+		const opensInNewTab = event.metaKey || event.ctrlKey;
+
+		// The default must be prevented before the `await`, or the browser
+		// leaves the page before the event is sent.
+		if ( ! opensInNewTab ) {
+			event.preventDefault();
+		}
+
+		await trackEvent(
+			`${ viewContext }_recent-activity`,
+			'click_post_link',
+			'latest-post-header'
+		);
+
+		if ( ! opensInNewTab ) {
+			global.location.assign( entityDashboardURL );
+		}
+	}
 
 	// The site time has no time zone suffix, so reading it as UTC and
 	// formatting it in UTC shows it unchanged, as WordPress shows it. This
@@ -73,6 +101,7 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 				<Link
 					className="googlesitekit-traffic-overview__latest-post-title"
 					href={ entityDashboardURL }
+					onClick={ handlePostLinkClick }
 				>
 					{ post.title }
 				</Link>
