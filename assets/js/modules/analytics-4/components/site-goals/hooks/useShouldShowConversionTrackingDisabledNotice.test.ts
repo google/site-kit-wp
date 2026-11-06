@@ -51,18 +51,13 @@ import { useShouldShowConversionTrackingDisabledNotice } from './useShouldShowCo
 describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 	let registry: WPDataRegistry;
 
-	const ALL_BREAKDOWN_DIMENSIONS = [
-		'googlesitekit_event_provider',
-		'googlesitekit_form_id',
-	];
-
-	// One detected event per goal type, so both widgets render.
-	const BOTH_WIDGET_EVENTS = [ 'purchase', 'contact' ];
-
 	function provideState( {
 		conversionTracking = false,
 		activeWidgets = [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
-		availableCustomDimensions = ALL_BREAKDOWN_DIMENSIONS,
+		availableCustomDimensions = [
+			'googlesitekit_event_provider',
+			'googlesitekit_form_id',
+		],
 	}: {
 		conversionTracking?: boolean;
 		activeWidgets?: string[];
@@ -77,7 +72,8 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID: '12345',
 			availableCustomDimensions,
-			detectedEvents: BOTH_WIDGET_EVENTS,
+			// One detected event per goal type, so both widgets render.
+			detectedEvents: [ 'purchase', 'contact' ],
 		} );
 	}
 

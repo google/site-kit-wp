@@ -54,15 +54,6 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		'^/google-site-kit/v1/core/site/data/conversion-tracking'
 	);
 
-	const TITLE = 'Plugin conversion tracking is disabled';
-	const ERROR_TITLE = 'Plugin conversion tracking couldn’t be enabled';
-
-	const SAVE_ERROR = {
-		code: 'internal_server_error',
-		message: 'Internal server error',
-		data: { status: 500 },
-	};
-
 	function provideState( {
 		conversionTracking = false,
 		leadBreakdownValues = [ '5' ],
@@ -100,7 +91,9 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 
 		const { queryByText } = renderNotice();
 
-		expect( queryByText( TITLE ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Plugin conversion tracking is disabled' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should render nothing when the widgets have never shown breakdown tabs', () => {
@@ -108,7 +101,9 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 
 		const { queryByText } = renderNotice();
 
-		expect( queryByText( TITLE ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Plugin conversion tracking is disabled' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should render the notice with the "Enable tracking" button for an admin', () => {
@@ -116,7 +111,9 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 
 		const { getByText, getByRole, queryByRole, container } = renderNotice();
 
-		expect( getByText( TITLE ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Plugin conversion tracking is disabled' )
+		).toBeInTheDocument();
 		expect(
 			getByText(
 				/so the breakdown in this section has stopped updating\. Enable plugin conversion tracking to keep it up to date\./
@@ -144,7 +141,9 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 
 		const { getByText, queryByRole } = renderNotice();
 
-		expect( getByText( TITLE ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Plugin conversion tracking is disabled' )
+		).toBeInTheDocument();
 		expect(
 			getByText(
 				/Ask a site admin to enable plugin conversion tracking to keep it up to date\./
@@ -165,7 +164,9 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Enable tracking' } ) );
 
 		await waitFor( () => {
-			expect( queryByText( TITLE ) ).not.toBeInTheDocument();
+			expect(
+				queryByText( 'Plugin conversion tracking is disabled' )
+			).not.toBeInTheDocument();
 		} );
 
 		expect( fetchMock ).toHaveFetched( conversionTrackingEndpoint, {
@@ -185,7 +186,9 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 
 		fireEvent.click( getByRole( 'button', { name: 'Enable tracking' } ) );
 
-		expect( getByText( TITLE ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Plugin conversion tracking is disabled' )
+		).toBeInTheDocument();
 		expect(
 			getByRole( 'button', { name: 'Enable tracking' } )
 		).toBeDisabled();
@@ -194,7 +197,11 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 	it( 'should reset the setting and show an error notice with a Retry button when saving fails', async () => {
 		provideState();
 		fetchMock.postOnce( conversionTrackingEndpoint, {
-			body: SAVE_ERROR,
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 			status: 500,
 		} );
 
@@ -203,11 +210,15 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 
 		fireEvent.click( getByRole( 'button', { name: 'Enable tracking' } ) );
 
-		expect( await findByText( ERROR_TITLE ) ).toBeInTheDocument();
+		expect(
+			await findByText( 'Plugin conversion tracking couldn’t be enabled' )
+		).toBeInTheDocument();
 		expect( console ).toHaveErrored();
 		expect( getByText( 'Internal server error' ) ).toBeInTheDocument();
 		expect( getByRole( 'button', { name: 'Retry' } ) ).not.toBeDisabled();
-		expect( queryByText( TITLE ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Plugin conversion tracking is disabled' )
+		).not.toBeInTheDocument();
 		expect(
 			registry.select( CORE_SITE ).isConversionTrackingEnabled()
 		).toBe( false );
@@ -216,7 +227,11 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 	it( 'should switch conversion tracking on and hide the notice when Retry succeeds', async () => {
 		provideState();
 		fetchMock.postOnce( conversionTrackingEndpoint, {
-			body: SAVE_ERROR,
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 			status: 500,
 		} );
 
@@ -235,10 +250,14 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		fireEvent.click( retryButton );
 
 		await waitFor( () => {
-			expect( queryByText( ERROR_TITLE ) ).not.toBeInTheDocument();
+			expect(
+				queryByText( 'Plugin conversion tracking couldn’t be enabled' )
+			).not.toBeInTheDocument();
 		} );
 
-		expect( queryByText( TITLE ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Plugin conversion tracking is disabled' )
+		).not.toBeInTheDocument();
 		expect(
 			registry.select( CORE_SITE ).isConversionTrackingEnabled()
 		).toBe( true );
