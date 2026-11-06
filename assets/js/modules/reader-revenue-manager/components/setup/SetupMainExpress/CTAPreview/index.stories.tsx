@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 
 /**
  * Internal dependencies
