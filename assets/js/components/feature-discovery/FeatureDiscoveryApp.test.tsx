@@ -31,6 +31,7 @@ import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/consta
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import * as pendingSetupModule from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
@@ -42,6 +43,11 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import FeatureDiscoveryApp from './FeatureDiscoveryApp';
+
+const consumePendingSetupSpy = jest.spyOn(
+	pendingSetupModule,
+	'consumePendingSetup'
+);
 
 // The `core/ui` key that opens each of the existing panels mounted on the hub.
 const mockPanelUIKeys: Record< string, string > = {
@@ -78,6 +84,13 @@ jest.mock(
 	() =>
 		function MockPDFExportRoot() {
 			return <div>PDFExportRoot</div>;
+		}
+);
+jest.mock(
+	'@/js/components/notifications/SetupCTAOverlays',
+	() =>
+		function MockSetupCTAOverlays() {
+			return <div>SetupCTAOverlays</div>;
 		}
 );
 
@@ -209,6 +222,38 @@ describe( 'FeatureDiscoveryApp', () => {
 		const { getByText } = await renderApp();
 
 		expect( getByText( 'PDFExportRoot' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should mount the hub setup-CTA overlays only once pending setup has been consumed', async () => {
+		let resolveConsumePendingSetup: ( value: null ) => void;
+		consumePendingSetupSpy.mockReturnValue(
+			new Promise( ( resolve ) => {
+				resolveConsumePendingSetup = resolve;
+			} )
+		);
+
+		const registry = createTestRegistry();
+		global.history.replaceState( {}, '', '/#/whats-new' );
+		provideHeader( registry );
+
+		const { queryByText } = render(
+			<HashRouter>
+				<FeatureDiscoveryApp />
+			</HashRouter>,
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+		);
+
+		expect( queryByText( 'SetupCTAOverlays' ) ).not.toBeInTheDocument();
+
+		await act( async () => {
+			resolveConsumePendingSetup( null );
+			// Let the resolved promise's `.then()` flush.
+			await null;
+		} );
+
+		expect( queryByText( 'SetupCTAOverlays' ) ).toBeInTheDocument();
+
+		consumePendingSetupSpy.mockRestore();
 	} );
 
 	it.each( [
