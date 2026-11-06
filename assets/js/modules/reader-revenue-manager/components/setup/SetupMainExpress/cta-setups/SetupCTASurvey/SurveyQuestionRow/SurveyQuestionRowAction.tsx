@@ -20,12 +20,13 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC, Fragment } from 'react';
+import { FC, Fragment, RefAttributes } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
+import { forwardRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -45,54 +46,62 @@ interface SurveyQuestionRowActionProps
 	onRemove?: () => void;
 }
 
-const SurveyQuestionRowAction: FC< SurveyQuestionRowActionProps > = ( {
-	'aria-describedby': ariaDescribedBy = '',
-	className,
-	isAdded,
-	isExpandable,
-	onAdd,
-	onRemove,
-	disabled,
-	disabledMessage,
-	...props
-} ) => {
-	const descriptionID = useInstanceId(
-		SurveyQuestionRowAction,
-		'googlesitekit-rrm-survey-question-row-action'
-	) as string;
+const SurveyQuestionRowAction: FC<
+	SurveyQuestionRowActionProps & RefAttributes< HTMLButtonElement >
+> = forwardRef< HTMLButtonElement, SurveyQuestionRowActionProps >(
+	(
+		{
+			'aria-describedby': ariaDescribedBy = '',
+			className,
+			isAdded,
+			isExpandable,
+			onAdd,
+			onRemove,
+			disabled,
+			disabledMessage,
+			...props
+		},
+		ref
+	) => {
+		const descriptionID = useInstanceId(
+			SurveyQuestionRowAction,
+			'googlesitekit-rrm-survey-question-row-action'
+		) as string;
 
-	const description =
-		disabled && disabledMessage ? disabledMessage : undefined;
+		const description =
+			disabled && disabledMessage ? disabledMessage : undefined;
 
-	const label = isAdded
-		? __( 'Remove question', 'google-site-kit' )
-		: __( 'Add question', 'google-site-kit' );
+		const label = isAdded
+			? __( 'Remove question', 'google-site-kit' )
+			: __( 'Add question', 'google-site-kit' );
 
-	const RemoveIcon = isExpandable ? CheckColor : MinusCircle;
+		const RemoveIcon = isExpandable ? CheckColor : MinusCircle;
 
-	const classNames = classnames(
-		'googlesitekit-rrm-survey-question-row__action',
-		className
-	);
+		const classNames = classnames(
+			'googlesitekit-rrm-survey-question-row__action',
+			className
+		);
 
-	return (
-		<Fragment>
-			<ActionButton
-				aria-describedby={ `${ descriptionID } ${ ariaDescribedBy }` }
-				className={ classNames }
-				disabled={ disabled }
-				Icon={ isAdded ? RemoveIcon : PlusCircle }
-				iconSize={ 18 }
-				label={ label }
-				onClick={ isAdded ? onRemove : onAdd }
-				tooltip={ description }
-				{ ...props }
-			/>
-			<span id={ descriptionID } hidden>
-				{ description }
-			</span>
-		</Fragment>
-	);
-};
+		return (
+			<Fragment>
+				<ActionButton
+					aria-describedby={ `${ descriptionID } ${ ariaDescribedBy }` }
+					className={ classNames }
+					disabled={ disabled }
+					Icon={ isAdded ? RemoveIcon : PlusCircle }
+					iconSize={ 18 }
+					label={ label }
+					onClick={ isAdded ? onRemove : onAdd }
+					tooltip={ description }
+					{ ...props }
+					ref={ ref }
+				/>
+				<span id={ descriptionID } hidden>
+					{ description }
+				</span>
+			</Fragment>
+		);
+	}
+);
 
 export default SurveyQuestionRowAction;

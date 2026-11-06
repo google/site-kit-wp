@@ -17,7 +17,6 @@
 /**
  * External dependencies
  */
-import { attachClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { ElementEventBasePayload } from '@atlaskit/pragmatic-drag-and-drop/adapter/element-adapter';
 import fetchMock from 'fetch-mock';
 import { debounce, keyBy, mapValues } from 'lodash';
@@ -970,19 +969,17 @@ export const dragInput = {
 };
 
 /**
- * Creates a library event with real closest-edge metadata.
+ * Creates a library drag event over a target item.
  *
  * @since 1.191.0
  *
  * @param {Object} sourceData Source item data.
  * @param {Object} targetData Target item data, or null for a canceled drag.
- * @param {string} edge       Closest target edge.
  * @return {Object} Drag event payload.
  */
 export function createDragEvent(
 	sourceData: Record< string, unknown >,
-	targetData: Record< string, unknown > | null = null,
-	edge: 'top' | 'bottom' = 'bottom'
+	targetData: Record< string, unknown > | null = null
 ): ElementEventBasePayload {
 	const element = document.createElement( 'li' );
 
@@ -990,11 +987,7 @@ export function createDragEvent(
 		? [
 				{
 					element,
-					data: attachClosestEdge( targetData, {
-						element,
-						input: dragInput,
-						allowedEdges: [ edge ],
-					} ),
+					data: targetData,
 					dropEffect: 'move' as const,
 					isActiveDueToStickiness: false,
 				},

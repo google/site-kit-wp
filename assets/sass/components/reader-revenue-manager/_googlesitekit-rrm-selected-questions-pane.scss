@@ -1,0 +1,68 @@
+/**
+ * Selected questions pane styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-rrm-selected-questions-pane {
+		background: $c-site-kit-sk-10;
+		border-radius: $br-xs;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding-block: 16px;
+
+		@media (min-width: $bp-desktop) {
+			min-height: 310px;
+			width: 320px;
+		}
+	}
+
+	.googlesitekit-rrm-selected-questions-pane__header {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding-inline: 16px;
+	}
+
+	.googlesitekit-rrm-selected-questions-pane__title {
+		margin: 0;
+
+		&:focus {
+			outline: none;
+		}
+	}
+
+	.googlesitekit-rrm-selected-questions-pane__description {
+		margin: 0;
+	}
+
+	.googlesitekit-rrm-selected-questions-pane__list {
+		.googlesitekit-draggable-list__item {
+			display: block;
+			padding-block: 0;
+		}
+	}
+
+	.googlesitekit-rrm-selected-questions-pane__empty {
+		align-items: center;
+		display: flex;
+		flex-grow: 1;
+		justify-content: center;
+		padding-block: 16px;
+	}
+}
