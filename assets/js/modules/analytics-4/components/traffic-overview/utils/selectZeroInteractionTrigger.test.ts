@@ -165,6 +165,11 @@ describe( 'selectZeroInteractionTrigger', () => {
 
 	it( 'should return `null` while the dismissed prompts load', async () => {
 		provideLatestPost();
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+			[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: getExpiryFromNow(
+				2 * DAY_IN_SECONDS
+			),
+		} );
 		freezeFetch( dismissedPromptsEndpoint );
 
 		expect( select() ).toBeNull();
