@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { Select } from 'googlesitekit-data';
 import {
 	INITIAL_VERSION,
 	sampleFeatures,
@@ -36,8 +37,12 @@ import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
 import {
@@ -95,6 +100,44 @@ WithSetupSuccessNotice.args = {
 	},
 };
 
+export const WithInPlaceSetupSuccessNotice = Template.bind( {} ) as Story;
+WithInPlaceSetupSuccessNotice.storyName = 'With In-Place Setup Success Notice';
+WithInPlaceSetupSuccessNotice.args = {
+	// Key metrics was set up without leaving the hub, so its success notice
+	// takes the place of its card in the list.
+	features: sampleFeatures.map( ( feature ) =>
+		feature.slug === 'key-metrics'
+			? {
+					...feature,
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						ctaLabel: 'Set up now',
+						isEnabled: () => true,
+					},
+					successNotice: {
+						title: 'Success! Key metrics are set up',
+						description:
+							'Your key metrics are now shown on your dashboard',
+						cta: {
+							label: 'View on dashboard',
+							getURL: ( select: Select ) =>
+								select( CORE_SITE ).getAdminURL(
+									'googlesitekit-dashboard'
+								),
+						},
+					},
+			  }
+			: feature
+	),
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideSiteInfo( registry );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( SUCCEEDED_FEATURES_UI_KEY, [ 'key-metrics' ] );
+	},
+};
+
 export default {
 	title: 'Components/Feature Discovery/AllServicesTab',
 	component: AllServicesTab,
@@ -113,7 +156,10 @@ export default {
 				provideModules( registry, sampleModules );
 				provideModuleRegistrations( registry );
 
-				provideFeatures( registry, sampleFeatures );
+				provideFeatures(
+					registry,
+					( args?.features as Partial< Feature >[] ) || sampleFeatures
+				);
 
 				args?.setupRegistry?.( registry );
 			}

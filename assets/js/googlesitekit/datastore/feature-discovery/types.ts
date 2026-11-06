@@ -68,8 +68,6 @@ export interface FeatureDetail {
 	screenshots?: FeatureScreenshot[];
 }
 
-// TODO: Replace this with the success notice component's own props once that
-// component exists, so the entry mirrors them directly.
 export interface FeatureSuccessNotice {
 	title: string;
 	description?: string;

@@ -360,6 +360,13 @@ export const actions = {
 					! registry.select( CORE_MODULES ).getModule( moduleSlug )
 						?.SetupComponent
 				) {
+					// Module activation doesn't refresh the modules list, so it
+					// is re-fetched here for the module's new connected state to
+					// reach the hub, which then confirms the setup in place.
+					yield commonActions.await(
+						registry.dispatch( CORE_MODULES ).fetchGetModules()
+					);
+
 					return {};
 				}
 
