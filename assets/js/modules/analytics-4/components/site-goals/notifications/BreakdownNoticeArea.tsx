@@ -243,7 +243,6 @@ function resolveBreakdownNoticeState(
 interface ComputeNoticeStateArgs {
 	isViewOnly: boolean;
 	shouldShowConversionTrackingDisabledNotice: boolean | undefined;
-	isConversionTrackingEnabled: boolean | undefined;
 	hasBreakdownDimensions: boolean | undefined;
 	isIntroModalDismissed: boolean | undefined;
 	isNoticeDismissed: boolean | undefined;
@@ -269,7 +268,6 @@ function computeNoticeState(
 	const {
 		isViewOnly,
 		shouldShowConversionTrackingDisabledNotice,
-		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,
@@ -279,7 +277,9 @@ function computeNoticeState(
 	// `ConversionTrackingDisabledNotice` covers the case where conversion
 	// tracking was switched off after the breakdown was in use, so no
 	// breakdown notice competes with it, in the widgets or the Side Panel.
-	// Waiting while it loads avoids a flash of "Get breakdown" first.
+	// Waiting while it loads avoids a flash of "Get breakdown" first. It also
+	// loads until the conversion tracking setting does, which decides whether
+	// the description says the CTA switches tracking on.
 	if ( shouldShowConversionTrackingDisabledNotice !== false ) {
 		return null;
 	}
@@ -291,12 +291,6 @@ function computeNoticeState(
 		isIntroModalDismissed === undefined ||
 		isNoticeDismissed === undefined
 	) {
-		return null;
-	}
-
-	// The description says whether the CTA also switches conversion tracking on,
-	// so waiting avoids showing the wrong wording first.
-	if ( isConversionTrackingEnabled === undefined ) {
 		return null;
 	}
 
@@ -473,7 +467,6 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	);
 
 	const conversionTracking = useConversionTrackingSetting();
-	const { isConversionTrackingEnabled } = conversionTracking;
 
 	const { hasBreakdownDimensions, missingScope } = getBreakdownDimensionState(
 		{
@@ -671,7 +664,6 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	const noticeState = computeNoticeState( {
 		isViewOnly,
 		shouldShowConversionTrackingDisabledNotice,
-		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,
