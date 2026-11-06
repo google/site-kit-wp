@@ -1,5 +1,5 @@
 /**
- * Thumbs up/down survey trigger styles.
+ * Thumbs up/down feedback styles.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,11 +17,11 @@
  */
 
 .googlesitekit-plugin {
-	.googlesitekit-thumbs-survey-trigger {
+	.googlesitekit-thumbs-feedback {
 		display: flex;
 	}
 
-	.googlesitekit-thumbs-survey-trigger__button.mdc-button {
+	.googlesitekit-thumbs-feedback__button.mdc-button {
 		height: 32px;
 		min-height: 32px;
 		min-width: 32px;
@@ -29,20 +29,20 @@
 		width: 32px;
 	}
 
-	.googlesitekit-thumbs-survey-trigger--voted {
-		> .googlesitekit-thumbs-survey-trigger__button[aria-pressed="false"] {
+	.googlesitekit-thumbs-feedback--voted {
+		> .googlesitekit-thumbs-feedback__button[aria-pressed="false"] {
 			opacity: 0.2;
 		}
 	}
 }
 
-.googlesitekit-popper.googlesitekit-thumbs-survey-trigger__popper {
+.googlesitekit-popper.googlesitekit-thumbs-feedback__popper {
 	align-items: center;
 	display: flex;
 	gap: 32px;
 	justify-content: space-between;
 
-	.googlesitekit-thumbs-survey-trigger__popper-close {
+	.googlesitekit-thumbs-feedback__popper-close {
 		background-color: transparent;
 		box-shadow: none;
 		color: $c-white;
