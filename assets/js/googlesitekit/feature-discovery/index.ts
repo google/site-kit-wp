@@ -26,7 +26,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { Registry } from 'googlesitekit-data';
 import IncompleteSetupReminderNotification from '@/js/components/feature-discovery/IncompleteSetupReminderNotification';
-import { isFeatureEnabled } from '@/js/features';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { requireCapability } from '@/js/googlesitekit/data-requirements';
 import {
@@ -37,10 +36,7 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery';
 import type { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '@/js/googlesitekit/datastore/user/constants';
+import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -118,9 +114,11 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 									data
 								);
 
-								return data
-									.select( CORE_FEATURE_DISCOVERY )
-									.isFeatureInProgress( slug );
+								return (
+									data
+										.select( CORE_FEATURE_DISCOVERY )
+										.isFeatureInProgress( slug ) === true
+								);
 							}
 						),
 					}
@@ -128,34 +126,6 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 			}
 
 			return result;
-		},
-
-		/**
-		 * Removes the dismissed-item mark for a feature's incomplete setup reminder.
-		 *
-		 * @since 1.191.0
-		 *
-		 * @param {string} slug Feature's slug.
-		 * @return {Promise<void>} Promise that resolves once the reminder has been reset.
-		 */
-		resetIncompleteSetupReminder: async ( slug: string ) => {
-			if ( ! isFeatureEnabled( 'featureDiscoveryHub' ) ) {
-				return;
-			}
-
-			const dataRegistry = registry as unknown as Registry;
-			await dataRegistry.resolveSelect( CORE_USER ).getDismissedItems();
-
-			const key = getFeatureIncompleteSetupReminderKey( slug );
-			const dismissed = dataRegistry
-				.select( CORE_USER )
-				.isItemDismissed( key );
-
-			if ( dismissed !== true ) {
-				return;
-			}
-
-			await dispatch( CORE_USER ).removeDismissedItems( key );
 		},
 	};
 

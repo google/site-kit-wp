@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import FeatureDiscovery from 'googlesitekit-feature-discovery';
 import { Registry } from '@/js/googlesitekit-data';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MODULE_SETUP,
 } from '@/js/googlesitekit/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
@@ -1065,7 +1065,10 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		beforeEach( () => {
 			resetReminder = jest
-				.spyOn( FeatureDiscovery, 'resetIncompleteSetupReminder' )
+				.spyOn(
+					registry.dispatch( CORE_FEATURE_DISCOVERY ),
+					'resetIncompleteSetupReminder'
+				)
 				.mockResolvedValue( undefined );
 		} );
 
@@ -1103,6 +1106,15 @@ describe( 'SetupCTANewsletterSignup', () => {
 		it( 'should not reset before the initial step resolves', () => {
 			global.location.href = 'http://example.com/?cta=newsletter-signup';
 			registry = createTestRegistry() as Registry;
+
+			resetReminder.mockRestore();
+
+			resetReminder = jest
+				.spyOn(
+					registry.dispatch( CORE_FEATURE_DISCOVERY ),
+					'resetIncompleteSetupReminder'
+				)
+				.mockResolvedValue( undefined );
 
 			freezeFetch(
 				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/

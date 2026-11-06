@@ -31,7 +31,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import FeatureDiscovery from 'googlesitekit-feature-discovery';
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import {
 	publicationPoliciesStep,
 	publicationSetupStep,
@@ -68,6 +69,10 @@ const STEPS: SetupStep[] = [
 ];
 
 const SetupCTANewsletterSignup: FC = () => {
+	const { resetIncompleteSetupReminder } = useDispatch(
+		CORE_FEATURE_DISCOVERY
+	);
+
 	const hasRequiredScopes = useExpressSetupScopes();
 
 	const { currentStep, advance } = useSetupFlow( STEPS );
@@ -118,10 +123,8 @@ const SetupCTANewsletterSignup: FC = () => {
 			return;
 		}
 
-		FeatureDiscovery.resetIncompleteSetupReminder(
-			FEATURE_SLUG_NEWSLETTER_SIGNUP
-		);
-	}, [ currentStep?.slug ] );
+		resetIncompleteSetupReminder( FEATURE_SLUG_NEWSLETTER_SIGNUP );
+	}, [ currentStep?.slug, resetIncompleteSetupReminder ] );
 
 	const onStepInView = useCallback( () => {
 		setStepInView( currentStep?.slug );
