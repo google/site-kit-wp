@@ -57,7 +57,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 	);
 
 	const TITLE = 'Plugin conversion tracking is disabled';
-	const ERROR_TITLE = "Plugin conversion tracking couldn't be enabled";
+	const ERROR_TITLE = 'Plugin conversion tracking couldn’t be enabled';
 
 	const SAVE_ERROR = {
 		code: 'internal_server_error',

@@ -90,7 +90,7 @@ const ConversionTrackingDisabledNotice: FC<
 					className="googlesitekit-site-goals-conversion-tracking-disabled-notice"
 					type={ NOTICE_TYPES.ERROR }
 					title={ __(
-						"Plugin conversion tracking couldn't be enabled",
+						'Plugin conversion tracking couldn’t be enabled',
 						'google-site-kit'
 					) }
 					description={ saveError.message }
