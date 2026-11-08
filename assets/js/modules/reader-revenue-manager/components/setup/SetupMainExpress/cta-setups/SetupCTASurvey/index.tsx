@@ -24,6 +24,7 @@ import type { FC } from 'react';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -44,6 +45,7 @@ import {
 	useExpressSetupScopes,
 	useSetupFlow,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import PublisherCenterLink from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/PublisherCenterLink';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import ViewOnSiteCTA from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ViewOnSiteCTA';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -90,13 +92,27 @@ const SetupCTASurvey: FC = () => {
 				'We found an existing survey for this publication',
 				'google-site-kit'
 			),
-			description: __(
-				'Your publication is now connected to Site Kit. However, Site Kit can’t create a survey for a publication that already has one in Reader Revenue Manager. To view or edit your publications, go to <a>Publisher Center</a>',
-				'google-site-kit'
+			description: createInterpolateElement(
+				__(
+					'Your publication is now connected to Site Kit. However, Site Kit can’t create a survey for a publication that already has one in Reader Revenue Manager. To view or edit your publications, go to <a>Publisher Center</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<PublisherCenterLink eventName="click_view_publications_link" />
+					),
+				}
 			),
-			targetingDescription: __(
-				'To change who sees your survey, set targeting rules in <a>Publisher Center</a>',
-				'google-site-kit'
+			targetingDescription: createInterpolateElement(
+				__(
+					'To change who sees your survey, set targeting rules in <a>Publisher Center</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<PublisherCenterLink eventName="click_set_targeting_rules_link" />
+					),
+				}
 			),
 		},
 		[ setupCompleteStep.slug ]: {

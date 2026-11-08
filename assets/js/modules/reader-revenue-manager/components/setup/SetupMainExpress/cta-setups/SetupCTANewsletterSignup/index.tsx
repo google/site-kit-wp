@@ -25,7 +25,13 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -49,6 +55,7 @@ import {
 	useSetupFlow,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import ObservedStep from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ObservedStep';
+import PublisherCenterLink from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/PublisherCenterLink';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import {
 	EXPRESS_SETUP_CTAS,
@@ -150,13 +157,27 @@ const SetupCTANewsletterSignup: FC = () => {
 				'We found an existing newsletter sign-up form for this publication',
 				'google-site-kit'
 			),
-			description: __(
-				'Your publication is now connected to Site Kit. However, Site Kit can’t create a newsletter sign-up form for a publication that already has one in Reader Revenue Manager. To view or edit your publications, go to <a>Publisher Center</a>',
-				'google-site-kit'
+			description: createInterpolateElement(
+				__(
+					'Your publication is now connected to Site Kit. However, Site Kit can’t create a newsletter sign-up form for a publication that already has one in Reader Revenue Manager. To view or edit your publications, go to <a>Publisher Center</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<PublisherCenterLink eventName="click_view_publications_link" />
+					),
+				}
 			),
-			targetingDescription: __(
-				'To change who sees your newsletter sign-up form, set targeting rules in <a>Publisher Center</a>',
-				'google-site-kit'
+			targetingDescription: createInterpolateElement(
+				__(
+					'To change who sees your newsletter sign-up form, set targeting rules in <a>Publisher Center</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<PublisherCenterLink eventName="click_set_targeting_rules_link" />
+					),
+				}
 			),
 		},
 		[ setupCompleteStep.slug ]: {

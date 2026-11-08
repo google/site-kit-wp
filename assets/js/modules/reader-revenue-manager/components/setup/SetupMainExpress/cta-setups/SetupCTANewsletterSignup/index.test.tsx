@@ -383,6 +383,74 @@ describe( 'SetupCTANewsletterSignup', () => {
 				container.querySelector( '.googlesitekit-stepper' )
 			).toBeInTheDocument();
 		} );
+
+		describe( 'event tracking', () => {
+			let mockTrackEvent: jest.SpyInstance;
+
+			beforeEach( () => {
+				mockTrackEvent = jest
+					.spyOn( tracking, 'trackEvent' )
+					.mockImplementation( () => Promise.resolve() );
+			} );
+
+			afterEach( () => {
+				mockTrackEvent.mockRestore();
+			} );
+
+			it( 'tracks a click on each Publisher Center link', async () => {
+				global.location.href =
+					'http://example.com/?cta=newsletter-signup&step=existing-cta';
+
+				setupRegistryWithReadyPublication( {
+					ctas: [ preExistingCTA ],
+				} );
+
+				const { getAllByRole, getByText, waitForRegistry } = render(
+					<SetupCTANewsletterSignup />,
+					{ registry, viewContext: VIEW_CONTEXT_MODULE_SETUP }
+				);
+
+				await waitForRegistry();
+
+				await waitFor( () => {
+					expect(
+						getByText( EXISTING_CTA_TITLE )
+					).toBeInTheDocument();
+				} );
+
+				const [ descriptionLink, targetingLink ] = getAllByRole(
+					'link',
+					{
+						name: /Publisher Center/,
+					}
+				);
+
+				// jsdom can't navigate, so keep the link clicks from trying to.
+				[ descriptionLink, targetingLink ].forEach( ( link ) =>
+					link.addEventListener( 'click', ( event ) =>
+						event.preventDefault()
+					)
+				);
+
+				const eventCategory = `${ VIEW_CONTEXT_MODULE_SETUP }_rrm-express-setup_newsletter-signup`;
+
+				fireEvent.click( descriptionLink );
+
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					eventCategory,
+					'click_view_publications_link',
+					'existing-cta'
+				);
+
+				fireEvent.click( targetingLink );
+
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					eventCategory,
+					'click_set_targeting_rules_link',
+					'existing-cta'
+				);
+			} );
+		} );
 	} );
 
 	describe( 'completing a step', () => {
