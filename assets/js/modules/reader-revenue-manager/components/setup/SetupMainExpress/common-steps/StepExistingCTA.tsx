@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -32,22 +32,17 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
-import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
+import ModuleSettingsLink from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ModuleSettingsLink';
 import StepSetupCompleteDetail from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/StepSetupCompleteDetail';
 import {
 	SetupStep,
 	SetupStepProps,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import {
-	EXPRESS_SETUP_STEPS,
-	MODULES_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 interface StepExistingCTAProps extends SetupStepProps {
 	/**
@@ -56,24 +51,22 @@ interface StepExistingCTAProps extends SetupStepProps {
 	title?: string;
 
 	/**
-	 * The text below the heading. Its `<a>` tag links to the Publisher Center.
+	 * The text below the heading.
 	 */
-	description?: string;
+	description?: ReactNode;
 
 	/**
-	 * The text of the "Targeting" row. Its `<a>` tag links to the Publisher Center.
+	 * The text of the "Targeting" row.
 	 */
-	targetingDescription?: string;
+	targetingDescription?: ReactNode;
 }
 
 const StepExistingCTA: FC< StepExistingCTAProps > = ( {
 	title,
-	description = '',
-	targetingDescription = '',
+	description,
+	targetingDescription,
 	onComplete,
 } ) => {
-	const trackEvent = useExpressSetupTrackEvent();
-
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const dashboardURL = useSelect(
@@ -81,43 +74,6 @@ const StepExistingCTA: FC< StepExistingCTAProps > = ( {
 			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ),
 		[]
 	);
-
-	const publisherCenterOverviewURL = useSelect(
-		( select: Select ) =>
-			select(
-				MODULES_READER_REVENUE_MANAGER
-			).getPublisherCenterOverviewURL(),
-		[]
-	);
-
-	const rrmSettingsURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getModuleSettingsEditURL(
-				MODULE_SLUG_READER_REVENUE_MANAGER
-			),
-		[]
-	);
-
-	const onClickViewPublications = useCallback( () => {
-		trackEvent(
-			'click_view_publications_link',
-			EXPRESS_SETUP_STEPS.EXISTING_CTA
-		);
-	}, [ trackEvent ] );
-
-	const onClickChangePlacementSettings = useCallback( () => {
-		trackEvent(
-			'click_change_placement_settings_link',
-			EXPRESS_SETUP_STEPS.EXISTING_CTA
-		);
-	}, [ trackEvent ] );
-
-	const onClickSetTargetingRules = useCallback( () => {
-		trackEvent(
-			'click_set_targeting_rules_link',
-			EXPRESS_SETUP_STEPS.EXISTING_CTA
-		);
-	}, [ trackEvent ] );
 
 	// The button completes this last step, so the flow can track it before the
 	// page is left.
@@ -143,15 +99,7 @@ const StepExistingCTA: FC< StepExistingCTAProps > = ( {
 					size="large"
 					className="googlesitekit-rrm-express-setup-existing-cta__description"
 				>
-					{ createInterpolateElement( description, {
-						a: (
-							<Link
-								href={ publisherCenterOverviewURL }
-								onClick={ onClickViewPublications }
-								external
-							/>
-						),
-					} ) }
+					{ description }
 				</Typography>
 				<div className="googlesitekit-rrm-express-setup-complete__detail-list">
 					<StepSetupCompleteDetail
@@ -164,12 +112,7 @@ const StepExistingCTA: FC< StepExistingCTAProps > = ( {
 							),
 							{
 								a: (
-									<Link
-										href={ rrmSettingsURL }
-										onClick={
-											onClickChangePlacementSettings
-										}
-									/>
+									<ModuleSettingsLink eventName="click_change_placement_settings_link" />
 								),
 							}
 						) }
@@ -177,15 +120,7 @@ const StepExistingCTA: FC< StepExistingCTAProps > = ( {
 					<StepSetupCompleteDetail
 						title={ __( 'Targeting', 'google-site-kit' ) }
 					>
-						{ createInterpolateElement( targetingDescription, {
-							a: (
-								<Link
-									href={ publisherCenterOverviewURL }
-									onClick={ onClickSetTargetingRules }
-									external
-								/>
-							),
-						} ) }
+						{ targetingDescription }
 					</StepSetupCompleteDetail>
 				</div>
 			</div>

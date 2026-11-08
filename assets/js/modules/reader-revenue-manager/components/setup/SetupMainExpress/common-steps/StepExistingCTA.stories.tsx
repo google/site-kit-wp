@@ -23,9 +23,18 @@ import { withQuery } from '@storybook/addon-queryparams';
 import { ComponentProps } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { createInterpolateElement } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import PublisherCenterLink from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/PublisherCenterLink';
+import {
+	EXPRESS_SETUP_CTAS,
+	EXPRESS_SETUP_STEPS,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Story } from '@/js/types/Story';
 import StepExistingCTA from './StepExistingCTA';
 
@@ -44,15 +53,28 @@ export default {
 	component: StepExistingCTA,
 	args: {
 		title: 'We found an existing newsletter sign-up form for this publication',
-		description:
+		description: createInterpolateElement(
 			'Your publication is now connected to Site Kit. However, Site Kit can’t create a newsletter sign-up form for a publication that already has one in Reader Revenue Manager. To view or edit your publications, go to <a>Publisher Center</a>',
-		targetingDescription:
+			{
+				a: (
+					<PublisherCenterLink eventName="click_view_publications_link" />
+				),
+			}
+		),
+		targetingDescription: createInterpolateElement(
 			'To change who sees your newsletter sign-up form, set targeting rules in <a>Publisher Center</a>',
+			{
+				a: (
+					<PublisherCenterLink eventName="click_set_targeting_rules_link" />
+				),
+			}
+		),
 		onComplete: () => {},
 	},
 	parameters: {
 		query: {
 			cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+			step: EXPRESS_SETUP_STEPS.EXISTING_CTA,
 		},
 	},
 	decorators: [ withQuery ],

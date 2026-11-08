@@ -20,14 +20,15 @@
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import PublisherCenterLink from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/PublisherCenterLink';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
-import { decodeServiceURL } from '@tests/js/mock-accountChooserURL-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -63,10 +64,22 @@ describe( 'StepExistingCTA', () => {
 
 	const props = {
 		title: 'We found an existing newsletter sign-up form for this publication',
-		description:
+		description: createInterpolateElement(
 			'Your publication is now connected to Site Kit. However, Site Kit can’t create a newsletter sign-up form for a publication that already has one in Reader Revenue Manager. To view or edit your publications, go to <a>Publisher Center</a>',
-		targetingDescription:
+			{
+				a: (
+					<PublisherCenterLink eventName="click_view_publications_link" />
+				),
+			}
+		),
+		targetingDescription: createInterpolateElement(
 			'To change who sees your newsletter sign-up form, set targeting rules in <a>Publisher Center</a>',
+			{
+				a: (
+					<PublisherCenterLink eventName="click_set_targeting_rules_link" />
+				),
+			}
+		),
 	};
 
 	beforeEach( () => {
@@ -82,7 +95,8 @@ describe( 'StepExistingCTA', () => {
 
 		onComplete = jest.fn();
 
-		global.location.href = 'http://example.com/?cta=newsletter-signup';
+		global.location.href =
+			'http://example.com/?cta=newsletter-signup&step=existing-cta';
 	} );
 
 	it( 'defines a step with the existing CTA slug', () => {
@@ -97,6 +111,9 @@ describe( 'StepExistingCTA', () => {
 		);
 
 		expect( getByText( props.title ) ).toBeInTheDocument();
+		expect(
+			getByText( /Site Kit can’t create a newsletter sign-up form/ )
+		).toBeInTheDocument();
 		expect( getByText( 'Placement' ) ).toBeInTheDocument();
 		expect( getByText( 'Targeting' ) ).toBeInTheDocument();
 		expect(
@@ -106,69 +123,21 @@ describe( 'StepExistingCTA', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'links both Publisher Center links in a new tab and the settings link in the same tab', () => {
-		const { getAllByRole, getByRole } = render(
+	it( 'tracks a click on the Site Kit settings link in the "Placement" row', () => {
+		const { getByRole } = render(
 			<StepExistingCTA { ...props } onComplete={ onComplete } />,
 			{ registry }
 		);
 
-		const publisherCenterLinks = getAllByRole( 'link', {
-			name: /Publisher Center/,
-		} );
+		const link = getByRole( 'link', { name: 'Site Kit settings' } );
 
-		expect( publisherCenterLinks ).toHaveLength( 2 );
+		// jsdom can't navigate, so keep the click from trying to.
+		link.addEventListener( 'click', ( event ) => event.preventDefault() );
 
-		publisherCenterLinks.forEach( ( link ) => {
-			expect(
-				decodeServiceURL( link.getAttribute( 'href' ) as string )
-			).toContain( 'reader-revenue-manager/content-access/overview' );
-			expect( link ).toHaveAttribute( 'target', '_blank' );
-		} );
+		fireEvent.click( link );
 
-		const settingsLink = getByRole( 'link', { name: 'Site Kit settings' } );
-
-		expect( settingsLink ).toHaveAttribute(
-			'href',
-			expect.stringContaining(
-				'#connected-services/reader-revenue-manager/edit'
-			)
-		);
-		expect( settingsLink ).not.toHaveAttribute( 'target', '_blank' );
-	} );
-
-	it( 'tracks each link click with the existing CTA label', () => {
-		const { getAllByRole, getByRole } = render(
-			<StepExistingCTA { ...props } onComplete={ onComplete } />,
-			{ registry }
-		);
-
-		const [ descriptionLink, targetingLink ] = getAllByRole( 'link', {
-			name: /Publisher Center/,
-		} );
-		const settingsLink = getByRole( 'link', { name: 'Site Kit settings' } );
-
-		// jsdom can't navigate, so keep the link clicks from trying to.
-		[ descriptionLink, targetingLink, settingsLink ].forEach( ( link ) =>
-			link.addEventListener( 'click', ( event ) =>
-				event.preventDefault()
-			)
-		);
-
-		fireEvent.click( descriptionLink );
-		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
-			'click_view_publications_link',
-			'existing-cta'
-		);
-
-		fireEvent.click( settingsLink );
-		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'click_change_placement_settings_link',
-			'existing-cta'
-		);
-
-		fireEvent.click( targetingLink );
-		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
-			'click_set_targeting_rules_link',
 			'existing-cta'
 		);
 	} );
