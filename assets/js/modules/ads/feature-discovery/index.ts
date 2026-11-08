@@ -33,7 +33,6 @@ import {
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
  * Registers Ads module features in the Feature Discovery catalog.
@@ -112,17 +111,6 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					),
 				],
 			},
-			screenshots: [
-				{
-					src: splashScreenScreenshotURL,
-					alt: __(
-						'Ads settings page showing various configuration options',
-						'google-site-kit'
-					),
-					width: 292,
-					height: 210,
-				},
-			],
 		},
 		successNotice: {
 			title: __( 'Success! Ads is set up', 'google-site-kit' ),

@@ -40,7 +40,16 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import type { ConfiguredCTA } from '@/js/modules/reader-revenue-manager/datastore/types';
-import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
+import contributionPromptScreenshotURL from '@/svg/screenshots/reader-revenue-manager-contribution-prompt.svg?path';
+import customCTAScreenshotURL from '@/svg/screenshots/reader-revenue-manager-custom-cta.svg?path';
+import newReaderPaywallScreenshotURL from '@/svg/screenshots/reader-revenue-manager-new-reader-paywall.svg?path';
+import newsletterSignUpFormPromptScreenshotURL from '@/svg/screenshots/reader-revenue-manager-newsletter-sign-up-form-prompt.svg?path';
+import newsletterSignUpFormSetupScreenshotURL from '@/svg/screenshots/reader-revenue-manager-newsletter-sign-up-form-setup.svg?path';
+import newsletterSignUpPromptScreenshotURL from '@/svg/screenshots/reader-revenue-manager-newsletter-sign-up-prompt.svg?path';
+import paywalledContentScreenshotURL from '@/svg/screenshots/reader-revenue-manager-paywalled-content.svg?path';
+import readerRegistrationScreenshotURL from '@/svg/screenshots/reader-revenue-manager-reader-registration.svg?path';
+import registeredReadersScreenshotURL from '@/svg/screenshots/reader-revenue-manager-registered-readers.svg?path';
+import surveyPromptScreenshotURL from '@/svg/screenshots/reader-revenue-manager-survey-prompt.svg?path';
 import { FEATURE_SLUG_NEWSLETTER_SIGNUP } from './constants';
 
 /**
@@ -130,13 +139,76 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: contributionPromptScreenshotURL,
 					alt: __(
-						'Reader Revenue Manager contribution prompt screenshot',
+						'Screenshot of a Reader Revenue Manager prompt over an article, asking readers to make a monthly contribution with their Google Account',
 						'google-site-kit'
 					),
-					width: 292,
-					height: 210,
+					width: 620,
+					height: 463,
+				},
+				{
+					src: paywalledContentScreenshotURL,
+					alt: __(
+						'Screenshot of a Reader Revenue Manager paywall over an article, offering readers a choice of subscription plans with a free trial',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 463,
+				},
+				{
+					src: registeredReadersScreenshotURL,
+					alt: __(
+						'Screenshot of a Reader Revenue Manager prompt over an article, telling a registered reader they have used up their free content and asking them to subscribe',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 463,
+				},
+				{
+					src: customCTAScreenshotURL,
+					alt: __(
+						'Screenshot of a custom call to action prompt from Reader Revenue Manager over an article, with a button that links to another page',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 463,
+				},
+				{
+					src: newReaderPaywallScreenshotURL,
+					alt: __(
+						'Screenshot of a Reader Revenue Manager prompt over an article, telling a new reader how many free articles they can read each week and asking them to subscribe',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 463,
+				},
+				{
+					src: newsletterSignUpPromptScreenshotURL,
+					alt: __(
+						'Screenshot of a Reader Revenue Manager prompt over an article, asking readers to sign up to the newsletter with their Google Account',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 395,
+				},
+				{
+					src: readerRegistrationScreenshotURL,
+					alt: __(
+						'Screenshot of a Reader Revenue Manager prompt over an article, inviting readers to register for free with their Google Account to get access to more articles',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 463,
+				},
+				{
+					src: surveyPromptScreenshotURL,
+					alt: __(
+						'Screenshot of a Reader Revenue Manager survey prompt over a page, asking readers a multiple choice question about themselves',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 483,
 				},
 			],
 		},
@@ -238,22 +310,22 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				},
 				screenshots: [
 					{
-						src: splashScreenScreenshotURL,
+						src: newsletterSignUpFormSetupScreenshotURL,
 						alt: __(
-							'Reader Revenue Manager newsletter sign-up prompt screenshot',
+							'Screenshot of the Reader Revenue Manager sign-up form setup in Site Kit, with fields for the form name, header and body text, options for collecting names and consent, and a preview of how the form will look',
 							'google-site-kit'
 						),
-						width: 292,
-						height: 210,
+						width: 620,
+						height: 632,
 					},
 					{
-						src: splashScreenScreenshotURL,
+						src: newsletterSignUpFormPromptScreenshotURL,
 						alt: __(
-							'Reader Revenue Manager newsletter sign-up form dashboard screenshot',
+							'Screenshot of a newsletter sign-up prompt over an article, asking readers to sign up to the newsletter with their Google Account',
 							'google-site-kit'
 						),
-						width: 292,
-						height: 210,
+						width: 620,
+						height: 395,
 					},
 				],
 			},
