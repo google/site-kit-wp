@@ -53,23 +53,23 @@ interface StepExistingCTAProps extends SetupStepProps {
 	/**
 	 * The heading, naming the type of CTA the publication already has.
 	 */
-	title: string;
+	title?: string;
 
 	/**
 	 * The text below the heading. Its `<a>` tag links to the Publisher Center.
 	 */
-	description: string;
+	description?: string;
 
 	/**
 	 * The text of the "Targeting" row. Its `<a>` tag links to the Publisher Center.
 	 */
-	targetingDescription: string;
+	targetingDescription?: string;
 }
 
 const StepExistingCTA: FC< StepExistingCTAProps > = ( {
 	title,
-	description,
-	targetingDescription,
+	description = '',
+	targetingDescription = '',
 	onComplete,
 } ) => {
 	const trackEvent = useExpressSetupTrackEvent();
