@@ -119,8 +119,8 @@ const Preview: FC< PreviewProps > = ( {
 						</div>
 					</div>
 					<button
-						type="button"
 						className="googlesitekit-rrm-cta-preview-pane__button"
+						type="button"
 						disabled
 					>
 						{ __( 'Next', 'google-site-kit' ) }

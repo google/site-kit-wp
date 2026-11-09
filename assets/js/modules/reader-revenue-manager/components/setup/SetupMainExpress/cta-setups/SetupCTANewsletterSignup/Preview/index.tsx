@@ -124,6 +124,7 @@ const Preview: FC< PreviewProps > = ( {
 			<div className="googlesitekit-rrm-cta-preview-pane__actions">
 				<button
 					className="googlesitekit-rrm-cta-preview-pane__button"
+					type="button"
 					disabled
 				>
 					{ __( 'Continue with email', 'google-site-kit' ) }
@@ -131,6 +132,7 @@ const Preview: FC< PreviewProps > = ( {
 				{ __( 'or', 'google-site-kit' ) }
 				<button
 					className="googlesitekit-rrm-cta-preview-pane__button"
+					type="button"
 					disabled
 				>
 					{ __( 'Continue with Google', 'google-site-kit' ) }
