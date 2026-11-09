@@ -260,7 +260,10 @@ export default function useSetupFlow(
 
 	// A step that opens with an existing CTA already found shows the existing
 	// CTA step straight away, before the effect sets it as the current step.
-	if ( isExistingCTAsStep || hasExistingCTAs ) {
+	if (
+		isExistingCTAsStep ||
+		( checkExistingCTAs && hasExistingCTAs && publication !== undefined )
+	) {
 		currentStep = existingCTAStep;
 	} else if ( checkExistingCTAs && hasExistingCTAs === undefined ) {
 		currentStep = undefined;

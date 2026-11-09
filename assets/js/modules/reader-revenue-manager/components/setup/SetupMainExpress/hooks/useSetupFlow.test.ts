@@ -432,6 +432,47 @@ describe( 'useSetupFlow', () => {
 				.finishResolution( 'getPublication', [ {} ] );
 		} );
 
+		it( 'should not return the existing CTA step while the connected publication is loading', () => {
+			global.location.href = 'http://example.com/';
+			freezeFetch( publicationEndpoint );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { publicationID: PUBLICATION_ID } );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.finishResolution( 'getSettings', [] );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetCTAs( {
+					ctas: [
+						{
+							name: `organizations/ABCD1234/publications/${ PUBLICATION_ID }/ctas/1`,
+							type: CTA_TYPES.NEWSLETTER_SIGNUP,
+						},
+					],
+					params: { publicationID: PUBLICATION_ID },
+				} );
+
+			const { result } = renderHook(
+				() =>
+					useSetupFlow(
+						NEWSLETTER_FLOW,
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+					),
+				{ registry }
+			);
+
+			expect( result.current.currentStep ).toBeUndefined();
+
+			// Prevent another request from being made to the publication endpoint.
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.finishResolution( 'getPublication', [ {} ] );
+		} );
+
 		it( 'should not open a step before the settings have loaded', () => {
 			global.location.href = 'http://example.com/';
 			freezeFetch( settingsEndpoint );
