@@ -251,21 +251,16 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			),
 		);
 
-		$this->subscribe_to_wp_http_requests(
-			function () {},
-			array(
-				'response' => array( 'code' => 200 ),
-				'headers'  => array(),
-				'body'     => wp_json_encode( $survey ),
-			)
-		);
+		$this->answer_service_requests( wp_json_encode( $survey ) );
 
 		$this->fake_proxy_site_connection();
 		$response = $this->send_request( 'survey-trigger', array( 'triggerID' => 'test_trigger' ) );
 
 		$this->assertEqualSets( array( 'success' => true ), $response->get_data(), 'Successful survey trigger request should return a success response.' );
 		$this->assertEqualSets( $survey, $this->queue->front(), 'Triggered survey should be added to the front of the survey queue.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/survey-trigger', 'Survey trigger response should match its resource schema.' );
+		$this->assertCount( 1, $this->service_requests, 'Survey trigger should send the trigger to the service once.' );
+		$this->assertEquals( 'test_trigger', $this->service_requests[0]['trigger_context']['trigger_id'], 'Survey trigger should send the trigger ID to the service.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/survey-trigger', 'Survey trigger response should match its resource schema.' );
 	}
 
 	/**
@@ -279,14 +274,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			'Survey trigger should not have a timeout before it is requested.'
 		);
 
-		$this->subscribe_to_wp_http_requests(
-			function () {},
-			array(
-				'response' => array( 'code' => 200 ),
-				'headers'  => array(),
-				'body'     => wp_json_encode( array() ),
-			)
-		);
+		$this->answer_service_requests();
 
 		$this->fake_proxy_site_connection();
 		$data     = array(
@@ -312,14 +300,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			'Survey trigger should not have a timeout before it is requested.'
 		);
 
-		$this->subscribe_to_wp_http_requests(
-			function () {},
-			array(
-				'response' => array( 'code' => 200 ),
-				'headers'  => array(),
-				'body'     => wp_json_encode( array() ),
-			)
-		);
+		$this->answer_service_requests();
 
 		$this->fake_proxy_site_connection();
 		$response = $this->send_request( 'survey-trigger', array( 'triggerID' => 'test_trigger' ) );
@@ -334,11 +315,10 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_survey_trigger__invalid_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_survey_trigger__rejects_invalid_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_survey_trigger__rejects_invalid_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -350,7 +330,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/survey-trigger' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertSame( array(), $this->service_requests, 'Survey trigger endpoint should send nothing to the service for invalid data.' );
 		$this->assertSame( array(), $this->timeouts->get_survey_timeouts(), 'Survey trigger endpoint should set no timeout for invalid data.' );
 		$this->assertNull( $this->queue->front(), 'Survey trigger endpoint should queue no survey for invalid data.' );
@@ -361,17 +341,14 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			'no data'                    => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data is not an object'      => array(
 				array( 'data' => 'abc' ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'data has no trigger ID'     => array(
 				array( 'data' => array( 'ttl' => DAY_IN_SECONDS ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'trigger ID is empty'        => array(
 				array(
@@ -381,7 +358,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'trigger ID is not a string' => array(
 				array(
@@ -391,7 +367,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'ttl is below zero'          => array(
 				array(
@@ -401,7 +376,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'ttl is not a number'        => array(
 				array(
@@ -411,7 +385,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'ttl is not a whole number'  => array(
 				array(
@@ -421,43 +394,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
-			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_survey_trigger__data_the_callback_rejects
-	 *
-	 * @param array $data Request data that WordPress before 5.5 lets through to the callback.
-	 */
-	public function test_survey_trigger__callback_rejects_missing_or_empty_data( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		// The service answers with a survey, so data that got through would queue it.
-		$this->answer_service_requests( wp_json_encode( $this->get_service_survey() ) );
-		$this->fake_proxy_site_connection();
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/survey-trigger', $data );
-
-		$this->assertWPError( $response, 'Survey trigger callback should reject missing or empty data.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Survey trigger callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Survey trigger callback should reject missing or empty data as a bad request.' );
-		$this->assertSame( array(), $this->service_requests, 'Survey trigger callback should send nothing to the service for missing or empty data.' );
-		$this->assertSame( array(), $this->timeouts->get_survey_timeouts(), 'Survey trigger callback should set no timeout for missing or empty data.' );
-		$this->assertNull( $this->queue->front(), 'Survey trigger callback should queue no survey for missing or empty data.' );
-	}
-
-	public function provider_survey_trigger__data_the_callback_rejects() {
-		return array(
-			'data has no trigger ID' => array( array( 'ttl' => DAY_IN_SECONDS ) ),
-			'trigger ID is empty'    => array(
-				array(
-					'triggerID' => '',
-					'ttl'       => DAY_IN_SECONDS,
-				),
 			),
 		);
 	}
@@ -548,14 +484,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			)
 		);
 
-		$this->subscribe_to_wp_http_requests(
-			function () {},
-			array(
-				'response' => array( 'code' => 200 ),
-				'headers'  => array(),
-				'body'     => '{}',
-			)
-		);
+		$this->answer_service_requests();
 
 		$this->fake_proxy_site_connection();
 		$resp = $this->send_request(
@@ -576,6 +505,8 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			$this->user_options->get( Survey_Queue::OPTION ),
 			'Completing a survey should remove only its matching session from the queue.'
 		);
+		$this->assertEquals( array(), $resp->get_data(), 'Survey event endpoint should return the empty reply of the service.' );
+		$this->assertMatchesRouteResourceSchema( $resp->get_data(), 'core/user/data/survey-event', 'Survey event response should match its resource schema.' );
 	}
 
 	/**
@@ -584,7 +515,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	 * @param array $event Event as the dashboard sends it, keyed by its type.
 	 */
 	public function test_survey_event__sends_dashboard_events( $event ) {
-		$this->answer_service_requests();
+		$this->answer_service_requests( '{"error":"survey not found"}' );
 		$this->fake_proxy_site_connection();
 
 		$session  = array(
@@ -600,11 +531,11 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		);
 
 		$this->assertEquals( 200, $response->get_status(), 'Survey event endpoint should accept each event the dashboard sends.' );
-		$this->assertEquals( array(), $response->get_data(), 'Survey event endpoint should return the reply of the service.' );
+		$this->assertEquals( array( 'error' => 'survey not found' ), $response->get_data(), 'Survey event endpoint should return the reply of the service.' );
 		$this->assertCount( 1, $this->service_requests, 'Survey event endpoint should send the event to the service once.' );
 		$this->assertEquals( $session, $this->service_requests[0]['session'], 'Survey event endpoint should send the session as the dashboard sent it.' );
 		$this->assertEquals( $event, $this->service_requests[0]['event'], 'Survey event endpoint should send the event as the dashboard sent it.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/survey-event', 'Survey event response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/survey-event', 'Survey event response should match its resource schema.' );
 	}
 
 	public function provider_survey_event__dashboard_events() {
@@ -640,11 +571,10 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_survey_event__invalid_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_survey_event__rejects_invalid_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_survey_event__rejects_invalid_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -657,7 +587,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/survey-event' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertSame( array(), $this->service_requests, 'Survey event endpoint should send nothing to the service for invalid data.' );
 		$this->assertSame( array(), $this->timeouts->get_survey_timeouts(), 'Survey event endpoint should set no timeout for invalid data.' );
 		$this->assertEquals( array( $survey ), $this->user_options->get( Survey_Queue::OPTION ), 'Survey event endpoint should leave the survey queue unchanged for invalid data.' );
@@ -679,17 +609,14 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			'no data'                           => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data is not an object'             => array(
 				array( 'data' => 'abc' ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'data has no session'               => array(
 				array( 'data' => array( 'event' => $event ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'session is not an object'          => array(
 				array(
@@ -699,7 +626,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'session has no session ID'         => array(
 				array(
@@ -709,7 +635,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'session ID is empty'               => array(
 				array(
@@ -719,7 +644,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'session has no session token'      => array(
 				array(
@@ -729,7 +653,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'session token is empty'            => array(
 				array(
@@ -739,7 +662,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'session token is not a string'     => array(
 				array(
@@ -749,12 +671,10 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'data has no event'                 => array(
 				array( 'data' => array( 'session' => $session ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'event is not an object'            => array(
 				array(
@@ -764,7 +684,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'event is empty'                    => array(
 				array(
@@ -774,7 +693,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.6',
 			),
 			'an event type is not an object'    => array(
 				array(
@@ -784,7 +702,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'event has a type outside the five' => array(
 				array(
@@ -794,80 +711,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
-			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_survey_event__data_the_callback_rejects
-	 *
-	 * @param array $data Request data that WordPress before 5.5, or before 5.6 for an empty `event`, lets through to the callback.
-	 */
-	public function test_survey_event__callback_rejects_missing_or_empty_data( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$survey = $this->get_service_survey();
-		$this->queue->enqueue( $survey );
-		$this->answer_service_requests();
-		$this->fake_proxy_site_connection();
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/survey-event', $data );
-
-		$this->assertWPError( $response, 'Survey event callback should reject missing or empty data.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Survey event callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Survey event callback should reject missing or empty data as a bad request.' );
-		$this->assertSame( array(), $this->service_requests, 'Survey event callback should send nothing to the service for missing or empty data.' );
-		$this->assertSame( array(), $this->timeouts->get_survey_timeouts(), 'Survey event callback should set no timeout for missing or empty data.' );
-		$this->assertEquals( array( $survey ), $this->user_options->get( Survey_Queue::OPTION ), 'Survey event callback should leave the survey queue unchanged for missing or empty data.' );
-	}
-
-	public function provider_survey_event__data_the_callback_rejects() {
-		$session = array(
-			'session_id'    => 'test_session_id',
-			'session_token' => 'test_session_token',
-		);
-		// If the callback accepted the data, `survey_shown` would set the global timeout. Where the session ID
-		// matches, `survey_closed` would take the survey off the queue.
-		$event = array(
-			'survey_shown'  => array(),
-			'survey_closed' => array(),
-		);
-
-		return array(
-			'data has no session'          => array( array( 'event' => $event ) ),
-			'session has no session ID'    => array(
-				array(
-					'session' => array( 'session_token' => 'test_session_token' ),
-					'event'   => $event,
-				),
-			),
-			'session ID is empty'          => array(
-				array(
-					'session' => array_merge( $session, array( 'session_id' => '' ) ),
-					'event'   => $event,
-				),
-			),
-			'session has no session token' => array(
-				array(
-					'session' => array( 'session_id' => 'test_session_id' ),
-					'event'   => $event,
-				),
-			),
-			'session token is empty'       => array(
-				array(
-					'session' => array_merge( $session, array( 'session_token' => '' ) ),
-					'event'   => $event,
-				),
-			),
-			'data has no event'            => array( array( 'session' => $session ) ),
-			'event is empty'               => array(
-				array(
-					'session' => $session,
-					'event'   => array(),
-				),
 			),
 		);
 	}
@@ -880,16 +723,17 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->timeouts->add( 'foo', 0 );
 		$this->timeouts->add( 'bar', 100 );
 		$this->timeouts->add( 'baz', -10 );
+		$this->timeouts->add( '123', 100 );
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/survey-timeouts' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSets(
-			array( 'bar' ),
+			array( 'bar', '123' ),
 			$response->get_data(),
 			'Survey timeouts response should contain only unexpired triggers.'
 		);
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/survey-timeouts', 'Survey timeouts response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/survey-timeouts', 'Survey timeouts response should match its resource schema.' );
 	}
 
 	public function test_survey() {
@@ -916,7 +760,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request )->get_data();
 
 		$this->assertEqualSets( array( 'survey' => $survey ), $response, 'Current survey response should contain the first queued survey.' );
-		$this->assert_matches_route_resource_schema( $response, 'core/user/data/survey', 'Current survey response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response, 'core/user/data/survey', 'Current survey response should match its resource schema.' );
 	}
 
 	public function test_survey__empty_queue() {
@@ -928,6 +772,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request )->get_data();
 
 		$this->assertSame( array( 'survey' => null ), $response, 'Current survey response should have a null survey when the queue is empty.' );
-		$this->assert_matches_route_resource_schema( $response, 'core/user/data/survey', 'Current survey response with an empty queue should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response, 'core/user/data/survey', 'Current survey response with an empty queue should match its resource schema.' );
 	}
 }
