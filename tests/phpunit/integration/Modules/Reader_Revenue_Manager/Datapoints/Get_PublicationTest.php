@@ -67,6 +67,16 @@ class Get_PublicationTest extends TestCase {
 	}
 
 	public function test_create_request() {
+		$request = $this->datapoint->create_request( $this->get_data_request( array() ) );
+
+		$this->assertSame(
+			'https://webcontentpublisher.googleapis.com/v1/organizations/organization-setting/publications/publication-setting',
+			(string) $request->getUri(),
+			'The request should use the connected publication from the module settings.'
+		);
+	}
+
+	public function test_create_request__ignores_request_identifiers() {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
@@ -77,19 +87,9 @@ class Get_PublicationTest extends TestCase {
 		);
 
 		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/organization-1/publications/publication-1',
-			(string) $request->getUri(),
-			'The request should use the get publication endpoint.'
-		);
-	}
-
-	public function test_create_request__falls_back_to_settings() {
-		$request = $this->datapoint->create_request( $this->get_data_request( array() ) );
-
-		$this->assertSame(
 			'https://webcontentpublisher.googleapis.com/v1/organizations/organization-setting/publications/publication-setting',
 			(string) $request->getUri(),
-			'The request should fall back to the configured IDs.'
+			'Identifiers sent with the request should not be used.'
 		);
 	}
 
@@ -98,7 +98,7 @@ class Get_PublicationTest extends TestCase {
 	 *
 	 * @param string $setting The missing setting.
 	 */
-	public function test_create_request__requires_fallback_settings( $setting ) {
+	public function test_create_request__requires_the_connected_publication( $setting ) {
 		$this->module->get_settings()->merge( array( $setting => '' ) );
 
 		try {
@@ -124,12 +124,8 @@ class Get_PublicationTest extends TestCase {
 		$response = new Publication();
 		$response->setOrganizationId( 'organization-1' );
 		$response->setPublicationId( 'publication-1' );
-		$data = array(
-			'organizationID' => 'organization-1',
-			'publicationID'  => 'publication-1',
-		);
 
-		$publication = $this->datapoint->parse_response( $response, $this->get_data_request( $data ) );
+		$publication = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
 
 		$this->assertSame( 'publication-1', $publication['publicationId'], 'The response should contain the requested publication.' );
 		$this->assertSame( 'organization-1', $publication['organizationId'], 'WCP fields should be preserved.' );
