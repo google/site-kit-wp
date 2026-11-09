@@ -24,7 +24,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_READ_SHARED_MODULE_DATA,
@@ -698,5 +702,203 @@ describe( 'TrafficOverviewPanel', () => {
 			breakdownRows: 15,
 		} );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+	} );
+
+	describe( 'key factors', () => {
+		const keyFactorsSelector =
+			'.googlesitekit-traffic-overview__key-factors';
+
+		it( 'should render the key factors between the traffic chart and the traffic breakdown on the main dashboard', async () => {
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getSectionClassNames( container ) ).toEqual( [
+				'googlesitekit-traffic-overview__total-visitors',
+				'googlesitekit-traffic-overview__chart',
+				'googlesitekit-traffic-overview__key-factors',
+				'googlesitekit-traffic-overview__breakdown',
+			] );
+		} );
+
+		it( 'should name the number of days in the selected date range in the heading of the key factors', async () => {
+			registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
+
+			const { getByRole, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'heading', {
+					name: 'Biggest channel shifts vs. the previous 14 days',
+				} )
+			).toBeInTheDocument();
+		} );
+
+		it.each( [
+			[ 'with', [ 'typicalTraffic', 'trafficInsights' ], true ],
+			[ 'without', [ 'typicalTraffic' ], false ],
+		] )(
+			'should render the summary above the key factor cards only %s the trafficInsights feature',
+			async ( _, features, hasInsight ) => {
+				const { container, waitForRegistry } = render(
+					<TrafficOverviewPanel />,
+					{
+						registry,
+						features,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					container.querySelector( keyFactorsSelector )
+				).toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-traffic-overview__key-factors-insight'
+					) !== null
+				).toBe( hasInsight );
+			}
+		);
+
+		it( 'should leave out the key factors without the typicalTraffic feature', async () => {
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__breakdown'
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( keyFactorsSelector )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should leave out the key factors on the entity dashboard', async () => {
+			provideSiteInfo( registry, {
+				currentEntityURL: 'https://example.com/about/',
+			} );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__breakdown'
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( keyFactorsSelector )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should leave out the key factors while the property is gathering data', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			getReportArgs().forEach( ( options ) =>
+				provideAnalytics4MockReport( registry, options )
+			);
+
+			const { container, getByText, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( 'Gathering data…' ) ).toBeInTheDocument();
+			expect(
+				container.querySelector( keyFactorsSelector )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render the key factors as three placeholder cards while one of the five reports is still loading, and the cards once it arrives', async () => {
+			const [
+				totalsArgs,
+				graphArgs,
+				channelsArgs,
+				locationsArgs,
+				devicesArgs,
+			] = getReportArgs();
+
+			[ totalsArgs, graphArgs, channelsArgs, locationsArgs ].forEach(
+				( options ) => provideAnalytics4MockReport( registry, options )
+			);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ devicesArgs ] );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			const placeholderCardSelector =
+				'.googlesitekit-traffic-overview__key-factor--loading';
+
+			expect( getPlaceholderCounts( container ).breakdownRows ).toBe(
+				15
+			);
+			expect(
+				container.querySelectorAll( placeholderCardSelector )
+			).toHaveLength( 3 );
+
+			act( () => {
+				provideAnalytics4MockReport( registry, devicesArgs );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ devicesArgs ] );
+			} );
+
+			expect(
+				container.querySelector( placeholderCardSelector )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factor'
+				).length
+			).toBeGreaterThan( 0 );
+		} );
 	} );
 } );
