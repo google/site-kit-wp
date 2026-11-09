@@ -71,9 +71,7 @@ class Update_PublicationTest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'organizationID' => 'organization-1',
-					'publicationID'  => 'publication-1',
-					'data'           => array(
+					'data' => array(
 						'publicationType' => Publication::PUBLICATION_TYPE_FOR_PROFIT,
 						'rrmProduct'      => array(
 							'tosAcceptance' => array(
@@ -88,9 +86,9 @@ class Update_PublicationTest extends TestCase {
 
 		$this->assertSame( 'PATCH', $request->getMethod(), 'The request should use PATCH.' );
 		$this->assertSame(
-			'/v1/organizations/organization-1/publications/publication-1',
+			'/v1/organizations/organization-setting/publications/publication-setting',
 			$request->getUri()->getPath(),
-			'The request should target the selected publication.'
+			'The request should target the connected publication.'
 		);
 
 		parse_str( $request->getUri()->getQuery(), $query );
@@ -120,9 +118,7 @@ class Update_PublicationTest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'organizationID' => 'organization-1',
-					'publicationID'  => 'publication-1',
-					'data'           => array(
+					'data' => array(
 						'rrmProduct' => array(
 							'tosAcceptance' => array(
 								'emailOptIn' => false,
@@ -154,11 +150,13 @@ class Update_PublicationTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__falls_back_to_settings() {
+	public function test_create_request__ignores_request_identifiers() {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'data' => array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'data'           => array(
 						'publicationTosUrl' => 'https://example.com/terms',
 					),
 				)
@@ -168,7 +166,7 @@ class Update_PublicationTest extends TestCase {
 		$this->assertSame(
 			'/v1/organizations/organization-setting/publications/publication-setting',
 			$request->getUri()->getPath(),
-			'The request should fall back to the configured IDs.'
+			'Identifiers sent with the request should not be used.'
 		);
 	}
 
@@ -176,9 +174,7 @@ class Update_PublicationTest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'organizationID' => 'organization-1',
-					'publicationID'  => 'publication-1',
-					'data'           => array(
+					'data' => array(
 						'publicationTosUrl'           => 'https://example.com/terms',
 						'publicationPrivacyPolicyUrl' => 'https://example.com/privacy',
 					),
@@ -209,7 +205,7 @@ class Update_PublicationTest extends TestCase {
 	 *
 	 * @param string $setting The missing setting.
 	 */
-	public function test_create_request__requires_fallback_settings( $setting ) {
+	public function test_create_request__requires_the_connected_publication( $setting ) {
 		$this->module->get_settings()->merge( array( $setting => '' ) );
 
 		try {
@@ -243,14 +239,7 @@ class Update_PublicationTest extends TestCase {
 		$this->expectException( Missing_Required_Param_Exception::class );
 		$this->expectExceptionMessage( 'Request parameter is empty: data.' );
 
-		$this->datapoint->create_request(
-			$this->get_data_request(
-				array(
-					'organizationID' => 'organization-1',
-					'publicationID'  => 'publication-1',
-				)
-			)
-		);
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
 	}
 
 	public function test_parse_response() {
@@ -262,9 +251,7 @@ class Update_PublicationTest extends TestCase {
 			$response,
 			$this->get_data_request(
 				array(
-					'organizationID' => 'organization-1',
-					'publicationID'  => 'publication-1',
-					'data'           => array(
+					'data' => array(
 						'publicationTosUrl' => 'https://example.com/terms',
 					),
 				)
