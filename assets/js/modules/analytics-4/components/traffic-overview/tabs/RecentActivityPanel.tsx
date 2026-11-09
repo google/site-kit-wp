@@ -46,6 +46,7 @@ import {
 	RECENT_ACTIVITY_TAB_ID,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useRecentActivityPanelState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentActivityPanelState';
+import { useRecordRecentActivityInteraction } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityInteraction';
 import FreshMetricsRow from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/FreshMetricsRow';
 import InsightNotice from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/InsightNotice';
 import LatestPostPerformance from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/LatestPostPerformance';
@@ -77,11 +78,16 @@ const RecentActivityPanel: FC = () => {
 		[]
 	);
 
+	const recordInteraction = useRecordRecentActivityInteraction();
+
 	function trackViewAllRecentPosts() {
 		trackEventOnce(
 			`${ viewContext }_recent-activity`,
 			'view_all_recent_posts'
 		);
+
+		// Staying on the tab to read it is a meaningful interaction.
+		recordInteraction();
 	}
 
 	// The widget mounts only the shown tab's panel, so this timer runs only

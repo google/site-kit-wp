@@ -174,18 +174,23 @@ export function getLatestPostReportArgs(
 }
 
 /**
- * Stores `LATEST_POST` as the most recent post, so the latest post
- * performance section renders without a request.
+ * Stores a post as the most recent post, so the latest post performance
+ * section renders without a request.
  *
  * @since 1.191.0
+ * @since n.e.x.t Takes an optional post.
  *
  * @param {Object} registry The registry to put the post in.
+ * @param {Object} [post]   Optional. The post. Default `LATEST_POST`.
  * @return {void}
  */
-export function provideLatestPost( registry: WPDataRegistry ) {
+export function provideLatestPost(
+	registry: WPDataRegistry,
+	post: RecentContentItem = LATEST_POST
+) {
 	provideRecentContent(
 		registry,
-		[ LATEST_POST ],
+		[ post ],
 		LATEST_POST_RECENT_CONTENT_OPTIONS
 	);
 }
@@ -703,4 +708,75 @@ export function createDailyTrafficRows(
 
 		return { date, visits: getVisits( dayIndex ) };
 	} );
+}
+
+/** The endpoint that `setExpirableItemTimers()` posts to. */
+export const setExpirableItemTimersEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+);
+
+/**
+ * Gets the slugs of the timers in the requests to the endpoint that
+ * `setExpirableItemTimers()` posts to, in the order they were sent.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Array<string>} The timer slugs.
+ */
+export function requestedTimerSlugs(): string[] {
+	return fetchMock
+		.calls( setExpirableItemTimersEndpoint )
+		.flatMap( ( call ) =>
+			JSON.parse( String( call[ 1 ]?.body ) ).data.map(
+				( { slug }: { slug: string } ) => slug
+			)
+		);
+}
+
+interface RecentActivitySurveyState {
+	/** The expirable items, as expiry times in seconds, keyed by slug. */
+	expirableItems?: Record< string, number >;
+	/** The dismissed prompts, keyed by slug. */
+	dismissedPrompts?: Record< string, { expires: number; count: number } >;
+}
+
+/**
+ * Gets the expiry time of an expirable item, in seconds, a number of seconds
+ * from now.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} secondsFromNow The seconds from now, negative for a time in the past.
+ * @return {number} The expiry time, in seconds since the epoch.
+ */
+export function getExpiryFromNow( secondsFromNow: number ): number {
+	// `isExpirableItemActive()` compares the expiry with the current time,
+	// not the reference date.
+	// eslint-disable-next-line sitekit/no-direct-date
+	return Math.floor( Date.now() / 1000 ) + secondsFromNow;
+}
+
+/**
+ * Stores the expirable items and the dismissed prompts that the Recent
+ * activity survey triggers read, so the store sends no request for them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry                 The registry to put the state in.
+ * @param {Object} [state]                  Optional. The state to put in the store.
+ * @param {Object} [state.expirableItems]   Optional. The expirable items. Default `{}`.
+ * @param {Object} [state.dismissedPrompts] Optional. The dismissed prompts. Default `{}`.
+ * @return {void}
+ */
+export function provideRecentActivitySurveyState(
+	registry: WPDataRegistry,
+	{
+		expirableItems = {},
+		dismissedPrompts = {},
+	}: RecentActivitySurveyState = {}
+) {
+	registry.dispatch( CORE_USER ).receiveGetExpirableItems( expirableItems );
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetDismissedPrompts( dismissedPrompts );
 }

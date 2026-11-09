@@ -37,6 +37,7 @@ import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
+	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
@@ -56,12 +57,14 @@ import {
 	LATEST_POST,
 	createBreakdownReport,
 	createDailyTrafficRows,
+	getExpiryFromNow,
 	getRecentTrafficBreakdownReportOptions,
 	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
+	provideRecentActivitySurveyState,
 	provideRecentTrafficBreakdownReports,
 	provideSiteVisitorsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
@@ -194,7 +197,7 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
  *
  * @since 1.190.0
  * @since 1.191.0 Puts the reports of the recent traffic breakdown in the store too.
- * @since n.e.x.t Puts the reports of the recent traffic breakdown and of the site's visitors in the store too.
+ * @since n.e.x.t Puts the reports of the recent traffic breakdown and of the site's visitors, and the state of the Recent activity survey triggers, in the store too.
  *
  * @param {Object} registry The registry to put the property, the post, and the reports in.
  * @return {void}
@@ -257,6 +260,16 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	provideLatestPostAnalyticsReports( registry );
 	provideLatestPostKeywordReport( registry );
 	provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
+	// The Recent activity survey triggers read the expirable items and the
+	// dismissed prompts. The "tab available" timer is running already, so
+	// the story doesn't start it.
+	provideRecentActivitySurveyState( registry, {
+		expirableItems: {
+			[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: getExpiryFromNow(
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.expiresInSeconds
+			),
+		},
+	} );
 }
 
 interface TrafficOverviewWidgetStoryProps {
