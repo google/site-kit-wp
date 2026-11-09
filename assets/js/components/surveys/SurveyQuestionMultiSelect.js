@@ -43,6 +43,8 @@ import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 import SurveyHeader from './SurveyHeader';
 
+/* eslint-disable camelcase -- The survey API names choice and answer fields in snake case. */
+
 function SurveyQuestionMultiSelect( {
 	question,
 	choices,
@@ -57,13 +59,11 @@ function SurveyQuestionMultiSelect( {
 		'SurveyQuestionMultiSelect'
 	);
 
-	// eslint-disable-next-line camelcase
 	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
 		// write_in means we need to support free text for that option (answer_text holds this in state).
-		const optionalKeys = write_in ? { answer_text: '' } : {}; // eslint-disable-line camelcase
+		const optionalKeys = write_in ? { answer_text: '' } : {};
 
 		return {
-			// eslint-disable-next-line camelcase
 			answer_ordinal,
 			selected: false,
 			...optionalKeys,
@@ -74,15 +74,11 @@ function SurveyQuestionMultiSelect( {
 
 	const [ selectedValues, setSelectedValues ] = useState( initialState );
 
-	// eslint-disable-next-line camelcase
 	function handleCheck( answer_ordinal ) {
 		const newState = {
 			...selectedValues,
-			// eslint-disable-next-line camelcase
 			[ answer_ordinal ]: {
-				// eslint-disable-next-line camelcase
 				...selectedValues[ answer_ordinal ],
-				// eslint-disable-next-line camelcase
 				selected: ! selectedValues[ answer_ordinal ].selected,
 			},
 		};
@@ -90,13 +86,10 @@ function SurveyQuestionMultiSelect( {
 		setSelectedValues( newState );
 	}
 
-	// eslint-disable-next-line camelcase
 	function handleAnswerChange( event, answer_ordinal ) {
 		const newState = {
 			...selectedValues,
-			// eslint-disable-next-line camelcase
 			[ answer_ordinal ]: {
-				// eslint-disable-next-line camelcase
 				...selectedValues[ answer_ordinal ],
 				answer_text: event.target.value?.slice(
 					0,
@@ -111,14 +104,10 @@ function SurveyQuestionMultiSelect( {
 	function handleSubmit() {
 		const answer = Object.values( selectedValues )
 			.filter( ( { selected } ) => selected )
-			// eslint-disable-next-line camelcase
 			.map( ( { answer_ordinal, answer_text } ) => {
-				// eslint-disable-next-line camelcase
 				if ( answer_text ) {
-					// eslint-disable-next-line camelcase
 					return { answer_ordinal, answer_text };
 				}
-				// eslint-disable-next-line camelcase
 				return { answer_ordinal };
 			} );
 		answerQuestion( {
@@ -127,15 +116,10 @@ function SurveyQuestionMultiSelect( {
 	}
 
 	const hasEmptySelectedTextValue =
-		// eslint-disable-next-line camelcase
 		choices.filter( ( { write_in, answer_ordinal } ) => {
-			// eslint-disable-next-line camelcase
 			if ( write_in ) {
-				// eslint-disable-next-line camelcase
 				const { selected, answer_text } =
-					// eslint-disable-next-line camelcase
 					selectedValues[ answer_ordinal ];
-				// eslint-disable-next-line camelcase
 				if ( selected && answer_text.length === 0 ) {
 					return true;
 				}
@@ -160,79 +144,66 @@ function SurveyQuestionMultiSelect( {
 			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
 
 			<div className="googlesitekit-survey__body">
-				{
-					// eslint-disable-next-line camelcase
-					choices.map( ( { answer_ordinal, text, write_in } ) => {
-						// eslint-disable-next-line camelcase
-						const answer = selectedValues[ answer_ordinal ];
-						// eslint-disable-next-line camelcase
-						const id = `${ instanceID }-answer-${ answer_ordinal }`;
+				{ choices.map( ( { answer_ordinal, text, write_in } ) => {
+					const answer = selectedValues[ answer_ordinal ];
+					const id = `${ instanceID }-answer-${ answer_ordinal }`;
 
-						return (
-							<div
-								key={ id }
-								className={ classnames(
-									'googlesitekit-survey__multi-select__choice',
-									{
-										'googlesitekit-survey__multi-select__choice--disabled':
-											hasMaximumNumberOfChoices &&
-											! answer.selected,
-									}
-								) }
-							>
-								<Checkbox
-									checked={ answer.selected }
-									disabled={
-										hasMaximumNumberOfChoices &&
-										! answer.selected
-									}
-									onChange={ () =>
-										handleCheck( answer_ordinal )
-									}
-									// Checkbox requires value prop to be a string.
-									// eslint-disable-next-line camelcase
-									value={ `${ answer_ordinal }` }
-									id={ id }
-									name={ id }
-								>
-									{ text }
-								</Checkbox>
+					return (
+						<div
+							key={ id }
+							className={ classnames(
+								'googlesitekit-survey__multi-select__choice',
 								{
-									// eslint-disable-next-line camelcase
-									write_in && (
-										<Fragment>
-											<VisuallyHidden>
-												<label
-													htmlFor={ `${ id }-write-in` }
-												>
-													{ sprintf(
-														/* translators: %s: Option name */
-														__(
-															'Text input for option %s',
-															'google-site-kit'
-														),
-														text
-													) }
-												</label>
-											</VisuallyHidden>
-											<TextField
-												id={ `${ id }-write-in` }
-												onChange={ ( event ) =>
-													handleAnswerChange(
-														event,
-														answer_ordinal
-													)
-												}
-												value={ answer.answer_text }
-												disabled={ ! answer.selected }
-											/>
-										</Fragment>
-									)
+									'googlesitekit-survey__multi-select__choice--disabled':
+										hasMaximumNumberOfChoices &&
+										! answer.selected,
 								}
-							</div>
-						);
-					} )
-				}
+							) }
+						>
+							<Checkbox
+								checked={ answer.selected }
+								disabled={
+									hasMaximumNumberOfChoices &&
+									! answer.selected
+								}
+								onChange={ () => handleCheck( answer_ordinal ) }
+								// Checkbox requires value prop to be a string.
+								value={ `${ answer_ordinal }` }
+								id={ id }
+								name={ id }
+							>
+								{ text }
+							</Checkbox>
+							{ write_in && (
+								<Fragment>
+									<VisuallyHidden>
+										<label htmlFor={ `${ id }-write-in` }>
+											{ sprintf(
+												/* translators: %s: Option name */
+												__(
+													'Text input for option %s',
+													'google-site-kit'
+												),
+												text
+											) }
+										</label>
+									</VisuallyHidden>
+									<TextField
+										id={ `${ id }-write-in` }
+										onChange={ ( event ) =>
+											handleAnswerChange(
+												event,
+												answer_ordinal
+											)
+										}
+										value={ answer.answer_text }
+										disabled={ ! answer.selected }
+									/>
+								</Fragment>
+							) }
+						</div>
+					);
+				} ) }
 			</div>
 
 			<div className="googlesitekit-survey__footer">

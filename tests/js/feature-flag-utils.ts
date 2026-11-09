@@ -43,7 +43,7 @@ export function reloadTestUtilsWithFeatures( features: Iterable< string > ) {
 	jest.resetModules();
 
 	const { enabledFeatures } =
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		// eslint-disable-next-line @typescript-eslint/no-require-imports -- Loads a fresh copy after `jest.resetModules()`; a static import would keep the old one, and `import()` would make this function async.
 		require( '@/js/features' );
 	enabledFeatures.clear();
 
@@ -51,7 +51,7 @@ export function reloadTestUtilsWithFeatures( features: Iterable< string > ) {
 		enabledFeatures.add( feature );
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	// eslint-disable-next-line @typescript-eslint/no-require-imports -- Same as above: the fresh copy must load after the flags are set, and synchronously.
 	return require( '@tests/js/utils' );
 }
 

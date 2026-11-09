@@ -55,7 +55,9 @@
     "strictNullChecks": true,
     "target": "es2015",
     "types": [
-      "*"
+      "google.accounts",
+      "jest",
+      "node"
     ]
   },
   "include": [
