@@ -27,8 +27,8 @@ import { useCallback, useRef } from '@wordpress/element';
 import { Registry, useRegistry } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { RECENT_ACTIVITY_TAB_OPENED_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { useRecordRecentActivityInteraction } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityInteraction';
 import { startTimerOnce } from '@/js/modules/analytics-4/components/traffic-overview/utils/startTimerOnce';
+import { useRecordRecentActivityInteraction } from './useRecordRecentActivityInteraction';
 
 /**
  * Gets a callback that records that the user opened the Recent activity tab.

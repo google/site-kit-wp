@@ -1182,12 +1182,15 @@ describe( 'TrafficOverviewWidget', () => {
 			title: { rendered: 'Autumn recipes' },
 		};
 
-		function renderWidget( features = [ 'freshData' ] ) {
+		function renderWidget(
+			features = [ 'freshData' ],
+			viewContext = VIEW_CONTEXT_MAIN_DASHBOARD
+		) {
 			return render(
 				<TrafficOverviewWidget { ...widgetComponentProps } />,
 				{
 					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					viewContext,
 					features,
 				}
 			);
@@ -1405,6 +1408,36 @@ describe( 'TrafficOverviewWidget', () => {
 			);
 			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
 			expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
+		} );
+
+		it( 'should not start the timers, count the visit or request the latest post for a view-only user', async () => {
+			const { container, waitForRegistry } = renderWidget(
+				[ 'freshData' ],
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+
+			await waitForRegistry();
+
+			act( () => {
+				simulateIntersection(
+					container.querySelector(
+						'.googlesitekit-widget--analyticsTrafficOverview'
+					) as Element,
+					true
+				);
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
+			).toBeInTheDocument();
+
+			expect( fetchMock ).not.toHaveFetched(
+				setExpirableItemTimersEndpoint
+			);
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+			expect( fetchMock ).not.toHaveFetched( postsEndpoint );
 		} );
 	} );
 } );
