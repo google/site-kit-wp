@@ -25,13 +25,20 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import {
+	existingCTAStep,
 	publicationPoliciesStep,
 	publicationSetupStep,
 	setupCompleteStep,
@@ -48,6 +55,7 @@ import {
 	useSetupFlow,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import ObservedStep from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ObservedStep';
+import PublisherCenterLink from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/PublisherCenterLink';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import {
 	EXPRESS_SETUP_CTAS,
@@ -68,7 +76,10 @@ const STEPS: SetupStep[] = [
 const SetupCTANewsletterSignup: FC = () => {
 	const hasRequiredScopes = useExpressSetupScopes();
 
-	const { currentStep, advance } = useSetupFlow( STEPS );
+	const { currentStep, advance } = useSetupFlow(
+		STEPS,
+		EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+	);
 
 	useRecordExpressSetupProgress(
 		EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
@@ -141,6 +152,34 @@ const SetupCTANewsletterSignup: FC = () => {
 				'google-site-kit'
 			),
 		},
+		[ existingCTAStep.slug ]: {
+			title: __(
+				'We found an existing newsletter sign-up form for this publication',
+				'google-site-kit'
+			),
+			description: createInterpolateElement(
+				__(
+					'Your publication is now connected to Site Kit. However, Site Kit can’t create a newsletter sign-up form for a publication that already has one in Reader Revenue Manager. To view or edit your publications, go to <a>Publisher Center</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<PublisherCenterLink eventName="click_view_publications_link" />
+					),
+				}
+			),
+			targetingDescription: createInterpolateElement(
+				__(
+					'To change who sees your newsletter sign-up form, set targeting rules in <a>Publisher Center</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<PublisherCenterLink eventName="click_set_targeting_rules_link" />
+					),
+				}
+			),
+		},
 		[ setupCompleteStep.slug ]: {
 			title: __(
 				'Your newsletter signup form is ready!',
@@ -165,13 +204,21 @@ const SetupCTANewsletterSignup: FC = () => {
 
 	const StepComponent = currentStep.Component;
 
+	// Steps outside the sequence, like the existing CTA step, have no place in
+	// the stepper.
+	const isStepInSequence = STEPS.some(
+		( { slug } ) => slug === currentStep.slug
+	);
+
 	return (
 		<ExpressSetupLayout
 			sidebar={
-				<ExpressSetupSteps
-					steps={ STEPS }
-					activeSlug={ currentStep.slug }
-				/>
+				isStepInSequence ? (
+					<ExpressSetupSteps
+						steps={ STEPS }
+						activeSlug={ currentStep.slug }
+					/>
+				) : undefined
 			}
 		>
 			{ /* Keyed by step, so each step is observed from when it renders. */ }

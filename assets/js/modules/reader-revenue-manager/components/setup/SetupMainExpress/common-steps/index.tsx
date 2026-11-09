@@ -28,6 +28,7 @@ export {
 	default as StepPublicationPolicies,
 	publicationPoliciesStep,
 } from './StepPublicationPolicies';
+export { default as StepExistingCTA, existingCTAStep } from './StepExistingCTA';
 export {
 	default as StepSetupComplete,
 	setupCompleteStep,
