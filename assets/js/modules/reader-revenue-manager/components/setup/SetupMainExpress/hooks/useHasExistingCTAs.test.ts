@@ -101,6 +101,29 @@ describe( 'useHasExistingCTAs', () => {
 		expect( result.current ).toBe( false );
 	} );
 
+	it( 'returns the result on the first render when the CTAs are already loaded', () => {
+		receiveCTAs( [ newsletterCTA ] );
+
+		// Every result the hook returns, render by render.
+		const results: ( boolean | undefined )[] = [];
+
+		renderHook(
+			() => {
+				const result = useHasExistingCTAs(
+					PUBLICATION_ID,
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				);
+
+				results.push( result );
+
+				return result;
+			},
+			{ registry }
+		);
+
+		expect( results[ 0 ] ).toBe( true );
+	} );
+
 	it( 'checks only once per publication and CTA type', () => {
 		receiveCTAs( [] );
 

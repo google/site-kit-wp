@@ -25,34 +25,24 @@ import { useEffect, useState } from 'react';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import { EXPRESS_SETUP_CTA_TO_CTA_TYPE } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import {
 	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	CTA,
-	CTA_TYPES,
-	CallToActionType,
-} from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import { CTA } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 
 type ExpressSetupCTAType =
 	typeof EXPRESS_SETUP_CTAS[ keyof typeof EXPRESS_SETUP_CTAS ];
-
-// The CTA type each express setup creates. A setup without an entry creates
-// a CTA of a type that can't be checked for yet.
-const EXPRESS_SETUP_CTA_TO_CTA_TYPE: Partial<
-	Record< ExpressSetupCTAType, CallToActionType >
-> = {
-	[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: CTA_TYPES.NEWSLETTER_SIGNUP,
-};
 
 /**
  * Determines whether a publication already has a CTA of the type an express
  * setup creates, in any state.
  *
- * The result is recorded once per publication and CTA type, as creating a CTA
- * in the setup reloads the CTAs, which would otherwise make the publication
- * look as if it had an existing CTA that the setup itself just created.
+ * The result is available as soon as the CTAs are loaded, and is then recorded
+ * once per publication and CTA type, as creating a CTA in the setup reloads the
+ * CTAs, which would otherwise make the publication look as if it had an
+ * existing CTA that the setup itself just created.
  *
  * @since n.e.x.t
  *
@@ -60,7 +50,7 @@ const EXPRESS_SETUP_CTA_TO_CTA_TYPE: Partial<
  * @param {string} ctaType       The express setup CTA type, one of `EXPRESS_SETUP_CTAS`.
  * @return {(boolean|undefined)} `true` when the publication has a CTA of the type, `false` when it
  *                               doesn't, or when `publicationID` is missing or `ctaType` can't be
- *                               checked, `undefined` while the CTAs are loading.
+ *                               checked, `undefined` until the CTAs load or if they fail to load.
  */
 export default function useHasExistingCTAs(
 	publicationID?: string,
@@ -82,21 +72,23 @@ export default function useHasExistingCTAs(
 
 	const key = `${ publicationID }:${ ctaType }`;
 
+	const hasExistingCTA = ctas?.some( ( cta ) => cta.type === type );
+
 	useEffect( () => {
-		if ( ! publicationID || ! type || ctas === undefined ) {
+		if ( ! publicationID || ! type || hasExistingCTA === undefined ) {
 			return;
 		}
-
-		const hasExistingCTA = ctas.some( ( cta ) => cta.type === type );
 
 		setRecord( ( current ) =>
 			key in current ? current : { ...current, [ key ]: hasExistingCTA }
 		);
-	}, [ ctas, key, publicationID, type ] );
+	}, [ hasExistingCTA, key, publicationID, type ] );
 
 	if ( ! publicationID || ! type ) {
 		return false;
 	}
 
-	return record[ key ];
+	// Until the effect records the result, return it for the CTAs as loaded, so
+	// a step that opens with the CTAs already loaded shows straight away.
+	return key in record ? record[ key ] : hasExistingCTA;
 }
