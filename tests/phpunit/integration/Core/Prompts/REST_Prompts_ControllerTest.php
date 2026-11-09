@@ -13,7 +13,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Prompts\Dismissed_Prompts;
 use Google\Site_Kit\Core\Prompts\REST_Prompts_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Prompts_Schema;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -90,10 +89,7 @@ class REST_Prompts_ControllerTest extends TestCase {
 		$this->assertEquals( 1, $response_data['foo']['count'], 'Permanent prompt should have been dismissed once.' );
 		$this->assertEqualsWithDelta( time() + 100, $response_data['bar']['expires'], 2, 'Expiring prompt should include its expiration timestamp.' );
 		$this->assertEquals( 1, $response_data['bar']['count'], 'Expiring prompt should have been dismissed once.' );
-		$this->assertTrue(
-			rest_validate_value_from_schema( $response_data, Dismissed_Prompts_Schema::get() ),
-			'Dismissed prompts response should match its resource schema.'
-		);
+		$this->assertMatchesRouteResourceSchema( $response_data, 'core/user/data/dismissed-prompts', 'Dismissed prompts response should match its resource schema.' );
 	}
 
 	public function test_dismiss_new_prompt() {
@@ -192,11 +188,10 @@ class REST_Prompts_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_dismiss_prompt__invalid_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_dismiss_prompt__invalid_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_dismiss_prompt__invalid_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -204,7 +199,7 @@ class REST_Prompts_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismiss-prompt' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertEmpty( $this->dismissed_prompts->get(), 'Dismiss prompt endpoint should dismiss no prompt for invalid data.' );
 	}
 
@@ -213,17 +208,14 @@ class REST_Prompts_ControllerTest extends TestCase {
 			'no data'                      => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data is not an object'        => array(
 				array( 'data' => 'foo' ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'slug is not a string'         => array(
 				array( 'data' => array( 'slug' => 123 ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'expiration is not an integer' => array(
 				array(
@@ -233,43 +225,15 @@ class REST_Prompts_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'data has no slug'             => array(
 				array( 'data' => array( 'expiration' => 100 ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'slug is empty'                => array(
 				array( 'data' => array( 'slug' => '' ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_dismiss_prompt__data_without_slug
-	 *
-	 * @param array $data Request data without a slug.
-	 */
-	public function test_dismiss_prompt__callback_rejects_data_without_slug( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/dismiss-prompt', $data );
-
-		$this->assertWPError( $response, 'Dismiss prompt callback should reject data without a slug.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Dismiss prompt callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Dismiss prompt callback should reject data without a slug as a bad request.' );
-		$this->assertEmpty( $this->dismissed_prompts->get(), 'Dismiss prompt callback should dismiss no prompt for data without a slug.' );
-	}
-
-	public function provider_dismiss_prompt__data_without_slug() {
-		return array(
-			'data has no slug' => array( array( 'expiration' => 100 ) ),
-			'slug is empty'    => array( array( 'slug' => '' ) ),
 		);
 	}
 }
