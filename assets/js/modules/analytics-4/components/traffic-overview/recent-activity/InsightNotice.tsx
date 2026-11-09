@@ -41,6 +41,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
+import { useRecordRecentActivityInteraction } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityInteraction';
 import { getInsightReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	Insight,
@@ -96,6 +97,7 @@ function getInsightCopy( { classification, changePercent }: Insight ): string {
 const InsightNotice: FC = () => {
 	const viewContext = useViewContext();
 	const dateRange = useFreshDataDateRange();
+	const recordInteraction = useRecordRecentActivityInteraction();
 
 	const { report, loading, error } =
 		useFreshDataReport( getInsightReportArgs );
@@ -141,6 +143,7 @@ const InsightNotice: FC = () => {
 					gaTrackingEventArgs={ {
 						category: `${ viewContext }_recent-activity-survey`,
 					} }
+					onVote={ recordInteraction }
 					hideQuestion
 				/>
 			</div>

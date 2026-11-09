@@ -30,9 +30,12 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { RECENT_ACTIVITY_INTERACTION_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	createInsightReport,
 	provideInsightReport,
+	provideRecentActivitySurveyState,
+	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -86,7 +89,24 @@ describe( 'InsightNotice', () => {
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		provideRecentActivitySurveyState( registry );
+		fetchMock.post( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
 	} );
+
+	const interactionTimerRequest = {
+		body: {
+			data: [
+				{
+					slug: RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+					expiration:
+						RECENT_ACTIVITY_INTERACTION_TIMER.expiresInSeconds,
+				},
+			],
+		},
+	};
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
@@ -173,7 +193,7 @@ describe( 'InsightNotice', () => {
 		).toBe( 0 );
 	} );
 
-	it( 'should send feedback and track `vote_up` with no label when "Yes, this was helpful" is clicked', async () => {
+	it( 'should send feedback, track `vote_up` with no label and record an interaction when "Yes, this was helpful" is clicked', async () => {
 		fetchMock.post( feedbackEndpoint, {
 			status: 200,
 			body: { success: true },
@@ -211,9 +231,13 @@ describe( 'InsightNotice', () => {
 				},
 			} )
 		);
+		expect( fetchMock ).toHaveFetched(
+			setExpirableItemTimersEndpoint,
+			interactionTimerRequest
+		);
 	} );
 
-	it( 'should send feedback and track `vote_down` with no label when "No, this was not helpful" is clicked', async () => {
+	it( 'should send feedback, track `vote_down` with no label and record an interaction when "No, this was not helpful" is clicked', async () => {
 		fetchMock.post( feedbackEndpoint, {
 			status: 200,
 			body: { success: true },
@@ -250,6 +274,10 @@ describe( 'InsightNotice', () => {
 					},
 				},
 			} )
+		);
+		expect( fetchMock ).toHaveFetched(
+			setExpirableItemTimersEndpoint,
+			interactionTimerRequest
 		);
 	} );
 
