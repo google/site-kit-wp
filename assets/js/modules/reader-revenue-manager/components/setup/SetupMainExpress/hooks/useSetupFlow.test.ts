@@ -696,6 +696,44 @@ describe( 'useSetupFlow', () => {
 			expect( result.current.currentStep ).toBe( signupFormStep );
 		} );
 
+		it( 'should return the existing CTA step straight away when moving on with the CTAs already loaded', () => {
+			global.location.href = `http://example.com/?step=${ publicationSetupStep.slug }`;
+			provideCTAs( [ newsletterCTA ] );
+
+			// Every step the flow returns, render by render.
+			const renderedSteps: ( SetupStep | undefined )[] = [];
+
+			const { result } = renderHook(
+				() => {
+					const flow = useSetupFlow(
+						NEWSLETTER_FLOW,
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+					);
+
+					renderedSteps.push( flow.currentStep );
+
+					return flow;
+				},
+				{ registry }
+			);
+
+			actHook( () => result.current.advance() );
+
+			expect( result.current.currentStep ).toBe( existingCTAStep );
+
+			// The flow goes straight from the publication setup step to the
+			// existing CTA step, without returning the next step or no step.
+			const stepsAfterPublicationSetup = renderedSteps.slice(
+				renderedSteps.lastIndexOf( publicationSetupStep ) + 1
+			);
+
+			expect(
+				stepsAfterPublicationSetup.every(
+					( step ) => step === existingCTAStep
+				)
+			).toBe( true );
+		} );
+
 		it( 'should not open the existing CTA step when the publication has no CTAs', () => {
 			global.location.href = 'http://example.com/';
 			provideCTAs( [] );
