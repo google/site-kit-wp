@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -35,19 +35,28 @@ import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import AIIcon from './AIIcon';
 
-const AIDisclosure: FC = () => (
+interface AIDisclosureProps {
+	/**
+	 * The disclosure. Without it, the component shows the disclosure for one
+	 * section, with a link to the AI insights support page.
+	 */
+	children?: ReactNode;
+}
+
+const AIDisclosure: FC< AIDisclosureProps > = ( { children } ) => (
 	<div className="googlesitekit-ai-disclosure">
 		<AIIcon />
 		<P className="googlesitekit-ai-disclosure__text" size={ SIZE_SMALL }>
-			{ createInterpolateElement(
-				__(
-					'This section contains data created using AI and may contain mistakes. <a>Learn more</a>',
-					'google-site-kit'
-				),
-				{
-					a: <DocumentationLink slug="ai-insights" />,
-				}
-			) }
+			{ children ??
+				createInterpolateElement(
+					__(
+						'This section contains data created using AI and may contain mistakes. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: <DocumentationLink slug="ai-insights" />,
+					}
+				) }
 		</P>
 	</div>
 );

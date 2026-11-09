@@ -965,6 +965,22 @@ $traffic-overview-column-gap: 42px;
 			margin-left: 4px;
 		}
 	}
+
+	// The disclosure fills the space on the left of the sources. The design
+	// shows the footer only at desktop width, so where the two don't fit side
+	// by side, the sources move under the disclosure, still on the right.
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__footer {
+		align-items: center;
+		display: flex;
+		flex: 1;
+		flex-wrap: wrap;
+		gap: 8px 16px;
+		justify-content: flex-end;
+
+		.googlesitekit-ai-disclosure {
+			flex: 1 1 auto;
+		}
+	}
 }
 
 // The padding comes on top, so the tooltip is 210px wide as in the design.

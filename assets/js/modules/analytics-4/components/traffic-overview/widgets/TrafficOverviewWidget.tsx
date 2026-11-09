@@ -59,6 +59,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import SparkleIcon from '@/svg/icons/sparkle.svg';
+import TrafficOverviewFooter from './TrafficOverviewFooter';
 import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -161,7 +162,7 @@ const TrafficOverviewWidget = forwardRef<
 			id: TRAFFIC_OVERVIEW_TAB_ID,
 			label: __( 'Traffic overview', 'google-site-kit' ),
 			PanelComponent: TrafficOverviewPanel,
-			FooterComponent: TrafficOverviewSourceLink,
+			FooterComponent: TrafficOverviewFooter,
 		} );
 	}
 

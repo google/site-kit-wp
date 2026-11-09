@@ -39,4 +39,23 @@ describe( 'AIDisclosure', () => {
 			'https://sitekit.withgoogle.com/support/?doc=ai-insights'
 		);
 	} );
+
+	it( 'should render its children in place of the default disclosure', () => {
+		const registry = createTestRegistry();
+
+		provideSiteInfo( registry );
+
+		const { container, queryByRole } = render(
+			<AIDisclosure>
+				Some insights on this page are created using AI.
+			</AIDisclosure>,
+			{ registry }
+		);
+
+		expect( container ).toHaveTextContent(
+			'Some insights on this page are created using AI.'
+		);
+		expect( container ).not.toHaveTextContent( 'This section' );
+		expect( queryByRole( 'link' ) ).not.toBeInTheDocument();
+	} );
 } );
