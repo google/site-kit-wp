@@ -92,7 +92,7 @@ class Has_Multiple_Admins {
 				// if they are also added as a local administrator.
 				$exclude_users = array();
 				if ( ! empty( $super_admins ) ) {
-					$super_admin = get_user_by( 'login', $super_admins[0] );
+					$super_admin = get_user_by( 'login', reset( $super_admins ) );
 					if ( $super_admin ) {
 						$exclude_users[] = $super_admin->ID;
 					}
