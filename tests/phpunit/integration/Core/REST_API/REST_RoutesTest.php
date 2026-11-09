@@ -108,6 +108,7 @@ class REST_RoutesTest extends TestCase {
 				'core/site/data/reset-persistent',
 				'core/site/data/setup-tag',
 				'core/site/data/site-health-tag-placement-test',
+				'core/site/data/wp-dashboard-widget-settings',
 				'core/user/data/audience-settings',
 				'core/user/data/authentication',
 				'core/user/data/conversion-reporting-settings',
