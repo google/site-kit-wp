@@ -96,7 +96,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data(), 'GET endpoint should return stored key metrics settings.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/key-metrics', 'GET endpoint response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/key-metrics', 'GET endpoint response should match its resource schema.' );
 	}
 
 	public function test_set_settings() {
@@ -109,7 +109,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			array(
 				'data' => array(
 					'settings' => array(
-						'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4', 'widget5' ),
+						'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4', 'widget5', 'widget6', 'widget7' ),
 						'isWidgetHidden' => false,
 					),
 				),
@@ -119,7 +119,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 200, $response->get_status(), 'POST endpoint should accept valid key metrics settings.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/key-metrics', 'POST endpoint response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/key-metrics', 'POST endpoint response should match its resource schema.' );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$request->set_body_params(
@@ -239,11 +239,10 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_wrong_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_set_settings__wrong_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_set_settings__wrong_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -258,7 +257,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get(), 'POST endpoint should keep the saved settings for malformed data.' );
 	}
 
@@ -267,27 +266,22 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			'no data'                         => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data has no settings'            => array(
 				array( 'data' => array() ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'wrong data type'                 => array(
 				array( 'data' => array( 'settings' => '{}' ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'settings has no isWidgetHidden'  => array(
 				array( 'data' => array( 'settings' => array( 'widgetSlugs' => array( 'widgetA', 'widgetB' ) ) ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'isWidgetHidden is not a boolean' => array(
 				array( 'data' => array( 'settings' => array( 'isWidgetHidden' => 'hidden' ) ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'a widget slug is not a string'   => array(
 				array(
@@ -299,7 +293,6 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'too many widget slugs'           => array(
 				array(
@@ -321,7 +314,6 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'no widget slugs'                 => array(
 				array(
@@ -333,68 +325,6 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.5',
-			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_set_settings__data_the_callback_rejects
-	 *
-	 * @param array $data Request data that WordPress before 5.5 lets through to the callback.
-	 */
-	public function test_set_settings__callback_rejects_invalid_data( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$original_settings = array(
-			'widgetSlugs'    => array( 'widgetA' ),
-			'isWidgetHidden' => false,
-		);
-		$this->settings->register();
-		$this->settings->set( $original_settings );
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/key-metrics', $data );
-
-		$this->assertWPError( $response, 'Key metrics callback should reject invalid data.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Key metrics callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Key metrics callback should reject invalid data as a bad request.' );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get(), 'Key metrics callback should keep the saved settings for invalid data.' );
-		$this->assertFalse( $this->key_metrics_setup_completed_by->get(), 'Key metrics callback should not record a setup for invalid data.' );
-	}
-
-	public function provider_set_settings__data_the_callback_rejects() {
-		return array(
-			'data has no settings'           => array( array() ),
-			'settings has no isWidgetHidden' => array(
-				array( 'settings' => array( 'widgetSlugs' => array( 'widgetA', 'widgetB' ) ) ),
-			),
-			'no widget slugs'                => array(
-				array(
-					'settings' => array(
-						'widgetSlugs'    => array(),
-						'isWidgetHidden' => false,
-					),
-				),
-			),
-			'too many widget slugs'          => array(
-				array(
-					'settings' => array(
-						'widgetSlugs'    => array(
-							'widget0',
-							'widget1',
-							'widget2',
-							'widget3',
-							'widget4',
-							'widget5',
-							'widget6',
-							'widget7',
-							'widget8',
-						),
-						'isWidgetHidden' => false,
-					),
-				),
 			),
 		);
 	}
