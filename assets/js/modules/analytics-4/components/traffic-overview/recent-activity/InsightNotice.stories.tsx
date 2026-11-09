@@ -35,7 +35,7 @@ import { getFreshDataDateRange } from '@/js/modules/analytics-4/components/traff
 import { provideInsightReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
-import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import { provideSiteInfo, provideUserAuthentication } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import InsightNotice from './InsightNotice';
@@ -127,8 +127,8 @@ Voted.args = {
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		fetchMock.post(
-			surveyTriggerEndpoint,
-			{ body: {} },
+			feedbackEndpoint,
+			{ body: { success: true } },
 			{ overwriteRoutes: true }
 		);
 		provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
@@ -140,7 +140,7 @@ Voted.parameters = {
 };
 Voted.scenario = {
 	viewport: 'large',
-	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--up',
+	clickSelector: '.googlesitekit-thumbs-feedback__button--up',
 	postInteractionWait: 200,
 };
 
