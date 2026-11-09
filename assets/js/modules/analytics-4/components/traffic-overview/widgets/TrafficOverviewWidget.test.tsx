@@ -133,6 +133,12 @@ describe( 'TrafficOverviewWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
+		// The Recent activity footer, and the Traffic overview footer when the
+		// tab has the key factors, link to a Search Console report, which needs
+		// the Search Console property.
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 		provideRecentActivitySurveyState( registry );
 		fetchMock.post( setExpirableItemTimersEndpoint, {
@@ -365,9 +371,6 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should render the Recent activity panel and the "Sources: Analytics Search Console" footer when the `freshData` feature flag is enabled and the user selects the "Recent activity" tab', async () => {
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.setPropertyID( 'https://example.com/' );
 		provideFreshMetricsReports( registry, {
 			totalVisitors: 157,
 			searchPerformance: { clicks: 72, impressions: 8000 },
@@ -801,7 +804,7 @@ describe( 'TrafficOverviewWidget', () => {
 		);
 	} );
 
-	it( 'should swap in the Typical Traffic panel and keep the "Source: Analytics" footer when the user selects "Typical traffic", and swap it back for "Traffic overview", when the `typicalTraffic` feature flag is enabled', async () => {
+	it( 'should swap in the Typical Traffic panel and its "Source: Analytics" footer when the user selects "Typical traffic", and swap back the Traffic overview panel and its "Sources: Analytics Search Console" footer for "Traffic overview", when the `typicalTraffic` feature flag is enabled', async () => {
 		fetchMock.get(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
@@ -832,7 +835,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).not.toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-widget__footer' )
-		).toHaveTextContent( 'Source: Analytics' );
+		).toHaveTextContent( /^Source: Analytics$/ );
 
 		fireEvent.click(
 			screen.getByRole( 'tab', { name: 'Traffic overview' } )
@@ -844,6 +847,33 @@ describe( 'TrafficOverviewWidget', () => {
 		expect(
 			screen.queryByRole( 'tabpanel', { name: 'Typical traffic Beta' } )
 		).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-widget__footer' )
+		).toHaveTextContent( /^Sources: Analytics Search Console$/ );
+	} );
+
+	it( 'should render the AI disclosure and the "Sources: Analytics Search Console" footer on the Traffic overview tab when the `typicalTraffic` and `trafficInsights` feature flags are enabled', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic', 'trafficInsights' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		const footer = container.querySelector(
+			'.googlesitekit-widget__footer'
+		);
+
+		expect( footer ).toHaveTextContent(
+			'Some insights on this page are created using AI and may contain mistakes. Learn more'
+		);
+		expect( footer ).toHaveTextContent(
+			/Learn more\s*Sources: Analytics Search Console$/
+		);
 	} );
 
 	it( 'should track `view_widget` labeled `googlesitekit-traffic-overview-tab` once when the card first enters the viewport, and not again on a re-render or a second entry', async () => {
@@ -1039,9 +1069,6 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should track `change_tab` labeled `googlesitekit-recent-activity-tab` when the user selects the Recent activity tab', async () => {
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.setPropertyID( 'https://example.com/' );
 		provideFreshMetricsReports( registry, {
 			totalVisitors: 157,
 			searchPerformance: { clicks: 72, impressions: 8000 },
@@ -1201,9 +1228,6 @@ describe( 'TrafficOverviewWidget', () => {
 		}
 
 		beforeEach( () => {
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.setPropertyID( 'https://example.com/' );
 			provideFreshMetricsReports( registry, {
 				totalVisitors: 157,
 				searchPerformance: { clicks: 72, impressions: 8000 },

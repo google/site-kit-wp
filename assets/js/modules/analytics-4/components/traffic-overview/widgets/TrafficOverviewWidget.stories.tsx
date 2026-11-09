@@ -94,10 +94,11 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 )( TrafficOverviewWidget );
 
 /**
- * Connects Analytics and sets a fixed date range, so `MainDashboard` and
- * `EntityDashboard` start from the same state.
+ * Connects Analytics, gives Search Console a property and sets a fixed date
+ * range, so `MainDashboard` and `EntityDashboard` start from the same state.
  *
  * @since 1.188.0
+ * @since n.e.x.t Gives Search Console a property too.
  *
  * @param {Object} registry The registry to set up.
  * @return {void}
@@ -125,6 +126,11 @@ function commonSetup( registry: WPDataRegistry ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( false );
+	// When the Traffic overview tab has the key factors, its footer links to
+	// Search Console, and the link needs the Search Console property.
+	registry
+		.dispatch( MODULES_SEARCH_CONSOLE )
+		.setPropertyID( 'https://example.com/' );
 }
 
 /**
@@ -317,6 +323,21 @@ TypicalTraffic.parameters = {
 	features: [ 'typicalTraffic' ],
 };
 TypicalTraffic.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+};
+
+export const TypicalTrafficWithInsights = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+TypicalTrafficWithInsights.storyName =
+	'Typical Traffic With Insights (typicalTraffic and trafficInsights enabled)';
+TypicalTrafficWithInsights.args = {
+	...MainDashboard.args,
+};
+TypicalTrafficWithInsights.parameters = {
+	features: [ 'typicalTraffic', 'trafficInsights' ],
+};
+TypicalTrafficWithInsights.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 

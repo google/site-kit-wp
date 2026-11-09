@@ -22,104 +22,15 @@
 import { FC } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { createInterpolateElement } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
-import Link from '@/js/components/Link';
-import useTrackSourceLinkClickCallback from '@/js/hooks/useTrackSourceLinkClickCallback';
-import useViewOnly from '@/js/hooks/useViewOnly';
+import SourcesLinks from '@/js/modules/analytics-4/components/traffic-overview/components/SourcesLinks';
 import { useFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { generateDateRangeArgs } from '@/js/modules/search-console/util';
 
 const RecentActivityFooter: FC = () => {
-	const viewOnly = useViewOnly();
-	const handleClick = useTrackSourceLinkClickCallback();
-
 	const { startDate, endDate } = useFreshDataDateRange();
 
-	const analyticsReportURL = useSelect(
-		( select: Select ) => {
-			if ( viewOnly ) {
-				return undefined;
-			}
-
-			return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
-				'lifecycle-traffic-acquisition-v2',
-				{
-					dates: { startDate, endDate },
-					otherArgs: {
-						// `collectionId` is what Analytics calls this parameter
-						// in its URL.
-						// eslint-disable-next-line sitekit/acronym-case
-						collectionId: 'life-cycle',
-					},
-				}
-			);
-		},
-		[ viewOnly, startDate, endDate ]
-	);
-
-	const searchConsoleReportURL = useSelect(
-		( select: Select ) => {
-			if ( viewOnly ) {
-				return undefined;
-			}
-
-			return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
-				generateDateRangeArgs( { startDate, endDate } )
-			);
-		},
-		[ viewOnly, startDate, endDate ]
-	);
-
-	if ( viewOnly ) {
-		return null;
-	}
-
-	return (
-		<div className="googlesitekit-source-link googlesitekit-traffic-overview__sources">
-			{ createInterpolateElement(
-				sprintf(
-					/* translators: 1: a link to the first source, e.g. "Analytics", 2: a link to the second source, e.g. "Search Console" */
-					__( 'Sources: %1$s %2$s', 'google-site-kit' ),
-					`<analytics>${ _x(
-						'Analytics',
-						'Service name',
-						'google-site-kit'
-					) }</analytics>`,
-					`<searchConsole>${ _x(
-						'Search Console',
-						'Service name',
-						'google-site-kit'
-					) }</searchConsole>`
-				),
-				{
-					analytics: (
-						<Link
-							href={ analyticsReportURL }
-							onClick={ handleClick }
-							external
-						/>
-					),
-					searchConsole: (
-						<Link
-							href={ searchConsoleReportURL }
-							onClick={ handleClick }
-							external
-						/>
-					),
-				}
-			) }
-		</div>
-	);
+	return <SourcesLinks startDate={ startDate } endDate={ endDate } />;
 };
 
 export default RecentActivityFooter;
