@@ -37,6 +37,7 @@ import {
 	fireEvent,
 	freezeFetch,
 	provideModules,
+	provideSiteInfo,
 	provideUserCapabilities,
 	render,
 	waitFor,
@@ -82,6 +83,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
+		provideSiteInfo( registry );
 		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 	} );
@@ -89,21 +91,17 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 	it( 'should render nothing while conversion tracking is on', () => {
 		provideState( { conversionTracking: true } );
 
-		const { queryByText } = renderNotice();
+		const { container } = renderNotice();
 
-		expect(
-			queryByText( 'Plugin conversion tracking is disabled' )
-		).not.toBeInTheDocument();
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should render nothing when the widgets have never shown breakdown tabs', () => {
 		provideState( { leadBreakdownValues: [] } );
 
-		const { queryByText } = renderNotice();
+		const { container } = renderNotice();
 
-		expect(
-			queryByText( 'Plugin conversion tracking is disabled' )
-		).not.toBeInTheDocument();
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should render the notice with the "Enable tracking" button for an admin', () => {
@@ -221,7 +219,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		).toBeInTheDocument();
 		expect( getByRole( 'link', { name: /get help/i } ) ).toHaveAttribute(
 			'href',
-			expect.stringContaining( 'error_id=internal_server_error' )
+			'https://sitekit.withgoogle.com/support/?error_id=internal_server_error'
 		);
 		expect( getByRole( 'button', { name: 'Retry' } ) ).not.toBeDisabled();
 		expect(

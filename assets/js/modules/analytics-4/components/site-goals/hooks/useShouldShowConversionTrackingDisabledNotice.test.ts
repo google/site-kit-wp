@@ -290,6 +290,25 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		).toBe( false );
 	} );
 
+	it( 'should not request the online store breakdown values when only the form dimension exists', async () => {
+		provideState( {
+			availableCustomDimensions: [ 'googlesitekit_form_id' ],
+		} );
+		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [] );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useShouldShowConversionTrackingDisabledNotice(),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( result.current ).toBe( false );
+		expect( hasRequestedBreakdownValues( GOAL_TYPES.ECOMMERCE ) ).toBe(
+			false
+		);
+	} );
+
 	it( 'should return undefined while a breakdown values report loads', () => {
 		provideState();
 		freezeFetch(

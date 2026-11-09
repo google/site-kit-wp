@@ -38,7 +38,11 @@ import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { provideSiteGoalsBreakdownInUse } from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { Story } from '@/js/types/Story';
-import { provideModules, provideUserCapabilities } from '@tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ConversionTrackingDisabledNotice from './ConversionTrackingDisabledNotice';
 
@@ -73,6 +77,7 @@ function Template( { canManageOptions, saveFails }: TemplateProps ) {
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
+		provideSiteInfo( registry );
 		provideUserCapabilities( registry, {
 			[ PERMISSION_MANAGE_OPTIONS ]: canManageOptions,
 		} );
