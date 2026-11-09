@@ -61,10 +61,10 @@ jobs:
           sudo apt-get install --yes --only-upgrade ca-certificates
 
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
 
       - name: Detect changed paths
-        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # ratchet:dorny/paths-filter@v4
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # ratchet:dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -97,7 +97,7 @@ jobs:
           sudo apt-get install --yes --only-upgrade ca-certificates
 
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
 
       - name: Load codegen library version
         id: library_version
@@ -137,7 +137,7 @@ jobs:
           sudo apt-get install --yes --only-upgrade ca-certificates
 
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
 
       - name: Build and push Docker image
         uses: ./.github/actions/build-push-docker-image
@@ -169,7 +169,7 @@ jobs:
           sudo apt-get install --yes --only-upgrade ca-certificates
 
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
 
       - name: Resolve latest WordPress version
         id: wp_version
@@ -211,7 +211,7 @@ jobs:
           sudo apt-get install --yes --only-upgrade ca-certificates
 
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
 
       - name: Build and push Docker image
         uses: ./.github/actions/build-push-docker-image
