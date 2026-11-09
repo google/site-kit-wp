@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Expirables;
 
 use Google\Site_Kit\Core\Expirables\Expirable_Items;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\Schema\Expirable_Items_Schema;
@@ -106,22 +105,7 @@ class REST_Expirable_Items_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request['data'];
-
-						// WordPress checks `minItems`, required properties and `minLength` only from 5.5.0,
-						// so an older version lets a list with a missing value through to here.
-						// Each item is checked before any is saved, as the schema does.
-						if ( empty( $data ) ) {
-							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-						}
-
-						foreach ( $data as $datum ) {
-							if ( empty( $datum['slug'] ) || empty( $datum['expiration'] ) ) {
-								return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-							}
-						}
-
-						foreach ( $data as $datum ) {
+						foreach ( $request['data'] as $datum ) {
 							$this->expirable_items->add( $datum['slug'], $datum['expiration'] );
 						}
 
