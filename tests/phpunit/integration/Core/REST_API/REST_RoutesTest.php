@@ -13,8 +13,8 @@ namespace Google\Site_Kit\Tests\Core\REST_API;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Prompts_Schema;
-use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
 use Google\Site_Kit\Core\REST_API\Schema\Expirable_Items_Schema;
+use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
@@ -164,12 +164,12 @@ class REST_RoutesTest extends TestCase {
 
 	public function provider_route_resource_schemas() {
 		return array(
-			'dismissed-items'           => array( 'core/user/data/dismissed-items', Dismissed_Slugs_Schema::class ),
-			'dismiss-item'              => array( 'core/user/data/dismiss-item', Dismissed_Slugs_Schema::class ),
+			'dismissed-items'           => array( 'core/user/data/dismissed-items', String_List_Schema::class ),
+			'dismiss-item'              => array( 'core/user/data/dismiss-item', String_List_Schema::class ),
 			'dismissed-prompts'         => array( 'core/user/data/dismissed-prompts', Dismissed_Prompts_Schema::class ),
 			'dismiss-prompt'            => array( 'core/user/data/dismiss-prompt', Dismissed_Prompts_Schema::class ),
-			'dismissed-tours'           => array( 'core/user/data/dismissed-tours', Dismissed_Slugs_Schema::class ),
-			'dismiss-tour'              => array( 'core/user/data/dismiss-tour', Dismissed_Slugs_Schema::class ),
+			'dismissed-tours'           => array( 'core/user/data/dismissed-tours', String_List_Schema::class ),
+			'dismiss-tour'              => array( 'core/user/data/dismiss-tour', String_List_Schema::class ),
 			'expirable-items'           => array( 'core/user/data/expirable-items', Expirable_Items_Schema::class ),
 			'set-expirable-item-timers' => array( 'core/user/data/set-expirable-item-timers', Expirable_Items_Schema::class ),
 		);
@@ -228,14 +228,80 @@ class REST_RoutesTest extends TestCase {
 			}
 		}
 
-		$this->assertSame( array(), $problems, 'Every argument schema should give each value a type WordPress knows, and each array its items.' );
+		$this->assertSame( array(), $problems, 'Every argument schema should give each value a type WordPress knows, and each array its items. It should use only keywords that each supported WordPress version or REST_Route checks.' );
+	}
+
+	/**
+	 * @dataProvider provider_schemas_with_a_keyword_an_older_version_skips
+	 *
+	 * @param array $schema Argument schema.
+	 */
+	public function test_get_schema_problems__names_a_keyword_an_older_version_skips( $schema ) {
+		$this->assertCount( 1, $this->get_schema_problems( $schema, 'data' ), 'The check should name an argument schema with a keyword that an older WordPress skips and REST_Route does not check.' );
+	}
+
+	public function provider_schemas_with_a_keyword_an_older_version_skips() {
+		$string_schema = array( 'type' => 'string' );
+
+		return array(
+			'maxLength'                        => array( $string_schema + array( 'maxLength' => 10 ) ),
+			'pattern'                          => array( $string_schema + array( 'pattern' => '^a' ) ),
+			'uniqueItems'                      => array(
+				array(
+					'type'        => 'array',
+					'items'       => $string_schema,
+					'uniqueItems' => true,
+				),
+			),
+			'maxProperties'                    => array(
+				array(
+					'type'          => 'object',
+					'maxProperties' => 1,
+				),
+			),
+			'patternProperties'                => array(
+				array(
+					'type'              => 'object',
+					'patternProperties' => array( '^a' => $string_schema ),
+				),
+			),
+			'anyOf'                            => array( $string_schema + array( 'anyOf' => array( $string_schema ) ) ),
+			'oneOf'                            => array( $string_schema + array( 'oneOf' => array( $string_schema ) ) ),
+			'multipleOf'                       => array(
+				array(
+					'type'       => 'integer',
+					'multipleOf' => 2,
+				),
+			),
+			'the format hex-color'             => array( $string_schema + array( 'format' => 'hex-color' ) ),
+			'the format uuid'                  => array( $string_schema + array( 'format' => 'uuid' ) ),
+			'required as a list'               => array(
+				array(
+					'type'       => 'object',
+					'required'   => array( 'slug' ),
+					'properties' => array( 'slug' => $string_schema ),
+				),
+			),
+			'a list of types'                  => array( array( 'type' => array( 'string', 'null' ) ) ),
+			'the type null'                    => array( array( 'type' => 'null' ) ),
+			'a schema in additionalProperties' => array(
+				array(
+					'type'                 => 'object',
+					'additionalProperties' => $string_schema,
+				),
+			),
+		);
 	}
 
 	/**
 	 * Lists where an argument schema breaks the rules WordPress has for its types.
 	 *
-	 * WordPress from 5.5 calls a schema wrong where it has no type or one outside its seven.
-	 * WordPress 5.2 reads `type` and the `items` of an array with no check.
+	 * From 5.5, WordPress gives a `_doing_it_wrong()` notice for a schema with no `type`, or with a type it doesn't support.
+	 * WordPress 5.2 uses `type` and the `items` of an array without checking them.
+	 *
+	 * It also lists each keyword that WordPress checks only from a version newer than 5.2, and that
+	 * `REST_Route::validate_request_arg()` does not check. WordPress 5.2 lets a value that breaks such
+	 * a keyword through to the callback.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -249,7 +315,37 @@ class REST_RoutesTest extends TestCase {
 			return array( "$path has no type WordPress knows." );
 		}
 
+		$checked_from = array(
+			'maxLength'         => '5.5',
+			'pattern'           => '5.5',
+			'uniqueItems'       => '5.5',
+			'maxProperties'     => '5.6',
+			'patternProperties' => '5.6',
+			'anyOf'             => '5.6',
+			'oneOf'             => '5.6',
+			'multipleOf'        => '5.6',
+		);
+
 		$problems = array();
+		foreach ( array_intersect_key( $checked_from, $schema ) as $keyword => $version ) {
+			$problems[] = "$path has `$keyword`, which WordPress before $version skips and REST_Route does not check.";
+		}
+
+		if ( isset( $schema['format'] ) && in_array( $schema['format'], array( 'hex-color', 'uuid' ), true ) ) {
+			$problems[] = "$path has the format `{$schema['format']}`, which WordPress before 5.5 skips.";
+		}
+
+		if ( isset( $schema['required'] ) && is_array( $schema['required'] ) ) {
+			$problems[] = "$path lists its required properties, which WordPress before 5.5 skips and REST_Route does not check.";
+		}
+
+		if ( count( $types ) > 1 || array( 'null' ) === $types ) {
+			$problems[] = "$path has a list of types or the type `null`, which WordPress 5.2 skips.";
+		}
+
+		if ( isset( $schema['additionalProperties'] ) && is_array( $schema['additionalProperties'] ) ) {
+			$problems[] = "$path has a schema in `additionalProperties`, which WordPress 5.2 skips.";
+		}
 		if ( in_array( 'array', $types, true ) ) {
 			if ( ! isset( $schema['items'] ) ) {
 				$problems[] = "$path is an array with no items.";
