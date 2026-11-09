@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\User;
 
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_REST_Request;
@@ -112,18 +111,10 @@ class REST_Email_Reporting_Controller {
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function ( WP_REST_Request $request ) {
-							$data = $request['data'];
-
-							// WordPress checks required properties only from 5.5.0, and `minProperties` only
-							// from 5.6.0. So an older version lets a request with no settings, or with empty
-							// settings, through to here.
-							if ( empty( $data['settings'] ) ) {
-								return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-							}
-
 							$previous_settings = $this->settings->get();
+							$settings = $request['data']['settings'];
 
-							$this->settings->merge( $data['settings'] );
+							$this->settings->merge( $settings );
 
 							$updated_settings = $this->settings->get();
 
