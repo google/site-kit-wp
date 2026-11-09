@@ -212,7 +212,7 @@ new REST_Route(
 
 **POST `/wp-json/google-site-kit/v1/core/user/data/dismiss-prompt`**
 
-Dismiss a prompt, with an optional `expiration` in seconds. A request without `data` gets a 400 `rest_missing_callback_param` error before the callback runs. A `slug` that is missing, empty or not a string, or an `expiration` that is not an integer, gets a 400 `rest_invalid_param` error. WordPress checks a required property and `minLength` only from 5.5. On an older version, the callback itself rejects a missing or empty `slug`, with the same error. With no `expiration`, or one of 0 or less, the dismissal is permanent.
+Dismiss a prompt, with an optional `expiration` in seconds. A request without `data` gets a 400 `rest_missing_callback_param` error before the callback runs. A `slug` that is missing, empty or not a string, or an `expiration` that is not an integer, gets a 400 `rest_invalid_param` error before the callback runs. With no `expiration`, or one of 0 or less, the dismissal is permanent.
 
 **Location**: `includes/Core/Prompts/REST_Prompts_Controller.php`
 
@@ -223,12 +223,6 @@ new REST_Route(
         'methods'             => WP_REST_Server::CREATABLE,
         'callback'            => function ( WP_REST_Request $request ) {
             $data = $request['data'];
-
-            // WordPress checks required properties and `minLength` only from 5.5.0,
-            // so an older version lets a request with no slug through to here.
-            if ( empty( $data['slug'] ) ) {
-                return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-            }
 
             $expiration = Dismissed_Prompts::DISMISS_PROMPT_PERMANENTLY;
             if ( isset( $data['expiration'] ) && intval( $data['expiration'] ) > 0 ) {
