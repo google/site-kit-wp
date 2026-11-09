@@ -11,12 +11,10 @@
 namespace Google\Site_Kit\Core\User_Surveys;
 
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use Google\Site_Kit\Core\REST_API\Schema\Success_Schema;
-use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -116,17 +114,10 @@ class REST_User_Surveys_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request->get_param( 'data' );
-
-						// WordPress checks required properties and `minLength` only from 5.5.0, so an
-						// older version lets a request with a missing or empty trigger ID through to here.
-						if ( empty( $data['triggerID'] ) ) {
-							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-						}
-
 						$proxy        = $this->authentication->get_google_proxy();
 						$creds        = $this->authentication->credentials();
 						$access_token = (string) $this->authentication->get_oauth_client()->get_access_token();
+						$data         = $request->get_param( 'data' );
 
 						$response = $proxy->send_survey_trigger( $creds, $access_token, $data['triggerID'] );
 
@@ -171,23 +162,11 @@ class REST_User_Surveys_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request->get_param( 'data' );
-
-						// WordPress checks required properties and `minLength` only from 5.5.0, and
-						// `minProperties` only from 5.6.0. So an older version lets a request with a
-						// missing or empty session ID, session token or event through to here.
-						if (
-							empty( $data['session']['session_id'] )
-							|| empty( $data['session']['session_token'] )
-							|| empty( $data['event'] )
-						) {
-							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-						}
-
 						$proxy        = $this->authentication->get_google_proxy();
 						$creds        = $this->authentication->credentials();
 						$access_token = (string) $this->authentication->get_oauth_client()->get_access_token();
 
+						$data = $request->get_param( 'data' );
 						if ( isset( $data['event']['survey_shown'] ) ) {
 							$this->timeouts->set_global_timeout();
 						}
