@@ -75,6 +75,14 @@ export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;
  */
 export const TRAFFIC_BREAKDOWN_EXPANDED_MAX_ROWS = 9;
 
+/**
+ * The most key factor cards the benchmarking response gives, and so the
+ * number of placeholder cards the key factors show while they load.
+ *
+ * @since n.e.x.t
+ */
+export const KEY_FACTORS_MAX_CARDS = 3;
+
 /** The most rows a column of the Recent activity tab's traffic breakdown shows. */
 export const RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS = 3;
 

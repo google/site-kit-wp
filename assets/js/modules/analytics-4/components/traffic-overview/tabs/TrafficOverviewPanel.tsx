@@ -29,13 +29,24 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect } from 'googlesitekit-data';
+import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import ReportError from '@/js/components/ReportError';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '@/js/hooks/useDashboardType';
+import { useFeature } from '@/js/hooks/useFeature';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors';
+import {
+	PLACEHOLDER_KEY_FACTORS,
+	PLACEHOLDER_KEY_FACTORS_INSIGHT,
+} from '@/js/modules/analytics-4/components/traffic-overview/factors/placeholderKeyFactors';
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -56,7 +67,28 @@ const TrafficOverviewPanel: FC = () => {
 		[ canViewSharedAnalytics4 ]
 	);
 
+	const typicalTrafficEnabled = useFeature( 'typicalTraffic' );
+	const trafficInsightsEnabled = useFeature( 'trafficInsights' );
+	const isMainDashboard = useDashboardType() === DASHBOARD_TYPE_MAIN;
+
+	const daysInSelectedRange = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
+		[]
+	);
+
+	const referenceSiteURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
+		[]
+	);
+
 	const isLoading = ! loaded || isGatheringData === undefined;
+
+	// The key factors describe the whole site, so the entity dashboard, which
+	// shows one page, leaves them out. A property that is still gathering data
+	// has none to show, so the section shows its placeholders until that is
+	// known, and then leaves.
+	const showKeyFactors =
+		typicalTrafficEnabled && isMainDashboard && ! isGatheringData;
 
 	return (
 		<div
@@ -82,6 +114,22 @@ const TrafficOverviewPanel: FC = () => {
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
 					/>
+					{ showKeyFactors && (
+						// TODO: Read the key factors and whether they have
+						// arrived from the benchmarking response, and their
+						// summary from the generated insight.
+						<KeyFactors
+							keyFactors={ PLACEHOLDER_KEY_FACTORS }
+							loaded={ ! isLoading }
+							insight={
+								trafficInsightsEnabled
+									? PLACEHOLDER_KEY_FACTORS_INSIGHT
+									: undefined
+							}
+							daysInSelectedRange={ daysInSelectedRange }
+							referenceSiteURL={ referenceSiteURL }
+						/>
+					) }
 					<TrafficBreakdown
 						reports={ breakdownReports }
 						loaded={ ! isLoading }
