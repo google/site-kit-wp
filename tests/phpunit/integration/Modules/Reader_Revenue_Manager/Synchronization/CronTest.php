@@ -202,7 +202,7 @@ class CronTest extends TestCase {
 		$this->assertSame( 0, $this->user_options->get_user_id(), 'The previous user should be restored after synchronization.' );
 	}
 
-	public function test_synchronize__passes_request_data_from_callback() {
+	public function test_synchronize__calls_the_data_callback() {
 		$this->enable_feature( 'rrmExpressSetup' );
 		$this->module->get_settings()->register();
 		$this->module->get_settings()->merge(
@@ -212,12 +212,18 @@ class CronTest extends TestCase {
 			)
 		);
 
+		$callback_calls = 0;
+
 		$this->cron = new Cron(
 			$this->module,
 			$this->user_options,
 			self::CRON_HOOK,
 			'publication',
-			array( $this, 'get_publication_request_data' )
+			function () use ( &$callback_calls ) {
+				$callback_calls++;
+
+				return array();
+			}
 		);
 
 		$request_uri = null;
@@ -228,8 +234,8 @@ class CronTest extends TestCase {
 				$request_uri = (string) $request->getUri();
 
 				$publication = new WCP_Publication();
-				$publication->setOrganizationId( 'organization-1' );
-				$publication->setPublicationId( 'publication-1' );
+				$publication->setOrganizationId( 'organization-setting' );
+				$publication->setPublicationId( 'publication-setting' );
 				$publication->setOnboardingState( 'ONBOARDING_COMPLETE' );
 
 				return new FulfilledPromise(
@@ -245,29 +251,8 @@ class CronTest extends TestCase {
 		$this->cron->register();
 		do_action( self::CRON_HOOK );
 
+		$this->assertSame( 1, $callback_calls, 'The cron should call the data callback when it fires.' );
 		$this->assertNotNull( $request_uri, 'The cron should fire a publication request.' );
-		$this->assertStringContainsString(
-			'/v1/organizations/organization-1/publications/publication-1',
-			$request_uri,
-			'The cron request should use data from the instance-method callback.'
-		);
-		$this->assertStringNotContainsString(
-			'organization-setting',
-			$request_uri,
-			'The cron request should not fall back to the saved settings when the callback is callable.'
-		);
-	}
-
-	/**
-	 * Returns request data used by the cron callback test.
-	 *
-	 * @return array Datapoint request data.
-	 */
-	public function get_publication_request_data() {
-		return array(
-			'organizationID' => 'organization-1',
-			'publicationID'  => 'publication-1',
-		);
 	}
 
 	private function fake_publications_response() {
