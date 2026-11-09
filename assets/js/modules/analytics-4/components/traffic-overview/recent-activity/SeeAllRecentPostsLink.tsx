@@ -39,6 +39,7 @@ import {
 	LATEST_CONTENT_TAB_ID,
 } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import { useChangeContentTab } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/hooks/useChangeContentTab';
+import { useRecordRecentActivityInteraction } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityInteraction';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
@@ -65,6 +66,7 @@ const SeeAllRecentPostsLink: FC = () => {
 	);
 
 	const changeContentTab = useChangeContentTab();
+	const recordInteraction = useRecordRecentActivityInteraction();
 
 	if ( recentContent === undefined || recentContent.length < 2 ) {
 		return null;
@@ -77,6 +79,7 @@ const SeeAllRecentPostsLink: FC = () => {
 		HTMLAnchorElement | HTMLButtonElement
 	> = ( event ) => {
 		changeContentTab( LATEST_CONTENT_TAB_ID );
+		recordInteraction();
 
 		global.history.replaceState( {}, '', contentIDForLink );
 		global.scrollTo( {

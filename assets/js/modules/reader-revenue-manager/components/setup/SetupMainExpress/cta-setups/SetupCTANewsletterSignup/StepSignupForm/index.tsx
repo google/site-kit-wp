@@ -40,6 +40,7 @@ import useFormValue from '@/js/hooks/useFormValue';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
 import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import Preview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/Preview';
+import CTAPreview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAPreview';
 import CTAsPlacementFormSection from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAsPlacementFormSection';
 import useCreateExpressSetupCTA from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useCreateExpressSetupCTA';
 import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
@@ -54,6 +55,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import CTASettings from './CTASettings';
 import FormText from './FormText';
 import GeneralDetails from './GeneralDetails';
@@ -100,6 +102,7 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 			...( trimmedTitle && { title: trimmedTitle } ),
 			...( trimmedBody && { customMessage: trimmedBody } ),
 			nameRequired: !! nameRequired,
+			optInRequired: !! consentEnabled,
 			...( consentEnabled &&
 				trimmedConsentText && {
 					customConsentText: trimmedConsentText,
@@ -134,6 +137,12 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 				createCTAParams
 			),
 		[ createCTAParams ]
+	);
+
+	const publication = useSelect(
+		( select: Select ): Publication | undefined =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPublication(),
+		[]
 	);
 
 	const publishChanges = useCallback( async () => {
@@ -232,7 +241,15 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 							</div>
 						</div>
 
-						<Preview />
+						<CTAPreview>
+							<Preview
+								consentEnabled={ consentEnabled }
+								consentText={ consentText }
+								ctaBody={ ctaBody }
+								ctaTitle={ ctaTitle }
+								publicationName={ publication?.displayName }
+							/>
+						</CTAPreview>
 					</div>
 				</div>
 				{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }

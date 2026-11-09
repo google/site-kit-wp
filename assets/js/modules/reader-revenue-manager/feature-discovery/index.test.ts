@@ -101,7 +101,13 @@ describe( 'Reader Revenue Manager feature discovery', () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
-					configuredCTAs: { 'cta-1': 'newsletter-signup' },
+					configuredCTAs: {
+						'cta-1': {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+					},
 				} );
 
 			expect( isNewsletterFeatureConnected() ).toBe( true );

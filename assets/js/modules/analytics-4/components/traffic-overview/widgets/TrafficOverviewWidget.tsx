@@ -41,6 +41,7 @@ import useDashboardType, {
 } from '@/js/hooks/useDashboardType';
 import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
 	RECENT_ACTIVITY_TAB_ID,
@@ -48,6 +49,8 @@ import {
 	TYPICAL_TRAFFIC_TAB_ID,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useHasTypicalTrafficTab } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useHasTypicalTrafficTab';
+import { useRecentActivitySurveyTriggers } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentActivitySurveyTriggers';
+import { useRecordRecentActivityTabOpen } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityTabOpen';
 import RecentActivityFooter from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityFooter';
 import RecentActivityPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/RecentActivityPanel';
 import TrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TrafficOverviewPanel';
@@ -136,6 +139,19 @@ const TrafficOverviewWidget = forwardRef<
 
 	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );
 	const [ hasTrackedView, setHasTrackedView ] = useState( false );
+	const recordRecentActivityTabOpen = useRecordRecentActivityTabOpen();
+
+	const isViewOnly = useViewOnly();
+
+	// The surveys ask about the Recent activity reports, which need Analytics.
+	// View-only users can't get surveys.
+	useRecentActivitySurveyTriggers( {
+		isEnabled:
+			! isViewOnly &&
+			shouldShowRecentActivityTab === true &&
+			isAnalyticsConnected === true,
+		hasBeenInView,
+	} );
 
 	const tabs: TrafficOverviewTabDescriptor[] = [];
 
@@ -220,6 +236,10 @@ const TrafficOverviewWidget = forwardRef<
 				'change_tab',
 				tabID
 			);
+
+			if ( tabID === RECENT_ACTIVITY_TAB_ID ) {
+				recordRecentActivityTabOpen();
+			}
 		}
 
 		setActiveTabID( tabID );
