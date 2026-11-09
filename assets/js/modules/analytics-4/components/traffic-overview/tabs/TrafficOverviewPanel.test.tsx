@@ -593,7 +593,7 @@ describe( 'TrafficOverviewPanel', () => {
 		expect( queryByText( 'Retry' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the "Gathering data…" notice and three empty columns while the property is gathering data', async () => {
+	it( 'should render the "Gathering data…" notice, and "We’re still collecting data" in each of the three columns, while the property is gathering data', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 
 		getReportArgs().forEach( ( options ) =>
@@ -609,11 +609,9 @@ describe( 'TrafficOverviewPanel', () => {
 
 		expect( getByText( 'Total visitors' ) ).toBeInTheDocument();
 		expect( getByText( 'Gathering data…' ) ).toBeInTheDocument();
-		expect(
-			getAllByText(
-				'No data to display: your site hasn’t received any visitors yet'
-			)
-		).toHaveLength( 3 );
+		expect( getAllByText( 'We’re still collecting data' ) ).toHaveLength(
+			3
+		);
 		// The five reports resolved, and no figure from them reaches the screen.
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )

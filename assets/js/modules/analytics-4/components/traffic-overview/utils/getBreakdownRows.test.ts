@@ -110,6 +110,60 @@ describe( 'getBreakdownRows', () => {
 		).toEqual( [ '32%', '26%', '19%', '13%', '10%' ] );
 	} );
 
+	it( 'should fold the values beyond the given number of rows into an "Others" row', () => {
+		const report = createBreakdownReport( [
+			[ 'A', 100 ],
+			[ 'B', 90 ],
+			[ 'C', 80 ],
+			[ 'D', 70 ],
+			[ 'E', 60 ],
+			[ 'F', 50 ],
+			[ 'G', 40 ],
+			[ 'H', 30 ],
+			[ 'I', 20 ],
+			[ 'J', 10 ],
+		] );
+
+		const rows = getBreakdownRows( report, 9 );
+
+		expect( rows.map( ( { label } ) => label ) ).toEqual( [
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+			'G',
+			'H',
+			'Others',
+		] );
+		// The last two values, 20 and 10, out of 550.
+		expect( rows[ 8 ].percentage ).toBeCloseTo( 30 / 550, 6 );
+	} );
+
+	it( 'should give each value a row when it has no more values than the given number of rows', () => {
+		const rows = getBreakdownRows(
+			createBreakdownReport( [
+				[ 'A', 50 ],
+				[ 'B', 40 ],
+				[ 'C', 30 ],
+				[ 'D', 20 ],
+				[ 'E', 10 ],
+				[ 'F', 5 ],
+			] ),
+			9
+		);
+
+		expect( rows.map( ( { label } ) => label ) ).toEqual( [
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+		] );
+	} );
+
 	it( 'drops the "Others" row when the values it would fold have no visitors', () => {
 		const rows = getBreakdownRows(
 			createBreakdownReport( [

@@ -139,19 +139,24 @@ export function formatRoundedShare( share: number, steps: number ): string {
  *
  * The report covers the selected range only and arrives ordered by visitors,
  * so the rows are taken as they come. Values with no visitors are left out
- * first. When more than `TRAFFIC_BREAKDOWN_MAX_ROWS` values have visitors, the
- * top values fill every row except the last, and an "Others" row adds up the
- * rest. The displayed shares add up to exactly 100%, only a lone value shows
- * 100%, and a row with visitors that gets no whole percent is displayed as
- * `<1%` rather than `0%`.
+ * first. When more than `maxRows` values have visitors, the top values fill
+ * every row except the last, and an "Others" row adds up the rest. The
+ * displayed shares add up to exactly 100%, only a lone value shows 100%, and a
+ * row with visitors that gets no whole percent is displayed as `<1%` rather
+ * than `0%`.
  *
  * @since 1.188.0
  * @since 1.189.0 Added `formattedPercentage` and left out values with no visitors.
+ * @since n.e.x.t Added the optional `maxRows` parameter.
  *
- * @param {Object} [report] A breakdown report.
+ * @param {Object} [report]  A breakdown report.
+ * @param {number} [maxRows] Optional. The most rows to return, counting the trailing "Others" row. Default `TRAFFIC_BREAKDOWN_MAX_ROWS`.
  * @return {Array<Object>} The rows to render, empty when no value in the report has visitors.
  */
-export function getBreakdownRows( report?: Report ): TrafficBreakdownRow[] {
+export function getBreakdownRows(
+	report?: Report,
+	maxRows = TRAFFIC_BREAKDOWN_MAX_ROWS
+): TrafficBreakdownRow[] {
 	// Values with no visitors are left out before the cap, so none of them
 	// takes a row.
 	const valueRows = ( report?.rows ?? [] )
@@ -167,14 +172,14 @@ export function getBreakdownRows( report?: Report ): TrafficBreakdownRow[] {
 
 	// One slot is kept for the trailing "Others" row.
 	const shapedRows =
-		valueRows.length <= TRAFFIC_BREAKDOWN_MAX_ROWS
+		valueRows.length <= maxRows
 			? valueRows
 			: [
-					...valueRows.slice( 0, TRAFFIC_BREAKDOWN_MAX_ROWS - 1 ),
+					...valueRows.slice( 0, maxRows - 1 ),
 					{
 						label: __( 'Others', 'google-site-kit' ),
 						visitors: sumBy(
-							valueRows.slice( TRAFFIC_BREAKDOWN_MAX_ROWS - 1 ),
+							valueRows.slice( maxRows - 1 ),
 							'visitors'
 						),
 					},

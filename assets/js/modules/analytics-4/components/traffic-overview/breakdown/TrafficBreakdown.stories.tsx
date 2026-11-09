@@ -52,9 +52,17 @@ const DEVICES = createBreakdownReport( [
 interface TrafficBreakdownStoryProps {
 	/** One report per column, keyed by the column's `id`. */
 	reports: Record< string, Report | undefined >;
+	/** Whether the reports have arrived. */
+	loaded?: boolean;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
 }
 
-function Template( { reports }: TrafficBreakdownStoryProps ) {
+function Template( {
+	reports,
+	loaded,
+	gatheringData,
+}: TrafficBreakdownStoryProps ) {
 	// The section's styles are scoped to the widget and the panel, so the
 	// story renders inside both.
 	return (
@@ -63,7 +71,11 @@ function Template( { reports }: TrafficBreakdownStoryProps ) {
 		>
 			<div className="googlesitekit-widget--analyticsTrafficOverview">
 				<div className="googlesitekit-traffic-overview__panel">
-					<TrafficBreakdown reports={ reports } />
+					<TrafficBreakdown
+						reports={ reports }
+						loaded={ loaded }
+						gatheringData={ gatheringData }
+					/>
 				</div>
 			</div>
 		</WithRegistrySetup>
@@ -173,6 +185,75 @@ LongestNames.args = {
 	},
 };
 LongestNames.scenario = {};
+
+/**
+ * After "Show more" is clicked, a column shows up to nine rows, and the ninth
+ * adds up the rest as "Others".
+ */
+export const Expanded = Template.bind(
+	{}
+) as Story< TrafficBreakdownStoryProps >;
+Expanded.storyName = 'Expanded';
+Expanded.args = {
+	reports: {
+		channels: createBreakdownReport( [
+			[ 'Direct', 3200 ],
+			[ 'Organic Search', 1600 ],
+			[ 'Referral', 1200 ],
+			[ 'Display', 1100 ],
+			[ 'Organic Video', 1000 ],
+			[ 'Organic Social', 900 ],
+			[ 'Paid Search', 500 ],
+			[ 'Email', 300 ],
+			[ 'Unassigned', 200 ],
+		] ),
+		locations: createBreakdownReport( [
+			[ 'Singapore', 4200 ],
+			[ 'Brazil', 2200 ],
+			[ 'China', 900 ],
+			[ 'United States', 800 ],
+			[ 'United Kingdom', 700 ],
+			[ 'France', 500 ],
+			[ 'Spain', 300 ],
+			[ 'Italy', 200 ],
+			[ 'Germany', 150 ],
+			[ 'Japan', 50 ],
+		] ),
+		devices: DEVICES,
+	},
+};
+Expanded.scenario = {
+	clickSelector: '.googlesitekit-traffic-overview__breakdown-toggle',
+	postInteractionWait: 200,
+};
+
+export const Loading = Template.bind(
+	{}
+) as Story< TrafficBreakdownStoryProps >;
+Loading.storyName = 'Loading';
+Loading.args = {
+	reports: {
+		channels: CHANNELS,
+		locations: LOCATIONS,
+		devices: DEVICES,
+	},
+	loaded: false,
+};
+
+/** Every column says it is still collecting data, and nothing expands. */
+export const GatheringData = Template.bind(
+	{}
+) as Story< TrafficBreakdownStoryProps >;
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	reports: {
+		channels: CHANNELS,
+		locations: LOCATIONS,
+		devices: DEVICES,
+	},
+	gatheringData: true,
+};
+GatheringData.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/TrafficBreakdown',

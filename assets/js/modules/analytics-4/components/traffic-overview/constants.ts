@@ -67,6 +67,14 @@ export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
 /** The most rows a breakdown column shows, counting the trailing "Others" row. */
 export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;
 
+/**
+ * The most rows a breakdown column shows after "Show more" is clicked,
+ * counting the trailing "Others" row.
+ *
+ * @since n.e.x.t
+ */
+export const TRAFFIC_BREAKDOWN_EXPANDED_MAX_ROWS = 9;
+
 /** The most rows a column of the Recent activity tab's traffic breakdown shows. */
 export const RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS = 3;
 
