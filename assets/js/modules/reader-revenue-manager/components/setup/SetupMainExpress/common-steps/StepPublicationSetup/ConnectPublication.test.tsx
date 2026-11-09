@@ -231,6 +231,43 @@ describe( 'ConnectPublication', () => {
 		expect( fetchMock ).toHaveFetched( settingsEndpoint );
 	} );
 
+	it( 'should keep the button disabled and spinning after the submission succeeds', async () => {
+		providePublications( registry, [
+			TEST_PUBLICATION_WITH_ACCEPTED_TERMS,
+		] );
+
+		fetchMock.postOnce( settingsEndpoint, {} );
+
+		const onComplete = jest.fn();
+
+		const { container, getByRole } = render(
+			<ConnectPublication onComplete={ onComplete } />,
+			{
+				registry,
+			}
+		);
+
+		const submitButton = getByRole( 'button', {
+			name: 'Connect existing publication',
+		} );
+
+		await waitFor( () => expect( submitButton ).toBeEnabled() );
+
+		fireEvent.click( submitButton );
+
+		await waitFor( () => {
+			expect( onComplete ).toHaveBeenCalledWith();
+		} );
+
+		// The flow may still be checking the publication's CTAs.
+		expect( submitButton ).toBeDisabled();
+		expect(
+			container.querySelector(
+				'.googlesitekit-button-icon--spinner__running'
+			)
+		).toBeInTheDocument();
+	} );
+
 	it( 'should display an error notice if the submission fails', async () => {
 		providePublications( registry, publications );
 
@@ -267,6 +304,7 @@ describe( 'ConnectPublication', () => {
 		} );
 
 		expect( onComplete ).not.toHaveBeenCalled();
+		expect( submitButton ).toBeEnabled();
 		expect( console ).toHaveErrored();
 	} );
 

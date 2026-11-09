@@ -28,6 +28,7 @@ import {
 	createInterpolateElement,
 	useCallback,
 	useEffect,
+	useState,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -140,6 +141,8 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 		? regionCodeFormat( publication.regionCode )
 		: __( 'Unknown', 'google-site-kit' );
 
+	const [ isConnecting, setIsConnecting ] = useState( false );
+
 	const onSubmit = useCallback(
 		async ( event ) => {
 			event.preventDefault();
@@ -148,11 +151,19 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 				return;
 			}
 
+			setIsConnecting( true );
+
 			const { error } = await submitChanges();
 
-			if ( ! error ) {
-				onComplete();
+			if ( error ) {
+				setIsConnecting( false );
+
+				return;
 			}
+
+			// The spinner stays on until the step changes, as the flow may
+			// check the publication's CTAs before moving on.
+			onComplete();
 		},
 		[ onComplete, publication, submitChanges ]
 	);
@@ -238,8 +249,8 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 			</div>
 			{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
 			<SpinnerButton
-				disabled={ ! canSubmitChanges }
-				isSaving={ isDoingSubmitChanges }
+				disabled={ ! canSubmitChanges || isConnecting }
+				isSaving={ isDoingSubmitChanges || isConnecting }
 				type="submit"
 			>
 				{ __( 'Connect existing publication', 'google-site-kit' ) }

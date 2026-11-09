@@ -26,7 +26,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { preventNavigation } from '@/js/event-providers/content-events/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { LATEST_POST } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { RECENT_ACTIVITY_INTERACTION_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	LATEST_POST,
+	provideRecentActivitySurveyState,
+	setExpirableItemTimersEndpoint,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
@@ -34,6 +39,7 @@ import {
 	createTestRegistry,
 	fireEvent,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import { provideSiteInfo, provideTimezone } from '@tests/js/utils';
 import LatestPostHeader from './LatestPostHeader';
@@ -54,7 +60,20 @@ describe( 'LatestPostHeader', () => {
 
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideRecentActivitySurveyState( registry );
 	} );
+
+	const interactionTimerRequest = {
+		body: {
+			data: [
+				{
+					slug: RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+					expiration:
+						RECENT_ACTIVITY_INTERACTION_TIMER.expiresInSeconds,
+				},
+			],
+		},
+	};
 
 	it( 'should link the post title to the entity dashboard of the post', () => {
 		const { getByRole } = render(
@@ -67,7 +86,7 @@ describe( 'LatestPostHeader', () => {
 		).toHaveAttribute( 'href', ENTITY_DASHBOARD_URL );
 	} );
 
-	it( 'should track `click_post_link` labeled `latest-post-header`, then open the entity dashboard, when the post title is clicked', async () => {
+	it( 'should track `click_post_link` labeled `latest-post-header` and record an interaction, then open the entity dashboard, when the post title is clicked', async () => {
 		let resolveTrackEvent: ( () => void ) | undefined;
 		mockTrackEvent.mockImplementationOnce(
 			() =>
@@ -75,6 +94,10 @@ describe( 'LatestPostHeader', () => {
 					resolveTrackEvent = resolve;
 				} )
 		);
+		fetchMock.postOnce( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
 
 		const { getByRole } = render(
 			<LatestPostHeader post={ LATEST_POST } />,
@@ -99,6 +122,46 @@ describe( 'LatestPostHeader', () => {
 			await Promise.resolve();
 		} );
 
+		await waitFor( () =>
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				ENTITY_DASHBOARD_URL
+			)
+		);
+		expect( fetchMock ).toHaveFetched(
+			setExpirableItemTimersEndpoint,
+			interactionTimerRequest
+		);
+	} );
+
+	it( 'should open the entity dashboard only once the interaction is saved', async () => {
+		let resolveTimerRequest: ( () => void ) | undefined;
+		fetchMock.postOnce(
+			setExpirableItemTimersEndpoint,
+			new Promise( ( resolve ) => {
+				resolveTimerRequest = () =>
+					resolve( { body: {}, status: 200 } );
+			} )
+		);
+
+		const { getByRole } = render(
+			<LatestPostHeader post={ LATEST_POST } />,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+
+		fireEvent.click(
+			getByRole( 'link', { name: 'Ice cream is good for your health' } )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint )
+		);
+		expect( global.location.assign ).not.toHaveBeenCalled();
+
+		await act( async () => {
+			resolveTimerRequest?.();
+			await new Promise( ( resolve ) => setTimeout( resolve ) );
+		} );
+
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			ENTITY_DASHBOARD_URL
 		);
@@ -108,8 +171,13 @@ describe( 'LatestPostHeader', () => {
 		[ 'Command', { metaKey: true } ],
 		[ 'Control', { ctrlKey: true } ],
 	] )(
-		'should track `click_post_link` and leave the click to the browser when the post title is clicked with %s held',
+		'should track `click_post_link`, record an interaction and leave the click to the browser when the post title is clicked with %s held',
 		async ( _key, modifiers ) => {
+			fetchMock.postOnce( setExpirableItemTimersEndpoint, {
+				body: {},
+				status: 200,
+			} );
+
 			const { getByRole } = render(
 				<LatestPostHeader post={ LATEST_POST } />,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
@@ -142,7 +210,15 @@ describe( 'LatestPostHeader', () => {
 				);
 			}
 
-			await act( () => Promise.resolve() );
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					setExpirableItemTimersEndpoint,
+					interactionTimerRequest
+				)
+			);
+			await act(
+				() => new Promise( ( resolve ) => setTimeout( resolve ) )
+			);
 
 			expect( wasPreventedByComponent ).toBe( false );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

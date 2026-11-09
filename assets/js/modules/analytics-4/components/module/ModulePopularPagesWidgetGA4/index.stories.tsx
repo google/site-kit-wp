@@ -367,6 +367,29 @@ LatestContentReportError.scenario = {
 	clickSelector: '#googlesitekit-latest-content-tab',
 };
 
+export const LatestContentGatheringData = Template.bind( {} ) as Story;
+LatestContentGatheringData.storyName =
+	'Latest Content, Gathering Data (freshData enabled)';
+LatestContentGatheringData.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		DataUnavailable.args?.setupRegistry?.( registry );
+		provideRecentContent( registry, RECENT_CONTENT, { count: 10 } );
+		// Analytics has no rows for the posts while it is gathering data.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{},
+			{
+				options: LATEST_CONTENT_REPORT_OPTIONS,
+			}
+		);
+	},
+};
+LatestContentGatheringData.parameters = {
+	features: [ 'freshData' ],
+};
+LatestContentGatheringData.scenario = {
+	clickSelector: '#googlesitekit-latest-content-tab',
+};
+
 export const LatestContentNoPublishedPosts = Template.bind( {} ) as Story;
 LatestContentNoPublishedPosts.storyName =
 	'Latest Content, No Published Posts (freshData enabled)';

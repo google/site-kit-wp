@@ -35,6 +35,7 @@ import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -75,11 +76,29 @@ const LatestPostPerformance: FC = () => {
 		[]
 	);
 
+	const homeURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getHomeURL(),
+		[]
+	);
+
+	const referenceSiteURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
+		[]
+	);
+
 	const post = recentContent?.[ 0 ];
 
 	const reportArgs = useMemo< PostReportArgs | undefined >(
-		() => ( post ? getPostReportArgs( post, referenceDate ) : undefined ),
-		[ post, referenceDate ]
+		() =>
+			post && homeURL && referenceSiteURL
+				? getPostReportArgs(
+						post,
+						referenceDate,
+						homeURL,
+						referenceSiteURL
+				  )
+				: undefined,
+		[ post, referenceDate, homeURL, referenceSiteURL ]
 	);
 
 	return (
