@@ -11,10 +11,9 @@
 namespace Google\Site_Kit\Core\Feature_Tours;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
+use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -96,7 +95,7 @@ class REST_Feature_Tours_Controller {
 					'permission_callback' => $can_dismiss_tour,
 				),
 				array(
-					'schema' => array( Dismissed_Slugs_Schema::class, 'get' ),
+					'schema' => array( String_List_Schema::class, 'get' ),
 				)
 			),
 			new REST_Route(
@@ -104,15 +103,7 @@ class REST_Feature_Tours_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request['data'];
-
-						// WordPress checks required properties and `minLength` only from 5.5.0,
-						// so an older version lets a request with no slug through to here.
-						if ( empty( $data['slug'] ) ) {
-							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-						}
-
-						$this->dismissed_tours->add( $data['slug'] );
+						$this->dismissed_tours->add( $request['data']['slug'] );
 
 						return new WP_REST_Response( $this->dismissed_tours->get() );
 					},
@@ -134,7 +125,7 @@ class REST_Feature_Tours_Controller {
 					),
 				),
 				array(
-					'schema' => array( Dismissed_Slugs_Schema::class, 'get' ),
+					'schema' => array( String_List_Schema::class, 'get' ),
 				)
 			),
 		);

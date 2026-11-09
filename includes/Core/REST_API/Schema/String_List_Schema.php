@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema
+ * Class Google\Site_Kit\Core\REST_API\Schema\String_List_Schema
  *
  * @package   Google\Site_Kit\Core\REST_API\Schema
  * @copyright 2026 Google LLC
@@ -11,16 +11,16 @@
 namespace Google\Site_Kit\Core\REST_API\Schema;
 
 /**
- * Class for the REST schema of a list of dismissed slugs.
+ * Class for the REST schema of a list of strings.
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-final class Dismissed_Slugs_Schema {
+final class String_List_Schema {
 
 	/**
-	 * Gets the REST schema of a list of dismissed slugs.
+	 * Gets the REST schema of a list of strings.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -29,8 +29,8 @@ final class Dismissed_Slugs_Schema {
 	public static function get() {
 		return array(
 			'$schema'     => 'http://json-schema.org/draft-04/schema#',
-			'title'       => 'dismissed-slugs',
-			'description' => __( 'Slugs the current user has dismissed.', 'google-site-kit' ),
+			'title'       => 'string-list',
+			'description' => __( 'A list of strings.', 'google-site-kit' ),
 			'type'        => 'array',
 			'items'       => array(
 				'type' => 'string',

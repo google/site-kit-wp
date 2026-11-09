@@ -13,7 +13,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Dismissals\REST_Dismissals_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -73,19 +72,17 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		$this->dismissed_items->add( 'foo' );
 		$this->dismissed_items->add( 'bar', 100 );
 		$this->dismissed_items->add( 'baz', -10 );
+		$this->dismissed_items->add( '0' );
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSets(
-			array( 'foo', 'bar' ),
+			array( 'foo', 'bar', '0' ),
 			$response->get_data(),
 			'Dismissed items response should contain non-expired items.'
 		);
-		$this->assertTrue(
-			rest_validate_value_from_schema( $response->get_data(), Dismissed_Slugs_Schema::get() ),
-			'Dismissed items response should match its resource schema.'
-		);
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/dismissed-items', 'Dismissed items response should match its resource schema.' );
 	}
 
 
@@ -155,11 +152,10 @@ class REST_Dismissals_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_dismissed_item_deletions__wrong_data
 	 *
-	 * @param mixed  $data                          Request data.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param mixed  $data          Request data.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_delete_dismissed_items__wrong_data( $data, $expected_code, $rejected_before_callback_from ) {
+	public function test_delete_dismissed_items__wrong_data( $data, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -173,7 +169,7 @@ class REST_Dismissals_ControllerTest extends TestCase {
 			)
 		);
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertEquals( array( 'foo' ), $this->dismissed_items->get_dismissed_items(), 'Invalid dismissed items request should remove no item.' );
 	}
 
@@ -182,17 +178,14 @@ class REST_Dismissals_ControllerTest extends TestCase {
 			'no data'                                      => array(
 				null,
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'empty object'                                 => array(
 				array(),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'wrong data type'                              => array(
 				'{}',
 				'rest_invalid_param',
-				'5.2',
 			),
 			'invalid property'                             => array(
 				array(
@@ -200,50 +193,19 @@ class REST_Dismissals_ControllerTest extends TestCase {
 					'some-invalid-property' => 'value',
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'empty slugs list'                             => array(
 				array( 'slugs' => array() ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'slugs array containing non-string'            => array(
 				array( 'slugs' => array( 123 ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'slugs array containing string and non-string' => array(
 				array( 'slugs' => array( '123', 456 ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_dismissed_item_deletions__data_without_slugs
-	 *
-	 * @param array $data Request data without slugs.
-	 */
-	public function test_delete_dismissed_items__callback_rejects_data_without_slugs( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$this->dismissed_items->add( 'foo' );
-
-		$response = $this->call_route_callback( 'DELETE', 'core/user/data/dismissed-items', $data );
-
-		$this->assertWPError( $response, 'Delete dismissed items callback should reject data without slugs.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Delete dismissed items callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Delete dismissed items callback should reject data without slugs as a bad request.' );
-		$this->assertEquals( array( 'foo' ), $this->dismissed_items->get_dismissed_items(), 'Delete dismissed items callback should remove no item for data without slugs.' );
-	}
-
-	public function provider_dismissed_item_deletions__data_without_slugs() {
-		return array(
-			'data has no slugs'   => array( array() ),
-			'slugs list is empty' => array( array( 'slugs' => array() ) ),
 		);
 	}
 
@@ -312,11 +274,10 @@ class REST_Dismissals_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_dismiss_item__invalid_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_dismiss_item__invalid_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_dismiss_item__invalid_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -324,7 +285,7 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismiss-item' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertEmpty( $this->dismissed_items->get(), 'Dismiss item endpoint should dismiss no item for invalid data.' );
 	}
 
@@ -333,17 +294,14 @@ class REST_Dismissals_ControllerTest extends TestCase {
 			'no data'                      => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data is not an object'        => array(
 				array( 'data' => 'foo' ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'slug is not a string'         => array(
 				array( 'data' => array( 'slug' => 123 ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'expiration is not an integer' => array(
 				array(
@@ -353,43 +311,15 @@ class REST_Dismissals_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'data has no slug'             => array(
 				array( 'data' => array( 'expiration' => 100 ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'slug is empty'                => array(
 				array( 'data' => array( 'slug' => '' ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_dismiss_item__data_without_slug
-	 *
-	 * @param array $data Request data without a slug.
-	 */
-	public function test_dismiss_item__callback_rejects_data_without_slug( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/dismiss-item', $data );
-
-		$this->assertWPError( $response, 'Dismiss item callback should reject data without a slug.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Dismiss item callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Dismiss item callback should reject data without a slug as a bad request.' );
-		$this->assertEmpty( $this->dismissed_items->get(), 'Dismiss item callback should dismiss no item for data without a slug.' );
-	}
-
-	public function provider_dismiss_item__data_without_slug() {
-		return array(
-			'data has no slug' => array( array( 'expiration' => 100 ) ),
-			'slug is empty'    => array( array( 'slug' => '' ) ),
 		);
 	}
 }

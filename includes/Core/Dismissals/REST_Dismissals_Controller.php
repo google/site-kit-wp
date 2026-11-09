@@ -11,10 +11,9 @@
 namespace Google\Site_Kit\Core\Dismissals;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Slugs_Schema;
+use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -98,7 +97,7 @@ class REST_Dismissals_Controller {
 					'permission_callback' => $can_dismiss_item,
 				),
 				array(
-					'schema' => array( Dismissed_Slugs_Schema::class, 'get' ),
+					'schema' => array( String_List_Schema::class, 'get' ),
 				)
 			),
 			// WordPress merges this endpoint into the route above, and keeps that route's schema.
@@ -107,12 +106,6 @@ class REST_Dismissals_Controller {
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						// WordPress checks required properties and `minItems` only from 5.5.0,
-						// so an older version lets a request with no slugs through to here.
-						if ( empty( $request['data']['slugs'] ) ) {
-							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-						}
-
 						foreach ( $request['data']['slugs'] as $slug ) {
 							$this->dismissed_items->remove( $slug );
 						}
@@ -149,12 +142,6 @@ class REST_Dismissals_Controller {
 					'callback'            => function ( WP_REST_Request $request ) {
 						$data = $request['data'];
 
-						// WordPress checks required properties and `minLength` only from 5.5.0,
-						// so an older version lets a request with no slug through to here.
-						if ( empty( $data['slug'] ) ) {
-							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-						}
-
 						$expiration = Dismissed_Items::DISMISS_ITEM_PERMANENTLY;
 						if ( isset( $data['expiration'] ) && intval( $data['expiration'] ) > 0 ) {
 							$expiration = $data['expiration'];
@@ -186,7 +173,7 @@ class REST_Dismissals_Controller {
 					),
 				),
 				array(
-					'schema' => array( Dismissed_Slugs_Schema::class, 'get' ),
+					'schema' => array( String_List_Schema::class, 'get' ),
 				)
 			),
 		);
