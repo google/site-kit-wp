@@ -136,6 +136,14 @@ function connectPublication(
 	providePublications( registry, [ ...publications, publication ] );
 }
 
+// The steps before the CTA exists, so there is none for the existing CTA check
+// to find.
+function provideNoCTAs( registry: WPDataRegistry ) {
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetCTAs( { ctas: [], params: {} } );
+}
+
 function Template() {
 	return <SetupCTANewsletterSignup />;
 }
@@ -166,8 +174,10 @@ TermsOfService.parameters = {
 	},
 };
 TermsOfService.args = {
-	setupRegistry: ( registry: WPDataRegistry ) =>
-		connectPublication( registry, PUBLICATION_WITHOUT_TERMS ),
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		connectPublication( registry, PUBLICATION_WITHOUT_TERMS );
+		provideNoCTAs( registry );
+	},
 };
 TermsOfService.scenario = {};
 
@@ -180,8 +190,10 @@ PublicationPolicies.parameters = {
 	},
 };
 PublicationPolicies.args = {
-	setupRegistry: ( registry: WPDataRegistry ) =>
-		connectPublication( registry, PUBLICATION_WITHOUT_POLICIES ),
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		connectPublication( registry, PUBLICATION_WITHOUT_POLICIES );
+		provideNoCTAs( registry );
+	},
 };
 PublicationPolicies.scenario = {};
 
@@ -194,8 +206,10 @@ SetupCTA.parameters = {
 	},
 };
 SetupCTA.args = {
-	setupRegistry: ( registry: WPDataRegistry ) =>
-		connectPublication( registry, COMPLETE_PUBLICATION ),
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		connectPublication( registry, COMPLETE_PUBLICATION );
+		provideNoCTAs( registry );
+	},
 };
 SetupCTA.scenario = {};
 
