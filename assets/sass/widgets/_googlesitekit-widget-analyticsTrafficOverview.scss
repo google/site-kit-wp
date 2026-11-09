@@ -209,7 +209,7 @@ $traffic-overview-column-gap: 42px;
 
 			// Stacked through tablet; three columns from desktop up.
 			grid-template-columns: 1fr;
-			margin-top: 18px;
+			margin-top: 8px;
 
 			@media (min-width: $bp-desktop) {
 				gap: $traffic-overview-column-gap;
@@ -244,19 +244,31 @@ $traffic-overview-column-gap: 42px;
 
 		.googlesitekit-traffic-overview__breakdown-column-loading {
 			display: grid;
-			gap: 4px;
+			gap: 8px;
 		}
 
+		.googlesitekit-traffic-overview__breakdown-column-gathering-data {
+			color: $c-surfaces-on-background-variant;
+			margin: 0;
+		}
+
+		// A row is its label and share, with its bar under them.
 		.googlesitekit-traffic-overview__breakdown-row {
-			align-items: baseline;
 			display: flex;
-			gap: 12px;
-			justify-content: space-between;
+			flex-direction: column;
+			gap: 3px;
 		}
 
 		.googlesitekit-traffic-overview__breakdown-row
 			+ .googlesitekit-traffic-overview__breakdown-row {
-			margin-top: 4px;
+			margin-top: 8px;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row-text {
+			align-items: baseline;
+			display: flex;
+			gap: 10px;
+			justify-content: space-between;
 		}
 
 		.googlesitekit-traffic-overview__breakdown-row-label {
@@ -277,6 +289,32 @@ $traffic-overview-column-gap: 42px;
 			// The share stays on one line however long the label gets.
 			flex-shrink: 0;
 			white-space: nowrap;
+		}
+
+		// The design draws the 3px bar in a 4px slot, so 1px stays under it.
+		.googlesitekit-traffic-overview__breakdown-row-bar {
+			background-color: $c-surfaces-surface-1;
+			border-radius: 2px;
+			height: 3px;
+			margin-bottom: 1px;
+		}
+
+		// The fill's width is the row's share of the column, set on the
+		// element itself.
+		.googlesitekit-traffic-overview__breakdown-row-bar-fill {
+			background-color: $c-violet-v-200;
+			border-radius: 2px;
+			height: 100%;
+		}
+
+		// The toggle starts 14px under the columns: the design's 8px gap plus
+		// the 6px above the link. As a flex box, the link sets the height of its
+		// own line.
+		.googlesitekit-traffic-overview__breakdown-toggle.googlesitekit-cta-link {
+			@include googlesitekit-typography(label, small);
+			display: flex;
+			margin-top: 14px;
+			width: fit-content;
 		}
 	}
 
