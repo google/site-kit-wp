@@ -93,6 +93,7 @@ describe( 'modules/reader-revenue-manager CTA types', () => {
 					title: 'Subscribe',
 					customMessage: 'Join our mailing list.',
 					nameRequired: true,
+					optInRequired: true,
 					customConsentText: 'I agree.',
 				} )
 			).not.toThrow();
@@ -138,10 +139,13 @@ describe( 'modules/reader-revenue-manager CTA types', () => {
 			}
 		);
 
-		it( 'should throw when nameRequired is not a boolean', () => {
-			expect( () => validateConfig( { nameRequired: 'yes' } ) ).toThrow(
-				'config.nameRequired must be a boolean.'
-			);
-		} );
+		it.each( [ 'nameRequired', 'optInRequired' ] )(
+			'should throw when %s is not a boolean',
+			( field ) => {
+				expect( () => validateConfig( { [ field ]: 'yes' } ) ).toThrow(
+					`config.${ field } must be a boolean.`
+				);
+			}
+		);
 	} );
 } );

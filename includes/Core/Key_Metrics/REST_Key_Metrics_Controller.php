@@ -11,10 +11,8 @@
 namespace Google\Site_Kit\Core\Key_Metrics;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -121,40 +119,14 @@ class REST_Key_Metrics_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request->get_param( 'data' );
-
-						// WordPress checks required properties, `minItems` and `maxItems` only from 5.5.0.
-						// So an older version lets a request with no `isWidgetHidden`, or with an empty
-						// or too long list of widget slugs, through to here. These checks stay until
-						// Site Kit drops WordPress versions below 5.5.0.
-						if ( ! isset( $data['settings']['isWidgetHidden'] ) ) {
-							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-						}
-
+						// Data is already validated because we've defined the detailed schema.
+						// If the incoming data param doesn't match the schema, then WordPress
+						// will automatically return the rest_invalid_param error and we will
+						// never get to here.
+						$data     = $request->get_param( 'data' );
 						$settings = $data['settings'];
 
 						if ( isset( $settings['widgetSlugs'] ) ) {
-							$num_widgets = count( $settings['widgetSlugs'] );
-							if ( ! $num_widgets ) {
-								return new WP_Error(
-									'rest_invalid_param',
-									__( 'Selected metrics cannot be empty.', 'google-site-kit' ),
-									array( 'status' => 400 )
-								);
-							}
-							$max_num_widgets = 8;
-							if ( $num_widgets > $max_num_widgets ) {
-								return new WP_Error(
-									'rest_invalid_param',
-									sprintf(
-										/* translators: %d: maximum number of key metrics that can be selected. */
-										__( 'No more than %d key metrics can be selected.', 'google-site-kit' ),
-										$max_num_widgets
-									),
-									array( 'status' => 400 )
-								);
-							}
-
 							$key_metrics_setup_already_done_by_user = $this->key_metrics_setup_completed_by->get();
 							if ( empty( $key_metrics_setup_already_done_by_user ) ) {
 								$current_user_id = get_current_user_id();

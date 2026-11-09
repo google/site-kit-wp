@@ -173,6 +173,56 @@ class AssetsTest extends TestCase {
 		}
 	}
 
+	/**
+	 * @dataProvider data_dashboard_sharing_settings
+	 *
+	 * @param array     $sharing_settings  Sharing settings option value.
+	 * @param \stdClass $expected_settings Expected `settings` value in the inline data.
+	 */
+	public function test_get_inline_dashboard_sharing_data__settings( $sharing_settings, $expected_settings ) {
+		remove_all_actions( 'wp_print_scripts' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		// Remove the filter that adds default sharing settings for PageSpeed Insights, which is active in tests.
+		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
+
+		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->set( $sharing_settings );
+
+		$this->assets->register();
+		$this->assets->enqueue_asset( 'googlesitekit-dashboard-sharing-data' );
+		do_action( 'wp_print_scripts' );
+
+		$script = wp_scripts()->get_data( 'googlesitekit-dashboard-sharing-data', 'data' );
+		$data   = json_decode( substr( $script, strlen( 'var _googlesitekitDashboardSharingData = ' ), -1 ) );
+
+		$this->assertEquals( $expected_settings, $data->settings, 'Dashboard sharing inline data should output `settings` as a JSON object.' );
+	}
+
+	public function data_dashboard_sharing_settings() {
+		return array(
+			'no sharing settings'   => array(
+				array(),
+				new \stdClass(),
+			),
+			'with sharing settings' => array(
+				array(
+					'search-console' => array(
+						'sharedRoles' => array( 'editor' ),
+						'management'  => 'owner',
+					),
+				),
+				(object) array(
+					'search-console' => (object) array(
+						'sharedRoles' => array( 'editor' ),
+						'management'  => 'owner',
+					),
+				),
+			),
+		);
+	}
+
 	public function test_has_registered_assets_prevents_duplicate_registration() {
 		// Ensure the current user can authenticate.
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );

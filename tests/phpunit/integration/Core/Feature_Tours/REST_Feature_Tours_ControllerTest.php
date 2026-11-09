@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Feature_Tours\Dismissed_Tours;
 use Google\Site_Kit\Core\Feature_Tours\REST_Feature_Tours_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -88,10 +87,7 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 			$response->get_data(),
 			'Get dismissed tours should contain expected values.'
 		);
-		$this->assertTrue(
-			rest_validate_value_from_schema( $response->get_data(), String_List_Schema::get() ),
-			'Get dismissed tours response should match its resource schema.'
-		);
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/dismissed-tours', 'Get dismissed tours response should match its resource schema.' );
 	}
 
 	public function test_post_dismiss_tour() {
@@ -125,11 +121,10 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_post_dismiss_tour__invalid_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_post_dismiss_tour__invalid_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_post_dismiss_tour__invalid_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -137,7 +132,7 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismiss-tour' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertEmpty( $this->dismissed_tours->get(), 'Dismiss tour endpoint should save no tour for invalid data.' );
 	}
 
@@ -146,53 +141,23 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 			'no data'               => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data is not an object' => array(
 				array( 'data' => 'feature_z' ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'slug is not a string'  => array(
 				array( 'data' => array( 'slug' => 123 ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'data has no slug'      => array(
 				array( 'data' => array() ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'slug is empty'         => array(
 				array( 'data' => array( 'slug' => '' ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_post_dismiss_tour__data_without_slug
-	 *
-	 * @param array $data Request data without a slug.
-	 */
-	public function test_post_dismiss_tour__callback_rejects_data_without_slug( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/dismiss-tour', $data );
-
-		$this->assertWPError( $response, 'Dismiss tour callback should reject data without a slug.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Dismiss tour callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Dismiss tour callback should reject data without a slug as a bad request.' );
-		$this->assertEmpty( $this->dismissed_tours->get(), 'Dismiss tour callback should save no tour for data without a slug.' );
-	}
-
-	public function provider_post_dismiss_tour__data_without_slug() {
-		return array(
-			'data has no slug' => array( array() ),
-			'slug is empty'    => array( array( 'slug' => '' ) ),
 		);
 	}
 }

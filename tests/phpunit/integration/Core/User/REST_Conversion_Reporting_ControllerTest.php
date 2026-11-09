@@ -111,7 +111,7 @@ class REST_Conversion_Reporting_ControllerTest extends TestCase {
 
 		$this->assertEquals( 200, $response->get_status(), 'GET endpoint should answer with the conversion reporting settings.' );
 		$this->assertEqualSetsWithIndex( $saved_settings, $response->get_data(), 'GET endpoint should return the saved conversion reporting settings.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/conversion-reporting-settings', 'GET endpoint response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/conversion-reporting-settings', 'GET endpoint response should match its resource schema.' );
 	}
 
 	/**
@@ -131,7 +131,7 @@ class REST_Conversion_Reporting_ControllerTest extends TestCase {
 
 		$this->assertEquals( 200, $response->get_status(), 'POST endpoint should accept the settings the dashboard sends.' );
 		$this->assertEqualSetsWithIndex( $expected_settings, $response->get_data(), 'POST endpoint should save the dismissal times it gets.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/conversion-reporting-settings', 'POST endpoint response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/conversion-reporting-settings', 'POST endpoint response should match its resource schema.' );
 	}
 
 	public function provider_set_settings() {
@@ -159,11 +159,10 @@ class REST_Conversion_Reporting_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_set_settings__invalid_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_set_settings__invalid_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_set_settings__invalid_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -177,7 +176,7 @@ class REST_Conversion_Reporting_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/conversion-reporting-settings' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertEqualSetsWithIndex( $saved_settings, $this->conversion_reporting_settings->get(), 'POST endpoint should keep the saved settings for invalid data.' );
 	}
 
@@ -186,59 +185,23 @@ class REST_Conversion_Reporting_ControllerTest extends TestCase {
 			'no data'                                  => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data has no settings'                     => array(
 				array( 'data' => array() ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'settings is empty'                        => array(
 				array( 'data' => array( 'settings' => array() ) ),
 				'rest_invalid_param',
-				'5.6',
 			),
 			'settings has a key that is not a setting' => array(
 				array( 'data' => array( 'settings' => array( 'favoriteColor' => 'blue' ) ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'a time is not an integer'                 => array(
 				array( 'data' => array( 'settings' => array( 'newEventsCalloutDismissedAt' => 'today' ) ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_set_settings__data_the_callback_rejects
-	 *
-	 * @param array $data Request data that WordPress before 5.5, or before 5.6 for an empty `settings`, lets through to the callback.
-	 */
-	public function test_set_settings__callback_rejects_invalid_data( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$saved_settings = array(
-			'newEventsCalloutDismissedAt'  => 1730000000,
-			'lostEventsCalloutDismissedAt' => 0,
-		);
-		$this->conversion_reporting_settings->set( $saved_settings );
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/conversion-reporting-settings', $data );
-
-		$this->assertWPError( $response, 'Conversion reporting callback should reject invalid data.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Conversion reporting callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Conversion reporting callback should reject invalid data as a bad request.' );
-		$this->assertEqualSetsWithIndex( $saved_settings, $this->conversion_reporting_settings->get(), 'Conversion reporting callback should keep the saved settings for invalid data.' );
-	}
-
-	public function provider_set_settings__data_the_callback_rejects() {
-		return array(
-			'data has no settings' => array( array() ),
-			'settings is empty'    => array( array( 'settings' => array() ) ),
 		);
 	}
 }

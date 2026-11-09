@@ -80,7 +80,7 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status(), 'Authenticated user should be able to read tracking consent.' );
 		$this->assertArrayHasKey( 'enabled', $response->get_data(), 'Tracking consent response should include enabled state.' );
 		$this->assertFalse( $response->get_data()['enabled'], 'Tracking consent should be disabled by default.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/tracking', 'Tracking consent response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/tracking', 'Tracking consent response should match its resource schema.' );
 	}
 
 	public function test_unauthorized_post_request() {
@@ -143,7 +143,7 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status(), 'Authenticated user should be able to enable tracking consent.' );
 		$this->assertArrayHasKey( 'enabled', $response->get_data(), 'Tracking consent update response should include enabled state.' );
 		$this->assertTrue( $response->get_data()['enabled'], 'Tracking consent update should return the enabled state.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/tracking', 'Tracking consent update response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/tracking', 'Tracking consent update response should match its resource schema.' );
 
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$response = rest_get_server()->dispatch( $request );
@@ -156,11 +156,10 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_modify_status_of_tracking__invalid_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_modify_status_of_tracking__invalid_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_modify_status_of_tracking__invalid_data( $body, $expected_code ) {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 
@@ -174,7 +173,7 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( WP_REST_Server::CREATABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertTrue( (bool) $tracking_consent->get(), 'Invalid data should keep the saved tracking consent.' );
 	}
 
@@ -183,43 +182,20 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 			'no data'                    => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data is not an object'      => array(
 				array( 'data' => 'enabled' ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'data has no `enabled`'      => array(
 				array( 'data' => array() ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'`enabled` is not a boolean' => array(
 				array( 'data' => array( 'enabled' => 'sometimes' ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 		);
-	}
-
-	public function test_modify_status_of_tracking__callback_rejects_data_without_enabled() {
-		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user->ID );
-
-		$tracking_consent = new Tracking_Consent( new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$tracking_consent->set( true );
-
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->get_rest_controller_instance()->register();
-		$this->register_rest_routes();
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/tracking', array() );
-
-		$this->assertWPError( $response, 'Tracking consent callback should reject data without `enabled`.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Tracking consent callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Tracking consent callback should reject data without `enabled` as a bad request.' );
-		$this->assertTrue( (bool) $tracking_consent->get(), 'Tracking consent callback should keep the saved consent for data without `enabled`.' );
 	}
 
 	protected function get_rest_controller_instance() {

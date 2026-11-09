@@ -38,10 +38,10 @@ import Badge from '@/js/components/Badge';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
 import FeatureCTA from '@/js/components/feature-discovery/FeatureCTA';
 import FeatureServiceIdentity from '@/js/components/feature-discovery/FeatureServiceIdentity';
-import Link from '@/js/components/Link';
 import FeedbackMenu, {
 	FeedbackMenuOption,
-} from '@/js/components/surveys/FeedbackMenu';
+} from '@/js/components/feedback/FeedbackMenu';
+import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
@@ -53,10 +53,12 @@ import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_BADGES,
 	FEATURE_BADGE_PROPS,
+	FEATURE_HUB_FEEDBACK_NAMESPACE,
+	FEATURE_RELEVANCY_FEEDBACK_KEYS,
 	FEATURE_RELEVANCY_REASONS,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
-import { getFeatureRelevancyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { getFeatureRelevancyFeedbackGroup } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import CloseIcon from '@/svg/icons/close.svg';
@@ -89,7 +91,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	) as string;
 	const { dismissFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 	const { setValue } = useDispatch( CORE_UI );
-	const { triggerSurvey } = useDispatch( CORE_USER );
+	const { sendFeedback } = useDispatch( CORE_USER );
 
 	const feedbackOptions = useMemo< FeedbackMenuOption[] >(
 		() => [
@@ -103,10 +105,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 					'It’s not relevant to my site goals',
 					'google-site-kit'
 				),
-				value: getFeatureRelevancyTriggerID(
-					slug,
-					FEATURE_RELEVANCY_REASONS.NOT_RELEVANT
-				),
+				value: FEATURE_RELEVANCY_REASONS.NOT_RELEVANT,
 			},
 			{
 				id: FEATURE_RELEVANCY_REASONS.ALREADY_USING,
@@ -114,21 +113,15 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 					'I’m already using another tool',
 					'google-site-kit'
 				),
-				value: getFeatureRelevancyTriggerID(
-					slug,
-					FEATURE_RELEVANCY_REASONS.ALREADY_USING
-				),
+				value: FEATURE_RELEVANCY_REASONS.ALREADY_USING,
 			},
 			{
 				id: FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED,
 				label: __( 'Setup seems complex', 'google-site-kit' ),
-				value: getFeatureRelevancyTriggerID(
-					slug,
-					FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED
-				),
+				value: FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED,
 			},
 		],
-		[ slug ]
+		[]
 	);
 
 	const onCloseFeedbackMenu = useCallback( () => {
@@ -141,10 +134,15 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 
 			if ( value ) {
 				// Feedback is independent of dismissal and must not delay it.
-				triggerSurvey( value );
+				sendFeedback( {
+					namespace: FEATURE_HUB_FEEDBACK_NAMESPACE,
+					group: getFeatureRelevancyFeedbackGroup( slug ),
+					key: FEATURE_RELEVANCY_FEEDBACK_KEYS.DISMISS_REASON,
+					value,
+				} );
 			}
 		},
-		[ dismissFeature, slug, triggerSurvey ]
+		[ dismissFeature, sendFeedback, slug ]
 	);
 
 	const isFeatureNew = useSelect(

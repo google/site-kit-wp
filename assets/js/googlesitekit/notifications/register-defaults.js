@@ -223,6 +223,7 @@ function requireFeatureDiscoverySetupSuccess( returnTab ) {
 		}
 
 		const { featureSlug } = pendingSetup;
+
 		const feature = select( CORE_FEATURE_DISCOVERY ).getFeature(
 			featureSlug
 		);

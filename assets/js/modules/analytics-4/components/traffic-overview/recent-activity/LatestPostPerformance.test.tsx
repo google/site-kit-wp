@@ -171,6 +171,63 @@ describe( 'LatestPostPerformance', () => {
 		] );
 	} );
 
+	it( 'should request the top keyword for the post URL on the reference site, and should keep the Analytics rows, when the reference site URL differs from the home URL', async () => {
+		provideSiteInfo( registry, {
+			homeURL: 'https://example.com/',
+			referenceSiteURL: 'https://live.example.com/blog/',
+		} );
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+			),
+			{
+				body: [ { keys: [ 'live ice cream' ], clicks: 12 } ],
+				status: 200,
+			}
+		);
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+			),
+			{ query: { url: 'https://live.example.com/blog/ice-cream/' } }
+		);
+		expect( getTiles( container ) ).toEqual( [
+			{
+				title: 'Visitor breakdown',
+				rows: [
+					[ 'Total visitors', '94' ],
+					[ 'New visitors', '66' ],
+					[ 'Returning visitors', '28' ],
+				],
+			},
+			{
+				title: 'Traffic sources',
+				rows: [
+					[ 'Top traffic source', 'Organic Social' ],
+					[ 'Top referring site', 'substack.com' ],
+					[ 'Top keyword', 'live ice cream' ],
+				],
+			},
+			{
+				title: 'Engagement & outcomes',
+				rows: [
+					[ 'Session Duration', '1m 16s' ],
+					[ 'Engaged sessions', '18' ],
+					[ 'Purchases affected by post', '4' ],
+				],
+			},
+		] );
+	} );
+
 	it( 'should set each value as the title of its cell, so a value that is cut off can be read in full', async () => {
 		provideLatestPostKeywordReport( registry );
 

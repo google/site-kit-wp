@@ -171,7 +171,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 
 		$this->assertEquals( 200, $response->get_status(), 'Fetching the email reporting settings should return success response.' );
 		$this->assertEqualSetsWithIndex( $saved_settings, $response->get_data(), 'Response should return the saved email reporting settings.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/email-reporting-settings', 'Email reporting settings response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/email-reporting-settings', 'Email reporting settings response should match its resource schema.' );
 	}
 
 	public function test_get_next_report_returns_scheduled_initiator_timestamp() {
@@ -197,7 +197,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			$response->get_data()['timestamp'],
 			'Response should return the timestamp of the currently scheduled initiator event for the saved frequency.'
 		);
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/email-reporting-next-report', 'Next report response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/email-reporting-next-report', 'Next report response should match its resource schema.' );
 	}
 
 	public function test_get_next_report_falls_back_when_no_initiator_scheduled() {
@@ -246,7 +246,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status(), 'Subscribing should return success response.' );
 		$this->assertTrue( (bool) $response->get_data()['subscribed'], 'Response should return subscribed state as true.' );
 		$this->assertSame( Email_Reporting_Settings::FREQUENCY_MONTHLY, $response->get_data()['frequency'], 'Response should return updated frequency.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/email-reporting-settings', 'Subscribing response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/email-reporting-settings', 'Subscribing response should match its resource schema.' );
 
 		$logs = get_posts(
 			array(
@@ -286,11 +286,10 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_set_settings__invalid_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_set_settings__invalid_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_set_settings__invalid_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
@@ -306,7 +305,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-settings' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertEqualSetsWithIndex( $saved_settings, $this->settings->get(), 'Invalid data should keep the saved email reporting settings.' );
 	}
 
@@ -315,66 +314,27 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			'no data'                                  => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data has no settings'                     => array(
 				array( 'data' => array() ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'settings is empty'                        => array(
 				array( 'data' => array( 'settings' => array() ) ),
 				'rest_invalid_param',
-				'5.6',
 			),
 			'settings has a key that is not a setting' => array(
 				array( 'data' => array( 'settings' => array( 'favoriteColor' => 'blue' ) ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'a frequency outside its set'              => array(
 				array( 'data' => array( 'settings' => array( 'frequency' => 'daily' ) ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'subscribed is not a boolean'              => array(
 				array( 'data' => array( 'settings' => array( 'subscribed' => 'often' ) ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_set_settings__data_the_callback_rejects
-	 *
-	 * @param array $data Request data that WordPress before 5.5, or before 5.6 for an empty `settings`, lets through to the callback.
-	 */
-	public function test_set_settings__callback_rejects_invalid_data( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
-
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$saved_settings = array(
-			'subscribed' => true,
-			'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
-		);
-		$this->settings->set( $saved_settings );
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/email-reporting-settings', $data );
-
-		$this->assertWPError( $response, 'Email reporting callback should reject invalid data.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'Email reporting callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'Email reporting callback should reject invalid data as a bad request.' );
-		$this->assertEqualSetsWithIndex( $saved_settings, $this->settings->get(), 'Email reporting callback should keep the saved settings for invalid data.' );
-	}
-
-	public function provider_set_settings__data_the_callback_rejects() {
-		return array(
-			'data has no settings' => array( array() ),
-			'settings is empty'    => array( array( 'settings' => array() ) ),
 		);
 	}
 

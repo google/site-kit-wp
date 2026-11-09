@@ -492,8 +492,8 @@ describe( 'WhatsNewTab', () => {
 
 		provideFeatures( registry, TEST_FEATURES );
 
-		const triggerSurvey = jest
-			.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+		const sendFeedback = jest
+			.spyOn( registry.dispatch( CORE_USER ), 'sendFeedback' )
 			.mockImplementation( () => new Promise( () => {} ) );
 
 		freezeFetch(
@@ -521,9 +521,12 @@ describe( 'WhatsNewTab', () => {
 			)
 		);
 
-		expect( triggerSurvey ).toHaveBeenCalledWith(
-			'feedback:feature_relevancy_unread-newer:too_complicated'
-		);
+		expect( sendFeedback ).toHaveBeenCalledWith( {
+			namespace: 'feature_hub',
+			group: 'feature_relevancy_unread-newer',
+			key: 'dismiss_reason',
+			value: 'too_complicated',
+		} );
 	} );
 
 	it( 'should show the empty state even when feedback fails after the final card is dismissed', async () => {
@@ -536,7 +539,7 @@ describe( 'WhatsNewTab', () => {
 
 		jest.spyOn(
 			registry.dispatch( CORE_USER ),
-			'triggerSurvey'
+			'sendFeedback'
 		).mockResolvedValue( { error: { message: 'Feedback unavailable' } } );
 
 		provideFeatures( registry, [ TEST_FEATURES[ 2 ] ] );

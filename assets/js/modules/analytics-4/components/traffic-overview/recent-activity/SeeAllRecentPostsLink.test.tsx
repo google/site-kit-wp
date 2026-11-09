@@ -31,9 +31,12 @@ import {
 import { PERMISSION_READ_SHARED_MODULE_DATA } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
+import { RECENT_ACTIVITY_INTERACTION_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	EARLIER_POST,
 	LATEST_POST,
+	provideRecentActivitySurveyState,
+	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -41,6 +44,7 @@ import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-ut
 import * as scrollUtils from '@/js/util/scroll';
 import * as tracking from '@/js/util/tracking';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
@@ -83,6 +87,11 @@ describe( 'SeeAllRecentPostsLink', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		provideRecentActivitySurveyState( registry );
+		fetchMock.post( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
 		getNavigationalScrollTopSpy.mockReturnValue( 100 );
 		scrollToSpy.mockClear();
 	} );
@@ -90,6 +99,15 @@ describe( 'SeeAllRecentPostsLink', () => {
 	afterEach( () => {
 		global.history.replaceState( {}, '', '/' );
 	} );
+
+	// A click records an interaction, so the tests wait for its request
+	// rather than let it finish during the next test.
+	async function waitForInteraction() {
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint )
+		);
+		await act( () => new Promise( ( resolve ) => setTimeout( resolve ) ) );
+	}
 
 	it( 'should render the link when the site has two or more recent posts', () => {
 		provideRecentContent(
@@ -179,7 +197,7 @@ describe( 'SeeAllRecentPostsLink', () => {
 		expect( fetchMock ).not.toHaveFetched( postsEndpoint );
 	} );
 
-	it( 'should select the Latest content tab, set the URL hash, and scroll to the content section when clicked', () => {
+	it( 'should select the Latest content tab, set the URL hash, and scroll to the content section when clicked', async () => {
 		provideRecentContent(
 			registry,
 			[ LATEST_POST, EARLIER_POST ],
@@ -204,9 +222,41 @@ describe( 'SeeAllRecentPostsLink', () => {
 			top: 100,
 			behavior: 'smooth',
 		} );
+
+		await waitForInteraction();
 	} );
 
-	it( 'should track `change_tab` under `mainDashboard_content-tabs` labeled `googlesitekit-latest-content-tab` when clicked', () => {
+	it( 'should record an interaction when clicked', async () => {
+		provideRecentContent(
+			registry,
+			[ LATEST_POST, EARLIER_POST ],
+			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+		);
+
+		render( <SeeAllRecentPostsLink />, { registry } );
+
+		expect( fetchMock ).not.toHaveFetched( setExpirableItemTimersEndpoint );
+
+		fireEvent.click(
+			screen.getByRole( 'link', { name: 'See all recent posts' } )
+		);
+
+		await waitForInteraction();
+
+		expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint, {
+			body: {
+				data: [
+					{
+						slug: RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+						expiration:
+							RECENT_ACTIVITY_INTERACTION_TIMER.expiresInSeconds,
+					},
+				],
+			},
+		} );
+	} );
+
+	it( 'should track `change_tab` under `mainDashboard_content-tabs` labeled `googlesitekit-latest-content-tab` when clicked', async () => {
 		provideRecentContent(
 			registry,
 			[ LATEST_POST, EARLIER_POST ],
@@ -227,9 +277,11 @@ describe( 'SeeAllRecentPostsLink', () => {
 			'change_tab',
 			'googlesitekit-latest-content-tab'
 		);
+
+		await waitForInteraction();
 	} );
 
-	it( 'should not track `change_tab` when the Latest content tab is already active', () => {
+	it( 'should not track `change_tab` when the Latest content tab is already active', async () => {
 		provideRecentContent(
 			registry,
 			[ LATEST_POST, EARLIER_POST ],
@@ -249,5 +301,7 @@ describe( 'SeeAllRecentPostsLink', () => {
 		);
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+		await waitForInteraction();
 	} );
 } );

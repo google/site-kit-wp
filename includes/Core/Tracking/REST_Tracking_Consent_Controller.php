@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Tracking;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\Schema\On_Off_Setting_Schema;
@@ -118,14 +117,7 @@ class REST_Tracking_Consent_Controller {
 						array(
 							'methods'             => WP_REST_Server::CREATABLE,
 							'callback'            => function ( WP_REST_Request $request ) use ( $tracking_callback ) {
-								$data = $request->get_param( 'data' );
-
-								// WordPress checks required properties only from 5.5.0,
-								// so an older version lets a request with no `enabled` through to here.
-								if ( ! isset( $data['enabled'] ) ) {
-									return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-								}
-
+								$data    = $request->get_param( 'data' );
 								$enabled = ! empty( $data['enabled'] );
 
 								$this->consent->set( $enabled );

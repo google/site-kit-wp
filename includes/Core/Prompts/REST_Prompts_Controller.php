@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Prompts;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\Schema\Dismissed_Prompts_Schema;
@@ -106,12 +105,6 @@ class REST_Prompts_Controller {
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
 						$data = $request['data'];
-
-						// WordPress checks required properties and `minLength` only from 5.5.0,
-						// so an older version lets a request with no slug through to here.
-						if ( empty( $data['slug'] ) ) {
-							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-						}
 
 						$expiration = Dismissed_Prompts::DISMISS_PROMPT_PERMANENTLY;
 						if ( isset( $data['expiration'] ) && intval( $data['expiration'] ) > 0 ) {

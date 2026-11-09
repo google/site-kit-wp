@@ -134,7 +134,7 @@ class REST_User_Input_ControllerTest extends TestCase {
 			$response->get_data(),
 			'User input settings response should include the stored site and user answers.'
 		);
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/user-input-settings', 'User input settings response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/user-input-settings', 'User input settings response should match its resource schema.' );
 	}
 
 	public function test_get_answers__answered_by_another_user() {
@@ -154,7 +154,7 @@ class REST_User_Input_ControllerTest extends TestCase {
 
 		$this->assertEquals( $other_user->ID, $purpose['answeredBy'], 'The purpose answer should name the user who gave it.' );
 		$this->assertEquals( $other_user->user_login, $purpose['author']['login'], 'The purpose answer should give the login of the user who gave it.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/user-input-settings', 'User input settings response with an answer by another user should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/user-input-settings', 'User input settings response with an answer by another user should match its resource schema.' );
 	}
 
 	public function test_get_answers__answered_by_a_deleted_user() {
@@ -173,7 +173,7 @@ class REST_User_Input_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertFalse( $response->get_data()['purpose']['author']['login'], 'The purpose answer should give no login once the user who gave it is deleted.' );
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/user-input-settings', 'User input settings response with an answer by a deleted user should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/user-input-settings', 'User input settings response with an answer by a deleted user should match its resource schema.' );
 	}
 
 	public function test_set_answers() {
@@ -245,7 +245,7 @@ class REST_User_Input_ControllerTest extends TestCase {
 			$response->get_data(),
 			'User input update response should include the submitted answers with their scopes.'
 		);
-		$this->assert_matches_route_resource_schema( $response->get_data(), 'core/user/data/user-input-settings', 'User input update response should match its resource schema.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/user-input-settings', 'User input update response should match its resource schema.' );
 
 		// Verify that the `user_input_answered_other_survey` survey is dequeued.
 		$this->assertEquals(
@@ -265,11 +265,10 @@ class REST_User_Input_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider provider_set_answers__invalid_data
 	 *
-	 * @param array  $body                          Request body.
-	 * @param string $expected_code                 Expected error code.
-	 * @param string $rejected_before_callback_from WordPress version from which the schema rejects the request before the route callback runs.
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_set_answers__invalid_data( $body, $expected_code, $rejected_before_callback_from ) {
+	public function test_set_answers__invalid_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -285,7 +284,7 @@ class REST_User_Input_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings' );
 		$request->set_body_params( $body );
 
-		$this->assert_rest_request_rejected( $request, $expected_code, $rejected_before_callback_from );
+		$this->assertRESTRequestRejected( $request, $expected_code );
 		$this->assertEquals( $answers, $this->user_input->get_answers(), 'User input endpoint should keep the saved answers for invalid data.' );
 	}
 
@@ -294,17 +293,14 @@ class REST_User_Input_ControllerTest extends TestCase {
 			'no data'                                   => array(
 				array(),
 				'rest_missing_callback_param',
-				'5.2',
 			),
 			'data is not an object'                     => array(
 				array( 'data' => 'purpose1' ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'settings is not an object'                 => array(
 				array( 'data' => array( 'settings' => 'purpose1' ) ),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'an answer is not a list'                   => array(
 				array(
@@ -318,7 +314,6 @@ class REST_User_Input_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'an answer is not a list of strings'        => array(
 				array(
@@ -332,7 +327,6 @@ class REST_User_Input_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'settings has a key that is not a question' => array(
 				array(
@@ -347,19 +341,16 @@ class REST_User_Input_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.2',
 			),
 			'data has no settings'                      => array(
 				array( 'data' => array() ),
 				'rest_invalid_param',
-				'5.5',
 			),
 			'settings is empty'                         => array(
 				array( 'data' => array( 'settings' => array() ) ),
 				'rest_invalid_param',
-				'5.5',
 			),
-			'settings leaves out a question'            => array(
+			'settings leaves out purpose'               => array(
 				array(
 					'data' => array(
 						'settings' => array(
@@ -370,44 +361,18 @@ class REST_User_Input_ControllerTest extends TestCase {
 					),
 				),
 				'rest_invalid_param',
-				'5.5',
 			),
-		);
-	}
-
-	/**
-	 * @dataProvider provider_set_answers__data_the_callback_rejects
-	 *
-	 * @param array $data Request data that WordPress before 5.5 lets through to the callback.
-	 */
-	public function test_set_answers__callback_rejects_invalid_data( $data ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$this->user_input->set_answers( array( 'purpose' => array( 'purpose1' ) ) );
-		$answers = $this->user_input->get_answers();
-
-		$response = $this->call_route_callback( 'POST', 'core/user/data/user-input-settings', $data );
-
-		$this->assertWPError( $response, 'User input callback should reject invalid data.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'User input callback should report the invalid data parameter.' );
-		$this->assertEquals( 400, $response->get_error_data()['status'], 'User input callback should reject invalid data as a bad request.' );
-		$this->assertEquals( $answers, $this->user_input->get_answers(), 'User input callback should keep the saved answers for invalid data.' );
-	}
-
-	public function provider_set_answers__data_the_callback_rejects() {
-		return array(
-			'data has no settings'           => array( array() ),
-			'settings is empty'              => array( array( 'settings' => array() ) ),
-			'settings leaves out a question' => array(
+			'settings leaves out goals'                 => array(
 				array(
-					'settings' => array(
-						'postFrequency'           => array( 'daily' ),
-						'goals'                   => array( 'goal2' ),
-						'includeConversionEvents' => array( 'contact' ),
+					'data' => array(
+						'settings' => array(
+							'purpose'                 => array( 'purpose2' ),
+							'postFrequency'           => array( 'daily' ),
+							'includeConversionEvents' => array( 'contact' ),
+						),
 					),
 				),
+				'rest_invalid_param',
 			),
 		);
 	}
