@@ -194,7 +194,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		).toBeDisabled();
 	} );
 
-	it( 'should reset the setting and show an error notice with a Retry button when saving fails', async () => {
+	it( 'should reset the setting and show an error notice with a help link and a Retry button when saving fails', async () => {
 		provideState();
 		fetchMock.postOnce( conversionTrackingEndpoint, {
 			body: {
@@ -211,10 +211,18 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Enable tracking' } ) );
 
 		expect(
-			await findByText( 'Plugin conversion tracking couldn’t be enabled' )
+			await findByText( 'Enabling plugin conversion tracking failed' )
 		).toBeInTheDocument();
 		expect( console ).toHaveErrored();
-		expect( getByText( 'Internal server error' ) ).toBeInTheDocument();
+		expect(
+			getByText(
+				/There was a problem enabling plugin conversion tracking\./
+			)
+		).toBeInTheDocument();
+		expect( getByRole( 'link', { name: /get help/i } ) ).toHaveAttribute(
+			'href',
+			expect.stringContaining( 'error_id=internal_server_error' )
+		);
 		expect( getByRole( 'button', { name: 'Retry' } ) ).not.toBeDisabled();
 		expect(
 			queryByText( 'Plugin conversion tracking is disabled' )
@@ -251,7 +259,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 
 		await waitFor( () => {
 			expect(
-				queryByText( 'Plugin conversion tracking couldn’t be enabled' )
+				queryByText( 'Enabling plugin conversion tracking failed' )
 			).not.toBeInTheDocument();
 		} );
 

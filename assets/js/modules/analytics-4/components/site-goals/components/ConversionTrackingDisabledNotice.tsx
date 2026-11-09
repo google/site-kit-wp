@@ -24,13 +24,18 @@ import { ElementType, FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -49,8 +54,19 @@ const ConversionTrackingDisabledNotice: FC<
 	const { canManageOptions } = useConversionTrackingSetting();
 
 	const [ isSaving, setIsSaving ] = useState( false );
-	const [ saveError, setSaveError ] = useState< { message?: string } | null >(
-		null
+	const [ saveError, setSaveError ] = useState< Record<
+		string,
+		unknown
+	> | null >( null );
+
+	const troubleshootingURL = useSelect(
+		( select: Select ) =>
+			saveError
+				? select( CORE_SITE ).getErrorTroubleshootingLinkURL(
+						saveError
+				  )
+				: undefined,
+		[ saveError ]
 	);
 
 	const {
@@ -90,10 +106,18 @@ const ConversionTrackingDisabledNotice: FC<
 					className="googlesitekit-site-goals-conversion-tracking-disabled-notice"
 					type={ NOTICE_TYPES.ERROR }
 					title={ __(
-						'Plugin conversion tracking couldn’t be enabled',
+						'Enabling plugin conversion tracking failed',
 						'google-site-kit'
 					) }
-					description={ saveError.message }
+					description={ createInterpolateElement(
+						__(
+							'There was a problem enabling plugin conversion tracking. Try again or <a>get help</a>.',
+							'google-site-kit'
+						),
+						{
+							a: <Link href={ troubleshootingURL } external />,
+						}
+					) }
 					ctaButton={ {
 						label: __( 'Retry', 'google-site-kit' ),
 						onClick: handleEnableTracking,
