@@ -45,7 +45,6 @@ import customCTAScreenshotURL from '@/svg/screenshots/reader-revenue-manager-cus
 import newReaderPaywallScreenshotURL from '@/svg/screenshots/reader-revenue-manager-new-reader-paywall.svg?path';
 import newsletterSignUpFormPromptScreenshotURL from '@/svg/screenshots/reader-revenue-manager-newsletter-sign-up-form-prompt.svg?path';
 import newsletterSignUpFormSetupScreenshotURL from '@/svg/screenshots/reader-revenue-manager-newsletter-sign-up-form-setup.svg?path';
-import newsletterSignUpPromptScreenshotURL from '@/svg/screenshots/reader-revenue-manager-newsletter-sign-up-prompt.svg?path';
 import paywalledContentScreenshotURL from '@/svg/screenshots/reader-revenue-manager-paywalled-content.svg?path';
 import readerRegistrationScreenshotURL from '@/svg/screenshots/reader-revenue-manager-reader-registration.svg?path';
 import registeredReadersScreenshotURL from '@/svg/screenshots/reader-revenue-manager-registered-readers.svg?path';
@@ -184,9 +183,9 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					height: 463,
 				},
 				{
-					src: newsletterSignUpPromptScreenshotURL,
+					src: newsletterSignUpFormPromptScreenshotURL,
 					alt: __(
-						'Screenshot of a Reader Revenue Manager prompt over an article, asking readers to sign up to the newsletter with their Google Account',
+						'Screenshot of a newsletter sign-up prompt over an article, asking readers to sign up to the newsletter with their Google Account',
 						'google-site-kit'
 					),
 					width: 620,

@@ -78,7 +78,6 @@ import analyticsDashboardOverviewScreenshotURL from '@/svg/screenshots/analytics
 import enhancedMeasurementScreenshotURL from '@/svg/screenshots/analytics-4-enhanced-measurement-settings.svg?path';
 import keyMetricsScreenshotURL from '@/svg/screenshots/analytics-4-key-metrics.svg?path';
 import analyticsSiteGoalsScreenshotURL from '@/svg/screenshots/analytics-4-site-goals.svg?path';
-import visitorGroupsScreenshotURL from '@/svg/screenshots/analytics-4-visitor-groups.svg?path';
 
 const ENHANCED_MEASUREMENT_FEATURE_SLUG = 'enhanced-measurement';
 
@@ -687,13 +686,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: visitorGroupsScreenshotURL,
+					src: analyticsAudiencesScreenshotURL,
 					alt: __(
 						'Screenshot of visitor group tiles on the Site Kit dashboard comparing new and returning visitors by visits, pages per visit, pageviews, top cities and top content',
 						'google-site-kit'
 					),
 					width: 620,
-					height: 391,
+					height: 390,
 				},
 			],
 		},
