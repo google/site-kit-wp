@@ -91,12 +91,24 @@ const CustomQuestionForm: FC< CustomQuestionFormProps > = ( {
 		question?.question ?? ''
 	);
 
+	const captureQuestionField = useCallback(
+		( element: HTMLInputElement | HTMLTextAreaElement | null ) => {
+			questionInputRef.current = element;
+		},
+		[ questionInputRef ]
+	);
+
 	const trimmedAnswers = answers
 		.map( ( a ) => a.value.trim() )
 		.filter( Boolean );
 
 	const trimmedCategory = category.trim();
 	const trimmedQuestionText = questionText.trim();
+
+	const isDisabled =
+		! trimmedQuestionText ||
+		answers.length < CUSTOM_QUESTION_LIMITS.MINIMUM_ANSWERS ||
+		answers.length > trimmedAnswers.length;
 
 	function onChangeCategory( event: ChangeEvent< HTMLInputElement > ) {
 		setCategory( event.target.value );
@@ -106,40 +118,18 @@ const CustomQuestionForm: FC< CustomQuestionFormProps > = ( {
 		setQuestionText( event.target.value );
 	}
 
-	const captureQuestionField = useCallback(
-		( element: HTMLInputElement | HTMLTextAreaElement | null ) => {
-			questionInputRef.current = element;
-		},
-		[ questionInputRef ]
-	);
+	function onSubmit( event: FormEvent< HTMLFormElement > ) {
+		event.preventDefault();
 
-	const onSubmit = useCallback(
-		( event: FormEvent< HTMLFormElement > ) => {
-			event.preventDefault();
+		onSave( {
+			...question,
+			answers: trimmedAnswers,
+			category: trimmedCategory,
+			question: trimmedQuestionText,
+		} );
 
-			onSave( {
-				...question,
-				answers: trimmedAnswers,
-				category: trimmedCategory,
-				question: trimmedQuestionText,
-			} );
-
-			onClose();
-		},
-		[
-			question,
-			trimmedAnswers,
-			trimmedCategory,
-			trimmedQuestionText,
-			onClose,
-			onSave,
-		]
-	);
-
-	const isDisabled =
-		! trimmedQuestionText ||
-		answers.length < CUSTOM_QUESTION_LIMITS.MINIMUM_ANSWERS ||
-		answers.length > trimmedAnswers.length;
+		onClose();
+	}
 
 	return (
 		<form

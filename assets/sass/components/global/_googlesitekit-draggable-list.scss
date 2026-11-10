@@ -46,7 +46,7 @@
 		border-block-end-color: currentcolor;
 	}
 
-	.googlesitekit-draggable-list__handle {
+	.googlesitekit-draggable-list__handle .googlesitekit-action-button__button:enabled {
 		cursor: grab;
 
 		&:active {

@@ -1,5 +1,5 @@
 /**
- * CustomQuestionAnswers component.
+ * RepeatableTextField component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import classNames from 'classnames';
-import { ChangeEvent } from 'react';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -40,9 +39,6 @@ import Repeater, {
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_BODY } from '@/js/components/Typography/constants';
 
-type RepeaterUpdateItem< Item > =
-	RepeaterFieldRenderOptions< Item >[ 'updateItem' ];
-
 type RepeatableTextFieldRepeaterProps< Item > = Pick<
 	RepeaterProps< Item >,
 	'getItemID' | 'getNewItem' | 'items' | 'maxItems' | 'onChange'
@@ -50,7 +46,7 @@ type RepeatableTextFieldRepeaterProps< Item > = Pick<
 
 interface RepeatableTextFieldOwnProps< Item > {
 	addItemLabel: string;
-	className?: classNames.Argument;
+	className?: classnames.Argument;
 	getItemLabel: ( index: number ) => string;
 	getItemValue: ( item: Item ) => string;
 	getMoveItemLabel: ( index: number ) => string;
@@ -79,17 +75,6 @@ function RepeatableTextField< Item >( {
 	maxItems,
 	onChange,
 }: RepeatableTextFieldProps< Item > ) {
-	const getOnChangeItem = useCallback(
-		( item: Item, updateItem: RepeaterUpdateItem< Item > ) => {
-			return ( event: ChangeEvent< HTMLInputElement > ) => {
-				const updatedItem = getUpdatedItem( event.target.value, item );
-
-				updateItem( updatedItem );
-			};
-		},
-		[ getUpdatedItem ]
-	);
-
 	const renderRepeaterList = useCallback(
 		( { renderField, AddButton }: RepeaterListRenderOptions< Item > ) => {
 			return (
@@ -130,7 +115,11 @@ function RepeatableTextField< Item >( {
 						inputRef={ inputRef }
 						label={ getItemLabel( index ) }
 						maxLength={ maxItemLength }
-						onChange={ getOnChangeItem( item, updateItem ) }
+						onChange={ ( event ) => {
+							updateItem(
+								getUpdatedItem( event.target.value, item )
+							);
+						} }
 						value={ getItemValue( item ) }
 						outlined
 						showCharacterCounter
@@ -142,15 +131,15 @@ function RepeatableTextField< Item >( {
 		[
 			getItemLabel,
 			getItemValue,
-			getOnChangeItem,
 			getRemoveItemLabel,
+			getUpdatedItem,
 			maxItemLength,
 		]
 	);
 
 	return (
 		<fieldset
-			className={ classNames(
+			className={ classnames(
 				'googlesitekit-repeatable-text-field',
 				className
 			) }

@@ -24,8 +24,8 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { CustomSurveyQuestion } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/CustomQuestionSideSheet/types';
 import { Story } from '@/js/types/Story';
+import { CustomSurveyQuestion } from './types';
 import CustomQuestionSideSheet, { CustomQuestionSideSheetProps } from '.';
 
 function Template( {
