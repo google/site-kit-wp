@@ -878,26 +878,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$timeouts = $this->user_options->get( Survey_Timeouts::OPTION );
 		$queue    = $this->user_options->get( Survey_Queue::OPTION );
 
-		$http_requests = array();
-		$this->subscribe_to_wp_http_requests(
-			function ( $url ) use ( &$http_requests ) {
-				$http_requests[] = $url;
-			},
-			array(
-				'response' => array( 'code' => 200 ),
-				'headers'  => array(),
-				'body'     => wp_json_encode(
-					array(
-						'survey_id' => 'triggered_survey',
-						'payload'   => array(),
-						'session'   => array(
-							'session_id'    => 'triggered_session_id',
-							'session_token' => 'triggered_session_token',
-						),
-					)
-				),
-			)
-		);
+		$this->answer_service_requests( wp_json_encode( $this->get_service_survey() ) );
 
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
@@ -912,7 +893,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->assertEquals( $status, $response->get_status(), "The survey route should reject the request with a {$status} status." );
 		$this->assertEquals( 'rest_forbidden', $data['code'], 'The survey route should reject the request with the rest_forbidden code.' );
 		$this->assertEqualSets( array( 'code', 'message', 'data' ), array_keys( $data ), 'The rejected request should return the error alone.' );
-		$this->assertEmpty( $http_requests, 'The rejected request should send nothing to the Site Kit service.' );
+		$this->assertEmpty( $this->service_requests, 'The rejected request should send nothing to the Site Kit service.' );
 		$this->assertEqualSetsWithIndex( $timeouts, $this->user_options->get( Survey_Timeouts::OPTION ), 'The rejected request should leave the survey timeouts as they were.' );
 		$this->assertEqualSetsWithIndex( $queue, $this->user_options->get( Survey_Queue::OPTION ), 'The rejected request should leave the survey queue as it was.' );
 	}
