@@ -59,19 +59,29 @@ describe( 'useSiteGoalsRemovalNoticeCopy', () => {
 		);
 	} );
 
-	it( 'should return a description with a "Learn more" link to the conversion tracking support page', () => {
-		const { result } = renderHook(
-			() => useSiteGoalsRemovalNoticeCopy( GOAL_TYPES.ECOMMERCE ),
-			{ registry }
-		);
+	it.each( [
+		{ goalType: GOAL_TYPES.ECOMMERCE },
+		{ goalType: GOAL_TYPES.LEAD },
+	] )(
+		'should return a description with a "Learn more" link that opens the Site Goals supported plugins page in a new tab for the $goalType goal type',
+		( { goalType } ) => {
+			const { result } = renderHook(
+				() => useSiteGoalsRemovalNoticeCopy( goalType ),
+				{ registry }
+			);
 
-		const { getByRole } = render( <p>{ result.current.description }</p>, {
-			registry,
-		} );
+			const { getByRole } = render(
+				<p>{ result.current.description }</p>,
+				{ registry }
+			);
 
-		expect( getByRole( 'link', { name: /Learn more/ } ) ).toHaveAttribute(
-			'href',
-			'https://sitekit.withgoogle.com/support/?doc=plugin-conversion-tracking'
-		);
-	} );
+			const learnMoreLink = getByRole( 'link', { name: /Learn more/ } );
+
+			expect( learnMoreLink ).toHaveAttribute(
+				'href',
+				'https://sitekit.withgoogle.com/support/?doc=site-goals-supported-plugins'
+			);
+			expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
+		}
+	);
 } );

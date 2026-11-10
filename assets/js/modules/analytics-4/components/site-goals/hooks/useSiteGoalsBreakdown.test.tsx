@@ -33,15 +33,15 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import {
+	buildSiteGoalsBreakdownValuesReportOptions,
+	seedSiteGoalsBreakdownValuesReport,
+} from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getPreviousDate } from '@/js/util';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
-import {
-	freezeFetch,
-	provideModules,
-	provideUserCapabilities,
-} from '@tests/js/utils';
+import { provideModules, provideUserCapabilities } from '@tests/js/utils';
 import { useSiteGoalsBreakdown } from './useSiteGoalsBreakdown';
 
 describe( 'useSiteGoalsBreakdown', () => {
@@ -55,40 +55,6 @@ describe( 'useSiteGoalsBreakdown', () => {
 		const endDate = registry.select( CORE_USER ).getReferenceDate();
 
 		return { startDate: getPreviousDate( endDate, 90 ), endDate };
-	}
-
-	function getDiscoveryReportOptions() {
-		return {
-			...getDiscoveryDates(),
-			dimensions: [ FORM_DIMENSION ],
-			dimensionFilters: {
-				[ FORM_DIMENSION ]: {
-					filterType: 'emptyFilter',
-					notExpression: true,
-				},
-			},
-			metrics: [ { name: 'eventCount' } ],
-			orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
-			reportID:
-				'analytics-4_site-goals-breakdown_values_googlesitekit_form_id',
-		};
-	}
-
-	function seedDiscoveryReport( values: string[] ) {
-		const options = getDiscoveryReportOptions();
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{
-				rows: values.map( ( value ) => ( {
-					dimensionValues: [ { value } ],
-					metricValues: [ { value: '1' } ],
-				} ) ),
-			},
-			{ options }
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ options ] );
 	}
 
 	// Seeds the "Other sources" totals reports for both windows: the fixed
@@ -177,12 +143,6 @@ describe( 'useSiteGoalsBreakdown', () => {
 		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideUserCapabilities( registry );
-		// The breakdown needs the dimension and plugin conversion tracking, and
-		// the hook queries nothing until both are in place, so every case below
-		// starts from the enabled state.
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetConversionTrackingSettings( { enabled: true } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID: PROPERTY_ID,
 			availableCustomDimensions: [ 'googlesitekit_form_id' ],
@@ -208,7 +168,10 @@ describe( 'useSiteGoalsBreakdown', () => {
 			registry
 				.select( MODULES_ANALYTICS_4 )
 				.hasStartedResolution( 'getReport', [
-					getDiscoveryReportOptions(),
+					buildSiteGoalsBreakdownValuesReportOptions(
+						registry,
+						GOAL_TYPES.LEAD
+					),
 				] )
 		).toBe( false );
 		expect( result.current.breakdownValues ).toBeUndefined();
@@ -216,71 +179,32 @@ describe( 'useSiteGoalsBreakdown', () => {
 		expect( result.current.hasOtherSources ).toBe( false );
 	} );
 
-	it.each( [
-		[
-			'while plugin conversion tracking is off',
-			() =>
-				registry
-					.dispatch( CORE_SITE )
-					.receiveGetConversionTrackingSettings( { enabled: false } ),
-		],
-		[
-			'while the conversion tracking setting is still loading',
-			() => {
-				registry = createTestRegistry();
-				provideModules( registry, [
-					{
-						slug: MODULE_SLUG_ANALYTICS_4,
-						active: true,
-						connected: true,
-					},
-				] );
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-				provideUserCapabilities( registry );
-				freezeFetch(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/conversion-tracking'
-					)
-				);
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					propertyID: PROPERTY_ID,
-					availableCustomDimensions: [ 'googlesitekit_form_id' ],
-				} );
-			},
-		],
-	] )(
-		'shows no breakdown %s, even though the dimension exists',
-		( _, setup ) => {
-			setup();
-			seedDiscoveryReport( [ '5', '12' ] );
-
-			const { result } = renderHook(
-				() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
-				{ registry }
-			);
-
-			expect( result.current.breakdownValues ).toBeUndefined();
-			expect( result.current.hasBreakdownTabs ).toBe( false );
-			expect( result.current.breakdownFilter ).toBeUndefined();
-		}
-	);
-
-	it( 'shows the breakdown for a user who cannot read the conversion tracking setting', () => {
-		provideUserCapabilities( registry, {
-			googlesitekit_manage_options: false,
-		} );
-		seedDiscoveryReport( [ '5', '12' ] );
+	it( 'should keep the breakdown tabs while plugin conversion tracking is off', () => {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: false } );
+		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [
+			'5',
+			'12',
+		] );
 
 		const { result } = renderHook(
 			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
 			{ registry }
 		);
 
+		expect( result.current.breakdownValues ).toEqual( [ '5', '12' ] );
 		expect( result.current.hasBreakdownTabs ).toBe( true );
+		expect( result.current.breakdownFilter ).toEqual( {
+			[ FORM_DIMENSION ]: '5',
+		} );
 	} );
 
 	it( 'defaults the active tab to the first breakdown value', () => {
-		seedDiscoveryReport( [ '5', '12' ] );
+		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [
+			'5',
+			'12',
+		] );
 
 		const { result } = renderHook(
 			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
@@ -294,7 +218,7 @@ describe( 'useSiteGoalsBreakdown', () => {
 	} );
 
 	it( 'returns no breakdown tabs and no section filter when the discovery report finds no values', () => {
-		seedDiscoveryReport( [] );
+		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [] );
 
 		const { result } = renderHook(
 			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
@@ -306,7 +230,9 @@ describe( 'useSiteGoalsBreakdown', () => {
 	} );
 
 	it( 'exposes the unattributed count and no section filter for the Other sources tab', () => {
-		seedDiscoveryReport( [ '5' ] );
+		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [
+			'5',
+		] );
 		// 25 total events − 20 attributed to form "5" = 5 unattributed.
 		seedOtherSourcesReport( [ 'generate_lead' ], [ '5' ], 25, 20 );
 
@@ -334,7 +260,9 @@ describe( 'useSiteGoalsBreakdown', () => {
 	} );
 
 	it( 'reports no Other sources tab when all events are attributed', () => {
-		seedDiscoveryReport( [ '5' ] );
+		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [
+			'5',
+		] );
 		// All events are attributed (20 total − 20 attributed = 0 unattributed).
 		seedOtherSourcesReport( [ 'generate_lead' ], [ '5' ], 20, 20 );
 
@@ -351,7 +279,10 @@ describe( 'useSiteGoalsBreakdown', () => {
 	} );
 
 	it( 'keeps the tabs and selection when the dashboard date range changes', () => {
-		seedDiscoveryReport( [ '5', '12' ] );
+		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [
+			'5',
+			'12',
+		] );
 
 		const { result, rerender } = renderHook(
 			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),

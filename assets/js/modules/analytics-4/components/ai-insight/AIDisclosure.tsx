@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager Newsletter CTA preview - disclaimer text.
+ * AIDisclosure component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,31 +17,39 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-export default function DisclaimerText() {
-	const linkSpan = (
-		<span className="googlesitekit-rrm-newsletter-preview__link" />
-	);
+/**
+ * Internal dependencies
+ */
+import DocumentationLink from '@/js/components/DocumentationLink';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import AIIcon from './AIIcon';
 
-	return (
-		<p className="googlesitekit-rrm-newsletter-preview__disclaimer">
+const AIDisclosure: FC = () => (
+	<div className="googlesitekit-ai-disclosure">
+		<AIIcon />
+		<P className="googlesitekit-ai-disclosure__text" size={ SIZE_SMALL }>
 			{ createInterpolateElement(
 				__(
-					'By continuing, you agree to provide your email and name (if applicable) to <em>YourSite</em> Test Publication through a Google service. Google delivers your information under its <tos>Terms of Service</tos> and <pp>Privacy Policy</pp>. <em>YourSite</em> Test Publication’s use of your data is subject to their own <terms>terms</terms> and <privacypolicy>privacy policy</privacypolicy>.',
+					'This section contains data created using AI and may contain mistakes. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{
-					em: <em />,
-					tos: linkSpan,
-					pp: linkSpan,
-					terms: linkSpan,
-					privacypolicy: linkSpan,
+					a: <DocumentationLink slug="ai-insights" />,
 				}
 			) }
-		</p>
-	);
-}
+		</P>
+	</div>
+);
+
+export default AIDisclosure;

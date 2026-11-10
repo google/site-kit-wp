@@ -30,6 +30,7 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
@@ -157,19 +158,23 @@ export const INSUFFICIENT_PERMISSIONS_ERROR: ErrorObject = {
 };
 
 /**
- * Gets the report arguments of `LATEST_POST` for the registry's reference date.
+ * Gets the report arguments of `LATEST_POST` for the registry's reference date
+ * and site URLs.
  *
  * @since 1.191.0
+ * @since n.e.x.t Uses the registry's home URL and reference site URL.
  *
- * @param {Object} registry The registry with the reference date.
- * @return {Object} The post's permalink and the post's date range.
+ * @param {Object} registry The registry with the reference date and the site URLs.
+ * @return {Object} The post's permalink, its URL on the site that Site Kit reports on, and the post's date range.
  */
 export function getLatestPostReportArgs(
 	registry: WPDataRegistry
 ): PostReportArgs {
 	return getPostReportArgs(
 		LATEST_POST,
-		registry.select( CORE_USER ).getReferenceDate()
+		registry.select( CORE_USER ).getReferenceDate(),
+		registry.select( CORE_SITE ).getHomeURL(),
+		registry.select( CORE_SITE ).getReferenceSiteURL()
 	);
 }
 
@@ -295,8 +300,9 @@ export function provideLatestPostAnalyticsReports( registry: WPDataRegistry ) {
  * performance section for `LATEST_POST`.
  *
  * @since 1.191.0
+ * @since n.e.x.t Requests the post's URL on the site that Site Kit reports on.
  *
- * @param {Object} registry The registry with the reference date.
+ * @param {Object} registry The registry with the reference date and the site URLs.
  * @return {Object} The Search Console report options.
  */
 export function getLatestPostKeywordReportOptions( registry: WPDataRegistry ) {
