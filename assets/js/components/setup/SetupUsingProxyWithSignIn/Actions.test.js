@@ -25,7 +25,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { act, fireEvent, render } from '@tests/js/test-utils';
+import { act, fireEvent, render, within } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -107,6 +107,46 @@ describe( 'Actions', () => {
 		expect( actionsProps.onButtonClick ).toHaveBeenCalled();
 
 		await waitForRegistry();
+	} );
+
+	it( 'should disable the Sign in with Google button and show no spinner while the compatibility checks run', () => {
+		provideModules( registry );
+		provideSiteConnection( registry );
+
+		const { getByRole } = render(
+			<Actions { ...actionsProps } complete={ false } />,
+			{
+				viewContext: VIEW_CONTEXT_SPLASH,
+				registry,
+			}
+		);
+
+		const button = getByRole( 'button', { name: 'Sign in with Google' } );
+
+		expect( button ).toBeDisabled();
+		expect(
+			within( button ).queryByRole( 'progressbar' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should show a spinner on the Sign in with Google button and disable it when isSettingUp is true', () => {
+		provideModules( registry );
+		provideSiteConnection( registry );
+
+		const { getByRole } = render(
+			<Actions { ...actionsProps } isSettingUp />,
+			{
+				viewContext: VIEW_CONTEXT_SPLASH,
+				registry,
+			}
+		);
+
+		const button = getByRole( 'button', { name: 'Sign in with Google' } );
+
+		expect( button ).toBeDisabled();
+		expect(
+			within( button ).getByRole( 'progressbar' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render the reset button when the site is resettable', () => {
