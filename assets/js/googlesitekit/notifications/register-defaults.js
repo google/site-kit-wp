@@ -37,6 +37,7 @@ import {
 import FeatureDiscoveryCallout, {
 	FEATURE_DISCOVERY_CALLOUT_NOTIFICATION,
 } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
+import FeatureDiscoverySetupFailureNotification from '@/js/components/feature-discovery/FeatureDiscoverySetupFailureNotification';
 import FeatureDiscoverySetupSuccessNotification from '@/js/components/feature-discovery/FeatureDiscoverySetupSuccessNotification';
 import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
 import AuthError from '@/js/components/notifications/AuthError';
@@ -132,6 +133,8 @@ import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
 	ACTIVATE_ANALYTICS_NOTIFICATION,
 	CONNECT_MORE_SERVICES_NOTIFICATION,
+	FEATURE_DISCOVERY_SETUP_FAILURE_ALL_SERVICES_NOTIFICATION,
+	FEATURE_DISCOVERY_SETUP_FAILURE_WHATS_NEW_NOTIFICATION,
 	FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION,
 	FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION,
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
@@ -263,6 +266,33 @@ function requireFeatureDiscoverySetupSuccess( returnTab ) {
 				featureSlug
 			) === true
 		);
+	};
+}
+
+/**
+ * Requires the hub visit to be a return from a feature setup whose Google
+ * consent screen was cancelled or denied, to the given tab.
+ *
+ * Both tabs' notification areas share a single queue, which only shows its
+ * first notification in the area it belongs to, so each placement is limited
+ * to the tab the user is returned to.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} returnTab Path of the hub tab the notification is shown on.
+ * @return {function(): Promise<boolean>} Whether the user has returned to the tab from a cancelled or denied feature setup or not.
+ */
+function requireFeatureDiscoverySetupFailure( returnTab ) {
+	return async ( { select, resolveSelect } ) => {
+		const pendingSetup = select( CORE_FEATURE_DISCOVERY ).getPendingSetup();
+
+		if ( ! pendingSetup || pendingSetup.returnTab !== returnTab ) {
+			return false;
+		}
+
+		await resolveSelect( CORE_SITE ).getSiteInfo();
+
+		return select( CORE_SITE ).getSetupErrorCode() === 'access_denied';
 	};
 }
 
@@ -561,6 +591,29 @@ export const DEFAULT_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.DEFAULT,
 		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
 		checkRequirements: requireFeatureDiscoverySetupSuccess(
+			ALL_SERVICES_TAB_PATH
+		),
+		isDismissible: false,
+	},
+	[ FEATURE_DISCOVERY_SETUP_FAILURE_WHATS_NEW_NOTIFICATION ]: {
+		Component: FeatureDiscoverySetupFailureNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements:
+			requireFeatureDiscoverySetupFailure( WHATS_NEW_TAB_PATH ),
+		isDismissible: false,
+	},
+	[ FEATURE_DISCOVERY_SETUP_FAILURE_ALL_SERVICES_NOTIFICATION ]: {
+		Component: FeatureDiscoverySetupFailureNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_ALL_SERVICES_TOP,
+		// Use the DEFAULT group so the notification doesn't block the auto-updates banner
+		// from being shown on the "What's new" tab.
+		groupID: NOTIFICATION_GROUPS.DEFAULT,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements: requireFeatureDiscoverySetupFailure(
 			ALL_SERVICES_TAB_PATH
 		),
 		isDismissible: false,

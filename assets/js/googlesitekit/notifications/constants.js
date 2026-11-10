@@ -36,6 +36,12 @@ export const FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION =
 export const FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION =
 	'feature-discovery-setup-success-all-services';
 
+export const FEATURE_DISCOVERY_SETUP_FAILURE_WHATS_NEW_NOTIFICATION =
+	'feature-discovery-setup-failure-whats-new';
+
+export const FEATURE_DISCOVERY_SETUP_FAILURE_ALL_SERVICES_NOTIFICATION =
+	'feature-discovery-setup-failure-all-services';
+
 export const PRIORITY = {
 	ERROR_HIGH: 30,
 	ERROR_LOW: 60,

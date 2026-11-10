@@ -33,6 +33,7 @@ import {
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	getCurrentFeatureDiscoveryTabPath,
@@ -332,10 +333,14 @@ export const actions = {
 					return {};
 				}
 
+				const errorRedirectURL = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'googlesitekit-features' );
+
 				const { response, error } = ( yield commonActions.await(
 					registry
 						.dispatch( CORE_MODULES )
-						.activateModule( moduleSlug )
+						.activateModule( moduleSlug, { errorRedirectURL } )
 				) ) as {
 					response?: { moduleReauthURL: string };
 					error?: unknown;
