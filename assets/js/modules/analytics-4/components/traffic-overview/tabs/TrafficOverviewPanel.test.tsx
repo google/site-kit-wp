@@ -901,4 +901,126 @@ describe( 'TrafficOverviewPanel', () => {
 			).toBeGreaterThan( 0 );
 		} );
 	} );
+
+	describe( 'typical traffic range and published posts', () => {
+		const entityURL = 'https://example.com/about/';
+
+		/**
+		 * Reads the labels of the chart's legend items.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Element} container The element the panel rendered into.
+		 * @return {Array.<string>} The label of each legend item, in order.
+		 */
+		function getLegendLabels( container: Element ) {
+			return Array.from(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__chart-legend-label'
+				)
+			).map( ( label ) => label.textContent );
+		}
+
+		/**
+		 * Puts a daily-visitors report with traffic on every day in the store.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {string} [url] Optional. The entity URL the report covers.
+		 * @return {void}
+		 */
+		function provideGraphReport( url?: string ) {
+			provideAnalytics4MockReport(
+				registry,
+				getGraphReportArgs( {
+					startDate: '2025-01-09',
+					endDate: '2025-02-05',
+					...( url ? { url } : {} ),
+				} )
+			);
+		}
+
+		it( 'should draw the typical traffic range and the published posts on the chart on the main dashboard', async () => {
+			provideGraphReport();
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+				'Typical traffic range',
+				'Published post',
+			] );
+		} );
+
+		it( 'should draw neither without the typicalTraffic feature', async () => {
+			provideGraphReport();
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+			] );
+		} );
+
+		it( 'should draw neither on the entity dashboard', async () => {
+			provideSiteInfo( registry, { currentEntityURL: entityURL } );
+			provideGraphReport( entityURL );
+
+			const { container, getByText, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			// The day's line, with no typical range, shows the chart has the
+			// entity's report.
+			expect(
+				getByText( 'January 9, 2025: 69 visitors' )
+			).toBeInTheDocument();
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+			] );
+		} );
+
+		it( 'should draw neither while the property is gathering data', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+			provideGraphReport();
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+			] );
+		} );
+	} );
 } );

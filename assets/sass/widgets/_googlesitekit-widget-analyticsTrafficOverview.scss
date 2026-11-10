@@ -89,6 +89,13 @@ $traffic-overview-column-gap: 42px;
 			letter-spacing: 0.4px;
 		}
 
+		// Google Charts gives the typical traffic range's area a hover of its
+		// own, with no tooltip, so a day's tooltip wouldn't open over the band.
+		// The band lets the pointer through to the chart area instead.
+		.googlesitekit-traffic-overview__chart svg path[fill="#{$c-violet-v-50}"] {
+			pointer-events: none;
+		}
+
 		.googlesitekit-traffic-overview__chart div[dir]::after {
 			background-color: $c-neutral-n-200;
 			content: "";
@@ -99,7 +106,13 @@ $traffic-overview-column-gap: 42px;
 			width: 1px;
 		}
 
+		// The items sit side by side, 57px apart, and wrap where they don't
+		// fit on one row.
 		.googlesitekit-traffic-overview__chart-legend {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 57px;
 			list-style: none;
 			margin: 4px 0 0;
 			padding: 0;
@@ -112,9 +125,29 @@ $traffic-overview-column-gap: 42px;
 			margin: 0;
 		}
 
+		.googlesitekit-traffic-overview__chart-legend-line,
+		.googlesitekit-traffic-overview__chart-legend-area,
+		.googlesitekit-traffic-overview__chart-legend-dot {
+			flex-shrink: 0;
+		}
+
 		.googlesitekit-traffic-overview__chart-legend-line {
 			height: 3px;
 			width: 29px;
+		}
+
+		// The swatch is as opaque as the band, which `TRAFFIC_CHART_OPTIONS`
+		// fills at 0.5.
+		.googlesitekit-traffic-overview__chart-legend-area {
+			height: 10px;
+			opacity: 0.5;
+			width: 25px;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend-dot {
+			border-radius: 50%;
+			height: 14px;
+			width: 14px;
 		}
 
 		.googlesitekit-traffic-overview__chart-legend-label.googlesitekit-typography {
@@ -122,6 +155,18 @@ $traffic-overview-column-gap: 42px;
 			font-size: 10px;
 			letter-spacing: 0.4px;
 			line-height: 16px;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend-item .googlesitekit-info-tooltip {
+			color: $c-surfaces-on-background-variant;
+			display: inline-flex;
+		}
+
+		// The badge is 24px tall, 8px taller than the rest of its row. The -4px
+		// margins keep the row 16px tall, so the legend takes the same space
+		// with the badge as without it.
+		.googlesitekit-traffic-overview__chart-legend-badge {
+			margin-block: -4px;
 		}
 
 		// The design puts the section 64px under the chart's 28px legend row,
@@ -917,4 +962,9 @@ $traffic-overview-column-gap: 42px;
 // The padding comes on top, so the tooltip is 210px wide as in the design.
 .googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__fresh-metrics-tooltip {
 	max-width: 186px;
+}
+
+// The padding comes on top, so the tooltip is 235px wide as in the design.
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__chart-legend-tooltip {
+	max-width: 211px;
 }

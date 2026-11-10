@@ -33,6 +33,11 @@ import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-m
 import { Story } from '@/js/types/Story';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import { PublishedPost, TypicalTrafficRangeDay } from './getTrafficChartData';
+import {
+	getPlaceholderPublishedPosts,
+	getPlaceholderTypicalTrafficRange,
+} from './placeholderTrafficChartData';
 import TrafficChart from './TrafficChart';
 
 const dailyVisitorsReport = getAnalytics4MockResponse(
@@ -70,12 +75,18 @@ interface TrafficChartStoryProps {
 	setupRegistry: ( registry: WPDataRegistry ) => void;
 	/** Whether the Analytics property is still gathering data. */
 	gatheringData?: boolean;
+	/** The typical range of visitors for each day that has one. */
+	typicalTrafficRange?: TypicalTrafficRangeDay[];
+	/** The posts published in the range. */
+	publishedPosts?: PublishedPost[];
 }
 
 function Template( {
 	report,
 	setupRegistry,
 	gatheringData,
+	typicalTrafficRange,
+	publishedPosts,
 }: TrafficChartStoryProps ) {
 	// The chart's styles are scoped to the widget and the panel, so the story
 	// renders inside both.
@@ -86,6 +97,8 @@ function Template( {
 					<TrafficChart
 						report={ report }
 						gatheringData={ gatheringData }
+						typicalTrafficRange={ typicalTrafficRange }
+						publishedPosts={ publishedPosts }
 					/>
 				</div>
 			</div>
@@ -101,6 +114,25 @@ export const Ready = Template.bind( {} ) as Story< TrafficChartStoryProps >;
 Ready.storyName = 'Ready';
 Ready.args = {
 	report: dailyVisitorsReport,
+	setupRegistry: commonSetup,
+};
+
+/**
+ * The band behind the line is the typical range of visitors for each day, and
+ * a dot on the line marks each day with a published post. This story runs no
+ * visual check, because the `TrafficOverviewWidget` Typical Traffic scenario
+ * already captures the chart with both.
+ */
+export const TypicalTrafficRangeAndPublishedPosts = Template.bind(
+	{}
+) as Story< TrafficChartStoryProps >;
+TypicalTrafficRangeAndPublishedPosts.storyName =
+	'Typical Traffic Range And Published Posts';
+TypicalTrafficRangeAndPublishedPosts.args = {
+	report: dailyVisitorsReport,
+	typicalTrafficRange:
+		getPlaceholderTypicalTrafficRange( dailyVisitorsReport ),
+	publishedPosts: getPlaceholderPublishedPosts( dailyVisitorsReport ),
 	setupRegistry: commonSetup,
 };
 

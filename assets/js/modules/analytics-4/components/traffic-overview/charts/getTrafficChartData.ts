@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { groupBy } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -26,21 +31,56 @@ import { __ } from '@wordpress/i18n';
  */
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
-import { DAY_IN_SECONDS, stringToDate } from '@/js/util';
+import {
+	DAY_IN_SECONDS,
+	getDateString,
+	getLocale,
+	stringToDate,
+} from '@/js/util';
+import { PUBLISHED_POST_POINT_STYLE } from './trafficChartOptions';
+
+export interface TypicalTrafficRangeDay {
+	/** The day, as `YYYY-MM-DD`. */
+	date: string;
+	/** The fewest visitors that are typical for the day. */
+	min: number;
+	/** The most visitors that are typical for the day. */
+	max: number;
+}
+
+export interface PublishedPost {
+	/** The day the post was published, as `YYYY-MM-DD`. */
+	date: string;
+	/** The post's title. */
+	title: string;
+}
 
 export interface TrafficChartColumn {
-	/** The column type: `date` for the day, `number` for the visitors. */
-	type: 'date' | 'number';
+	/** The column type: `date` for the day, `number` for the visitors and the typical range, `string` for the tooltip and the point style. */
+	type: 'date' | 'number' | 'string';
 	/** The column heading a person sees in a day's tooltip. */
-	label: string;
+	label?: string;
+	/** What Google Charts does with a column that follows the visitors column: `interval` for a bound of the typical range, `tooltip` for the value a day's tooltip shows, and `style` for a day's point. */
+	role?: 'interval' | 'tooltip' | 'style';
 }
 
 export type TrafficChartPoint = [ Date, number ];
 
-export type TrafficChartTable = [
-	TrafficChartColumn[],
-	...TrafficChartPoint[]
-];
+/** A day and its visitors, then the day's value in each role column the table has. */
+export type TrafficChartRow = [ Date, number, ...( number | string | null )[] ];
+
+export type TrafficChartTable = [ TrafficChartColumn[], ...TrafficChartRow[] ];
+
+export interface TrafficChartDay {
+	/** The day. */
+	date: Date;
+	/** The visitors on the day. */
+	visitors: number;
+	/** The typical range of visitors for the day, when the day has one. */
+	typicalRange?: TypicalTrafficRangeDay;
+	/** The posts published on the day. */
+	posts: PublishedPost[];
+}
 
 export interface TrafficChartDataOptions {
 	/** The daily-visitors report, `undefined` until the request has finished. */
@@ -51,26 +91,55 @@ export interface TrafficChartDataOptions {
 	endDate: string;
 	/** Whether the Analytics property is still gathering data. */
 	gatheringData?: boolean;
+	/** The typical range of visitors for each day that has one. */
+	typicalTrafficRange?: TypicalTrafficRangeDay[];
+	/** The posts published in the selected range. */
+	publishedPosts?: PublishedPost[];
 }
 
 export interface TrafficChartData {
 	/** The table `GoogleChart` reads as `data`. */
 	chartData: TrafficChartTable;
+	/** The days the chart plots, oldest first. */
+	days: TrafficChartDay[];
 	/** The days the horizontal axis shows a date label under. */
 	ticks: Date[];
 	/** Whether the range's total is above zero. */
 	hasVisitors: boolean;
+	/** Whether a day the chart plots has a typical range. */
+	hasTypicalTrafficRange: boolean;
+	/** Whether a post was published on a day the chart plots. */
+	hasPublishedPosts: boolean;
 }
+
+/**
+ * The columns that draw the typical range behind the line.
+ *
+ * Google Charts adds a day's interval values to its tooltip, as in
+ * "Users: 25 [31, 52]", so the tooltip column holds the day's visitors alone.
+ */
+const TYPICAL_TRAFFIC_RANGE_COLUMNS: TrafficChartColumn[] = [
+	{ type: 'number', role: 'interval' },
+	{ type: 'number', role: 'interval' },
+	{ type: 'string', role: 'tooltip' },
+];
+
+/** The column that marks a day with a published post with a dot on the line. */
+const PUBLISHED_POST_COLUMN: TrafficChartColumn = {
+	type: 'string',
+	role: 'style',
+};
 
 /**
  * Turns the report's rows into the chart's points.
  *
  * @since 1.189.0
+ * @since n.e.x.t Changed from local to exported, for the placeholder typical range and posts.
  *
  * @param {Array<Object>} rows The daily-visitors report rows.
  * @return {Array<Array>} One `[ day, visitors ]` point for each row that has a day.
  */
-function getReportPoints( rows: ReportRow[] ): TrafficChartPoint[] {
+export function getReportPoints( rows: ReportRow[] ): TrafficChartPoint[] {
 	return rows.reduce< TrafficChartPoint[] >( ( points, row ) => {
 		const date = parseDimensionStringToDate(
 			row.dimensionValues?.[ 0 ]?.value ?? ''
@@ -141,29 +210,62 @@ function getDailyTicks( startDate: string, endDate: string ): Date[] {
 }
 
 /**
- * Builds the chart table from the daily-visitors report.
+ * Builds the chart table from the daily-visitors report, with the typical
+ * range behind the line and a dot for each day with a published post.
  *
  * @since 1.189.0
+ * @since n.e.x.t Added the `typicalTrafficRange` and `publishedPosts` options.
  *
- * @param {Object}  options                 Options.
- * @param {Object}  [options.report]        Optional. The daily-visitors report.
- * @param {string}  options.startDate       The range's first day, as `YYYY-MM-DD`.
- * @param {string}  options.endDate         The range's last day, as `YYYY-MM-DD`.
- * @param {boolean} [options.gatheringData] Optional. Whether the property is still gathering data.
- * @return {Object} The chart table, the days the axis shows a date label under, and whether the range has visitors.
+ * @param {Object}         options                       Options.
+ * @param {Object}         [options.report]              Optional. The daily-visitors report.
+ * @param {string}         options.startDate             The range's first day, as `YYYY-MM-DD`.
+ * @param {string}         options.endDate               The range's last day, as `YYYY-MM-DD`.
+ * @param {boolean}        [options.gatheringData]       Optional. Whether the property is still gathering data.
+ * @param {Array.<Object>} [options.typicalTrafficRange] Optional. The typical range of visitors for each day that has one.
+ * @param {Array.<Object>} [options.publishedPosts]      Optional. The posts published in the range.
+ * @return {Object} The chart table, the plotted days, the days the axis shows a date label under, and what the range has.
  */
 export function getTrafficChartData( {
 	report,
 	startDate,
 	endDate,
 	gatheringData = false,
+	typicalTrafficRange = [],
+	publishedPosts = [],
 }: TrafficChartDataOptions ): TrafficChartData {
 	// A property still gathering data shows no visitors, so the chart draws a
-	// flat line at zero whatever the report holds.
+	// flat line at zero whatever the report holds, with no typical range to
+	// compare it with and no posts to mark on it.
 	const points =
 		! gatheringData && report?.rows?.length
 			? getReportPoints( report.rows )
 			: getZeroVisitorPoints( startDate, endDate );
+
+	const rangesByDate = new Map< string, TypicalTrafficRangeDay >(
+		gatheringData
+			? []
+			: typicalTrafficRange.map( ( range ) => [ range.date, range ] )
+	);
+	const postsByDate = groupBy( gatheringData ? [] : publishedPosts, 'date' );
+
+	const days = points.map( ( [ date, visitors ] ): TrafficChartDay => {
+		const dateString = getDateString( date );
+
+		return {
+			date,
+			visitors,
+			typicalRange: rangesByDate.get( dateString ),
+			posts: postsByDate[ dateString ] ?? [],
+		};
+	} );
+
+	const hasTypicalTrafficRange = days.some(
+		( { typicalRange } ) => !! typicalRange
+	);
+	const hasPublishedPosts = days.some( ( { posts } ) => posts.length > 0 );
+
+	// The format Google Charts gives a day's visitors in its tooltip.
+	const visitorsFormat = new Intl.NumberFormat( getLocale() );
 
 	const totalUsers = parseInt(
 		report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value ?? '',
@@ -175,14 +277,42 @@ export function getTrafficChartData( {
 			[
 				{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 				{ type: 'number', label: __( 'Users', 'google-site-kit' ) },
+				...( hasTypicalTrafficRange
+					? TYPICAL_TRAFFIC_RANGE_COLUMNS
+					: [] ),
+				...( hasPublishedPosts ? [ PUBLISHED_POST_COLUMN ] : [] ),
 			],
-			...points,
+			...days.map(
+				( {
+					date,
+					visitors,
+					typicalRange,
+					posts,
+				} ): TrafficChartRow => [
+					date,
+					visitors,
+					// A day without a typical range leaves a gap in the band.
+					...( hasTypicalTrafficRange
+						? [
+								typicalRange?.min ?? null,
+								typicalRange?.max ?? null,
+								visitorsFormat.format( visitors ),
+						  ]
+						: [] ),
+					...( hasPublishedPosts
+						? [ posts.length ? PUBLISHED_POST_POINT_STYLE : null ]
+						: [] ),
+				]
+			),
 		],
+		days,
 		// Google Charts hides the first day's label against the edge of the
 		// chart area, so the labels start on the second day.
 		ticks: gatheringData
 			? getDailyTicks( startDate, endDate )
 			: points.slice( 1 ).map( ( [ date ] ) => date ),
 		hasVisitors: ! gatheringData && totalUsers > 0,
+		hasTypicalTrafficRange,
+		hasPublishedPosts,
 	};
 }

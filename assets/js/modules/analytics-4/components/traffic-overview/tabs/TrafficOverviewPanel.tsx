@@ -36,6 +36,10 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { useFeature } from '@/js/hooks/useFeature';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
+import {
+	getPlaceholderPublishedPosts,
+	getPlaceholderTypicalTrafficRange,
+} from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
@@ -103,6 +107,23 @@ const TrafficOverviewPanel: FC = () => {
 						report={ graphReport }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
+						// The chart compares the site with its typical traffic
+						// wherever the panel shows the key factors.
+						//
+						// TODO: Replace the placeholder typical traffic range
+						// and published posts with the site's own.
+						typicalTrafficRange={
+							showKeyFactors
+								? getPlaceholderTypicalTrafficRange(
+										graphReport
+								  )
+								: undefined
+						}
+						publishedPosts={
+							showKeyFactors
+								? getPlaceholderPublishedPosts( graphReport )
+								: undefined
+						}
 					/>
 					{ showKeyFactors && (
 						// TODO: Read the key factors and whether they have

@@ -33,13 +33,14 @@ import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
-import { render, waitFor } from '@tests/js/test-utils';
+import { render, waitFor, within } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 } from '@tests/js/utils';
 import TrafficChart from './TrafficChart';
+import { PUBLISHED_POST_POINT_STYLE } from './trafficChartOptions';
 
 jest.mock( '@/js/components/GoogleChart', () =>
 	jest
@@ -605,5 +606,225 @@ describe( 'TrafficChart', () => {
 		// handler of its own.
 		expect( onSelect ).toBeUndefined();
 		expect( chartEvents ).toBeUndefined();
+	} );
+
+	describe( 'typical traffic range and published posts', () => {
+		const typicalTrafficRange = [
+			{ date: '2025-01-15', min: 10, max: 30 },
+		];
+
+		const publishedPosts = [
+			{ date: '2025-01-15', title: 'Ice cream is good for your health' },
+			{ date: '2025-01-15', title: 'Eat ice cream every day' },
+		];
+
+		/**
+		 * Reads the text of each line the chart reads to a screen reader.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Element} container The element the chart rendered into.
+		 * @return {Array.<string>} The text of each line, in order.
+		 */
+		function getScreenReaderLines( container: Element ) {
+			return Array.from(
+				container.querySelectorAll( '.screen-reader-text' )
+			).map( ( line ) => line.textContent );
+		}
+
+		it( 'should fill the typical range in #e3d1ff at half opacity, with no edge lines', async () => {
+			render(
+				<TrafficChart
+					report={ getAnalytics4MockResponse( reportOptions ) }
+					typicalTrafficRange={ typicalTrafficRange }
+				/>,
+				{ registry }
+			);
+
+			const { data, options } = await getLastChartProps();
+
+			expect( data[ 2 ] ).toEqual( [
+				new Date( 2025, 0, 15 ),
+				14,
+				10,
+				30,
+				'14',
+			] );
+			expect( options.intervals ).toEqual( {
+				style: 'area',
+				color: '#e3d1ff',
+				fillOpacity: 0.5,
+				lineWidth: 0,
+			} );
+		} );
+
+		it( 'should keep the line #462083 and 3px wide with the typical range and the posts', async () => {
+			render(
+				<TrafficChart
+					report={ getAnalytics4MockResponse( reportOptions ) }
+					typicalTrafficRange={ typicalTrafficRange }
+					publishedPosts={ publishedPosts }
+				/>,
+				{ registry }
+			);
+
+			const { options } = await getLastChartProps();
+
+			expect( options.colors ).toEqual( [ '#462083' ] );
+			expect( options.series ).toEqual( {
+				0: { color: '#462083', lineWidth: 3, targetAxisIndex: 1 },
+			} );
+		} );
+
+		it( 'should mark a day with published posts with one dot on the line', async () => {
+			render(
+				<TrafficChart
+					report={ getAnalytics4MockResponse( reportOptions ) }
+					publishedPosts={ publishedPosts }
+				/>,
+				{ registry }
+			);
+
+			const { data } = await getLastChartProps();
+
+			expect( data.slice( 1 ) ).toEqual( [
+				[ new Date( 2025, 0, 14 ), 55, null ],
+				[ new Date( 2025, 0, 15 ), 14, PUBLISHED_POST_POINT_STYLE ],
+				[ new Date( 2025, 0, 16 ), 3, null ],
+			] );
+		} );
+
+		it( 'should end the value axis above the typical range for a range with no visitors', async () => {
+			render(
+				<TrafficChart
+					report={ {
+						totals: [ { metricValues: [ { value: '0' } ] } ],
+					} }
+					typicalTrafficRange={ [
+						{ date: '2025-01-14', min: 100, max: 300 },
+					] }
+				/>,
+				{ registry }
+			);
+
+			const { options } = await getLastChartProps();
+
+			expect( options.vAxis.viewWindow ).toEqual( { min: 0 } );
+		} );
+
+		it( 'should list the "Typical traffic range" and "Published post" legend items after the traffic item', async () => {
+			const { getAllByRole, waitForRegistry } = render(
+				<TrafficChart
+					report={ getAnalytics4MockResponse( reportOptions ) }
+					typicalTrafficRange={ typicalTrafficRange }
+					publishedPosts={ publishedPosts }
+				/>,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			const [ trafficItem, rangeItem, postItem, ...otherItems ] =
+				getAllByRole( 'listitem' );
+
+			expect( trafficItem ).toHaveTextContent( 'Last 3 days traffic' );
+
+			expect( rangeItem ).toHaveTextContent( 'Typical traffic range' );
+			expect(
+				rangeItem.querySelector(
+					'.googlesitekit-traffic-overview__chart-legend-area'
+				)
+			).toHaveStyle( { backgroundColor: '#e3d1ff' } );
+			expect(
+				within( rangeItem ).getByRole( 'button', {
+					name: /^Site Kit analyzes the last 18 months of your traffic history to estimate a typical range/,
+				} )
+			).toBeInTheDocument();
+			expect(
+				within( rangeItem ).getByText( 'Beta' )
+			).toBeInTheDocument();
+
+			expect( postItem ).toHaveTextContent( 'Published post' );
+			expect(
+				postItem.querySelector(
+					'.googlesitekit-traffic-overview__chart-legend-dot'
+				)
+			).toHaveStyle( { backgroundColor: '#a983e6' } );
+
+			expect( otherItems ).toHaveLength( 0 );
+		} );
+
+		it( 'should list only the traffic legend item when no day the chart plots has a typical range or a post', async () => {
+			const { getAllByRole, waitForRegistry } = render(
+				<TrafficChart
+					report={ getAnalytics4MockResponse( reportOptions ) }
+					typicalTrafficRange={ [
+						{ date: '2025-01-13', min: 10, max: 30 },
+					] }
+					publishedPosts={ [
+						{
+							date: '2025-01-17',
+							title: 'Ice cream is good for your health',
+						},
+					] }
+				/>,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			const items = getAllByRole( 'listitem' );
+
+			expect( items ).toHaveLength( 1 );
+			expect( items[ 0 ] ).toHaveTextContent( 'Last 3 days traffic' );
+		} );
+
+		it( "should read each day's typical range, and each post after its day, to a screen reader", async () => {
+			const { container, waitForRegistry } = render(
+				<TrafficChart
+					report={ getAnalytics4MockResponse( reportOptions ) }
+					typicalTrafficRange={ typicalTrafficRange }
+					publishedPosts={ publishedPosts }
+				/>,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			expect( getScreenReaderLines( container ) ).toEqual( [
+				'January 14, 2025: 55 visitors',
+				'January 15, 2025: 14 visitors, typical range 10 to 30',
+				'Post published on January 15, 2025: Ice cream is good for your health',
+				'Post published on January 15, 2025: Eat ice cream every day',
+				'January 16, 2025: 3 visitors',
+			] );
+		} );
+
+		it( 'should draw neither the typical range nor the posts, nor list them in the legend, while the property is gathering data', async () => {
+			const { container, getAllByRole, waitForRegistry } = render(
+				<TrafficChart
+					report={ getAnalytics4MockResponse( reportOptions ) }
+					typicalTrafficRange={ [
+						{ date: '2025-01-14', min: 10, max: 30 },
+					] }
+					publishedPosts={ [
+						{
+							date: '2025-01-14',
+							title: 'Ice cream is good for your health',
+						},
+					] }
+					gatheringData
+				/>,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			const { data } = await getLastChartProps();
+
+			expect( data[ 0 ] ).toHaveLength( 2 );
+			expect( getAllByRole( 'listitem' ) ).toHaveLength( 1 );
+			expect( getScreenReaderLines( container ) ).toEqual( [] );
+		} );
 	} );
 } );

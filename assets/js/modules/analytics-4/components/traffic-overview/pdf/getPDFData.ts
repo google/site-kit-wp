@@ -154,8 +154,8 @@ function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
 /**
  * Builds the Google Charts `DataTable` for the All Visitors line chart.
  *
- * The table has the same columns as the dashboard chart's table, which
- * `getTrafficChartData()` builds.
+ * The table has the "Day" and "Users" columns of the dashboard chart's table,
+ * which `getTrafficChartData()` builds.
  *
  * @since 1.189.0
  *
