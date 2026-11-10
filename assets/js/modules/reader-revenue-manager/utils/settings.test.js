@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { enabledFeatures } from '@/js/features';
 import {
 	getConfiguredCTAList,
 	getPaymentOption,
@@ -95,6 +96,58 @@ describe( 'getConfiguredCTAList', () => {
 				label: 'Weekly newsletter',
 			},
 		] );
+	} );
+
+	describe( 'with survey CTAs', () => {
+		const configuredCTAs = {
+			'cta-1': {
+				type: 'newsletter-signup',
+				state: 'ACTIVE',
+				displayName: 'Weekly newsletter',
+			},
+			'cta-2': {
+				type: 'survey',
+				state: 'ACTIVE',
+				displayName: 'Reader survey',
+			},
+			'cta-3': {
+				type: 'survey',
+				state: 'DRAFT',
+				displayName: '',
+			},
+		};
+
+		it( 'should list survey CTAs by name, or as "Survey" without one, alongside newsletter CTAs when the rrmSurveyCTA feature flag is enabled', () => {
+			enabledFeatures.add( 'rrmSurveyCTA' );
+
+			expect( getConfiguredCTAList( configuredCTAs ) ).toEqual( [
+				{
+					ctaID: 'cta-1',
+					ctaType: 'newsletter-signup',
+					label: 'Weekly newsletter',
+				},
+				{
+					ctaID: 'cta-2',
+					ctaType: 'survey',
+					label: 'Reader survey',
+				},
+				{
+					ctaID: 'cta-3',
+					ctaType: 'survey',
+					label: 'Survey',
+				},
+			] );
+		} );
+
+		it( 'should omit saved survey CTAs when the rrmSurveyCTA feature flag is disabled', () => {
+			expect( getConfiguredCTAList( configuredCTAs ) ).toEqual( [
+				{
+					ctaID: 'cta-1',
+					ctaType: 'newsletter-signup',
+					label: 'Weekly newsletter',
+				},
+			] );
+		} );
 	} );
 
 	it.each( [

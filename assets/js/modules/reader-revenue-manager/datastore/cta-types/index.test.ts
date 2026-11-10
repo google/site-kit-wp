@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { enabledFeatures } from '@/js/features';
 import {
 	CTA_STATES,
 	CTA_TYPES,
@@ -66,6 +67,15 @@ describe( 'modules/reader-revenue-manager CTA types', () => {
 			const handler = getCTATypeHandler( CTA_TYPES.NEWSLETTER_SIGNUP );
 
 			expect( handler.type ).toBe( CTA_TYPES.NEWSLETTER_SIGNUP );
+			expect( typeof handler.validateConfig ).toBe( 'function' );
+		} );
+
+		it( 'should return the survey handler when the rrmSurveyCTA feature flag is enabled', () => {
+			enabledFeatures.add( 'rrmSurveyCTA' );
+
+			const handler = getCTATypeHandler( CTA_TYPES.SURVEY );
+
+			expect( handler.type ).toBe( CTA_TYPES.SURVEY );
 			expect( typeof handler.validateConfig ).toBe( 'function' );
 		} );
 

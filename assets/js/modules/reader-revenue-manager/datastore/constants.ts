@@ -83,6 +83,7 @@ export const EXPRESS_SETUP_CTAS = {
 
 export const EXPRESS_SETUP_CTA_FORMS = {
 	NEWSLETTER_SIGNUP: 'expressSetupCtaForm-newsletter-signup',
+	SURVEY: 'expressSetupCtaForm-survey',
 };
 
 export const enum EXPRESS_SETUP_STEPS {

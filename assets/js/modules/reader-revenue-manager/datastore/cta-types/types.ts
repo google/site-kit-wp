@@ -18,6 +18,7 @@
 
 export const CTA_TYPES = {
 	NEWSLETTER_SIGNUP: 'NEWSLETTER_SIGNUP',
+	SURVEY: 'SURVEY',
 } as const;
 
 export type CallToActionType = typeof CTA_TYPES[ keyof typeof CTA_TYPES ];

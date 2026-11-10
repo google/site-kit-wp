@@ -24,10 +24,15 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import { isFeatureEnabled } from '@/js/features';
 import newsletterSignupCTATypeHandler, {
 	type NewsletterConfig,
 	type NewsletterSignupCTA,
 } from './newsletter-signup';
+import surveyCTATypeHandler, {
+	type SurveyCTA,
+	type SurveyConfig,
+} from './survey';
 import {
 	CTA_STATES,
 	CTA_TYPES,
@@ -49,12 +54,27 @@ export {
 	type NewsletterSignupCTA,
 } from './newsletter-signup';
 
+export {
+	type CustomAnswerChoice,
+	type CustomQuestion,
+	type CustomQuestionResponse,
+	type IdentifiedSurveyQuestion,
+	type PresetQuestion,
+	type SurveyCTA,
+	type SurveyConfig,
+	type SurveyConfigResponse,
+	type SurveyQuestion,
+	type SurveyQuestionResponse,
+} from './survey';
+
 interface CallToActionConfigByType {
 	[ CTA_TYPES.NEWSLETTER_SIGNUP ]: NewsletterConfig;
+	[ CTA_TYPES.SURVEY ]: SurveyConfig;
 }
 
 interface CallToActionByType {
 	[ CTA_TYPES.NEWSLETTER_SIGNUP ]: NewsletterSignupCTA;
+	[ CTA_TYPES.SURVEY ]: SurveyCTA;
 }
 
 export type CallToActionConfig<
@@ -74,6 +94,7 @@ export type CTA = CallToActionByType[ CallToActionType ];
 
 const CTA_TYPE_HANDLERS: Record< CallToActionType, CallToActionTypeHandler > = {
 	[ CTA_TYPES.NEWSLETTER_SIGNUP ]: newsletterSignupCTATypeHandler,
+	[ CTA_TYPES.SURVEY ]: surveyCTATypeHandler,
 	// Register additional CTA type handlers here as they are added.
 };
 
@@ -81,11 +102,16 @@ const CTA_TYPE_HANDLERS: Record< CallToActionType, CallToActionTypeHandler > = {
  * Checks whether a value is a supported CTA type.
  *
  * @since 1.187.0
+ * @since n.e.x.t The survey type is only supported when the `rrmSurveyCTA` feature flag is enabled.
  *
  * @param  type Value to check.
  * @return {boolean} Whether the value is a supported CTA type.
  */
 export function isCTAType( type: unknown ): type is CallToActionType {
+	if ( type === CTA_TYPES.SURVEY && ! isFeatureEnabled( 'rrmSurveyCTA' ) ) {
+		return false;
+	}
+
 	return (
 		typeof type === 'string' &&
 		Object.values( CTA_TYPES ).includes( type as CallToActionType )
