@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests;
 
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use MockAction;
 use stdClass;
@@ -55,6 +56,22 @@ trait RestTestTrait {
 		$this->assertEquals( 400, $response->get_status(), 'The request should get a bad request status.' );
 		$this->assertEquals( $expected_code, $response->get_data()['code'], 'The request should fail with the expected error code.' );
 		$this->assertSame( 0, $dispatch_filter->get_call_count(), 'The request should be rejected before the route callback runs.' );
+	}
+
+	/**
+	 * Grants every user `Permissions::VIEW_DASHBOARD`, which otherwise needs a Google sign-in or a role a module is shared with.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function grant_dashboard_permission() {
+		add_filter(
+			'map_meta_cap',
+			function ( $caps, $cap ) {
+				return Permissions::VIEW_DASHBOARD === $cap ? array() : $caps;
+			},
+			20,
+			2
+		);
 	}
 
 	/**
