@@ -24,7 +24,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { render, renderHook } from '@tests/js/test-utils';
 import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
@@ -59,21 +58,29 @@ describe( 'useEventProviderDeactivatedNoticeCopy', () => {
 		}
 	);
 
-	it( 'gives the description a Learn more link to the conversion tracking page', () => {
-		const { result } = renderHook(
-			() => useEventProviderDeactivatedNoticeCopy( GOAL_TYPES.ECOMMERCE ),
-			{ registry }
-		);
+	it.each( [
+		{ goalType: GOAL_TYPES.ECOMMERCE },
+		{ goalType: GOAL_TYPES.LEAD },
+	] )(
+		'should return a description with a "Learn more" link that opens the Site Goals supported plugins page in a new tab for the $goalType goal type',
+		( { goalType } ) => {
+			const { result } = renderHook(
+				() => useEventProviderDeactivatedNoticeCopy( goalType ),
+				{ registry }
+			);
 
-		const { getByRole } = render( <p>{ result.current.description }</p>, {
-			registry,
-		} );
+			const { getByRole } = render(
+				<p>{ result.current.description }</p>,
+				{ registry }
+			);
 
-		expect( getByRole( 'link', { name: /Learn more/ } ) ).toHaveAttribute(
-			'href',
-			registry
-				.select( CORE_SITE )
-				.getDocumentationLinkURL( 'plugin-conversion-tracking' )
-		);
-	} );
+			const learnMoreLink = getByRole( 'link', { name: /Learn more/ } );
+
+			expect( learnMoreLink ).toHaveAttribute(
+				'href',
+				'https://sitekit.withgoogle.com/support/?doc=site-goals-supported-plugins'
+			);
+			expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
+		}
+	);
 } );

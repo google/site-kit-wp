@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Core\REST_API;
 
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
+use WP_Error;
+use WP_REST_Request;
 use WP_REST_Server;
 
 /**
@@ -122,6 +125,96 @@ final class REST_Route {
 	}
 
 	/**
+	 * Validates a request argument against its schema, on every WordPress version Site Kit supports.
+	 *
+	 * WordPress checks `required` on a property of an object, `minLength`, `minItems` and `maxItems` only
+	 * from 5.5, and `minProperties` only from 5.6. So once WordPress's own check passes, this checks those
+	 * keywords too. WordPress 5.6 and later check them first, so this can go once Site Kit requires 5.6.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed           $value   Value of the argument.
+	 * @param WP_REST_Request $request Request the argument belongs to.
+	 * @param string          $param   Name of the argument.
+	 * @return true|WP_Error True where the value is valid, otherwise the error that rejects it.
+	 */
+	public static function validate_request_arg( $value, WP_REST_Request $request, $param ) {
+		$is_valid = rest_validate_request_arg( $value, $request, $param );
+		if ( is_wp_error( $is_valid ) ) {
+			return $is_valid;
+		}
+
+		if ( ! self::is_valid_by_keywords_older_versions_skip( $value, $request->get_attributes()['args'][ $param ] ) ) {
+			return ( new Invalid_Param_Exception( $param ) )->to_wp_error();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Checks a value against five schema keywords that WordPress checks only from 5.5 or 5.6.
+	 *
+	 * Those are `required` on a property of an object, `minLength`, `minItems`, `maxItems` and `minProperties`.
+	 * It walks `properties` and `items` as WordPress does. It checks no type, because WordPress's own check
+	 * of the value runs first.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $value  Value to check.
+	 * @param array $schema Schema of the value.
+	 * @return bool True where the value meets each of those keywords, otherwise false.
+	 */
+	private static function is_valid_by_keywords_older_versions_skip( $value, array $schema ) {
+		if ( 'array' === $schema['type'] ) {
+			// WordPress reads a scalar sent for an array as a list separated by commas.
+			$items = is_array( $value ) ? $value : wp_parse_list( $value );
+
+			if ( isset( $schema['minItems'] ) && count( $items ) < $schema['minItems'] ) {
+				return false;
+			}
+
+			if ( isset( $schema['maxItems'] ) && count( $items ) > $schema['maxItems'] ) {
+				return false;
+			}
+
+			if ( isset( $schema['items'] ) ) {
+				foreach ( $items as $item ) {
+					if ( ! self::is_valid_by_keywords_older_versions_skip( $item, $schema['items'] ) ) {
+						return false;
+					}
+				}
+			}
+		}
+
+		if ( 'object' === $schema['type'] ) {
+			// WordPress reads an empty string as an empty object from 5.4, and a stdClass as an array.
+			$properties = '' === $value ? array() : (array) $value;
+
+			foreach ( $schema['properties'] ?? array() as $name => $property ) {
+				$is_missing = ! array_key_exists( $name, $properties );
+
+				if ( $is_missing && true === ( $property['required'] ?? false ) ) {
+					return false;
+				}
+
+				if ( ! $is_missing && ! self::is_valid_by_keywords_older_versions_skip( $properties[ $name ], $property ) ) {
+					return false;
+				}
+			}
+
+			if ( isset( $schema['minProperties'] ) && count( $properties ) < $schema['minProperties'] ) {
+				return false;
+			}
+		}
+
+		if ( 'string' === $schema['type'] && isset( $schema['minLength'] ) ) {
+			return mb_strlen( $value ) >= $schema['minLength'];
+		}
+
+		return true;
+	}
+
+	/**
 	 * Parses all supported request arguments and their data.
 	 *
 	 * @since 1.0.0
@@ -137,16 +230,17 @@ final class REST_Route {
 	 * Parses data for a supported request argument.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Defaults the validate callback to {@see REST_Route::validate_request_arg()}.
 	 *
 	 * @param array $data {
 	 *     Request argument data.
 	 *
 	 *     @type string   $type              Data type of the argument. Default 'string'.
 	 *     @type string   $description       Public description of the argument. Default empty string.
-	 *     @†ype callable $validate_callback Callback to validate the argument. Default
-	 *                                       {@see rest_validate_rest_arg()}.
+	 *     @type callable $validate_callback Callback to validate the argument. Default
+	 *                                       {@see REST_Route::validate_request_arg()}.
 	 *     @type callable $sanitize_callback Callback to sanitize the argument. Default
-	 *                                       {@see rest_sanitize_rest_arg()}.
+	 *                                       {@see rest_sanitize_request_arg()}.
 	 *     @type bool     $required          Whether the argument is required. Default false.
 	 *     @type mixed    $default           Default value for the argument, if any. Default none.
 	 *     @type array    $enum              Allowlist of possible values to validate against. Default none.
@@ -161,7 +255,7 @@ final class REST_Route {
 			array(
 				'type'              => 'string',
 				'description'       => '',
-				'validate_callback' => 'rest_validate_request_arg',
+				'validate_callback' => array( self::class, 'validate_request_arg' ),
 				'sanitize_callback' => 'rest_sanitize_request_arg',
 				'required'          => false,
 				'default'           => null,

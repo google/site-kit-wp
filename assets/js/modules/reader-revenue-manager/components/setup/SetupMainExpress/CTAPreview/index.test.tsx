@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { fireEvent, render, screen } from '@tests/js/test-utils';
+import { fireEvent, render, screen, within } from '@tests/js/test-utils';
 import CTAPreview from './index';
 
 describe( 'CTAPreview', () => {
@@ -59,102 +59,6 @@ describe( 'CTAPreview', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the Pop-up and Inline tabs', () => {
-		render( <CTAPreview /> );
-
-		expect(
-			screen.getByRole( 'tab', { name: /pop-up/i } )
-		).toBeInTheDocument();
-		expect(
-			screen.getByRole( 'tab', { name: /inline/i } )
-		).toBeInTheDocument();
-	} );
-
-	it( 'should show popup content by default', () => {
-		render(
-			<CTAPreview
-				popupContent={ <div>Popup panel content</div> }
-				inlineContent={ <div>Inline panel content</div> }
-			/>
-		);
-
-		expect( screen.getByText( 'Popup panel content' ) ).toBeInTheDocument();
-		expect(
-			screen.queryByText( 'Inline panel content' )
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'should show inline content when the Inline tab is clicked', () => {
-		render(
-			<CTAPreview
-				popupContent={ <div>Popup panel content</div> }
-				inlineContent={ <div>Inline panel content</div> }
-			/>
-		);
-
-		const inlineTab = screen.getByRole( 'tab', { name: /inline/i } );
-		fireEvent.click( inlineTab );
-
-		expect(
-			screen.getByText( 'Inline panel content' )
-		).toBeInTheDocument();
-		expect(
-			screen.queryByText( 'Popup panel content' )
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'should render the popup panel with the correct class', () => {
-		const { container } = render(
-			<CTAPreview popupContent={ <div>Popup content</div> } />
-		);
-
-		expect(
-			container.querySelector(
-				'.googlesitekit-rrm-cta-preview__panel--popup'
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( 'should render the popup panel as tabpanel linked to the popup tab', () => {
-		render( <CTAPreview popupContent={ <div>Popup content</div> } /> );
-
-		const panel = screen.getByRole( 'tabpanel' );
-
-		expect( panel ).toHaveAttribute(
-			'aria-labelledby',
-			'googlesitekit-rrm-cta-preview-tab-popup'
-		);
-	} );
-
-	it( 'should render the inline panel with the correct class after switching tabs', () => {
-		const { container } = render(
-			<CTAPreview inlineContent={ <div>Inline content</div> } />
-		);
-
-		const inlineTab = screen.getByRole( 'tab', { name: /inline/i } );
-		fireEvent.click( inlineTab );
-
-		expect(
-			container.querySelector(
-				'.googlesitekit-rrm-cta-preview__panel--inline'
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( 'should render the inline panel as tabpanel linked to the inline tab after switching tabs', () => {
-		render( <CTAPreview inlineContent={ <div>Inline content</div> } /> );
-
-		const inlineTab = screen.getByRole( 'tab', { name: /inline/i } );
-		fireEvent.click( inlineTab );
-
-		const panel = screen.getByRole( 'tabpanel' );
-
-		expect( panel ).toHaveAttribute(
-			'aria-labelledby',
-			'googlesitekit-rrm-cta-preview-tab-inline'
-		);
-	} );
-
 	it( 'should not render the footer when footer prop is empty', () => {
 		const { container } = render( <CTAPreview footer="" /> );
 
@@ -167,5 +71,85 @@ describe( 'CTAPreview', () => {
 		render( <CTAPreview footer="Custom disclaimer." /> );
 
 		expect( screen.getByText( 'Custom disclaimer.' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the popup panel with the shared content and popup background by default', () => {
+		render(
+			<CTAPreview>
+				<div>Preview content</div>
+			</CTAPreview>
+		);
+
+		expect( screen.getByRole( 'tab', { name: 'Pop-up' } ) ).toHaveAttribute(
+			'aria-selected',
+			'true'
+		);
+
+		expect( screen.getByRole( 'tab', { name: 'Inline' } ) ).toHaveAttribute(
+			'aria-selected',
+			'false'
+		);
+
+		const panel = screen.getByRole( 'tabpanel', { name: 'Pop-up' } );
+
+		expect( panel ).toHaveClass(
+			'googlesitekit-rrm-cta-preview__panel--popup'
+		);
+
+		expect(
+			screen.queryByRole( 'tabpanel', { name: 'Inline' } )
+		).not.toBeInTheDocument();
+
+		const content = within( panel ).getByText( 'Preview content' );
+		const card = content.parentElement;
+
+		expect( card ).toHaveClass(
+			'googlesitekit-rrm-cta-preview__panel-card'
+		);
+
+		expect( panel.querySelectorAll( 'svg' ) ).toHaveLength( 1 );
+		expect( card?.previousElementSibling?.tagName ).toBe( 'svg' );
+		expect( card?.nextElementSibling ).toBeNull();
+	} );
+
+	it( 'should switch to the inline panel with the shared content between its images', () => {
+		render(
+			<CTAPreview>
+				<div>Preview content</div>
+			</CTAPreview>
+		);
+
+		fireEvent.click( screen.getByRole( 'tab', { name: 'Inline' } ) );
+
+		expect( screen.getByRole( 'tab', { name: 'Inline' } ) ).toHaveAttribute(
+			'aria-selected',
+			'true'
+		);
+
+		expect( screen.getByRole( 'tab', { name: 'Pop-up' } ) ).toHaveAttribute(
+			'aria-selected',
+			'false'
+		);
+
+		const panel = screen.getByRole( 'tabpanel', { name: 'Inline' } );
+
+		expect( panel ).toHaveClass(
+			'googlesitekit-rrm-cta-preview__panel--inline'
+		);
+
+		expect(
+			screen.queryByRole( 'tabpanel', { name: 'Pop-up' } )
+		).not.toBeInTheDocument();
+
+		const content = within( panel ).getByText( 'Preview content' );
+		const card = content.parentElement;
+
+		expect( card ).toHaveClass(
+			'googlesitekit-rrm-cta-preview__panel-card'
+		);
+
+		expect( panel.querySelectorAll( 'svg' ) ).toHaveLength( 2 );
+		expect( card?.previousElementSibling?.tagName ).toBe( 'svg' );
+		expect( card?.nextElementSibling?.tagName ).toBe( 'svg' );
 	} );
 } );
