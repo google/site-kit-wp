@@ -99,8 +99,7 @@ class REST_User_Surveys_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.35.0
-	 * @since n.e.x.t Declares the argument and resource schemas of each route.
-	 * @since n.e.x.t Requires the current user to have `Permissions::AUTHENTICATE` for each route.
+	 * @since n.e.x.t Declares the argument and resource schemas of each route. Requires the current user to have `Permissions::AUTHENTICATE` for each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
