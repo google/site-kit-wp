@@ -45,6 +45,7 @@ import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCo
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
+import SetupCTAOverlays from '@/js/components/notifications/SetupCTAOverlays';
 import PDFExportRoot from '@/js/components/pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from '@/js/components/pdf-export/PDFSectionsSelectionPanel';
 import Typography from '@/js/components/Typography';
@@ -163,6 +164,7 @@ const FeatureDiscoveryApp: FC = () => {
 				<HelpMenu />
 			</Header>
 			<div className="googlesitekit-module-page googlesitekit-feature-discovery">
+				{ hasConsumedPendingSetup && <SetupCTAOverlays /> }
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>

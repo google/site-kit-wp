@@ -30,6 +30,7 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
@@ -157,35 +158,44 @@ export const INSUFFICIENT_PERMISSIONS_ERROR: ErrorObject = {
 };
 
 /**
- * Gets the report arguments of `LATEST_POST` for the registry's reference date.
+ * Gets the report arguments of `LATEST_POST` for the registry's reference date
+ * and site URLs.
  *
  * @since 1.191.0
+ * @since n.e.x.t Uses the registry's home URL and reference site URL.
  *
- * @param {Object} registry The registry with the reference date.
- * @return {Object} The post's permalink and the post's date range.
+ * @param {Object} registry The registry with the reference date and the site URLs.
+ * @return {Object} The post's permalink, its URL on the site that Site Kit reports on, and the post's date range.
  */
 export function getLatestPostReportArgs(
 	registry: WPDataRegistry
 ): PostReportArgs {
 	return getPostReportArgs(
 		LATEST_POST,
-		registry.select( CORE_USER ).getReferenceDate()
+		registry.select( CORE_USER ).getReferenceDate(),
+		registry.select( CORE_SITE ).getHomeURL(),
+		registry.select( CORE_SITE ).getReferenceSiteURL()
 	);
 }
 
 /**
- * Stores `LATEST_POST` as the most recent post, so the latest post
- * performance section renders without a request.
+ * Stores a post as the most recent post, so the latest post performance
+ * section renders without a request.
  *
  * @since 1.191.0
+ * @since n.e.x.t Takes an optional post.
  *
  * @param {Object} registry The registry to put the post in.
+ * @param {Object} [post]   Optional. The post. Default `LATEST_POST`.
  * @return {void}
  */
-export function provideLatestPost( registry: WPDataRegistry ) {
+export function provideLatestPost(
+	registry: WPDataRegistry,
+	post: RecentContentItem = LATEST_POST
+) {
 	provideRecentContent(
 		registry,
-		[ LATEST_POST ],
+		[ post ],
 		LATEST_POST_RECENT_CONTENT_OPTIONS
 	);
 }
@@ -290,8 +300,9 @@ export function provideLatestPostAnalyticsReports( registry: WPDataRegistry ) {
  * performance section for `LATEST_POST`.
  *
  * @since 1.191.0
+ * @since n.e.x.t Requests the post's URL on the site that Site Kit reports on.
  *
- * @param {Object} registry The registry with the reference date.
+ * @param {Object} registry The registry with the reference date and the site URLs.
  * @return {Object} The Search Console report options.
  */
 export function getLatestPostKeywordReportOptions( registry: WPDataRegistry ) {
@@ -703,4 +714,75 @@ export function createDailyTrafficRows(
 
 		return { date, visits: getVisits( dayIndex ) };
 	} );
+}
+
+/** The endpoint that `setExpirableItemTimers()` posts to. */
+export const setExpirableItemTimersEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+);
+
+/**
+ * Gets the slugs of the timers in the requests to the endpoint that
+ * `setExpirableItemTimers()` posts to, in the order they were sent.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Array<string>} The timer slugs.
+ */
+export function requestedTimerSlugs(): string[] {
+	return fetchMock
+		.calls( setExpirableItemTimersEndpoint )
+		.flatMap( ( call ) =>
+			JSON.parse( String( call[ 1 ]?.body ) ).data.map(
+				( { slug }: { slug: string } ) => slug
+			)
+		);
+}
+
+interface RecentActivitySurveyState {
+	/** The expirable items, as expiry times in seconds, keyed by slug. */
+	expirableItems?: Record< string, number >;
+	/** The dismissed prompts, keyed by slug. */
+	dismissedPrompts?: Record< string, { expires: number; count: number } >;
+}
+
+/**
+ * Gets the expiry time of an expirable item, in seconds, a number of seconds
+ * from now.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} secondsFromNow The seconds from now, negative for a time in the past.
+ * @return {number} The expiry time, in seconds since the epoch.
+ */
+export function getExpiryFromNow( secondsFromNow: number ): number {
+	// `isExpirableItemActive()` compares the expiry with the current time,
+	// not the reference date.
+	// eslint-disable-next-line sitekit/no-direct-date
+	return Math.floor( Date.now() / 1000 ) + secondsFromNow;
+}
+
+/**
+ * Stores the expirable items and the dismissed prompts that the Recent
+ * activity survey triggers read, so the store sends no request for them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry                 The registry to put the state in.
+ * @param {Object} [state]                  Optional. The state to put in the store.
+ * @param {Object} [state.expirableItems]   Optional. The expirable items. Default `{}`.
+ * @param {Object} [state.dismissedPrompts] Optional. The dismissed prompts. Default `{}`.
+ * @return {void}
+ */
+export function provideRecentActivitySurveyState(
+	registry: WPDataRegistry,
+	{
+		expirableItems = {},
+		dismissedPrompts = {},
+	}: RecentActivitySurveyState = {}
+) {
+	registry.dispatch( CORE_USER ).receiveGetExpirableItems( expirableItems );
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetDismissedPrompts( dismissedPrompts );
 }

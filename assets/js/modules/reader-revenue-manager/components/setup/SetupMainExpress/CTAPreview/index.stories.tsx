@@ -24,6 +24,8 @@ import type { ComponentProps } from 'react';
 /**
  * Internal dependencies
  */
+import NewsletterPreview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/Preview';
+import SurveyPreview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/Preview';
 import { Story } from '@/js/types/Story';
 import CTAPreview from './index';
 
@@ -35,11 +37,67 @@ function Template( args: Props ) {
 
 export const Default = Template.bind( {} ) as Story< Props >;
 Default.storyName = 'Default';
-Default.args = {
-	popupContent: <div style={ { height: '200px' } } />,
-	inlineContent: <div style={ { height: '200px' } } />,
-};
 Default.scenario = {};
+
+function selectInlineTab() {
+	document
+		.querySelector< HTMLButtonElement >(
+			'#googlesitekit-rrm-cta-preview-tab-inline'
+		)
+		?.click();
+	return Promise.resolve();
+}
+
+export const PopupNewsletter = Template.bind( {} ) as Story< Props >;
+PopupNewsletter.storyName = 'Popup Newsletter';
+PopupNewsletter.args = {
+	children: (
+		<NewsletterPreview
+			publicationName="Example Publication"
+			ctaTitle="Your form header"
+			ctaBody="Your newsletter sign-up form text"
+			consentText="I agree to receive newsletter updates."
+			consentEnabled
+		/>
+	),
+};
+PopupNewsletter.scenario = {};
+
+export const InlineNewsletter = Template.bind( {} ) as Story< Props >;
+InlineNewsletter.storyName = 'Inline Newsletter';
+InlineNewsletter.args = PopupNewsletter.args;
+InlineNewsletter.play = selectInlineTab;
+InlineNewsletter.scenario = {
+	clickSelector: '#googlesitekit-rrm-cta-preview-tab-inline',
+};
+
+export const PopupSurvey = Template.bind( {} ) as Story< Props >;
+PopupSurvey.storyName = 'Popup Survey';
+PopupSurvey.args = {
+	children: (
+		<SurveyPreview
+			publicationName="Example Publication"
+			question="How often do you visit our site?"
+			questionAnswers={ [
+				'Daily',
+				'Weekly',
+				'Monthly',
+				'This is my first visit',
+			] }
+			questionCount={ 3 }
+			surveyText="Help us learn more about you by answering a few questions"
+		/>
+	),
+};
+PopupSurvey.scenario = {};
+
+export const InlineSurvey = Template.bind( {} ) as Story< Props >;
+InlineSurvey.storyName = 'Inline Survey';
+InlineSurvey.args = PopupSurvey.args;
+InlineSurvey.play = selectInlineTab;
+InlineSurvey.scenario = {
+	clickSelector: '#googlesitekit-rrm-cta-preview-tab-inline',
+};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/CTAPreview',

@@ -19,11 +19,23 @@
 /**
  * Internal dependencies
  */
+import {
+	ALL_SERVICES_TAB_PATH,
+	WHATS_NEW_TAB_PATH,
+} from '@/js/components/feature-discovery/constants';
 import { isFeatureEnabled } from '@/js/features';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_FEATURE_DISCOVERY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '@/js/googlesitekit/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION } from '@/js/modules/reader-revenue-manager/components/dashboard/PublicationApprovedOverlayNotification';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_FEATURE_DISCOVERY_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION_ID,
+	RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION_ID,
+	RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
@@ -272,6 +284,250 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 			expect( await checkRequirements( registry ) ).toBe( false );
 		} );
 	} );
+	describe.each( [
+		[
+			RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION_ID,
+			WHATS_NEW_TAB_PATH,
+			ALL_SERVICES_TAB_PATH,
+		],
+		[
+			RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION_ID,
+			ALL_SERVICES_TAB_PATH,
+			WHATS_NEW_TAB_PATH,
+		],
+	] )( '%s', ( notificationID, returnTab, otherTab ) => {
+		const { checkRequirements } = NOTIFICATIONS[ notificationID ];
+
+		function providePendingSetup( pendingSetup ) {
+			registry
+				.dispatch( CORE_FEATURE_DISCOVERY )
+				.receivePendingSetup( pendingSetup );
+		}
+
+		function provideOnboardingState(
+			publicationOnboardingState = PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+			paymentOption = 'subscriptions'
+		) {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationOnboardingState,
+					paymentOption,
+				} );
+		}
+
+		it( 'should not be active when there is no pending setup', async () => {
+			provideOnboardingState();
+			providePendingSetup( null );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the pending feature is not Reader Revenue Manager (full setup)', async () => {
+			provideOnboardingState();
+			providePendingSetup( {
+				featureSlug: 'newsletter-signup',
+				returnTab,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the user returned to the other tab', async () => {
+			provideOnboardingState();
+			providePendingSetup( {
+				featureSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				returnTab: otherTab,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: true,
+					connected: false,
+				},
+			] );
+			provideOnboardingState();
+			providePendingSetup( {
+				featureSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				returnTab,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the publication onboarding state is undefined', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {} );
+			providePendingSetup( {
+				featureSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				returnTab,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should be active when the user has returned to the tab from Reader Revenue Manager (full setup)', async () => {
+			provideOnboardingState();
+			providePendingSetup( {
+				featureSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				returnTab,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+		} );
+
+		it( 'should not be active when the publication is approved with no payment option chosen, so the "Publication approved" overlay can take the slot instead', async () => {
+			provideOnboardingState(
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+				''
+			);
+			providePendingSetup( {
+				featureSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				returnTab,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'feature-discovery-rrm-publication-approved-overlay', () => {
+		const { checkRequirements } =
+			NOTIFICATIONS[
+				RRM_FEATURE_DISCOVERY_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION_ID
+			];
+
+		function providePendingSetup( pendingSetup ) {
+			registry
+				.dispatch( CORE_FEATURE_DISCOVERY )
+				.receivePendingSetup( pendingSetup );
+		}
+
+		function provideApprovedNoPaymentOption( extraSettings = {} ) {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+					paymentOption: '',
+					...extraSettings,
+				} );
+		}
+
+		it( 'should not be active when there is no pending setup', async () => {
+			provideApprovedNoPaymentOption();
+			providePendingSetup( null );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the pending feature is not Reader Revenue Manager (full setup)', async () => {
+			provideApprovedNoPaymentOption();
+			providePendingSetup( {
+				featureSlug: 'newsletter-signup',
+				returnTab: WHATS_NEW_TAB_PATH,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it.each( [ [ WHATS_NEW_TAB_PATH ], [ ALL_SERVICES_TAB_PATH ] ] )(
+			'should be active regardless of which tab the user returned to (%s)',
+			async ( returnTab ) => {
+				provideApprovedNoPaymentOption();
+				providePendingSetup( {
+					featureSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					returnTab,
+				} );
+
+				expect( await checkRequirements( registry ) ).toBe( true );
+			}
+		);
+
+		it( 'should not be active when the module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: true,
+					connected: false,
+				},
+			] );
+			provideApprovedNoPaymentOption();
+			providePendingSetup( {
+				featureSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				returnTab: WHATS_NEW_TAB_PATH,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when a payment option has been chosen', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+					paymentOption: 'subscriptions',
+				} );
+			providePendingSetup( {
+				featureSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				returnTab: WHATS_NEW_TAB_PATH,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active merely because the publication onboarding state changed, without a hub return - that trigger stays dashboard-only', async () => {
+			provideApprovedNoPaymentOption( {
+				publicationOnboardingStateChanged: true,
+			} );
+			providePendingSetup( null );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'Feature Discovery hub registrations', () => {
+		it( 'should use notification IDs distinct from the dashboard registrations', () => {
+			expect(
+				RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION_ID
+			).not.toBe( RRM_SETUP_SUCCESS_NOTIFICATION_ID );
+			expect(
+				RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION_ID
+			).not.toBe( RRM_SETUP_SUCCESS_NOTIFICATION_ID );
+			expect(
+				RRM_FEATURE_DISCOVERY_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION_ID
+			).not.toBe( RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION );
+		} );
+
+		it( 'should register each hub notification independently, scoped to the Feature Discovery view context and non-persistently dismissible', () => {
+			[
+				RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION_ID,
+				RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION_ID,
+				RRM_FEATURE_DISCOVERY_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION_ID,
+			].forEach( ( notificationID ) => {
+				expect( NOTIFICATIONS[ notificationID ] ).toMatchObject( {
+					viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+					isDismissible: false,
+				} );
+			} );
+
+			// The dashboard registrations are untouched by the above.
+			expect(
+				NOTIFICATIONS[ RRM_SETUP_SUCCESS_NOTIFICATION_ID ].viewContexts
+			).toEqual( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+			expect(
+				NOTIFICATIONS[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ]
+					.viewContexts
+			).toEqual( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+		} );
+	} );
+
 	describe( 'main dashboard notifications with RRM inactive', () => {
 		it( 'should not request the user settings or log an error when the `rrmExpressSetup` feature is enabled', async () => {
 			setEnabledFeatures( [ 'rrmExpressSetup' ] );

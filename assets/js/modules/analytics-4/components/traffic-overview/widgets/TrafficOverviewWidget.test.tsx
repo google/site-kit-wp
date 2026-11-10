@@ -32,15 +32,32 @@ import {
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	RECENT_ACTIVITY_INTERACTION_TIMER,
+	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
+	RECENT_ACTIVITY_TAB_OPENED_TIMER,
+	TRAFFIC_OVERVIEW_WIDGET_SLUG,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { provideFreshMetricsReports } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	getExpiryFromNow,
+	provideFreshMetricsReports,
+	provideRecentActivitySurveyState,
+	requestedTimerSlugs,
+	setExpirableItemTimersEndpoint,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util/dates';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import {
+	dismissPromptEndpoint,
+	dismissedPromptsEndpoint,
+} from '@tests/js/mock-dismiss-prompt-endpoints';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -73,6 +90,10 @@ describe( 'TrafficOverviewWidget', () => {
 	);
 
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
+
+	const expirableItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/expirable-items'
+	);
 
 	const searchAnalyticsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
@@ -113,6 +134,12 @@ describe( 'TrafficOverviewWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+		provideRecentActivitySurveyState( registry );
+		fetchMock.post( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
+		fetchMock.post( dismissPromptEndpoint, { body: {}, status: 200 } );
 	} );
 
 	it( 'renders the widget with no header', async () => {
@@ -820,6 +847,9 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should track `view_widget` labeled `googlesitekit-traffic-overview-tab` once when the card first enters the viewport, and not again on a re-render or a second entry', async () => {
+		// Once the card is in view, the survey triggers read the latest post.
+		fetchMock.get( postsEndpoint, { body: [], status: 200 } );
+
 		const { container, rerender, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -854,6 +884,8 @@ describe( 'TrafficOverviewWidget', () => {
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		await waitForRegistry();
 	} );
 
 	it( 'should not track `view_widget` again when the user selects another tab', async () => {
@@ -1140,5 +1172,272 @@ describe( 'TrafficOverviewWidget', () => {
 			'change_tab',
 			'googlesitekit-typical-traffic-tab'
 		);
+	} );
+	describe( 'the Recent activity survey', () => {
+		const recentPost = {
+			id: 12,
+			date: '2026-09-24T10:05:00',
+			date_gmt: '2026-09-24T14:05:00',
+			link: 'http://example.com/autumn-recipes/',
+			title: { rendered: 'Autumn recipes' },
+		};
+
+		function renderWidget(
+			features = [ 'freshData' ],
+			viewContext = VIEW_CONTEXT_MAIN_DASHBOARD
+		) {
+			return render(
+				<TrafficOverviewWidget { ...widgetComponentProps } />,
+				{
+					registry,
+					viewContext,
+					features,
+				}
+			);
+		}
+
+		function clickTab( name: string ) {
+			fireEvent.click( screen.getByRole( 'tab', { name } ) );
+		}
+
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.setPropertyID( 'https://example.com/' );
+			provideFreshMetricsReports( registry, {
+				totalVisitors: 157,
+				searchPerformance: { clicks: 72, impressions: 8000 },
+			} );
+			fetchMock.get( postsEndpoint, {
+				body: [ recentPost ],
+				status: 200,
+			} );
+			fetchMock.get( searchAnalyticsEndpoint, {
+				body: [],
+				status: 200,
+			} );
+		} );
+
+		it( 'should start the "tab available" timer when the widget shows the Recent activity tab', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+			] );
+		} );
+
+		it( 'should not start the "tab available" timer when the widget does not show the Recent activity tab', async () => {
+			const { waitForRegistry } = renderWidget( [] );
+
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [] );
+		} );
+
+		it( 'should start the "tab opened" timer, and record no interaction, when the user selects the Recent activity tab for the first time', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+
+			await waitForRegistry();
+			await waitFor( () =>
+				expect( requestedTimerSlugs() ).toEqual( [
+					RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+					RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+				] )
+			);
+
+			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint, {
+				body: {
+					data: [
+						{
+							slug: RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+							expiration:
+								RECENT_ACTIVITY_TAB_OPENED_TIMER.expiresInSeconds,
+						},
+					],
+				},
+			} );
+		} );
+
+		it( 'should record the tab open only once per page load', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+			await waitForRegistry();
+
+			clickTab( 'Traffic overview' );
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+				RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+			] );
+		} );
+
+		it( 'should record an interaction when the user opens the tab in a later page load', async () => {
+			// The user opened the tab in an earlier page load.
+			const tabOpenedTimer = {
+				[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]:
+					getExpiryFromNow( DAY_IN_SECONDS ),
+			};
+			provideRecentActivitySurveyState( registry, {
+				expirableItems: tabOpenedTimer,
+			} );
+			// The response to a timer request has all the user's expirable
+			// items, so the "tab available" timer keeps the "tab opened" one.
+			fetchMock.post(
+				setExpirableItemTimersEndpoint,
+				{ body: tabOpenedTimer, status: 200 },
+				{ overwriteRoutes: true }
+			);
+
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+
+			await waitForRegistry();
+			await waitFor( () =>
+				expect( requestedTimerSlugs() ).toEqual( [
+					RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+					RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+				] )
+			);
+		} );
+
+		it( 'should record nothing when the user selects another tab', async () => {
+			fetchMock.get(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+				),
+				{ body: benchmarkingData, status: 200 }
+			);
+
+			const { waitForRegistry } = renderWidget( [
+				'freshData',
+				'typicalTraffic',
+			] );
+
+			await waitForRegistry();
+
+			clickTab( 'Typical traffic Beta' );
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+			] );
+		} );
+
+		it( 'should record nothing when the user clicks the tab already shown', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Traffic overview' );
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+			] );
+		} );
+
+		it( 'should not start the timers, count the visit or trigger a survey when Analytics is not connected', async () => {
+			// A new registry, without the expirable items and the dismissed
+			// prompts that the outer `beforeEach()` stores, so the survey
+			// triggers would have to request them.
+			registry = createTestRegistry();
+			registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+			provideUserInfo( registry );
+			provideSiteInfo( registry );
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+					connected: false,
+				},
+			] );
+			provideModuleRegistrations( registry );
+			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			fetchMock.get( expirableItemsEndpoint, { body: {}, status: 200 } );
+			fetchMock.get( dismissedPromptsEndpoint, {
+				body: {},
+				status: 200,
+			} );
+			fetchMock.post( surveyTriggerEndpoint, { body: {}, status: 200 } );
+
+			const { container, waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			act( () => {
+				simulateIntersection(
+					container.querySelector(
+						'.googlesitekit-widget--analyticsTrafficOverview'
+					) as Element,
+					true
+				);
+			} );
+
+			await waitForRegistry();
+
+			// The Recent activity tab still shows, with its Analytics setup CTA.
+			expect(
+				screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole( 'button', { name: 'Set up Analytics' } )
+			).toBeInTheDocument();
+
+			expect( fetchMock ).not.toHaveFetched( expirableItemsEndpoint );
+			expect( fetchMock ).not.toHaveFetched(
+				setExpirableItemTimersEndpoint
+			);
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+			expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
+		} );
+
+		it( 'should not start the timers, count the visit or request the latest post for a view-only user', async () => {
+			const { container, waitForRegistry } = renderWidget(
+				[ 'freshData' ],
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+
+			await waitForRegistry();
+
+			act( () => {
+				simulateIntersection(
+					container.querySelector(
+						'.googlesitekit-widget--analyticsTrafficOverview'
+					) as Element,
+					true
+				);
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
+			).toBeInTheDocument();
+
+			expect( fetchMock ).not.toHaveFetched(
+				setExpirableItemTimersEndpoint
+			);
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+			expect( fetchMock ).not.toHaveFetched( postsEndpoint );
+		} );
 	} );
 } );

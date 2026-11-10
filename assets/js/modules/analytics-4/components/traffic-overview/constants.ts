@@ -17,6 +17,11 @@
  */
 
 /**
+ * Internal dependencies
+ */
+import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util/dates';
+
+/**
  * The DOM `id` of the Traffic Overview tab. The panel points its
  * `aria-labelledby` at this `id`, so the tab names the panel.
  */
@@ -67,3 +72,105 @@ export const RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS = 3;
 
 /** The `getRecentContent` options that select the most recently published post. */
 export const LATEST_POST_RECENT_CONTENT_OPTIONS = { count: 1 };
+
+/** A `CORE_USER` expirable item timer, as `setExpirableItemTimers()` takes it. */
+export interface ExpirableItemTimer {
+	/** The expirable item slug. */
+	slug: string;
+	/** How long the timer runs, in seconds. */
+	expiresInSeconds: number;
+}
+
+/**
+ * The survey trigger ID for users who have never opened the Recent activity
+ * tab.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_SURVEY_TRIGGER_ZERO_INTERACTION =
+	'view_fresh_data_recent_activity_zero_interaction';
+
+/**
+ * The survey trigger ID for users who opened the Recent activity tab, but did
+ * not interact with it.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED =
+	'view_fresh_data_recent_activity_opened_but_not_interacted';
+
+/**
+ * The survey trigger ID for users who opened the Recent activity tab and
+ * interacted with it.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED =
+	'view_fresh_data_recent_activity_opened_and_interacted';
+
+/**
+ * The timer that starts when the Recent activity tab first shows on the
+ * user's dashboard.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_TAB_AVAILABLE_TIMER: ExpirableItemTimer = {
+	slug: 'fresh-data-recent-activity-tab-available',
+	expiresInSeconds: 2 * WEEK_IN_SECONDS,
+};
+
+/**
+ * The timer that starts when the user first opens the Recent activity tab.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_TAB_OPENED_TIMER: ExpirableItemTimer = {
+	slug: 'fresh-data-recent-activity-tab-opened',
+	expiresInSeconds: WEEK_IN_SECONDS,
+};
+
+/**
+ * The timer that starts at the user's first meaningful interaction with the
+ * Recent activity tab.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_INTERACTION_TIMER: ExpirableItemTimer = {
+	slug: 'fresh-data-recent-activity-interaction',
+	expiresInSeconds: WEEK_IN_SECONDS,
+};
+
+/**
+ * The prompt slug whose dismiss count counts the page loads in which the
+ * Traffic card was in view.
+ *
+ * @since n.e.x.t
+ */
+export const TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG =
+	'fresh-data-traffic-card-visit';
+
+/**
+ * The number of Traffic card visits after which a user who never opened the
+ * Recent activity tab can get the zero interaction survey.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT = 3;
+
+/**
+ * How long, in seconds, the "tab available" timer can have left for the zero
+ * interaction survey to show, so it shows 10 to 14 days after the tab became
+ * available.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_ZERO_INTERACTION_MAX_SECONDS_LEFT =
+	4 * DAY_IN_SECONDS;
+
+/**
+ * The most days since the latest post was published for the zero interaction
+ * survey to show.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_ZERO_INTERACTION_MAX_POST_AGE_DAYS = 7;

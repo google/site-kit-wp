@@ -1846,6 +1846,46 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toHaveLength( 1 );
 	} );
 
+	it( 'should link "Learn more" in the form tab tooltip to the Plugin conversion tracking page', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { container, findByRole, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const infoTooltip = container
+			.querySelector( '.googlesitekit-site-goals-breakdown-tabs' )
+			?.querySelector( '.googlesitekit-info-tooltip' );
+		expect( infoTooltip ).toBeInTheDocument();
+
+		fireEvent.mouseOver( infoTooltip as Element );
+
+		const tooltip = await findByRole( 'tooltip' );
+
+		expect( tooltip ).toHaveTextContent(
+			'about Plugin conversion tracking'
+		);
+		expect(
+			within( tooltip ).getByRole( 'link', { name: /Learn more/ } )
+		).toHaveAttribute(
+			'href',
+			'https://sitekit.withgoogle.com/support/?doc=plugin-conversion-tracking'
+		);
+	} );
+
 	it( 'renders tabs only after form titles resolve', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

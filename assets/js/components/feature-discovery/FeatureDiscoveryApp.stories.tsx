@@ -45,7 +45,14 @@ import {
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { setPendingSetup } from '@/js/googlesitekit/feature-discovery/pending-setup';
+import { createNotifications } from '@/js/googlesitekit/notifications';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { registerNotifications as registerReaderRevenueManagerNotifications } from '@/js/modules/reader-revenue-manager/notifications';
 import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
@@ -298,6 +305,91 @@ WhatsNewWithInPlaceSetupSuccess.args = {
 };
 WhatsNewWithInPlaceSetupSuccess.scenario = {
 	readySelector: '.googlesitekit-feature-success-notice',
+};
+
+function provideReaderRevenueManager(
+	registry: Registry,
+	{
+		paymentOption,
+		publicationOnboardingState = PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+	}: { paymentOption: string; publicationOnboardingState?: string }
+) {
+	provideModules( registry, [
+		{
+			slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+			active: true,
+			connected: true,
+		},
+	] );
+	provideModuleRegistrations( registry );
+
+	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
+		publicationID: '1234',
+		publicationOnboardingState,
+		paymentOption,
+		productIDs: [ 'product-a', 'product-b' ],
+		productID: 'product-a',
+	} );
+
+	registerReaderRevenueManagerNotifications(
+		createNotifications( registry )
+	);
+}
+
+export const WhatsNewWithRRMSetupSuccess = Template.bind(
+	{}
+) as Story< StoryArgs >;
+WhatsNewWithRRMSetupSuccess.storyName =
+	'"What’s new" with Reader Revenue Manager setup success notice';
+WhatsNewWithRRMSetupSuccess.parameters = { route: WHATS_NEW_TAB_PATH };
+WhatsNewWithRRMSetupSuccess.args = {
+	setupRegistry: async ( registry: Registry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+		provideNotifications( registry, [] );
+
+		provideReaderRevenueManager( registry, {
+			paymentOption: 'subscriptions',
+		} );
+
+		await setPendingSetup(
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			WHATS_NEW_TAB_PATH
+		);
+	},
+};
+WhatsNewWithRRMSetupSuccess.scenario = {
+	readySelector: '.googlesitekit-notice--success',
+};
+
+export const AllServicesWithRRMPublicationApprovedOverlay = Template.bind(
+	{}
+) as Story< StoryArgs >;
+AllServicesWithRRMPublicationApprovedOverlay.storyName =
+	'"All services" with Reader Revenue Manager publication approved overlay';
+AllServicesWithRRMPublicationApprovedOverlay.parameters = {
+	route: ALL_SERVICES_TAB_PATH,
+};
+AllServicesWithRRMPublicationApprovedOverlay.args = {
+	setupRegistry: async ( registry: Registry ) => {
+		provideFeatures( registry, sampleFeatures );
+		registry
+			.dispatch( CORE_USER )
+			.receiveInitialSiteKitVersion( INITIAL_VERSION );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+		provideNotifications( registry, [] );
+
+		provideReaderRevenueManager( registry, { paymentOption: '' } );
+
+		await setPendingSetup(
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			ALL_SERVICES_TAB_PATH
+		);
+	},
+};
+AllServicesWithRRMPublicationApprovedOverlay.scenario = {
+	readySelector: '.googlesitekit-overlay-card',
 };
 
 export const WhatsNewEmpty = Template.bind( {} ) as Story< StoryArgs >;
