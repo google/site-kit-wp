@@ -121,10 +121,12 @@ const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
 
 	if ( isConnected === true ) {
 		return (
-			<FeatureSuccessNotice
-				slug={ slug }
-				onDismiss={ handleSuccessDismiss }
-			/>
+			<article className="googlesitekit-feature-list-item">
+				<FeatureSuccessNotice
+					slug={ slug }
+					onDismiss={ handleSuccessDismiss }
+				/>
+			</article>
 		);
 	}
 
@@ -134,42 +136,50 @@ const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
 
 	if ( SetupComponent ) {
 		return (
-			<Suspense
-				fallback={
-					<FeatureCard
+			<div className="googlesitekit-feature-list-item">
+				<Suspense
+					fallback={
+						<FeatureCard
+							slug={ slug }
+							{ ...props }
+							ctaButton={
+								<FeatureCTAButton isBusy isTertiary>
+									{ feature?.setup?.ctaLabel }
+								</FeatureCTAButton>
+							}
+						/>
+					}
+				>
+					<SetupComponent
 						slug={ slug }
 						{ ...props }
-						ctaButton={
-							<FeatureCTAButton isBusy isTertiary>
-								{ feature?.setup?.ctaLabel }
-							</FeatureCTAButton>
-						}
+						isSetupRequested={ isSetupRequested }
+						onSetupRequestHandled={ onSetupRequestHandled }
 					/>
-				}
-			>
-				<SetupComponent
-					slug={ slug }
-					{ ...props }
-					isSetupRequested={ isSetupRequested }
-					onSetupRequestHandled={ onSetupRequestHandled }
-				/>
-			</Suspense>
+				</Suspense>
+			</div>
 		);
 	}
 
 	if ( setupError ) {
 		return (
-			<FeatureSetupErrorNotice
-				error={ setupError }
-				isRetrying={ isRetrying }
-				onDismiss={ handleDismiss }
-				onRetry={ handleRetry }
-				slug={ slug }
-			/>
+			<div className="googlesitekit-feature-list-item">
+				<FeatureSetupErrorNotice
+					error={ setupError }
+					isRetrying={ isRetrying }
+					onDismiss={ handleDismiss }
+					onRetry={ handleRetry }
+					slug={ slug }
+				/>
+			</div>
 		);
 	}
 
-	return <FeatureCard slug={ slug } { ...props } />;
+	return (
+		<div className="googlesitekit-feature-list-item">
+			<FeatureCard slug={ slug } { ...props } />
+		</div>
+	);
 };
 
 export default FeatureListItem;

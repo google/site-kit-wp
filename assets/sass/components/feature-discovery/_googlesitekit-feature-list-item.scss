@@ -1,5 +1,5 @@
 /**
- * Feature error notice styles.
+ * Feature list item styles.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -18,18 +18,12 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-feature-discovery__content {
+	.googlesitekit-feature-list-item {
+		border-bottom: 1px solid $c-neutral-n-100;
+		padding-block: 30px;
+	}
 
-		.googlesitekit-feature-setup-error-notice {
-			margin-top: 20px;
-		}
-
-		// A success notice in a feature's place in the list is spaced as the
-		// setup error notice that can take the same place, but not where it is
-		// shown at the top of the list on return from a setup flow.
-		.googlesitekit-feature-goal-group > .googlesitekit-feature-success-notice,
-		.googlesitekit-whats-new > .googlesitekit-feature-success-notice {
-			margin-top: 20px;
-		}
+	.googlesitekit-whats-new .googlesitekit-feature-list-item:last-child {
+		border-bottom: none;
 	}
 }

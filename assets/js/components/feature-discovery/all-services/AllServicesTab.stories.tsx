@@ -24,7 +24,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { Select } from 'googlesitekit-data';
 import {
 	INITIAL_VERSION,
 	sampleFeatures,
@@ -36,12 +35,9 @@ import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContex
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
-	FEATURE_SETUP_TYPES,
 	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
-import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
@@ -76,25 +72,9 @@ WithSetupSuccessNotice.storyName = 'With Setup Success Notice';
 WithSetupSuccessNotice.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		provideSiteInfo( registry );
-		provideFeatures( registry, [
-			{
-				slug: 'set-up-feature',
-				title: 'Set up feature',
-				setup: {
-					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
-					ctaLabel: 'Set up now',
-					isEnabled: () => true,
-				},
-				successNotice: {
-					title: 'Success! AdSense is set up',
-					description:
-						'You are now monetizing your website with relevant ads',
-				},
-			},
-		] );
 		provideNotifications( registry, [] );
 		registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
-			featureSlug: 'set-up-feature',
+			featureSlug: 'enabled-test-feature',
 			returnTab: ALL_SERVICES_TAB_PATH,
 		} );
 	},
@@ -105,30 +85,6 @@ WithInPlaceSetupSuccessNotice.storyName = 'With In-Place Setup Success Notice';
 WithInPlaceSetupSuccessNotice.args = {
 	// Key metrics was set up without leaving the hub, so its success notice
 	// takes the place of its card in the list.
-	features: sampleFeatures.map( ( feature ) =>
-		feature.slug === 'key-metrics'
-			? {
-					...feature,
-					setup: {
-						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-						ctaLabel: 'Set up now',
-						isEnabled: () => true,
-					},
-					successNotice: {
-						title: 'Success! Key metrics are set up',
-						description:
-							'Your key metrics are now shown on your dashboard',
-						cta: {
-							label: 'View on dashboard',
-							getURL: ( select: Select ) =>
-								select( CORE_SITE ).getAdminURL(
-									'googlesitekit-dashboard'
-								),
-						},
-					},
-			  }
-			: feature
-	),
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		provideSiteInfo( registry );
 
@@ -155,11 +111,7 @@ export default {
 
 				provideModules( registry, sampleModules );
 				provideModuleRegistrations( registry );
-
-				provideFeatures(
-					registry,
-					( args?.features as Partial< Feature >[] ) || sampleFeatures
-				);
+				provideFeatures( registry, sampleFeatures );
 
 				args?.setupRegistry?.( registry );
 			}
