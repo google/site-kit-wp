@@ -20,8 +20,8 @@ use WP_Error;
 /**
  * Assembles the benchmarking response for a pair of dates.
  *
- * Everything the Typical Traffic tab renders comes from here, so the tab makes
- * one request and has one loading state instead of eight.
+ * The Traffic overview tab reads all of its benchmarking data from here, so the
+ * tab makes one request and has one loading state instead of eight.
  *
  * @since 1.190.0
  * @access private
@@ -81,7 +81,7 @@ class Response_Builder {
 	 *
 	 *     @type array $visits         Visit totals for the selected period and the one before it.
 	 *     @type array $dailyTraffic   List of the days of the selected period, oldest first, each as `array( 'date' => 'YYYY-MM-DD', 'visits' => int )`.
-	 *     @type array $dimensions     Dimension codes, in the order the Typical Traffic tab shows them.
+	 *     @type array $dimensions     Dimension codes, in the order the Traffic overview tab shows them.
 	 *     @type array $contextualData Ranked rows, keyed by the dimension they belong to.
 	 * }
 	 */

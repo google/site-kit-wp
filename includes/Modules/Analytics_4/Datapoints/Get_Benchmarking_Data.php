@@ -25,8 +25,8 @@ use WP_Error;
 /**
  * Class for the benchmarking data datapoint.
  *
- * Everything the Typical Traffic tab renders comes back from this one request,
- * so the tab has one loading state and one error state.
+ * The Traffic overview tab reads all of its benchmarking data from this one
+ * request, so the tab has one loading state and one error state for it.
  *
  * @since 1.190.0
  * @access private
@@ -187,7 +187,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	/**
 	 * Checks whether the current user is allowed to access the datapoint.
 	 *
-	 * The Typical Traffic tab is part of the shared dashboard, so a view-only
+	 * The Traffic overview tab is part of the shared dashboard, so a view-only
 	 * reader has to reach this datapoint.
 	 *
 	 * @since 1.190.0

@@ -71,10 +71,8 @@ import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
-import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { getDateString, stringToDate } from '@/js/util';
 import { ErrorObject } from '@/js/util/errors';
 
 interface FreshMetricsFigures {
@@ -682,38 +680,6 @@ export function forDimensions( ...dimensions: string[] ) {
 			),
 			dimensions
 		);
-}
-
-/**
- * Builds the daily rows of a benchmarking response, for the given number of
- * days up to and including the given last day.
- *
- * The checked-in `benchmarking-data.json` fixture has only four days.
- *
- * @since n.e.x.t
- *
- * @param {number}   days      The number of rows, one for each day.
- * @param {string}   endDate   The last day, as `YYYY-MM-DD`.
- * @param {Function} getVisits Returns a day's visits, given the day's position in the rows, from `0`.
- * @return {Array.<Object>} The `{ date, visits }` rows, oldest first.
- */
-export function createDailyTrafficRows(
-	days: number,
-	endDate: string,
-	getVisits: ( dayIndex: number ) => number
-): BenchmarkingDailyTrafficRow[] {
-	// `setDate()` moves the calendar day and keeps the time of day, so a
-	// daylight-saving change inside the rows doesn't skip or repeat a day.
-	const day = stringToDate( endDate );
-	day.setDate( day.getDate() - days + 1 );
-
-	return Array.from( { length: days }, ( _value, dayIndex ) => {
-		const date = getDateString( day );
-
-		day.setDate( day.getDate() + 1 );
-
-		return { date, visits: getVisits( dayIndex ) };
-	} );
 }
 
 /** The endpoint that `setExpirableItemTimers()` posts to. */

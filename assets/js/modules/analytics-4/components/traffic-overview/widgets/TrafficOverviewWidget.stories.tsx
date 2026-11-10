@@ -33,7 +33,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
-import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
@@ -56,7 +55,6 @@ import {
 	INTERNAL_SERVER_ERROR,
 	LATEST_POST,
 	createBreakdownReport,
-	createDailyTrafficRows,
 	getExpiryFromNow,
 	getRecentTrafficBreakdownReportOptions,
 	provideFreshMetricsReports,
@@ -69,10 +67,6 @@ import {
 	provideSiteVisitorsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	decodedBenchmarkingResponse,
-	provideBenchmarkingData,
-} from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -119,9 +113,7 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
 	// Storing the creation time stops a request for the Analytics property.
-	// `2024-01-01` sits before the selected range, so the chart draws no marker,
-	// and more than thirteen months before the reference date, so the widget
-	// shows the Typical Traffic tab when `typicalTraffic` is on.
+	// `2024-01-01` sits before the selected range, so the chart draws no marker.
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
@@ -339,42 +331,6 @@ TypicalTrafficWithInsights.parameters = {
 };
 TypicalTrafficWithInsights.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-};
-
-export const TypicalTrafficSelected = Template.bind(
-	{}
-) as Story< TrafficOverviewWidgetStoryProps >;
-TypicalTrafficSelected.storyName =
-	'Typical Traffic Selected (typicalTraffic enabled)';
-TypicalTrafficSelected.args = {
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		provideTrafficOverviewReports( registry );
-
-		const dates = registry.select( CORE_USER ).getDateRangeDates();
-
-		// The checked-in response has only four days. So the chart gets the 28
-		// days of `DESIGN_DAILY_VISITS` times 100, which puts labels in the
-		// thousands on the value axis, and the reference images show each label
-		// in full.
-		provideBenchmarkingData( registry, dates, {
-			...decodedBenchmarkingResponse,
-			dailyTraffic: createDailyTrafficRows(
-				28,
-				dates.endDate,
-				( dayIndex ) => DESIGN_DAILY_VISITS[ dayIndex ] * 100
-			),
-		} );
-	},
-};
-TypicalTrafficSelected.parameters = {
-	features: [ 'typicalTraffic' ],
-};
-TypicalTrafficSelected.scenario = {
-	readySelector: '[id^="googlesitekit-chart-"] svg',
-	// The mouse stays over the tab after the click, so the snapshot shows the
-	// tab's hover background.
-	clickSelector: '#googlesitekit-typical-traffic-tab',
 };
 
 /**

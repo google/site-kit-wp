@@ -28,12 +28,6 @@ import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util/dates';
 export const TRAFFIC_OVERVIEW_TAB_ID = 'googlesitekit-traffic-overview-tab';
 
 /**
- * The DOM `id` of the Typical Traffic tab. The panel points its
- * `aria-labelledby` at this `id`, so the tab names the panel.
- */
-export const TYPICAL_TRAFFIC_TAB_ID = 'googlesitekit-typical-traffic-tab';
-
-/**
  * The DOM `id` of the Recent activity tab. The Recent activity panel points
  * its `aria-labelledby` at the tab's `id`, so the tab names the panel.
  */
