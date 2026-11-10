@@ -46,6 +46,7 @@ class Survey_Timeouts extends User_Setting {
 	 * Gets survey timeouts.
 	 *
 	 * @since 1.73.0
+	 * @since n.e.x.t Returns each trigger ID as a string.
 	 *
 	 * @return array Survey timeouts array.
 	 */
@@ -53,7 +54,8 @@ class Survey_Timeouts extends User_Setting {
 		$surveys = $this->get();
 		$surveys = $this->sanitize_list_items( $surveys );
 
-		return array_keys( $surveys );
+		// PHP stores a numeric trigger ID, such as '123', as an integer key.
+		return array_map( 'strval', array_keys( $surveys ) );
 	}
 
 	/**

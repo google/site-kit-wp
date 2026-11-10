@@ -61,6 +61,9 @@ class REST_Audience_Settings_ControllerTest extends TestCase {
 		$this->controller        = new REST_Audience_Settings_Controller(
 			$this->audience_settings
 		);
+
+		$this->audience_settings->register();
+		$this->grant_dashboard_permission();
 	}
 
 	public function tear_down() {
@@ -96,5 +99,135 @@ class REST_Audience_Settings_ControllerTest extends TestCase {
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
 
 		$this->assertEqualSets( $routes, $get_routes, 'Audience settings REST route should be registered.' );
+	}
+
+	public function test_get_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$saved_settings = array(
+			'configuredAudiences'                => array( 'properties/12345678/audiences/12345', 'properties/12345678/audiences/67890' ),
+			'isAudienceSegmentationWidgetHidden' => false,
+			'didSetAudiences'                    => true,
+		);
+		$this->audience_settings->set( $saved_settings );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/audience-settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status(), 'GET endpoint should answer with the audience settings.' );
+		$this->assertEqualSetsWithIndex( $saved_settings, $response->get_data(), 'GET endpoint should return the saved audience settings.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/audience-settings', 'GET endpoint response should match its resource schema.' );
+	}
+
+	public function test_get_settings__defaults() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/audience-settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'configuredAudiences'                => null,
+				'isAudienceSegmentationWidgetHidden' => false,
+				'didSetAudiences'                    => false,
+			),
+			$response->get_data(),
+			'GET endpoint should return the default audience settings where none are saved.'
+		);
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/audience-settings', 'GET endpoint response with the default settings should match its resource schema.' );
+	}
+
+	public function test_set_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/audience-settings' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => array(
+						'configuredAudiences' => array( 'properties/12345678/audiences/12345' ),
+						'isAudienceSegmentationWidgetHidden' => false,
+						'didSetAudiences'     => false,
+					),
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status(), 'POST endpoint should accept the settings the dashboard sends.' );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'configuredAudiences'                => array( 'properties/12345678/audiences/12345' ),
+				'isAudienceSegmentationWidgetHidden' => false,
+				'didSetAudiences'                    => true,
+			),
+			$response->get_data(),
+			'POST endpoint should save the audiences, and record that the user has picked audiences at least once.'
+		);
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/audience-settings', 'POST endpoint response should match its resource schema.' );
+	}
+
+	/**
+	 * @dataProvider provider_set_settings__invalid_data
+	 *
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
+	 */
+	public function test_set_settings__invalid_data( $body, $expected_code ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$saved_settings = array(
+			'configuredAudiences'                => array( 'properties/12345678/audiences/12345' ),
+			'isAudienceSegmentationWidgetHidden' => false,
+			'didSetAudiences'                    => true,
+		);
+		$this->audience_settings->set( $saved_settings );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/audience-settings' );
+		$request->set_body_params( $body );
+
+		$this->assertRESTRequestRejected( $request, $expected_code );
+		$this->assertEqualSetsWithIndex( $saved_settings, $this->audience_settings->get(), 'POST endpoint should keep the saved audience settings for invalid data.' );
+	}
+
+	public function provider_set_settings__invalid_data() {
+		return array(
+			'no data'                                  => array(
+				array(),
+				'rest_missing_callback_param',
+			),
+			'data has no settings'                     => array(
+				array( 'data' => array() ),
+				'rest_invalid_param',
+			),
+			'settings is empty'                        => array(
+				array( 'data' => array( 'settings' => array() ) ),
+				'rest_invalid_param',
+			),
+			'settings has a key that is not a setting' => array(
+				array( 'data' => array( 'settings' => array( 'favoriteColor' => 'blue' ) ) ),
+				'rest_invalid_param',
+			),
+			'configuredAudiences is not a list'        => array(
+				array( 'data' => array( 'settings' => array( 'configuredAudiences' => array( 'name' => 'properties/12345678/audiences/12345' ) ) ) ),
+				'rest_invalid_param',
+			),
+			'configuredAudiences is null'              => array(
+				array( 'data' => array( 'settings' => array( 'configuredAudiences' => null ) ) ),
+				'rest_invalid_param',
+			),
+			'the widget flag is not a boolean'         => array(
+				array( 'data' => array( 'settings' => array( 'isAudienceSegmentationWidgetHidden' => 'hidden' ) ) ),
+				'rest_invalid_param',
+			),
+		);
 	}
 }
