@@ -525,6 +525,21 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'selectPublication', () => {
+			const cta = {
+				name: 'organizations/organization-1/publications/publication-1/ctas/cta-1',
+				type: 'NEWSLETTER_SIGNUP',
+			};
+
+			function connectPublicationWithCTAs() {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( { publicationID: 'publication-1' } );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( [ cta ] );
+			}
+
 			it( 'should throw an error if a publication object is not provided', () => {
 				expect( () =>
 					registry
@@ -854,6 +869,49 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				expect( settings ).not.toHaveProperty( 'contentPolicyState' );
 				expect( settings ).not.toHaveProperty( 'policyInfoLink' );
+			} );
+
+			it( 'should clear the CTAs when a different publication is selected', async () => {
+				// Reading the cleared CTAs starts their resolver, which
+				// requests the saved publication's CTAs.
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+					)
+				);
+
+				connectPublicationWithCTAs();
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-2',
+						onboardingState: 'ONBOARDING_COMPLETE',
+					} );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getCTAs();
+			} );
+
+			it( 'should keep the CTAs when the connected publication is selected again', async () => {
+				connectPublicationWithCTAs();
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-1',
+						onboardingState: 'ONBOARDING_COMPLETE',
+					} );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
 			} );
 		} );
 	} );
