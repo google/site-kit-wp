@@ -11,10 +11,9 @@
 namespace Google\Site_Kit\Core\Dismissals;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use WP_Error;
+use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -78,6 +77,7 @@ class REST_Dismissals_Controller {
 	 *
 	 * @since 1.37.0
 	 * @since 1.133.0 Added the `DELETE dismissed-items` route.
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -95,19 +95,17 @@ class REST_Dismissals_Controller {
 						return new WP_REST_Response( $this->dismissed_items->get_dismissed_items() );
 					},
 					'permission_callback' => $can_dismiss_item,
+				),
+				array(
+					'schema' => array( String_List_Schema::class, 'get' ),
 				)
 			),
+			// WordPress merges this endpoint into the route above, and keeps that route's schema.
 			new REST_Route(
 				'core/user/data/dismissed-items',
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						if ( empty( $request['data']['slugs'] ) ) {
-							// Schema validation does not catch empty object params
-							// in older versions of WP.
-							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
-						}
-
 						foreach ( $request['data']['slugs'] as $slug ) {
 							$this->dismissed_items->remove( $slug );
 						}
@@ -118,21 +116,24 @@ class REST_Dismissals_Controller {
 					'args'                => array(
 						'data' => array(
 							'type'                 => 'object',
+							'description'          => __( 'The dismissed items to remove.', 'google-site-kit' ),
 							'required'             => true,
 							'minProperties'        => 1,
 							'additionalProperties' => false,
 							'properties'           => array(
 								'slugs' => array(
-									'type'     => 'array',
-									'required' => true,
-									'items'    => array(
+									'type'        => 'array',
+									'description' => __( 'Slugs of the dismissed items to remove.', 'google-site-kit' ),
+									'required'    => true,
+									'minItems'    => 1,
+									'items'       => array(
 										'type' => 'string',
 									),
 								),
 							),
 						),
 					),
-				),
+				)
 			),
 			new REST_Route(
 				'core/user/data/dismiss-item',
@@ -140,15 +141,6 @@ class REST_Dismissals_Controller {
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
 						$data = $request['data'];
-
-						if ( empty( $data['slug'] ) ) {
-							return new WP_Error(
-								'missing_required_param',
-								/* translators: %s: Missing parameter name */
-								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
-								array( 'status' => 400 )
-							);
-						}
 
 						$expiration = Dismissed_Items::DISMISS_ITEM_PERMANENTLY;
 						if ( isset( $data['expiration'] ) && intval( $data['expiration'] ) > 0 ) {
@@ -162,10 +154,26 @@ class REST_Dismissals_Controller {
 					'permission_callback' => $can_dismiss_item,
 					'args'                => array(
 						'data' => array(
-							'type'     => 'object',
-							'required' => true,
+							'type'        => 'object',
+							'description' => __( 'The item to dismiss.', 'google-site-kit' ),
+							'required'    => true,
+							'properties'  => array(
+								'slug'       => array(
+									'type'        => 'string',
+									'description' => __( 'Slug of the item.', 'google-site-kit' ),
+									'required'    => true,
+									'minLength'   => 1,
+								),
+								'expiration' => array(
+									'type'        => 'integer',
+									'description' => __( 'Seconds until the dismissal expires. Zero or less dismisses the item permanently.', 'google-site-kit' ),
+								),
+							),
 						),
 					),
+				),
+				array(
+					'schema' => array( String_List_Schema::class, 'get' ),
 				)
 			),
 		);
