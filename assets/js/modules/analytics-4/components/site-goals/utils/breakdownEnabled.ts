@@ -29,21 +29,19 @@ import type { ConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/u
  * itself to attach those dimensions. The dimensions may have been created by
  * another custom dimensions CTA, which leaves conversion tracking alone.
  *
- * Only a user allowed to read the conversion tracking setting is held to it;
- * anyone else falls back to the dimensions alone, as the setting never loads
- * for them. This matches how `BreakdownNoticeArea` waits for the setting.
- *
  * @since 1.190.0
+ * @since n.e.x.t Held every user to the conversion tracking setting, now that any dashboard user may read it.
  *
  * @param {boolean|undefined} hasBreakdownDimensions                         Whether the breakdown custom dimensions exist, or `undefined` while loading.
  * @param {Object}            conversionTracking                             The conversion tracking setting, see `useConversionTrackingSetting`.
- * @param {boolean|undefined} conversionTracking.canManageOptions            Whether the user may read and change the setting.
  * @param {boolean|undefined} conversionTracking.isConversionTrackingEnabled Whether plugin conversion tracking is on.
- * @return {boolean|undefined} Whether the breakdown is enabled, or `undefined` while either condition or the capabilities are loading.
+ * @return {boolean|undefined} Whether the breakdown is enabled, or `undefined` while either condition is loading.
  */
 export function isSiteGoalsBreakdownEnabled(
 	hasBreakdownDimensions: boolean | undefined,
-	{ canManageOptions, isConversionTrackingEnabled }: ConversionTrackingSetting
+	{
+		isConversionTrackingEnabled,
+	}: Pick< ConversionTrackingSetting, 'isConversionTrackingEnabled' >
 ): boolean | undefined {
 	if ( hasBreakdownDimensions === undefined ) {
 		return undefined;
@@ -52,14 +50,6 @@ export function isSiteGoalsBreakdownEnabled(
 	// Without the dimensions there is nothing to wait for.
 	if ( ! hasBreakdownDimensions ) {
 		return false;
-	}
-
-	if ( canManageOptions === undefined ) {
-		return undefined;
-	}
-
-	if ( ! canManageOptions ) {
-		return true;
 	}
 
 	return isConversionTrackingEnabled;
