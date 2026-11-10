@@ -305,6 +305,7 @@ class Get_Publications_LegacyTest extends TestCase {
 			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
 
+		$before = time();
 		$this->reader_revenue_manager->get_data( 'publications' );
 
 		$new_schedule = wp_next_scheduled( Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
@@ -316,7 +317,7 @@ class Get_Publications_LegacyTest extends TestCase {
 			'Cron schedule should be updated to a new time.'
 		);
 		$this->assertGreaterThanOrEqual(
-			time() + HOUR_IN_SECONDS - 1,
+			$before + HOUR_IN_SECONDS,
 			$new_schedule,
 			'Cron should be rescheduled approximately one hour from now.'
 		);
