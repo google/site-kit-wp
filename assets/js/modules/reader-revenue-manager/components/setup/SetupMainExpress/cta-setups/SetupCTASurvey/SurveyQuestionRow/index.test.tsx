@@ -248,7 +248,7 @@ describe( 'SurveyQuestionRow', () => {
 		] );
 	} );
 
-	it( 'passes the action button to actionRef', () => {
+	it( 'should pass the action button to actionRef', () => {
 		const actionRef = createRef< HTMLButtonElement >();
 
 		renderRow( { actionRef, isAdded: true } );

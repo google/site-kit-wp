@@ -81,7 +81,7 @@ describe( 'SelectedQuestionsPane', () => {
 	// Provide our own version of the `useInstanceId()` hook to avoid instability in test snapshots.
 	mockUseInstanceID();
 
-	it( 'renders the title, description and illustration with no list when there are no questions', () => {
+	it( 'should render the title, description and illustration with no list when there are no questions', () => {
 		const { container } = renderPane( { questions: [] } );
 
 		expect(
@@ -103,7 +103,7 @@ describe( 'SelectedQuestionsPane', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'renders the questions in the order given, each with a drag handle and a remove action and no expand control', () => {
+	it( 'should render the questions in the order given, each with a drag handle and a remove action and no expand control', () => {
 		const { container } = renderPane();
 
 		expect(
@@ -139,7 +139,7 @@ describe( 'SelectedQuestionsPane', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'reports the removed question and moves focus to the remove action that takes its place', () => {
+	it( 'should report the removed question and move focus to the remove action that takes its place', () => {
 		const onRemove = jest.fn();
 
 		render( <StatefulPane onRemove={ onRemove } /> );
@@ -157,7 +157,7 @@ describe( 'SelectedQuestionsPane', () => {
 		expect( getRemoveButtons()[ 0 ] ).toHaveFocus();
 	} );
 
-	it( 'moves focus to the previous remove action when the last question is removed', () => {
+	it( 'should move focus to the previous remove action when the last question is removed', () => {
 		const onRemove = jest.fn();
 
 		render( <StatefulPane onRemove={ onRemove } /> );
@@ -169,7 +169,7 @@ describe( 'SelectedQuestionsPane', () => {
 		expect( getRemoveButtons()[ 1 ] ).toHaveFocus();
 	} );
 
-	it( 'moves focus to the title when no questions remain', () => {
+	it( 'should move focus to the title when no questions remain', () => {
 		const onRemove = jest.fn();
 
 		render( <StatefulPane onRemove={ onRemove } /> );
@@ -186,7 +186,7 @@ describe( 'SelectedQuestionsPane', () => {
 		).toHaveFocus();
 	} );
 
-	it( 'does not move focus when the parent keeps the question', () => {
+	it( 'should not move focus when the parent keeps the question', () => {
 		renderPane();
 
 		const removeButton = getRemoveButtons()[ 1 ];
@@ -197,7 +197,7 @@ describe( 'SelectedQuestionsPane', () => {
 		expect( removeButton ).toHaveFocus();
 	} );
 
-	it( 'names the drag handles after the current order of the questions', () => {
+	it( 'should name the drag handles after the current order of the questions', () => {
 		const { rerender } = renderPane();
 
 		const reorderedQuestions = [
@@ -227,7 +227,7 @@ describe( 'SelectedQuestionsPane', () => {
 		} );
 	} );
 
-	it( 'reports the new order when a handle is moved down with the arrow key', () => {
+	it( 'should report the new order when a handle is moved down with the arrow key', () => {
 		const onReorder = jest.fn();
 
 		renderPane( { onReorder } );
@@ -245,7 +245,7 @@ describe( 'SelectedQuestionsPane', () => {
 		] );
 	} );
 
-	it( 'reports the new order when a handle is moved up with the arrow key', () => {
+	it( 'should report the new order when a handle is moved up with the arrow key', () => {
 		const onReorder = jest.fn();
 
 		renderPane( { onReorder } );
@@ -263,7 +263,7 @@ describe( 'SelectedQuestionsPane', () => {
 		] );
 	} );
 
-	it( 'highlights only the question matching highlightedQuestionID', () => {
+	it( 'should highlight only the question matching highlightedQuestionID', () => {
 		const { container } = renderPane( { highlightedQuestionID: 'age' } );
 
 		const highlightedRows = container.querySelectorAll(
@@ -276,7 +276,7 @@ describe( 'SelectedQuestionsPane', () => {
 		);
 	} );
 
-	it( 'highlights no question without highlightedQuestionID', () => {
+	it( 'should highlight no question without highlightedQuestionID', () => {
 		const { container } = renderPane();
 
 		expect(

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SelectedQuestionsPane renders the questions in the order given, each with a drag handle and a remove action and no expand control 1`] = `
+exports[`SelectedQuestionsPane should render the questions in the order given, each with a drag handle and a remove action and no expand control 1`] = `
 <div>
   <section
     aria-labelledby="googlesitekit-rrm-selected-questions-pane-title-0"
@@ -200,7 +200,7 @@ exports[`SelectedQuestionsPane renders the questions in the order given, each wi
 </div>
 `;
 
-exports[`SelectedQuestionsPane renders the title, description and illustration with no list when there are no questions 1`] = `
+exports[`SelectedQuestionsPane should render the title, description and illustration with no list when there are no questions 1`] = `
 <div>
   <section
     aria-labelledby="googlesitekit-rrm-selected-questions-pane-title-0"
