@@ -25,8 +25,8 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
-import { createTestRegistry } from '@tests/js/utils';
-import { CORE_USER } from './constants';
+import { createTestRegistry, provideUserCapabilities } from '@tests/js/utils';
+import { CORE_USER, PERMISSION_AUTHENTICATE } from './constants';
 import { Feedback } from './feedback';
 
 describe( 'core/user feedback', () => {
@@ -45,6 +45,7 @@ describe( 'core/user feedback', () => {
 
 	describe( 'sendFeedback', () => {
 		it( 'should send the feedback payload to the `core/user/data/feedback` route', async () => {
+			provideUserCapabilities( registry );
 			fetchMock.postOnce( feedbackEndpoint, {
 				body: { success: true },
 			} );
@@ -58,7 +59,45 @@ describe( 'core/user feedback', () => {
 			} );
 		} );
 
+		it( 'should not send the feedback when the user cannot connect Site Kit', async () => {
+			provideUserCapabilities( registry, {
+				[ PERMISSION_AUTHENTICATE ]: false,
+			} );
+			fetchMock.postOnce( feedbackEndpoint, {
+				body: { success: true },
+			} );
+
+			const { response, error } = await registry
+				.dispatch( CORE_USER )
+				.sendFeedback( feedback );
+
+			expect( fetchMock ).not.toHaveFetched( feedbackEndpoint );
+			expect( response ).toBeUndefined();
+			expect( error ).toBeUndefined();
+		} );
+
+		it( 'should wait for the user capabilities to load before it sends the feedback', async () => {
+			fetchMock.postOnce( feedbackEndpoint, {
+				body: { success: true },
+			} );
+
+			const sendFeedbackPromise = registry
+				.dispatch( CORE_USER )
+				.sendFeedback( feedback );
+
+			provideUserCapabilities( registry );
+
+			await sendFeedbackPromise;
+
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
+				body: {
+					data: feedback,
+				},
+			} );
+		} );
+
 		it( 'should return the response on success', async () => {
+			provideUserCapabilities( registry );
 			fetchMock.postOnce( feedbackEndpoint, {
 				body: { success: true },
 			} );
@@ -86,6 +125,7 @@ describe( 'core/user feedback', () => {
 		);
 
 		it( 'should store the error when the request fails', async () => {
+			provideUserCapabilities( registry );
 			fetchMock.postOnce( feedbackEndpoint, {
 				body: {
 					code: 'invalid_param',
@@ -118,6 +158,7 @@ describe( 'core/user feedback', () => {
 		} );
 
 		it( 'should clear the stored error when the feedback is sent again successfully', async () => {
+			provideUserCapabilities( registry );
 			fetchMock.postOnce( feedbackEndpoint, {
 				body: {
 					code: 'invalid_param',
