@@ -24,11 +24,24 @@
 		--googlesitekit-feature-card-dot-size: 12px;
 
 		border-bottom: 1px solid $c-neutral-n-100;
-		display: grid;
-		grid-template-columns: max-content auto;
+		container: feature-card / inline-size;
 		padding-block: 30px;
-		padding-inline-end: $grid-gap-phone;
-		row-gap: var(--googlesitekit-feature-card-gap-m);
+		padding-inline: $grid-gap-phone;
+
+		// Keeps the left padding when a card's content is replaced by eg. a
+		// setup notice, which won't have the left offset from the status dot.
+		&:has(.googlesitekit-feature-card__status) {
+			padding-inline-start: 0;
+		}
+	}
+
+	.googlesitekit-feature-card__layout {
+		display: grid;
+		grid-template: '. meta' 'status heading' 'status content' / min-content auto;
+
+		@container feature-card ( inline-size > 600px ) {
+			grid-template: 'status heading meta' 'status content content' / min-content auto 1fr;
+		}
 	}
 
 	// The last card closes the "What's new?" list, where the other tabs keep
@@ -37,14 +50,8 @@
 		border-bottom: none;
 	}
 
-	// A feature's own setup failure takes the place of its card in the list, as
-	// a single column inside the card's row.
-	.googlesitekit-feature-card--custom {
-		grid-template-columns: auto;
-	}
-
 	.googlesitekit-feature-card__status {
-		grid-row: span 2;
+		grid-area: status;
 		padding-block: var(--googlesitekit-feature-card-gap-s);
 		padding-inline: var(--googlesitekit-feature-card-dot-size);
 	}
@@ -64,34 +71,29 @@
 		transition: none;
 	}
 
-	.googlesitekit-feature-card__content {
-		display: grid;
-		gap: var(--googlesitekit-feature-card-gap-s);
-	}
-
-	.googlesitekit-feature-card__header {
-		align-items: start;
-		display: flex;
-		flex-wrap: nowrap;
-		gap: var(--googlesitekit-feature-card-gap-m);
-		justify-content: space-between;
-	}
-
-	.googlesitekit-feature-card__title {
+	.googlesitekit-feature-card__meta {
 		align-items: center;
 		display: flex;
-		flex-wrap: wrap;
-		gap: var(--googlesitekit-feature-card-gap-s) var(--googlesitekit-feature-card-gap-m);
-		justify-content: start;
-	}
+		flex: 1;
+		flex-wrap: nowrap;
+		gap: var(--googlesitekit-feature-card-gap-m);
+		grid-area: meta;
+		padding-block-end: var(--googlesitekit-feature-card-gap-m);
 
-	.googlesitekit-feature-card__heading {
-		margin: 0;
+		@container feature-card ( inline-size > 600px ) {
+			padding-block-end: 0;
+			padding-inline-start: var(--googlesitekit-feature-card-gap-m);
+		}
 	}
 
 	.googlesitekit-feature-card__dismiss-menu {
 		display: flex;
 		flex-shrink: 0;
+		margin-inline-start: auto;
+
+		@container feature-card ( inline-size > 600px ) {
+			align-self: start;
+		}
 	}
 
 	.googlesitekit-feature-card__dismiss {
@@ -101,6 +103,18 @@
 		svg {
 			display: block;
 		}
+	}
+
+	.googlesitekit-feature-card__heading {
+		grid-area: heading;
+		margin: 0;
+	}
+
+	.googlesitekit-feature-card__content {
+		display: grid;
+		gap: var(--googlesitekit-feature-card-gap-m);
+		grid-area: content;
+		padding-block-start: var(--googlesitekit-feature-card-gap-s);
 	}
 
 	.googlesitekit-feature-card__details {
@@ -113,13 +127,13 @@
 	}
 
 	.googlesitekit-feature-card__footer {
+		align-items: center;
 		display: grid;
 		gap: var(--googlesitekit-feature-card-gap-m);
 
-		@media ( min-width: $bp-tablet ) {
-			align-items: center;
+		@container feature-card ( inline-size > 600px ) {
 			display: flex;
-			justify-content: space-between;
+			flex-wrap: wrap;
 		}
 	}
 
@@ -127,7 +141,8 @@
 		align-items: center;
 		display: flex;
 		flex-grow: 1;
-		gap: var(--googlesitekit-feature-card-gap-m);
+		flex-wrap: wrap;
+		gap: var(--googlesitekit-feature-card-gap-s) var(--googlesitekit-feature-card-gap-m);
 		justify-content: end;
 
 		.MuiCircularProgress-colorPrimary {
