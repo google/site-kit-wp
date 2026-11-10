@@ -63,9 +63,7 @@ export default function useHasExistingCTAs(
 	const ctas: CTA[] | undefined = useSelect(
 		( select: Select ) =>
 			publicationID && type
-				? select( MODULES_READER_REVENUE_MANAGER ).getCTAs( {
-						publicationID,
-				  } )
+				? select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
 				: undefined,
 		[ publicationID, type ]
 	);
