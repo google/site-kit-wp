@@ -39,6 +39,27 @@ $traffic-overview-column-gap: 42px;
 			}
 		}
 
+		// The visitor total, with the traffic insight beside it from desktop up
+		// and under it below.
+		.googlesitekit-traffic-overview__summary {
+			display: flex;
+			flex-direction: column;
+			gap: 24px;
+
+			@media (min-width: $bp-desktop) {
+				align-items: flex-start;
+				flex-direction: row;
+			}
+		}
+
+		// The insight takes the rest of the row.
+		.googlesitekit-traffic-overview__traffic-insight {
+
+			@media (min-width: $bp-desktop) {
+				flex: 1;
+			}
+		}
+
 		// Every element below carries its own typography classes, so only the
 		// colors and the layout are set here.
 		.googlesitekit-traffic-overview__total-visitors-title {

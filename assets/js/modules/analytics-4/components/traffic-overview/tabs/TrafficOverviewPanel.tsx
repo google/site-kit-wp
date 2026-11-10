@@ -41,7 +41,9 @@ import {
 	getPlaceholderTypicalTrafficRange,
 } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
+import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
+import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors';
 import {
@@ -98,11 +100,23 @@ const TrafficOverviewPanel: FC = () => {
 			) }
 			{ errors.length === 0 && (
 				<Fragment>
-					<TotalVisitors
-						report={ totalsReport }
-						loaded={ ! isLoading }
-						gatheringData={ isGatheringData }
-					/>
+					<div className="googlesitekit-traffic-overview__summary">
+						<TotalVisitors
+							report={ totalsReport }
+							loaded={ ! isLoading }
+							gatheringData={ isGatheringData }
+						/>
+						{ showKeyFactors && trafficInsightsEnabled && (
+							// The insight compares the site's traffic with its
+							// typical range, which the chart draws wherever the
+							// panel shows the key factors.
+							//
+							// TODO: Read the sentence from the generated insight.
+							<TrafficInsightNotice
+								text={ PLACEHOLDER_TRAFFIC_INSIGHT }
+							/>
+						) }
+					</div>
 					<TrafficChart
 						report={ graphReport }
 						loaded={ ! isLoading }

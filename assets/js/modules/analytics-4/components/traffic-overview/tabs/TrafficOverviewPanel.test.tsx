@@ -35,6 +35,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
 import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
@@ -217,7 +218,7 @@ describe( 'TrafficOverviewPanel', () => {
 		await waitForRegistry();
 
 		expect( getSectionClassNames( container ) ).toEqual( [
-			'googlesitekit-traffic-overview__total-visitors',
+			'googlesitekit-traffic-overview__summary',
 			'googlesitekit-traffic-overview__chart',
 			'googlesitekit-traffic-overview__breakdown',
 		] );
@@ -721,7 +722,7 @@ describe( 'TrafficOverviewPanel', () => {
 			await waitForRegistry();
 
 			expect( getSectionClassNames( container ) ).toEqual( [
-				'googlesitekit-traffic-overview__total-visitors',
+				'googlesitekit-traffic-overview__summary',
 				'googlesitekit-traffic-overview__chart',
 				'googlesitekit-traffic-overview__key-factors',
 				'googlesitekit-traffic-overview__breakdown',
@@ -1021,6 +1022,120 @@ describe( 'TrafficOverviewPanel', () => {
 			expect( getLegendLabels( container ) ).toEqual( [
 				'Last 28 days traffic',
 			] );
+		} );
+	} );
+
+	describe( 'traffic insight', () => {
+		const trafficInsightSelector =
+			'.googlesitekit-traffic-overview__traffic-insight';
+
+		it( 'should render the traffic insight next to the visitor total on the main dashboard', async () => {
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			const summary = container.querySelector(
+				'.googlesitekit-traffic-overview__summary'
+			) as Element;
+
+			expect(
+				Array.from( summary.children ).map(
+					( { className } ) => className
+				)
+			).toEqual( [
+				'googlesitekit-traffic-overview__total-visitors',
+				'googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__traffic-insight',
+			] );
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).toHaveTextContent( PLACEHOLDER_TRAFFIC_INSIGHT );
+		} );
+
+		it.each( [
+			[ 'trafficInsights', [ 'typicalTraffic' ] ],
+			[ 'typicalTraffic', [ 'trafficInsights' ] ],
+		] )(
+			'should leave out the traffic insight without the %s feature',
+			async ( _, features ) => {
+				const { container, waitForRegistry } = render(
+					<TrafficOverviewPanel />,
+					{
+						registry,
+						features,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					container.querySelector(
+						'.googlesitekit-traffic-overview__total-visitors'
+					)
+				).toBeInTheDocument();
+				expect(
+					container.querySelector( trafficInsightSelector )
+				).not.toBeInTheDocument();
+			}
+		);
+
+		it( 'should leave out the traffic insight on the entity dashboard', async () => {
+			provideSiteInfo( registry, {
+				currentEntityURL: 'https://example.com/about/',
+			} );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__total-visitors'
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should leave out the traffic insight while the property is gathering data', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			getReportArgs().forEach( ( options ) =>
+				provideAnalytics4MockReport( registry, options )
+			);
+
+			const { container, getByText, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( 'Gathering data…' ) ).toBeInTheDocument();
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).not.toBeInTheDocument();
 		} );
 	} );
 } );
