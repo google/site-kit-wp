@@ -96,43 +96,13 @@ interface CreatePublicationParams {
 	regionCode: string;
 }
 
-export interface PublicationParams {
-	organizationID: string;
-	publicationID: string;
-}
-
-export interface UpdatePublicationParams extends Partial< PublicationParams > {
+export interface UpdatePublicationParams {
 	data: Record< string, unknown >;
 }
 
 interface SyncPublicationOnboardingStateParams {
 	publicationID: string;
 	publicationOnboardingState: string;
-}
-
-/**
- * Validates optional publication parameters.
- *
- * @since 1.186.0
- *
- * @param  params Publication parameters to validate.
- * @return {void}
- */
-export function validateOptionalPublicationParams(
-	params: Partial< PublicationParams > = {}
-): void {
-	const { organizationID, publicationID } = params;
-
-	invariant(
-		organizationID === undefined ||
-			( typeof organizationID === 'string' && organizationID.length > 0 ),
-		'organizationID must be a non-empty string when provided.'
-	);
-	invariant(
-		publicationID === undefined ||
-			( typeof publicationID === 'string' && publicationID.length > 0 ),
-		'publicationID must be a non-empty string when provided.'
-	);
 }
 
 type ReaderRevenueManagerRegistry = WPDataRegistry & {
@@ -183,51 +153,6 @@ function syncConnectedPublicationSettings(
 	if ( state.savedSettings ) {
 		Object.assign( state.savedSettings, newSettings );
 	}
-}
-
-/**
- * Resolves the publication ID for a request, falling back to the saved setting.
- *
- * @since 1.187.0
- *
- * @param {Object} state            Store state.
- * @param {Object} [state.settings] Module settings.
- * @param {Object} [params]         Optional publication parameters.
- * @return {string|undefined} Publication ID, if one can be resolved.
- */
-export function getSelectedPublicationID(
-	state: { settings?: ReaderRevenueManagerSettings },
-	params: Partial< PublicationParams > = {}
-): string | undefined {
-	return params.publicationID || state.settings?.publicationID;
-}
-
-/**
- * Resolves module settings when no publication ID was passed and settings
- * are not already in the store.
- *
- * @since 1.187.0
- *
- * @param {Object} registry               Data registry.
- * @param {Object} [params]               Optional publication parameters.
- * @param {string} [params.publicationID] Publication ID.
- * @return {Promise|undefined} Settings resolution, if needed.
- */
-export function maybeResolveSettings(
-	registry: ReaderRevenueManagerRegistry,
-	params: Partial< PublicationParams > = {}
-): Promise< void > | undefined {
-	if (
-		params.publicationID ||
-		registry.select( MODULES_READER_REVENUE_MANAGER ).getSettings() !==
-			undefined
-	) {
-		return undefined;
-	}
-
-	return registry
-		.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-		.getSettings();
 }
 
 const fetchGetPublicationsStore = createFetchStore( {
@@ -328,46 +253,28 @@ const fetchCreatePublicationStore = createFetchStore( {
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',
-	controlCallback: ( {
-		organizationID,
-		publicationID,
-	}: Partial< PublicationParams > = {} ) =>
+	controlCallback: () =>
 		get(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'publication',
-			{ organizationID, publicationID },
+			{},
 			{ useCache: false }
 		),
 	reducerCallback: fetchPublicationStoreReducerCallback,
-	argsToParams: ( {
-		organizationID,
-		publicationID,
-	}: Partial< PublicationParams > = {} ) => ( {
-		organizationID,
-		publicationID,
-	} ),
-	validateParams: validateOptionalPublicationParams,
 } );
 
 const fetchUpdatePublicationStore = createFetchStore( {
 	baseName: 'updatePublication',
-	controlCallback: ( publicationData: UpdatePublicationParams ) =>
-		set(
-			'modules',
-			MODULE_SLUG_READER_REVENUE_MANAGER,
-			'publication',
-			publicationData
-		),
+	controlCallback: ( { data }: UpdatePublicationParams ) =>
+		set( 'modules', MODULE_SLUG_READER_REVENUE_MANAGER, 'publication', {
+			data,
+		} ),
 	reducerCallback: fetchPublicationStoreReducerCallback,
-	argsToParams: (
-		publicationData: Partial< UpdatePublicationParams > = {}
-	) => publicationData,
-	validateParams: ( params: Partial< UpdatePublicationParams > = {} ) => {
-		const { data } = params;
-
-		validateOptionalPublicationParams( params );
-
+	argsToParams: ( { data }: Partial< UpdatePublicationParams > = {} ) => ( {
+		data,
+	} ),
+	validateParams: ( { data }: Partial< UpdatePublicationParams > = {} ) => {
 		invariant(
 			isPlainObject( data ) &&
 				Object.keys( data as Record< string, unknown > ).length > 0,
@@ -500,25 +407,20 @@ const baseActions = {
 	),
 
 	/**
-	 * Updates a publication.
+	 * Updates the connected publication.
 	 *
 	 * @since 1.186.0
+	 * @since n.e.x.t Acts on the connected publication; no longer accepts publication identifiers.
 	 *
-	 * @param {Object} params                  Publication update parameters.
-	 * @param {string} [params.publicationID]  Publication ID. Defaults to the configured setting on the server.
-	 * @param {string} [params.organizationID] Organization ID. Defaults to the configured setting on the server.
-	 * @param {Object} params.data             Publication fields to update.
+	 * @param {Object} params      Publication update parameters.
+	 * @param {Object} params.data Publication fields to update.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	updatePublication: createValidatedAction(
 		( params: unknown ) => {
 			invariant( isPlainObject( params ), 'params must be an object.' );
-			const publicationParams =
-				params as Partial< UpdatePublicationParams >;
 
-			validateOptionalPublicationParams( publicationParams );
-
-			const { data } = publicationParams;
+			const { data } = params as Partial< UpdatePublicationParams >;
 
 			invariant(
 				isPlainObject( data ) &&
@@ -526,12 +428,12 @@ const baseActions = {
 				'data is required and must be a non-empty object.'
 			);
 		},
-		function* (
-			params: UpdatePublicationParams
-		): Generator< unknown, unknown, unknown > {
+		function* ( {
+			data,
+		}: UpdatePublicationParams ): Generator< unknown, unknown, unknown > {
 			// @ts-expect-error createFetchStore is not properly typed yet.
 			return yield fetchUpdatePublicationStore.actions.fetchUpdatePublication(
-				params
+				{ data }
 			);
 		}
 	),
@@ -737,36 +639,33 @@ const baseResolvers = {
 		}
 	},
 
-	*getPublication(
-		params?: Partial< PublicationParams >
-	): Generator< unknown, void, unknown > {
+	*getPublication(): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as ReaderRevenueManagerRegistry;
 
-		// Conditionally resolve settings so that the fetch reducer has
-		// the publication ID to key the list by.
-		const settingsResolution = maybeResolveSettings( registry, params );
-
-		if ( settingsResolution ) {
-			yield commonActions.await( settingsResolution );
-		}
+		// The saved publication ID decides whether to fetch, so wait for the
+		// settings before reading it.
+		yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+				.getSettings()
+		);
 
 		const publication = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublication( params );
+			.getPublication();
 
 		if ( publication !== undefined ) {
 			return;
 		}
 
-		const publicationID =
-			params?.publicationID ||
-			registry
+		// No connected publication to look up; skip the fetch rather than
+		// looping on `undefined`.
+		if (
+			! registry
 				.select( MODULES_READER_REVENUE_MANAGER )
-				.getPublicationID();
-
-		// No publication to look up; skip the fetch rather than looping on `undefined`.
-		if ( ! publicationID ) {
+				.getSavedPublicationID()
+		) {
 			return;
 		}
 
@@ -774,12 +673,11 @@ const baseResolvers = {
 			// Legacy settings (saved before express setup) have a publication ID
 			// but no organization ID. The publications list synchronizes the
 			// connected publication's organization ID into settings, so resolve
-			// it first rather than requesting the publication without one.
-			const organizationID =
-				params?.organizationID ||
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getOrganizationID();
+			// it first rather than requesting a publication the server cannot
+			// identify.
+			const organizationID = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getSavedOrganizationID();
 
 			if ( ! organizationID ) {
 				yield commonActions.await(
@@ -790,7 +688,7 @@ const baseResolvers = {
 
 				const resolvedPublication = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
-					.getPublication( params );
+					.getPublication();
 
 				if ( resolvedPublication !== undefined ) {
 					return;
@@ -799,7 +697,7 @@ const baseResolvers = {
 		}
 
 		// @ts-expect-error createFetchStore is not properly typed yet.
-		yield fetchGetPublicationStore.actions.fetchGetPublication( params );
+		yield fetchGetPublicationStore.actions.fetchGetPublication();
 	},
 };
 
@@ -817,30 +715,55 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets a publication.
+	 * Gets the connected publication.
 	 *
 	 * @since 1.186.0
+	 * @since n.e.x.t Returns the connected publication; no longer accepts publication identifiers.
 	 *
-	 * @param {Object} state                   Data store's state.
-	 * @param {Object} params                  Publication parameters.
-	 * @param {string} [params.organizationID] Organization ID. Defaults to the configured setting on the server.
-	 * @param {string} [params.publicationID]  Publication ID. Defaults to the configured setting on the server.
+	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
 	 */
-	getPublication(
-		state: ReaderRevenueManagerState,
-		params: Partial< PublicationParams > = {}
-	) {
-		const selectedPublicationID = getSelectedPublicationID( state, params );
+	getPublication( state: ReaderRevenueManagerState ) {
+		const publicationID = state.savedSettings?.publicationID;
 
-		if ( ! selectedPublicationID ) {
+		if ( ! publicationID ) {
 			return undefined;
 		}
 
 		return state.publications?.find(
 			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId: id } ) => id === selectedPublicationID
+			( { publicationId: id } ) => id === publicationID
 		);
+	},
+
+	/**
+	 * Gets the publication ID of the connected publication.
+	 *
+	 * Unlike `getPublicationID()`, this returns the saved value, so it does
+	 * not change while a publisher is picking a different publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} Publication ID; `undefined` if the settings are not loaded or none is saved.
+	 */
+	getSavedPublicationID( state: ReaderRevenueManagerState ) {
+		return state.savedSettings?.publicationID;
+	},
+
+	/**
+	 * Gets the organization ID of the connected publication.
+	 *
+	 * Unlike `getOrganizationID()`, this returns the saved value, which is the
+	 * one the server builds its requests from.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} Organization ID; `undefined` if the settings are not loaded or none is saved.
+	 */
+	getSavedOrganizationID( state: ReaderRevenueManagerState ) {
+		return state.savedSettings?.organizationID;
 	},
 
 	/**
