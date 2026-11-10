@@ -52,6 +52,7 @@ import {
 	freezeFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import InsightNotice from './InsightNotice';
@@ -86,6 +87,7 @@ describe( 'InsightNotice', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
@@ -319,7 +321,7 @@ describe( 'InsightNotice', () => {
 		).toHaveAttribute( 'aria-pressed', 'false' );
 	} );
 
-	it( 'should track `vote_up` with the category `mainDashboardViewOnly_recent-activity-survey` and still send feedback when a view-only user clicks "Yes, this was helpful"', async () => {
+	it( 'should track `vote_up` with the category `mainDashboardViewOnly_recent-activity-survey` and still send feedback when a view-only administrator clicks "Yes, this was helpful"', async () => {
 		fetchMock.post( feedbackEndpoint, {
 			status: 200,
 			body: { success: true },
