@@ -24,26 +24,38 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import { FEATURE_SETUP_SUCCESS_NOTIFICATION_EVENT_ID } from '@/js/components/feature-discovery/constants';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureSuccessNotice as FeatureSuccessNoticeSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+
+const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
 interface FeatureSuccessNoticeProps {
 	slug: string;
 	onDismiss: () => void;
+	trackViewEvent?: boolean;
 }
 
 const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 	slug,
 	onDismiss,
+	trackViewEvent = true,
 } ) => {
+	const trackEvents = useNotificationEvents(
+		FEATURE_SETUP_SUCCESS_NOTIFICATION_EVENT_ID
+	);
+
 	const successNotice = useSelect(
 		( select: Select ): FeatureSuccessNoticeSettings | undefined =>
 			select( CORE_FEATURE_DISCOVERY ).getFeature( slug )?.successNotice,
@@ -55,6 +67,26 @@ const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 		[ successNotice ]
 	);
 
+	const getOnClickCTA = useCallback(
+		( callback ) =>
+			( ...args: unknown[] ) => {
+				trackEvents.confirm( slug );
+				callback?.( ...args );
+			},
+		[ trackEvents, slug ]
+	);
+
+	const onClickDismiss = useCallback( () => {
+		trackEvents.dismiss( slug );
+		onDismiss();
+	}, [ trackEvents, slug, onDismiss ] );
+
+	const onInView = useCallback( () => {
+		if ( trackViewEvent ) {
+			trackEvents.view( slug );
+		}
+	}, [ trackEvents, trackViewEvent, slug ] );
+
 	if ( ! successNotice ) {
 		return null;
 	}
@@ -62,7 +94,7 @@ const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 	const { title, description, cta, dismissLabel } = successNotice;
 
 	return (
-		<Notice
+		<NoticeWithIntersectionObserver
 			className="googlesitekit-feature-success-notice"
 			type={ NOTICE_TYPES.SUCCESS }
 			title={ title }
@@ -71,7 +103,7 @@ const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 				cta
 					? {
 							label: cta.label,
-							onClick: cta.onClick,
+							onClick: getOnClickCTA( cta.onClick ),
 							href: ctaURL,
 							external: cta.external,
 					  }
@@ -79,8 +111,9 @@ const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 			}
 			dismissButton={ {
 				label: dismissLabel || __( 'Got it', 'google-site-kit' ),
-				onClick: onDismiss,
+				onClick: onClickDismiss,
 			} }
+			onInView={ onInView }
 		/>
 	);
 };

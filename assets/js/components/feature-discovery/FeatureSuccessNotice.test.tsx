@@ -20,11 +20,28 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	render,
+} from '@tests/js/test-utils';
 import { provideSiteInfo } from '@tests/js/utils';
 import FeatureSuccessNotice from './FeatureSuccessNotice';
+
+const mockOnCTAClick = jest.fn();
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { simulateAllIntersections } = mockIntersectionObserver();
+
+const EVENT_CATEGORY = `${ VIEW_CONTEXT_FEATURE_DISCOVERY }_feature-setup-success-notification`;
 
 describe( 'FeatureSuccessNotice', () => {
 	let registry: Registry;
@@ -34,9 +51,12 @@ describe( 'FeatureSuccessNotice', () => {
 		provideSiteInfo( registry );
 	} );
 
-	it( 'should render the title, description, CTA and dismiss from the feature', () => {
-		const onCTAClick = jest.fn();
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+		mockOnCTAClick.mockClear();
+	} );
 
+	it( 'should render the title, description, CTA and dismiss from the feature', () => {
 		provideFeatures( registry, [
 			{
 				slug: 'test-feature',
@@ -50,7 +70,7 @@ describe( 'FeatureSuccessNotice', () => {
 								'googlesitekit-settings'
 							),
 						external: true,
-						onClick: onCTAClick,
+						onClick: mockOnCTAClick,
 					},
 				},
 			},
@@ -80,7 +100,7 @@ describe( 'FeatureSuccessNotice', () => {
 		expect( cta ).toHaveAttribute( 'target', '_blank' );
 
 		fireEvent.click( cta );
-		expect( onCTAClick ).toHaveBeenCalledTimes( 1 );
+		expect( mockOnCTAClick ).toHaveBeenCalledTimes( 1 );
 
 		expect( getByRole( 'button', { name: 'Got it' } ) ).toBeInTheDocument();
 	} );
@@ -181,5 +201,108 @@ describe( 'FeatureSuccessNotice', () => {
 		);
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	describe( 'GA tracking', () => {
+		beforeEach( () => {
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					successNotice: {
+						title: 'Success! Test feature is set up',
+						cta: {
+							label: 'Go to Settings',
+							onClick: mockOnCTAClick,
+						},
+					},
+				},
+			] );
+		} );
+
+		it( 'should track view_notification when the notice becomes visible', () => {
+			render(
+				<FeatureSuccessNotice
+					slug="test-feature"
+					onDismiss={ jest.fn() }
+				/>,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+			act( () => {
+				simulateAllIntersections( true );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				'view_notification',
+				'test-feature'
+			);
+		} );
+
+		it( 'should not track view_notification when trackViewEvent is false', () => {
+			render(
+				<FeatureSuccessNotice
+					slug="test-feature"
+					onDismiss={ jest.fn() }
+					trackViewEvent={ false }
+				/>,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			act( () => {
+				simulateAllIntersections( true );
+			} );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should track confirm_notification when the CTA is clicked', () => {
+			const { getByRole } = render(
+				<FeatureSuccessNotice
+					slug="test-feature"
+					onDismiss={ jest.fn() }
+				/>,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: /Go to Settings/ } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				'confirm_notification',
+				'test-feature'
+			);
+
+			expect( mockOnCTAClick ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'should track dismiss_notification when dismissed', () => {
+			const onDismiss = jest.fn();
+
+			const { getByRole } = render(
+				<FeatureSuccessNotice
+					slug="test-feature"
+					onDismiss={ onDismiss }
+				/>,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				'dismiss_notification',
+				'test-feature'
+			);
+
+			expect( onDismiss ).toHaveBeenCalledTimes( 1 );
+		} );
 	} );
 } );

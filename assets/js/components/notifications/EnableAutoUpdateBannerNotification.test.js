@@ -24,12 +24,20 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_FEATURE_DISCOVERY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideNotifications,
@@ -40,7 +48,12 @@ import {
 } from '@tests/js/test-utils';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+	FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
 } from './EnableAutoUpdateBannerNotification';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const EnableAutoUpdateBannerNotificationComponent =
 	withNotificationComponentProps( ENABLE_AUTO_UPDATES_BANNER_SLUG )(
@@ -61,6 +74,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 	afterEach( () => {
 		delete global.ajaxurl;
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render banner and send enable-auto-updates post request to admin-ajax on CTA click.', async () => {
@@ -207,6 +221,144 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 			expect( isActive ).toBe( false );
+		} );
+	} );
+
+	describe( 'Feature Discovery hub variant', () => {
+		const FeatureDiscoveryAutoUpdatesBannerComponent =
+			withNotificationComponentProps(
+				FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG
+			)( EnableAutoUpdateBannerNotification );
+
+		const eventCategory = `${ VIEW_CONTEXT_FEATURE_DISCOVERY }_${ FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG }`;
+
+		// Use a registry of the hub tests' own, as the file-level one has the
+		// default notifications registered by earlier tests.
+		let hubRegistry;
+
+		beforeEach( () => {
+			hubRegistry = createTestRegistry();
+
+			hubRegistry
+				.dispatch( CORE_USER )
+				.receiveGetNonces( { updates: '751b9198d2' } );
+
+			provideSiteInfo( hubRegistry, {
+				changePluginAutoUpdatesCapacity: true,
+				siteKitAutoUpdatesEnabled: false,
+				pluginBasename: 'google-site-kit/google-site-kit.php',
+			} );
+
+			provideUserCapabilities( hubRegistry, {
+				googlesitekit_update_plugins: true,
+			} );
+
+			hubRegistry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification(
+					FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
+					DEFAULT_NOTIFICATIONS[
+						FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG
+					]
+				);
+		} );
+
+		it( 'should track view_notification when shown', async () => {
+			const { findByText } = render(
+				<FeatureDiscoveryAutoUpdatesBannerComponent />,
+				{
+					registry: hubRegistry,
+					viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+				}
+			);
+
+			await findByText( 'Unlock the latest Site Kit features!' );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+			act( () => {
+				hubRegistry
+					.dispatch( CORE_UI )
+					.setValue(
+						useHasBeenViewed.getKey(
+							FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG
+						),
+						true
+					);
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				eventCategory,
+				'view_notification',
+				undefined,
+				undefined
+			);
+		} );
+
+		it( 'should track confirm_notification when Enable auto-updates is clicked', async () => {
+			global.ajaxurl = 'admin-ajax.php';
+
+			fetchMock.postOnce( /^\/admin-ajax.php/, {
+				body: { success: true },
+				status: 200,
+			} );
+
+			const { findByText, getByText } = render(
+				<FeatureDiscoveryAutoUpdatesBannerComponent />,
+				{
+					registry: hubRegistry,
+					viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+				}
+			);
+
+			await findByText( 'Unlock the latest Site Kit features!' );
+
+			fireEvent.click( getByText( 'Enable auto-updates' ) );
+
+			await waitFor( () => expect( fetchMock ).toHaveFetchedTimes( 1 ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				eventCategory,
+				'confirm_notification',
+				undefined,
+				undefined
+			);
+		} );
+
+		it( 'should track dismiss_notification when No thanks is clicked', async () => {
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismiss-item'
+				),
+				{
+					body: JSON.stringify( [
+						FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
+					] ),
+					status: 200,
+				}
+			);
+
+			const { findByText, getByText, waitForRegistry } = render(
+				<FeatureDiscoveryAutoUpdatesBannerComponent />,
+				{
+					registry: hubRegistry,
+					viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+				}
+			);
+
+			await findByText( 'Unlock the latest Site Kit features!' );
+
+			fireEvent.click( getByText( 'No thanks' ) );
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				eventCategory,
+				'dismiss_notification',
+				undefined,
+				undefined
+			);
 		} );
 	} );
 } );
