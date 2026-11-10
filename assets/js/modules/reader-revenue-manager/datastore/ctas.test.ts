@@ -322,6 +322,32 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 			} );
 		} );
 
+		describe( 'clearCTAs', () => {
+			it( 'should clear the CTAs without invalidating their resolution', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( [ cta ] );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.finishResolution( 'getCTAs', [] );
+
+				registry.dispatch( MODULES_READER_REVENUE_MANAGER ).clearCTAs();
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toBeUndefined();
+
+				// Unlike `resetCTAs()`, the resolution is left alone, so the
+				// CTAs stay cleared until something else invalidates it.
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.hasFinishedResolution( 'getCTAs', [] )
+				).toBe( true );
+			} );
+		} );
+
 		describe( 'resetCTAs', () => {
 			it( 'should clear the CTAs and let them be fetched again', async () => {
 				registry

@@ -226,6 +226,24 @@ const baseActions = {
 	),
 
 	/**
+	 * Clears the stored CTAs, leaving their resolution as it is.
+	 *
+	 * Use this when a different publication has been picked but not saved yet.
+	 * The server answers from the saved settings, so refetching now would
+	 * return the previous publication's CTAs. `getCTAs()` stays `undefined`
+	 * until `resetCTAs()` reloads them for the publication that was saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	clearCTAs() {
+		return {
+			type: 'RESET_CTAS',
+		};
+	},
+
+	/**
 	 * Resets the CTAs in the store, so they are requested again.
 	 *
 	 * @since n.e.x.t
