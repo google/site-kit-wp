@@ -278,4 +278,51 @@ class REST_User_Feedback_ControllerTest extends TestCase {
 
 		$this->assertEquals( 403, $response->get_status(), 'A request from a site that is not connected via the proxy should be rejected.' );
 	}
+
+	public function test_feedback__rejects_a_cookie_request_without_a_nonce() {
+		$this->authentication
+			->get_oauth_client()
+			->set_token( array( 'access_token' => 'valid-auth-token' ) );
+		// WordPress runs a cookie request with no REST nonce as user 0.
+		// The controller still reads the token of the administrator that set_up() signed in.
+		wp_set_current_user( 0 );
+
+		$this->assert_feedback_request_rejected( 401 );
+	}
+
+	public function test_feedback__rejects_an_editor_who_kept_a_token() {
+		$this->authentication
+			->get_oauth_client()
+			->set_token( array( 'access_token' => 'valid-auth-token' ) );
+		wp_get_current_user()->set_role( 'editor' );
+
+		$this->assert_feedback_request_rejected( 403 );
+	}
+
+	/**
+	 * Sends the valid feedback, and asserts that the route rejects it and sends nothing to the Site Kit service.
+	 *
+	 * @param int $status Expected status code.
+	 */
+	private function assert_feedback_request_rejected( $status ) {
+		$this->fake_proxy_site_connection();
+
+		$http_requests = array();
+		$this->subscribe_to_wp_http_requests(
+			function ( $url ) use ( &$http_requests ) {
+				$http_requests[] = $url;
+			},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => wp_json_encode( array( 'success' => true ) ),
+			)
+		);
+
+		$response = $this->send_feedback_request( $this->valid_feedback );
+
+		$this->assertEquals( $status, $response->get_status(), "The feedback route should reject the request with a {$status} status." );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'The feedback route should reject the request with the rest_forbidden code.' );
+		$this->assertEmpty( $http_requests, 'The rejected request should send no feedback to the Site Kit service.' );
+	}
 }
