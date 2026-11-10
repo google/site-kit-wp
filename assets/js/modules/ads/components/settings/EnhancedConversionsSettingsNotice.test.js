@@ -35,6 +35,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '@tests/js/utils';
 import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 
@@ -55,6 +56,7 @@ describe( 'Ads EnhancedConversionsNotification', () => {
 
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 

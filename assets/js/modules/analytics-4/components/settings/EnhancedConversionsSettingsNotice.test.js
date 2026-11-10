@@ -36,6 +36,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	provideUserInfo,
 } from '@tests/js/utils';
 import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
@@ -58,6 +59,7 @@ describe( 'Analytics EnhancedConversionsNotification', () => {
 		provideSiteInfo( registry );
 		provideUserInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 

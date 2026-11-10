@@ -33,6 +33,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '@tests/js/utils';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
@@ -43,6 +44,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
 		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );

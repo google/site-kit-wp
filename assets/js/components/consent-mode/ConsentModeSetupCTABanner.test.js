@@ -29,6 +29,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	provideUserInfo,
 	render,
 } from '@tests/js/test-utils';
@@ -50,6 +51,7 @@ describe( 'ConsentModeSetupCTABanner', () => {
 		provideSiteInfo( registry );
 		provideUserInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry
 			.dispatch( CORE_SITE )

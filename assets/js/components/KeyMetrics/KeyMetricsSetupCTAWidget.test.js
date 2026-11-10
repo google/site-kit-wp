@@ -43,6 +43,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -96,6 +97,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				authenticated: true,
 			}
 		);
+		provideUserCapabilities( registry );
 
 		muteFetch(
 			new RegExp(

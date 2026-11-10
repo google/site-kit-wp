@@ -37,6 +37,7 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitForDefaultTimeouts,
 } from '@tests/js/test-utils';
@@ -87,6 +88,7 @@ describe( 'useExpressSetupSurveyTriggers', () => {
 		registry = createTestRegistry() as Registry;
 
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
 
 		// Not the shared `mockSurveyEndpoints()` helper: it mocks a single

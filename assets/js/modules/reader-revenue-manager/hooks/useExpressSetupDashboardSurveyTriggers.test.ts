@@ -39,6 +39,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	renderHook,
 	waitFor,
 	waitForDefaultTimeouts,
@@ -88,6 +89,7 @@ describe( 'useExpressSetupDashboardSurveyTriggers', () => {
 		registry = createTestRegistry() as Registry;
 
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
 		provideModules( registry, [
 			{
