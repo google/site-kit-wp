@@ -62,19 +62,17 @@ const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 		[ slug ]
 	);
 
+	const cta = successNotice?.cta;
+
 	const ctaURL = useSelect(
-		( select: Select ) => successNotice?.cta?.getURL?.( select ),
-		[ successNotice ]
+		( select: Select ) => cta?.getURL?.( select ),
+		[ cta ]
 	);
 
-	const getOnClickCTA = useCallback(
-		( callback ) =>
-			( ...args: unknown[] ) => {
-				trackEvents.confirm( slug );
-				callback?.( ...args );
-			},
-		[ trackEvents, slug ]
-	);
+	const onClickCTA = useCallback( () => {
+		trackEvents.confirm( slug );
+		cta?.onClick?.();
+	}, [ trackEvents, slug, cta ] );
 
 	const onClickDismiss = useCallback( () => {
 		trackEvents.dismiss( slug );
@@ -91,7 +89,7 @@ const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 		return null;
 	}
 
-	const { title, description, cta, dismissLabel } = successNotice;
+	const { title, description, dismissLabel } = successNotice;
 
 	return (
 		<NoticeWithIntersectionObserver
@@ -103,7 +101,7 @@ const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 				cta
 					? {
 							label: cta.label,
-							onClick: getOnClickCTA( cta.onClick ),
+							onClick: onClickCTA,
 							href: ctaURL,
 							external: cta.external,
 					  }
