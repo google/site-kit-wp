@@ -87,9 +87,9 @@ describe( 'asyncRequire* utilities', () => {
 	describe( 'asyncRequireAll', () => {
 		it( 'accepts any number of predicate functions that all receive the same arguments when the returned function is called', async () => {
 			const predicates = [
-				jest.fn( () => true ),
-				jest.fn( () => true ),
-				jest.fn( () => true ),
+				jest.fn< boolean, [ string, string ] >( () => true ),
+				jest.fn< boolean, [ string, string ] >( () => true ),
+				jest.fn< boolean, [ string, string ] >( () => true ),
 			];
 			const requiresAll = asyncRequireAll( ...predicates );
 

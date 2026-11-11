@@ -17,32 +17,38 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
 import CheckFill from '@/svg/icons/check-fill.svg';
 import InfoCircle from '@/svg/icons/info-circle.svg';
+import Launch from '@/svg/icons/launch.svg';
 import StarFill from '@/svg/icons/star-fill.svg';
 import WarningSVG from '@/svg/icons/warning-notice.svg';
 import { NOTICE_TYPES } from './constants';
 
-const typeIconMap = {
-	[ NOTICE_TYPES.NEW ]: StarFill,
-	[ NOTICE_TYPES.SUCCESS ]: CheckFill,
-	[ NOTICE_TYPES.INFO ]: WarningSVG,
-	[ NOTICE_TYPES.INFO_CIRCLE ]: InfoCircle,
-	[ NOTICE_TYPES.WARNING ]: WarningSVG,
-	[ NOTICE_TYPES.ERROR ]: WarningSVG,
-};
-
-export default function Icon( { type } ) {
-	const IconComponent = typeIconMap[ type ] || WarningSVG;
-
-	return <IconComponent width={ 24 } height={ 24 } />;
+interface IconProps {
+	type?: NOTICE_TYPES;
 }
 
-Icon.propTypes = {
-	type: PropTypes.oneOf( Object.values( NOTICE_TYPES ) ),
+const typeIconMap: Record< NOTICE_TYPES, typeof WarningSVG > = {
+	[ NOTICE_TYPES.ERROR ]: WarningSVG,
+	[ NOTICE_TYPES.INFO ]: WarningSVG,
+	[ NOTICE_TYPES.INFO_ALT ]: WarningSVG,
+	[ NOTICE_TYPES.INFO_ALT_2 ]: WarningSVG,
+	[ NOTICE_TYPES.INFO_CIRCLE ]: InfoCircle,
+	[ NOTICE_TYPES.NEW ]: StarFill,
+	[ NOTICE_TYPES.REMINDER ]: Launch,
+	[ NOTICE_TYPES.SUCCESS ]: CheckFill,
+	[ NOTICE_TYPES.WARNING ]: WarningSVG,
 };
+
+const Icon: FC< IconProps > = ( { type = NOTICE_TYPES.INFO } ) => {
+	const IconComponent = typeIconMap[ type ];
+
+	return <IconComponent height={ 24 } width={ 24 } />;
+};
+
+export default Icon;

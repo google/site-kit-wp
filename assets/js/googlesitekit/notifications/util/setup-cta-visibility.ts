@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry, Select } from 'googlesitekit-data';
+import { isFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import {
 	CORE_USER,
 	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
@@ -50,16 +51,22 @@ export function shouldHideSetupCTAs(
 	const initialSetupNotificationTimeoutDismissed = select(
 		CORE_USER
 	).isItemDismissed( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG );
+
 	const queuedHeaderNotifications = select(
 		CORE_NOTIFICATIONS
 	).getQueuedNotifications( viewContext, NOTIFICATION_GROUPS.DEFAULT );
+
 	const firstHeaderNotificationID =
-		queuedHeaderNotifications?.[ 0 ]?.id || null;
+		queuedHeaderNotifications?.[ 0 ]?.id || '';
+
+	const hasIncompleteSetupReminderNotification =
+		isFeatureIncompleteSetupReminderKey( firstHeaderNotificationID );
 
 	return (
 		initialSetupNotificationTimeoutDismissed ||
 		firstHeaderNotificationID === ACTIVATE_ANALYTICS_NOTIFICATION ||
-		firstHeaderNotificationID === CONNECT_MORE_SERVICES_NOTIFICATION
+		firstHeaderNotificationID === CONNECT_MORE_SERVICES_NOTIFICATION ||
+		hasIncompleteSetupReminderNotification
 	);
 }
 

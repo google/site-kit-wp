@@ -84,6 +84,8 @@ export interface FeatureIncompleteSetupReminder {
 	title: string;
 	description: string;
 	tooltip: string;
+	// Resolves dependencies for progress, completion, and the notification's resume URL.
+	resolveRequirements: ( registry: Registry ) => Promise< void >;
 }
 
 export interface FeatureSetup {

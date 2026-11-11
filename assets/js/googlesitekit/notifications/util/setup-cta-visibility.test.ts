@@ -21,6 +21,7 @@
  */
 import { Select } from 'googlesitekit-data';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import {
 	CORE_USER,
 	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
@@ -80,6 +81,14 @@ describe( 'shouldHideSetupCTAs', () => {
 
 	it( 'returns true when connect-more-services-notification is first in the header queue', () => {
 		receiveFirstHeaderNotification( 'connect-more-services-notification' );
+
+		expect( callHelper() ).toBe( true );
+	} );
+
+	it( 'returns true when an incomplete setup reminder is first in the header queue', () => {
+		receiveFirstHeaderNotification(
+			getFeatureIncompleteSetupReminderKey( 'newsletter-signup' )
+		);
 
 		expect( callHelper() ).toBe( true );
 	} );
