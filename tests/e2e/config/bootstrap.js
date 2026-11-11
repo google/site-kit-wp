@@ -217,9 +217,10 @@ expect.extend( customMatchers );
 async function optOutOfEventTracking() {
 	// The opt-out is set before any of the page's scripts run, because a
 	// widget can send a tracking event as soon as it renders, before the
-	// page's `load` event. Without the opt-out, the event waits for a beacon
-	// that does not arrive in time, and logs a "took too long to fire" warning.
-	await page.evaluateOnNewDocument( () => {
+	// page's `load` event. Without the opt-out, the event waits for the gtag
+	// script to load and call it back, and when the script loads slowly it
+	// logs a "took too long to fire" warning.
+	await page.addInitScript( () => {
 		window._gaUserPrefs = { ioo: () => true };
 	} );
 }
