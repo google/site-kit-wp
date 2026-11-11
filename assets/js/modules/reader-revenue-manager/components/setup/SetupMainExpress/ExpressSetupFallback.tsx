@@ -40,12 +40,27 @@ interface ExpressSetupFallbackProps {
 const ExpressSetupFallback: FC< ExpressSetupFallbackProps > = ( {
 	showErrors,
 	errorTitle,
+	children,
 } ) => {
 	const hasErrors = useSelect(
 		( select: Select ): boolean =>
 			select( MODULES_READER_REVENUE_MANAGER ).hasErrors(),
 		[]
 	);
+
+	// Given content replaces the store errors and the progress bar.
+	if ( children ) {
+		return (
+			<ExpressSetupLayout>
+				<div className="googlesitekit-rrm-express-setup__error">
+					<ExpressSetupStepHeadline className="googlesitekit-rrm-express-setup-step__headline">
+						{ errorTitle }
+					</ExpressSetupStepHeadline>
+					{ children }
+				</div>
+			</ExpressSetupLayout>
+		);
+	}
 
 	return (
 		<ExpressSetupLayout>
