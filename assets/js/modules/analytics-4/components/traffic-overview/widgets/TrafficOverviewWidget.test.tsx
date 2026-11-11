@@ -38,7 +38,7 @@ import {
 	RECENT_ACTIVITY_TAB_OPENED_TIMER,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	getExpiryFromNow,
 	provideFreshMetricsReports,
@@ -226,7 +226,7 @@ describe( 'TrafficOverviewWidget', () => {
 		);
 	} );
 
-	it( 'renders the tab bar and the "Source: Analytics" footer while the five reports load', async () => {
+	it( 'should render the tab bar and the "Source: Analytics" footer while the report loads', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -250,23 +250,27 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'renders the tab bar and the "Source: Analytics" footer when a report fails', async () => {
-		const { startDate, endDate } = registry
-			.select( CORE_USER )
-			.getDateRangeDates();
-		const graphReportArgs = getGraphReportArgs( { startDate, endDate } );
+		const { startDate, endDate, compareStartDate, compareEndDate } =
+			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
+		const totalsReportArgs = getTotalsReportArgs( {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test_error',
-				message: 'The daily visitors report failed.',
+				message: 'The total visitors report failed.',
 				data: { status: 500, reason: 'backendError' },
 			},
 			'getReport',
-			[ graphReportArgs ]
+			[ totalsReportArgs ]
 		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ graphReportArgs ] );
+			.finishResolution( 'getReport', [ totalsReportArgs ] );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
@@ -279,7 +283,7 @@ describe( 'TrafficOverviewWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			screen.getByText( 'The daily visitors report failed.' )
+			screen.getByText( 'The total visitors report failed.' )
 		).toBeInTheDocument();
 		expect(
 			screen.getByRole( 'tab', { name: 'Traffic overview' } )
@@ -304,7 +308,7 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'sends the five report requests when the widget scrolls into view', async () => {
+	it( 'should send the report request when the widget scrolls into view', async () => {
 		const { setInView, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -318,10 +322,10 @@ describe( 'TrafficOverviewWidget', () => {
 
 		act( () => setInView!( true ) );
 
-		// The five requests do not all start on the render that brings the
-		// widget into view, so this check waits for the count to reach five.
+		// The request does not start on the render that brings the widget
+		// into view, so this check waits for it.
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint )
 		);
 	} );
 

@@ -33,7 +33,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
-import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
 	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
@@ -44,11 +43,7 @@ import {
 	FRESH_DATA_FETCH_OPTIONS,
 	getSiteVisitorsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
-import {
-	getBreakdownReportArgs,
-	getGraphReportArgs,
-	getTotalsReportArgs,
-} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	EARLIER_POST,
 	INSUFFICIENT_PERMISSIONS_ERROR,
@@ -126,64 +121,42 @@ function commonSetup( registry: WPDataRegistry ) {
 }
 
 /**
- * Builds the five argument sets the panel passes to `getReport`, in this order:
- *
- * 1. totals
- * 2. graph
- * 3. channels
- * 4. locations
- * 5. devices.
+ * Builds the arguments the panel passes to `getReport` for the totals report.
  *
  * @since 1.188.0
+ * @since n.e.x.t Renamed from `getTrafficOverviewReportArgs()`, and builds the totals report's arguments alone.
  *
  * @param {Object} registry The registry the date range and the entity URL come from.
- * @return {Array<Object>} The five argument sets.
+ * @return {Object} The totals report's arguments.
  */
-function getTrafficOverviewReportArgs(
-	registry: WPDataRegistry
-): ReportOptions[] {
+function getTotalsArgs( registry: WPDataRegistry ): ReportOptions {
 	const { startDate, endDate, compareStartDate, compareEndDate } = registry
 		.select( CORE_USER )
 		.getDateRangeDates( { compare: true } );
 
 	const entityURL = registry.select( CORE_SITE ).getCurrentEntityURL();
 
-	const sharedReportOptions = {
+	return getTotalsReportArgs( {
 		startDate,
 		endDate,
+		compareStartDate,
+		compareEndDate,
 		...( entityURL ? { url: entityURL } : {} ),
-	};
-
-	return [
-		getTotalsReportArgs( {
-			...sharedReportOptions,
-			compareStartDate,
-			compareEndDate,
-		} ),
-		getGraphReportArgs( sharedReportOptions ),
-		...TRAFFIC_BREAKDOWN_COLUMNS.map( ( { dimensionName, reportID } ) =>
-			getBreakdownReportArgs( {
-				...sharedReportOptions,
-				dimensionName,
-				reportID,
-			} )
-		),
-	];
+	} );
 }
 
 /**
- * Puts the Traffic Overview widget's five reports in the store, so a story
+ * Puts the Traffic Overview widget's totals report in the store, so a story
  * renders without sending a report request.
  *
  * @since 1.189.0
+ * @since n.e.x.t Puts the totals report alone in the store.
  *
- * @param {Object} registry The registry to put the reports in.
+ * @param {Object} registry The registry to put the report in.
  * @return {void}
  */
 function provideTrafficOverviewReports( registry: WPDataRegistry ) {
-	getTrafficOverviewReportArgs( registry ).forEach( ( options ) =>
-		provideAnalytics4MockReport( registry, options )
-	);
+	provideAnalytics4MockReport( registry, getTotalsArgs( registry ) );
 }
 
 /**
@@ -361,11 +334,9 @@ Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
-		getTrafficOverviewReportArgs( registry ).forEach( ( options ) =>
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.startResolution( 'getReport', [ options ] )
-		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ getTotalsArgs( registry ) ] );
 	},
 };
 
@@ -392,9 +363,6 @@ ZeroData.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 
-		const [ totalsArgs, ...remainingArgs ] =
-			getTrafficOverviewReportArgs( registry );
-
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				totals: [
@@ -402,14 +370,7 @@ ZeroData.args = {
 					{ metricValues: [ { value: '0' } ] },
 				],
 			},
-			{ options: totalsArgs }
-		);
-		// A report with no rows is what the API returns for a range with no
-		// traffic.
-		remainingArgs.forEach( ( options ) =>
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetReport( {}, { options } )
+			{ options: getTotalsArgs( registry ) }
 		);
 	},
 };
@@ -422,21 +383,21 @@ ReportFailure.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 
-		getTrafficOverviewReportArgs( registry ).forEach( ( options ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
-				{
-					code: 'test_error',
-					message:
-						'Request contains an invalid argument. Learn more about the Analytics Data API.',
-					data: { status: 400, reason: 'badRequest' },
-				},
-				'getReport',
-				[ options ]
-			);
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getReport', [ options ] );
-		} );
+		const totalsArgs = getTotalsArgs( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message:
+					'Request contains an invalid argument. Learn more about the Analytics Data API.',
+				data: { status: 400, reason: 'badRequest' },
+			},
+			'getReport',
+			[ totalsArgs ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ totalsArgs ] );
 	},
 };
 

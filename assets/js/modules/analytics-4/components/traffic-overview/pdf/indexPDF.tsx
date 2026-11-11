@@ -124,7 +124,7 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 
 	const {
 		totalsReport,
-		graphReport,
+		dailyTraffic,
 		channelBreakdown,
 		locationBreakdown,
 		deviceBreakdown,
@@ -139,13 +139,13 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 		currentValue
 	);
 
-	const graphRowCount = graphReport?.rows?.length || 0;
+	const dayCount = dailyTraffic.length;
 	const comparisonLabel =
-		graphRowCount > 0
+		dayCount > 0
 			? sprintf(
 					/* translators: %d: number of days in the comparison period */
 					__( 'Vs. prev. %d days', 'google-site-kit' ),
-					graphRowCount
+					dayCount
 			  )
 			: undefined;
 
@@ -153,17 +153,15 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 
 	const lineChartImage = trafficChartImages?.lineChart;
 
-	const breakdownRowsByID: Record< string, TrafficBreakdownRow[] | null > = {
+	const breakdownRowsByID: Record< string, TrafficBreakdownRow[] > = {
 		channels: channelBreakdown,
 		locations: locationBreakdown,
 		// The dashboard's devices column capitalizes GA4's lowercase device
 		// names, so the PDF prints them the same way.
-		devices:
-			deviceBreakdown &&
-			deviceBreakdown.map( ( row ) => ( {
-				...row,
-				label: capitalizeWords( row.label ),
-			} ) ),
+		devices: deviceBreakdown.map( ( row ) => ( {
+			...row,
+			label: capitalizeWords( row.label ),
+		} ) ),
 	};
 
 	return (
@@ -189,7 +187,7 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 
 					return (
 						<View key={ id } style={ styles.breakdownCard }>
-							{ rows && rows.length > 0 ? (
+							{ rows.length > 0 ? (
 								<PDFMetricTileTable
 									title={ heading }
 									rows={ toTableRows( rows ) }

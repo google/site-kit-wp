@@ -36,7 +36,7 @@ import Link from '@/js/components/Link';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
 import ChartLegend, { ChartLegendItem } from './ChartLegend';
@@ -56,9 +56,9 @@ import {
 } from './trafficChartOptions';
 
 export interface TrafficChartProps {
-	/** The daily-visitors report for the selected range. */
-	report?: Report;
-	/** Whether the daily-visitors report has arrived. */
+	/** The visits on each day of the selected range, oldest first. */
+	dailyTraffic?: BenchmarkingDailyTrafficRow[];
+	/** Whether the daily traffic has arrived. */
 	loaded?: boolean;
 	/** Whether the Analytics property is still gathering data. */
 	gatheringData?: boolean;
@@ -69,7 +69,7 @@ export interface TrafficChartProps {
 }
 
 const TrafficChart: FC< TrafficChartProps > = ( {
-	report,
+	dailyTraffic,
 	loaded = true,
 	gatheringData = false,
 	typicalTrafficRange,
@@ -99,7 +99,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 		hasTypicalTrafficRange,
 		hasPublishedPosts,
 	} = getTrafficChartData( {
-		report,
+		dailyTraffic,
 		startDate,
 		endDate,
 		gatheringData,

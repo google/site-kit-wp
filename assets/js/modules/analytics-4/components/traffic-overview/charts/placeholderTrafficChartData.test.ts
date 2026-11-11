@@ -19,41 +19,106 @@
 /**
  * Internal dependencies
  */
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getDateString } from '@/js/util';
 import {
+	getPlaceholderDailyTraffic,
 	getPlaceholderPublishedPosts,
 	getPlaceholderTypicalTrafficRange,
 } from './placeholderTrafficChartData';
 
 /**
- * Builds a daily-visitors report with one row for each count, from
- * `2025-01-10` on.
+ * Builds the daily traffic with one row for each count, from `2025-01-10` on.
  *
  * @since n.e.x.t
  *
- * @param {Array.<number>} visitors The visitors on each day, oldest first.
- * @return {Object} The report.
+ * @param {Array.<number>} visits The visits on each day, oldest first.
+ * @return {Array.<Object>} The daily traffic.
  */
-function createDailyVisitorsReport( visitors: number[] ): Report {
-	return {
-		rows: visitors.map( ( value, index ) => ( {
-			dimensionValues: [
-				{
-					value: getDateString(
-						new Date( 2025, 0, 10 + index )
-					).replace( /-/g, '' ),
-				},
-			],
-			metricValues: [ { value: String( value ) } ],
-		} ) ),
-	};
+function createDailyTraffic( visits: number[] ): BenchmarkingDailyTrafficRow[] {
+	return visits.map( ( value, index ) => ( {
+		date: getDateString( new Date( 2025, 0, 10 + index ) ),
+		visits: value,
+	} ) );
 }
+
+describe( 'getPlaceholderDailyTraffic', () => {
+	it( "should give each day of a 28 day range the design's visits for that day", () => {
+		const dailyTraffic = getPlaceholderDailyTraffic(
+			'2025-01-09',
+			'2025-02-05'
+		);
+
+		expect( dailyTraffic ).toHaveLength( 28 );
+		expect( dailyTraffic[ 0 ] ).toEqual( {
+			date: '2025-01-09',
+			visits: 39,
+		} );
+		// The dip under the first post.
+		expect( dailyTraffic[ 3 ] ).toEqual( {
+			date: '2025-01-12',
+			visits: 25,
+		} );
+		expect( dailyTraffic[ 27 ] ).toEqual( {
+			date: '2025-02-05',
+			visits: 152,
+		} );
+	} );
+
+	it( "should stretch the design's visits over a shorter range, keeping its first and last days", () => {
+		const dailyTraffic = getPlaceholderDailyTraffic(
+			'2025-01-30',
+			'2025-02-05'
+		);
+
+		expect( dailyTraffic.map( ( { date } ) => date ) ).toEqual( [
+			'2025-01-30',
+			'2025-01-31',
+			'2025-02-01',
+			'2025-02-02',
+			'2025-02-03',
+			'2025-02-04',
+			'2025-02-05',
+		] );
+		// The second day sits halfway between the design's fifth and sixth
+		// days, 42 and 41, so it takes 41.5, rounded to 42.
+		expect( dailyTraffic.map( ( { visits } ) => visits ) ).toEqual( [
+			39, 42, 38, 71, 76, 128, 152,
+		] );
+	} );
+
+	it( 'should give one row for each day of a 90 day range', () => {
+		// The range takes in the March start of daylight saving time, in the
+		// time zones that have it.
+		const dailyTraffic = getPlaceholderDailyTraffic(
+			'2025-01-01',
+			'2025-03-31'
+		);
+		const dates = dailyTraffic.map( ( { date } ) => date );
+
+		expect( dailyTraffic ).toHaveLength( 90 );
+		expect( new Set( dates ).size ).toBe( 90 );
+		expect( dailyTraffic[ 0 ] ).toEqual( {
+			date: '2025-01-01',
+			visits: 39,
+		} );
+		expect( dailyTraffic[ 89 ] ).toEqual( {
+			date: '2025-03-31',
+			visits: 152,
+		} );
+	} );
+
+	it( "should give a range of one day the design's last visits", () => {
+		expect(
+			getPlaceholderDailyTraffic( '2025-02-05', '2025-02-05' )
+		).toEqual( [ { date: '2025-02-05', visits: 152 } ] );
+	} );
+} );
 
 describe( 'getPlaceholderTypicalTrafficRange', () => {
 	it( 'should run each day a quarter below and above the average of the seven days centered on it', () => {
 		const range = getPlaceholderTypicalTrafficRange(
-			createDailyVisitorsReport( [ 10, 20, 30, 40, 50, 60, 70 ] )
+			createDailyTraffic( [ 10, 20, 30, 40, 50, 60, 70 ] )
 		);
 
 		expect( range ).toHaveLength( 7 );
@@ -77,10 +142,10 @@ describe( 'getPlaceholderTypicalTrafficRange', () => {
 		} );
 	} );
 
-	it( 'should keep each range at least 5 visitors either way, and never below 0', () => {
+	it( 'should keep each range at least 5 visits either way, and never below 0', () => {
 		expect(
 			getPlaceholderTypicalTrafficRange(
-				createDailyVisitorsReport( [ 8, 8, 8 ] )
+				createDailyTraffic( [ 8, 8, 8 ] )
 			)
 		).toEqual( [
 			{ date: '2025-01-10', min: 3, max: 13 },
@@ -89,35 +154,31 @@ describe( 'getPlaceholderTypicalTrafficRange', () => {
 		] );
 
 		expect(
-			getPlaceholderTypicalTrafficRange(
-				createDailyVisitorsReport( [ 0 ] )
-			)
+			getPlaceholderTypicalTrafficRange( createDailyTraffic( [ 0 ] ) )
 		).toEqual( [ { date: '2025-01-10', min: 0, max: 5 } ] );
 	} );
 
-	it( 'should give no range without a report', () => {
+	it( 'should give no range without daily traffic', () => {
 		expect( getPlaceholderTypicalTrafficRange() ).toEqual( [] );
-		expect( getPlaceholderTypicalTrafficRange( { rows: [] } ) ).toEqual(
-			[]
-		);
+		expect( getPlaceholderTypicalTrafficRange( [] ) ).toEqual( [] );
 	} );
 } );
 
 describe( 'getPlaceholderPublishedPosts', () => {
-	it( 'should place three posts 12%, 48% and 75% of the way through the days of the report', () => {
+	it( 'should place three posts 12%, 48% and 75% of the way through the days of the daily traffic', () => {
 		// 28 days, from `2025-01-10` to `2025-02-06`, put the posts on the
 		// days at the positions 3, 13 and 20.
-		const report = createDailyVisitorsReport( Array( 28 ).fill( 10 ) );
+		const dailyTraffic = createDailyTraffic( Array( 28 ).fill( 10 ) );
 
-		expect( getPlaceholderPublishedPosts( report ) ).toEqual( [
+		expect( getPlaceholderPublishedPosts( dailyTraffic ) ).toEqual( [
 			{ date: '2025-01-13', title: 'Ice cream is good for your health' },
 			{ date: '2025-01-23', title: 'Eat ice cream every day' },
 			{ date: '2025-01-30', title: 'The best ice cream shops guide' },
 		] );
 	} );
 
-	it( 'should give no posts without a report', () => {
+	it( 'should give no posts without daily traffic', () => {
 		expect( getPlaceholderPublishedPosts() ).toEqual( [] );
-		expect( getPlaceholderPublishedPosts( { rows: [] } ) ).toEqual( [] );
+		expect( getPlaceholderPublishedPosts( [] ) ).toEqual( [] );
 	} );
 } );

@@ -1,5 +1,5 @@
 /**
- * Placeholder unique visitors.
+ * Placeholder total visits.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,9 +17,18 @@
  */
 
 /**
- * The unique visitors the Traffic Overview panel shows next to the total
- * visits until it reads them from a report. It is the figure of the design.
+ * Internal dependencies
+ */
+import { BenchmarkingVisits } from '@/js/modules/analytics-4/utils/benchmarking/types';
+
+/**
+ * The visits the Traffic Overview panel shows as its total visits until it
+ * reads them from the benchmarking response. They make the figure and the
+ * change of the design: 1.2K, up 12.1% on the range before.
  *
  * @since n.e.x.t
  */
-export const PLACEHOLDER_UNIQUE_VISITORS = 234;
+export const PLACEHOLDER_TOTAL_VISITS: BenchmarkingVisits = {
+	current: 1234,
+	previous: 1101,
+};

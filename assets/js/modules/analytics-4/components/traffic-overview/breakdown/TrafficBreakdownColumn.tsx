@@ -47,9 +47,9 @@ export interface TrafficBreakdownColumnProps {
 	id: string;
 	/** The column's heading, which also names it for a screen reader. */
 	heading: string;
-	/** The rows to render, empty when no value in the report has visitors. */
+	/** The rows to render, empty when no value has visitors. */
 	rows: BreakdownRow[];
-	/** Whether the column's report has arrived. */
+	/** Whether the column's values have arrived. */
 	loaded?: boolean;
 	/** Whether the Analytics property is still gathering data. */
 	gatheringData?: boolean;

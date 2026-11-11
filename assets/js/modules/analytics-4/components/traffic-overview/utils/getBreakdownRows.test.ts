@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { createBreakdownValues } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import {
 	formatRoundedShare,
 	getBreakdownRows,
@@ -29,7 +29,7 @@ import {
 describe( 'getBreakdownRows', () => {
 	it( 'gives each value its share of the column total', () => {
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'Organic Search', 1200 ],
 				[ 'Direct', 600 ],
 				[ 'Paid Search', 400 ],
@@ -50,11 +50,11 @@ describe( 'getBreakdownRows', () => {
 		] );
 	} );
 
-	it( 'keeps the report order rather than re-sorting', () => {
-		// The report arrives ordered by visitors, so a row out of order is
+	it( 'should keep the order of the values rather than re-sorting', () => {
+		// The values arrive ordered by visitors, so a value out of order is
 		// passed through as it came.
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'First', 10 ],
 				[ 'Second', 90 ],
 			] )
@@ -68,7 +68,7 @@ describe( 'getBreakdownRows', () => {
 
 	it( 'gives five values one row each and no "Others" row', () => {
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'A', 50 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -83,7 +83,7 @@ describe( 'getBreakdownRows', () => {
 
 	it( 'folds a sixth value and beyond into an "Others" row', () => {
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'A', 50 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -111,7 +111,7 @@ describe( 'getBreakdownRows', () => {
 	} );
 
 	it( 'should fold the values beyond the given number of rows into an "Others" row', () => {
-		const report = createBreakdownReport( [
+		const values = createBreakdownValues( [
 			[ 'A', 100 ],
 			[ 'B', 90 ],
 			[ 'C', 80 ],
@@ -124,7 +124,7 @@ describe( 'getBreakdownRows', () => {
 			[ 'J', 10 ],
 		] );
 
-		const rows = getBreakdownRows( report, 9 );
+		const rows = getBreakdownRows( values, 9 );
 
 		expect( rows.map( ( { label } ) => label ) ).toEqual( [
 			'A',
@@ -143,7 +143,7 @@ describe( 'getBreakdownRows', () => {
 
 	it( 'should give each value a row when it has no more values than the given number of rows', () => {
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'A', 50 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -166,7 +166,7 @@ describe( 'getBreakdownRows', () => {
 
 	it( 'drops the "Others" row when the values it would fold have no visitors', () => {
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'A', 50 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -189,7 +189,7 @@ describe( 'getBreakdownRows', () => {
 		'keeps the %s label as GA4 returned it',
 		( label ) => {
 			const rows = getBreakdownRows(
-				createBreakdownReport( [
+				createBreakdownValues( [
 					[ 'Direct', 90 ],
 					[ label, 10 ],
 				] )
@@ -200,15 +200,15 @@ describe( 'getBreakdownRows', () => {
 		}
 	);
 
-	it( 'gives an empty array for a report with no rows', () => {
-		expect( getBreakdownRows( createBreakdownReport( [] ) ) ).toEqual( [] );
+	it( 'should give an empty array for a column with no values', () => {
+		expect( getBreakdownRows( [] ) ).toEqual( [] );
 		expect( getBreakdownRows( undefined ) ).toEqual( [] );
 	} );
 
 	it( 'gives an empty array when nobody visited', () => {
 		expect(
 			getBreakdownRows(
-				createBreakdownReport( [
+				createBreakdownValues( [
 					[ 'A', 0 ],
 					[ 'B', 0 ],
 				] )
@@ -218,7 +218,7 @@ describe( 'getBreakdownRows', () => {
 
 	it( 'leaves out a value with no visitors, so it does not push the fifth value into "Others"', () => {
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'A', 50 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -240,7 +240,7 @@ describe( 'getBreakdownRows', () => {
 
 	it( 'formats each share as a whole percent', () => {
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'Organic Search', 1200 ],
 				[ 'Direct', 600 ],
 				[ 'Paid Search', 400 ],
@@ -255,7 +255,7 @@ describe( 'getBreakdownRows', () => {
 	it( 'gives shares that add up to 100% when rounding each one would give 99%', () => {
 		// 33.4%, 33.3%, and 33.3% each round down to 33%.
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'A', 334 ],
 				[ 'B', 333 ],
 				[ 'C', 333 ],
@@ -270,7 +270,7 @@ describe( 'getBreakdownRows', () => {
 	it( 'gives shares that add up to 100% when rounding each one would give 101%', () => {
 		// 50.5% and 30.5% each round up, to 51% and 31%.
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'desktop', 505 ],
 				[ 'mobile', 305 ],
 				[ 'tablet', 190 ],
@@ -286,7 +286,7 @@ describe( 'getBreakdownRows', () => {
 		// 99.6%, 0.3%, and 0.1% leave one percent missing, which goes to the
 		// 0.3% value.
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'United States', 996 ],
 				[ 'Germany', 3 ],
 				[ 'France', 1 ],
@@ -302,7 +302,7 @@ describe( 'getBreakdownRows', () => {
 	it( 'never shows "100%" beside another value, and gives that percent to the next value', () => {
 		// 99.9% would get the missing percent by its remainder.
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'desktop', 999 ],
 				[ 'mobile', 1 ],
 			] )
@@ -315,7 +315,7 @@ describe( 'getBreakdownRows', () => {
 
 	it( 'shows a single value as "100%"', () => {
 		const rows = getBreakdownRows(
-			createBreakdownReport( [ [ 'desktop', 42 ] ] )
+			createBreakdownValues( [ [ 'desktop', 42 ] ] )
 		);
 
 		expect(
@@ -327,7 +327,7 @@ describe( 'getBreakdownRows', () => {
 		// 99.3% and 0.7% leave one percent missing, and 0.7% has the larger
 		// remainder.
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'United States', 993 ],
 				[ 'Germany', 7 ],
 			] )
@@ -343,7 +343,7 @@ describe( 'getBreakdownRows', () => {
 		// 7%, and 0%, which adds up to 99%. "Others" ties with "Organic Search"
 		// for the missing percent, and the earlier row gets it.
 		const rows = getBreakdownRows(
-			createBreakdownReport( [
+			createBreakdownValues( [
 				[ 'Direct', 4630 ],
 				[ 'Organic Search', 3040 ],
 				[ 'Organic Social', 1560 ],

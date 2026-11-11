@@ -30,8 +30,15 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
+
+export interface TrafficBreakdownValue {
+	/** The dimension value, such as `Organic Search`. */
+	label: string;
+	/** The visitors the value had. */
+	visitors: number;
+}
 
 export interface TrafficBreakdownRow {
 	/** The dimension value, exactly as GA4 returned it. */
@@ -135,9 +142,9 @@ export function formatRoundedShare( share: number, steps: number ): string {
 }
 
 /**
- * Shapes a breakdown report into the rows a column renders.
+ * Shapes the values of a breakdown column into the rows the column renders.
  *
- * The report covers the selected range only and arrives ordered by visitors,
+ * The values cover the selected range only and arrive ordered by visitors,
  * so the rows are taken as they come. Values with no visitors are left out
  * first. When more than `maxRows` values have visitors, the top values fill
  * every row except the last, and an "Others" row adds up the rest. The
@@ -147,24 +154,19 @@ export function formatRoundedShare( share: number, steps: number ): string {
  *
  * @since 1.188.0
  * @since 1.189.0 Added `formattedPercentage` and left out values with no visitors.
- * @since n.e.x.t Added the optional `maxRows` parameter.
+ * @since n.e.x.t Added the optional `maxRows` parameter, and changed the `report` parameter to `values`.
  *
- * @param {Object} [report]  A breakdown report.
- * @param {number} [maxRows] Optional. The most rows to return, counting the trailing "Others" row. Default `TRAFFIC_BREAKDOWN_MAX_ROWS`.
- * @return {Array<Object>} The rows to render, empty when no value in the report has visitors.
+ * @param {Array<Object>} [values]  Optional. The column's values, ordered by visitors, most first.
+ * @param {number}        [maxRows] Optional. The most rows to return, counting the trailing "Others" row. Default `TRAFFIC_BREAKDOWN_MAX_ROWS`.
+ * @return {Array<Object>} The rows to render, empty when no value has visitors.
  */
 export function getBreakdownRows(
-	report?: Report,
+	values: TrafficBreakdownValue[] = [],
 	maxRows = TRAFFIC_BREAKDOWN_MAX_ROWS
 ): TrafficBreakdownRow[] {
 	// Values with no visitors are left out before the cap, so none of them
 	// takes a row.
-	const valueRows = ( report?.rows ?? [] )
-		.map( ( row ) => ( {
-			label: row?.dimensionValues?.[ 0 ]?.value ?? '',
-			visitors: getMetricCount( row ),
-		} ) )
-		.filter( ( { visitors } ) => visitors > 0 );
+	const valueRows = values.filter( ( { visitors } ) => visitors > 0 );
 
 	if ( ! valueRows.length ) {
 		return [];

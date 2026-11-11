@@ -64,6 +64,7 @@ import {
 	getComparisonDateRange,
 	getDateDimensionValues,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
@@ -360,6 +361,21 @@ export function createBreakdownReport(
 					],
 			  } ),
 	};
+}
+
+/**
+ * Builds the values of a traffic breakdown column from label and visitor
+ * pairs, in the order given.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
+ * @return {Array<Object>} The column's values.
+ */
+export function createBreakdownValues(
+	pairs: Array< [ string, number ] >
+): TrafficBreakdownValue[] {
+	return pairs.map( ( [ label, visitors ] ) => ( { label, visitors } ) );
 }
 
 /**

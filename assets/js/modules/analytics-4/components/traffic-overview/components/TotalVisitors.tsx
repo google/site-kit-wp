@@ -49,13 +49,14 @@ import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { BenchmarkingVisits } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { calculateChange, numFmt } from '@/js/util';
 
 export interface TotalVisitorsProps {
-	/** The totals report, holding the selected range then the range before it. */
+	/** The totals report, whose selected range holds the unique visitors. */
 	report?: Report;
-	/** The unique visitors over the selected range. */
-	uniqueVisitors?: number;
+	/** The visits over the selected range and over the range before it. */
+	totalVisits?: BenchmarkingVisits;
 	/** Whether the figures have arrived. */
 	loaded?: boolean;
 	/** Whether the Analytics property is still gathering data. */
@@ -64,7 +65,7 @@ export interface TotalVisitorsProps {
 
 const TotalVisitors: FC< TotalVisitorsProps > = ( {
 	report,
-	uniqueVisitors = 0,
+	totalVisits,
 	loaded = true,
 	gatheringData = false,
 } ) => {
@@ -73,14 +74,15 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( {
 		[]
 	);
 
-	const [ current, previous ] = report?.totals || [];
+	const currentVisits = totalVisits?.current || 0;
+	const previousVisits = totalVisits?.previous || 0;
 
-	const currentValue = getMetricValue( current );
-	const previousValue = getMetricValue( previous );
+	// The report's totals hold the selected range then the range before it.
+	const uniqueVisitors = getMetricValue( report?.totals?.[ 0 ] );
 
 	// `ChangeBadge` renders nothing when the previous value is zero. Asking
 	// the same question here stops the label being left on its own.
-	const hasChange = calculateChange( previousValue, currentValue ) !== null;
+	const hasChange = calculateChange( previousVisits, currentVisits ) !== null;
 
 	return (
 		<div className="googlesitekit-traffic-overview__total-visitors">
@@ -102,7 +104,7 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( {
 								size={ SIZE_LARGE }
 								className="googlesitekit-traffic-overview__total-visits-figure"
 							>
-								{ numFmt( currentValue ) }
+								{ numFmt( currentVisits ) }
 							</Typography>
 							<P
 								size={ SIZE_MEDIUM }
@@ -114,8 +116,8 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( {
 						{ hasChange && (
 							<div className="googlesitekit-traffic-overview__total-visits-change">
 								<ChangeBadge
-									previousValue={ previousValue }
-									currentValue={ currentValue }
+									previousValue={ previousVisits }
+									currentValue={ currentVisits }
 								/>
 								<P
 									size={ SIZE_SMALL }

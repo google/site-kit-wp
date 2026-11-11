@@ -25,24 +25,21 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
-import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import { PublishedPost, TypicalTrafficRangeDay } from './getTrafficChartData';
 import {
+	getPlaceholderDailyTraffic,
 	getPlaceholderPublishedPosts,
 	getPlaceholderTypicalTrafficRange,
 } from './placeholderTrafficChartData';
 import TrafficChart from './TrafficChart';
 
-const dailyVisitorsReport = getAnalytics4MockResponse(
-	getGraphReportArgs( { startDate: '2025-01-09', endDate: '2025-02-05' } )
-);
+const dailyTraffic = getPlaceholderDailyTraffic( '2025-01-09', '2025-02-05' );
 
 /**
  * Connects Analytics and sets one date range, so every story shows the same
@@ -69,8 +66,8 @@ function commonSetup( registry: WPDataRegistry ) {
 }
 
 interface TrafficChartStoryProps {
-	/** The daily-visitors report the chart shows. */
-	report: Report;
+	/** The visits on each day the chart shows, oldest first. */
+	dailyTraffic: BenchmarkingDailyTrafficRow[];
 	/** Sets the registry state before the story renders. */
 	setupRegistry: ( registry: WPDataRegistry ) => void;
 	/** Whether the Analytics property is still gathering data. */
@@ -82,7 +79,7 @@ interface TrafficChartStoryProps {
 }
 
 function Template( {
-	report,
+	dailyTraffic: storyDailyTraffic,
 	setupRegistry,
 	gatheringData,
 	typicalTrafficRange,
@@ -95,7 +92,7 @@ function Template( {
 			<div className="googlesitekit-widget--analyticsTrafficOverview">
 				<div className="googlesitekit-traffic-overview__panel">
 					<TrafficChart
-						report={ report }
+						dailyTraffic={ storyDailyTraffic }
 						gatheringData={ gatheringData }
 						typicalTrafficRange={ typicalTrafficRange }
 						publishedPosts={ publishedPosts }
@@ -113,7 +110,7 @@ function Template( {
 export const Ready = Template.bind( {} ) as Story< TrafficChartStoryProps >;
 Ready.storyName = 'Ready';
 Ready.args = {
-	report: dailyVisitorsReport,
+	dailyTraffic,
 	setupRegistry: commonSetup,
 };
 
@@ -129,23 +126,22 @@ export const TypicalTrafficRangeAndPublishedPosts = Template.bind(
 TypicalTrafficRangeAndPublishedPosts.storyName =
 	'Typical Traffic Range And Published Posts';
 TypicalTrafficRangeAndPublishedPosts.args = {
-	report: dailyVisitorsReport,
-	typicalTrafficRange:
-		getPlaceholderTypicalTrafficRange( dailyVisitorsReport ),
-	publishedPosts: getPlaceholderPublishedPosts( dailyVisitorsReport ),
+	dailyTraffic,
+	typicalTrafficRange: getPlaceholderTypicalTrafficRange( dailyTraffic ),
+	publishedPosts: getPlaceholderPublishedPosts( dailyTraffic ),
 	setupRegistry: commonSetup,
 };
 
 /**
- * A site with no visitors in the whole range. The value axis ends at `100`,
- * and the line runs flat along the bottom.
+ * A range with no daily traffic. The value axis ends at `100`, and the line
+ * runs flat along the bottom.
  */
 export const NoVisitors = Template.bind(
 	{}
 ) as Story< TrafficChartStoryProps >;
 NoVisitors.storyName = 'No Visitors';
 NoVisitors.args = {
-	report: { totals: [ { metricValues: [ { value: '0' } ] } ] },
+	dailyTraffic: [],
 	setupRegistry: commonSetup,
 };
 NoVisitors.scenario = {
@@ -162,17 +158,11 @@ export const PropertyCreatedInRange = Template.bind(
 ) as Story< TrafficChartStoryProps >;
 PropertyCreatedInRange.storyName = 'Property Created In Range';
 PropertyCreatedInRange.args = {
-	report: {
-		...dailyVisitorsReport,
-		// The property was created on `2025-01-16`, so the seven days before it
-		// have no visitors.
-		rows: dailyVisitorsReport.rows.map(
-			( row: ReportRow, dayIndex: number ) =>
-				dayIndex < 7
-					? { ...row, metricValues: [ { value: '0' } ] }
-					: row
-		),
-	},
+	// The property was created on `2025-01-16`, so the seven days before it
+	// have no visits.
+	dailyTraffic: dailyTraffic.map( ( row, dayIndex ) =>
+		dayIndex < 7 ? { ...row, visits: 0 } : row
+	),
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		registry
@@ -195,7 +185,7 @@ export const GatheringData = Template.bind(
 ) as Story< TrafficChartStoryProps >;
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
-	report: dailyVisitorsReport,
+	dailyTraffic,
 	gatheringData: true,
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );

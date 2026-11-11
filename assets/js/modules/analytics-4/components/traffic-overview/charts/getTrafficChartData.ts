@@ -29,8 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
-import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import {
 	DAY_IN_SECONDS,
 	getDateString,
@@ -83,8 +82,8 @@ export interface TrafficChartDay {
 }
 
 export interface TrafficChartDataOptions {
-	/** The daily-visitors report, `undefined` until the request has finished. */
-	report?: Report;
+	/** The visits on each day of the range, oldest first. */
+	dailyTraffic?: BenchmarkingDailyTrafficRow[];
 	/** The first day of the selected range, as `YYYY-MM-DD`. */
 	startDate: string;
 	/** The last day of the selected range, as `YYYY-MM-DD`. */
@@ -104,7 +103,7 @@ export interface TrafficChartData {
 	days: TrafficChartDay[];
 	/** The days the horizontal axis shows a date label under. */
 	ticks: Date[];
-	/** Whether the range's total is above zero. */
+	/** Whether a day the chart plots is above zero. */
 	hasVisitors: boolean;
 	/** Whether a day the chart plots has a typical range. */
 	hasTypicalTrafficRange: boolean;
@@ -129,32 +128,6 @@ const PUBLISHED_POST_COLUMN: TrafficChartColumn = {
 	type: 'string',
 	role: 'style',
 };
-
-/**
- * Turns the report's rows into the chart's points.
- *
- * @since 1.189.0
- * @since n.e.x.t Changed from local to exported, for the placeholder typical range and posts.
- *
- * @param {Array<Object>} rows The daily-visitors report rows.
- * @return {Array<Array>} One `[ day, visitors ]` point for each row that has a day.
- */
-export function getReportPoints( rows: ReportRow[] ): TrafficChartPoint[] {
-	return rows.reduce< TrafficChartPoint[] >( ( points, row ) => {
-		const date = parseDimensionStringToDate(
-			row.dimensionValues?.[ 0 ]?.value ?? ''
-		);
-
-		if ( date instanceof Date ) {
-			points.push( [
-				date,
-				parseInt( row.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0,
-			] );
-		}
-
-		return points;
-	}, [] );
-}
 
 /**
  * Builds zero-visitor points for the range's first day, second day, and last
@@ -210,14 +183,14 @@ function getDailyTicks( startDate: string, endDate: string ): Date[] {
 }
 
 /**
- * Builds the chart table from the daily-visitors report, with the typical
- * range behind the line and a dot for each day with a published post.
+ * Builds the chart table from the visits on each day of the range, with the
+ * typical range behind the line and a dot for each day with a published post.
  *
  * @since 1.189.0
- * @since n.e.x.t Added the `typicalTrafficRange` and `publishedPosts` options.
+ * @since n.e.x.t Added the `typicalTrafficRange` and `publishedPosts` options, and changed the `report` option to `dailyTraffic`.
  *
  * @param {Object}         options                       Options.
- * @param {Object}         [options.report]              Optional. The daily-visitors report.
+ * @param {Array.<Object>} [options.dailyTraffic]        Optional. The visits on each day of the range, oldest first.
  * @param {string}         options.startDate             The range's first day, as `YYYY-MM-DD`.
  * @param {string}         options.endDate               The range's last day, as `YYYY-MM-DD`.
  * @param {boolean}        [options.gatheringData]       Optional. Whether the property is still gathering data.
@@ -226,19 +199,24 @@ function getDailyTicks( startDate: string, endDate: string ): Date[] {
  * @return {Object} The chart table, the plotted days, the days the axis shows a date label under, and what the range has.
  */
 export function getTrafficChartData( {
-	report,
+	dailyTraffic = [],
 	startDate,
 	endDate,
 	gatheringData = false,
 	typicalTrafficRange = [],
 	publishedPosts = [],
 }: TrafficChartDataOptions ): TrafficChartData {
-	// A property still gathering data shows no visitors, so the chart draws a
-	// flat line at zero whatever the report holds, with no typical range to
-	// compare it with and no posts to mark on it.
+	// A property still gathering data shows no visits, so the chart draws a
+	// flat line at zero whatever the daily traffic holds, with no typical range
+	// to compare it with and no posts to mark on it.
 	const points =
-		! gatheringData && report?.rows?.length
-			? getReportPoints( report.rows )
+		! gatheringData && dailyTraffic.length
+			? dailyTraffic.map(
+					( { date, visits } ): TrafficChartPoint => [
+						stringToDate( date ),
+						visits,
+					]
+			  )
 			: getZeroVisitorPoints( startDate, endDate );
 
 	const rangesByDate = new Map< string, TypicalTrafficRangeDay >(
@@ -266,11 +244,6 @@ export function getTrafficChartData( {
 
 	// The format Google Charts gives a day's visitors in its tooltip.
 	const visitorsFormat = new Intl.NumberFormat( getLocale() );
-
-	const totalUsers = parseInt(
-		report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value ?? '',
-		10
-	);
 
 	return {
 		chartData: [
@@ -311,7 +284,9 @@ export function getTrafficChartData( {
 		ticks: gatheringData
 			? getDailyTicks( startDate, endDate )
 			: points.slice( 1 ).map( ( [ date ] ) => date ),
-		hasVisitors: ! gatheringData && totalUsers > 0,
+		// While the property is gathering data, every day the chart plots is
+		// at zero.
+		hasVisitors: days.some( ( { visitors } ) => visitors > 0 ),
 		hasTypicalTrafficRange,
 		hasPublishedPosts,
 	};

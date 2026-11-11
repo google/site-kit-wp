@@ -19,21 +19,22 @@
 /**
  * Internal dependencies
  */
-import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { getTrafficChartData } from './getTrafficChartData';
 import { PUBLISHED_POST_POINT_STYLE } from './trafficChartOptions';
 
 describe( 'getTrafficChartData', () => {
-	const reportOptions = getGraphReportArgs( {
-		startDate: '2025-01-13',
-		endDate: '2025-01-16',
-	} );
+	const dailyTraffic: BenchmarkingDailyTrafficRow[] = [
+		{ date: '2025-01-13', visits: 55 },
+		{ date: '2025-01-14', visits: 14 },
+		{ date: '2025-01-15', visits: 3 },
+		{ date: '2025-01-16', visits: 13 },
+	];
 
 	it( 'names the columns "Day" and "Users"', () => {
 		const { chartData } = getTrafficChartData( {
-			report: getAnalytics4MockResponse( reportOptions ),
+			dailyTraffic,
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
@@ -44,9 +45,9 @@ describe( 'getTrafficChartData', () => {
 		] );
 	} );
 
-	it( 'draws one point for each day the report returns', () => {
+	it( 'should draw one point for each day of the daily traffic', () => {
 		const { chartData } = getTrafficChartData( {
-			report: getAnalytics4MockResponse( reportOptions ),
+			dailyTraffic,
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
@@ -61,7 +62,7 @@ describe( 'getTrafficChartData', () => {
 
 	it( 'shows a date label under every day except the first', () => {
 		const { ticks } = getTrafficChartData( {
-			report: getAnalytics4MockResponse( reportOptions ),
+			dailyTraffic,
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
@@ -73,7 +74,7 @@ describe( 'getTrafficChartData', () => {
 		] );
 	} );
 
-	it( 'draws a flat line at zero across the whole date range when there is no report', () => {
+	it( 'should draw a flat line at zero across the whole date range when there is no daily traffic', () => {
 		const { chartData, hasVisitors } = getTrafficChartData( {
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
@@ -87,9 +88,9 @@ describe( 'getTrafficChartData', () => {
 		expect( hasVisitors ).toBe( false );
 	} );
 
-	it( 'draws a flat line at zero across the whole date range when the report has no rows', () => {
-		const { chartData } = getTrafficChartData( {
-			report: { rows: [] },
+	it( 'should draw a flat line at zero across the whole date range when the daily traffic has no days', () => {
+		const { chartData, hasVisitors } = getTrafficChartData( {
+			dailyTraffic: [],
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
@@ -99,9 +100,10 @@ describe( 'getTrafficChartData', () => {
 			[ new Date( 2025, 0, 14 ), 0 ],
 			[ new Date( 2025, 0, 16 ), 0 ],
 		] );
+		expect( hasVisitors ).toBe( false );
 	} );
 
-	it( 'shows a date label on the second day and the last day when there is no report', () => {
+	it( 'should show a date label on the second day and the last day when there is no daily traffic', () => {
 		const { ticks } = getTrafficChartData( {
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
@@ -113,9 +115,9 @@ describe( 'getTrafficChartData', () => {
 		] );
 	} );
 
-	it( "finds visitors when the report's total is above zero", () => {
+	it( 'should find visitors when a day is above zero', () => {
 		const { hasVisitors } = getTrafficChartData( {
-			report: getAnalytics4MockResponse( reportOptions ),
+			dailyTraffic,
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
@@ -123,9 +125,12 @@ describe( 'getTrafficChartData', () => {
 		expect( hasVisitors ).toBe( true );
 	} );
 
-	it( "finds no visitors when the report's total is '0'", () => {
+	it( 'should find no visitors when every day is at zero', () => {
 		const { hasVisitors } = getTrafficChartData( {
-			report: { totals: [ { metricValues: [ { value: '0' } ] } ] },
+			dailyTraffic: dailyTraffic.map( ( { date } ) => ( {
+				date,
+				visits: 0,
+			} ) ),
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
@@ -133,19 +138,9 @@ describe( 'getTrafficChartData', () => {
 		expect( hasVisitors ).toBe( false );
 	} );
 
-	it( 'finds no visitors when the report has no total', () => {
-		const { hasVisitors } = getTrafficChartData( {
-			report: { rows: [] },
-			startDate: '2025-01-13',
-			endDate: '2025-01-16',
-		} );
-
-		expect( hasVisitors ).toBe( false );
-	} );
-
-	it( 'should draw a flat line at zero while the property is gathering data, even though the report has visitors', () => {
+	it( 'should draw a flat line at zero while the property is gathering data, even though the daily traffic has visits', () => {
 		const { chartData, hasVisitors } = getTrafficChartData( {
-			report: getAnalytics4MockResponse( reportOptions ),
+			dailyTraffic,
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 			gatheringData: true,
@@ -203,7 +198,7 @@ describe( 'getTrafficChartData', () => {
 	it( 'should add no column for the typical range or the published posts when the range has neither', () => {
 		const { chartData, hasTypicalTrafficRange, hasPublishedPosts } =
 			getTrafficChartData( {
-				report: getAnalytics4MockResponse( reportOptions ),
+				dailyTraffic,
 				startDate: '2025-01-13',
 				endDate: '2025-01-16',
 				typicalTrafficRange: [],
@@ -217,7 +212,7 @@ describe( 'getTrafficChartData', () => {
 
 	it( 'should draw the typical range as two interval columns, and leave them empty on a day without a range', () => {
 		const { chartData, hasTypicalTrafficRange } = getTrafficChartData( {
-			report: getAnalytics4MockResponse( reportOptions ),
+			dailyTraffic,
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 			typicalTrafficRange: [
@@ -245,14 +240,7 @@ describe( 'getTrafficChartData', () => {
 
 	it( "should give each day's tooltip the day's visitors in the format Google Charts gives them", () => {
 		const { chartData } = getTrafficChartData( {
-			report: {
-				rows: [
-					{
-						dimensionValues: [ { value: '20250113' } ],
-						metricValues: [ { value: '12345' } ],
-					},
-				],
-			},
+			dailyTraffic: [ { date: '2025-01-13', visits: 12345 } ],
 			startDate: '2025-01-13',
 			endDate: '2025-01-13',
 			typicalTrafficRange: [
@@ -271,7 +259,7 @@ describe( 'getTrafficChartData', () => {
 
 	it( 'should mark each day with a published post in a style column, once however many posts the day has', () => {
 		const { chartData, hasPublishedPosts } = getTrafficChartData( {
-			report: getAnalytics4MockResponse( reportOptions ),
+			dailyTraffic,
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 			publishedPosts: [
@@ -300,7 +288,7 @@ describe( 'getTrafficChartData', () => {
 
 	it( 'should put the style column after the typical range columns when the range has both', () => {
 		const { chartData } = getTrafficChartData( {
-			report: getAnalytics4MockResponse( reportOptions ),
+			dailyTraffic,
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 			typicalTrafficRange: [ { date: '2025-01-14', min: 10, max: 30 } ],
@@ -338,7 +326,7 @@ describe( 'getTrafficChartData', () => {
 		};
 
 		const { days } = getTrafficChartData( {
-			report: getAnalytics4MockResponse( reportOptions ),
+			dailyTraffic,
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 			typicalTrafficRange: [ range ],
@@ -361,7 +349,7 @@ describe( 'getTrafficChartData', () => {
 	it( 'should leave out a typical range and a post on a day the chart does not plot', () => {
 		const { chartData, hasTypicalTrafficRange, hasPublishedPosts } =
 			getTrafficChartData( {
-				report: getAnalytics4MockResponse( reportOptions ),
+				dailyTraffic,
 				startDate: '2025-01-13',
 				endDate: '2025-01-16',
 				typicalTrafficRange: [
@@ -383,7 +371,7 @@ describe( 'getTrafficChartData', () => {
 	it( 'should draw neither the typical range nor the published posts while the property is gathering data', () => {
 		const { chartData, days, hasTypicalTrafficRange, hasPublishedPosts } =
 			getTrafficChartData( {
-				report: getAnalytics4MockResponse( reportOptions ),
+				dailyTraffic,
 				startDate: '2025-01-13',
 				endDate: '2025-01-16',
 				gatheringData: true,

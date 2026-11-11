@@ -35,14 +35,16 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { useFeature } from '@/js/hooks/useFeature';
+import { PLACEHOLDER_TRAFFIC_BREAKDOWN } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/placeholderTrafficBreakdown';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
 import {
+	getPlaceholderDailyTraffic,
 	getPlaceholderPublishedPosts,
 	getPlaceholderTypicalTrafficRange,
 } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
+import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
-import { PLACEHOLDER_UNIQUE_VISITORS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderUniqueVisitors';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
 import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
@@ -57,8 +59,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const TrafficOverviewPanel: FC = () => {
-	const { totalsReport, graphReport, breakdownReports, loaded, errors } =
-		useTrafficOverviewReports();
+	const { totalsReport, loaded, errors } = useTrafficOverviewReports();
 
 	const canViewSharedAnalytics4 = useCanViewSharedModule(
 		MODULE_SLUG_ANALYTICS_4
@@ -75,6 +76,11 @@ const TrafficOverviewPanel: FC = () => {
 	const { isShown: showKeyFactors } = useKeyFactorsVisibility();
 	const trafficInsightsEnabled = useFeature( 'trafficInsights' );
 
+	const { startDate, endDate } = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
+		[]
+	);
+
 	const daysInSelectedRange = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
 		[]
@@ -86,6 +92,9 @@ const TrafficOverviewPanel: FC = () => {
 	);
 
 	const isLoading = ! loaded || isGatheringData === undefined;
+
+	// TODO: Read the visits on each day from the benchmarking response.
+	const dailyTraffic = getPlaceholderDailyTraffic( startDate, endDate );
 
 	return (
 		<div
@@ -114,14 +123,15 @@ const TrafficOverviewPanel: FC = () => {
 						) }
 						<TotalVisitors
 							report={ totalsReport }
-							// TODO: Read the unique visitors from a report.
-							uniqueVisitors={ PLACEHOLDER_UNIQUE_VISITORS }
+							// TODO: Read the total visits from the benchmarking
+							// response.
+							totalVisits={ PLACEHOLDER_TOTAL_VISITS }
 							loaded={ ! isLoading }
 							gatheringData={ isGatheringData }
 						/>
 					</div>
 					<TrafficChart
-						report={ graphReport }
+						dailyTraffic={ dailyTraffic }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
 						// The chart compares the site with its typical traffic
@@ -132,13 +142,13 @@ const TrafficOverviewPanel: FC = () => {
 						typicalTrafficRange={
 							showKeyFactors
 								? getPlaceholderTypicalTrafficRange(
-										graphReport
+										dailyTraffic
 								  )
 								: undefined
 						}
 						publishedPosts={
 							showKeyFactors
-								? getPlaceholderPublishedPosts( graphReport )
+								? getPlaceholderPublishedPosts( dailyTraffic )
 								: undefined
 						}
 					/>
@@ -159,7 +169,9 @@ const TrafficOverviewPanel: FC = () => {
 						/>
 					) }
 					<TrafficBreakdown
-						reports={ breakdownReports }
+						// TODO: Replace the placeholder breakdown with the
+						// site's own.
+						values={ PLACEHOLDER_TRAFFIC_BREAKDOWN }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
 					/>

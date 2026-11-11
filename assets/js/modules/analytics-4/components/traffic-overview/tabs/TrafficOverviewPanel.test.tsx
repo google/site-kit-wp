@@ -34,13 +34,8 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
-import {
-	getBreakdownReportArgs,
-	getGraphReportArgs,
-	getTotalsReportArgs,
-} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -107,37 +102,24 @@ describe( 'TrafficOverviewPanel', () => {
 	}
 
 	/**
-	 * Builds the five argument sets the panel passes to `getReport`, in this
-	 * order:
-	 *
-	 * 1. totals
-	 * 2. graph
-	 * 3. channels
-	 * 4. locations
-	 * 5. devices.
+	 * Builds the arguments the panel passes to `getReport` for the totals
+	 * report, over the selected date range.
 	 *
 	 * @since 1.189.0
+	 * @since n.e.x.t Renamed from `getReportArgs()`, and builds the totals report's arguments alone.
 	 *
-	 * @param {string} [url] Optional. The entity URL the reports cover.
-	 * @return {Array<Object>} The five argument sets.
+	 * @return {Object} The totals report's arguments.
 	 */
-	function getReportArgs( url?: string ): ReportOptions[] {
+	function getTotalsArgs(): ReportOptions {
 		const { startDate, endDate, compareStartDate, compareEndDate } =
 			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
 
-		const shared = { startDate, endDate, ...( url ? { url } : {} ) };
-
-		return [
-			getTotalsReportArgs( {
-				...shared,
-				compareStartDate,
-				compareEndDate,
-			} ),
-			getGraphReportArgs( shared ),
-			...TRAFFIC_BREAKDOWN_COLUMNS.map( ( { dimensionName, reportID } ) =>
-				getBreakdownReportArgs( { ...shared, dimensionName, reportID } )
-			),
-		];
+		return getTotalsReportArgs( {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+		} );
 	}
 
 	/**
@@ -224,8 +206,8 @@ describe( 'TrafficOverviewPanel', () => {
 		] );
 	} );
 
-	it( 'builds the visitor total and its badge from the totals report', async () => {
-		provideTotalsReport( 1200, 1000 );
+	it( 'should build the unique visitors from the totals report', async () => {
+		provideTotalsReport( 843, 700 );
 
 		const { getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -234,11 +216,12 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		expect( getByText( '1.2K' ) ).toBeInTheDocument();
-		expect( getByText( '+20%' ) ).toBeInTheDocument();
+		expect( getByText( '843' ) ).toHaveClass(
+			'googlesitekit-traffic-overview__unique-visitors-figure'
+		);
 	} );
 
-	it( 'builds the visitor total and its badge from the entity-scoped totals report', async () => {
+	it( 'should build the unique visitors from the entity-scoped totals report', async () => {
 		const entityURL = 'https://example.com/about/';
 
 		provideSiteInfo( registry, { currentEntityURL: entityURL } );
@@ -253,19 +236,12 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		expect( getByText( '500' ) ).toBeInTheDocument();
-		expect( getByText( '+25%' ) ).toBeInTheDocument();
+		expect( getByText( '500' ) ).toHaveClass(
+			'googlesitekit-traffic-overview__unique-visitors-figure'
+		);
 	} );
 
-	it( "shows each day's visitors in the chart", async () => {
-		provideAnalytics4MockReport(
-			registry,
-			getGraphReportArgs( {
-				startDate: '2025-01-09',
-				endDate: '2025-02-05',
-			} )
-		);
-
+	it( 'should draw the placeholder visits for each day of the selected range in the chart', async () => {
 		const { getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
 			{
@@ -278,38 +254,38 @@ describe( 'TrafficOverviewPanel', () => {
 		// Google Charts draws nothing under Jest, so this test reads the
 		// chart's screen-reader lines instead.
 		expect(
-			getByText( 'January 9, 2025: 55 visitors' )
+			getByText( 'January 9, 2025: 39 visitors' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'January 10, 2025: 14 visitors' )
+			getByText( 'February 5, 2025: 152 visitors' )
 		).toBeInTheDocument();
 	} );
 
-	it( "shows each day's visitors to the current URL in the chart on the entity dashboard", async () => {
-		const entityURL = 'https://example.com/about/';
-
-		provideSiteInfo( registry, { currentEntityURL: entityURL } );
-		provideAnalytics4MockReport(
-			registry,
-			getGraphReportArgs( {
-				startDate: '2025-01-09',
-				endDate: '2025-02-05',
-				url: entityURL,
-			} )
-		);
-
-		const { getByText, waitForRegistry } = render(
+	it( 'should show the placeholder values in the three columns of the traffic breakdown', async () => {
+		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
-			{
-				registry,
-			}
+			{ registry }
 		);
 
 		await waitForRegistry();
 
-		expect(
-			getByText( 'January 9, 2025: 69 visitors' )
-		).toBeInTheDocument();
+		const labelsByColumn = Array.from(
+			container.querySelectorAll(
+				'.googlesitekit-traffic-overview__breakdown-column'
+			)
+		).map( ( column ) =>
+			Array.from(
+				column.querySelectorAll(
+					'.googlesitekit-traffic-overview__breakdown-row-label'
+				)
+			).map( ( label ) => label.textContent )
+		);
+
+		expect( labelsByColumn ).toEqual( [
+			[ 'Direct', 'Organic Search', 'Organic Social', 'Referral' ],
+			[ 'Singapore', 'Brazil', 'China', 'United States' ],
+			[ 'desktop', 'mobile', 'tablet' ],
+		] );
 	} );
 
 	it( 'sends a report request when the panel renders', async () => {
@@ -324,21 +300,10 @@ describe( 'TrafficOverviewPanel', () => {
 		);
 	} );
 
-	it( 'renders the three sections as placeholders while one of the five reports is still loading', async () => {
-		const [
-			totalsArgs,
-			graphArgs,
-			channelsArgs,
-			locationsArgs,
-			devicesArgs,
-		] = getReportArgs();
-
-		[ totalsArgs, graphArgs, channelsArgs, locationsArgs ].forEach(
-			( options ) => provideAnalytics4MockReport( registry, options )
-		);
+	it( 'should render the three sections as placeholders while the totals report is still loading', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [ devicesArgs ] );
+			.startResolution( 'getReport', [ getTotalsArgs() ] );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -366,21 +331,12 @@ describe( 'TrafficOverviewPanel', () => {
 		).toBeNull();
 	} );
 
-	it( 'renders the visitor total, the chart and the three columns together when the last of the five reports arrives', async () => {
-		const [
-			totalsArgs,
-			graphArgs,
-			channelsArgs,
-			locationsArgs,
-			devicesArgs,
-		] = getReportArgs();
+	it( 'should render the visitor total, the chart and the three columns together when the totals report arrives', async () => {
+		const totalsArgs = getTotalsArgs();
 
-		[ totalsArgs, graphArgs, channelsArgs, locationsArgs ].forEach(
-			( options ) => provideAnalytics4MockReport( registry, options )
-		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [ devicesArgs ] );
+			.startResolution( 'getReport', [ totalsArgs ] );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -394,10 +350,10 @@ describe( 'TrafficOverviewPanel', () => {
 		).toBeNull();
 
 		act( () => {
-			provideAnalytics4MockReport( registry, devicesArgs );
+			provideAnalytics4MockReport( registry, totalsArgs );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getReport', [ devicesArgs ] );
+				.finishResolution( 'getReport', [ totalsArgs ] );
 		} );
 
 		expect(
@@ -430,9 +386,7 @@ describe( 'TrafficOverviewPanel', () => {
 	} );
 
 	it( 'returns the three sections to their placeholders when the date range changes', async () => {
-		getReportArgs().forEach( ( options ) =>
-			provideAnalytics4MockReport( registry, options )
-		);
+		provideAnalytics4MockReport( registry, getTotalsArgs() );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -447,11 +401,9 @@ describe( 'TrafficOverviewPanel', () => {
 
 		act( () => {
 			registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
-			getReportArgs().forEach( ( options ) =>
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.startResolution( 'getReport', [ options ] )
-			);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ getTotalsArgs() ] );
 		} );
 
 		expect( getPlaceholderCounts( container ) ).toEqual( {
@@ -464,34 +416,21 @@ describe( 'TrafficOverviewPanel', () => {
 		).toBeNull();
 	} );
 
-	it( 'renders the report error and its "Retry" button in place of the three sections when one report fails', async () => {
-		const [
-			totalsArgs,
-			graphArgs,
-			channelsArgs,
-			locationsArgs,
-			devicesArgs,
-		] = getReportArgs();
-
-		[ totalsArgs, graphArgs, channelsArgs, locationsArgs ].forEach(
-			( options ) =>
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetReport( {}, { options } )
-		);
+	it( 'should render the report error and its "Retry" button in place of the three sections when the report fails', async () => {
+		const totalsArgs = getTotalsArgs();
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test_error',
-				message: 'The devices report failed.',
+				message: 'The total visitors report failed.',
 				data: { status: 500, reason: 'backendError' },
 			},
 			'getReport',
-			[ devicesArgs ]
+			[ totalsArgs ]
 		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ devicesArgs ] );
+			.finishResolution( 'getReport', [ totalsArgs ] );
 
 		const { container, getByRole, getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -500,7 +439,9 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		expect( getByText( 'The devices report failed.' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'The total visitors report failed.' )
+		).toBeInTheDocument();
 		expect( getByRole( 'button', { name: 'Retry' } ) ).toBeInTheDocument();
 		expect(
 			container.querySelector(
@@ -517,21 +458,21 @@ describe( 'TrafficOverviewPanel', () => {
 		).toBeNull();
 	} );
 
-	it( 'requests the five reports again and renders the three sections on a "Retry" click', async () => {
-		getReportArgs().forEach( ( options ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
-				{
-					code: 'test_error',
-					message: 'The traffic reports failed.',
-					data: { status: 500, reason: 'backendError' },
-				},
-				'getReport',
-				[ options ]
-			);
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getReport', [ options ] );
-		} );
+	it( 'should request the report again and render the three sections on a "Retry" click', async () => {
+		const totalsArgs = getTotalsArgs();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'The total visitors report failed.',
+				data: { status: 500, reason: 'backendError' },
+			},
+			'getReport',
+			[ totalsArgs ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ totalsArgs ] );
 
 		const { container, getByRole, queryByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -543,11 +484,11 @@ describe( 'TrafficOverviewPanel', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint )
 		);
 		await waitFor( () =>
 			expect(
-				queryByText( 'The traffic reports failed.' )
+				queryByText( 'The total visitors report failed.' )
 			).not.toBeInTheDocument()
 		);
 
@@ -572,20 +513,20 @@ describe( 'TrafficOverviewPanel', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '67890' );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( '13579' );
 
-		getReportArgs().forEach( ( options ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
-				{
-					code: 'test_error',
-					message: 'Request had insufficient authentication scopes.',
-					data: { status: 403, reason: 'insufficientPermissions' },
-				},
-				'getReport',
-				[ options ]
-			);
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getReport', [ options ] );
-		} );
+		const totalsArgs = getTotalsArgs();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'Request had insufficient authentication scopes.',
+				data: { status: 403, reason: 'insufficientPermissions' },
+			},
+			'getReport',
+			[ totalsArgs ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ totalsArgs ] );
 
 		const { getByText, queryByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -601,9 +542,7 @@ describe( 'TrafficOverviewPanel', () => {
 	it( 'should render the "Gathering data…" notice, and "We’re still collecting data" in each of the three columns, while the property is gathering data', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 
-		getReportArgs().forEach( ( options ) =>
-			provideAnalytics4MockReport( registry, options )
-		);
+		provideAnalytics4MockReport( registry, getTotalsArgs() );
 
 		const { container, getAllByText, getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -616,7 +555,7 @@ describe( 'TrafficOverviewPanel', () => {
 		expect( getAllByText( 'We’re still collecting data' ) ).toHaveLength(
 			3
 		);
-		// The five reports resolved, and no figure from them reaches the screen.
+		// Neither the report nor the placeholders put a figure on the screen.
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
 		).toBeNull();
@@ -632,9 +571,7 @@ describe( 'TrafficOverviewPanel', () => {
 		} );
 	} );
 
-	it( 'renders 0 visitors, a 0% badge and three empty columns when the reports show no traffic', async () => {
-		const [ totalsArgs, ...remainingArgs ] = getReportArgs();
-
+	it( 'should render 0 unique visitors when the totals report shows no traffic', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				totals: [
@@ -642,39 +579,25 @@ describe( 'TrafficOverviewPanel', () => {
 					{ metricValues: [ { value: '0' } ] },
 				],
 			},
-			{ options: totalsArgs }
-		);
-		remainingArgs.forEach( ( options ) =>
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetReport( {}, { options } )
+			{ options: getTotalsArgs() }
 		);
 
-		const {
-			container,
-			getAllByText,
-			getByText,
-			queryByText,
-			waitForRegistry,
-		} = render( <TrafficOverviewPanel />, { registry } );
+		const { container, getByText, queryByText, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
-		expect( getByText( '0' ) ).toBeInTheDocument();
+		expect( getByText( '0' ) ).toHaveClass(
+			'googlesitekit-traffic-overview__unique-visitors-figure'
+		);
 		expect( getPlaceholderCounts( container ) ).toEqual( {
 			totalVisitors: 0,
 			chart: 0,
 			breakdownRows: 0,
 		} );
 		expect( queryByText( 'Gathering data…' ) ).not.toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-change-badge' )
-		).toHaveTextContent( '0%' );
-		expect(
-			getAllByText(
-				'No data to display: your site hasn’t received any visitors yet'
-			)
-		).toHaveLength( 3 );
 		expect(
 			container.querySelector( '.googlesitekit-traffic-overview__chart' )
 		).toBeInTheDocument();
@@ -826,9 +749,7 @@ describe( 'TrafficOverviewPanel', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsGatheringData( true );
 
-			getReportArgs().forEach( ( options ) =>
-				provideAnalytics4MockReport( registry, options )
-			);
+			provideAnalytics4MockReport( registry, getTotalsArgs() );
 
 			const { container, getByText, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
@@ -847,21 +768,12 @@ describe( 'TrafficOverviewPanel', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		it( 'should render the key factors as three placeholder cards while one of the five reports is still loading, and the cards once it arrives', async () => {
-			const [
-				totalsArgs,
-				graphArgs,
-				channelsArgs,
-				locationsArgs,
-				devicesArgs,
-			] = getReportArgs();
+		it( 'should render the key factors as three placeholder cards while the totals report is still loading, and the cards once it arrives', async () => {
+			const totalsArgs = getTotalsArgs();
 
-			[ totalsArgs, graphArgs, channelsArgs, locationsArgs ].forEach(
-				( options ) => provideAnalytics4MockReport( registry, options )
-			);
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.startResolution( 'getReport', [ devicesArgs ] );
+				.startResolution( 'getReport', [ totalsArgs ] );
 
 			const { container, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
@@ -885,10 +797,10 @@ describe( 'TrafficOverviewPanel', () => {
 			).toHaveLength( 3 );
 
 			act( () => {
-				provideAnalytics4MockReport( registry, devicesArgs );
+				provideAnalytics4MockReport( registry, totalsArgs );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getReport', [ devicesArgs ] );
+					.finishResolution( 'getReport', [ totalsArgs ] );
 			} );
 
 			expect(
@@ -921,28 +833,7 @@ describe( 'TrafficOverviewPanel', () => {
 			).map( ( label ) => label.textContent );
 		}
 
-		/**
-		 * Puts a daily-visitors report with traffic on every day in the store.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param {string} [url] Optional. The entity URL the report covers.
-		 * @return {void}
-		 */
-		function provideGraphReport( url?: string ) {
-			provideAnalytics4MockReport(
-				registry,
-				getGraphReportArgs( {
-					startDate: '2025-01-09',
-					endDate: '2025-02-05',
-					...( url ? { url } : {} ),
-				} )
-			);
-		}
-
 		it( 'should draw the typical traffic range and the published posts on the chart on the main dashboard', async () => {
-			provideGraphReport();
-
 			const { container, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
 				{
@@ -962,8 +853,6 @@ describe( 'TrafficOverviewPanel', () => {
 		} );
 
 		it( 'should draw neither without the typicalTraffic feature', async () => {
-			provideGraphReport();
-
 			const { container, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
@@ -978,7 +867,6 @@ describe( 'TrafficOverviewPanel', () => {
 
 		it( 'should draw neither on the entity dashboard', async () => {
 			provideSiteInfo( registry, { currentEntityURL: entityURL } );
-			provideGraphReport( entityURL );
 
 			const { container, getByText, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
@@ -991,10 +879,9 @@ describe( 'TrafficOverviewPanel', () => {
 
 			await waitForRegistry();
 
-			// The day's line, with no typical range, shows the chart has the
-			// entity's report.
+			// The day's line has no typical range.
 			expect(
-				getByText( 'January 9, 2025: 69 visitors' )
+				getByText( 'January 9, 2025: 39 visitors' )
 			).toBeInTheDocument();
 			expect( getLegendLabels( container ) ).toEqual( [
 				'Last 28 days traffic',
@@ -1005,7 +892,6 @@ describe( 'TrafficOverviewPanel', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsGatheringData( true );
-			provideGraphReport();
 
 			const { container, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
@@ -1116,9 +1002,7 @@ describe( 'TrafficOverviewPanel', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsGatheringData( true );
 
-			getReportArgs().forEach( ( options ) =>
-				provideAnalytics4MockReport( registry, options )
-			);
+			provideAnalytics4MockReport( registry, getTotalsArgs() );
 
 			const { container, getByText, waitForRegistry } = render(
 				<TrafficOverviewPanel />,

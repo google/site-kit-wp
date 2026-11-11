@@ -19,13 +19,18 @@
 /**
  * Internal dependencies
  */
-import { Report } from '@/js/modules/analytics-4/datastore/types';
-import { getDateString } from '@/js/util';
-import {
-	PublishedPost,
-	TypicalTrafficRangeDay,
-	getReportPoints,
-} from './getTrafficChartData';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import { getDateString, stringToDate } from '@/js/util';
+import { PublishedPost, TypicalTrafficRangeDay } from './getTrafficChartData';
+
+/**
+ * The visits the design plots for each of its 28 days, oldest first. They
+ * climb from about 40 a day to about 150, with a dip under the first post.
+ */
+const PLACEHOLDER_DAILY_VISITS = [
+	39, 33, 66, 25, 42, 41, 72, 39, 44, 38, 31, 57, 36, 55, 87, 66, 73, 61, 76,
+	84, 70, 112, 134, 121, 145, 71, 141, 152,
+];
 
 /**
  * The placeholder posts: how far through the plotted days each one sits, as
@@ -39,32 +44,81 @@ const PLACEHOLDER_POSTS = [
 ];
 
 /**
+ * Gets the visits the Traffic Overview chart plots until it reads them from
+ * the benchmarking response.
+ *
+ * The design's 28 days of visits stretch or shrink to cover the range, so the
+ * line keeps the design's shape over a range of any length.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} startDate The range's first day, as `YYYY-MM-DD`.
+ * @param {string} endDate   The range's last day, as `YYYY-MM-DD`.
+ * @return {Array.<Object>} One row for each day of the range, oldest first.
+ */
+export function getPlaceholderDailyTraffic(
+	startDate: string,
+	endDate: string
+): BenchmarkingDailyTrafficRow[] {
+	const dates: string[] = [];
+
+	// The date walks a day at a time, like the dates of the decoded response,
+	// so a daylight-saving change inside the range skips no day.
+	for (
+		const date = stringToDate( startDate );
+		getDateString( date ) <= endDate;
+		date.setDate( date.getDate() + 1 )
+	) {
+		dates.push( getDateString( date ) );
+	}
+
+	const lastPosition = PLACEHOLDER_DAILY_VISITS.length - 1;
+
+	return dates.map( ( date, index ) => {
+		// How far through the design's days the day sits. A day between two of
+		// them takes a value on the straight line between theirs.
+		const position =
+			dates.length > 1
+				? ( index * lastPosition ) / ( dates.length - 1 )
+				: lastPosition;
+		const before = PLACEHOLDER_DAILY_VISITS[ Math.floor( position ) ];
+		const after = PLACEHOLDER_DAILY_VISITS[ Math.ceil( position ) ];
+
+		return {
+			date,
+			visits: Math.round(
+				before +
+					( position - Math.floor( position ) ) * ( after - before )
+			),
+		};
+	} );
+}
+
+/**
  * Gets the typical range the Traffic Overview chart draws until it reads the
  * range from the benchmarking response.
  *
  * Each day's range runs a quarter below and above the average of the seven
- * days centered on it, and at least 5 visitors either way, so the band
- * follows the line, as in the design.
+ * days centered on it, and at least 5 visits either way, so the band follows
+ * the line, as in the design.
  *
  * @since n.e.x.t
  *
- * @param {Object} [report] Optional. The daily-visitors report.
- * @return {Array.<Object>} One range for each day of the report.
+ * @param {Array.<Object>} [dailyTraffic] Optional. The visits on each day, oldest first.
+ * @return {Array.<Object>} One range for each day.
  */
 export function getPlaceholderTypicalTrafficRange(
-	report?: Report
+	dailyTraffic: BenchmarkingDailyTrafficRow[] = []
 ): TypicalTrafficRangeDay[] {
-	const points = getReportPoints( report?.rows ?? [] );
-
-	return points.map( ( [ date ], index ) => {
-		const week = points.slice( Math.max( 0, index - 3 ), index + 4 );
+	return dailyTraffic.map( ( { date }, index ) => {
+		const week = dailyTraffic.slice( Math.max( 0, index - 3 ), index + 4 );
 		const average =
-			week.reduce( ( total, [ , visitors ] ) => total + visitors, 0 ) /
+			week.reduce( ( total, { visits } ) => total + visits, 0 ) /
 			week.length;
 		const margin = Math.max( average / 4, 5 );
 
 		return {
-			date: getDateString( date ),
+			date,
 			min: Math.max( 0, Math.round( average - margin ) ),
 			max: Math.round( average + margin ),
 		};
@@ -77,22 +131,20 @@ export function getPlaceholderTypicalTrafficRange(
  *
  * @since n.e.x.t
  *
- * @param {Object} [report] Optional. The daily-visitors report.
- * @return {Array.<Object>} Three posts on days of the report, or none when the report has no days.
+ * @param {Array.<Object>} [dailyTraffic] Optional. The visits on each day, oldest first.
+ * @return {Array.<Object>} Three posts on days of the daily traffic, or none when it has no days.
  */
 export function getPlaceholderPublishedPosts(
-	report?: Report
+	dailyTraffic: BenchmarkingDailyTrafficRow[] = []
 ): PublishedPost[] {
-	const points = getReportPoints( report?.rows ?? [] );
-
-	if ( ! points.length ) {
+	if ( ! dailyTraffic.length ) {
 		return [];
 	}
 
-	return PLACEHOLDER_POSTS.map( ( { position, title } ) => {
-		const [ date ] =
-			points[ Math.round( position * ( points.length - 1 ) ) ];
-
-		return { date: getDateString( date ), title };
-	} );
+	return PLACEHOLDER_POSTS.map( ( { position, title } ) => ( {
+		date: dailyTraffic[
+			Math.round( position * ( dailyTraffic.length - 1 ) )
+		].date,
+		title,
+	} ) );
 }

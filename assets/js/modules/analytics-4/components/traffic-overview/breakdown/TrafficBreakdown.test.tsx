@@ -24,8 +24,8 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { createBreakdownValues } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import * as tracking from '@/js/util/tracking';
 import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import { provideSiteInfo } from '@tests/js/utils';
@@ -33,22 +33,22 @@ import TrafficBreakdown from './TrafficBreakdown';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 
-const CHANNELS = createBreakdownReport( [
+const CHANNELS = createBreakdownValues( [
 	[ 'Organic Search', 1200 ],
 	[ 'Direct', 600 ],
 	[ 'Paid Search', 400 ],
 ] );
-const LOCATIONS = createBreakdownReport( [
+const LOCATIONS = createBreakdownValues( [
 	[ 'United States', 800 ],
 	[ 'Germany', 200 ],
 ] );
-const DEVICES = createBreakdownReport( [
+const DEVICES = createBreakdownValues( [
 	[ 'desktop', 700 ],
 	[ 'mobile', 300 ],
 ] );
 
 /** Rounded one by one, these shares would add up to 99%, with "Others" at 0%. */
-const LONG_TAIL_CHANNELS = createBreakdownReport( [
+const LONG_TAIL_CHANNELS = createBreakdownValues( [
 	[ 'Direct', 4630 ],
 	[ 'Organic Search', 3040 ],
 	[ 'Organic Social', 1560 ],
@@ -61,7 +61,7 @@ const LONG_TAIL_CHANNELS = createBreakdownReport( [
  * Ten values: collapsed, four of them fill the column and "Others" adds up
  * the rest; expanded, eight fill it and "Others" adds up the last two.
  */
-const MANY_CHANNELS = createBreakdownReport( [
+const MANY_CHANNELS = createBreakdownValues( [
 	[ 'Direct', 1000 ],
 	[ 'Organic Search', 900 ],
 	[ 'Referral', 800 ],
@@ -83,8 +83,10 @@ describe( 'TrafficBreakdown', () => {
 		mockTrackEvent.mockClear();
 	} );
 
-	function renderBreakdown( reports: Record< string, Report | undefined > ) {
-		return render( <TrafficBreakdown reports={ reports } />, { registry } );
+	function renderBreakdown(
+		values: Record< string, TrafficBreakdownValue[] | undefined >
+	) {
+		return render( <TrafficBreakdown values={ values } />, { registry } );
 	}
 
 	function getRowLabels( column: Element ) {
@@ -218,7 +220,7 @@ describe( 'TrafficBreakdown', () => {
 	it( 'shows the zero data message for a column with no rows, and the other two keep their rows', () => {
 		const { getByRole, getByText } = renderBreakdown( {
 			channels: CHANNELS,
-			locations: createBreakdownReport( [] ),
+			locations: createBreakdownValues( [] ),
 			devices: DEVICES,
 		} );
 
@@ -255,7 +257,7 @@ describe( 'TrafficBreakdown', () => {
 
 	it( 'renders an "Others" row that is inert too', () => {
 		const { container, getByText } = renderBreakdown( {
-			channels: createBreakdownReport( [
+			channels: createBreakdownValues( [
 				[ 'A', 50 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -278,7 +280,7 @@ describe( 'TrafficBreakdown', () => {
 
 	it( 'renders a dimension value named "Others" alongside the folded row', () => {
 		const { getAllByText } = renderBreakdown( {
-			channels: createBreakdownReport( [
+			channels: createBreakdownValues( [
 				[ 'Others', 100 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -294,10 +296,10 @@ describe( 'TrafficBreakdown', () => {
 		expect( getAllByText( 'Others' ) ).toHaveLength( 2 );
 	} );
 
-	it( 'renders every heading above placeholder rows while the reports load', () => {
+	it( 'should render every heading above placeholder rows while the values load', () => {
 		const { container, getAllByRole, queryByText } = render(
 			<TrafficBreakdown
-				reports={ {
+				values={ {
 					channels: CHANNELS,
 					locations: LOCATIONS,
 					devices: DEVICES,
@@ -325,7 +327,7 @@ describe( 'TrafficBreakdown', () => {
 	it( 'should render every column heading above "We’re still collecting data" while the property is gathering data', () => {
 		const { getAllByRole, getAllByText, queryByText } = render(
 			<TrafficBreakdown
-				reports={ {
+				values={ {
 					channels: CHANNELS,
 					locations: LOCATIONS,
 					devices: DEVICES,
@@ -356,7 +358,7 @@ describe( 'TrafficBreakdown', () => {
 		expect( queryByText( 'Organic Search' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'renders a column whose report has not arrived as its zero data message', () => {
+	it( 'should render a column whose values have not arrived as its zero data message', () => {
 		const { getByRole } = renderBreakdown( {
 			channels: CHANNELS,
 			locations: LOCATIONS,
@@ -405,7 +407,7 @@ describe( 'TrafficBreakdown', () => {
 	it( 'should render no "Show more" when no column has more than five values', () => {
 		const { queryByRole } = renderBreakdown( {
 			// Five values fill the column without an "Others" row.
-			channels: createBreakdownReport( [
+			channels: createBreakdownValues( [
 				[ 'A', 50 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -493,12 +495,12 @@ describe( 'TrafficBreakdown', () => {
 	} );
 
 	it.each( [
-		[ 'while the reports load', { loaded: false } ],
+		[ 'while the values load', { loaded: false } ],
 		[ 'while the property is gathering data', { gatheringData: true } ],
 	] )( 'should render no "Show more" %s', ( _, props ) => {
 		const { queryByRole } = render(
 			<TrafficBreakdown
-				reports={ {
+				values={ {
 					channels: MANY_CHANNELS,
 					locations: LOCATIONS,
 					devices: DEVICES,

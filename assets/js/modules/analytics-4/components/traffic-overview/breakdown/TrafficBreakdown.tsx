@@ -36,21 +36,23 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import { TRAFFIC_BREAKDOWN_EXPANDED_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import {
+	TrafficBreakdownValue,
+	getBreakdownRows,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import TrafficBreakdownColumn from './TrafficBreakdownColumn';
 
 export interface TrafficBreakdownProps {
-	/** One report per breakdown column, keyed by the column's `id`. */
-	reports: Record< string, Report | undefined >;
-	/** Whether the three breakdown reports have arrived. */
+	/** The values of each column, keyed by the column's `id`, each ordered by visitors, most first. */
+	values: Record< string, TrafficBreakdownValue[] | undefined >;
+	/** Whether the values have arrived. */
 	loaded?: boolean;
 	/** Whether the Analytics property is still gathering data. */
 	gatheringData?: boolean;
 }
 
 const TrafficBreakdown: FC< TrafficBreakdownProps > = ( {
-	reports,
+	values,
 	loaded = true,
 	gatheringData = false,
 } ) => {
@@ -76,9 +78,9 @@ const TrafficBreakdown: FC< TrafficBreakdownProps > = ( {
 	const columns = TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, heading } ) => ( {
 		id,
 		heading,
-		collapsedRows: getBreakdownRows( reports[ id ] ),
+		collapsedRows: getBreakdownRows( values[ id ] ),
 		expandedRows: getBreakdownRows(
-			reports[ id ],
+			values[ id ],
 			TRAFFIC_BREAKDOWN_EXPANDED_MAX_ROWS
 		),
 	} ) );

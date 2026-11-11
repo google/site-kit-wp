@@ -29,10 +29,9 @@ import { getChartOptions } from '@/js/components/GoogleChart/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKPOINT_DESKTOP } from '@/js/hooks/useBreakpoint';
-import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { render, waitFor, within } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -53,10 +52,16 @@ const mockGoogleChart = jest.mocked( GoogleChart );
 describe( 'TrafficChart', () => {
 	let registry: WPDataRegistry;
 
-	const reportOptions = getGraphReportArgs( {
-		startDate: '2025-01-14',
-		endDate: '2025-01-16',
-	} );
+	const dailyTraffic: BenchmarkingDailyTrafficRow[] = [
+		{ date: '2025-01-14', visits: 55 },
+		{ date: '2025-01-15', visits: 14 },
+		{ date: '2025-01-16', visits: 3 },
+	];
+
+	// Every day of the range, at zero.
+	const noVisits: BenchmarkingDailyTrafficRow[] = dailyTraffic.map(
+		( { date } ) => ( { date, visits: 0 } )
+	);
 
 	/**
 	 * Stores the day the Analytics property was created.
@@ -111,13 +116,8 @@ describe( 'TrafficChart', () => {
 		return calls[ calls.length - 1 ][ 0 ];
 	}
 
-	it( 'draws one point for each day the report returns', async () => {
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+	it( 'should draw one point for each day of the daily traffic', async () => {
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { data } = await getLastChartProps();
 
@@ -129,12 +129,7 @@ describe( 'TrafficChart', () => {
 	} );
 
 	it( 'labels the horizontal axis from the second day of the range', async () => {
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { options } = await getLastChartProps();
 
@@ -145,12 +140,7 @@ describe( 'TrafficChart', () => {
 	} );
 
 	it( 'runs the value axis from 0 to 100 for a range with no visitors', async () => {
-		render(
-			<TrafficChart
-				report={ { totals: [ { metricValues: [ { value: '0' } ] } ] } }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ noVisits } />, { registry } );
 
 		const { options } = await getLastChartProps();
 
@@ -158,12 +148,7 @@ describe( 'TrafficChart', () => {
 	} );
 
 	it( 'draws a flat line across the selected range when it has no visitors', async () => {
-		render(
-			<TrafficChart
-				report={ { totals: [ { metricValues: [ { value: '0' } ] } ] } }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ noVisits } />, { registry } );
 
 		const { data, options } = await getLastChartProps();
 
@@ -178,7 +163,7 @@ describe( 'TrafficChart', () => {
 		] );
 	} );
 
-	it( 'draws a flat line at zero when the chart gets no report', async () => {
+	it( 'should draw a flat line at zero when the chart gets no daily traffic', async () => {
 		render( <TrafficChart />, { registry } );
 
 		const { data, options } = await getLastChartProps();
@@ -192,12 +177,7 @@ describe( 'TrafficChart', () => {
 	} );
 
 	it( 'sets no maximum on the value axis for a range that has visitors', async () => {
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { options } = await getLastChartProps();
 
@@ -205,12 +185,7 @@ describe( 'TrafficChart', () => {
 	} );
 
 	it( 'draws a line chart in #462083', async () => {
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { chartType, options } = await getLastChartProps();
 
@@ -221,12 +196,7 @@ describe( 'TrafficChart', () => {
 	} );
 
 	it( 'draws a #b8bdb9 line along the right edge of the chart area', async () => {
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { options } = await getLastChartProps();
 
@@ -236,9 +206,7 @@ describe( 'TrafficChart', () => {
 
 	it( 'shows the "Last 3 days traffic" legend label beside a line in the chart color', async () => {
 		const { getByRole, waitForRegistry } = render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
+			<TrafficChart dailyTraffic={ dailyTraffic } />,
 			{ registry }
 		);
 
@@ -257,12 +225,7 @@ describe( 'TrafficChart', () => {
 	it( 'marks the day the Analytics property was created when that day is inside the range', async () => {
 		providePropertyCreateTime( '2025-01-14' );
 
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { dateMarkers } = await getLastChartProps();
 
@@ -277,12 +240,7 @@ describe( 'TrafficChart', () => {
 	it( 'should mark the day the Analytics property was created when that day is the last day of the range', async () => {
 		providePropertyCreateTime( '2025-01-16' );
 
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { dateMarkers } = await getLastChartProps();
 
@@ -297,12 +255,7 @@ describe( 'TrafficChart', () => {
 	it( 'draws no marker when the Analytics property was created before the range', async () => {
 		providePropertyCreateTime( '2024-11-02' );
 
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { dateMarkers } = await getLastChartProps();
 
@@ -313,9 +266,7 @@ describe( 'TrafficChart', () => {
 		providePropertyCreateTime( '2025-01-14' );
 
 		const { getByText } = render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
+			<TrafficChart dailyTraffic={ dailyTraffic } />,
 			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
 		);
 
@@ -341,9 +292,7 @@ describe( 'TrafficChart', () => {
 			.receiveGetSettings( { propertyCreateTime: 0 } );
 
 		const { queryByText } = render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
+			<TrafficChart dailyTraffic={ dailyTraffic } />,
 			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
 		);
 
@@ -357,9 +306,7 @@ describe( 'TrafficChart', () => {
 
 	it( 'reads every day and its visitors to a screen reader', async () => {
 		const { container, waitForRegistry } = render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
+			<TrafficChart dailyTraffic={ dailyTraffic } />,
 			{ registry }
 		);
 
@@ -379,14 +326,7 @@ describe( 'TrafficChart', () => {
 	it( 'reads a day with one visitor in the singular', async () => {
 		const { getByText, waitForRegistry } = render(
 			<TrafficChart
-				report={ {
-					rows: [
-						{
-							dimensionValues: [ { value: '20250114' } ],
-							metricValues: [ { value: '1' } ],
-						},
-					],
-				} }
+				dailyTraffic={ [ { date: '2025-01-14', visits: 1 } ] }
 			/>,
 			{ registry }
 		);
@@ -402,9 +342,7 @@ describe( 'TrafficChart', () => {
 		providePropertyCreateTime( '2025-01-14' );
 
 		const { getByText, waitForRegistry } = render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
+			<TrafficChart dailyTraffic={ dailyTraffic } />,
 			{ registry }
 		);
 
@@ -421,9 +359,7 @@ describe( 'TrafficChart', () => {
 		providePropertyCreateTime( '2024-11-02' );
 
 		const { queryByText, waitForRegistry } = render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
+			<TrafficChart dailyTraffic={ dailyTraffic } />,
 			{ registry }
 		);
 
@@ -436,7 +372,7 @@ describe( 'TrafficChart', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'reads no day to a screen reader while the report loads', async () => {
+	it( 'should read no day to a screen reader while the daily traffic loads', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficChart loaded={ false } />,
 			{ registry }
@@ -452,14 +388,10 @@ describe( 'TrafficChart', () => {
 		).toHaveLength( 0 );
 	} );
 
-	it( 'draws a flat line at zero while the property is gathering data, even though the report has visitors', async () => {
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-				gatheringData
-			/>,
-			{ registry }
-		);
+	it( 'should draw a flat line at zero while the property is gathering data, even though the daily traffic has visits', async () => {
+		render( <TrafficChart dailyTraffic={ dailyTraffic } gatheringData />, {
+			registry,
+		} );
 
 		const { data, options } = await getLastChartProps();
 
@@ -474,13 +406,9 @@ describe( 'TrafficChart', () => {
 	it( 'should label every day of the range while the property is gathering data', async () => {
 		registry.dispatch( CORE_USER ).setDateRange( 'last-7-days' );
 
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-				gatheringData
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } gatheringData />, {
+			registry,
+		} );
 
 		const { options } = await getLastChartProps();
 
@@ -501,13 +429,9 @@ describe( 'TrafficChart', () => {
 	it( 'should keep the date labels once the chart has extended the options for the gathering-data state', async () => {
 		registry.dispatch( CORE_USER ).setDateRange( 'last-7-days' );
 
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-				gatheringData
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } gatheringData />, {
+			registry,
+		} );
 
 		const { options } = await getLastChartProps();
 
@@ -525,12 +449,7 @@ describe( 'TrafficChart', () => {
 	} );
 
 	it( 'should set no horizontal view window once the property has data', async () => {
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { options } = await getLastChartProps();
 
@@ -539,10 +458,7 @@ describe( 'TrafficChart', () => {
 
 	it( 'reads no day to a screen reader while the property is gathering data', async () => {
 		const { container, waitForRegistry } = render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-				gatheringData
-			/>,
+			<TrafficChart dailyTraffic={ dailyTraffic } gatheringData />,
 			{ registry }
 		);
 
@@ -565,7 +481,7 @@ describe( 'TrafficChart', () => {
 		expect( loadingHeight ).toBe( '276px' );
 	} );
 
-	it( 'shows no legend while the report loads', async () => {
+	it( 'should show no legend while the daily traffic loads', async () => {
 		const { queryByRole, waitForRegistry } = render(
 			<TrafficChart loaded={ false } />,
 			{ registry }
@@ -578,10 +494,7 @@ describe( 'TrafficChart', () => {
 
 	it( 'shows the legend while the property is gathering data', async () => {
 		const { getByRole, waitForRegistry } = render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-				gatheringData
-			/>,
+			<TrafficChart dailyTraffic={ dailyTraffic } gatheringData />,
 			{ registry }
 		);
 
@@ -593,12 +506,7 @@ describe( 'TrafficChart', () => {
 	} );
 
 	it( 'gives the chart no click handler', async () => {
-		render(
-			<TrafficChart
-				report={ getAnalytics4MockResponse( reportOptions ) }
-			/>,
-			{ registry }
-		);
+		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { onSelect, chartEvents } = await getLastChartProps();
 
@@ -635,7 +543,7 @@ describe( 'TrafficChart', () => {
 		it( 'should fill the typical range in #e3d1ff at half opacity, with no edge lines', async () => {
 			render(
 				<TrafficChart
-					report={ getAnalytics4MockResponse( reportOptions ) }
+					dailyTraffic={ dailyTraffic }
 					typicalTrafficRange={ typicalTrafficRange }
 				/>,
 				{ registry }
@@ -661,7 +569,7 @@ describe( 'TrafficChart', () => {
 		it( 'should keep the line #462083 and 3px wide with the typical range and the posts', async () => {
 			render(
 				<TrafficChart
-					report={ getAnalytics4MockResponse( reportOptions ) }
+					dailyTraffic={ dailyTraffic }
 					typicalTrafficRange={ typicalTrafficRange }
 					publishedPosts={ publishedPosts }
 				/>,
@@ -679,7 +587,7 @@ describe( 'TrafficChart', () => {
 		it( 'should mark a day with published posts with one dot on the line', async () => {
 			render(
 				<TrafficChart
-					report={ getAnalytics4MockResponse( reportOptions ) }
+					dailyTraffic={ dailyTraffic }
 					publishedPosts={ publishedPosts }
 				/>,
 				{ registry }
@@ -697,9 +605,7 @@ describe( 'TrafficChart', () => {
 		it( 'should end the value axis above the typical range for a range with no visitors', async () => {
 			render(
 				<TrafficChart
-					report={ {
-						totals: [ { metricValues: [ { value: '0' } ] } ],
-					} }
+					dailyTraffic={ noVisits }
 					typicalTrafficRange={ [
 						{ date: '2025-01-14', min: 100, max: 300 },
 					] }
@@ -715,7 +621,7 @@ describe( 'TrafficChart', () => {
 		it( 'should list the "Typical traffic range" and "Published post" legend items after the traffic item', async () => {
 			const { getAllByRole, waitForRegistry } = render(
 				<TrafficChart
-					report={ getAnalytics4MockResponse( reportOptions ) }
+					dailyTraffic={ dailyTraffic }
 					typicalTrafficRange={ typicalTrafficRange }
 					publishedPosts={ publishedPosts }
 				/>,
@@ -757,7 +663,7 @@ describe( 'TrafficChart', () => {
 		it( 'should list only the traffic legend item when no day the chart plots has a typical range or a post', async () => {
 			const { getAllByRole, waitForRegistry } = render(
 				<TrafficChart
-					report={ getAnalytics4MockResponse( reportOptions ) }
+					dailyTraffic={ dailyTraffic }
 					typicalTrafficRange={ [
 						{ date: '2025-01-13', min: 10, max: 30 },
 					] }
@@ -782,7 +688,7 @@ describe( 'TrafficChart', () => {
 		it( "should read each day's typical range, and each post after its day, to a screen reader", async () => {
 			const { container, waitForRegistry } = render(
 				<TrafficChart
-					report={ getAnalytics4MockResponse( reportOptions ) }
+					dailyTraffic={ dailyTraffic }
 					typicalTrafficRange={ typicalTrafficRange }
 					publishedPosts={ publishedPosts }
 				/>,
@@ -803,7 +709,7 @@ describe( 'TrafficChart', () => {
 		it( 'should draw neither the typical range nor the posts, nor list them in the legend, while the property is gathering data', async () => {
 			const { container, getAllByRole, waitForRegistry } = render(
 				<TrafficChart
-					report={ getAnalytics4MockResponse( reportOptions ) }
+					dailyTraffic={ dailyTraffic }
 					typicalTrafficRange={ [
 						{ date: '2025-01-14', min: 10, max: 30 },
 					] }
