@@ -64,59 +64,49 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                        => '',
-				'adsConversionID'                  => '',
-				'propertyID'                       => '',
-				'webDataStreamID'                  => '',
-				'measurementID'                    => '',
-				'trackingDisabled'                 => array( 'loggedinUsers' ),
-				'useSnippet'                       => true,
-				'ownerID'                          => 0,
-				'googleTagID'                      => '',
-				'googleTagAccountID'               => '',
-				'googleTagContainerID'             => '',
-				'googleTagContainerDestinationIDs' => null,
-				'googleTagLastSyncedAtMs'          => 0,
-				'availableCustomDimensions'        => null,
-				'propertyCreateTime'               => 0,
-				'adSenseLinked'                    => false,
-				'adSenseLinkedLastSyncedAt'        => 0,
-				'adsLinked'                        => false,
-				'adsLinkedLastSyncedAt'            => 0,
-				'detectedEvents'                   => array(),
-				'lostConversionEventsLastUpdateAt' => 0,
-				'newConversionEventsLastUpdateAt'  => 0,
+				'accountID'                            => '',
+				'adsConversionID'                      => '',
+				'propertyID'                           => '',
+				'webDataStreamID'                      => '',
+				'measurementID'                        => '',
+				'trackingDisabled'                     => array( 'loggedinUsers' ),
+				'useSnippet'                           => true,
+				'ownerID'                              => 0,
+				'googleTagID'                          => '',
+				'googleTagAccountID'                   => '',
+				'googleTagContainerID'                 => '',
+				'googleTagContainerDestinationIDs'     => null,
+				'googleTagLastSyncedAtMs'              => 0,
+				'availableCustomDimensions'            => null,
+				'propertyCreateTime'                   => 0,
+				'adSenseLinked'                        => false,
+				'adSenseLinkedLastSyncedAt'            => 0,
+				'adsLinked'                            => false,
+				'adsLinkedLastSyncedAt'                => 0,
+				'detectedEvents'                       => array(),
+				'lostConversionEventsLastUpdateAt'     => 0,
+				'newConversionEventsLastUpdateAt'      => 0,
+				'freshDataIncludesWooCommerceProducts' => true,
 			),
 			get_option( Settings::OPTION ),
 			'Analytics 4 default settings should match expected values.'
 		);
 	}
 
-	public function test_get_default__with_fresh_data_flag() {
-		$this->enable_feature( 'freshData' );
+	public function test_get_default__includes_woocommerce_products() {
 		$this->settings->register();
 
 		$this->assertTrue(
 			$this->settings->get()[ Settings::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ],
-			'freshDataIncludesWooCommerceProducts should default to true when the flag is enabled.'
+			'freshDataIncludesWooCommerceProducts should default to true.'
 		);
 	}
 
-	public function test_get_view_only_keys__with_fresh_data_flag() {
-		$this->enable_feature( 'freshData' );
-
+	public function test_get_view_only_keys__includes_the_woocommerce_products_setting() {
 		$this->assertContains(
 			Settings::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
 			$this->settings->get_view_only_keys(),
-			'freshDataIncludesWooCommerceProducts should be a view-only key when the flag is enabled.'
-		);
-	}
-
-	public function test_get_view_only_keys__without_fresh_data_flag() {
-		$this->assertNotContains(
-			Settings::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
-			$this->settings->get_view_only_keys(),
-			'freshDataIncludesWooCommerceProducts should not be a view-only key when the flag is disabled.'
+			'freshDataIncludesWooCommerceProducts should be a view-only key.'
 		);
 	}
 

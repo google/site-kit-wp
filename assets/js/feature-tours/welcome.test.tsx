@@ -27,6 +27,10 @@ import { __ } from '@wordpress/i18n';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	provideRecentActivitySurveyState,
+	setExpirableItemTimersEndpoint,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import TrafficOverviewWidget from '@/js/modules/analytics-4/components/traffic-overview/widgets/TrafficOverviewWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -418,6 +422,14 @@ describe( 'getWelcomeTour', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsGatheringData( false );
+
+			// The widget also shows the Recent activity tab, whose survey
+			// reads these items and starts a timer.
+			provideRecentActivitySurveyState( registry );
+			fetchMock.post( setExpirableItemTimersEndpoint, {
+				body: {},
+				status: 200,
+			} );
 
 			fetchMock.get(
 				new RegExp(
