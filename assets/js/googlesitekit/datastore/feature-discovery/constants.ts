@@ -33,6 +33,11 @@ import {
 
 export const CORE_FEATURE_DISCOVERY = 'core/feature-discovery';
 
+// The `core/ui` key holding the slugs of features that were set up without
+// leaving the hub and are showing their success notice in place of their card.
+// Session-only, as `core/ui` values are never persisted.
+export const SUCCEEDED_FEATURES_UI_KEY = 'feature-discovery-succeeded-features';
+
 export const FEATURE_CATEGORIES = {
 	AUDIENCE: 'audience',
 	ENGAGEMENT: 'engagement',

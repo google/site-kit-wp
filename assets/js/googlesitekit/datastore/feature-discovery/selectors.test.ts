@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -34,6 +35,7 @@ import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from './constants';
 import type { FeatureSettings } from './types';
 
@@ -555,6 +557,57 @@ describe( 'core/feature-discovery selectors', () => {
 					moduleSlug: 'search-console',
 				},
 			} );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getAvailableFeatures()
+			).toEqual( [] );
+		} );
+
+		it( 'should keep a set-up feature only while its success notice is shown', () => {
+			registerFeature( 'already-set-up', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					moduleSlug: 'search-console',
+				},
+			} );
+			registerFeature( 'not-set-up' );
+
+			function getAvailableSlugs() {
+				return registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getAvailableFeatures()
+					.map( ( { slug }: { slug: string } ) => slug );
+			}
+
+			expect( getAvailableSlugs() ).toEqual( [ 'not-set-up' ] );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( SUCCEEDED_FEATURES_UI_KEY, [ 'already-set-up' ] );
+
+			expect( getAvailableSlugs() ).toEqual( [
+				'already-set-up',
+				'not-set-up',
+			] );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( SUCCEEDED_FEATURES_UI_KEY, [] );
+
+			expect( getAvailableSlugs() ).toEqual( [ 'not-set-up' ] );
+		} );
+
+		it( 'should not keep a feature whose connection state has not loaded, even while listed as succeeded', () => {
+			registerFeature( 'loading', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => undefined,
+				},
+			} );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( SUCCEEDED_FEATURES_UI_KEY, [ 'loading' ] );
 
 			expect(
 				registry.select( CORE_FEATURE_DISCOVERY ).getAvailableFeatures()

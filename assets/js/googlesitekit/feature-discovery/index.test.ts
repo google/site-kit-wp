@@ -24,21 +24,27 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import IncompleteSetupReminderNotification from '@/js/components/feature-discovery/IncompleteSetupReminderNotification';
 import { enabledFeatures } from '@/js/features';
-import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
-	createTestRegistry,
-	freezeFetch,
-	untilResolved,
-} from '@tests/js/utils';
+	FEATURE_CATEGORIES,
+	FEATURE_EFFORTS,
+	FEATURE_SETUP_TYPES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { createTestRegistry, provideUserCapabilities } from '@tests/js/utils';
 import { createFeatureDiscovery } from './index';
 
 describe( 'createFeatureDiscovery', () => {
-	const dismissedItemsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-items'
-	);
-
 	let registry: WPDataRegistry;
 
 	beforeEach( () => {
@@ -50,132 +56,141 @@ describe( 'createFeatureDiscovery', () => {
 		enabledFeatures.delete( 'featureDiscoveryHub' );
 	} );
 
-	describe( 'resetIncompleteSetupReminder', () => {
-		it( 'removes only the matching reminder dismissal', async () => {
-			const key = getFeatureIncompleteSetupReminderKey( 'newsletter' );
-			const otherKey = getFeatureIncompleteSetupReminderKey( 'adsense' );
+	describe( 'registerFeature', () => {
+		const slug = 'test-feature';
 
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetDismissedItems( [ key, otherKey ] );
+		const settings: FeatureSettings = {
+			title: 'Test feature',
+			shortDescription: 'Test feature description',
+			effort: FEATURE_EFFORTS.LOW,
+			goalCategories: [ FEATURE_CATEGORIES.ENGAGEMENT ],
+			addedInVersion: '1.191.0',
+			setup: { type: FEATURE_SETUP_TYPES.SETUP_FLOW },
+		};
 
-			fetchMock.postOnce(
-				dismissedItemsEndpoint,
-				{
-					body: [ otherKey ],
-				},
-				{
-					headers: {
-						'X-HTTP-Method-Override': 'DELETE',
-					},
-				}
-			);
-
-			await createFeatureDiscovery(
-				registry
-			).resetIncompleteSetupReminder( 'newsletter' );
-
-			expect( fetchMock ).toHaveFetched( dismissedItemsEndpoint, {
-				body: {
-					data: {
-						slugs: [ key ],
-					},
-				},
-				headers: {
-					'X-HTTP-Method-Override': 'DELETE',
+		it( 'registers a reminder notification for a feature with incompleteSetupReminder', () => {
+			createFeatureDiscovery( registry ).registerFeature( slug, {
+				...settings,
+				incompleteSetupReminder: {
+					title: 'Finish setting up this feature',
+					description: 'Complete setup to start using it.',
+					tooltip: '',
+					resolveRequirements: () => Promise.resolve(),
 				},
 			} );
-
-			expect( registry.select( CORE_USER ).getDismissedItems() ).toEqual(
-				[ otherKey ]
-			);
-		} );
-
-		it( 'does nothing when the reminder is already loaded and not dismissed', async () => {
-			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-			await createFeatureDiscovery(
-				registry
-			).resetIncompleteSetupReminder( 'newsletter' );
-
-			expect( fetchMock ).not.toHaveFetched( dismissedItemsEndpoint );
-		} );
-
-		it( 'does nothing when the featureDiscoveryHub feature flag is disabled, even with unloaded user data', async () => {
-			enabledFeatures.delete( 'featureDiscoveryHub' );
-			freezeFetch( dismissedItemsEndpoint );
-
-			await createFeatureDiscovery(
-				registry
-			).resetIncompleteSetupReminder( 'newsletter' );
-
-			expect( fetchMock ).not.toHaveFetched( dismissedItemsEndpoint );
-		} );
-
-		it( 'loads dismissed items first and removes reminder once loaded', async () => {
-			const key = getFeatureIncompleteSetupReminderKey( 'newsletter' );
-			fetchMock.getOnce( dismissedItemsEndpoint, {
-				body: [ key ],
-			} );
-
-			fetchMock.postOnce(
-				dismissedItemsEndpoint,
-				{
-					body: [],
-				},
-				{
-					headers: {
-						'X-HTTP-Method-Override': 'DELETE',
-					},
-				}
-			);
-
-			await createFeatureDiscovery(
-				registry
-			).resetIncompleteSetupReminder( 'newsletter' );
-
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
-			expect( registry.select( CORE_USER ).getDismissedItems() ).toEqual(
-				[]
-			);
-		} );
-
-		it( 'surfaces user-store removal failures', async () => {
-			const key = getFeatureIncompleteSetupReminderKey( 'newsletter' );
-
-			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [ key ] );
-
-			const response = {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			};
-
-			fetchMock.postOnce(
-				dismissedItemsEndpoint,
-				{
-					body: response,
-					status: 500,
-				},
-				{
-					headers: {
-						'X-HTTP-Method-Override': 'DELETE',
-					},
-				}
-			);
-
-			await createFeatureDiscovery(
-				registry
-			).resetIncompleteSetupReminder( 'newsletter' );
-
-			await untilResolved( registry, CORE_USER ).getDismissedItems();
 
 			expect(
 				registry
-					.select( CORE_USER )
-					.getErrorForAction( 'removeDismissedItems', [ [ key ] ] )
-			).toMatchObject( response );
-			expect( console ).toHaveErrored();
+					.select( CORE_NOTIFICATIONS )
+					.getNotification(
+						getFeatureIncompleteSetupReminderKey( slug )
+					)
+			).toMatchObject( {
+				Component: IncompleteSetupReminderNotification,
+				priority: PRIORITY.REMINDER,
+				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+				groupID: NOTIFICATION_GROUPS.DEFAULT,
+				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+				isDismissible: true,
+				featureFlag: 'featureDiscoveryHub',
+				checkRequirements: expect.any( Function ),
+			} );
+		} );
+
+		it( 'does not register a reminder notification for a feature without incompleteSetupReminder', () => {
+			createFeatureDiscovery( registry ).registerFeature(
+				slug,
+				settings
+			);
+
+			expect(
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotification(
+						getFeatureIncompleteSetupReminderKey( slug )
+					)
+			).toBeUndefined();
+		} );
+
+		describe( 'checkRequirements', () => {
+			let checkRequirements: (
+				registry: WPDataRegistry
+			) => Promise< boolean >;
+
+			let resolveRequirements: jest.Mock;
+			let isInProgress: jest.Mock;
+
+			beforeEach( () => {
+				provideUserCapabilities( registry, {
+					[ PERMISSION_MANAGE_OPTIONS ]: true,
+				} );
+
+				resolveRequirements = jest.fn().mockResolvedValue( undefined );
+				isInProgress = jest.fn().mockReturnValue( true );
+
+				createFeatureDiscovery( registry ).registerFeature( slug, {
+					...settings,
+					setup: {
+						...settings.setup,
+						isEnabled: () => false,
+						isInProgress,
+					},
+					incompleteSetupReminder: {
+						title: 'Finish setting up this feature',
+						description: 'Complete setup to start using it.',
+						tooltip: '',
+						resolveRequirements,
+					},
+				} );
+
+				( { checkRequirements } = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotification(
+						getFeatureIncompleteSetupReminderKey( slug )
+					) );
+			} );
+
+			it( 'returns false without permission to manage options', async () => {
+				provideUserCapabilities( registry, {
+					[ PERMISSION_MANAGE_OPTIONS ]: false,
+				} );
+
+				await expect( checkRequirements( registry ) ).resolves.toBe(
+					false
+				);
+
+				expect( resolveRequirements ).not.toHaveBeenCalled();
+			} );
+
+			it( 'resolves requirements before checking feature progress', async () => {
+				isInProgress.mockReturnValue( undefined );
+
+				resolveRequirements.mockImplementation( async () => {
+					await Promise.resolve();
+					isInProgress.mockReturnValue( true );
+				} );
+
+				await expect( checkRequirements( registry ) ).resolves.toBe(
+					true
+				);
+
+				expect( resolveRequirements ).toHaveBeenCalledWith( registry );
+			} );
+
+			it.each( [
+				[ true, true ],
+				[ false, false ],
+				[ undefined, false ],
+			] )(
+				'returns the expected eligibility for feature progress %s',
+				async ( progress, expected ) => {
+					isInProgress.mockReturnValue( progress );
+
+					await expect( checkRequirements( registry ) ).resolves.toBe(
+						expected
+					);
+				}
+			);
 		} );
 	} );
 } );

@@ -466,7 +466,8 @@ public function register() {
         return;
     }
 
-    $this->add_amp_dev_mode_attributes( $this->get_assets() );
+    // Reads the asset list when a tag prints, so later `googlesitekit_assets` filters apply.
+    $this->add_amp_dev_mode_attributes();
 
     // Context-specific enqueue hooks (inline, not extracted to a separate method)
     add_action( 'admin_print_scripts-edit.php', function () { /* CONTEXT_ADMIN_POSTS */ } );

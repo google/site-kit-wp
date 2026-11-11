@@ -31,7 +31,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import WidgetTabBar from '@/js/components/WidgetTabBar';
-import { useFeature } from '@/js/hooks/useFeature';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import whenActive from '@/js/util/when-active';
@@ -59,8 +58,6 @@ const ModulePopularPagesWidgetGA4: FC< ModulePopularPagesWidgetGA4Props > = ( {
 	Widget,
 	WidgetReportError,
 } ) => {
-	const freshDataEnabled = useFeature( 'freshData' );
-
 	const activeTabID = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getActiveContentTab(),
@@ -68,14 +65,6 @@ const ModulePopularPagesWidgetGA4: FC< ModulePopularPagesWidgetGA4Props > = ( {
 	);
 
 	const changeContentTab = useChangeContentTab();
-
-	if ( ! freshDataEnabled ) {
-		return (
-			<Widget Header={ Header } Footer={ Footer } noPadding>
-				<TopContentTable WidgetReportError={ WidgetReportError } />
-			</Widget>
-		);
-	}
 
 	const isLatestContentActive = activeTabID === LATEST_CONTENT_TAB_ID;
 

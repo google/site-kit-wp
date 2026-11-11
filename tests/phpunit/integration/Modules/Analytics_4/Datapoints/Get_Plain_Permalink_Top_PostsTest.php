@@ -111,9 +111,6 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 			}
 		);
 
-		// With the `freshData` flag off, the module has no `plain-permalink-top-posts`
-		// datapoint, and `merge()` ignores the products setting.
-		$this->enable_feature( 'freshData' );
 		$this->analytics->get_settings()->merge( array( 'propertyID' => '12345' ) );
 		$this->set_permalink_structure( '' );
 

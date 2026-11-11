@@ -29,6 +29,7 @@ import { get } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { plainPermalinkTopPosts } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { provideIncludeProductsState } from '@/js/modules/analytics-4/datastore/test-utils';
 import {
 	actHook as act,
 	createTestRegistry,
@@ -67,6 +68,9 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		// The columns read whether to include products, which needs the module
+		// list, the site info and the Analytics settings.
+		provideIncludeProductsState( registry, { wooCommerceActive: false } );
 		// The total of the channels report is the 120 visitors that every
 		// share is a percentage of.
 		fetchMock.get(

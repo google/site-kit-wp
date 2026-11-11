@@ -46,6 +46,20 @@ export function getFeatureIncompleteSetupReminderKey( slug: string ) {
 }
 
 /**
+ * Returns whether the provided key is a feature incomplete setup reminder key.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} key Key to check.
+ * @return {boolean} Whether the provided key is a feature incomplete setup reminder key.
+ */
+export function isFeatureIncompleteSetupReminderKey( key: string ) {
+	const prefix = getFeatureIncompleteSetupReminderKey( '' );
+
+	return key.startsWith( prefix );
+}
+
+/**
  * Gets the feature newness key for a feature.
  *
  * @since 1.188.0
