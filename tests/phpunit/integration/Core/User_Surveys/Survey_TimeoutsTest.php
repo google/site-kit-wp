@@ -75,16 +75,17 @@ class Survey_TimeoutsTest extends TestCase {
 			'Survey timeouts should initially be empty.'
 		);
 
-		$time    = array();
 		$timeout = 12 * HOUR_IN_SECONDS;
 
-		array_push( $time, time() + $timeout );
+		// Bracket the call so the assertion holds even if the clock ticks over
+		// a second while `set_global_timeout()` runs.
+		$earliest = time() + $timeout;
 		$this->timeouts->set_global_timeout();
-		array_push( $time, time() + $timeout );
+		$latest = time() + $timeout;
 
 		$timeouts = $this->user_options->get( Survey_Timeouts::OPTION );
 		$this->assertArrayHasKey( Survey_Timeouts::GLOBAL_KEY, $timeouts, 'Global survey timeout should be persisted.' );
-		$this->assertTrue( $time[0] >= $timeouts[ Survey_Timeouts::GLOBAL_KEY ], 'Global timeout should not exceed the start of the expected time window.' );
-		$this->assertTrue( $time[1] <= $timeouts[ Survey_Timeouts::GLOBAL_KEY ], 'Global timeout should not precede the end of the expected time window.' );
+		$this->assertGreaterThanOrEqual( $earliest, $timeouts[ Survey_Timeouts::GLOBAL_KEY ], 'Global timeout should not precede the start of the expected time window.' );
+		$this->assertLessThanOrEqual( $latest, $timeouts[ Survey_Timeouts::GLOBAL_KEY ], 'Global timeout should not exceed the end of the expected time window.' );
 	}
 }
