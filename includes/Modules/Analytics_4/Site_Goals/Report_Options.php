@@ -18,7 +18,7 @@ use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reportin
  * Builds the options of the Site Goals reports, which the email report and the
  * Site Goals insight both run.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Report_Options {
 	/**
 	 * Current period, with `startDate` and `endDate` as `YYYY-MM-DD`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var array
 	 */
 	private $date_range;
@@ -35,7 +35,7 @@ class Report_Options {
 	/**
 	 * Compare period, with `startDate` and `endDate` as `YYYY-MM-DD`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var array
 	 */
 	private $compare_range;
@@ -43,7 +43,7 @@ class Report_Options {
 	/**
 	 * Conversion event names Analytics has found on the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var array
 	 */
 	private $detected_events;
@@ -51,7 +51,7 @@ class Report_Options {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array $date_range      Current period, with `startDate` and `endDate` as `YYYY-MM-DD`.
 	 * @param array $compare_range   Compare period, with `startDate` and `endDate` as `YYYY-MM-DD`.
@@ -66,7 +66,7 @@ class Report_Options {
 	/**
 	 * Gets the store event the Online store widget counts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return string `purchase` when Analytics has found it on the site, otherwise `add_to_cart`.
 	 */
@@ -77,7 +77,7 @@ class Report_Options {
 	/**
 	 * Checks whether Analytics has found an event of a goal type on the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param string $goal_type Goal type, `lead` or `ecommerce`.
 	 * @return bool True when Analytics has found an event of the goal type, false otherwise.
@@ -95,7 +95,7 @@ class Report_Options {
 	 * Gets the `eventName` filter that selects every lead event Analytics has found on the site.
 	 *
 	 * @since 1.188.0
-	 * @since n.e.x.t Moved from `Email_Reporting\Report_Options::get_lead_event_filter()`, and made public.
+	 * @since 1.192.0 Moved from `Email_Reporting\Report_Options::get_lead_event_filter()`, and made public.
 	 *
 	 * @return array Dimension filter array.
 	 */
@@ -112,7 +112,7 @@ class Report_Options {
 	 * The Leads widget counts every lead event Analytics has found on the site, and the
 	 * Online store widget counts its primary store event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param string $goal_type        Goal type, `lead` or `ecommerce`.
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the count by, such as
@@ -131,7 +131,7 @@ class Report_Options {
 	/**
 	 * Gets the options of the report that gives the engagement rate and the session count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the rows by, such as
 	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
@@ -155,7 +155,7 @@ class Report_Options {
 	 * @since 1.187.0
 	 * @since 1.188.0 Left the date range to the caller, so a discovery report can cover
 	 *                days of its own.
-	 * @since n.e.x.t Moved from `Email_Reporting\Report_Options::build_event_count_options()`, and made public.
+	 * @since 1.192.0 Moved from `Email_Reporting\Report_Options::build_event_count_options()`, and made public.
 	 *
 	 * @param string|array $event_filter     Value for the `eventName` dimension filter. One event name,
 	 *                                       such as `purchase`, or a filter array, such as
@@ -185,7 +185,7 @@ class Report_Options {
 	 * Gets the lead generation events Analytics has found on the site.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Moved from `Email_Reporting\Report_Options::get_detected_lead_events()`.
+	 * @since 1.192.0 Moved from `Email_Reporting\Report_Options::get_detected_lead_events()`.
 	 *
 	 * @return array Lead event names, in the order
 	 *               `Conversion_Reporting_Events_Sync::LEAD_EVENT_NAMES` lists them.
@@ -198,7 +198,7 @@ class Report_Options {
 	 * Adds a breakdown dimension to report options, and keeps the rows that have no data.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Moved from `Email_Reporting\Report_Options::with_breakdown_dimension()`.
+	 * @since 1.192.0 Moved from `Email_Reporting\Report_Options::with_breakdown_dimension()`.
 	 *
 	 * @param array  $options          Report request options array.
 	 * @param string $custom_dimension Custom dimension slug to split the rows by, such as
@@ -220,7 +220,7 @@ class Report_Options {
 	/**
 	 * Sets the report to the current period, compared with the compare period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array $options Report request options array.
 	 * @return array Report request options array, with the dates after its other options.

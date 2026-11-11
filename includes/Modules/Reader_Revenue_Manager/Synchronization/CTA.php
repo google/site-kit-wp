@@ -62,7 +62,7 @@ class CTA {
 	 * Synchronizes CTAs with the module settings.
 	 *
 	 * @since 1.188.0
-	 * @since n.e.x.t Stores the type, state and display name of each CTA.
+	 * @since 1.192.0 Stores the type, state and display name of each CTA.
 	 *
 	 * @param WCP_CTA[] $ctas WCP CTA objects.
 	 * @return void No return value.

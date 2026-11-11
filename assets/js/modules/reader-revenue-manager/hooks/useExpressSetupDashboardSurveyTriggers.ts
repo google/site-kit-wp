@@ -49,7 +49,7 @@ const CTA_NOTIFICATION_IDS: Record< string, string > = {
 /**
  * Checks whether any entry belongs to the given CTA.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object|undefined} entries Express setup entries keyed by `<cta>:<id>`.
  * @param {string}           cta     The CTA to look for.
@@ -71,7 +71,7 @@ function hasEntryForCTA(
  * published, incomplete, then not interacted. The trigger is sent at most once
  * a day.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {void}
  */

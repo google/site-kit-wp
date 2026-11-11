@@ -51,7 +51,7 @@ export const FRESH_DATA_FEEDBACK_GROUP_RECENT_ACTIVITY =
  * How long the Recent activity tab stays shown, in milliseconds, before the
  * `view_all_recent_posts` event fires.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_MINIMUM_VIEW_TIME_MILLISECONDS = 3000;
 
@@ -95,7 +95,7 @@ export interface ExpirableItemTimer {
  * The survey trigger ID for users who have never opened the Recent activity
  * tab.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_SURVEY_TRIGGER_ZERO_INTERACTION =
 	'view_fresh_data_recent_activity_zero_interaction';
@@ -104,7 +104,7 @@ export const RECENT_ACTIVITY_SURVEY_TRIGGER_ZERO_INTERACTION =
  * The survey trigger ID for users who opened the Recent activity tab, but did
  * not interact with it.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED =
 	'view_fresh_data_recent_activity_opened_but_not_interacted';
@@ -113,7 +113,7 @@ export const RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED =
  * The survey trigger ID for users who opened the Recent activity tab and
  * interacted with it.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED =
 	'view_fresh_data_recent_activity_opened_and_interacted';
@@ -122,7 +122,7 @@ export const RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED =
  * The timer that starts when the Recent activity tab first shows on the
  * user's dashboard.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_TAB_AVAILABLE_TIMER: ExpirableItemTimer = {
 	slug: 'fresh-data-recent-activity-tab-available',
@@ -132,7 +132,7 @@ export const RECENT_ACTIVITY_TAB_AVAILABLE_TIMER: ExpirableItemTimer = {
 /**
  * The timer that starts when the user first opens the Recent activity tab.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_TAB_OPENED_TIMER: ExpirableItemTimer = {
 	slug: 'fresh-data-recent-activity-tab-opened',
@@ -143,7 +143,7 @@ export const RECENT_ACTIVITY_TAB_OPENED_TIMER: ExpirableItemTimer = {
  * The timer that starts at the user's first meaningful interaction with the
  * Recent activity tab.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_INTERACTION_TIMER: ExpirableItemTimer = {
 	slug: 'fresh-data-recent-activity-interaction',
@@ -154,7 +154,7 @@ export const RECENT_ACTIVITY_INTERACTION_TIMER: ExpirableItemTimer = {
  * The prompt slug whose dismiss count counts the page loads in which the
  * Traffic card was in view.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG =
 	'fresh-data-traffic-card-visit';
@@ -163,7 +163,7 @@ export const TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG =
  * The number of Traffic card visits after which a user who never opened the
  * Recent activity tab can get the zero interaction survey.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT = 3;
 
@@ -172,7 +172,7 @@ export const RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT = 3;
  * interaction survey to show, so it shows 10 to 14 days after the tab became
  * available.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_ZERO_INTERACTION_MAX_SECONDS_LEFT =
 	4 * DAY_IN_SECONDS;
@@ -181,6 +181,6 @@ export const RECENT_ACTIVITY_ZERO_INTERACTION_MAX_SECONDS_LEFT =
  * The most days since the latest post was published for the zero interaction
  * survey to show.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RECENT_ACTIVITY_ZERO_INTERACTION_MAX_POST_AGE_DAYS = 7;

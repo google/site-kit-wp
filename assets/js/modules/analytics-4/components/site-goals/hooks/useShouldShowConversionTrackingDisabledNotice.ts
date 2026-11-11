@@ -39,7 +39,7 @@ import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/use
  * Mirrors the arguments each widget passes to `useSiteGoalsBreakdown()`, so
  * the check reads the same discovery report the widget does.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Function} select   The registry `select` function.
  * @param {string}   goalType The widget's goal type, one of `GOAL_TYPES`.
@@ -99,7 +99,7 @@ function hasBreakdownTabs(
  * Site Goals widget shows breakdown tabs, which means the breakdown was in use
  * before conversion tracking was switched off.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {(boolean|undefined)} `true` when the notice shows, `false` when it does not, and `undefined` while the conditions load.
  */

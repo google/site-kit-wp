@@ -39,7 +39,7 @@ import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
  * One thing the chart draws, as the legend lists it.
  *
  * @since 1.189.0
- * @since n.e.x.t Interface changed from local to exported, for `getTrafficLegendItem()`.
+ * @since 1.192.0 Interface changed from local to exported, for `getTrafficLegendItem()`.
  * @since n.e.x.t Added the `swatch`, `info` and `isBeta` properties.
  */
 export interface ChartLegendItem {

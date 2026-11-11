@@ -123,7 +123,7 @@ export const EARLIER_POST: RecentContentItem = {
 /**
  * An internal server error of a report request, which "Retry" can fix.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const INTERNAL_SERVER_ERROR: ErrorObject = {
 	code: 'internal_server_error',
@@ -135,7 +135,7 @@ export const INTERNAL_SERVER_ERROR: ErrorObject = {
  * A rate limit error of an Analytics report request. The Analytics API names
  * no reason for a rate limit, so the status alone marks it.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const RATE_LIMIT_ERROR: ErrorObject = {
 	code: 429,
@@ -147,7 +147,7 @@ export const RATE_LIMIT_ERROR: ErrorObject = {
  * A permissions error of an Analytics report request, for a Google account
  * that can't read the Analytics property.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const INSUFFICIENT_PERMISSIONS_ERROR: ErrorObject = {
 	code: 403,
@@ -160,7 +160,7 @@ export const INSUFFICIENT_PERMISSIONS_ERROR: ErrorObject = {
  * and site URLs.
  *
  * @since 1.191.0
- * @since n.e.x.t Uses the registry's home URL and reference site URL.
+ * @since 1.192.0 Uses the registry's home URL and reference site URL.
  *
  * @param {Object} registry The registry with the reference date and the site URLs.
  * @return {Object} The post's permalink, its URL on the site that Site Kit reports on, and the post's date range.
@@ -181,7 +181,7 @@ export function getLatestPostReportArgs(
  * section renders without a request.
  *
  * @since 1.191.0
- * @since n.e.x.t Takes an optional post.
+ * @since 1.192.0 Takes an optional post.
  *
  * @param {Object} registry The registry to put the post in.
  * @param {Object} [post]   Optional. The post. Default `LATEST_POST`.
@@ -298,7 +298,7 @@ export function provideLatestPostAnalyticsReports( registry: WPDataRegistry ) {
  * performance section for `LATEST_POST`.
  *
  * @since 1.191.0
- * @since n.e.x.t Requests the post's URL on the site that Site Kit reports on.
+ * @since 1.192.0 Requests the post's URL on the site that Site Kit reports on.
  *
  * @param {Object} registry The registry with the reference date and the site URLs.
  * @return {Object} The Search Console report options.
@@ -454,7 +454,7 @@ export function provideInsightReport(
  * With the "Total visitors" report of `provideFreshMetricsReports()` in the
  * store too, the tab counts the visitors without a request.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object} registry The registry, with its reference date set.
  * @param {number} visitors The visitors over the date range.
@@ -691,7 +691,7 @@ export const setExpirableItemTimersEndpoint = new RegExp(
  * Gets the slugs of the timers in the requests to the endpoint that
  * `setExpirableItemTimers()` posts to, in the order they were sent.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {Array<string>} The timer slugs.
  */
@@ -716,7 +716,7 @@ interface RecentActivitySurveyState {
  * Gets the expiry time of an expirable item, in seconds, a number of seconds
  * from now.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {number} secondsFromNow The seconds from now, negative for a time in the past.
  * @return {number} The expiry time, in seconds since the epoch.
@@ -732,7 +732,7 @@ export function getExpiryFromNow( secondsFromNow: number ): number {
  * Stores the expirable items and the dismissed prompts that the Recent
  * activity survey triggers read, so the store sends no request for them.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object} registry                 The registry to put the state in.
  * @param {Object} [state]                  Optional. The state to put in the store.

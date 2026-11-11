@@ -532,7 +532,7 @@ export function listFormat(
  *
  * Memoized since `getLocale()` runs every time a number or date is formatted.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  * @private
  *
  * @param {string} tag Language tag to check, e.g. `de-DE`.
@@ -556,7 +556,7 @@ const isValidLanguageTag = memize( ( tag: string ): boolean => {
  * `pt_PT_ao90` becomes `pt-PT`.
  *
  * @since 1.8.0
- * @since n.e.x.t Always returns a language tag the browser accepts.
+ * @since 1.192.0 Always returns a language tag the browser accepts.
  *
  * @param {Object} _global The global window object.
  * @return {string} Current Site Kit locale if set and valid, otherwise the current language set by the browser.

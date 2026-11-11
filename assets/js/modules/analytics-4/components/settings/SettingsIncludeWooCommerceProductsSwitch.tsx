@@ -47,7 +47,7 @@ interface SettingsIncludeWooCommerceProductsSwitchProps {
  * Only rendered when WooCommerce is installed and Analytics is connected.
  *
  * @since 1.190.0
- * @since n.e.x.t Renders without the `freshData` feature flag.
+ * @since 1.192.0 Renders without the `freshData` feature flag.
  *
  * @param props                   Component props.
  * @param [props.hasModuleAccess] Whether the current user has access to the Analytics module, defaults to `true`.

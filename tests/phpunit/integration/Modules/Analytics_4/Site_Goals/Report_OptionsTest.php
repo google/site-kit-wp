@@ -223,7 +223,7 @@ class Report_OptionsTest extends TestCase {
 	 * Creates report options for `2026-08-19` to `2026-09-15`, compared with
 	 * `2026-07-22` to `2026-08-18`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array $detected_events The event names Analytics has found.
 	 * @return Report_Options The report options.
