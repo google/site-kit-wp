@@ -70,7 +70,7 @@ interface ThumbsFeedbackProps {
  * and show a thank-you popper after the user votes.
  *
  * @since 1.182.0
- * @since n.e.x.t Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
+ * @since 1.192.0 Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
  *
  * @param props                   Component props.
  * @param props.feedbackNamespace The product area the feedback is about.

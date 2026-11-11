@@ -40,7 +40,7 @@ export interface ConversionTrackingSetting {
  * who can manage options may change it.
  *
  * @since 1.189.0
- * @since n.e.x.t Read the setting for every user, not only for a user who can manage options.
+ * @since 1.192.0 Read the setting for every user, not only for a user who can manage options.
  *
  * @return {ConversionTrackingSetting} The setting, and whether the user may change it.
  */

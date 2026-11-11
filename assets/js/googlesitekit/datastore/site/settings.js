@@ -37,7 +37,7 @@ import { CORE_SITE } from './constants';
 /**
  * Creates a reducer that merges `{ enabled }` settings into the given state key.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {string} stateKey State key to merge the settings into.
  * @return {Function} Reducer callback.
@@ -54,7 +54,7 @@ function createEnabledSettingsReducer( stateKey ) {
 /**
  * Maps `{ enabled }` settings args to fetch params.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object}  args         Args object.
  * @param {boolean} args.enabled Whether the setting is enabled.
@@ -67,7 +67,7 @@ function enabledSettingsArgsToParams( { enabled } ) {
 /**
  * Validates `{ enabled }` settings params.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object}  params         Params object.
  * @param {boolean} params.enabled Whether the setting is enabled.
@@ -148,7 +148,7 @@ const baseActions = {
 	/**
 	 * Sets showWPDashboardWidget setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param {boolean} enabled Whether to show or hide the WordPress dashboard widget.
 	 * @return {Object} Object with `response` and `error`.
@@ -219,7 +219,7 @@ const baseSelectors = {
 	/**
 	 * Gets WordPress dashboard widget settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} WordPress dashboard widget settings if they have been already resolved, otherwise undefined.
@@ -231,7 +231,7 @@ const baseSelectors = {
 	/**
 	 * Gets showWPDashboardWidget setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} The showWPDashboardWidget setting if it has been already resolved, otherwise undefined.
