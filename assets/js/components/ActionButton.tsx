@@ -67,14 +67,16 @@ const ActionButton: FC<
 		// @ts-expect-error `MaybeTooltip` component is not yet typed.
 		<MaybeTooltip tooltipTitle={ tooltip } tooltip>
 			{ /* Material UI complains if Tooltip wraps a disabled button directly. */ }
-			<div className="googlesitekit-action-button">
+			<div
+				className={ classnames(
+					'googlesitekit-action-button',
+					className
+				) }
+			>
 				<button
 					{ ...buttonProps }
 					aria-label={ label }
-					className={ classnames(
-						'googlesitekit-action-button__button',
-						className
-					) }
+					className="googlesitekit-action-button__button"
 					ref={ ref }
 					type={ type }
 				>

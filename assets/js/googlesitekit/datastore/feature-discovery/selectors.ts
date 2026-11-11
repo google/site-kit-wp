@@ -30,11 +30,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, createRegistrySelector } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_CATEGORIES,
 	FEATURE_CATEGORY_ORDER,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from './constants';
 import type {
 	Feature,
@@ -348,7 +350,9 @@ export const selectors = {
 	 * Gets the features that are available to show.
 	 *
 	 * A feature is available while it is not set up, its prerequisite modules
-	 * are connected, and its own `checkRequirements()` passes.
+	 * are connected, and its own `checkRequirements()` passes. A feature that
+	 * was just set up without leaving the hub stays available while its success
+	 * notice is shown, so that the notice keeps the feature's place in the list.
 	 *
 	 * @since 1.186.0
 	 *
@@ -362,8 +366,18 @@ export const selectors = {
 				isFeaturePrerequisiteMet,
 			} = select( CORE_FEATURE_DISCOVERY );
 
+			const succeededFeatures: string[] =
+				select( CORE_UI ).getValue( SUCCEEDED_FEATURES_UI_KEY ) || [];
+
 			return getFeatures().filter( ( feature: Feature ) => {
-				if ( isFeatureConnected( feature.slug ) !== false ) {
+				const isConnected = isFeatureConnected( feature.slug );
+
+				// A set-up feature is kept only while its success notice shows.
+				const isShowingSuccess =
+					isConnected === true &&
+					succeededFeatures.includes( feature.slug );
+
+				if ( isConnected !== false && ! isShowingSuccess ) {
 					return false;
 				}
 

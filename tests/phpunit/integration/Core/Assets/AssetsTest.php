@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Assets;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
@@ -260,6 +261,67 @@ class AssetsTest extends TestCase {
 
 		// Verify that assets are still registered.
 		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'registered' ), 'Script should still be registered after second hook fires.' );
+	}
+
+	public function test_register__includes_assets_added_after_register() {
+		// A user who can use Site Kit gets the extra hooks that `register()` only adds for such users.
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		set_current_screen( 'dashboard' );
+		remove_all_actions( 'admin_enqueue_scripts' );
+
+		$this->assets->register();
+
+		add_filter(
+			'googlesitekit_assets',
+			function ( $assets ) {
+				$assets[] = new Script_Data(
+					'googlesitekit-test-late-data',
+					array(
+						'global'        => '_googlesitekitTestLateData',
+						'data_callback' => '__return_empty_array',
+					)
+				);
+				return $assets;
+			}
+		);
+
+		do_action( 'admin_enqueue_scripts' );
+
+		$this->assertTrue( wp_script_is( 'googlesitekit-test-late-data', 'registered' ), 'An asset added through the `googlesitekit_assets` filter after `Assets::register()` should be registered.' );
+	}
+
+	public function test_register__amp_dev_mode_attributes() {
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		remove_all_filters( 'script_loader_tag' );
+		remove_all_filters( 'style_loader_tag' );
+
+		$assets = new Assets( $this->get_amp_primary_context() );
+		$assets->register();
+
+		add_filter(
+			'googlesitekit_assets',
+			function ( $assets ) {
+				$assets[] = new Script_Data(
+					'googlesitekit-test-late-data',
+					array(
+						'global'        => '_googlesitekitTestLateData',
+						'data_callback' => '__return_empty_array',
+					)
+				);
+				return $assets;
+			}
+		);
+
+		$script_tag = '<script src="https://example.com/script.js"></script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		$style_tag  = '<link rel="stylesheet" href="https://example.com/style.css" />'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+
+		$this->assertStringContainsString( '<script data-ampdevmode ', apply_filters( 'script_loader_tag', $script_tag, 'googlesitekit-commons' ), 'A Site Kit script should get the `data-ampdevmode` attribute.' );
+		$this->assertStringContainsString( '<script data-ampdevmode ', apply_filters( 'script_loader_tag', $script_tag, 'googlesitekit-test-late-data' ), 'A script added after `Assets::register()` should get the `data-ampdevmode` attribute.' );
+		$this->assertStringContainsString( '<link data-ampdevmode ', apply_filters( 'style_loader_tag', $style_tag, 'googlesitekit-admin-css' ), 'A Site Kit stylesheet should get the `data-ampdevmode` attribute.' );
+		$this->assertSame( $script_tag, apply_filters( 'script_loader_tag', $script_tag, 'other-script' ), 'A script that is not a Site Kit asset should not change.' );
+		$this->assertSame( $style_tag, apply_filters( 'style_loader_tag', $style_tag, 'other-style' ), 'A stylesheet that is not a Site Kit asset should not change.' );
 	}
 
 	public function test_enqueue_asset_with_unknown() {

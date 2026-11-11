@@ -68,8 +68,6 @@ export interface FeatureDetail {
 	screenshots?: FeatureScreenshot[];
 }
 
-// TODO: Replace this with the success notice component's own props once that
-// component exists, so the entry mirrors them directly.
 export interface FeatureSuccessNotice {
 	title: string;
 	description?: string;
@@ -86,6 +84,8 @@ export interface FeatureIncompleteSetupReminder {
 	title: string;
 	description: string;
 	tooltip: string;
+	// Resolves dependencies for progress, completion, and the notification's resume URL.
+	resolveRequirements: ( registry: Registry ) => Promise< void >;
 }
 
 export interface FeatureSetup {

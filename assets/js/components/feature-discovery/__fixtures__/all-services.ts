@@ -19,13 +19,17 @@
 /**
  * Internal dependencies
  */
+import { Select } from 'googlesitekit-data';
 import {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
@@ -57,6 +61,26 @@ export const sampleFeatures: Partial< Feature >[] = [
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		addedInVersion: OLD_VERSION,
+		setup: {
+			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+			ctaLabel: 'Set up now',
+			isEnabled: ( select: Select ) =>
+				(
+					( select( CORE_UI ).getValue( SUCCEEDED_FEATURES_UI_KEY ) ||
+						[] ) as string[]
+				 ).includes( 'key-metrics' ),
+		},
+		successNotice: {
+			title: 'Success! Key metrics are set up',
+			description: 'Your key metrics are now shown on your dashboard',
+			cta: {
+				label: 'View on dashboard',
+				getURL: ( select: Select ) =>
+					select( CORE_SITE ).getAdminURL(
+						'googlesitekit-dashboard'
+					),
+			},
+		},
 	},
 	{
 		slug: 'sign-in-with-google',
@@ -90,6 +114,25 @@ export const sampleFeatures: Partial< Feature >[] = [
 		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
 		addedInVersion: OLD_VERSION,
+	},
+	{
+		slug: 'enabled-test-feature',
+		title: 'Earn money by placing ads on your site',
+		setup: {
+			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+			ctaLabel: 'Set up AdSense',
+			isEnabled: () => true,
+		},
+		successNotice: {
+			title: 'Success! AdSense is set up',
+			description:
+				'You are now monetizing your website with relevant ads',
+			cta: {
+				label: 'Show me',
+				getURL: () =>
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard#monetization',
+			},
+		},
 	},
 ];
 

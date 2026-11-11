@@ -147,13 +147,14 @@ class PublicationTest extends TestCase {
 		);
 		$original_schedule = wp_next_scheduled( Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
+		$before = time();
 		$this->synchronization->synchronize( $this->create_publication() );
 
 		$new_schedule = wp_next_scheduled( Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$this->assertNotFalse( $new_schedule, 'Cron should remain scheduled.' );
 		$this->assertNotSame( $original_schedule, $new_schedule, 'Cron should be rescheduled.' );
-		$this->assertGreaterThanOrEqual( time() + HOUR_IN_SECONDS - 1, $new_schedule, 'Cron should run approximately one hour from now.' );
+		$this->assertGreaterThanOrEqual( $before + HOUR_IN_SECONDS, $new_schedule, 'Cron should run approximately one hour from now.' );
 	}
 
 	private function create_publication( $publication_id = 'publication-1' ) {

@@ -39,6 +39,7 @@
 
 		&:disabled {
 			color: $c-disabled;
+			cursor: default;
 		}
 
 		svg {

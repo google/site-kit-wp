@@ -39,7 +39,6 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '@/js/hooks/useDashboardType';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
@@ -84,7 +83,6 @@ const TrafficOverviewWidget = forwardRef<
 	>;
 
 	const viewContext = useViewContext();
-	const freshDataEnabled = useFeature( 'freshData' );
 	const dashboardType = useDashboardType();
 
 	const isAnalyticsConnected = useSelect(
@@ -95,10 +93,6 @@ const TrafficOverviewWidget = forwardRef<
 
 	const shouldShowRecentActivityTab = useSelect(
 		( select: Select ) => {
-			if ( ! freshDataEnabled ) {
-				return false;
-			}
-
 			// The Recent activity tab shows data for the whole site, but the entity
 			// dashboard shows data for one page.
 			if ( dashboardType === DASHBOARD_TYPE_ENTITY ) {
@@ -128,7 +122,7 @@ const TrafficOverviewWidget = forwardRef<
 
 			return isDismissed === undefined ? undefined : ! isDismissed;
 		},
-		[ freshDataEnabled, dashboardType, isAnalyticsConnected ]
+		[ dashboardType, isAnalyticsConnected ]
 	);
 
 	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );
