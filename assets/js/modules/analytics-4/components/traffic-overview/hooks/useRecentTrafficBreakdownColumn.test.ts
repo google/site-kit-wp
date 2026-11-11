@@ -33,6 +33,7 @@ import {
 	createBreakdownReport,
 	forDimensions,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { provideIncludeProductsState } from '@/js/modules/analytics-4/datastore/test-utils';
 import {
 	actHook as act,
 	createTestRegistry,
@@ -69,6 +70,9 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		// The columns read whether to include products, which needs the module
+		// list, the site info and the Analytics settings.
+		provideIncludeProductsState( registry, { wooCommerceActive: false } );
 	} );
 
 	it( "should return the column's rows, each with its share of the site's visitors, the total of the channels report", async () => {

@@ -265,5 +265,4 @@ NoPublishedPosts.scenario = {
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/RecentTrafficBreakdown',
 	component: RecentTrafficBreakdown,
-	parameters: { features: [ 'freshData' ] },
 };
