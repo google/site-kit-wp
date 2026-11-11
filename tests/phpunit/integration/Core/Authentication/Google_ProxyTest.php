@@ -1090,7 +1090,7 @@ class Google_ProxyTest extends TestCase {
 		);
 	}
 
-	public function test_get_benchmarking_insight_operation() {
+	public function test_get_ai_operation() {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
 		$expected_url              = $this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id );
@@ -1110,18 +1110,18 @@ class Google_ProxyTest extends TestCase {
 		$this->mock_http_request( $expected_url, $expected_success_response );
 
 		$access_token = 'dcba';
-		$response     = $this->google_proxy->get_benchmarking_insight_operation( $credentials, $access_token, 'operation-123' );
+		$response     = $this->google_proxy->get_ai_operation( $credentials, $access_token, 'operation-123' );
 
-		$this->assertEquals( $expected_url, $this->request_url, 'Benchmarking insight operation request URL should have site_id as its only query parameter.' );
-		$this->assertEquals( 'GET', $this->request_args['method'], 'Benchmarking insight operation request method should be GET.' );
-		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Benchmarking insight operation Authorization header should match access token.' );
-		$this->assertArrayNotHasKey( 'Content-Type', $this->request_args['headers'], 'Benchmarking insight operation request should not have a Content-Type header.' );
-		$this->assertNull( $this->request_args['body'], 'Benchmarking insight operation request should not have a body.' );
+		$this->assertEquals( $expected_url, $this->request_url, 'AI operation request URL should have site_id as its only query parameter.' );
+		$this->assertEquals( 'GET', $this->request_args['method'], 'AI operation request method should be GET.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'AI operation Authorization header should match access token.' );
+		$this->assertArrayNotHasKey( 'Content-Type', $this->request_args['headers'], 'AI operation request should not have a Content-Type header.' );
+		$this->assertNull( $this->request_args['body'], 'AI operation request should not have a body.' );
 
-		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Benchmarking insight operation should return the succeeded operation from the response.' );
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'AI operation request should return the succeeded operation from the response.' );
 	}
 
-	public function test_get_benchmarking_insight_operation__failed_operation() {
+	public function test_get_ai_operation__failed_operation() {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
 		$expected_response = array(
@@ -1135,12 +1135,12 @@ class Google_ProxyTest extends TestCase {
 			$expected_response
 		);
 
-		$response = $this->google_proxy->get_benchmarking_insight_operation( $credentials, 'dcba', 'operation-123' );
+		$response = $this->google_proxy->get_ai_operation( $credentials, 'dcba', 'operation-123' );
 
-		$this->assertEqualSetsWithIndex( $expected_response, $response, 'Benchmarking insight operation should return the failed operation from the response.' );
+		$this->assertEqualSetsWithIndex( $expected_response, $response, 'AI operation request should return the failed operation from the response.' );
 	}
 
-	public function test_get_benchmarking_insight_operation__error_response() {
+	public function test_get_ai_operation__error_response() {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
 		$this->mock_http_request(
@@ -1149,10 +1149,10 @@ class Google_ProxyTest extends TestCase {
 			404
 		);
 
-		$response = $this->google_proxy->get_benchmarking_insight_operation( $credentials, 'dcba', 'operation-123' );
+		$response = $this->google_proxy->get_ai_operation( $credentials, 'dcba', 'operation-123' );
 
-		$this->assertWPError( $response, 'A 404 response to the benchmarking insight operation request should return a WP_Error.' );
-		$this->assertEquals( 404, $response->get_error_data()['status'], 'The benchmarking insight operation error should have status 404.' );
+		$this->assertWPError( $response, 'A 404 response to the AI operation request should return a WP_Error.' );
+		$this->assertEquals( 404, $response->get_error_data()['status'], 'The AI operation error should have status 404.' );
 	}
 
 	/**
@@ -1222,7 +1222,7 @@ class Google_ProxyTest extends TestCase {
 	 * given URL will yield a specific response.
 	 *
 	 * @param string $request_url   Request URL to modify response for.
-	 * @param (array)  $response_data Response data to return for the request. Will be JSON-encoded if it is an array.
+	 * @param array  $response_data Response data, encoded as JSON for the body of the mocked response.
 	 * @param int    $response_code Optional. Response status code to return. Default 200.
 	 */
 	private function mock_http_request( $request_url, array $response_data, $response_code = 200 ) {

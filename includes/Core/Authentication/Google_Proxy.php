@@ -51,18 +51,24 @@ class Google_Proxy {
 	 */
 	const CONVERSION_INSIGHT_URI = '/v1/ai/conversion-insights';
 
-	const BENCHMARKING_INSIGHT_OPERATION_URI = '/v1/ai/operations/%s';
-	const ACTION_EXCHANGE_SITE_CODE          = 'googlesitekit_proxy_exchange_site_code';
-	const ACTION_SETUP                       = 'googlesitekit_proxy_setup';
-	const ACTION_SETUP_START                 = 'googlesitekit_proxy_setup_start';
-	const ACTION_PERMISSIONS                 = 'googlesitekit_proxy_permissions';
-	const ACTION_VERIFY                      = 'googlesitekit_proxy_verify';
-	const NONCE_ACTION                       = 'googlesitekit_proxy_nonce';
-	const HEADER_REDIRECT_TO                 = 'Redirect-To';
-	const PARAM_PURPOSE                      = 'purpose';
-	const PURPOSE_INTENT                     = 'intent';
-	const SETUP_MODE_ANALYTICS_STEP          = 'analytics-step';
-	const SETUP_MODE_INTENT_STEP             = 'intent-step';
+	/**
+	 * Endpoint of an AI operation, with its ID in place of `%s`.
+	 *
+	 * @since n.e.x.t
+	 */
+	const AI_OPERATION_URI = '/v1/ai/operations/%s';
+
+	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
+	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
+	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
+	const ACTION_PERMISSIONS        = 'googlesitekit_proxy_permissions';
+	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
+	const NONCE_ACTION              = 'googlesitekit_proxy_nonce';
+	const HEADER_REDIRECT_TO        = 'Redirect-To';
+	const PARAM_PURPOSE             = 'purpose';
+	const PURPOSE_INTENT            = 'intent';
+	const SETUP_MODE_ANALYTICS_STEP = 'analytics-step';
+	const SETUP_MODE_INTENT_STEP    = 'intent-step';
 
 	/**
 	 * Plugin context.
@@ -636,7 +642,7 @@ class Google_Proxy {
 	 * @since 1.167.0 Added `amp_mode` to request.
 	 *
 	 * @param Credentials $credentials Credentials instance.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return array|WP_Error Decoded JSON body of the proxy's response, or WP_Error on failure.
 	 */
 	public function get_features( Credentials $credentials ) {
 		global $wp_version;
@@ -713,7 +719,7 @@ class Google_Proxy {
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
 	 * @param string      $trigger_id   Token ID.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return array|WP_Error Decoded JSON body of the proxy's response, or WP_Error on failure.
 	 */
 	public function send_survey_trigger( Credentials $credentials, $access_token, $trigger_id ) {
 		return $this->request(
@@ -741,7 +747,7 @@ class Google_Proxy {
 	 * @param string          $access_token Access token.
 	 * @param array|\stdClass $session      Session object.
 	 * @param array|\stdClass $event        Event object.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return array|WP_Error Decoded JSON body of the proxy's response, or WP_Error on failure.
 	 */
 	public function send_survey_event( Credentials $credentials, $access_token, $session, $event ) {
 		return $this->request(
@@ -766,7 +772,7 @@ class Google_Proxy {
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
 	 * @param array       $feedback     Feedback data, with `namespace`, `group`, `key`, and `value` keys.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return array|WP_Error Decoded JSON body of the proxy's response, or WP_Error on failure.
 	 */
 	public function send_feedback( Credentials $credentials, $access_token, array $feedback ) {
 		return $this->request(
@@ -833,7 +839,7 @@ class Google_Proxy {
 	}
 
 	/**
-	 * Gets a benchmarking insight operation from the proxy.
+	 * Gets an AI operation from the proxy.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -842,9 +848,9 @@ class Google_Proxy {
 	 * @param string      $operation_id Operation ID.
 	 * @return array|WP_Error Operation, or WP_Error on failure.
 	 */
-	public function get_benchmarking_insight_operation( Credentials $credentials, $access_token, $operation_id ) {
+	public function get_ai_operation( Credentials $credentials, $access_token, $operation_id ) {
 		return $this->request(
-			sprintf( self::BENCHMARKING_INSIGHT_OPERATION_URI, rawurlencode( $operation_id ) ),
+			sprintf( self::AI_OPERATION_URI, rawurlencode( $operation_id ) ),
 			$credentials,
 			array(
 				'access_token' => $access_token,
