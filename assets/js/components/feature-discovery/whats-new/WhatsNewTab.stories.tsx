@@ -37,7 +37,9 @@ import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { Story } from '@/js/types/Story';
 import {
@@ -141,6 +143,22 @@ WithSetupSuccessNotice.args = {
 			featureSlug: 'set-up-feature',
 			returnTab: WHATS_NEW_TAB_PATH,
 		} );
+	},
+};
+
+export const WithInPlaceSetupSuccessNotice = Template.bind(
+	{}
+) as Story< StoryArgs >;
+WithInPlaceSetupSuccessNotice.storyName = 'With In-Place Setup Success Notice';
+WithInPlaceSetupSuccessNotice.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+		provideNotifications( registry, [] );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( SUCCEEDED_FEATURES_UI_KEY, [ 'dashboard-sharing' ] );
 	},
 };
 

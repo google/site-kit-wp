@@ -1,5 +1,5 @@
 /**
- * Feature error notice styles.
+ * Feature list item styles.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -18,10 +18,12 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-feature-discovery__content {
+	.googlesitekit-feature-list-item {
+		border-bottom: 1px solid $c-neutral-n-100;
+		padding-block: 30px;
+	}
 
-		.googlesitekit-feature-setup-error-notice {
-			margin-top: 20px;
-		}
+	.googlesitekit-whats-new .googlesitekit-feature-list-item:last-child {
+		border-bottom: none;
 	}
 }

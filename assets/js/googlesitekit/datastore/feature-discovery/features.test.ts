@@ -237,6 +237,9 @@ describe( 'core/feature-discovery features', () => {
 			const activationEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/modules/data/activation'
 			);
+			const modulesListEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/modules/data/list'
+			);
 
 			let navigateTo: jest.SpyInstance;
 
@@ -248,6 +251,13 @@ describe( 'core/feature-discovery features', () => {
 				provideModules( registry, [
 					{ slug: 'test-module', active: false, connected: false },
 				] );
+				// The modules list as re-fetched once a module with no setup
+				// screen has been activated in place.
+				fetchMock.get( modulesListEndpoint, {
+					body: [
+						{ slug: 'test-module', active: true, connected: true },
+					],
+				} );
 			} );
 
 			afterEach( async () => {
@@ -627,6 +637,36 @@ describe( 'core/feature-discovery features', () => {
 				).toHaveBeenCalledWith( 'test-module' );
 				expect( navigateTo ).not.toHaveBeenCalled();
 				expect( await consumePendingSetup() ).toBeNull();
+			} );
+
+			it( 'should refresh the modules once a module with no setup component is activated, so the feature reads as connected', async () => {
+				registerSetupFlowFeature();
+				jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				).mockResolvedValue( {
+					response: {
+						success: true,
+						moduleReauthURL: 'http://example.com/reauth',
+					},
+				} );
+
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.isFeatureConnected( 'test-feature' )
+				).toBe( false );
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.setupFeature( 'test-feature' );
+
+				expect( fetchMock ).toHaveFetched( modulesListEndpoint );
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.isFeatureConnected( 'test-feature' )
+				).toBe( true );
 			} );
 
 			it( 'should record pending setup and navigate when setup provides a URL', async () => {

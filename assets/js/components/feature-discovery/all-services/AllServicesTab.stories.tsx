@@ -35,9 +35,10 @@ import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContex
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
-	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
 import {
@@ -71,27 +72,25 @@ WithSetupSuccessNotice.storyName = 'With Setup Success Notice';
 WithSetupSuccessNotice.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		provideSiteInfo( registry );
-		provideFeatures( registry, [
-			{
-				slug: 'set-up-feature',
-				title: 'Set up feature',
-				setup: {
-					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
-					ctaLabel: 'Set up now',
-					isEnabled: () => true,
-				},
-				successNotice: {
-					title: 'Success! AdSense is set up',
-					description:
-						'You are now monetizing your website with relevant ads',
-				},
-			},
-		] );
 		provideNotifications( registry, [] );
 		registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
-			featureSlug: 'set-up-feature',
+			featureSlug: 'enabled-test-feature',
 			returnTab: ALL_SERVICES_TAB_PATH,
 		} );
+	},
+};
+
+export const WithInPlaceSetupSuccessNotice = Template.bind( {} ) as Story;
+WithInPlaceSetupSuccessNotice.storyName = 'With In-Place Setup Success Notice';
+WithInPlaceSetupSuccessNotice.args = {
+	// Key metrics was set up without leaving the hub, so its success notice
+	// takes the place of its card in the list.
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideSiteInfo( registry );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( SUCCEEDED_FEATURES_UI_KEY, [ 'key-metrics' ] );
 	},
 };
 
@@ -112,7 +111,6 @@ export default {
 
 				provideModules( registry, sampleModules );
 				provideModuleRegistrations( registry );
-
 				provideFeatures( registry, sampleFeatures );
 
 				args?.setupRegistry?.( registry );
