@@ -39,8 +39,8 @@ function Template( { text }: TrafficInsightNoticeProps ) {
 
 /**
  * This story runs no visual check, because the `TrafficOverviewWidget` Typical
- * Traffic With Insights scenario already captures the notice next to the
- * visitor total.
+ * Traffic With Insights scenario already captures the notice above the visitor
+ * figures.
  */
 export const Default = Template.bind(
 	{}

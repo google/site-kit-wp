@@ -39,63 +39,109 @@ $traffic-overview-column-gap: 42px;
 			}
 		}
 
-		// The visitor total, with the traffic insight beside it from desktop up
-		// and under it below.
+		// The traffic insight, where the panel has one, sits above the visitor
+		// figures.
 		.googlesitekit-traffic-overview__summary {
 			display: flex;
 			flex-direction: column;
-			gap: 24px;
+			gap: 16px;
+		}
 
-			@media (min-width: $bp-desktop) {
-				align-items: flex-start;
+		// The total visits and the unique visitors stack on phones, and sit
+		// side by side from tablets up.
+		.googlesitekit-traffic-overview__total-visitors {
+			align-items: flex-start;
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+
+			@media (min-width: $bp-tablet) {
 				flex-direction: row;
+				gap: 36px;
 			}
 		}
 
-		// The insight takes the rest of the row.
-		.googlesitekit-traffic-overview__traffic-insight {
+		// From tablets up, a divider separates the total visits from the
+		// unique visitors.
+		.googlesitekit-traffic-overview__total-visits {
+			align-items: flex-start;
+			display: flex;
+			gap: 16px;
 
-			@media (min-width: $bp-desktop) {
-				flex: 1;
+			@media (min-width: $bp-tablet) {
+				border-right: 1px solid $c-utility-divider;
+				padding-right: 36px;
 			}
 		}
 
 		// Every element below carries its own typography classes, so only the
-		// colors and the layout are set here.
-		.googlesitekit-traffic-overview__total-visitors-title {
-			color: $c-surfaces-on-surface-variant;
+		// colors and the layout are set here. The figure's box is 58px tall, as
+		// in the design: 6px shorter than its 64px line, so the label under it
+		// starts 6px before the line ends.
+		.googlesitekit-traffic-overview__total-visits-figure {
+			color: $c-surfaces-on-surface;
+			display: block;
+			height: 58px;
+		}
+
+		.googlesitekit-traffic-overview__total-visits-label {
+			color: $c-surfaces-on-surface;
 			margin: 0;
 		}
 
-		.googlesitekit-traffic-overview__total-visitors-metric {
-			align-items: flex-start;
-			display: flex;
-			gap: 14px;
-		}
-
-		.googlesitekit-traffic-overview__total-visitors-figure {
-			color: $c-surfaces-on-surface;
-		}
-
-		.googlesitekit-traffic-overview__total-visitors-change {
+		// The badge sits 9px down, with the comparison 3px under it.
+		.googlesitekit-traffic-overview__total-visits-change {
 			align-items: flex-start;
 			display: flex;
 			flex-direction: column;
-			gap: 4px;
-			margin-top: 5px;
+			gap: 3px;
+			padding-top: 9px;
 
 			.googlesitekit-change-badge {
 				margin-top: 0;
 			}
 		}
 
-		.googlesitekit-traffic-overview__total-visitors-comparison {
+		.googlesitekit-traffic-overview__total-visits-comparison {
 			color: $c-surfaces-on-background-variant;
 			margin: 0;
 		}
 
+		// From tablets up, the figure's 28px line starts 6px down, level with
+		// the change badge, and the label 2px under it, level with the
+		// comparison.
+		.googlesitekit-traffic-overview__unique-visitors {
+			color: $c-surfaces-on-surface-variant;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+
+			@media (min-width: $bp-tablet) {
+				padding-top: 6px;
+			}
+
+			.googlesitekit-typography {
+				color: inherit;
+				margin: 0;
+			}
+		}
+
+		// The info icon takes the height of its 16px icon, the height of the
+		// label's line.
+		.googlesitekit-traffic-overview__unique-visitors-label {
+			align-items: center;
+			display: flex;
+			gap: 6px;
+
+			.googlesitekit-info-tooltip {
+				display: inline-flex;
+			}
+		}
+
+		// The design puts the chart 36px under the 80px row of the visitor
+		// figures, which fill 78px of it.
 		.googlesitekit-traffic-overview__chart {
-			margin-top: 70px;
+			margin-top: 38px;
 		}
 
 		.googlesitekit-traffic-overview__chart .googlesitekit-chart {

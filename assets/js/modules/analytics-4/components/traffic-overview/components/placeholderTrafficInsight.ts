@@ -17,7 +17,7 @@
  */
 
 /**
- * The sentence the Traffic Overview panel shows next to the visitor total
+ * The sentence the Traffic Overview panel shows above the visitor figures
  * until it reads the generated insight. It is the sentence of the design.
  *
  * @since n.e.x.t

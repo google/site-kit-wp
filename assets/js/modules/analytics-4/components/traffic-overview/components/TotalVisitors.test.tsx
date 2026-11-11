@@ -52,9 +52,9 @@ describe( 'TotalVisitors', () => {
 		[ 1234, '1.2K' ],
 		[ 12345, '12K' ],
 		[ 1234567, '1.2M' ],
-	] )( 'should abbreviate %s visitors as %s', ( totalUsers, expected ) => {
+	] )( 'should abbreviate %s visits as %s', ( totalVisits, expected ) => {
 		const { getByText } = render(
-			<TotalVisitors report={ createTotalsReport( totalUsers, 1 ) } />
+			<TotalVisitors report={ createTotalsReport( totalVisits, 1 ) } />
 		);
 
 		expect( getByText( expected ) ).toBeInTheDocument();
@@ -99,66 +99,85 @@ describe( 'TotalVisitors', () => {
 	} );
 
 	it( 'should render zero and a zero badge when both totals are zero', () => {
-		const { container, getByText } = render(
-			<TotalVisitors report={ createTotalsReport( 0, 0 ) } />
+		const { container } = render(
+			<TotalVisitors
+				report={ createTotalsReport( 0, 0 ) }
+				uniqueVisitors={ 0 }
+			/>
 		);
 
-		expect( getByText( '0' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__total-visits-figure'
+			)
+		).toHaveTextContent( /^0$/ );
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
 		).toHaveTextContent( '0%' );
 	} );
 
-	it( 'should replace the total and its change badge with a placeholder while the report loads', () => {
-		const { container, getByRole, queryByText } = render(
+	it( 'should replace both figures and the change badge with a placeholder while the figures load', () => {
+		const { container, queryByText } = render(
 			<TotalVisitors
 				report={ createTotalsReport( 1200, 1000 ) }
+				uniqueVisitors={ 234 }
 				loaded={ false }
 			/>
 		);
 
 		expect(
-			getByRole( 'heading', { name: 'Total visitors' } )
-		).toBeInTheDocument();
-		expect(
 			container.querySelector( '.googlesitekit-preview-block' )
 		).toBeInTheDocument();
 		expect( queryByText( '1.2K' ) ).not.toBeInTheDocument();
+		expect( queryByText( '234' ) ).not.toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
 		).toBeNull();
 	} );
 
-	it( 'should replace the total and its change badge with "Gathering data…" while the property is gathering data', () => {
-		const { container, getByRole, getByText, queryByText } = render(
+	it( 'should replace both figures and the change badge with "Gathering data…" while the property is gathering data', () => {
+		const { container, getByText, queryByText } = render(
 			<TotalVisitors
 				report={ createTotalsReport( 1200, 1000 ) }
+				uniqueVisitors={ 234 }
 				gatheringData
 			/>
 		);
 
-		expect(
-			getByRole( 'heading', { name: 'Total visitors' } )
-		).toBeInTheDocument();
 		expect( getByText( 'Gathering data…' ) ).toBeInTheDocument();
 		expect( queryByText( '1.2K' ) ).not.toBeInTheDocument();
+		expect( queryByText( '234' ) ).not.toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
 		).toBeNull();
 	} );
 
-	it( 'should render the title as plain text, and nothing in the section is clickable', () => {
-		const { container, getByRole } = render(
-			<TotalVisitors report={ createTotalsReport( 1000, 800 ) } />
+	it( 'should render "Total visits" under the total visits figure', () => {
+		const { getByText } = render(
+			<TotalVisitors report={ createTotalsReport( 1200, 1000 ) } />
 		);
 
-		const title = getByRole( 'heading', { name: 'Total visitors' } );
+		expect( getByText( 'Total visits' ).previousElementSibling ).toBe(
+			getByText( '1.2K' )
+		);
+	} );
 
-		expect( title ).toBeInTheDocument();
-		expect( title ).toHaveTextContent( 'Total visitors' );
-		expect( title.querySelector( 'svg' ) ).toBeNull();
+	it( 'should render the unique visitors, abbreviated, with an info icon that explains them', () => {
+		const { getByRole, getByText } = render(
+			<TotalVisitors
+				report={ createTotalsReport( 5000, 4000 ) }
+				uniqueVisitors={ 1234 }
+			/>
+		);
 
-		expect( container.querySelector( 'a' ) ).toBeNull();
-		expect( container.querySelector( 'button' ) ).toBeNull();
+		expect( getByText( '1.2K' ) ).toHaveClass(
+			'googlesitekit-traffic-overview__unique-visitors-figure'
+		);
+		expect( getByText( 'Unique visitors' ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'button', {
+				name: 'Shows how many people visited your site, counting each person once.',
+			} )
+		).toBeInTheDocument();
 	} );
 } );

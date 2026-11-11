@@ -612,7 +612,6 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		expect( getByText( 'Total visitors' ) ).toBeInTheDocument();
 		expect( getByText( 'Gathering data…' ) ).toBeInTheDocument();
 		expect( getAllByText( 'We’re still collecting data' ) ).toHaveLength(
 			3
@@ -1029,7 +1028,7 @@ describe( 'TrafficOverviewPanel', () => {
 		const trafficInsightSelector =
 			'.googlesitekit-traffic-overview__traffic-insight';
 
-		it( 'should render the traffic insight next to the visitor total on the main dashboard', async () => {
+		it( 'should render the traffic insight above the visitor figures on the main dashboard', async () => {
 			const { container, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
 				{
@@ -1050,8 +1049,8 @@ describe( 'TrafficOverviewPanel', () => {
 					( { className } ) => className
 				)
 			).toEqual( [
-				'googlesitekit-traffic-overview__total-visitors',
 				'googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__traffic-insight',
+				'googlesitekit-traffic-overview__total-visitors',
 			] );
 			expect(
 				container.querySelector( trafficInsightSelector )

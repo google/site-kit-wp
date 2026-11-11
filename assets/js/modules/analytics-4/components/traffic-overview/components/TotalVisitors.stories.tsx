@@ -28,6 +28,8 @@ interface TotalVisitorsStoryProps {
 	currentValue: number;
 	/** Visitors over the range before it. */
 	previousValue: number;
+	/** Unique visitors over the selected range. */
+	uniqueVisitors: number;
 }
 
 /**
@@ -53,7 +55,11 @@ function createTotalsReport(
 	};
 }
 
-function Template( { currentValue, previousValue }: TotalVisitorsStoryProps ) {
+function Template( {
+	currentValue,
+	previousValue,
+	uniqueVisitors,
+}: TotalVisitorsStoryProps ) {
 	// The section's styles are scoped to the widget and the panel, so the
 	// story renders inside both.
 	return (
@@ -61,6 +67,7 @@ function Template( { currentValue, previousValue }: TotalVisitorsStoryProps ) {
 			<div className="googlesitekit-traffic-overview__panel">
 				<TotalVisitors
 					report={ createTotalsReport( currentValue, previousValue ) }
+					uniqueVisitors={ uniqueVisitors }
 				/>
 			</div>
 		</div>
@@ -72,6 +79,7 @@ Rise.storyName = 'Rise';
 Rise.args = {
 	currentValue: 1200,
 	previousValue: 1000,
+	uniqueVisitors: 234,
 };
 Rise.scenario = {};
 
@@ -80,6 +88,7 @@ Fall.storyName = 'Fall';
 Fall.args = {
 	currentValue: 1000,
 	previousValue: 1200,
+	uniqueVisitors: 234,
 };
 Fall.scenario = {};
 
@@ -88,6 +97,7 @@ NoChange.storyName = 'No Change';
 NoChange.args = {
 	currentValue: 1000,
 	previousValue: 1000,
+	uniqueVisitors: 234,
 };
 NoChange.scenario = {};
 
@@ -102,6 +112,7 @@ MissingPreviousFigure.storyName = 'Missing Previous Figure';
 MissingPreviousFigure.args = {
 	currentValue: 1000,
 	previousValue: 0,
+	uniqueVisitors: 234,
 };
 MissingPreviousFigure.scenario = {};
 
