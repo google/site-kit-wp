@@ -366,7 +366,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				);
 			} );
 
-			it( 'creates only the missing Site Kit dimensions on a property that has the survey dimensions', async () => {
+			it( 'should create only the missing Site Kit dimensions on a property that has the survey dimensions', async () => {
 				const propertyDimensions = [
 					...customDimensionNames,
 					...SURVEY_CUSTOM_DIMENSIONS,
