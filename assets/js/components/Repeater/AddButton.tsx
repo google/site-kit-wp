@@ -49,24 +49,25 @@ const AddButton: FC< AddButtonProps > = ( { children } ) => {
 	const { addItem, isAtMaximum, addButtonRef } = context;
 
 	return (
-		<Typography as="div" size={ SIZE_MEDIUM } type={ TYPE_LABEL }>
-			<Link
-				className="googlesitekit-repeater__add"
-				disabled={ isAtMaximum }
-				leadingIcon={
-					<PlusCircleIcon
-						aria-hidden="true"
-						focusable="false"
-						height={ 18 }
-						width={ 18 }
-					/>
-				}
-				onClick={ addItem }
-				ref={ addButtonRef }
-				type="button"
-			>
-				{ children }
-			</Link>
+		<Typography
+			as={ Link }
+			asType="button"
+			className="googlesitekit-repeater__add"
+			disabled={ isAtMaximum }
+			leadingIcon={
+				<PlusCircleIcon
+					aria-hidden="true"
+					focusable="false"
+					height={ 18 }
+					width={ 18 }
+				/>
+			}
+			onClick={ addItem }
+			ref={ addButtonRef }
+			size={ SIZE_MEDIUM }
+			type={ TYPE_LABEL }
+		>
+			{ children }
 		</Typography>
 	);
 };
