@@ -123,3 +123,41 @@ export const READONLY_SCOPE =
 
 export const MANAGE_SCOPE =
 	'https://www.googleapis.com/auth/webcontentpublisher.publications.manage';
+
+// Event-scoped custom dimensions that Reader Revenue Manager records survey
+// responses with. They are created only for the survey setup, so they are not
+// part of the Analytics module's `CUSTOM_DIMENSION_DEFINITIONS`.
+export const SURVEY_CUSTOM_DIMENSION_DEFINITIONS = {
+	survey_question: {
+		parameterName: 'survey_question',
+		displayName: 'Survey question',
+		description:
+			'Created by Site Kit: Reader Revenue Manager survey question',
+		scope: 'EVENT',
+	},
+	survey_question_category: {
+		parameterName: 'survey_question_category',
+		displayName: 'Survey question category',
+		description:
+			'Created by Site Kit: Reader Revenue Manager survey question category',
+		scope: 'EVENT',
+	},
+	survey_answer: {
+		parameterName: 'survey_answer',
+		displayName: 'Survey answer',
+		description:
+			'Created by Site Kit: Reader Revenue Manager survey answer',
+		scope: 'EVENT',
+	},
+	survey_answer_category: {
+		parameterName: 'survey_answer_category',
+		displayName: 'Survey answer category',
+		description:
+			'Created by Site Kit: Reader Revenue Manager survey answer category',
+		scope: 'EVENT',
+	},
+} as const;
+
+export const SURVEY_CUSTOM_DIMENSIONS = Object.keys(
+	SURVEY_CUSTOM_DIMENSION_DEFINITIONS
+) as ( keyof typeof SURVEY_CUSTOM_DIMENSION_DEFINITIONS )[];
