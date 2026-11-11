@@ -67,6 +67,9 @@ class Google_Proxy {
 	/**
 	 * Required scopes list.
 	 *
+	 * Only set by setup, when an administrator signs in. Site Kit's service treats a site fields sync
+	 * without scopes as unattended and doesn't let it change the site's URL.
+	 *
 	 * @since 1.68.0
 	 * @var array
 	 */
@@ -85,6 +88,8 @@ class Google_Proxy {
 
 	/**
 	 * Sets required scopes to use when the site is registering at proxy.
+	 *
+	 * Call this only for a sync started by an administrator signing in; see `$required_scopes`.
 	 *
 	 * @since 1.68.0
 	 *
