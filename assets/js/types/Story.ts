@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { ElementType } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -33,5 +38,6 @@ export type Story< PropTypes = Record< string, unknown > > = {
 	};
 	parameters?: Record< string, unknown >;
 	scenario?: Record< string, unknown >;
+	decorators?: ( ( StoryComponent: ElementType ) => JSX.Element )[];
 	play?: () => Promise< void >;
 };
