@@ -853,7 +853,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.132.0
-	 * @since n.e.x.t Lists the type and state of each configured CTA.
+	 * @since 1.192.0 Lists the type and state of each configured CTA.
 	 *
 	 * @return array An array of all debug fields.
 	 */
@@ -958,7 +958,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * Gets an array of internal feature metrics.
 	 *
 	 * @since 1.163.0
-	 * @since n.e.x.t Lists the type and state of each configured CTA.
+	 * @since 1.192.0 Lists the type and state of each configured CTA.
 	 *
 	 * @return array
 	 */

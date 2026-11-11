@@ -56,7 +56,7 @@ interface UserSettingsState {
  * Validates Reader Revenue Manager user settings.
  *
  * @since 1.186.0
- * @since n.e.x.t Validates `completedExpressSetups`.
+ * @since 1.192.0 Validates `completedExpressSetups`.
  *
  * @param  settings User settings to validate.
  * @return {void}

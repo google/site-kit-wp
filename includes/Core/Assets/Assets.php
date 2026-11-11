@@ -995,7 +995,7 @@ final class Assets {
 	 * Gets the inline dashboard sharing data.
 	 *
 	 * @since 1.49.0
-	 * @since n.e.x.t Outputs `settings` as an object, also when no module has sharing settings.
+	 * @since 1.192.0 Outputs `settings` as an object, also when no module has sharing settings.
 	 *
 	 * @return array The dashboard sharing inline data to be output.
 	 */

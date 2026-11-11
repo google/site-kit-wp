@@ -125,7 +125,7 @@ describe( 'RecentActivityPanel', () => {
 	 * had failed. The report is already in the store from `beforeEach()`, so
 	 * a mocked request wouldn't be sent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param {Object} error The error of the report.
 	 * @return {void}

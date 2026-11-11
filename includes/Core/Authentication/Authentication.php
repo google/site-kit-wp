@@ -225,7 +225,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	/**
 	 * Dashboard_Widget_Enabled instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Dashboard_Widget_Enabled
 	 */
 	private $dashboard_widget_enabled;
@@ -234,7 +234,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added Dashboard_Widget_Enabled instance.
+	 * @since 1.192.0 Added Dashboard_Widget_Enabled instance.
 	 *
 	 * @param Context      $context      Plugin context.
 	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
@@ -276,7 +276,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.0.0
 	 * @since 1.191.0 Skips syncing site fields when the site URL differs from the connected URL.
-	 * @since n.e.x.t Syncs site fields again when the plugin version is written, always without scopes.
+	 * @since 1.192.0 Syncs site fields again when the plugin version is written, always without scopes.
 	 */
 	public function register() {
 		$this->credentials()->register();
@@ -668,7 +668,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.42.0
 	 * @since 1.70.0 Moved the closure within regiser() to this method.
-	 * @since n.e.x.t Skips the WordPress dashboard screen when the WordPress dashboard widget is disabled.
+	 * @since 1.192.0 Skips the WordPress dashboard screen when the WordPress dashboard widget is disabled.
 	 *
 	 * @param string $screen_id The unique ID of the current WP_Screen.
 	 *

@@ -1,6 +1,6 @@
 <?php
 /**
- * \Google\Site_Kit\Tests\Core\Util\Migration_N_E_X_TTest
+ * \Google\Site_Kit\Tests\Core\Util\Migration_1_192_0Test
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2026 Google LLC
@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Migration_1_123_0;
 use Google\Site_Kit\Core\Util\Migration_1_150_0;
-use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
+use Google\Site_Kit\Core\Util\Migration_1_192_0;
 use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
@@ -24,7 +24,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings as Reader_Revenue_Ma
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
-class Migration_N_E_X_TTest extends TestCase {
+class Migration_1_192_0Test extends TestCase {
 
 	protected Context $context;
 	protected Options $options;
@@ -54,7 +54,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		// Remove every option the migration reads or writes, so each test relies
 		// only on the values it creates and stores.
 		$migrated_options = array(
-			Migration_N_E_X_T::DB_VERSION_OPTION,
+			Migration_1_192_0::DB_VERSION_OPTION,
 			Modules::OPTION_ACTIVE_MODULES,
 			Module_Sharing_Settings::OPTION,
 			Migration_1_123_0::LEGACY_ANALYTICS_OPTION,
@@ -73,11 +73,11 @@ class Migration_N_E_X_TTest extends TestCase {
 	/**
 	 * Gets a migration whose target version is above the current plugin version.
 	 *
-	 * The real target version is `n.e.x.t` until release, which
+	 * The real target version is `1.192.0` until release, which
 	 * `version_compare()` sorts below every numeric version.
 	 */
 	public function get_new_migration_instance() {
-		return new class( $this->context, $this->options ) extends Migration_N_E_X_T {
+		return new class( $this->context, $this->options ) extends Migration_1_192_0 {
 			const DB_VERSION = GOOGLESITEKIT_VERSION . '.1';
 		};
 	}
@@ -98,7 +98,7 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__converts_settings_skipped_since_1_185_0() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, '1.185.0' );
+		$this->options->set( Migration_1_192_0::DB_VERSION_OPTION, '1.185.0' );
 		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( 'analytics-4', 'sign-in-with-google', 'reader-revenue-manager' ) );
 		$this->analytics_settings->set(
 			array(
@@ -438,7 +438,7 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		// Store already converted settings, as a site that ran 1.177.0 before
 		// 1.185.0 would have them.
-		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, '1.177.0' );
+		$this->options->set( Migration_1_192_0::DB_VERSION_OPTION, '1.177.0' );
 		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( 'analytics', 'analytics-4', 'ads', 'sign-in-with-google', 'reader-revenue-manager' ) );
 		$this->analytics_settings->set( array( 'accountID' => '12345678' ) );
 		$this->audience_settings->set( array( 'availableAudiencesLastSyncedAt' => 1700000000 ) );
@@ -474,23 +474,23 @@ class Migration_N_E_X_TTest extends TestCase {
 		$migration->migrate();
 
 		$this->assertSame(
-			array( Migration_N_E_X_T::DB_VERSION_OPTION ),
+			array( Migration_1_192_0::DB_VERSION_OPTION ),
 			array_values( array_diff( $this->get_site_kit_option_names(), $options_before ) ),
 			'The database version should be the only option the migration creates on a fresh install.'
 		);
-		$this->assertSame( $migration::DB_VERSION, $this->options->get( Migration_N_E_X_T::DB_VERSION_OPTION ), "Database version should update to the migration's target version on a fresh install." );
+		$this->assertSame( $migration::DB_VERSION, $this->options->get( Migration_1_192_0::DB_VERSION_OPTION ), "Database version should update to the migration's target version on a fresh install." );
 	}
 
 	public function test_migrate__sets_db_version() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, '1.185.0' );
+		$this->options->set( Migration_1_192_0::DB_VERSION_OPTION, '1.185.0' );
 
 		$migration->migrate();
 
 		$this->assertSame(
 			$migration::DB_VERSION,
-			$this->options->get( Migration_N_E_X_T::DB_VERSION_OPTION ),
+			$this->options->get( Migration_1_192_0::DB_VERSION_OPTION ),
 			"Database version should update to the migration's target version after the migration runs."
 		);
 	}
@@ -498,7 +498,7 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__skips_when_the_db_version_is_current() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, $migration::DB_VERSION );
+		$this->options->set( Migration_1_192_0::DB_VERSION_OPTION, $migration::DB_VERSION );
 
 		$this->sign_in_with_google_settings->set(
 			array(

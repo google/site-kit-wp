@@ -37,7 +37,7 @@ type RecentActivityPostLinkSection = 'latest-post-header' | 'top-posts';
  * The handler sends the `click_post_link` event, labeled with the link's
  * section, and records a meaningful interaction with the tab.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {string} section The section the link is in.
  * @return {Function} A handler that returns a promise, which resolves once the event is sent and the interaction is saved.

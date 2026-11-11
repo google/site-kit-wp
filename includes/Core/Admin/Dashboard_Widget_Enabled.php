@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class handling the WordPress dashboard widget settings.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Dashboard_Widget_Enabled extends Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return bool Value set for the option, or registered default if not set.
 	 */
@@ -40,7 +40,7 @@ class Dashboard_Widget_Enabled extends Setting {
 	/**
 	 * Checks whether the WordPress dashboard widget should be displayed, based on the setting and filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return bool True if the WordPress dashboard widget should be displayed, false otherwise.
 	 */
@@ -54,7 +54,7 @@ class Dashboard_Widget_Enabled extends Setting {
 		 *
 		 * This only runs when the WordPress dashboard widget setting is enabled, so it can only be used to hide the widget.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.192.0
 		 *
 		 * @param bool $display Whether to display the WordPress dashboard widget.
 		 */
@@ -64,7 +64,7 @@ class Dashboard_Widget_Enabled extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return string The type name.
 	 */
@@ -75,7 +75,7 @@ class Dashboard_Widget_Enabled extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return boolean The default value.
 	 */
@@ -86,7 +86,7 @@ class Dashboard_Widget_Enabled extends Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return callable The callable sanitize callback.
 	 */

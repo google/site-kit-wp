@@ -29,7 +29,7 @@ const pendingStarts = new WeakMap< Registry, Map< string, Promise< void > > >();
 /**
  * Loads the expirable items, then starts the timer when the user does not have it.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object} registry The data registry.
  * @param {Object} timer    The timer to start, with its `slug` and `expiresInSeconds`.
@@ -62,7 +62,7 @@ async function startTimer(
  * returns the earlier call's promise. Both calls would otherwise find that
  * the user does not have the timer yet, and send the same request twice.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object} registry The data registry.
  * @param {Object} timer    The timer to start, with its `slug` and `expiresInSeconds`.
