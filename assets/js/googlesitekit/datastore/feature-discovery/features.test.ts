@@ -32,9 +32,11 @@ import {
 	FEATURE_DISCOVERY_SETUP_REQUEST_KEY,
 } from '@/js/components/feature-discovery/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import { enabledFeatures } from '@/js/features';
 import { getItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFeatureDiscovery } from '@/js/googlesitekit/feature-discovery';
 import {
 	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
@@ -44,8 +46,10 @@ import { registerDefaults } from '@/js/googlesitekit/feature-discovery/register-
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideModules,
 	provideSiteInfo,
+	untilResolved,
 } from '@tests/js/utils';
 import {
 	CORE_FEATURE_DISCOVERY,
@@ -54,6 +58,7 @@ import {
 	FEATURE_SETUP_TYPES,
 } from './constants';
 import type { FeatureSettings } from './types';
+import { getFeatureIncompleteSetupReminderKey } from './utils';
 
 function createSettings(
 	overrides: Partial< FeatureSettings > = {}
@@ -231,6 +236,155 @@ describe( 'core/feature-discovery features', () => {
 					).toThrow();
 				}
 			);
+		} );
+
+		describe( 'resetIncompleteSetupReminder', () => {
+			const dismissedItemsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismissed-items'
+			);
+
+			beforeEach( () => {
+				enabledFeatures.add( 'featureDiscoveryHub' );
+			} );
+
+			afterEach( () => {
+				enabledFeatures.delete( 'featureDiscoveryHub' );
+			} );
+
+			it( 'removes only the matching reminder dismissal', async () => {
+				const key =
+					getFeatureIncompleteSetupReminderKey( 'newsletter' );
+				const otherKey =
+					getFeatureIncompleteSetupReminderKey( 'adsense' );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [ key, otherKey ] );
+
+				fetchMock.postOnce(
+					dismissedItemsEndpoint,
+					{
+						body: [ otherKey ],
+					},
+					{
+						headers: {
+							'X-HTTP-Method-Override': 'DELETE',
+						},
+					}
+				);
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.resetIncompleteSetupReminder( 'newsletter' );
+
+				expect( fetchMock ).toHaveFetched( dismissedItemsEndpoint, {
+					body: {
+						data: {
+							slugs: [ key ],
+						},
+					},
+					headers: {
+						'X-HTTP-Method-Override': 'DELETE',
+					},
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getDismissedItems()
+				).toEqual( [ otherKey ] );
+			} );
+
+			it( 'does nothing when the reminder is already loaded and not dismissed', async () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.resetIncompleteSetupReminder( 'newsletter' );
+
+				expect( fetchMock ).not.toHaveFetched( dismissedItemsEndpoint );
+			} );
+
+			it( 'does nothing when the featureDiscoveryHub feature flag is disabled, even with unloaded user data', async () => {
+				enabledFeatures.delete( 'featureDiscoveryHub' );
+				freezeFetch( dismissedItemsEndpoint );
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.resetIncompleteSetupReminder( 'newsletter' );
+
+				expect( fetchMock ).not.toHaveFetched( dismissedItemsEndpoint );
+			} );
+
+			it( 'loads dismissed items first and removes reminder once loaded', async () => {
+				const key =
+					getFeatureIncompleteSetupReminderKey( 'newsletter' );
+				fetchMock.getOnce( dismissedItemsEndpoint, {
+					body: [ key ],
+				} );
+
+				fetchMock.postOnce(
+					dismissedItemsEndpoint,
+					{
+						body: [],
+					},
+					{
+						headers: {
+							'X-HTTP-Method-Override': 'DELETE',
+						},
+					}
+				);
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.resetIncompleteSetupReminder( 'newsletter' );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect(
+					registry.select( CORE_USER ).getDismissedItems()
+				).toEqual( [] );
+			} );
+
+			it( 'surfaces user-store removal failures', async () => {
+				const key =
+					getFeatureIncompleteSetupReminderKey( 'newsletter' );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [ key ] );
+
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.postOnce(
+					dismissedItemsEndpoint,
+					{
+						body: response,
+						status: 500,
+					},
+					{
+						headers: {
+							'X-HTTP-Method-Override': 'DELETE',
+						},
+					}
+				);
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.resetIncompleteSetupReminder( 'newsletter' );
+
+				await untilResolved( registry, CORE_USER ).getDismissedItems();
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getErrorForAction( 'removeDismissedItems', [
+							[ key ],
+						] )
+				).toMatchObject( response );
+				expect( console ).toHaveErrored();
+			} );
 		} );
 
 		describe( 'setupFeature', () => {

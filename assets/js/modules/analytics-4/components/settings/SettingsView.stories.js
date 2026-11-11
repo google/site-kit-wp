@@ -99,9 +99,6 @@ WithEnhancedConversionsNotice.parameters = {
 
 export const WithWooCommerceProductsToggle = Template.bind( null );
 WithWooCommerceProductsToggle.storyName = 'With WooCommerce products toggle';
-WithWooCommerceProductsToggle.parameters = {
-	features: [ 'freshData' ],
-};
 WithWooCommerceProductsToggle.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
@@ -126,9 +123,6 @@ WithWooCommerceProductsToggle.scenario = {};
 export const WithWooCommerceProductsToggleOff = Template.bind( null );
 WithWooCommerceProductsToggleOff.storyName =
 	'With WooCommerce products toggle off';
-WithWooCommerceProductsToggleOff.parameters = {
-	features: [ 'freshData' ],
-};
 WithWooCommerceProductsToggleOff.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {

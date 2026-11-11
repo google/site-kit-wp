@@ -21,6 +21,7 @@ export const enum NOTICE_TYPES {
 	NEW = 'new',
 	SUCCESS = 'success',
 	WARNING = 'warning',
+	REMINDER = 'reminder',
 	/**
 	 * Grey background, the default for `'info'` notices.
 	 */

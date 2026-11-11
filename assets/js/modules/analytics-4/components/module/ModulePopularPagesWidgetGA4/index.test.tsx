@@ -91,29 +91,12 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
-	it( 'should render the Top content card without tabs when freshData is disabled', async () => {
-		const { container, queryAllByRole, getByText, waitForRegistry } =
-			render(
-				<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
-				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-			);
-
-		await waitForRegistry();
-
-		expect( queryAllByRole( 'tab' ) ).toHaveLength( 0 );
-		expect(
-			getByText( 'Top content over the last 28 days' )
-		).toBeInTheDocument();
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should render the tabs with the Top content header title when freshData is enabled', async () => {
+	it( 'should render the tabs with the Top content header title', async () => {
 		const { getAllByRole, getByRole, getByText, waitForRegistry } = render(
 			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -147,7 +130,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -181,7 +163,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -209,7 +190,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -231,7 +211,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -268,7 +247,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -299,7 +277,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 

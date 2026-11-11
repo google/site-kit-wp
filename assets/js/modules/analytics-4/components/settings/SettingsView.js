@@ -51,7 +51,6 @@ import OptionalSettingsView from './OptionalSettingsView';
 export default function SettingsView() {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
-	const freshDataEnabled = useFeature( 'freshData' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -319,7 +318,7 @@ export default function SettingsView() {
 								},
 						  ]
 						: [] ),
-					...( freshDataEnabled && isWooCommerceInstalled
+					...( isWooCommerceInstalled
 						? [
 								{
 									label: __(

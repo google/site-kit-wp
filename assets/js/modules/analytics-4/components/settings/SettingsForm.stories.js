@@ -316,9 +316,6 @@ WithEnhancedConversionsNotice.parameters = {
 
 export const WithWooCommerceProductsToggle = Template.bind( null );
 WithWooCommerceProductsToggle.storyName = 'With WooCommerce products toggle';
-WithWooCommerceProductsToggle.parameters = {
-	features: [ 'freshData' ],
-};
 WithWooCommerceProductsToggle.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
@@ -447,6 +444,11 @@ export default {
 						owner: { login: 'analytics_4-owner-username' },
 					},
 				] );
+
+				// WooCommerce is not installed, so the setting to include
+				// products in Recent activity does not show. The rest of the
+				// site info still comes from the base data.
+				global._googlesitekitBaseData.wooCommerceInstalled = false;
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
