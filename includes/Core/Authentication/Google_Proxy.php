@@ -25,24 +25,32 @@ use WP_Error;
  */
 class Google_Proxy {
 
-	const PRODUCTION_BASE_URL                = 'https://sitekit.withgoogle.com';
-	const STAGING_BASE_URL                   = 'https://site-kit-dev.appspot.com';
-	const DEVELOPMENT_BASE_URL               = 'https://site-kit-local.appspot.com';
-	const OAUTH2_SITE_URI                    = '/o/oauth2/site/';
-	const OAUTH2_REVOKE_URI                  = '/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI                   = '/o/oauth2/token/';
-	const OAUTH2_AUTH_URI                    = '/o/oauth2/auth/';
-	const OAUTH2_DELETE_SITE_URI             = '/o/oauth2/delete-site/';
-	const SETUP_V3_URI                       = '/v3/site-management/setup/';
-	const PERMISSIONS_URI                    = '/site-management/permissions/';
-	const FEATURES_URI                       = '/site-management/features/';
-	const SURVEY_TRIGGER_URI                 = '/survey/trigger/';
-	const SURVEY_EVENT_URI                   = '/survey/event/';
-	const FEEDBACK_URI                       = '/feedback/';
-	const SUPPORT_LINK_URI                   = '/support';
-	const INTENT_URI                         = '/intent/%s/';
-	const INTENT_COMPLETE_URI                = '/intent/%s/complete/';
-	const BENCHMARKING_INSIGHT_URI           = '/v1/ai/benchmarking';
+	const PRODUCTION_BASE_URL      = 'https://sitekit.withgoogle.com';
+	const STAGING_BASE_URL         = 'https://site-kit-dev.appspot.com';
+	const DEVELOPMENT_BASE_URL     = 'https://site-kit-local.appspot.com';
+	const OAUTH2_SITE_URI          = '/o/oauth2/site/';
+	const OAUTH2_REVOKE_URI        = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI         = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URI          = '/o/oauth2/auth/';
+	const OAUTH2_DELETE_SITE_URI   = '/o/oauth2/delete-site/';
+	const SETUP_V3_URI             = '/v3/site-management/setup/';
+	const PERMISSIONS_URI          = '/site-management/permissions/';
+	const FEATURES_URI             = '/site-management/features/';
+	const SURVEY_TRIGGER_URI       = '/survey/trigger/';
+	const SURVEY_EVENT_URI         = '/survey/event/';
+	const FEEDBACK_URI             = '/feedback/';
+	const SUPPORT_LINK_URI         = '/support';
+	const INTENT_URI               = '/intent/%s/';
+	const INTENT_COMPLETE_URI      = '/intent/%s/complete/';
+	const BENCHMARKING_INSIGHT_URI = '/v1/ai/benchmarking';
+
+	/**
+	 * Endpoint of the conversion insight request.
+	 *
+	 * @since n.e.x.t
+	 */
+	const CONVERSION_INSIGHT_URI = '/v1/ai/conversion-insights';
+
 	const BENCHMARKING_INSIGHT_OPERATION_URI = '/v1/ai/operations/%s';
 	const ACTION_EXCHANGE_SITE_CODE          = 'googlesitekit_proxy_exchange_site_code';
 	const ACTION_SETUP                       = 'googlesitekit_proxy_setup';
@@ -792,6 +800,29 @@ class Google_Proxy {
 	public function send_benchmarking_insight_request( Credentials $credentials, $access_token, array $payload, $language_tag ) {
 		return $this->request(
 			add_query_arg( 'hl', $language_tag, self::BENCHMARKING_INSIGHT_URI ),
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'json_request' => true,
+				'body'         => array_merge( $payload, array( 'async' => true ) ),
+			)
+		);
+	}
+
+	/**
+	 * Sends a conversion insight request to the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $access_token Access token.
+	 * @param array       $payload      Conversion insight request payload.
+	 * @param string      $language_tag Language tag for the generated insight, such as `de-DE`.
+	 * @return array|WP_Error Operation, or generated insight when the proxy returns it from its cache, or WP_Error on failure.
+	 */
+	public function send_conversion_insight_request( Credentials $credentials, $access_token, array $payload, $language_tag ) {
+		return $this->request(
+			add_query_arg( 'hl', $language_tag, self::CONVERSION_INSIGHT_URI ),
 			$credentials,
 			array(
 				'access_token' => $access_token,
