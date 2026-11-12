@@ -977,7 +977,120 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( 429, $response->get_error_data()['status'], 'The benchmarking insight error should have status 429.' );
 	}
 
-	public function test_get_benchmarking_insight_operation() {
+	public function test_send_conversion_insight_request() {
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( '/v1/ai/conversion-insights?hl=de-DE' );
+		$expected_success_response = array(
+			'operation_id'   => 'YhMZgdgne7B3vkpA7VTLJa',
+			'interaction_id' => '01M4ZDVWTA3J4SBF8QX8NVXT93',
+			'model_version'  => 'model-1',
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'abcd';
+		$events       = array(
+			array(
+				'event_name'               => 'generate_lead',
+				'month_start_date'         => '2026-09-09',
+				'current'                  => array(
+					'conversions'     => 150,
+					'conversion_rate' => 0.025,
+					'sessions'        => 6000,
+					'engagement_rate' => 0.66,
+				),
+				'previous'                 => array(
+					'conversions'     => 100,
+					'conversion_rate' => 0.02,
+					'sessions'        => 5000,
+					'engagement_rate' => 0.6,
+				),
+				'yoy_current_conversions'  => 130,
+				'yoy_previous_conversions' => 125,
+			),
+		);
+		$response     = $this->google_proxy->send_conversion_insight_request( $credentials, $access_token, array( 'events' => $events ), 'de-DE' );
+
+		$this->assertEquals( $expected_url, $this->request_url, 'Conversion insight request URL should have the language tag as the hl query parameter.' );
+		$this->assertEquals( 'POST', $this->request_args['method'], 'Conversion insight request method should be POST.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Conversion insight Authorization header should match access token.' );
+		$this->assertEquals( 'application/json', $this->request_args['headers']['Content-Type'], 'Conversion insight request should be sent as JSON.' );
+		$this->assertTrue( $this->request_args['blocking'], 'Conversion insight request should wait for the response.' );
+		$this->assertTrue( json_decode( $this->request_args['body'], true )['async'], 'Conversion insight request body should have async set to the boolean true.' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'     => $site_id,
+				'site_secret' => $site_secret,
+				'events'      => $events,
+				'async'       => true,
+			),
+			json_decode( $this->request_args['body'], true ),
+			'Conversion insight request body should contain site credentials, the events, and async set to true.'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Conversion insight request should return the operation from the response.' );
+	}
+
+	public function test_send_conversion_insight_request__cached_insight() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$expected_response = array(
+			'interaction_id' => '01M4B0KB2E2VWF72GMV1X4BE08',
+			'scenario'       => 'GROWTH_VOL_UP_CR_UP_NOT_SEASONAL',
+			'insights'       => array(
+				array(
+					'event_name'                => 'generate_lead',
+					'code'                      => 'GROWTH_VOL_UP_CR_UP_NOT_SEASONAL',
+					'text'                      => 'Leads are up 50% over the past 28 days.',
+					'actionable_recommendation' => 'Both an increase in site traffic and a higher conversion rate contributed to this lead growth.',
+				),
+			),
+		);
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/conversion-insights?hl=de-DE' ), $expected_response );
+
+		$response = $this->google_proxy->send_conversion_insight_request( $credentials, 'abcd', array(), 'de-DE' );
+
+		$this->assertEqualSetsWithIndex( $expected_response, $response, 'Conversion insight request should return the cached insight from the response.' );
+	}
+
+	/**
+	 * @dataProvider data_conversion_insight_error_responses
+	 */
+	public function test_send_conversion_insight_request__error_response( $response_code, array $response_data, $expected_message ) {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/conversion-insights?hl=de-DE' ),
+			$response_data,
+			$response_code
+		);
+
+		$response = $this->google_proxy->send_conversion_insight_request( $credentials, 'abcd', array(), 'de-DE' );
+
+		$this->assertWPError( $response, "A $response_code response to the conversion insight request should return a WP_Error." );
+		$this->assertEquals( $expected_message, $response->get_error_message(), 'The conversion insight error should have the error message of the response, or an empty message when the response has no error message.' );
+		$this->assertEquals( $response_code, $response->get_error_data()['status'], "The conversion insight error should have status $response_code." );
+	}
+
+	public function data_conversion_insight_error_responses() {
+		return array(
+			'429 with an error message' => array(
+				429,
+				array( 'error' => 'Too many requests.' ),
+				'Too many requests.',
+			),
+			'400 with no error message' => array(
+				400,
+				array(),
+				'',
+			),
+		);
+	}
+
+	public function test_get_ai_operation() {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
 		$expected_url              = $this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id );
@@ -997,18 +1110,18 @@ class Google_ProxyTest extends TestCase {
 		$this->mock_http_request( $expected_url, $expected_success_response );
 
 		$access_token = 'dcba';
-		$response     = $this->google_proxy->get_benchmarking_insight_operation( $credentials, $access_token, 'operation-123' );
+		$response     = $this->google_proxy->get_ai_operation( $credentials, $access_token, 'operation-123' );
 
-		$this->assertEquals( $expected_url, $this->request_url, 'Benchmarking insight operation request URL should have site_id as its only query parameter.' );
-		$this->assertEquals( 'GET', $this->request_args['method'], 'Benchmarking insight operation request method should be GET.' );
-		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Benchmarking insight operation Authorization header should match access token.' );
-		$this->assertArrayNotHasKey( 'Content-Type', $this->request_args['headers'], 'Benchmarking insight operation request should not have a Content-Type header.' );
-		$this->assertNull( $this->request_args['body'], 'Benchmarking insight operation request should not have a body.' );
+		$this->assertEquals( $expected_url, $this->request_url, 'AI operation request URL should have site_id as its only query parameter.' );
+		$this->assertEquals( 'GET', $this->request_args['method'], 'AI operation request method should be GET.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'AI operation Authorization header should match access token.' );
+		$this->assertArrayNotHasKey( 'Content-Type', $this->request_args['headers'], 'AI operation request should not have a Content-Type header.' );
+		$this->assertNull( $this->request_args['body'], 'AI operation request should not have a body.' );
 
-		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Benchmarking insight operation should return the succeeded operation from the response.' );
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'AI operation request should return the succeeded operation from the response.' );
 	}
 
-	public function test_get_benchmarking_insight_operation__failed_operation() {
+	public function test_get_ai_operation__failed_operation() {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
 		$expected_response = array(
@@ -1022,12 +1135,12 @@ class Google_ProxyTest extends TestCase {
 			$expected_response
 		);
 
-		$response = $this->google_proxy->get_benchmarking_insight_operation( $credentials, 'dcba', 'operation-123' );
+		$response = $this->google_proxy->get_ai_operation( $credentials, 'dcba', 'operation-123' );
 
-		$this->assertEqualSetsWithIndex( $expected_response, $response, 'Benchmarking insight operation should return the failed operation from the response.' );
+		$this->assertEqualSetsWithIndex( $expected_response, $response, 'AI operation request should return the failed operation from the response.' );
 	}
 
-	public function test_get_benchmarking_insight_operation__error_response() {
+	public function test_get_ai_operation__error_response() {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
 		$this->mock_http_request(
@@ -1036,10 +1149,10 @@ class Google_ProxyTest extends TestCase {
 			404
 		);
 
-		$response = $this->google_proxy->get_benchmarking_insight_operation( $credentials, 'dcba', 'operation-123' );
+		$response = $this->google_proxy->get_ai_operation( $credentials, 'dcba', 'operation-123' );
 
-		$this->assertWPError( $response, 'A 404 response to the benchmarking insight operation request should return a WP_Error.' );
-		$this->assertEquals( 404, $response->get_error_data()['status'], 'The benchmarking insight operation error should have status 404.' );
+		$this->assertWPError( $response, 'A 404 response to the AI operation request should return a WP_Error.' );
+		$this->assertEquals( 404, $response->get_error_data()['status'], 'The AI operation error should have status 404.' );
 	}
 
 	/**
@@ -1109,7 +1222,7 @@ class Google_ProxyTest extends TestCase {
 	 * given URL will yield a specific response.
 	 *
 	 * @param string $request_url   Request URL to modify response for.
-	 * @param (array)  $response_data Response data to return for the request. Will be JSON-encoded if it is an array.
+	 * @param array  $response_data Response data, encoded as JSON for the body of the mocked response.
 	 * @param int    $response_code Optional. Response status code to return. Default 200.
 	 */
 	private function mock_http_request( $request_url, array $response_data, $response_code = 200 ) {
