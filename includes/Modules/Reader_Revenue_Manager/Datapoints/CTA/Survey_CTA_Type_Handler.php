@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA;
 
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\CustomAnswerChoice;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\CustomQuestion;
@@ -62,7 +63,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 			$survey_config->setCustomMessage( $config['customMessage'] );
 		}
 
-		if ( ! isset( $config['questions'] ) || ! $this->is_list( $config['questions'] ) ) {
+		if ( ! isset( $config['questions'] ) || ! is_array( $config['questions'] ) || ! BC_Functions::array_is_list( $config['questions'] ) ) {
 			throw new Invalid_Param_Exception( 'config.questions' );
 		}
 
@@ -134,7 +135,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 		if ( array_key_exists( 'answerIds', $question ) ) {
 			$answer_ids = $question['answerIds'];
 
-			if ( ! $this->is_list( $answer_ids ) || array_filter( $answer_ids, 'is_int' ) !== $answer_ids ) {
+			if ( ! is_array( $answer_ids ) || ! BC_Functions::array_is_list( $answer_ids ) || array_filter( $answer_ids, 'is_int' ) !== $answer_ids ) {
 				throw new Invalid_Param_Exception( "{$path}.answerIds" ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 			}
 
@@ -171,7 +172,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 			$custom_question->setCategoryLabel( $question['categoryLabel'] );
 		}
 
-		if ( ! isset( $question['answerChoices'] ) || ! $this->is_list( $question['answerChoices'] ) ) {
+		if ( ! isset( $question['answerChoices'] ) || ! is_array( $question['answerChoices'] ) || ! BC_Functions::array_is_list( $question['answerChoices'] ) ) {
 			throw new Invalid_Param_Exception( "{$path}.answerChoices" ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
@@ -228,17 +229,5 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 		if ( ! is_string( $value ) ) {
 			throw new Invalid_Param_Exception( $path ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
-	}
-
-	/**
-	 * Checks whether a value is a list, which is an array with consecutive integer keys from zero.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param mixed $value Value to check.
-	 * @return bool Whether the value is a list.
-	 */
-	private function is_list( $value ) {
-		return is_array( $value ) && array_values( $value ) === $value;
 	}
 }

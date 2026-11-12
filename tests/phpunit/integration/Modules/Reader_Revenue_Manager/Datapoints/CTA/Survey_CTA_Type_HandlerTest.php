@@ -210,7 +210,7 @@ class Survey_CTA_Type_HandlerTest extends TestCase {
 				'config.questions',
 			),
 			'non-array question'                     => array(
-				$with_question( array( 'not-an-array' ) ),
+				array( 'questions' => array( 'not-an-array' ) ),
 				'config.questions[0]',
 			),
 			'question without a variant'             => array(

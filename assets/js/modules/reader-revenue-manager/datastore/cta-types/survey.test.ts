@@ -220,6 +220,11 @@ describe( 'modules/reader-revenue-manager survey CTA type', () => {
 			'config.questions[0].customQuestion.answerChoices must be an array.',
 		],
 		[
+			'custom answer choices that are not an array',
+			withCustomQuestion( { answerChoices: 'Yes' } ),
+			'config.questions[0].customQuestion.answerChoices must be an array.',
+		],
+		[
 			'a custom answer choice that is not an object',
 			withCustomQuestion( { answerChoices: [ 'Yes' ] } ),
 			'config.questions[0].customQuestion.answerChoices[0] must be an object.',

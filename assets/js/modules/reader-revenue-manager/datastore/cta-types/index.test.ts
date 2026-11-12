@@ -79,6 +79,12 @@ describe( 'modules/reader-revenue-manager CTA types', () => {
 			expect( typeof handler.validateConfig ).toBe( 'function' );
 		} );
 
+		it( 'should throw for the survey type when the rrmSurveyCTA feature flag is disabled', () => {
+			expect( () => getCTATypeHandler( CTA_TYPES.SURVEY ) ).toThrow(
+				'type is not supported.'
+			);
+		} );
+
 		it( 'should throw for an unsupported type', () => {
 			expect( () => getCTATypeHandler( 'SUBSCRIPTION' ) ).toThrow(
 				'type is not supported.'
