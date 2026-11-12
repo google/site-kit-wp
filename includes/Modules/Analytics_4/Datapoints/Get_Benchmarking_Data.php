@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Insight_Payload;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Encoder;
@@ -73,6 +74,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 *
 	 * @since 1.190.0
 	 * @since 1.192.0 The longest period it accepts changed from 197 days to 90.
+	 * @since n.e.x.t With the `trafficInsights` feature, the response also carries the locale and the signed request of the generated insight.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date, for a `startDate` later than `endDate`, or for a period longer than `Report_Options::MAXIMUM_PERIOD_DAYS` days.
@@ -134,8 +136,42 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 				return $response;
 			}
 
-			return ( new Response_Encoder() )->encode( $response );
+			return ( new Response_Encoder() )->encode( $this->with_insight_payload( $response ) );
 		};
+	}
+
+	/**
+	 * Replaces the request of the generated insight, when the response has
+	 * one, with the payload the browser sends back to
+	 * `POST:benchmarking-insight`, and adds the locale the insight is written
+	 * in.
+	 *
+	 * The locale is the user's own, as WordPress names it, such as
+	 * `de_DE_formal`. The service reads that form, and the browser keeps the
+	 * insight it receives under the locale, so a change of language asks for
+	 * a new insight.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $response The assembled response.
+	 * @return array The response, with `insightLocale` and `insightPayload` in place of `insightRequest` when it has one.
+	 */
+	private function with_insight_payload( array $response ) {
+		if ( ! array_key_exists( 'insightRequest', $response ) ) {
+			return $response;
+		}
+
+		$locale  = get_user_locale();
+		$request = $response['insightRequest'];
+
+		unset( $response['insightRequest'] );
+
+		$response['insightLocale']  = $locale;
+		$response['insightPayload'] = is_array( $request )
+			? Insight_Payload::encode( $request, $locale, get_current_user_id() )
+			: null;
+
+		return $response;
 	}
 
 	/**

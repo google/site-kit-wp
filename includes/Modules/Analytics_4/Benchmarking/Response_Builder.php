@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse as Google_Service_AnalyticsData_RunReportResponse;
@@ -74,6 +75,7 @@ class Response_Builder {
 	 * @since 1.191.0 Returns `visits` in place of `visitors`, and each day's count as `visits`.
 	 * @since 1.192.0 `dailyTraffic` changed from the 395 days that end on the end date to the days of the selected period.
 	 * @since n.e.x.t Gives each day of `dailyTraffic` its expected range, and returns `firstTrafficDate`.
+	 * @since n.e.x.t Returns `insightRequest` with the `trafficInsights` feature.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
@@ -85,6 +87,7 @@ class Response_Builder {
 	 *     @type string|null $firstTrafficDate The first day of the daily report with visits, as `YYYY-MM-DD`, or null when no day has any.
 	 *     @type array       $dimensions       Dimension codes, in the order the Traffic overview tab shows them.
 	 *     @type array       $contextualData   Ranked rows, keyed by the dimension they belong to.
+	 *     @type array|null  $insightRequest   Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request.
 	 * }
 	 */
 	public function build( $start_date, $end_date ) {
@@ -118,13 +121,21 @@ class Response_Builder {
 
 		$ranked_data = $this->rank_contextual_data( $contextual_data, $visits );
 
-		return array(
+		$response = array(
 			'visits'           => $visits,
 			'dailyTraffic'     => $this->get_daily_traffic( $daily_series, $start_date, $expected_baseline ),
 			'firstTrafficDate' => $this->get_first_traffic_date( $daily_series ),
 			'dimensions'       => $ranked_data['dimensions'],
 			'contextualData'   => $ranked_data['contextualData'],
 		);
+
+		// The insight is written from every row the reports returned, not
+		// from the few rows each dimension keeps once they are ranked.
+		if ( Feature_Flags::enabled( 'trafficInsights' ) ) {
+			$response['insightRequest'] = ( new Insight_Request_Builder() )->build( $start_date, $end_date, $daily_series, $visits, $contextual_data );
+		}
+
+		return $response;
 	}
 
 	/**
@@ -136,18 +147,19 @@ class Response_Builder {
 	 * with no row left is in neither `dimensions` nor `contextualData`.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t The rows and the site's totals count visits in place of visitors.
 	 *
-	 * @param array $contextual_data The rows, keyed by `contextualData` key, such as `channels`. Every row has its `current` and `previous` visitors.
-	 * @param array $visitors        The site's visitors, with `current` and `previous`.
+	 * @param array $contextual_data The rows, keyed by `contextualData` key, such as `channels`. Every row has its `current` and `previous` visits.
+	 * @param array $visits          The site's visits, with `current` and `previous`.
 	 * @return array {
 	 *     The two response fields the ranking decides.
 	 *
 	 *     @type array $dimensions     Dimension codes, the highest sum of row scores first.
-	 *     @type array $contextualData Rows each dimension keeps, keyed by `contextualData` key. A `CONTENT` row has `url`, `title`, `visitors`, and `publishedDaysAgo`. Every other row is unchanged.
+	 *     @type array $contextualData Rows each dimension keeps, keyed by `contextualData` key. A `CONTENT` row has `url`, `title`, its visits in the selected period as `visitors`, and `publishedDaysAgo`. Every other row is unchanged.
 	 * }
 	 */
-	public function rank_contextual_data( array $contextual_data, array $visitors ) {
-		$row_scorer       = new Row_Scorer( $visitors['current'], $visitors['previous'] );
+	public function rank_contextual_data( array $contextual_data, array $visits ) {
+		$row_scorer       = new Row_Scorer( $visits['current'], $visits['previous'] );
 		$dimension_codes  = array_flip( Wire_Format::CONTEXTUAL_DATA_KEYS );
 		$ranked_data      = array();
 		$dimension_scores = array();
@@ -205,7 +217,7 @@ class Response_Builder {
 	/**
 	 * Gets the options of every report the response needs.
 	 *
-	 * The `CONTENT` and `CATEGORIES` reports count visitors by a custom dimension,
+	 * The `CONTENT` and `CATEGORIES` reports count visits by a custom dimension,
 	 * so each one runs only while its dimension has data.
 	 *
 	 * @since 1.190.0
@@ -276,7 +288,7 @@ class Response_Builder {
 	 * @since n.e.x.t Each row has its `count` in place of its `visitors`, since the daily series counts visits.
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $report A report from a batch call.
-	 * @return array List of rows, each with its dimension `values` in the order the report asked for them, its `dateRange`, and its `count`, the value of the report's one metric: the visits of a day of the daily series, or the visitors of a dimension value.
+	 * @return array List of rows, each with its dimension `values` in the order the report asked for them, its `dateRange`, and its `count`, the value of the report's one metric: the visits of a day of the daily series, or of a dimension value.
 	 */
 	private function get_report_rows( Google_Service_AnalyticsData_RunReportResponse $report ) {
 		$dimension_names = array_map(
@@ -441,7 +453,7 @@ class Response_Builder {
 	 *
 	 * @param array  $reports  The report rows, keyed by `dailyTraffic` or by dimension code.
 	 * @param string $end_date The end date, as `YYYY-MM-DD`.
-	 * @return array Rows, keyed by `contextualData` key. Every row has its `current` and `previous` visitors.
+	 * @return array Rows, keyed by `contextualData` key. Every row has its `current` and `previous` visits.
 	 */
 	private function build_contextual_data( array $reports, $end_date ) {
 		$contextual_data = array();
@@ -505,13 +517,13 @@ class Response_Builder {
 		 * A callback adds the rows of a dimension under its
 		 * `contextualData` key. Each key has its own row fields:
 		 * - `channels`, `devices`, `visitorMix`, `referrers`, and
-		 *   `categories`: `label`, and the visitors of the selected and
-		 *   the compare period as `current` and `previous`.
+		 *   `categories`: `label`, and the visits (sessions) of the selected
+		 *   and the compare period as `current` and `previous`.
 		 * - `searchQueries`: `label`, the clicks of each period as
 		 *   `current` and `previous`, and the average position of each
 		 *   period as `positionCurrent` and `positionPrevious`, or `null`
 		 *   for a period the query isn't reported in.
-		 * - `content`: `url`, `title`, `publishedDaysAgo`, and the visitors of
+		 * - `content`: `url`, `title`, `publishedDaysAgo`, and the visits of
 		 *   each period as `current` and `previous`.
 		 *
 		 * What a callback returns is checked before the next callback receives
@@ -523,9 +535,12 @@ class Response_Builder {
 		 * A numeric string is stored as a number. When the rows are ranked, a
 		 * row whose change explains too little of the site's change is left
 		 * out, each key keeps at most its 5 highest scoring rows, and a key
-		 * with no row left is left out of the response.
+		 * with no row left is left out of the response. With the
+		 * `trafficInsights` feature, the request the generated insight is
+		 * written from is built from the rows before they are ranked.
 		 *
 		 * @since 1.190.0
+		 * @since n.e.x.t The rows count visits in place of visitors.
 		 *
 		 * @param array $contextual_data The rows, keyed by `contextualData` key.
 		 * @param array $args {
@@ -563,7 +578,7 @@ class Response_Builder {
 	/**
 	 * Pairs a dimension report's two periods by the value of its first dimension.
 	 *
-	 * A value missing from one period has `0` visitors in that period. A pair
+	 * A value missing from one period has `0` visits in that period. A pair
 	 * keeps the `values` of its first row, such as a page's title, and the rows
 	 * of the selected period are read first.
 	 *
@@ -648,13 +663,13 @@ class Response_Builder {
 	/**
 	 * Gets the shape a row takes in the response.
 	 *
-	 * A `CONTENT` row reports the visitors of the selected period as
+	 * A `CONTENT` row reports the visits of the selected period as
 	 * `visitors`, without the `previous` count that only its score used.
 	 *
 	 * @since 1.190.0
 	 *
 	 * @param string $dimension_code The dimension code the row belongs to, such as `CONTENT`.
-	 * @param array  $row            The row, with its `current` and `previous` visitors.
+	 * @param array  $row            The row, with its `current` and `previous` visits.
 	 * @return array The row as the response lists it.
 	 */
 	private function get_response_row( $dimension_code, array $row ) {

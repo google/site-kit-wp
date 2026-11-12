@@ -43,12 +43,11 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
 import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
-import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
 import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors';
-import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/factors/placeholderKeyFactors';
+import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
 import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -78,6 +77,13 @@ const TrafficOverviewPanel: FC = () => {
 	const { isAvailable: hasKeyFactors, isShown: showKeyFactors } =
 		useKeyFactorsVisibility();
 	const trafficInsightsEnabled = useFeature( 'trafficInsights' );
+	const showInsights = showKeyFactors && trafficInsightsEnabled;
+
+	// The insight arrives after the figures, since the service generates it
+	// from them. Without an insight, the panel shows its figures alone.
+	const { insight, loading: insightLoading } = useBenchmarkingInsight( {
+		isEnabled: showInsights,
+	} );
 
 	const { startDate, endDate } = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
@@ -128,14 +134,13 @@ const TrafficOverviewPanel: FC = () => {
 			{ errors.length === 0 && (
 				<Fragment>
 					<div className="googlesitekit-traffic-overview__summary">
-						{ showKeyFactors && trafficInsightsEnabled && (
-							// The insight compares the site's traffic with its
-							// typical range, which the chart draws wherever the
-							// panel shows the key factors.
-							//
-							// TODO: Read the sentence from the generated insight.
+						{ showInsights && (
+							// The analysis compares the site's traffic with
+							// its typical range, which the chart draws wherever
+							// the panel shows the key factors.
 							<TrafficInsightNotice
-								text={ PLACEHOLDER_TRAFFIC_INSIGHT }
+								text={ insight?.analysis }
+								loading={ insightLoading }
 							/>
 						) }
 						<TotalVisitors
@@ -158,18 +163,15 @@ const TrafficOverviewPanel: FC = () => {
 						}
 					/>
 					{ showKeyFactors && (
-						// TODO: Read the summary of the cards from the
-						// generated insight.
 						<KeyFactors
 							keyFactors={
 								benchmarkingResponse?.keyFactors ?? []
 							}
 							loaded={ ! isLoading }
-							insight={
-								trafficInsightsEnabled
-									? PLACEHOLDER_KEY_FACTORS_INSIGHT
-									: undefined
-							}
+							// The driver describes the change against the
+							// previous period, and what carried it.
+							insight={ insight?.driver }
+							insightLoading={ insightLoading }
 							daysInSelectedRange={ daysInSelectedRange }
 							referenceSiteURL={ referenceSiteURL }
 						/>

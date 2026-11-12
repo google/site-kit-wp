@@ -534,6 +534,87 @@ class Response_EncoderTest extends TestCase {
 		);
 	}
 
+	public function test_encode__writes_nine_members_for_a_response_without_an_insight_payload() {
+		$response                  = $this->get_fixture_response();
+		$response['insightLocale'] = 'de_DE';
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 9, $encoded, 'A response without `insightPayload` should keep its nine members, even with a locale.' );
+		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_LOCALE, $encoded, 'A response without `insightPayload` should have no insight locale member.' );
+		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_PAYLOAD, $encoded, 'A response without `insightPayload` should have no insight payload member.' );
+	}
+
+	public function test_encode__writes_the_insight_locale_and_the_insight_payload_as_members_9_and_10() {
+		$response                   = $this->get_fixture_response();
+		$response['insightLocale']  = 'de_DE_formal';
+		$response['insightPayload'] = 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl';
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 11, $encoded, 'A response with `insightPayload` should have eleven members.' );
+		// The browser reads the members by their positions, so the positions
+		// are named here rather than read from `Wire_Format`.
+		$this->assertSame( range( 0, 10 ), array_keys( $encoded ), 'The response should stay a list, so it is sent as a JSON array.' );
+		$this->assertSame( 'de_DE_formal', $encoded[9], 'The locale of the insight should be at position 9.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[10], 'The payload should be at position 10.' );
+		$this->assertSame( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 9 should be the locale of the insight, as it is.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 10 should be the payload, as it is.' );
+		$this->assertSame(
+			$this->encode_as_sent( $this->get_fixture_response() ),
+			array_slice( $encoded, 0, 9 ),
+			'The first nine members should be the same as those of the response without the insight members.'
+		);
+		$this->assertNotContains( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_STRINGS ], 'The locale should not be added to the string table.' );
+	}
+
+	public function test_encode__writes_null_as_the_insight_payload_when_there_is_no_insight_to_request() {
+		$response                   = $this->get_fixture_response();
+		$response['insightLocale']  = 'de_DE';
+		$response['insightPayload'] = null;
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 11, $encoded, 'A response with a null `insightPayload` should still have eleven members.' );
+		$this->assertSame( 'de_DE', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 9 should be the locale of the insight.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 10 should be null when there is no insight to request.' );
+	}
+
+	public function test_encode__writes_null_as_the_insight_locale_when_the_response_has_none() {
+		$response                   = $this->get_fixture_response();
+		$response['insightPayload'] = 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl';
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 9 should be null for a response without `insightLocale`.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 10 should be the payload.' );
+	}
+
+	/**
+	 * @dataProvider data_unusable_insight_strings
+	 *
+	 * @param mixed $value A value that is not a non-empty string.
+	 */
+	public function test_encode__writes_null_for_an_insight_member_that_is_not_a_non_empty_string( $value ) {
+		$response                   = $this->get_fixture_response();
+		$response['insightLocale']  = $value;
+		$response['insightPayload'] = $value;
+
+		$encoded = $this->encoder->encode( $response );
+
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'An insight locale that is not a non-empty string should be encoded as null.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'An insight payload that is not a non-empty string should be encoded as null.' );
+	}
+
+	public function data_unusable_insight_strings() {
+		return array(
+			'an empty string' => array( '' ),
+			'a number'        => array( 123 ),
+			'a list'          => array( array( 'payload' ) ),
+			'false'           => array( false ),
+		);
+	}
+
 	/**
 	 * Flattens a nested array into its scalar values.
 	 *

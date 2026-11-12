@@ -35,6 +35,10 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	provideBenchmarkingData,
+	provideBenchmarkingInsight,
+} from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { decodeServiceURL } from '@tests/js/mock-accountChooserURL-utils';
@@ -76,6 +80,12 @@ describe( 'TrafficOverviewFooter', () => {
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.setPropertyID( 'https://example.com/' );
+		// With the `trafficInsights` feature, the footer reads the insight
+		// once the benchmarking response it is generated from has arrived.
+		provideBenchmarkingData(
+			registry,
+			registry.select( CORE_USER ).getDateRangeDates()
+		);
 	} );
 
 	it( 'should render only "Source: Analytics" when the `typicalTraffic` feature flag is off', async () => {
@@ -152,6 +162,11 @@ describe( 'TrafficOverviewFooter', () => {
 	} );
 
 	it( 'should render the AI disclosure, with its link to the AI insights documentation page, before the sources when the `typicalTraffic` and `trafficInsights` feature flags are enabled', async () => {
+		provideBenchmarkingInsight(
+			registry,
+			registry.select( CORE_USER ).getDateRangeDates()
+		);
+
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewFooter />,
 			{
@@ -174,6 +189,29 @@ describe( 'TrafficOverviewFooter', () => {
 		).toHaveAttribute(
 			'href',
 			'https://sitekit.withgoogle.com/support/?doc=ai-insights'
+		);
+	} );
+
+	it( 'should render the sources without the AI disclosure when there is no generated insight to show', async () => {
+		provideBenchmarkingInsight(
+			registry,
+			registry.select( CORE_USER ).getDateRangeDates(),
+			null
+		);
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewFooter />,
+			{
+				registry,
+				features: [ 'typicalTraffic', 'trafficInsights' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent(
+			/^Sources: Analytics Search Console$/
 		);
 	} );
 
@@ -203,6 +241,10 @@ describe( 'TrafficOverviewFooter', () => {
 				MODULE_SLUG_ANALYTICS_4
 			) ]: true,
 		} );
+		provideBenchmarkingInsight(
+			registry,
+			registry.select( CORE_USER ).getDateRangeDates()
+		);
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewFooter />,

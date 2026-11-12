@@ -316,10 +316,9 @@ describe( 'KeyFactors', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should render "No channel changed notably…" in place of the insight and the cards when there are no key factors', () => {
+	it( 'should render "No channel changed notably…" in place of the cards when there are no key factors and no insight', () => {
 		const { container, getByText, queryByRole } = renderKeyFactors( {
 			keyFactors: [],
-			insight: INSIGHT,
 		} );
 
 		expect(
@@ -332,7 +331,78 @@ describe( 'KeyFactors', () => {
 		).not.toBeInTheDocument();
 		expect(
 			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors'
+			)
+		).toHaveClass(
+			'googlesitekit-traffic-overview__key-factors--no-change'
+		);
+	} );
+
+	it( 'should render the insight in place of "No channel changed notably…" when there are no key factors', () => {
+		const { container, queryByText, queryByRole } = renderKeyFactors( {
+			keyFactors: [],
+			insight: INSIGHT,
+		} );
+
+		expect(
+			container.querySelector(
 				'.googlesitekit-traffic-overview__key-factors-insight'
+			)
+		).toHaveTextContent( 'Referral traffic from substack.com is up most' );
+		expect(
+			queryByText(
+				'No channel changed notably compared with the previous 28 days'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			queryByRole( 'heading', { level: 4 } )
+		).not.toBeInTheDocument();
+		// The section keeps the spacing it has without cards.
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors'
+			)
+		).toHaveClass(
+			'googlesitekit-traffic-overview__key-factors--no-change'
+		);
+	} );
+
+	it( 'should render a placeholder for the insight above the cards while the insight loads', () => {
+		const { container } = renderKeyFactors( { insightLoading: true } );
+
+		const placeholder = container.querySelector(
+			'.googlesitekit-traffic-overview__key-factors-insight .googlesitekit-preview-block'
+		);
+
+		expect( placeholder ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__insight-notice-content'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			placeholder?.compareDocumentPosition(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors-cards'
+				) as Node
+			)
+		).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
+	} );
+
+	it( 'should render a placeholder for the insight, and no "No channel changed notably…", while the insight loads without key factors', () => {
+		const { container, queryByText } = renderKeyFactors( {
+			keyFactors: [],
+			insightLoading: true,
+		} );
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors-insight .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		expect(
+			queryByText(
+				'No channel changed notably compared with the previous 28 days'
 			)
 		).not.toBeInTheDocument();
 	} );

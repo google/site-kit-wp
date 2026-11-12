@@ -291,6 +291,12 @@ $traffic-overview-column-gap: 42px;
 
 		.googlesitekit-traffic-overview__key-factors-insight {
 			margin-bottom: 24px;
+
+			// Without cards, the summary ends the section, whose bottom
+			// padding then spaces it from the breakdown, as it does the notice.
+			&:last-child {
+				margin-bottom: 0;
+			}
 		}
 
 		.googlesitekit-traffic-overview__key-factors-cards {

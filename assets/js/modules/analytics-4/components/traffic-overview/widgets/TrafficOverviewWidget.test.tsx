@@ -48,6 +48,7 @@ import {
 	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideBenchmarkingInsight } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util/dates';
@@ -668,8 +669,13 @@ describe( 'TrafficOverviewWidget', () => {
 
 	it( 'should render the AI disclosure and the "Sources: Analytics Search Console" footer on the Traffic overview tab when the `typicalTraffic` and `trafficInsights` feature flags are enabled', async () => {
 		// With the `typicalTraffic` feature, the panel reads the benchmarking
-		// response.
+		// response, and with the `trafficInsights` feature, the insight
+		// generated from it, which the footer discloses.
 		provideBenchmarkingResponse( registry );
+		provideBenchmarkingInsight(
+			registry,
+			registry.select( CORE_USER ).getDateRangeDates()
+		);
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,

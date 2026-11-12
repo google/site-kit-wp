@@ -39,8 +39,9 @@ final class Response_Encoder {
 	 * @since 1.189.0
 	 * @since 1.191.0 Encodes the key factor cards in place of the dimension rows, and reads `visits` in place of `visitors`.
 	 * @since n.e.x.t Encodes the expected range of each day and the first day with recorded traffic.
+	 * @since n.e.x.t Encodes the locale and the signed request of the generated insight when the response has them.
 	 *
-	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `firstTrafficDate` and `keyFactors`. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `firstTrafficDate` is the first day with recorded traffic, as `YYYY-MM-DD`, or null when there is none.
+	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `firstTrafficDate` and `keyFactors`. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `firstTrafficDate` is the first day with recorded traffic, as `YYYY-MM-DD`, or null when there is none. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
 	 * @return array The encoded response.
 	 */
 	public function encode( array $response ) {
@@ -108,7 +109,28 @@ final class Response_Encoder {
 			isset( $response['firstTrafficDate'] ) ? $response['firstTrafficDate'] : null
 		);
 
+		// Only a response built with the `trafficInsights` feature has the
+		// insight members, so a response built without it keeps the members
+		// it had before them, byte for byte.
+		if ( array_key_exists( 'insightPayload', $response ) ) {
+			$encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ]  = $this->encode_optional_string( isset( $response['insightLocale'] ) ? $response['insightLocale'] : null );
+			$encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ] = $this->encode_optional_string( $response['insightPayload'] );
+		}
+
 		return $encoded;
+	}
+
+	/**
+	 * Encodes a string that travels as itself rather than through the string
+	 * table, since no other part of the response repeats it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $value The value to encode.
+	 * @return string|null The value as a string, or null when it is not a non-empty string.
+	 */
+	private function encode_optional_string( $value ) {
+		return is_string( $value ) && '' !== $value ? $value : null;
 	}
 
 	/**

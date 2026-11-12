@@ -24,35 +24,53 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { AIIcon, AIText } from '@/js/modules/analytics-4/components/ai-insight';
 
 export interface KeyFactorsInsightNoticeProps {
 	/** The generated summary of the key factors, where `**` pairs mark the names it highlights. */
-	text: string;
+	text?: string | null;
+	/** Whether the summary is still on its way, which shows the notice's placeholder. */
+	loading?: boolean;
 }
 
 const KeyFactorsInsightNotice: FC< KeyFactorsInsightNoticeProps > = ( {
 	text,
-} ) => (
-	// The notice shares its look, and so its classes, with the Recent activity
-	// tab's insight notice.
-	<div className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__key-factors-insight">
-		<div className="googlesitekit-traffic-overview__insight-notice-content">
-			<div className="googlesitekit-traffic-overview__insight-notice-message">
-				<span className="googlesitekit-traffic-overview__insight-notice-icon">
-					<AIIcon />
-				</span>
-				<P
-					className="googlesitekit-traffic-overview__insight-notice-text"
-					size={ SIZE_MEDIUM }
-				>
-					<AIText text={ text } />
-				</P>
+	loading = false,
+} ) => {
+	if ( loading ) {
+		return (
+			<div className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__key-factors-insight">
+				<PreviewBlock width="100%" height="72px" />
+			</div>
+		);
+	}
+
+	if ( ! text ) {
+		return null;
+	}
+
+	return (
+		// The notice shares its look, and so its classes, with the Recent
+		// activity tab's insight notice.
+		<div className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__key-factors-insight">
+			<div className="googlesitekit-traffic-overview__insight-notice-content">
+				<div className="googlesitekit-traffic-overview__insight-notice-message">
+					<span className="googlesitekit-traffic-overview__insight-notice-icon">
+						<AIIcon />
+					</span>
+					<P
+						className="googlesitekit-traffic-overview__insight-notice-text"
+						size={ SIZE_MEDIUM }
+					>
+						<AIText text={ text } />
+					</P>
+				</div>
 			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 export default KeyFactorsInsightNotice;

@@ -51,8 +51,10 @@ export interface KeyFactorsProps {
 	daysInSelectedRange: number;
 	/** Whether the key factors have arrived. */
 	loaded?: boolean;
-	/** The generated summary of the cards, where `**` pairs mark the names it highlights. */
-	insight?: string;
+	/** The generated summary of the change, where `**` pairs mark the names it highlights. */
+	insight?: string | null;
+	/** Whether the generated summary is still on its way, which shows its placeholder. */
+	insightLoading?: boolean;
 	/** The site's URL, which a landing page's path links to. */
 	referenceSiteURL?: string;
 }
@@ -62,6 +64,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 	daysInSelectedRange,
 	loaded = true,
 	insight,
+	insightLoading = false,
 	referenceSiteURL,
 } ) => {
 	// `useInstanceId` is typed as `string | number`, so it is read as a string
@@ -81,10 +84,12 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 		} => !! keyFactor.label
 	);
 
-	const hasNoChange = loaded && cards.length === 0;
+	const hasNoCards = loaded && cards.length === 0;
 	// The summary comes apart from the cards, so it can show above their
-	// placeholders. Without cards, the notice takes its place.
-	const showInsight = !! insight && ! hasNoChange;
+	// placeholders, and it describes the change on its own where there are no
+	// cards. Without a summary, the notice takes the place of the cards.
+	const showInsight = insightLoading || !! insight;
+	const hasNoChange = hasNoCards && ! showInsight;
 
 	const tooltipContent = createInterpolateElement(
 		__(
@@ -103,7 +108,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 				'googlesitekit-traffic-overview__key-factors',
 				{
 					'googlesitekit-traffic-overview__key-factors--no-change':
-						hasNoChange,
+						hasNoCards,
 				}
 			) }
 			aria-labelledby={ headingID }
@@ -147,7 +152,12 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 					) }
 				/>
 			) }
-			{ showInsight && <KeyFactorsInsightNotice text={ insight } /> }
+			{ showInsight && (
+				<KeyFactorsInsightNotice
+					text={ insight }
+					loading={ insightLoading }
+				/>
+			) }
 			{ ! loaded && (
 				<div className="googlesitekit-traffic-overview__key-factors-cards">
 					{ Array.from( { length: KEY_FACTORS_MAX_CARDS } ).map(

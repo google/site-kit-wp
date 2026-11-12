@@ -24,33 +24,53 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { AIIcon, AIText } from '@/js/modules/analytics-4/components/ai-insight';
 
 export interface TrafficInsightNoticeProps {
 	/** The generated sentence that compares the site's traffic with its typical range, where `**` pairs mark the names it highlights. */
-	text: string;
+	text?: string | null;
+	/** Whether the sentence is still on its way, which shows the notice's placeholder. */
+	loading?: boolean;
 }
 
-const TrafficInsightNotice: FC< TrafficInsightNoticeProps > = ( { text } ) => (
-	// The notice shares its look, and so its classes, with the widget's other
-	// insight notices.
-	<div className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__traffic-insight">
-		<div className="googlesitekit-traffic-overview__insight-notice-content">
-			<div className="googlesitekit-traffic-overview__insight-notice-message">
-				<span className="googlesitekit-traffic-overview__insight-notice-icon">
-					<AIIcon />
-				</span>
-				<P
-					className="googlesitekit-traffic-overview__insight-notice-text"
-					size={ SIZE_MEDIUM }
-				>
-					<AIText text={ text } />
-				</P>
+const TrafficInsightNotice: FC< TrafficInsightNoticeProps > = ( {
+	text,
+	loading = false,
+} ) => {
+	if ( loading ) {
+		return (
+			<div className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__traffic-insight">
+				<PreviewBlock width="100%" height="72px" />
+			</div>
+		);
+	}
+
+	if ( ! text ) {
+		return null;
+	}
+
+	return (
+		// The notice shares its look, and so its classes, with the widget's
+		// other insight notices.
+		<div className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__traffic-insight">
+			<div className="googlesitekit-traffic-overview__insight-notice-content">
+				<div className="googlesitekit-traffic-overview__insight-notice-message">
+					<span className="googlesitekit-traffic-overview__insight-notice-icon">
+						<AIIcon />
+					</span>
+					<P
+						className="googlesitekit-traffic-overview__insight-notice-text"
+						size={ SIZE_MEDIUM }
+					>
+						<AIText text={ text } />
+					</P>
+				</div>
 			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 export default TrafficInsightNotice;

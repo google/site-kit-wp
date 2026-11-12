@@ -213,9 +213,55 @@ describe( 'decodeBenchmarkingResponse', () => {
 			'a response of ten members',
 			[ ...( benchmarkingData as unknown[] ), [] ],
 		],
+		[
+			'a response of twelve members',
+			[ ...( benchmarkingData as unknown[] ), 'en_US', 'payload', null ],
+		],
 	] )( 'decodes %s to null', ( _label, encoded ) => {
 		expect( decodeBenchmarkingResponse( encoded ) ).toBeNull();
 	} );
+
+	it( 'should decode the locale and the request of the generated insight from a response of eleven members', () => {
+		const decoded = decodeBenchmarkingResponse( [
+			...( benchmarkingData as unknown[] ),
+			'de_DE_formal',
+			'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl',
+		] );
+
+		expect( decoded ).toEqual( {
+			...decodeBenchmarkingResponse( benchmarkingData ),
+			insightLocale: 'de_DE_formal',
+			insightPayload: 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl',
+		} );
+	} );
+
+	it( 'should leave out the locale and the request of the generated insight from a response of nine members', () => {
+		const decoded = decodeBenchmarkingResponse( benchmarkingData );
+
+		expect( decoded ).not.toHaveProperty( 'insightLocale' );
+		expect( decoded ).not.toHaveProperty( 'insightPayload' );
+	} );
+
+	it.each( [
+		[ 'null', null, null ],
+		[ 'empty strings', '', '' ],
+		[ 'not strings', 3, [ 'payload' ] ],
+	] )(
+		'should decode the locale and the request of the generated insight to null, and keep the rest of the response, when they are %s',
+		( _label, locale, payload ) => {
+			const decoded = decodeBenchmarkingResponse( [
+				...( benchmarkingData as unknown[] ),
+				locale,
+				payload,
+			] );
+
+			expect( decoded ).toEqual( {
+				...decodeBenchmarkingResponse( benchmarkingData ),
+				insightLocale: null,
+				insightPayload: null,
+			} );
+		}
+	);
 
 	it( "should decode the encoder's output for an empty series without throwing", () => {
 		// What Response_Encoder writes when `dailyTraffic` is empty: no first

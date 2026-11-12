@@ -1,0 +1,13 @@
+{
+  "name": "days_000",
+  "description": "No history: no baseline.",
+  "start_date": "2024-03-04",
+  "target_date": "2024-03-04",
+  "days_in_period": 28,
+  "daily_visits": [],
+  "expected": {
+    "baseline": null,
+    "last_year": null,
+    "model": null
+  }
+}

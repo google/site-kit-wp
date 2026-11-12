@@ -85,4 +85,33 @@ export interface DecodedBenchmarkingResponse {
 	firstTrafficDate: string | null;
 	/** The key factor cards, in the order the response ranked them. */
 	keyFactors: BenchmarkingKeyFactor[];
+	/**
+	 * The locale the generated insight is written in, such as `de_DE`, or null.
+	 * Only a response of the `trafficInsights` feature has it.
+	 */
+	insightLocale?: string | null;
+	/**
+	 * The signed request the generated insight is written from, which the
+	 * browser sends back unread, or null when there is no insight to request.
+	 * Only a response of the `trafficInsights` feature has it.
+	 */
+	insightPayload?: string | null;
+}
+
+export interface BenchmarkingInsight {
+	/**
+	 * The service's label for the period, such as `ABOVE_EXPECTED.UP`. The set
+	 * of labels is open, so a label may be one the plugin doesn't know.
+	 */
+	scenario: string | null;
+	/** One sentence on how the period compares with what is usual for the site, or null when the service wrote none. */
+	teaser: string | null;
+	/** The period's visits, and how they compare with what is usual for the site. */
+	analysis: string | null;
+	/** The change against the previous period and what carried it, where `**` pairs mark the names it highlights. */
+	driver: string | null;
+	/** The ID of the generation, which a vote on the insight names. */
+	interactionID: string | null;
+	/** The model that wrote the insight. */
+	modelVersion: string | null;
 }

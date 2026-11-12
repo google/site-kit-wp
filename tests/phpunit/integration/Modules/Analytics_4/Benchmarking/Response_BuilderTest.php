@@ -618,7 +618,7 @@ class Response_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build__asks_for_the_sessions_of_each_day_from_364_days_before_the_start_date() {
+	public function test_build__asks_for_the_sessions_of_each_day_from_364_days_before_the_compare_period() {
 		$this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$daily_report_request = $this->batch_requests[0]['requests'][0];
@@ -633,13 +633,188 @@ class Response_BuilderTest extends TestCase {
 		$this->assertEquals(
 			array(
 				array(
-					'startDate' => '2025-08-20',
+					'startDate' => '2025-07-23',
 					'endDate'   => '2026-09-15',
 				),
 			),
 			$daily_report_request['dateRanges'],
-			'The daily report should run from `2025-08-20`, 364 days before `2026-08-19`, to `2026-09-15`.'
+			'The daily report should run from `2025-07-23`, 364 days before the compare period starts on `2026-07-22`, to `2026-09-15`, so it covers last year\'s two periods.'
 		);
+	}
+
+	public function test_build__returns_no_insight_request_without_the_traffic_insights_feature() {
+		$this->provide_reports_for_every_dimension();
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array( 'visits', 'dailyTraffic', 'firstTrafficDate', 'dimensions', 'contextualData' ),
+			array_keys( $response ),
+			'Without the `trafficInsights` feature, the response should have no `insightRequest`.'
+		);
+	}
+
+	public function test_build__returns_the_insight_request_built_from_every_row_with_the_traffic_insights_feature() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->provide_reports_for_every_dimension();
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$pair = fn( $current, $previous ) => array(
+			'current'  => $current,
+			'previous' => $previous,
+		);
+
+		// The site recorded its first visits on `2026-08-18`, 29 days before the
+		// end date, which is too little history for an expected range and leaves
+		// last year's periods out. The request lists all seven referrers, where
+		// the response's rows keep the five highest scoring.
+		$this->assertSame(
+			array(
+				'end_date'        => '2026-09-15',
+				'days_in_period'  => 28,
+				'visits'          => array(
+					'current_period'  => 412,
+					'previous_period' => 388,
+				),
+				'history_days'    => 29,
+				'contextual_data' => array(
+					'traffic_channel_surges'  => array(
+						array(
+							'channel'  => 'Organic Search',
+							'sessions' => $pair( 210, 168 ),
+						),
+						array(
+							'channel'  => 'Direct',
+							'sessions' => $pair( 118, 137 ),
+						),
+						array(
+							'channel'  => 'Referral',
+							'sessions' => $pair( 47, 0 ),
+						),
+						array(
+							'channel'  => 'Email',
+							'sessions' => $pair( 42, 40 ),
+						),
+						array(
+							'channel'  => 'Affiliates',
+							'sessions' => $pair( 30, 10 ),
+						),
+						array(
+							'channel'  => 'Display',
+							'sessions' => $pair( 30, 10 ),
+						),
+					),
+					'device_shifts'           => array(
+						array(
+							'device'   => 'mobile',
+							'sessions' => $pair( 240, 200 ),
+						),
+					),
+					'user_mix_shifts'         => array(
+						array(
+							'segment'  => 'new',
+							'sessions' => $pair( 240, 200 ),
+						),
+					),
+					'referrers'               => array_map(
+						fn( $label, $current ) => array(
+							'referrer' => $label,
+							'sessions' => $pair( $current, 20 ),
+						),
+						array( 'a.example.com', 'b.example.com', 'c.example.com', 'd.example.com', 'e.example.com', 'f.example.com', 'g.example.com' ),
+						array( 80, 70, 60, 50, 45, 40, 35 )
+					),
+					'recent_content_momentum' => array(
+						array(
+							'url'                => '/a-post/',
+							'title'              => 'A post',
+							'published_days_ago' => 14,
+							'sessions'           => 30,
+						),
+						array(
+							'url'                => '/b-post/',
+							'title'              => 'B post',
+							'published_days_ago' => 14,
+							'sessions'           => 30,
+						),
+					),
+				),
+			),
+			$response['insightRequest'],
+			'With the `trafficInsights` feature, the response should carry the insight request, built from the daily series and from every row of the reports before they are ranked.'
+		);
+		$this->assertCount( 5, $response['contextualData']['referrers'], 'The response itself should still keep the five highest scoring referrers.' );
+	}
+
+	public function test_build__builds_the_insight_request_from_the_rows_a_contextual_data_callback_adds() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->report_rows = array(
+			'date' => array(
+				array( '20260818', 388 ),
+				array( '20260915', 412 ),
+			),
+		);
+
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$contextual_data['searchQueries'] = array_map(
+					fn( $n ) => array(
+						'label'            => "query $n",
+						'current'          => 100 + $n,
+						'previous'         => 100,
+						'positionCurrent'  => 2.5,
+						'positionPrevious' => null,
+					),
+					range( 1, 12 )
+				);
+
+				return $contextual_data;
+			}
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array_map( fn( $n ) => "query $n", range( 12, 3 ) ),
+			array_column( $response['insightRequest']['contextual_data']['search_query_shifts'], 'query' ),
+			'The insight request should list the 10 search queries a callback added that moved most.'
+		);
+		$this->assertSame(
+			array(
+				'current'  => 2.5,
+				'previous' => 0.0,
+			),
+			$response['insightRequest']['contextual_data']['search_query_shifts'][0]['position'],
+			'A search query should carry its positions, with `0.0` for a period it was not reported in.'
+		);
+	}
+
+	public function test_build__returns_a_null_insight_request_for_a_period_shorter_than_7_days() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->provide_reports_for_every_dimension();
+
+		$response = $this->builder->build( '2026-09-15', '2026-09-15' );
+
+		$this->assertArrayHasKey( 'insightRequest', $response, 'With the `trafficInsights` feature, the response should always have `insightRequest`.' );
+		$this->assertNull( $response['insightRequest'], 'A one-day period should have no insight request.' );
+	}
+
+	public function test_build__returns_a_null_insight_request_when_neither_period_has_a_visit() {
+		$this->enable_feature( 'trafficInsights' );
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				'current'  => 0,
+				'previous' => 0,
+			),
+			$response['visits'],
+			'Without any row in the daily report, neither period should have a visit.'
+		);
+		$this->assertNull( $response['insightRequest'], 'Two periods without a visit should have no insight request.' );
 	}
 
 	public function test_build__gives_every_day_of_a_steady_year_the_same_expected_range() {

@@ -33,11 +33,13 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
+import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
 	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/factors/placeholderKeyFactors';
 import { getFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import {
 	FRESH_DATA_FETCH_OPTIONS,
@@ -63,6 +65,10 @@ import {
 	provideSiteVisitorsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	benchmarkingInsight,
+	provideBenchmarkingInsight,
+} from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -304,7 +310,21 @@ export const TypicalTrafficWithInsights = Template.bind(
 TypicalTrafficWithInsights.storyName =
 	'Typical Traffic With Insights (typicalTraffic and trafficInsights enabled)';
 TypicalTrafficWithInsights.args = {
-	...TypicalTraffic.args,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		TypicalTraffic.args?.setupRegistry?.( registry );
+		// With the `trafficInsights` feature, the panel shows the insight
+		// generated from the benchmarking response, here with the sentences
+		// of the design.
+		provideBenchmarkingInsight(
+			registry,
+			registry.select( CORE_USER ).getDateRangeDates(),
+			{
+				...benchmarkingInsight,
+				analysis: PLACEHOLDER_TRAFFIC_INSIGHT,
+				driver: PLACEHOLDER_KEY_FACTORS_INSIGHT,
+			}
+		);
+	},
 };
 TypicalTrafficWithInsights.parameters = {
 	features: [ 'typicalTraffic', 'trafficInsights' ],

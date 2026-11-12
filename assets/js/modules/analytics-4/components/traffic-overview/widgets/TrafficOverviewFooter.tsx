@@ -36,6 +36,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import AIDisclosure from '@/js/modules/analytics-4/components/ai-insight/AIDisclosure';
 import SourcesLinks from '@/js/modules/analytics-4/components/traffic-overview/components/SourcesLinks';
+import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
 import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
 import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
 
@@ -43,6 +44,10 @@ const TrafficOverviewFooter: FC = () => {
 	const { isAvailable: hasKeyFactors, isShown: showKeyFactors } =
 		useKeyFactorsVisibility();
 	const trafficInsightsEnabled = useFeature( 'trafficInsights' );
+
+	const { insight } = useBenchmarkingInsight( {
+		isEnabled: showKeyFactors && trafficInsightsEnabled,
+	} );
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
 		( select: Select ) =>
@@ -56,11 +61,11 @@ const TrafficOverviewFooter: FC = () => {
 	}
 
 	// The key factors' search keywords come from Search Console, so the footer
-	// names it too. The disclosure covers their generated summary, so it shows
-	// only while the panel shows them.
+	// names it too. The disclosure covers the generated insight, so it shows
+	// only while the panel shows one.
 	return (
 		<div className="googlesitekit-traffic-overview__footer">
-			{ showKeyFactors && trafficInsightsEnabled && (
+			{ !! insight && (
 				<AIDisclosure>
 					{ createInterpolateElement(
 						__(

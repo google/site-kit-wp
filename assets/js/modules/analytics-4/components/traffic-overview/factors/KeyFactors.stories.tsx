@@ -143,13 +143,14 @@ WithoutInsight.args = {
 	keyFactors: KEY_FACTORS,
 };
 
+// `NoNotableChange` has no insight: a summary would take the place of the
+// notice the story shows.
 export const NoNotableChange = Template.bind(
 	{}
 ) as Story< KeyFactorsStoryProps >;
 NoNotableChange.storyName = 'No Notable Change';
 NoNotableChange.args = {
 	keyFactors: [],
-	insight: PLACEHOLDER_KEY_FACTORS_INSIGHT,
 };
 NoNotableChange.scenario = {};
 

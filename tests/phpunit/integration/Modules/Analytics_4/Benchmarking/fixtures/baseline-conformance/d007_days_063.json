@@ -1,0 +1,119 @@
+{
+  "name": "d007_days_063",
+  "description": "d = 7, 63 days: the first day with a range (two 28-day reference blocks, one miss).",
+  "start_date": "2024-03-04",
+  "target_date": "2024-05-05",
+  "days_in_period": 7,
+  "daily_visits": [
+    93,
+    90,
+    95,
+    96,
+    87,
+    59,
+    51,
+    107,
+    98,
+    89,
+    101,
+    103,
+    61,
+    61,
+    106,
+    112,
+    94,
+    102,
+    105,
+    60,
+    54,
+    108,
+    98,
+    110,
+    100,
+    103,
+    58,
+    54,
+    107,
+    98,
+    91,
+    95,
+    101,
+    53,
+    61,
+    103,
+    86,
+    94,
+    109,
+    107,
+    49,
+    59,
+    108,
+    91,
+    112,
+    98,
+    97,
+    62,
+    53,
+    103,
+    92,
+    94,
+    96,
+    112,
+    49,
+    58,
+    98,
+    90,
+    96,
+    97,
+    86,
+    52,
+    62
+  ],
+  "expected": {
+    "baseline": {
+      "expected_range_min": 355,
+      "expected_range_max": 869
+    },
+    "last_year": null,
+    "model": {
+      "center": 611.625,
+      "margin": 256.98321980346964,
+      "block_center": 2446.5,
+      "period_weight": 7,
+      "filtered_days": [],
+      "block_totals": [
+        2455,
+        2438
+      ],
+      "cleaned_block_totals": [
+        2455,
+        2438
+      ],
+      "ratios": [
+        0.9930753564154786
+      ],
+      "width_ratios": [
+        0.9930753564154786
+      ],
+      "level": 2446.5,
+      "alignment_drifts": [
+        1
+      ],
+      "alignment_centers": [
+        2446.5
+      ],
+      "alignment_margins": [
+        256.98321980346964
+      ],
+      "dow_factors_sunday_first": [
+        0.68068669527897,
+        1.1751072961373392,
+        1.084978540772532,
+        1.1030042918454936,
+        1.1261802575107298,
+        1.149356223175966,
+        0.68068669527897
+      ]
+    }
+  }
+}

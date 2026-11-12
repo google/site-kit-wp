@@ -33,6 +33,8 @@ import {
 	MEMBER_DAILY_VISITS,
 	MEMBER_FIRST_DATE,
 	MEMBER_FIRST_TRAFFIC_DAY_OFFSET,
+	MEMBER_INSIGHT_LOCALE,
+	MEMBER_INSIGHT_PAYLOAD,
 	MEMBER_KEY_FACTORS,
 	MEMBER_KEY_FACTOR_ATTRIBUTES,
 	MEMBER_STRINGS,
@@ -46,7 +48,11 @@ import {
 	DecodedBenchmarkingResponse,
 } from './types';
 
+/** The members of a response built without the `trafficInsights` feature. */
 const MEMBER_COUNT = 9;
+
+/** The members of a response built with the `trafficInsights` feature, which adds the insight's locale and request. */
+const MEMBER_COUNT_WITH_INSIGHT = 11;
 
 /** A day's expected range, as `[ expectedMin, expectedMax ]`, or null on a day without one. */
 type EncodedExpectedRange = [ number, number ] | null;
@@ -269,11 +275,28 @@ function dailyMembersHoldTheirShapes( encoded: unknown[] ): boolean {
 }
 
 /**
+ * Reads a string member that travels as itself.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value The member's value.
+ * @return {string|null} The string, or null when the value is not a non-empty string.
+ */
+function readOptionalString( value: unknown ): string | null {
+	return typeof value === 'string' && value !== '' ? value : null;
+}
+
+/**
  * Decodes an encoded benchmarking response.
+ *
+ * A response of the `trafficInsights` feature has two more members, the
+ * insight's locale and request. A response with any other number of members
+ * cannot be read.
  *
  * @since 1.189.0
  * @since 1.191.0 Decodes the key factor cards in place of the dimension rows, and returns `visits` in place of `visitors`.
  * @since n.e.x.t Decodes the expected range of each day and the first day with recorded traffic.
+ * @since n.e.x.t Decodes the locale and the request of the generated insight of a response that has them.
  *
  * @param {*} encoded The encoded response.
  * @return {Object|null} The decoded response, or null when it cannot be read.
@@ -283,7 +306,8 @@ export function decodeBenchmarkingResponse(
 ): DecodedBenchmarkingResponse | null {
 	if (
 		! Array.isArray( encoded ) ||
-		encoded.length !== MEMBER_COUNT ||
+		( encoded.length !== MEMBER_COUNT &&
+			encoded.length !== MEMBER_COUNT_WITH_INSIGHT ) ||
 		encoded[ MEMBER_VERSION ] !== BENCHMARKING_FORMAT_VERSION
 	) {
 		return null;
@@ -317,7 +341,7 @@ export function decodeBenchmarkingResponse(
 	const strings = encoded[ MEMBER_STRINGS ] as string[];
 	const [ current, previous ] = visitTotals as number[];
 
-	return {
+	const decodedResponse: DecodedBenchmarkingResponse = {
 		visits: { current, previous },
 		dailyTraffic: decodeDailyTraffic(
 			firstDate,
@@ -334,4 +358,17 @@ export function decodeBenchmarkingResponse(
 			strings
 		),
 	};
+
+	// The figures never depend on the insight, so an insight member that
+	// cannot be read means no insight rather than an unusable response.
+	if ( encoded.length === MEMBER_COUNT_WITH_INSIGHT ) {
+		decodedResponse.insightLocale = readOptionalString(
+			encoded[ MEMBER_INSIGHT_LOCALE ]
+		);
+		decodedResponse.insightPayload = readOptionalString(
+			encoded[ MEMBER_INSIGHT_PAYLOAD ]
+		);
+	}
+
+	return decodedResponse;
 }

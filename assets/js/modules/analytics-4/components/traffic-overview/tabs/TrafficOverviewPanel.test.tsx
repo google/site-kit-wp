@@ -34,7 +34,6 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	createBenchmarkingResponse,
@@ -42,6 +41,10 @@ import {
 	provideBenchmarkingResponse,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	benchmarkingInsight,
+	provideBenchmarkingInsight,
+} from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -1021,6 +1024,11 @@ describe( 'TrafficOverviewPanel', () => {
 		] )(
 			'should render the summary above the key factor cards only %s the trafficInsights feature',
 			async ( _, features, hasInsight ) => {
+				provideBenchmarkingInsight(
+					registry,
+					registry.select( CORE_USER ).getDateRangeDates()
+				);
+
 				const { container, waitForRegistry } = render(
 					<TrafficOverviewPanel />,
 					{
@@ -1371,6 +1379,11 @@ describe( 'TrafficOverviewPanel', () => {
 	describe( 'traffic insight', () => {
 		const trafficInsightSelector =
 			'.googlesitekit-traffic-overview__traffic-insight';
+		const keyFactorsInsightSelector =
+			'.googlesitekit-traffic-overview__key-factors-insight';
+		const insightEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-insight'
+		);
 
 		beforeEach( () => {
 			// With the typicalTraffic feature, the panel waits for the
@@ -1378,7 +1391,32 @@ describe( 'TrafficOverviewPanel', () => {
 			provideBenchmarkingResponse( registry );
 		} );
 
+		/**
+		 * Stores a benchmarking response for the selected date range that
+		 * carries the request of the generated insight.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {void}
+		 */
+		function provideBenchmarkingResponseWithInsightRequest() {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			provideBenchmarkingResponse( registry, {
+				...createBenchmarkingResponse( startDate, endDate ),
+				insightLocale: 'en_US',
+				insightPayload: 'signed-payload',
+			} );
+		}
+
 		it( 'should render the traffic insight above the visitor figures on the main dashboard', async () => {
+			provideBenchmarkingInsight(
+				registry,
+				registry.select( CORE_USER ).getDateRangeDates()
+			);
+
 			const { container, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
 				{
@@ -1402,9 +1440,149 @@ describe( 'TrafficOverviewPanel', () => {
 				'googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__traffic-insight',
 				'googlesitekit-traffic-overview__total-visitors',
 			] );
+			// The analysis compares the period with the site's typical range.
 			expect(
 				container.querySelector( trafficInsightSelector )
-			).toHaveTextContent( PLACEHOLDER_TRAFFIC_INSIGHT );
+			).toHaveTextContent(
+				'Over the last 28 days, your site had 1,740 visits, about 12% above what is usual for it.'
+			);
+		} );
+
+		it( 'should render the driver of the insight above the key factor cards', async () => {
+			provideBenchmarkingInsight(
+				registry,
+				registry.select( CORE_USER ).getDateRangeDates()
+			);
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( keyFactorsInsightSelector )
+			).toHaveTextContent(
+				'Visits rose 18% (+265 visits) compared to the previous 28 days, led by Organic Search (+190 visits).'
+			);
+			expect(
+				container.querySelector(
+					`${ keyFactorsInsightSelector } strong`
+				)
+			).toHaveTextContent( 'Organic Search' );
+		} );
+
+		it( 'should render placeholders in place of the analysis and the driver while the insight loads', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getBenchmarkingInsight', [
+					startDate,
+					endDate,
+				] );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector(
+					`${ trafficInsightSelector } .googlesitekit-preview-block`
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					`${ keyFactorsInsightSelector } .googlesitekit-preview-block`
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__insight-notice-content'
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should ask for the insight with the request of the benchmarking response, and render it once it arrives', async () => {
+			provideBenchmarkingResponseWithInsightRequest();
+			fetchMock.postOnce( insightEndpoint, {
+				body: { insight: benchmarkingInsight },
+			} );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'POST',
+				body: { data: { payload: 'signed-payload' } },
+			} );
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).toHaveTextContent( 'your site had 1,740 visits' );
+			expect(
+				container.querySelector( keyFactorsInsightSelector )
+			).toHaveTextContent( 'Visits rose 18% (+265 visits)' );
+		} );
+
+		it( 'should render the figures without the insight when the request for it fails', async () => {
+			provideBenchmarkingResponseWithInsightRequest();
+			fetchMock.postOnce( insightEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( console ).toHaveErrored();
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector( keyFactorsInsightSelector )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector( '.googlesitekit-report-error' )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factor'
+				).length
+			).toBeGreaterThan( 0 );
 		} );
 
 		it.each( [

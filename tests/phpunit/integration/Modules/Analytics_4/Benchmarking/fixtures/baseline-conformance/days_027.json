@@ -1,0 +1,41 @@
+{
+  "name": "days_027",
+  "description": "27 days: no baseline.",
+  "start_date": "2024-03-04",
+  "target_date": "2024-03-30",
+  "days_in_period": 28,
+  "daily_visits": [
+    90,
+    93,
+    87,
+    89,
+    103,
+    62,
+    54,
+    91,
+    91,
+    89,
+    104,
+    111,
+    53,
+    53,
+    104,
+    112,
+    98,
+    85,
+    101,
+    62,
+    55,
+    90,
+    102,
+    99,
+    101,
+    113,
+    59
+  ],
+  "expected": {
+    "baseline": null,
+    "last_year": null,
+    "model": null
+  }
+}

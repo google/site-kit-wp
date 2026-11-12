@@ -37,4 +37,31 @@ describe( 'TrafficInsightNotice', () => {
 		);
 		expect( getByText( 'substack.com' ).tagName ).toBe( 'STRONG' );
 	} );
+
+	it( 'should render a placeholder in place of the insight while it loads', () => {
+		const { container } = render(
+			<TrafficInsightNotice
+				text="Your traffic is within your typical range"
+				loading
+			/>
+		);
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__traffic-insight .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		expect( container ).not.toHaveTextContent(
+			'Your traffic is within your typical range'
+		);
+	} );
+
+	it.each( [
+		[ 'null', null ],
+		[ 'an empty string', '' ],
+	] )( 'should render nothing when the insight is %s', ( _, text ) => {
+		const { container } = render( <TrafficInsightNotice text={ text } /> );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
 } );
