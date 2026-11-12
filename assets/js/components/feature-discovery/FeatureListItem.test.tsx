@@ -32,6 +32,7 @@ import { lazy } from '@wordpress/element';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { FeatureSetup } from '@/js/googlesitekit/datastore/feature-discovery/types';
@@ -39,6 +40,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
@@ -219,6 +221,10 @@ describe( 'FeatureListItem', () => {
 		provideModules( registry, [
 			{ slug: 'test-module', name: 'Test module', active: false },
 		] );
+		fetchMock.get(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+			{ body: [ { slug: 'test-module', active: true, connected: true } ] }
+		);
 
 		provideFeatures( registry, [
 			{
@@ -411,5 +417,95 @@ describe( 'FeatureListItem', () => {
 		expect(
 			getByRole( 'button', { name: 'Set up now' } )
 		).toBeInTheDocument();
+	} );
+
+	describe( 'success notice', () => {
+		const CONNECTED_KEY = 'test-feature-connected';
+
+		function setupRegistryWithSucceedingFeature() {
+			const registry = createTestRegistry();
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+			registry
+				.dispatch( CORE_USER )
+				.receiveInitialSiteKitVersion( '1.186.0' );
+
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					title: 'Analytics',
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						ctaLabel: 'Set up now',
+						isEnabled: ( select ) =>
+							select( CORE_UI ).getValue( CONNECTED_KEY ) ===
+							true,
+					},
+					successNotice: { title: 'Success! Analytics is set up' },
+				},
+			] );
+
+			return registry;
+		}
+
+		it( 'should render the feature card while the feature is not connected', () => {
+			const registry = setupRegistryWithSucceedingFeature();
+
+			const { getByRole, queryByText } = render(
+				<FeatureListItem slug="test-feature" hideUnreadDot />,
+				{ registry }
+			);
+
+			expect(
+				getByRole( 'button', { name: 'Set up now' } )
+			).toBeInTheDocument();
+			expect(
+				queryByText( 'Success! Analytics is set up' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render the success notice in place of the card once the feature is connected', () => {
+			const registry = setupRegistryWithSucceedingFeature();
+
+			const { getByText, queryByRole } = render(
+				<FeatureListItem slug="test-feature" hideUnreadDot />,
+				{ registry }
+			);
+
+			act( () => {
+				registry.dispatch( CORE_UI ).setValue( CONNECTED_KEY, true );
+			} );
+
+			expect(
+				getByText( 'Success! Analytics is set up' )
+			).toBeInTheDocument();
+			expect(
+				queryByRole( 'button', { name: 'Set up now' } )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should clear the feature from the succeeded features when the notice is dismissed', () => {
+			const registry = setupRegistryWithSucceedingFeature();
+
+			registry.dispatch( CORE_UI ).setValues( {
+				[ CONNECTED_KEY ]: true,
+				[ SUCCEEDED_FEATURES_UI_KEY ]: [
+					'other-feature',
+					'test-feature',
+				],
+			} );
+
+			const { getByRole } = render(
+				<FeatureListItem slug="test-feature" hideUnreadDot />,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+			expect(
+				registry.select( CORE_UI ).getValue( SUCCEEDED_FEATURES_UI_KEY )
+			).toEqual( [ 'other-feature' ] );
+		} );
 	} );
 } );

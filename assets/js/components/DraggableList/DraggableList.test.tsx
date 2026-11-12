@@ -109,11 +109,7 @@ function setup(
 		view.rerender( <DraggableList { ...props } /> );
 	}
 
-	function dragEvent(
-		sourceIndex: number,
-		targetIndex: number,
-		edge: 'top' | 'bottom' = 'bottom'
-	) {
+	function dragEvent( sourceIndex: number, targetIndex: number ) {
 		const rows = within( view.container ).getAllByRole( 'listitem' );
 
 		const registration = mockDraggable.mock.calls.find(
@@ -131,7 +127,7 @@ function setup(
 			itemID: props.items[ targetIndex ].id,
 		};
 
-		return createDragEvent( sourceData, targetData, edge );
+		return createDragEvent( sourceData, targetData );
 	}
 
 	const monitor =
@@ -298,21 +294,19 @@ describe( 'DraggableList', () => {
 			label: 'after the destination row when moving downward',
 			source: 0,
 			target: 2,
-			edge: 'bottom' as const,
 			placement: 'after',
 		},
 		{
 			label: 'before the destination row when moving upward',
 			source: 2,
 			target: 0,
-			edge: 'top' as const,
 			placement: 'before',
 		},
 	] )(
 		'should show the insertion line $label',
-		( { source, target, edge, placement } ) => {
+		( { source, target, placement } ) => {
 			const view = setup();
-			const event = view.dragEvent( source, target, edge );
+			const event = view.dragEvent( source, target );
 
 			act( () => {
 				view.monitor.onDragStart!( event );

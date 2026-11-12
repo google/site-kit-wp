@@ -238,7 +238,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Sanitizes the express setup settings.
 	 *
 	 * @since 1.185.0
-	 * @since n.e.x.t Keeps only `configuredCTAs` entries that are arrays with string `type`, `state` and `displayName` values.
+	 * @since 1.192.0 Keeps only `configuredCTAs` entries that are arrays with string `type`, `state` and `displayName` values.
 	 *
 	 * @param array $option Settings array.
 	 * @return array Sanitized settings array.

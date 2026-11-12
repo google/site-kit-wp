@@ -726,7 +726,7 @@ const baseSelectors = {
 	 * Indicates whether the sharing settings have updated from default.
 	 *
 	 * @since 1.85.0
-	 * @since n.e.x.t Also checks the settings when there are no shared ownership modules.
+	 * @since 1.192.0 Also checks the settings when there are no shared ownership modules.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the sharing settings have updated, false otherwise.

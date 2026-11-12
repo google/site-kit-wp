@@ -45,7 +45,7 @@ interface PendingFocus {
 /**
  * Manages input refs and focus after a controlled Repeater accepts item changes.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Array} itemIDs Current ordered item IDs.
  * @return {Object} Input ref getter, Add button ref, and focus request functions.

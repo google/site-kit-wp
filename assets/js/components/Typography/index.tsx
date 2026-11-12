@@ -20,6 +20,11 @@
 import classnames from 'classnames';
 
 /**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { TypographySize, TypographyType } from './constants';
@@ -47,30 +52,44 @@ export type TypographyProps< E extends React.ElementType > = {
 } & TypographyOwnProps &
 	Omit< PropsOf< E >, keyof TypographyOwnProps | 'as' | 'asType' | 'asSize' >;
 
-function Typography< E extends React.ElementType = typeof DEFAULT_TAG_NAME >( {
-	as,
-	asType,
-	asSize,
-	className,
-	size,
-	type,
-	...props
-}: TypographyProps< E > ) {
-	const Component = as || DEFAULT_TAG_NAME;
+type TypographyComponent = <
+	E extends React.ElementType = typeof DEFAULT_TAG_NAME
+>(
+	props: TypographyProps< E > & {
+		ref?: React.ComponentPropsWithRef< E >[ 'ref' ];
+	}
+) => React.ReactElement | null;
 
-	return (
-		<Component
-			className={ classnames(
-				'googlesitekit-typography',
-				className,
-				type && `googlesitekit-typography--${ type }`,
-				size && `googlesitekit-typography--${ size }`
-			) }
-			size={ asSize }
-			type={ asType }
-			{ ...props }
-		/>
-	);
-}
+const Typography = forwardRef(
+	(
+		{
+			as,
+			asType,
+			asSize,
+			className,
+			size,
+			type,
+			...props
+		}: TypographyProps< React.ElementType >,
+		ref: React.ForwardedRef< Element >
+	) => {
+		const Component = as || DEFAULT_TAG_NAME;
+
+		return (
+			<Component
+				className={ classnames(
+					'googlesitekit-typography',
+					className,
+					type && `googlesitekit-typography--${ type }`,
+					size && `googlesitekit-typography--${ size }`
+				) }
+				ref={ ref }
+				size={ asSize }
+				type={ asType }
+				{ ...props }
+			/>
+		);
+	}
+) as TypographyComponent;
 
 export default Typography;

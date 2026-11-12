@@ -32,7 +32,8 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
-import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
+import signInWithGoogleCustomPageScreenshotURL from '@/svg/screenshots/sign-in-with-google-custom-page.svg?path';
+import signInWithGoogleLoginPageScreenshotURL from '@/svg/screenshots/sign-in-with-google-login-page.svg?path';
 
 /**
  * Registers Sign in with Google module features in the Feature Discovery catalog.
@@ -112,13 +113,22 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: signInWithGoogleLoginPageScreenshotURL,
 					alt: __(
-						'Custom page showing Sign in with Google integration',
+						'Screenshot of the WordPress login page with a Sign in with Google button above the username and password fields',
 						'google-site-kit'
 					),
-					width: 292,
-					height: 210,
+					width: 620,
+					height: 330,
+				},
+				{
+					src: signInWithGoogleCustomPageScreenshotURL,
+					alt: __(
+						'Screenshot of a custom login page on a website with a Sign in with Google button above the email and password fields',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 341,
 				},
 			],
 		},

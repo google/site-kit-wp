@@ -214,13 +214,14 @@ expect.extend( customMatchers );
  * @since 1.13.0
  * @see {@link https://tools.google.com/dlpage/gaoptout}
  */
-function optOutOfEventTracking() {
-	page.on( 'load', async () => {
-		try {
-			await page.evaluate( () => {
-				window._gaUserPrefs = { ioo: () => true };
-			} );
-		} catch ( err ) {}
+async function optOutOfEventTracking() {
+	// The opt-out is set before any of the page's scripts run, because a
+	// widget can send a tracking event as soon as it renders, before the
+	// page's `load` event. Without the opt-out, the event waits for the gtag
+	// script to load and call it back, and when the script loads slowly it
+	// logs a "took too long to fire" warning.
+	await page.addInitScript( () => {
+		window._gaUserPrefs = { ioo: () => true };
 	} );
 }
 
@@ -375,7 +376,7 @@ async function observeRestResponse( res ) {
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
 // each other's side-effects.
 beforeAll( async () => {
-	optOutOfEventTracking();
+	await optOutOfEventTracking();
 	enablePageDialogAccept();
 	observeConsoleLogging();
 	// Log uncaught exceptions on the client.
