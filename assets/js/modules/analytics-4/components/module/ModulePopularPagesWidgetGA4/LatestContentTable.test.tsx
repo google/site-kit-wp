@@ -126,7 +126,7 @@ describe( 'LatestContentTable', () => {
 	/**
 	 * Gets the text of every cell in each body row of the table.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param {Element} container The element the table is rendered in.
 	 * @return {Array<Array<string|null>>} The cell texts, one list per row.

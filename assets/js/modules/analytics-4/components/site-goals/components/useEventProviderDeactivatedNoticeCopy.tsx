@@ -47,7 +47,7 @@ export interface EventProviderDeactivatedNoticeCopy {
  * Gets the deactivated plugin notice copy for a goal type.
  *
  * @since 1.187.0
- * @since n.e.x.t Pointed the `Learn more` link to the Site Goals supported plugins page.
+ * @since 1.192.0 Pointed the `Learn more` link to the Site Goals supported plugins page.
  *
  * @param {GoalType} goalType The goal type of the widget that shows the notice.
  * @return {EventProviderDeactivatedNoticeCopy} The `title` and `description`.

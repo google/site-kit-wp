@@ -90,7 +90,7 @@ class Migration_1_123_0 {
 	 * Registers hooks.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Changed the `admin_init` priority to 0.
+	 * @since 1.192.0 Changed the `admin_init` priority to 0.
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
@@ -117,7 +117,7 @@ class Migration_1_123_0 {
 	 * Migrates the legacy analytics settings over to analytics-4.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Made method public, and updated to skip missing keys and a legacy option that is not an array.
+	 * @since 1.192.0 Made method public, and updated to skip missing keys and a legacy option that is not an array.
 	 */
 	public function migrate_legacy_analytics_settings() {
 		if ( ! $this->analytics_settings->has() ) {
@@ -159,7 +159,7 @@ class Migration_1_123_0 {
 	 * Activates the analytics-4 module if the legacy analytics module was active.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Made method public.
+	 * @since 1.192.0 Made method public.
 	 */
 	public function activate_analytics() {
 		$option = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
@@ -197,7 +197,7 @@ class Migration_1_123_0 {
 	 * Replicates sharing settings from the legacy analytics module to analytics-4.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Made method public.
+	 * @since 1.192.0 Made method public.
 	 */
 	public function migrate_legacy_analytics_sharing_settings() {
 		$option = $this->options->get( Module_Sharing_Settings::OPTION );

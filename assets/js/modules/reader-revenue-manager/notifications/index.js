@@ -166,7 +166,7 @@ function requireProductIDNotification( paymentOption ) {
  * surfaces here rather than the hub's generic success notice (see
  * `assets/js/googlesitekit/notifications/register-defaults.js`).
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {function(): boolean} Whether the user has returned to the hub from Reader Revenue Manager's own setup or not.
  */
@@ -183,7 +183,7 @@ function requireFeatureDiscoveryReturnFromRRMSetup() {
  * its first notification in the area it belongs to, so each top-of-list
  * placement is limited to the tab the user is returned to.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {string} returnTab Path of the hub tab the notification is shown on.
  * @return {function(): boolean} Whether the pending setup's return tab matches the given tab or not.
@@ -201,7 +201,7 @@ function requireFeatureDiscoveryReturnTab( returnTab ) {
  * "Publication approved" overlay takes over from the setup success
  * notification.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {function(): Promise<boolean>} Whether the publication is approved with no payment option chosen or not.
  */

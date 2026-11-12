@@ -26,7 +26,7 @@ use WP_Error;
  * insight and the email count key actions the same way. The service caches each
  * insight by its payload, so the same data must always give the same entry.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  * @access private
  * @ignore
  */
@@ -35,7 +35,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Days in each period the entry compares.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	const PERIOD_DAYS = 28;
 
@@ -43,14 +43,14 @@ class Insight_Payload_Builder {
 	 * Days between a period and its year-ago period: 52 whole weeks, so each year-ago
 	 * day falls on the same weekday.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	const YEAR_AGO_OFFSET_DAYS = 364;
 
 	/**
 	 * Analytics 4 module instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Analytics_4
 	 */
 	private $analytics_4;
@@ -58,7 +58,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Email_Report_Payload_Processor instance, which reads the rows of a report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Email_Report_Payload_Processor
 	 */
 	private $report_processor;
@@ -66,7 +66,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Report_Data_Processor instance, which adds up a metric of the rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Report_Data_Processor
 	 */
 	private $data_processor;
@@ -74,7 +74,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param Analytics_4 $analytics_4 The Analytics 4 module instance, which runs the reports.
 	 */
@@ -87,7 +87,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Builds the payload entry of one Site Goals widget, or of one of its tabs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param string $goal_type Goal type, `lead` or `ecommerce`.
 	 * @param string $tab       Group the tab shows: a form ID for `lead`, an event provider
@@ -178,7 +178,7 @@ class Insight_Payload_Builder {
 	 *
 	 * The dates are midnight UTC, where every day is 24 hours long.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param string $end_date Last day of the current period, as `YYYY-MM-DD`.
 	 * @return array Periods keyed `current`, `previous`, `year_ago_current` and `year_ago_previous`,
@@ -200,7 +200,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Gets the period of `PERIOD_DAYS` days that ends on a day.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param DateTimeImmutable $end_date Last day of the period, at midnight UTC.
 	 * @return array Period with `startDate` and `endDate` as `YYYY-MM-DD`.
@@ -218,7 +218,7 @@ class Insight_Payload_Builder {
 	 * A form or provider tab counts by its breakdown dimension, which may have no data for the
 	 * year-ago periods yet. So only the whole widget sends them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param string $tab                  Group the tab shows, or an empty string for the whole widget.
 	 * @param int    $property_create_time When the property was created, in milliseconds.
@@ -243,7 +243,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Gets the custom dimension that names the tabs of a widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param string $goal_type Goal type, `lead` or `ecommerce`.
 	 * @return string Custom dimension slug: `googlesitekit_form_id` for `lead`, and `googlesitekit_event_provider` for `ecommerce`.
@@ -257,7 +257,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Runs the reports in one batch call.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array $requests Report request options, keyed by report.
 	 * @return array|WP_Error Rows of each report, keyed like the requests, or the error of the batch call.
@@ -288,7 +288,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Adds up a metric of one group of a report, in the current and in the previous period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array  $rows            Report rows, as `Email_Report_Payload_Processor::extract_report_rows()`
 	 *                                returns them.
@@ -313,7 +313,7 @@ class Insight_Payload_Builder {
 	/**
 	 * Builds the fields of one period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param float $conversions     Key actions in the period.
 	 * @param float $sessions        Sessions of the whole site in the period.

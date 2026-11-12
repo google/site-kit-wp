@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import {
 	draggable,
 	dropTargetForElements,
@@ -109,15 +108,10 @@ function setup() {
 		input: dragInput,
 	} );
 
-	function event(
-		sourceID = 'a',
-		targetID: string | null = 'c',
-		edge: 'top' | 'bottom' = 'bottom'
-	) {
+	function event( sourceID = 'a', targetID: string | null = 'c' ) {
 		return createDragEvent(
 			{ ...sourceData, itemID: sourceID },
-			targetID ? { ...sourceData, itemID: targetID } : null,
-			edge
+			targetID ? { ...sourceData, itemID: targetID } : null
 		);
 	}
 
@@ -161,7 +155,7 @@ describe( 'useDraggableList', () => {
 			.forEach( ( element ) => element.remove() );
 	} );
 
-	it( 'should register handles and sticky row targets with item and edge data', () => {
+	it( 'should register handles and sticky row targets with item data', () => {
 		const { list, bindings, event } = setup();
 
 		bindings.forEach( ( { item, row, handle } ) => {
@@ -187,14 +181,10 @@ describe( 'useDraggableList', () => {
 				source: event().source,
 			} );
 
-			expect( data ).toEqual(
-				expect.objectContaining( {
-					itemID: item.id,
-					listToken: event().source.data.listToken,
-				} )
-			);
-
-			expect( extractClosestEdge( data ) ).not.toBeNull();
+			expect( data ).toEqual( {
+				itemID: item.id,
+				listToken: event().source.data.listToken,
+			} );
 		} );
 
 		expect(
@@ -265,7 +255,6 @@ describe( 'useDraggableList', () => {
 			label: 'down to the last position',
 			source: 'a',
 			target: 'c',
-			edge: 'bottom' as const,
 			destinationIndex: 2,
 			expected: [ items[ 1 ], items[ 2 ], items[ 0 ] ],
 		},
@@ -273,15 +262,28 @@ describe( 'useDraggableList', () => {
 			label: 'up to the first position',
 			source: 'c',
 			target: 'a',
-			edge: 'top' as const,
 			destinationIndex: 0,
 			expected: [ items[ 2 ], items[ 0 ], items[ 1 ] ],
 		},
+		{
+			label: 'down one position onto the next row',
+			source: 'a',
+			target: 'b',
+			destinationIndex: 1,
+			expected: [ items[ 1 ], items[ 0 ], items[ 2 ] ],
+		},
+		{
+			label: 'up one position onto the previous row',
+			source: 'c',
+			target: 'b',
+			destinationIndex: 1,
+			expected: [ items[ 0 ], items[ 2 ], items[ 1 ] ],
+		},
 	] )(
 		'should drag an item $label',
-		( { source, target, edge, destinationIndex, expected } ) => {
+		( { source, target, destinationIndex, expected } ) => {
 			const hook = setup();
-			const payload = hook.event( source, target, edge );
+			const payload = hook.event( source, target );
 
 			act( () => hook.monitor.onDragStart!( payload ) );
 

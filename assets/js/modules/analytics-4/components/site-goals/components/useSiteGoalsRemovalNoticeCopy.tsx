@@ -48,7 +48,7 @@ export interface SiteGoalsRemovalNoticeCopy {
  * lead generation widget.
  *
  * @since 1.190.0
- * @since n.e.x.t Pointed the `Learn more` link to the Site Goals supported plugins page.
+ * @since 1.192.0 Pointed the `Learn more` link to the Site Goals supported plugins page.
  *
  * @param {GoalType} goalType The goal type of the widget that shows the notice.
  * @return {SiteGoalsRemovalNoticeCopy} The `title` and `description`.

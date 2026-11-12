@@ -77,7 +77,7 @@ class Migration_1_163_0 {
 	 * Registers hooks.
 	 *
 	 * @since 1.163.0
-	 * @since n.e.x.t Changed the `admin_init` priority to 0.
+	 * @since 1.192.0 Changed the `admin_init` priority to 0.
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
@@ -103,7 +103,7 @@ class Migration_1_163_0 {
 	 *
 	 * This neither checks nor updates `googlesitekit_db_version`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	public function apply_changes() {
 		$this->migrate_one_tap_enabled_setting();
@@ -119,7 +119,7 @@ class Migration_1_163_0 {
 	 * setting was set to true.
 	 *
 	 * @since 1.163.0
-	 * @since n.e.x.t Updated to keep One Tap disabled when it was not enabled.
+	 * @since 1.192.0 Updated to keep One Tap disabled when it was not enabled.
 	 */
 	protected function migrate_one_tap_enabled_setting() {
 		if ( ! $this->sign_in_with_google_settings->has() ) {

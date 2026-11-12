@@ -30,7 +30,7 @@ class Report_Options {
 	 * The `core/user` store accepts a longer `custom` date range, which only
 	 * `DateRangePicker` can set, and `Get_Benchmarking_Data` refuses it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	const MAXIMUM_PERIOD_DAYS = 90;
 
@@ -96,7 +96,7 @@ class Report_Options {
 	 * report, and returns the days of the selected period alone as `dailyTraffic`.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t The report starts on the first day of the compare period, in place of the first of the 395 days that end on the last day of the selected period.
+	 * @since 1.192.0 The report starts on the first day of the compare period, in place of the first of the 395 days that end on the last day of the selected period.
 	 *
 	 * @return array Report request options array.
 	 */

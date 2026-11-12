@@ -39,7 +39,7 @@ import { useRecordRecentActivityInteraction } from './useRecordRecentActivityInt
  * so the callback records one instead. Later opens in the same page load
  * record nothing.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {Function} A callback that returns a promise, which resolves once the open is saved.
  */

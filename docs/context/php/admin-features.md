@@ -547,31 +547,7 @@ private function get_reconnect_after_url_mismatch_notice() {
 
 **Location**: `includes/Core/Admin/Pointer.php`
 
-Represents a WordPress pointer for onboarding (`@since 1.83.0`).
-
-```php
-final class Pointer {
-	private $slug;
-	private $args = array();
-
-	public function __construct( $slug, array $args ) {
-		$this->slug = $slug;
-		$this->args = wp_parse_args(
-			$args,
-			array(
-				'title'           => '',
-				'content'         => '',
-				'target_id'       => '',
-				'position'        => 'top',
-				'active_callback' => null,
-				'buttons'         => null,
-				'class'           => '',
-				'tracking'        => array(),
-			)
-		);
-	}
-}
-```
+Represents a WordPress pointer: a small popup attached to an element in the WordPress admin, used to introduce a feature. A feature creates a `Pointer` with a unique slug and an array of arguments, and adds it through the `googlesitekit_admin_pointers` filter (see "Adding a Pointer" below).
 
 **Constructor Arguments**:
 
@@ -583,150 +559,57 @@ final class Pointer {
 | `position` | string\|array | Position of the pointer: `'top'`, `'bottom'`, `'left'`, `'right'`, or an array of `edge`/`align`. Default `'top'`. |
 | `active_callback` | callable | Determines whether the pointer is active. Receives the current admin screen hook suffix. |
 | `buttons` | string | Optional HTML for the pointer buttons (rendered in a `googlesitekit-pointer-buttons` container). Default `null`. |
-| `class` | string\|array | Optional additional CSS class(es). Default `''`. |
-| `tracking` | array | Optional tracking config for `view`, `dismiss`, and `click` events. Default `array()`. |
+| `class` | string | Optional additional CSS classes, separated by spaces. Default `''`. |
+| `tracking` | array | Optional tracking config, keyed by `view`, `click` and `dismiss`. Each event is an array with `category`, `action` and an optional `label`. Default `array()`. |
 
-> Note: the real argument names are `target_id` and `position`, not `target`/`edge`/`align`/`pointer_class`.
+#### Activation and Dismissal
 
-#### Pointer Accessors and Activation
+- A pointer is active on a screen when it has a `title`, `content` and `target_id`, and its `active_callback` returns `true` for the screen's hook suffix. A pointer without an `active_callback` is active on every admin screen.
+- A pointer whose content is empty is not shown.
+- When the user closes a pointer, Site Kit adds the pointer's slug to the user's `dismissed_wp_pointers` user meta. Site Kit does not check this meta for you. Each pointer checks it in its own `active_callback` (see the example below).
 
-**Location**: `includes/Core/Admin/Pointer.php`
+#### Markup, Buttons and Tracking
 
-`Pointer` is a value object with getters (`get_slug()`, `get_title()`, `get_content()`, `get_target_id()`, `get_position()`, `get_buttons()`, `get_class()`, `get_tracking()`) and an `is_active( $hook_suffix )` method. There is no `get_pointer_data()` method, and dismissal is not checked here — individual pointers check `dismissed_wp_pointers` user meta in their own `active_callback` (see the view-only example below).
-
-```php
-public function get_content() {
-	if ( is_callable( $this->args['content'] ) ) {
-		return call_user_func( $this->args['content'] );
-	} else {
-		return '<p>' . wp_kses( $this->args['content'], 'googlesitekit_admin_pointer' ) . '</p>';
-	}
-}
-
-public function is_active( $hook_suffix ) {
-	if ( empty( $this->args['title'] ) || empty( $this->args['content'] ) || empty( $this->args['target_id'] ) ) {
-		return false;
-	}
-
-	if ( ! is_callable( $this->args['active_callback'] ) ) {
-		return true;
-	}
-
-	return (bool) call_user_func( $this->args['active_callback'], $hook_suffix );
-}
-```
+- `Pointers` filters the title and the content, including `buttons`, with `wp_kses` before they reach the page. Other tags and attributes are removed.
+  - The title allows `span` (`class`) and `button` (`class`, `type`, `data-action`).
+  - The content allows `a` (`href`, `class`, `target`, `rel`, `data-action`), `h4`, `p` (`class`), `br`, `strong`, `em`, `button` (`class`, `type`, `data-action`) and `div` (`class`).
+- An element with `data-action="dismiss"`, in the title or in `buttons`, closes the pointer.
+- A link with the `googlesitekit-pointer-cta` class is the pointer's call to action. Clicking it sends the `click` event. For a link without a `target` attribute, the page waits for the event before it opens the link.
+- The `view` event is sent when the pointer opens. The `dismiss` event is sent when the pointer closes, unless the user clicked the call to action first.
+- Tracking events are sent only when the user has enabled Site Kit tracking.
 
 ### Pointers Class
 
 **Location**: `includes/Core/Admin/Pointers.php`
 
-Central manager for all pointers. It uses `Method_Proxy_Trait`, hooks only `admin_enqueue_scripts`, filters the pointers down to the active ones for the current screen, enqueues the WordPress `wp-pointer` assets plus Site Kit's dashboard styles and the `googlesitekit-admin-pointers-tracking` script, then prints one script per active pointer on `admin_print_footer_scripts`.
+`Pointers` collects every `Pointer` from the `googlesitekit_admin_pointers` filter. On each admin screen it passes the active pointers to the `googlesitekit-admin-pointers` script, which opens them. Feature code never calls `Pointers` directly.
+
+### Adding a Pointer
+
+A feature adds a `Pointer` through the `googlesitekit_admin_pointers` filter:
 
 ```php
-class Pointers {
-
-	use Method_Proxy_Trait;
-
-	public function register() {
-		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_pointers' ) );
-	}
-
-	private function enqueue_pointers( $hook_suffix ) {
-		if ( empty( $hook_suffix ) ) {
-			return;
-		}
-
-		$pointers = $this->get_pointers();
-		if ( empty( $pointers ) ) {
-			return;
-		}
-
-		$active_pointers = array_filter(
-			$pointers,
-			function ( Pointer $pointer ) use ( $hook_suffix ) {
-				return $pointer->is_active( $hook_suffix );
-			}
+add_filter(
+	'googlesitekit_admin_pointers',
+	function ( $pointers ) {
+		$pointers[] = new Pointer(
+			'example-pointer',
+			array(
+				'title'           => __( 'Example pointer title', 'google-site-kit' ),
+				'content'         => __( 'Example pointer content.', 'google-site-kit' ),
+				'target_id'       => 'toplevel_page_googlesitekit-dashboard',
+				'active_callback' => function ( $hook_suffix ) {
+					return 'index.php' === $hook_suffix;
+				},
+			)
 		);
 
-		if ( empty( $active_pointers ) ) {
-			return;
-		}
-
-		wp_enqueue_style( 'wp-pointer' );
-		wp_enqueue_style( 'googlesitekit-wp-dashboard-css' );
-		wp_enqueue_script( 'wp-pointer' );
-		wp_enqueue_script( 'googlesitekit-admin-pointers-tracking' );
-
-		add_action(
-			'admin_print_footer_scripts',
-			function () use ( $active_pointers ) {
-				foreach ( $active_pointers as $pointer ) {
-					$this->print_pointer_script( $pointer );
-				}
-			}
-		);
+		return $pointers;
 	}
-
-	private function get_pointers() {
-		$pointers = apply_filters( 'googlesitekit_admin_pointers', array() );
-
-		return array_filter(
-			$pointers,
-			function ( $pointer ) {
-				return $pointer instanceof Pointer;
-			}
-		);
-	}
-}
+);
 ```
 
-#### Pointer Script Generation
-
-**Location**: `includes/Core/Admin/Pointers.php` (`print_pointer_script()` method)
-
-Each pointer is printed as a single inline script via `BC_Functions::wp_print_inline_script_tag()`. The pointer's data (slug, class, target id, `wp_kses`-escaped title/content, JSON-encoded position, and optional tracking config) is passed through `data-*` attributes and read back via `document.currentScript.dataset`. The inline JS initializes the WordPress pointer and (when tracking is configured) registers handlers with `window.googlesitekitAdminPointersTracking`.
-
-```php
-private function print_pointer_script( $pointer ) {
-	$content = $pointer->get_content();
-	if ( empty( $content ) ) {
-		return;
-	}
-
-	$buttons = $pointer->get_buttons();
-	if ( $buttons ) {
-		$content .= '<div class="googlesitekit-pointer-buttons">' . $buttons . '</div>';
-	}
-
-	$class      = array( 'wp-pointer' );
-	$class[]    = sanitize_html_class( $pointer->get_slug() );
-	if ( $pointer->get_class() ) {
-		$class[] = $pointer->get_class();
-	}
-
-	// ... build $kses_title / $kses_content allowlists ...
-
-	$data = array(
-		'data-slug'      => $pointer->get_slug(),
-		'data-class'     => implode( ' ', $class ),
-		'data-target-id' => $pointer->get_target_id(),
-		'data-title'     => wp_kses( $pointer->get_title(), $kses_title ),
-		'data-content'   => wp_kses( $content, $kses_content ),
-		'data-position'  => wp_json_encode( $pointer->get_position() ),
-	);
-
-	if ( ! empty( $pointer->get_tracking() ) ) {
-		$data['data-tracking'] = wp_json_encode( $pointer->get_tracking() );
-	}
-
-	BC_Functions::wp_print_inline_script_tag(
-		// inline JS that calls target.pointer( options ).pointer( 'open' )
-		// and dismisses via wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.slug } )
-		$inline_js,
-		$data
-	);
-}
-```
+A real pointer's `active_callback` also returns `false` once the slug is in the user's `dismissed_wp_pointers` user meta, so the pointer does not open again after the user closes it.
 
 ### Pointer Examples
 
@@ -734,47 +617,7 @@ private function print_pointer_script( $pointer ) {
 
 **Location**: `includes/Core/Dashboard_Sharing/View_Only_Pointer.php`
 
-`View_Only_Pointer` registers a pointer (slug constant `View_Only_Pointer::SLUG === 'googlesitekit-view-only-pointer'`) on the `googlesitekit_admin_pointers` filter. It targets the Site Kit top-level menu item (`toplevel_page_googlesitekit-dashboard`), only shows on the WordPress dashboard (`index.php`) for view-only users, checks `dismissed_wp_pointers` in its `active_callback`, and supplies `buttons` and `tracking`.
-
-```php
-private function get_view_only_pointer() {
-	return new Pointer(
-		self::SLUG,
-		array(
-			'title'           => sprintf(
-				'%s %s',
-				__( 'You now have access to Site Kit', 'google-site-kit' ),
-				'<button type="button" class="googlesitekit-pointer-cta--dismiss dashicons dashicons-no" data-action="dismiss">' .
-					'<span class="screen-reader-text">' . esc_html__( 'Dismiss this notice.', 'google-site-kit' ) . '</span>' .
-				'</button>'
-			),
-			'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, …', 'google-site-kit' ),
-			'target_id'       => 'toplevel_page_googlesitekit-dashboard',
-			'active_callback' => function ( $hook_suffix ) {
-				if ( 'index.php' !== $hook_suffix
-					|| current_user_can( Permissions::AUTHENTICATE )
-					|| ! current_user_can( Permissions::VIEW_SPLASH )
-				) {
-					return false;
-				}
-
-				$dismissed_wp_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
-				if ( ! is_array( $dismissed_wp_pointers ) ) {
-					$dismissed_wp_pointers = explode( ',', (string) $dismissed_wp_pointers );
-				}
-				return ! in_array( self::SLUG, $dismissed_wp_pointers, true );
-			},
-			'class'           => 'googlesitekit-view-only-pointer',
-			'tracking'        => array( /* view / dismiss / click events */ ),
-			'buttons'         => sprintf(
-				'<a class="googlesitekit-pointer-cta button-primary" href="%s" data-action="dismiss">%s</a>',
-				esc_attr( $this->context->admin_url( 'dashboard' ) ),
-				esc_html__( 'View dashboard', 'google-site-kit' )
-			),
-		)
-	);
-}
-```
+`View_Only_Pointer` tells a view-only user that they can now see the Site Kit dashboard. It attaches to the Site Kit menu item (`toplevel_page_googlesitekit-dashboard`). Its `active_callback` shows it only on the WordPress dashboard (`index.php`), only to users who can view the splash screen but cannot authenticate, and only until the user dismisses it. Its title has a dismiss icon with `data-action="dismiss"`, and its `buttons` add a "View dashboard" call to action. It sets `class` and `tracking` too.
 
 ## Dashboard Widget
 
@@ -1184,5 +1027,5 @@ $screens->register();
 New notices/pointers/screens are added the same way the built-in ones are:
 
 - **Notices**: append a `Notice` instance on the `googlesitekit_admin_notices` filter (see `Activation_Notice::register()` above).
-- **Pointers**: append a `Pointer` instance on the `googlesitekit_admin_pointers` filter (see `View_Only_Pointer` above).
+- **Pointers**: append a `Pointer` instance on the `googlesitekit_admin_pointers` filter (see "Adding a Pointer" above).
 - **Screens**: add a `Screen` instance in `Screens::get_screens()` (see that method above), using `self::PARENT_SLUG_NULL` to keep it out of the menu.

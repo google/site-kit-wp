@@ -30,7 +30,10 @@ import { Suspense, useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	SUCCEEDED_FEATURES_UI_KEY,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { ErrorObject } from '@/js/util/errors';
@@ -38,6 +41,7 @@ import { FEATURE_DISCOVERY_SETUP_REQUEST_KEY } from './constants';
 import FeatureCard, { FeatureCardProps } from './FeatureCard';
 import FeatureCTAButton from './FeatureCTAButton';
 import FeatureSetupErrorNotice from './FeatureSetupErrorNotice';
+import FeatureSuccessNotice from './FeatureSuccessNotice';
 
 const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
 	const [ isRetrying, setIsRetrying ] = useState( false );
@@ -92,48 +96,90 @@ const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
 		setValue( FEATURE_DISCOVERY_SETUP_REQUEST_KEY, undefined );
 	}, [ setValue ] );
 
+	const isConnected = useSelect(
+		( select: Select ): boolean | undefined =>
+			select( CORE_FEATURE_DISCOVERY ).isFeatureConnected( slug ),
+		[ slug ]
+	);
+
+	const succeededFeatures = useSelect(
+		( select: Select ): string[] =>
+			select( CORE_UI ).getValue( SUCCEEDED_FEATURES_UI_KEY ) || [],
+		[]
+	);
+
+	// Dismissing the success notice drops the feature from the list, as it is
+	// now set up.
+	const handleSuccessDismiss = useCallback( () => {
+		setValue(
+			SUCCEEDED_FEATURES_UI_KEY,
+			succeededFeatures.filter(
+				( succeededSlug ) => succeededSlug !== slug
+			)
+		);
+	}, [ setValue, slug, succeededFeatures ] );
+
+	if ( isConnected === true ) {
+		return (
+			<article className="googlesitekit-feature-list-item">
+				<FeatureSuccessNotice
+					slug={ slug }
+					onDismiss={ handleSuccessDismiss }
+				/>
+			</article>
+		);
+	}
+
 	// A feature that brings its own setup UI owns the whole item, including
 	// how its setup errors are reported.
 	const SetupComponent = feature?.setup?.SetupComponent;
 
 	if ( SetupComponent ) {
 		return (
-			<Suspense
-				fallback={
-					<FeatureCard
+			<div className="googlesitekit-feature-list-item">
+				<Suspense
+					fallback={
+						<FeatureCard
+							slug={ slug }
+							{ ...props }
+							ctaButton={
+								<FeatureCTAButton isBusy isTertiary>
+									{ feature?.setup?.ctaLabel }
+								</FeatureCTAButton>
+							}
+						/>
+					}
+				>
+					<SetupComponent
 						slug={ slug }
 						{ ...props }
-						ctaButton={
-							<FeatureCTAButton isBusy isTertiary>
-								{ feature?.setup?.ctaLabel }
-							</FeatureCTAButton>
-						}
+						isSetupRequested={ isSetupRequested }
+						onSetupRequestHandled={ onSetupRequestHandled }
 					/>
-				}
-			>
-				<SetupComponent
-					slug={ slug }
-					{ ...props }
-					isSetupRequested={ isSetupRequested }
-					onSetupRequestHandled={ onSetupRequestHandled }
-				/>
-			</Suspense>
+				</Suspense>
+			</div>
 		);
 	}
 
 	if ( setupError ) {
 		return (
-			<FeatureSetupErrorNotice
-				error={ setupError }
-				isRetrying={ isRetrying }
-				onDismiss={ handleDismiss }
-				onRetry={ handleRetry }
-				slug={ slug }
-			/>
+			<div className="googlesitekit-feature-list-item">
+				<FeatureSetupErrorNotice
+					error={ setupError }
+					isRetrying={ isRetrying }
+					onDismiss={ handleDismiss }
+					onRetry={ handleRetry }
+					slug={ slug }
+				/>
+			</div>
 		);
 	}
 
-	return <FeatureCard slug={ slug } { ...props } />;
+	return (
+		<div className="googlesitekit-feature-list-item">
+			<FeatureCard slug={ slug } { ...props } />
+		</div>
+	);
 };
 
 export default FeatureListItem;

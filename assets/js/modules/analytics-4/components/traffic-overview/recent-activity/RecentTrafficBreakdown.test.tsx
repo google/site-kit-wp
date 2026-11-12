@@ -710,6 +710,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render the loading state in each column while its report loads', async () => {
+		provideIncludeProductsState( registry, { wooCommerceActive: false } );
 		freezeFetch( reportEndpoint, { repeat: 3 } );
 
 		const { container } = render( <RecentTrafficBreakdown />, {
@@ -841,7 +842,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
-			features: [ 'freshData' ],
 		} );
 
 		await waitForRegistry();
@@ -913,7 +913,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
-			features: [ 'freshData' ],
 		} );
 
 		await waitForRegistry();

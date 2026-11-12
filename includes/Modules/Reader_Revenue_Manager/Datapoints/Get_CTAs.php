@@ -92,7 +92,7 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	 * Parses a response.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Excludes CTAs that are neither active nor draft, such as deleted CTAs.
+	 * @since 1.192.0 Excludes CTAs that are neither active nor draft, such as deleted CTAs.
 	 *
 	 * @param mixed        $response List CTAs response.
 	 * @param Data_Request $data     Data request object.

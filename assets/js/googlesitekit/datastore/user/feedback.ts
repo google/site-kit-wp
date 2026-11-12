@@ -60,7 +60,7 @@ const REQUIRED_FEEDBACK_FIELDS = [
 /**
  * Throws an error when a required feedback field is missing or not a string.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object} feedback The feedback to validate.
  * @return {void}
@@ -91,7 +91,7 @@ const baseActions = {
 	/**
 	 * Sends feedback to the Site Kit Service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param {Object} feedback           The feedback to send.
 	 * @param {string} feedback.namespace The product area the feedback is about.

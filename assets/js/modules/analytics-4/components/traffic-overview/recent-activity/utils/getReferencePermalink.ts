@@ -32,7 +32,7 @@ import { untrailingslashit } from '@/js/util/sanitize';
  * as `https://example.com.au/`, stays unchanged. WordPress always adds that `/`,
  * also before the query string of a plain permalink such as `/?p=42`.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {string} permalink        The URL of the post on the WordPress site, such as `https://staging.example.com/hello-world/`.
  * @param {string} homeURL          The home URL of the WordPress site, such as `https://staging.example.com/`.

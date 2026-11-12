@@ -48,7 +48,7 @@ type CreateExpressSetupCTACallback = (
  * from the saved `configuredCTAs`.
  *
  * @since 1.191.0
- * @since n.e.x.t Sets the created CTA's identifier as the `ctaID` query arg.
+ * @since 1.192.0 Sets the created CTA's identifier as the `ctaID` query arg.
  *
  * @return {Function} Callback that takes the `createCTA()` params and resolves
  *                    to the `createCTA()` result.

@@ -79,7 +79,7 @@ type Registry = WPDataRegistry & {
  * Syncs configured CTAs into settings and savedSettings.
  *
  * @since 1.188.0
- * @since n.e.x.t Stores the type, state and display name of each CTA.
+ * @since 1.192.0 Stores the type, state and display name of each CTA.
  *
  * @param {Object} state Module state.
  * @param {Array}  ctas  CTAs to sync from.

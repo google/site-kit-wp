@@ -29,6 +29,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Core\Util\Auto_Updates;
+use Google\Site_Kit\Core\Util\Plugin_Update;
 use Google\Site_Kit\Core\Authentication\REST_Authentication_Controller;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
@@ -224,7 +225,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	/**
 	 * Dashboard_Widget_Enabled instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Dashboard_Widget_Enabled
 	 */
 	private $dashboard_widget_enabled;
@@ -233,7 +234,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added Dashboard_Widget_Enabled instance.
+	 * @since 1.192.0 Added Dashboard_Widget_Enabled instance.
 	 *
 	 * @param Context      $context      Plugin context.
 	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
@@ -275,6 +276,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.0.0
 	 * @since 1.191.0 Skips syncing site fields when the site URL differs from the connected URL.
+	 * @since 1.192.0 Syncs site fields again when the plugin version is written, always without scopes.
 	 */
 	public function register() {
 		$this->credentials()->register();
@@ -359,7 +361,10 @@ final class Authentication implements Provides_Feature_Metrics {
 				}
 
 				if ( $this->credentials->using_proxy() ) {
-					$this->google_proxy->sync_site_fields( $this->credentials() );
+					// Sync without scopes. Site Kit's service treats a site fields sync without scopes as
+					// unattended and doesn't let it change the site's URL, so a fresh proxy instance is used
+					// rather than the shared one that setup adds scopes to.
+					( new Google_Proxy( $this->context ) )->sync_site_fields( $this->credentials() );
 				}
 			};
 			add_action( 'shutdown', $sync_site_fields );
@@ -367,8 +372,10 @@ final class Authentication implements Provides_Feature_Metrics {
 
 		add_action( 'update_option_blogname', $option_updated );
 		add_action( 'update_option_googlesitekit_db_version', $option_updated );
-		// Not synced on plugin version writes: a sync can change the site URL at the proxy,
-		// which resets every user's delegation, so it shouldn't run unattended.
+		// WordPress fires `add_option_` the first time an option is saved and `update_option_` after
+		// that. Both are needed, otherwise the first release that saves the version would not sync.
+		add_action( 'add_option_' . Plugin_Update::VERSION_OPTION, $option_updated );
+		add_action( 'update_option_' . Plugin_Update::VERSION_OPTION, $option_updated );
 
 		add_action(
 			OAuth_Client::CRON_REFRESH_PROFILE_DATA,
@@ -661,7 +668,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.42.0
 	 * @since 1.70.0 Moved the closure within regiser() to this method.
-	 * @since n.e.x.t Skips the WordPress dashboard screen when the WordPress dashboard widget is disabled.
+	 * @since 1.192.0 Skips the WordPress dashboard screen when the WordPress dashboard widget is disabled.
 	 *
 	 * @param string $screen_id The unique ID of the current WP_Screen.
 	 *

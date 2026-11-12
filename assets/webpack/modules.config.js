@@ -112,8 +112,8 @@ module.exports = function ( mode, rules, ANALYZE ) {
 			// Old Modules
 			'googlesitekit-activation': './js/googlesitekit-activation.tsx',
 			'googlesitekit-adminbar': './js/googlesitekit-adminbar.tsx',
-			'googlesitekit-admin-pointers-tracking':
-				'./js/googlesitekit-admin-pointers-tracking.ts',
+			'googlesitekit-admin-pointers':
+				'./js/googlesitekit-admin-pointers.ts',
 			'googlesitekit-settings': './js/googlesitekit-settings.tsx',
 			'googlesitekit-main-dashboard':
 				'./js/googlesitekit-main-dashboard.tsx',

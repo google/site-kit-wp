@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -72,37 +71,34 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Returns keys for view-only settings.
 	 *
 	 * @since 1.113.0
+	 * @since 1.192.0 Always includes `freshDataIncludesWooCommerceProducts`.
 	 *
 	 * @return array An array of keys for view-only settings.
 	 */
 	public function get_view_only_keys() {
-		$keys = array(
+		return array(
 			'availableCustomDimensions',
 			'adSenseLinked',
 			'detectedEvents',
 			'newConversionEventsLastUpdateAt',
 			'lostConversionEventsLastUpdateAt',
 			'propertyCreateTime',
+			self::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
 		);
-
-		if ( Feature_Flags::enabled( 'freshData' ) ) {
-			$keys[] = self::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS;
-		}
-
-		return $keys;
 	}
 
 	/**
 	 * Gets the default value.
 	 *
 	 * @since 1.30.0
+	 * @since 1.192.0 Always includes `freshDataIncludesWooCommerceProducts`.
 	 *
 	 * @return array
 	 */
 	protected function get_default() {
-		$defaults = array(
-			'ownerID'                          => 0,
-			'accountID'                        => '',
+		return array(
+			'ownerID'                                      => 0,
+			'accountID'                                    => '',
 			/**
 			 * This setting is deprecated and only remains for backwards
 			 * compatibility with old migrations.
@@ -111,33 +107,28 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			 *
 			 * @deprecated
 			 */
-			'adsConversionID'                  => '',
-			'propertyID'                       => '',
-			'webDataStreamID'                  => '',
-			'measurementID'                    => '',
-			'trackingDisabled'                 => array( 'loggedinUsers' ),
-			'useSnippet'                       => true,
-			'googleTagID'                      => '',
-			'googleTagAccountID'               => '',
-			'googleTagContainerID'             => '',
-			'googleTagContainerDestinationIDs' => null,
-			'googleTagLastSyncedAtMs'          => 0,
-			'availableCustomDimensions'        => null,
-			'propertyCreateTime'               => 0,
-			'adSenseLinked'                    => false,
-			'adSenseLinkedLastSyncedAt'        => 0,
-			'adsLinked'                        => false,
-			'adsLinkedLastSyncedAt'            => 0,
-			'detectedEvents'                   => array(),
-			'newConversionEventsLastUpdateAt'  => 0,
-			'lostConversionEventsLastUpdateAt' => 0,
+			'adsConversionID'                              => '',
+			'propertyID'                                   => '',
+			'webDataStreamID'                              => '',
+			'measurementID'                                => '',
+			'trackingDisabled'                             => array( 'loggedinUsers' ),
+			'useSnippet'                                   => true,
+			'googleTagID'                                  => '',
+			'googleTagAccountID'                           => '',
+			'googleTagContainerID'                         => '',
+			'googleTagContainerDestinationIDs'             => null,
+			'googleTagLastSyncedAtMs'                      => 0,
+			'availableCustomDimensions'                    => null,
+			'propertyCreateTime'                           => 0,
+			'adSenseLinked'                                => false,
+			'adSenseLinkedLastSyncedAt'                    => 0,
+			'adsLinked'                                    => false,
+			'adsLinkedLastSyncedAt'                        => 0,
+			'detectedEvents'                               => array(),
+			'newConversionEventsLastUpdateAt'              => 0,
+			'lostConversionEventsLastUpdateAt'             => 0,
+			self::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS => true,
 		);
-
-		if ( Feature_Flags::enabled( 'freshData' ) ) {
-			$defaults[ self::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ] = true;
-		}
-
-		return $defaults;
 	}
 
 	/**

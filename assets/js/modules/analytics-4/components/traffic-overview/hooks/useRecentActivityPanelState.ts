@@ -55,7 +55,7 @@ import { useFreshDataReport } from './useFreshDataReport';
  *   recent data, and Search Console has none or the user can't view it.
  * - `default` in every other case, where the tab shows its sections.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export type RecentActivityPanelState = 'access-error' | 'zero-data' | 'default';
 
@@ -67,7 +67,7 @@ export type RecentActivityPanelState = 'access-error' | 'zero-data' | 'default';
  * loads, and when one fails with an error that is not about permissions, the
  * state is `default`. Each section then shows its own loading state or error.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {number} windowStart The start of the last 24 hours, from `getFreshDataWindowStart()`.
  * @return {string} The state: `access-error`, `zero-data` or `default`.

@@ -25,36 +25,51 @@ use WP_Error;
  */
 class Google_Proxy {
 
-	const PRODUCTION_BASE_URL                = 'https://sitekit.withgoogle.com';
-	const STAGING_BASE_URL                   = 'https://site-kit-dev.appspot.com';
-	const DEVELOPMENT_BASE_URL               = 'https://site-kit-local.appspot.com';
-	const OAUTH2_SITE_URI                    = '/o/oauth2/site/';
-	const OAUTH2_REVOKE_URI                  = '/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI                   = '/o/oauth2/token/';
-	const OAUTH2_AUTH_URI                    = '/o/oauth2/auth/';
-	const OAUTH2_DELETE_SITE_URI             = '/o/oauth2/delete-site/';
-	const SETUP_V3_URI                       = '/v3/site-management/setup/';
-	const PERMISSIONS_URI                    = '/site-management/permissions/';
-	const FEATURES_URI                       = '/site-management/features/';
-	const SURVEY_TRIGGER_URI                 = '/survey/trigger/';
-	const SURVEY_EVENT_URI                   = '/survey/event/';
-	const FEEDBACK_URI                       = '/feedback/';
-	const SUPPORT_LINK_URI                   = '/support';
-	const INTENT_URI                         = '/intent/%s/';
-	const INTENT_COMPLETE_URI                = '/intent/%s/complete/';
-	const BENCHMARKING_INSIGHT_URI           = '/v1/ai/benchmarking';
-	const BENCHMARKING_INSIGHT_OPERATION_URI = '/v1/ai/operations/%s';
-	const ACTION_EXCHANGE_SITE_CODE          = 'googlesitekit_proxy_exchange_site_code';
-	const ACTION_SETUP                       = 'googlesitekit_proxy_setup';
-	const ACTION_SETUP_START                 = 'googlesitekit_proxy_setup_start';
-	const ACTION_PERMISSIONS                 = 'googlesitekit_proxy_permissions';
-	const ACTION_VERIFY                      = 'googlesitekit_proxy_verify';
-	const NONCE_ACTION                       = 'googlesitekit_proxy_nonce';
-	const HEADER_REDIRECT_TO                 = 'Redirect-To';
-	const PARAM_PURPOSE                      = 'purpose';
-	const PURPOSE_INTENT                     = 'intent';
-	const SETUP_MODE_ANALYTICS_STEP          = 'analytics-step';
-	const SETUP_MODE_INTENT_STEP             = 'intent-step';
+	const PRODUCTION_BASE_URL      = 'https://sitekit.withgoogle.com';
+	const STAGING_BASE_URL         = 'https://site-kit-dev.appspot.com';
+	const DEVELOPMENT_BASE_URL     = 'https://site-kit-local.appspot.com';
+	const OAUTH2_SITE_URI          = '/o/oauth2/site/';
+	const OAUTH2_REVOKE_URI        = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI         = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URI          = '/o/oauth2/auth/';
+	const OAUTH2_DELETE_SITE_URI   = '/o/oauth2/delete-site/';
+	const SETUP_V3_URI             = '/v3/site-management/setup/';
+	const PERMISSIONS_URI          = '/site-management/permissions/';
+	const FEATURES_URI             = '/site-management/features/';
+	const SURVEY_TRIGGER_URI       = '/survey/trigger/';
+	const SURVEY_EVENT_URI         = '/survey/event/';
+	const FEEDBACK_URI             = '/feedback/';
+	const SUPPORT_LINK_URI         = '/support';
+	const INTENT_URI               = '/intent/%s/';
+	const INTENT_COMPLETE_URI      = '/intent/%s/complete/';
+	const BENCHMARKING_INSIGHT_URI = '/v1/ai/benchmarking';
+
+	/**
+	 * Endpoint of the conversion insight request.
+	 *
+	 * @since n.e.x.t
+	 */
+	const CONVERSION_INSIGHT_URI = '/v1/ai/conversion-insights';
+
+	/**
+	 * Endpoint of an AI operation, with its ID in place of `%s`.
+	 *
+	 * @since 1.192.0
+	 * @since n.e.x.t Renamed from `BENCHMARKING_INSIGHT_OPERATION_URI`.
+	 */
+	const AI_OPERATION_URI = '/v1/ai/operations/%s';
+
+	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
+	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
+	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
+	const ACTION_PERMISSIONS        = 'googlesitekit_proxy_permissions';
+	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
+	const NONCE_ACTION              = 'googlesitekit_proxy_nonce';
+	const HEADER_REDIRECT_TO        = 'Redirect-To';
+	const PARAM_PURPOSE             = 'purpose';
+	const PURPOSE_INTENT            = 'intent';
+	const SETUP_MODE_ANALYTICS_STEP = 'analytics-step';
+	const SETUP_MODE_INTENT_STEP    = 'intent-step';
 
 	/**
 	 * Plugin context.
@@ -66,6 +81,9 @@ class Google_Proxy {
 
 	/**
 	 * Required scopes list.
+	 *
+	 * Only set by setup, when an administrator signs in. Site Kit's service treats a site fields sync
+	 * without scopes as unattended and doesn't let it change the site's URL.
 	 *
 	 * @since 1.68.0
 	 * @var array
@@ -85,6 +103,8 @@ class Google_Proxy {
 
 	/**
 	 * Sets required scopes to use when the site is registering at proxy.
+	 *
+	 * Call this only for a sync started by an administrator signing in; see `$required_scopes`.
 	 *
 	 * @since 1.68.0
 	 *
@@ -276,7 +296,7 @@ class Google_Proxy {
 	 * Sends a request to the Google Proxy server.
 	 *
 	 * @since 1.27.0
-	 * @since n.e.x.t Added the `method` argument.
+	 * @since 1.192.0 Added the `method` argument.
 	 *
 	 * @param string      $uri Endpoint to send the request to.
 	 * @param Credentials $credentials Credentials instance.
@@ -628,7 +648,7 @@ class Google_Proxy {
 	 * @since 1.167.0 Added `amp_mode` to request.
 	 *
 	 * @param Credentials $credentials Credentials instance.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return array|WP_Error Decoded JSON body of the proxy's response, or WP_Error on failure.
 	 */
 	public function get_features( Credentials $credentials ) {
 		global $wp_version;
@@ -705,7 +725,7 @@ class Google_Proxy {
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
 	 * @param string      $trigger_id   Token ID.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return array|WP_Error Decoded JSON body of the proxy's response, or WP_Error on failure.
 	 */
 	public function send_survey_trigger( Credentials $credentials, $access_token, $trigger_id ) {
 		return $this->request(
@@ -733,7 +753,7 @@ class Google_Proxy {
 	 * @param string          $access_token Access token.
 	 * @param array|\stdClass $session      Session object.
 	 * @param array|\stdClass $event        Event object.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return array|WP_Error Decoded JSON body of the proxy's response, or WP_Error on failure.
 	 */
 	public function send_survey_event( Credentials $credentials, $access_token, $session, $event ) {
 		return $this->request(
@@ -753,12 +773,12 @@ class Google_Proxy {
 	/**
 	 * Sends feedback to the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
 	 * @param array       $feedback     Feedback data, with `namespace`, `group`, `key`, and `value` keys.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return array|WP_Error Decoded JSON body of the proxy's response, or WP_Error on failure.
 	 */
 	public function send_feedback( Credentials $credentials, $access_token, array $feedback ) {
 		return $this->request(
@@ -781,7 +801,7 @@ class Google_Proxy {
 	/**
 	 * Sends a benchmarking insight request to the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
@@ -802,18 +822,42 @@ class Google_Proxy {
 	}
 
 	/**
-	 * Gets a benchmarking insight operation from the proxy.
+	 * Sends a conversion insight request to the proxy.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $access_token Access token.
+	 * @param array       $payload      Conversion insight request payload.
+	 * @param string      $language_tag Language tag for the generated insight, such as `de-DE`.
+	 * @return array|WP_Error Operation, or generated insight when the proxy returns it from its cache, or WP_Error on failure.
+	 */
+	public function send_conversion_insight_request( Credentials $credentials, $access_token, array $payload, $language_tag ) {
+		return $this->request(
+			add_query_arg( 'hl', $language_tag, self::CONVERSION_INSIGHT_URI ),
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'json_request' => true,
+				'body'         => array_merge( $payload, array( 'async' => true ) ),
+			)
+		);
+	}
+
+	/**
+	 * Gets an AI operation from the proxy.
+	 *
+	 * @since 1.192.0
+	 * @since n.e.x.t Renamed from `get_benchmarking_insight_operation()`.
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
 	 * @param string      $operation_id Operation ID.
 	 * @return array|WP_Error Operation, or WP_Error on failure.
 	 */
-	public function get_benchmarking_insight_operation( Credentials $credentials, $access_token, $operation_id ) {
+	public function get_ai_operation( Credentials $credentials, $access_token, $operation_id ) {
 		return $this->request(
-			sprintf( self::BENCHMARKING_INSIGHT_OPERATION_URI, rawurlencode( $operation_id ) ),
+			sprintf( self::AI_OPERATION_URI, rawurlencode( $operation_id ) ),
 			$credentials,
 			array(
 				'access_token' => $access_token,

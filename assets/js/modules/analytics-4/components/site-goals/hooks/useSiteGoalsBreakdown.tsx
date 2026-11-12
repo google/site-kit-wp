@@ -57,7 +57,7 @@ export interface UseSiteGoalsBreakdownOptions {
  * @since 1.182.0
  * @since 1.187.0 Held every breakdown report back until the breakdown custom dimension exists on the property.
  * @since 1.190.0 Held every breakdown report back until plugin conversion tracking is enabled too.
- * @since n.e.x.t Stopped holding the breakdown reports back for plugin conversion tracking, so the tabs stay when it is switched off later.
+ * @since 1.192.0 Stopped holding the breakdown reports back for plugin conversion tracking, so the tabs stay when it is switched off later.
  *
  * @param {string} goalType                      The goal type whose breakdown dimension to resolve.
  * @param {Object} [options]                     Discovery, detection and allowlist options.

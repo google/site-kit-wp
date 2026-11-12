@@ -64,6 +64,41 @@ describe( 'startTimerOnce', () => {
 		).toBe( true );
 	} );
 
+	it( 'should send one request when it is called again before the first call finishes', async () => {
+		fetchMock.getOnce( expirableItemsEndpoint, { body: {}, status: 200 } );
+		mockSetExpirableItemTimers();
+
+		await Promise.all( [
+			startTimerOnce( registry, TIMER ),
+			startTimerOnce( registry, TIMER ),
+		] );
+
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			setExpirableItemTimersEndpoint
+		);
+	} );
+
+	it( 'should start each timer when it is called for two timers at once', async () => {
+		const OTHER_TIMER = { slug: 'other-timer', expiresInSeconds: 60 };
+
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+		fetchMock.post( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
+
+		await Promise.all( [
+			startTimerOnce( registry, TIMER ),
+			startTimerOnce( registry, OTHER_TIMER ),
+		] );
+
+		expect( fetchMock ).toHaveFetchedTimes(
+			2,
+			setExpirableItemTimersEndpoint
+		);
+	} );
+
 	it.each( [
 		[ 'active', 3600 ],
 		[ 'expired', -3600 ],

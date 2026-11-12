@@ -20,7 +20,7 @@ use WP_REST_Server;
 /**
  * Class for handling the user feedback REST route.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class REST_User_Feedback_Controller {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -37,7 +37,7 @@ class REST_User_Feedback_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param Authentication $authentication Authentication instance.
 	 */
@@ -48,7 +48,7 @@ class REST_User_Feedback_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	public function register() {
 		add_filter(
@@ -62,7 +62,7 @@ class REST_User_Feedback_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -127,7 +127,7 @@ class REST_User_Feedback_Controller {
 	/**
 	 * Validates the `data` parameter of the feedback route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param mixed $value The `data` parameter value.
 	 * @return true|WP_Error True if valid, otherwise a WP_Error with a 400 status.

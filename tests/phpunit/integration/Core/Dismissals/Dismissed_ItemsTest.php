@@ -58,31 +58,32 @@ class Dismissed_ItemsTest extends TestCase {
 	}
 
 	public function test_remove() {
-		$this->user_options->set(
-			Dismissed_Items::OPTION,
-			array(
-				'foo' => 0,
-				'bar' => time() + 100,
-				'baz' => time() + 200,
-			)
+		// Capture the timestamps once so the expectations below reuse the exact
+		// values that were stored, rather than calling `time()` again (which
+		// fails whenever the clock ticks over a second during the test).
+		$items = array(
+			'foo' => 0,
+			'bar' => time() + 100,
+			'baz' => time() + 200,
 		);
 
-		$user_options = $this->user_options->get( Dismissed_Items::OPTION );
-		$this->assertArrayHasKey( 'foo', $user_options, 'Dismissed items should contain foo before removal.' );
-		$this->assertArrayHasKey( 'bar', $user_options, 'Dismissed items should contain bar before removal.' );
-		$this->assertArrayHasKey( 'baz', $user_options, 'Dismissed items should contain baz before removal.' );
-		$this->assertEquals( 0, $user_options['foo'], 'Foo dismissal should store zero before removal.' );
-		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2, 'Bar dismissal should store future timestamp.' );
-		$this->assertEqualsWithDelta( time() + 200, $user_options['baz'], 2, 'Baz dismissal should store future timestamp.' );
+		$this->user_options->set( Dismissed_Items::OPTION, $items );
+
+		$this->assertEquals(
+			$items,
+			$this->user_options->get( Dismissed_Items::OPTION ),
+			'Dismissed items should contain all items before removal.'
+		);
 
 		$this->dismissed_items->remove( 'bar' );
 
-		$this->assertEquals(
-			array(
-				'foo' => 0,
-				'baz' => time() + 200,
+		$expected = array(
+			'foo' => 0,
+			'baz' => $items['baz'],
+		);
 
-			),
+		$this->assertEquals(
+			$expected,
 			$this->user_options->get( Dismissed_Items::OPTION ),
 			'Dismissed items should omit removed item.'
 		);
@@ -91,11 +92,7 @@ class Dismissed_ItemsTest extends TestCase {
 		$this->dismissed_items->remove( 'bar' );
 
 		$this->assertEquals(
-			array(
-				'foo' => 0,
-				'baz' => time() + 200,
-
-			),
+			$expected,
 			$this->user_options->get( Dismissed_Items::OPTION ),
 			'Dismissed items should remain unchanged after removing missing item.'
 		);

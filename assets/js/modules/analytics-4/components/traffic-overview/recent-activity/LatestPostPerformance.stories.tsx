@@ -87,7 +87,7 @@ function commonSetup(
  * Stores a referring site and a keyword too long for their rows, in place of
  * the reports' short values.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object} registry The registry with the latest post's reports.
  * @return {void}

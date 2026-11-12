@@ -36,7 +36,7 @@ import { startTimerOnce } from '@/js/modules/analytics-4/components/traffic-over
  * the Recent activity survey for users who interacted with the tab shows. It
  * starts the timer at the first interaction only.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {Function} A callback that returns a promise, which resolves once the interaction is saved.
  */

@@ -44,7 +44,7 @@ type ExpressSetupCTAType =
  * CTAs, which would otherwise make the publication look as if it had an
  * existing CTA that the setup itself just created.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {string} publicationID The publication ID.
  * @param {string} ctaType       The express setup CTA type, one of `EXPRESS_SETUP_CTAS`.

@@ -45,6 +45,13 @@ describe( 'SettingsForm', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
 			enabled: false,
 		} );
@@ -90,7 +97,12 @@ describe( 'SettingsForm', () => {
 		);
 	} );
 
-	it( 'should not render the WooCommerce products row by default (no flag)', () => {
+	it( 'should not render the WooCommerce products row when WooCommerce is not installed', () => {
+		provideSiteInfo( registry, {
+			wooCommerceInstalled: false,
+			wooCommerceActive: false,
+		} );
+
 		const { queryByLabelText } = render( <SettingsForm />, {
 			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
@@ -101,14 +113,7 @@ describe( 'SettingsForm', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should render the WooCommerce products row when freshData is enabled and WooCommerce is installed', () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-		] );
+	it( 'should render the WooCommerce products row when WooCommerce is installed', () => {
 		provideSiteInfo( registry, {
 			wooCommerceInstalled: true,
 			wooCommerceActive: true,
@@ -116,7 +121,6 @@ describe( 'SettingsForm', () => {
 
 		const { getByLabelText } = render( <SettingsForm />, {
 			registry,
-			features: [ 'freshData' ],
 			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 

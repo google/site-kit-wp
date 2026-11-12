@@ -89,7 +89,7 @@ class Migration_1_129_0 {
 	 * Registers hooks.
 	 *
 	 * @since 1.129.0
-	 * @since n.e.x.t Changed the `admin_init` priority to 0.
+	 * @since 1.192.0 Changed the `admin_init` priority to 0.
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
@@ -115,7 +115,7 @@ class Migration_1_129_0 {
 	 *
 	 * This neither checks nor updates `googlesitekit_db_version`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	public function apply_changes() {
 		$this->migrate_analytics_conversion_id_setting();
@@ -126,7 +126,7 @@ class Migration_1_129_0 {
 	 * Migrates the Ads Conversion ID to the new Ads module.
 	 *
 	 * @since 1.129.0
-	 * @since n.e.x.t Updated to handle missing Ads settings.
+	 * @since 1.192.0 Updated to handle missing Ads settings.
 	 */
 	protected function migrate_analytics_conversion_id_setting() {
 		if ( ! $this->analytics_settings->has() ) {

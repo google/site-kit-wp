@@ -78,7 +78,7 @@ final class Dashboard {
 	/**
 	 * Dashboard_Widget_Enabled instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Dashboard_Widget_Enabled
 	 */
 	private $dashboard_widget_enabled;
@@ -88,7 +88,7 @@ final class Dashboard {
 	 *
 	 * @since 1.0.0
 	 * @since 1.172.0 Added Dismissed_Items instance.
-	 * @since n.e.x.t Added Dashboard_Widget_Enabled instance.
+	 * @since 1.192.0 Added Dashboard_Widget_Enabled instance.
 	 *
 	 * @param Context         $context         Plugin context.
 	 * @param Assets          $assets          Optional. Assets API instance. Default is a new instance.
@@ -150,7 +150,7 @@ final class Dashboard {
 	/**
 	 * Checks if the WordPress dashboard widget should be displayed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return bool True if the WordPress dashboard widget should display, false otherwise.
 	 */
@@ -277,7 +277,7 @@ final class Dashboard {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */

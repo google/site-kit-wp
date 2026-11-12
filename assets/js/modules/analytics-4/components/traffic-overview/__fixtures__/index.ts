@@ -23,7 +23,7 @@
  * They follow the line of the design's chart, which stays low for two weeks
  * and climbs in the last week.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const DESIGN_DAILY_VISITS = [
 	39, 34, 59, 40, 42, 40, 39, 41, 44, 39, 31, 36, 58, 61, 74, 69, 70, 61, 70,

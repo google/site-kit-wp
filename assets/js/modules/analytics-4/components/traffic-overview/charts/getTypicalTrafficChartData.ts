@@ -45,7 +45,7 @@ export interface TypicalTrafficChartData {
 /**
  * Builds the Typical Traffic chart table from the daily rows.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object}         options              Options.
  * @param {Array.<Object>} options.dailyTraffic The daily rows of the benchmarking response, oldest first.

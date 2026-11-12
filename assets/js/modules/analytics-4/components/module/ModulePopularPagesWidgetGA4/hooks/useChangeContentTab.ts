@@ -37,7 +37,7 @@ import { trackEvent } from '@/js/util';
  * that tab sends no event, and neither does a click on "See all recent posts"
  * while Latest content is active.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {Function} The function that selects a tab by its ID.
  */

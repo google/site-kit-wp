@@ -22,7 +22,7 @@ export const surveyTriggerEndpoint = new RegExp(
  * Gets the trigger IDs of the requests to the survey trigger endpoint, in the
  * order they were sent.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {Array<string>} The trigger IDs.
  */

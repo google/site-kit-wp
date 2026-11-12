@@ -37,9 +37,11 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import dashboardSharingScreenshotURL from '@/svg/graphics/dashboard-sharing.svg?path';
-import emailReportingScreenshotURL from '@/svg/graphics/email-reporting.svg?path';
-import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
+import dashboardSharingScreenshotURL from '@/svg/screenshots/sitekit-dashboard-sharing-settings.svg?path';
+import emailReportsEmailScreenshotURL from '@/svg/screenshots/sitekit-email-reports-email.svg?path';
+import emailReportsSubscriptionScreenshotURL from '@/svg/screenshots/sitekit-email-reports-subscription.svg?path';
+import pdfReportFullScreenshotURL from '@/svg/screenshots/sitekit-pdf-report-full.svg?path';
+import pdfReportPanelScreenshotURL from '@/svg/screenshots/sitekit-pdf-report-panel.svg?path';
 
 /**
  * Registers default features from core Site Kit and modules.
@@ -139,7 +141,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: dashboardSharingScreenshotURL,
 					alt: __(
-						'Dashboard sharing screenshot showing the dashboard sharing panel',
+						'Screenshot of the dashboard sharing & permissions panel, which lists each Google service with the WordPress user roles that can view its data and who can manage view access',
 						'google-site-kit'
 					),
 					width: 620,
@@ -273,13 +275,22 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: emailReportingScreenshotURL,
+					src: emailReportsEmailScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
+						'Screenshot of a Site Kit email report on a mobile device summarizing site performance for the past week, including online store sales, form completions and visitor numbers compared with the previous period',
+						'google-site-kit'
+					),
+					width: 375,
+					height: 1290,
+				},
+				{
+					src: emailReportsSubscriptionScreenshotURL,
+					alt: __(
+						'Screenshot of the email reports subscription panel in Site Kit with options to receive reports weekly, monthly or quarterly, and a list of other site users to invite',
 						'google-site-kit'
 					),
 					width: 620,
-					height: 462,
+					height: 421,
 				},
 			],
 		},
@@ -375,22 +386,22 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: pdfReportPanelScreenshotURL,
 					alt: __(
-						'PDF report screenshot showing the full report with all selected metrics',
+						'Screenshot of the download report panel in Site Kit with checkboxes to choose which sections of the dashboard to include in the PDF report, such as key metrics, traffic, content, speed and monetization',
 						'google-site-kit'
 					),
-					width: 292,
-					height: 210,
+					width: 620,
+					height: 434,
 				},
 				{
-					src: splashScreenScreenshotURL,
+					src: pdfReportFullScreenshotURL,
 					alt: __(
-						'PDF report screenshot showing the export panel with selected metrics',
+						"Screenshot of a Site Kit PDF report showing the site's performance for a date range, with key metrics followed by charts of traffic over time, visitors by channel, location and device, and search traffic",
 						'google-site-kit'
 					),
-					width: 292,
-					height: 210,
+					width: 620,
+					height: 1064,
 				},
 			],
 		},

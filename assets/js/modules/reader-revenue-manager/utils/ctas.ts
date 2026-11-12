@@ -20,7 +20,7 @@
  * Gets the CTA ID from a WCP CTA resource name.
  *
  * @since 1.188.0
- * @since n.e.x.t Moved from the CTAs datastore and exported.
+ * @since 1.192.0 Moved from the CTAs datastore and exported.
  *
  * @param  name Optional CTA resource name.
  * @return {string|undefined} CTA ID, or undefined if none can be determined.

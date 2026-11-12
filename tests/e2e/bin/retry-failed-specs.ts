@@ -56,7 +56,7 @@ const E2E_DIRECTORY = resolve( dirname( process.argv[ 1 ] ), '..' );
 /**
  * Reads the Jest JSON results at the given path.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param resultsPath Path of the results file.
  * @return The results, or `null` when the file does not exist.
@@ -71,7 +71,7 @@ function readResults( resultsPath: string ): JestResults | null {
 /**
  * Gets the spec files that failed in the given results.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param results Jest JSON results.
  * @return Absolute paths of the failed spec files.
@@ -85,7 +85,7 @@ function getFailedSpecFiles( results: JestResults ): string[] {
 /**
  * Runs the given spec files.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param specFiles   Absolute paths of the spec files to run.
  * @param resultsPath Path to write the Jest JSON results to.
@@ -117,7 +117,7 @@ function runSpecFiles( specFiles: string[], resultsPath: string ): string[] {
 /**
  * Formats spec file paths as a Markdown list.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param specFiles Absolute paths of the spec files.
  * @return One list item for each spec file, relative to `tests/e2e`.
@@ -131,7 +131,7 @@ function toMarkdownList( specFiles: string[] ): string[] {
 /**
  * Prints the summary, and adds it to the GitHub job summary when it exists.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param  lines Lines of the summary.
  * @return {void}
@@ -147,7 +147,7 @@ function writeSummary( lines: string[] ) {
 /**
  * Retries the failed spec files from the given results.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param resultsPath Path of the Jest JSON results of the first run.
  * @return Exit code: `0` when every failed spec file passed on the retry.

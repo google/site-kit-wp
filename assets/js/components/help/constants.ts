@@ -22,6 +22,6 @@
  * The Welcome modal tooltip anchors to this button, so the class is shared
  * rather than repeated as a selector string.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export const HELP_MENU_BUTTON_CLASS = 'googlesitekit-help-menu__button';

@@ -554,7 +554,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 	 * Makes the fake Analytics API return the rows of a site whose lead events are
 	 * `contact` and `submit_lead_form`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	private function provide_lead_rows() {
 		$this->report_rows = array(
@@ -580,7 +580,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 	/**
 	 * Makes the fake Analytics API return the rows of a store whose key action is `purchase`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	private function provide_store_rows() {
 		$this->report_rows = array(
@@ -601,7 +601,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 	 *
 	 * PHP runs this method in place of the trait's `build_report()`, which answers `totalUsers` alone.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return array The report, in the shape Analytics returns it.
@@ -649,7 +649,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 	/**
 	 * Gets the key of `$report_rows` that a report request asks for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return string `engagement`, `key_actions` or `year_ago_key_actions`.
@@ -665,7 +665,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 	/**
 	 * Gets the periods of each report of the batch call, in the order the call asks for them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return array List of reports, each a list of periods as `<startDate> to <endDate>`.
 	 */
@@ -682,7 +682,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 	/**
 	 * Gets the dimensions of each report of the batch call, in the order the call asks for them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return array List of reports, each a list of dimension names.
 	 */
@@ -696,7 +696,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 	/**
 	 * Gets the event names each report of the batch call filters by, in the order the call asks for them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return array List of reports, each a list of the event names its `eventName` filter selects.
 	 *               A report with no such filter gets an empty list.

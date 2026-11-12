@@ -96,7 +96,7 @@ class Migration_1_150_0 {
 	 * Registers hooks.
 	 *
 	 * @since 1.151.0
-	 * @since n.e.x.t Changed the `admin_init` priority to 0.
+	 * @since 1.192.0 Changed the `admin_init` priority to 0.
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
@@ -121,7 +121,7 @@ class Migration_1_150_0 {
 	 * Migrates the Audience Settings from Analytics settings to new Audience settings.
 	 *
 	 * @since 1.151.0
-	 * @since n.e.x.t Updated to handle missing Audience settings.
+	 * @since 1.192.0 Updated to handle missing Audience settings.
 	 */
 	protected function migrate_audience_settings() {
 		if ( ! $this->analytics_settings->has() ) {

@@ -213,7 +213,7 @@ class AuthenticationTest extends TestCase {
 	 * @dataProvider data_plugin_version_writes
 	 * @param string|null $stored_version Version stored before the write, or null for none.
 	 */
-	public function test_register__does_not_sync_site_fields_when_the_plugin_version_is_written( $stored_version ) {
+	public function test_register__syncs_site_fields_without_scopes_when_the_plugin_version_is_written( $stored_version ) {
 		$this->fake_proxy_site_connection();
 
 		// Set up the stored version before registering the listeners, so they only see the write
@@ -257,7 +257,45 @@ class AuthenticationTest extends TestCase {
 
 		do_action( 'shutdown' );
 
-		$this->assertCount( 0, $synced_bodies, 'Writing the plugin version should not send the site fields.' );
+		$this->assertCount( 1, $synced_bodies, 'Writing the plugin version should send the site fields once.' );
+		$this->assertArrayHasKey( 'intent_uri', $synced_bodies[0], 'The synced site fields should include the intent URI.' );
+		$this->assertSame( '', $synced_bodies[0]['scope'], 'A background sync should send no scopes.' );
+	}
+
+	public function test_register__background_sync_sends_no_scopes_when_setup_set_them() {
+		$this->fake_proxy_site_connection();
+
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_actions( 'update_option_blogname' );
+		remove_all_actions( 'shutdown' );
+		$auth->register();
+
+		// Setup adds scopes to the shared proxy instance when an administrator signs in.
+		$auth->get_google_proxy()->with_scopes( $auth->get_oauth_client()->get_required_scopes() );
+
+		$synced_bodies = array();
+		$this->subscribe_to_wp_http_requests(
+			function ( $url, $args ) use ( &$synced_bodies ) {
+				if ( false !== strpos( $url, Google_Proxy::OAUTH2_SITE_URI ) ) {
+					$synced_bodies[] = $args['body'];
+				}
+			},
+			array(
+				'headers'  => array(),
+				'body'     => '{}',
+				'response' => array(
+					'code'    => 200,
+					'message' => get_status_header_desc( 200 ),
+				),
+			)
+		);
+
+		update_option( 'blogname', 'A new site title ' . wp_generate_password( 6, false ) );
+
+		do_action( 'shutdown' );
+
+		$this->assertCount( 1, $synced_bodies, 'Changing the site title should send the site fields once.' );
+		$this->assertSame( '', $synced_bodies[0]['scope'], 'A background sync should send no scopes, even after setup set them.' );
 	}
 
 	public function data_connected_proxy_urls() {

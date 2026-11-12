@@ -140,11 +140,15 @@ class Setup_Test extends TestCase {
 		$_GET['code']  = 'test-code';
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_SETUP_START );
 
-		// Capture URLs of all WP HTTP requests.
+		// Capture URLs and bodies of all WP HTTP requests.
 		$http_requests = array();
+		$site_bodies   = array();
 		$this->subscribe_to_wp_http_requests(
-			function ( $url ) use ( &$http_requests ) {
+			function ( $url, $args ) use ( &$http_requests, &$site_bodies ) {
 				$http_requests[] = $url;
+				if ( false !== strpos( $url, Google_Proxy::OAUTH2_SITE_URI ) ) {
+					$site_bodies[] = $args['body'];
+				}
 			},
 			array(
 				'response' => array( 'code' => 200 ),
@@ -165,6 +169,13 @@ class Setup_Test extends TestCase {
 			( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ),
 			$http_requests,
 			'HTTP requests should contain the OAuth2 site URI.'
+		);
+
+		$this->assertCount( 1, $site_bodies, 'Setup should send the site fields once.' );
+		$this->assertEquals(
+			implode( ' ', $authentication->get_oauth_client()->get_required_scopes() ),
+			$site_bodies[0]['scope'],
+			'Setup should send the required scopes with the site fields.'
 		);
 	}
 

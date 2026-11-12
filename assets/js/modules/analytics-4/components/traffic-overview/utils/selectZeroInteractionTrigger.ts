@@ -37,7 +37,7 @@ import { getDayCount } from '@/js/util/dates';
  * Selects the zero interaction trigger, for a user who never opened the
  * Recent activity tab.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Function} select The data store select function.
  * @return {(string|null|undefined)} The trigger ID, `undefined` when the user doesn't meet its criteria, or `null` while the data loads.

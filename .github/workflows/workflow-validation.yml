@@ -25,7 +25,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --only-upgrade ca-certificates
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
       - id: github-yaml-files
         run: echo "files=$(find .github/ \( -name '*.yml' -o -name '*.yaml' \) -print0 | xargs -0)" >> "$GITHUB_OUTPUT"
       # Excluded so the commit and `version` (v0.12.0) are only updated

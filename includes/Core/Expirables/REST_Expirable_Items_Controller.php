@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Expirables\Expirable_Items;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use WP_Error;
+use Google\Site_Kit\Core\REST_API\Schema\Expirable_Items_Schema;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -77,6 +77,7 @@ class REST_Expirable_Items_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.128.0
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -94,6 +95,9 @@ class REST_Expirable_Items_Controller {
 						return new WP_REST_Response( $this->expirable_items->get() );
 					},
 					'permission_callback' => $can_manage_expirable_item,
+				),
+				array(
+					'schema' => array( Expirable_Items_Schema::class, 'get' ),
 				)
 			),
 			new REST_Route(
@@ -101,42 +105,8 @@ class REST_Expirable_Items_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request['data'];
-
-						if ( empty( $data ) || ! is_array( $data ) ) {
-							return new WP_Error(
-								'missing_required_param',
-								/* translators: %s: Missing parameter name */
-								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'items' ),
-								array( 'status' => 400 )
-							);
-						}
-
-						foreach ( $data as $datum ) {
-							if ( empty( $datum['slug'] ) ) {
-								return new WP_Error(
-									'missing_required_param',
-									/* translators: %s: Missing parameter name */
-									sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
-									array( 'status' => 400 )
-								);
-							}
-
-							$expiration = null;
-							if ( isset( $datum['expiration'] ) && intval( $datum['expiration'] ) > 0 ) {
-								$expiration = $datum['expiration'];
-							}
-
-							if ( ! $expiration ) {
-								return new WP_Error(
-									'missing_required_param',
-									/* translators: %s: Missing parameter name */
-									sprintf( __( 'Request parameter is invalid: %s.', 'google-site-kit' ), 'expiration' ),
-									array( 'status' => 400 )
-								);
-							}
-
-							$this->expirable_items->add( $datum['slug'], $expiration );
+						foreach ( $request['data'] as $datum ) {
+							$this->expirable_items->add( $datum['slug'], $datum['expiration'] );
 						}
 
 						return new WP_REST_Response( $this->expirable_items->get() );
@@ -144,24 +114,33 @@ class REST_Expirable_Items_Controller {
 					'permission_callback' => $can_manage_expirable_item,
 					'args'                => array(
 						'data' => array(
-							'type'     => 'array',
-							'required' => true,
-							'items'    => array(
+							'type'        => 'array',
+							'description' => __( 'The items to set an expiration timer for.', 'google-site-kit' ),
+							'required'    => true,
+							'minItems'    => 1,
+							'items'       => array(
 								'type'                 => 'object',
 								'additionalProperties' => false,
 								'properties'           => array(
 									'slug'       => array(
-										'type'     => 'string',
-										'required' => true,
+										'type'        => 'string',
+										'description' => __( 'Slug of the item.', 'google-site-kit' ),
+										'required'    => true,
+										'minLength'   => 1,
 									),
 									'expiration' => array(
-										'type'     => 'integer',
-										'required' => true,
+										'type'        => 'integer',
+										'description' => __( 'Seconds until the item expires.', 'google-site-kit' ),
+										'required'    => true,
+										'minimum'     => 1,
 									),
 								),
 							),
 						),
 					),
+				),
+				array(
+					'schema' => array( Expirable_Items_Schema::class, 'get' ),
 				)
 			),
 		);

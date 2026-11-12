@@ -118,6 +118,47 @@ describe( 'Notification', () => {
 		expect( mockDismissNotification ).not.toHaveBeenCalled();
 	} );
 
+	describe( 'maxViewedDates', () => {
+		it.each( [
+			[ 0, 4, false ],
+			[ 2, 1, false ],
+			[ 2, 2, true ],
+			[ 2, 3, true ],
+			[ 5, 3, false ],
+		] )(
+			'should apply limit %s after %s viewed dates (dismissed: %s)',
+			( maxViewedDates, count, dismissed ) => {
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates.mockReturnValue(
+						Array.from(
+							{ length: count },
+							( _, index ) => `2026-01-0${ index + 1 }`
+						)
+					);
+
+				render(
+					<Notification
+						id="test-notification"
+						maxViewedDates={ maxViewedDates }
+					>
+						Test Notification Content
+					</Notification>,
+					{ registry }
+				);
+
+				if ( dismissed ) {
+					expect( mockDismissNotification ).toHaveBeenCalledWith(
+						'test-notification',
+						{ skipHidingFromQueue: true }
+					);
+				} else {
+					expect( mockDismissNotification ).not.toHaveBeenCalled();
+				}
+			}
+		);
+	} );
+
 	it( 'marks notification as seen only after being in view for 3 seconds', () => {
 		render( <NotificationWrapper />, { registry } );
 

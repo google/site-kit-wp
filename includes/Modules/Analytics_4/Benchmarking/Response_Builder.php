@@ -72,7 +72,7 @@ class Response_Builder {
 	 *
 	 * @since 1.190.0
 	 * @since 1.191.0 Returns `visits` in place of `visitors`, and each day's count as `visits`.
-	 * @since n.e.x.t `dailyTraffic` changed from the 395 days that end on the end date to the days of the selected period.
+	 * @since 1.192.0 `dailyTraffic` changed from the 395 days that end on the end date to the days of the selected period.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
@@ -312,7 +312,7 @@ class Response_Builder {
 	 *
 	 * @since 1.190.0
 	 * @since 1.191.0 Lists each day's count as `visits` in place of `visitors`.
-	 * @since n.e.x.t Method renamed from `get_daily_traffic()`, and changed from walking 395 days to walking every day from `$first_date` to `$end_date`.
+	 * @since 1.192.0 Method renamed from `get_daily_traffic()`, and changed from walking 395 days to walking every day from `$first_date` to `$end_date`.
 	 *
 	 * @param array  $report_rows The rows of the daily series report.
 	 * @param string $first_date  The first day of the daily series, as `YYYY-MM-DD`.
@@ -351,7 +351,7 @@ class Response_Builder {
 	 * The daily series starts with the compare period, which `dailyTraffic`
 	 * leaves out.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array  $daily_series The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
 	 * @param string $start_date   The first day of the selected period, as `YYYY-MM-DD`.
@@ -371,7 +371,7 @@ class Response_Builder {
 	 *
 	 * @since 1.190.0
 	 * @since 1.191.0 Renamed from `sum_visitors()`.
-	 * @since n.e.x.t Parameter `$daily_traffic` renamed to `$daily_series`, because `dailyTraffic` now has the selected period alone.
+	 * @since 1.192.0 Parameter `$daily_traffic` renamed to `$daily_series`, because `dailyTraffic` now has the selected period alone.
 	 *
 	 * @param array  $daily_series The days of the daily series, each with `visits` and a `date` as `YYYY-MM-DD`.
 	 * @param string $start_date   The first day to count, as `YYYY-MM-DD`.

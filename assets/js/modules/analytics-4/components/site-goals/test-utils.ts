@@ -102,7 +102,7 @@ export function seedSiteGoalsEventCountReport(
  * Builds the options of the discovery report that lists a goal type's breakdown
  * values, with the event scoping its Site Goals widget uses.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {WPDataRegistry} registry Test registry whose reference date ends the 90-day discovery window.
  * @param {GoalType}       goalType Goal type whose breakdown dimension the report groups by.
@@ -145,7 +145,7 @@ export function buildSiteGoalsBreakdownValuesReportOptions(
  * Stores a finished discovery report listing a goal type's breakdown values,
  * so the code under test reads them without a request.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {WPDataRegistry} registry Test registry whose reference date ends the 90-day discovery window.
  * @param {GoalType}       goalType Goal type whose breakdown dimension the report groups by.
@@ -180,7 +180,7 @@ export function seedSiteGoalsBreakdownValuesReport(
  * Sets up both Site Goals widgets with the breakdown dimensions, and the lead
  * generation widget with breakdown values, so it shows breakdown tabs.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {WPDataRegistry} registry            Test registry whose reference date ends the 90-day discovery window.
  * @param {Array<string>}  leadBreakdownValues Form IDs the lead breakdown values report returns.

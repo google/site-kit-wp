@@ -29,15 +29,18 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { Select } from 'googlesitekit-data';
 import {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 
@@ -74,6 +77,17 @@ export const WHATS_NEW_FEATURES: Partial< Feature >[] = [
 		addedInVersion: OLDER_VERSION,
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+			isEnabled: ( select: Select ) =>
+				(
+					( select( CORE_UI ).getValue( SUCCEEDED_FEATURES_UI_KEY ) ||
+						[] ) as string[]
+				 ).includes( 'dashboard-sharing' ),
+		},
+		successNotice: {
+			title: 'Success! Dashboard sharing is configured',
+			description:
+				'Dashboard sharing can always be managed from the Site Kit header',
+			dismissLabel: 'Got it',
 		},
 	},
 	{
@@ -86,6 +100,25 @@ export const WHATS_NEW_FEATURES: Partial< Feature >[] = [
 		addedInVersion: OLDER_VERSION,
 		setup: {
 			type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+		},
+	},
+	{
+		slug: 'enabled-test-feature',
+		title: 'Earn money by placing ads on your site',
+		setup: {
+			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+			ctaLabel: 'Set up AdSense',
+			isEnabled: () => true,
+		},
+		successNotice: {
+			title: 'Success! AdSense is set up',
+			description:
+				'You are now monetizing your website with relevant ads',
+			cta: {
+				label: 'Show me',
+				getURL: () =>
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard#monetization',
+			},
 		},
 	},
 ];
