@@ -22,11 +22,6 @@
  * External dependencies
  */
 import {
-	attachClosestEdge,
-	extractClosestEdge,
-} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
-import { getReorderDestinationIndex } from '@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index';
-import {
 	ElementEventBasePayload,
 	draggable,
 	dropTargetForElements,
@@ -346,15 +341,7 @@ export default function useDraggableList< Item >( {
 				element: binding.rowElement,
 				canDrop: ( { source } ) => source.data.listToken === listToken,
 				getIsSticky: () => true,
-				getData: ( { element, input } ) =>
-					attachClosestEdge(
-						{ itemID, listToken },
-						{
-							element,
-							input,
-							allowedEdges: [ 'top', 'bottom' ],
-						}
-					),
+				getData: () => ( { itemID, listToken } ),
 			} );
 
 			cleanupFunctions.push( draggableCleanup );
@@ -387,22 +374,14 @@ export default function useDraggableList< Item >( {
 				target.data.itemID as string
 			);
 
-			const closestEdgeOfTarget = extractClosestEdge( target.data );
-
-			if (
-				startIndex === -1 ||
-				indexOfTarget === -1 ||
-				! closestEdgeOfTarget
-			) {
+			if ( startIndex === -1 || indexOfTarget === -1 ) {
 				return null;
 			}
 
-			return getReorderDestinationIndex( {
-				startIndex,
-				indexOfTarget,
-				closestEdgeOfTarget,
-				axis: 'vertical',
-			} );
+			// The dragged item takes the place of the row under the pointer, so
+			// the destination changes as soon as the pointer enters a
+			// neighboring row.
+			return indexOfTarget;
 		}
 
 		function updateDestination( { location }: ElementEventBasePayload ) {
