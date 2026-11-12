@@ -40,7 +40,6 @@ import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overvi
 import {
 	getPlaceholderDailyTraffic,
 	getPlaceholderPublishedPosts,
-	getPlaceholderTypicalTrafficRange,
 } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
 import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
@@ -98,7 +97,8 @@ const TrafficOverviewPanel: FC = () => {
 	const isLoading = ! loaded || isGatheringData === undefined;
 
 	// The panel reads the benchmarking response wherever it has the key
-	// factors.
+	// factors. Each day of the response carries its typical range, which the
+	// chart draws behind the line.
 	//
 	// TODO: Give the chart and the total visits figures of their own on the
 	// entity dashboard and without the `typicalTraffic` feature, where the
@@ -149,18 +149,8 @@ const TrafficOverviewPanel: FC = () => {
 						dailyTraffic={ dailyTraffic }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
-						// The chart compares the site with its typical traffic
-						// wherever the panel shows the key factors.
-						//
-						// TODO: Replace the placeholder typical traffic range
-						// and published posts with the site's own.
-						typicalTrafficRange={
-							showKeyFactors
-								? getPlaceholderTypicalTrafficRange(
-										dailyTraffic
-								  )
-								: undefined
-						}
+						// TODO: Replace the placeholder published posts with
+						// the site's own.
 						publishedPosts={
 							showKeyFactors
 								? getPlaceholderPublishedPosts( dailyTraffic )

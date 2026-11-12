@@ -34,14 +34,17 @@ final class Wire_Format {
 	 *
 	 * @since 1.189.0
 	 * @since 1.191.0 Renamed the constants of members `3` and `4` from visitors to visits, and replaced members `5` and `6` with the key factor cards and their attributes.
+	 * @since n.e.x.t Added members `7` and `8`, the expected range of each day and the first day with recorded traffic.
 	 */
-	const MEMBER_VERSION               = 0;
-	const MEMBER_STRINGS               = 1;
-	const MEMBER_FIRST_DATE            = 2;
-	const MEMBER_DAILY_VISITS          = 3;
-	const MEMBER_VISIT_TOTALS          = 4;
-	const MEMBER_KEY_FACTORS           = 5;
-	const MEMBER_KEY_FACTOR_ATTRIBUTES = 6;
+	const MEMBER_VERSION                  = 0;
+	const MEMBER_STRINGS                  = 1;
+	const MEMBER_FIRST_DATE               = 2;
+	const MEMBER_DAILY_VISITS             = 3;
+	const MEMBER_VISIT_TOTALS             = 4;
+	const MEMBER_KEY_FACTORS              = 5;
+	const MEMBER_KEY_FACTOR_ATTRIBUTES    = 6;
+	const MEMBER_DAILY_EXPECTED_RANGES    = 7;
+	const MEMBER_FIRST_TRAFFIC_DAY_OFFSET = 8;
 
 	/**
 	 * The position each driver kind of a key factor card travels as. A kind is
@@ -104,9 +107,17 @@ final class Wire_Format {
 
 	/**
 	 * The decimal places a share of the site's change keeps. Every other number
-	 * the format carries is an integer.
+	 * the format carries is an integer, except the bounds of the expected range.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Names the bounds of the expected range as the other numbers with decimals.
 	 */
 	const SHARE_DECIMAL_PLACES = 1;
+
+	/**
+	 * The decimal places each bound of a day's expected range keeps.
+	 *
+	 * @since n.e.x.t
+	 */
+	const EXPECTED_RANGE_DECIMAL_PLACES = 1;
 }

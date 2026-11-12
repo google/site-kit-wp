@@ -53,14 +53,24 @@ describe( 'TrafficChart', () => {
 	let registry: WPDataRegistry;
 
 	const dailyTraffic: BenchmarkingDailyTrafficRow[] = [
-		{ date: '2025-01-14', visits: 55 },
-		{ date: '2025-01-15', visits: 14 },
-		{ date: '2025-01-16', visits: 3 },
+		{
+			date: '2025-01-14',
+			visits: 55,
+			expectedMin: null,
+			expectedMax: null,
+		},
+		{
+			date: '2025-01-15',
+			visits: 14,
+			expectedMin: null,
+			expectedMax: null,
+		},
+		{ date: '2025-01-16', visits: 3, expectedMin: null, expectedMax: null },
 	];
 
 	// Every day of the range, at zero.
 	const noVisits: BenchmarkingDailyTrafficRow[] = dailyTraffic.map(
-		( { date } ) => ( { date, visits: 0 } )
+		( day ) => ( { ...day, visits: 0 } )
 	);
 
 	/**
@@ -139,7 +149,7 @@ describe( 'TrafficChart', () => {
 		] );
 	} );
 
-	it( 'runs the value axis from 0 to 100 for a range with no visitors', async () => {
+	it( 'should run the value axis from 0 to 100 for a range with no visits', async () => {
 		render( <TrafficChart dailyTraffic={ noVisits } />, { registry } );
 
 		const { options } = await getLastChartProps();
@@ -147,7 +157,7 @@ describe( 'TrafficChart', () => {
 		expect( options.vAxis.viewWindow ).toEqual( { min: 0, max: 100 } );
 	} );
 
-	it( 'draws a flat line across the selected range when it has no visitors', async () => {
+	it( 'should draw a flat line across the selected range when it has no visits', async () => {
 		render( <TrafficChart dailyTraffic={ noVisits } />, { registry } );
 
 		const { data, options } = await getLastChartProps();
@@ -176,7 +186,7 @@ describe( 'TrafficChart', () => {
 		expect( options.vAxis.viewWindow ).toEqual( { min: 0, max: 100 } );
 	} );
 
-	it( 'sets no maximum on the value axis for a range that has visitors', async () => {
+	it( 'should set no maximum on the value axis for a range that has visits', async () => {
 		render( <TrafficChart dailyTraffic={ dailyTraffic } />, { registry } );
 
 		const { options } = await getLastChartProps();
@@ -304,7 +314,7 @@ describe( 'TrafficChart', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'reads every day and its visitors to a screen reader', async () => {
+	it( 'should read every day and its visits to a screen reader', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficChart dailyTraffic={ dailyTraffic } />,
 			{ registry }
@@ -317,25 +327,30 @@ describe( 'TrafficChart', () => {
 		).map( ( line ) => line.textContent );
 
 		expect( lines ).toEqual( [
-			'January 14, 2025: 55 visitors',
-			'January 15, 2025: 14 visitors',
-			'January 16, 2025: 3 visitors',
+			'January 14, 2025: 55 visits',
+			'January 15, 2025: 14 visits',
+			'January 16, 2025: 3 visits',
 		] );
 	} );
 
-	it( 'reads a day with one visitor in the singular', async () => {
+	it( 'should read a day with one visit in the singular', async () => {
 		const { getByText, waitForRegistry } = render(
 			<TrafficChart
-				dailyTraffic={ [ { date: '2025-01-14', visits: 1 } ] }
+				dailyTraffic={ [
+					{
+						date: '2025-01-14',
+						visits: 1,
+						expectedMin: null,
+						expectedMax: null,
+					},
+				] }
 			/>,
 			{ registry }
 		);
 
 		await waitForRegistry();
 
-		expect(
-			getByText( 'January 14, 2025: 1 visitor' )
-		).toBeInTheDocument();
+		expect( getByText( 'January 14, 2025: 1 visit' ) ).toBeInTheDocument();
 	} );
 
 	it( "reads the property-creation marker's day and label to a screen reader", async () => {
@@ -517,9 +532,12 @@ describe( 'TrafficChart', () => {
 	} );
 
 	describe( 'typical traffic range and published posts', () => {
-		const typicalTrafficRange = [
-			{ date: '2025-01-15', min: 10, max: 30 },
-		];
+		// Only `2025-01-15` has a typical range.
+		const dailyTrafficWithRange = dailyTraffic.map( ( day ) =>
+			day.date === '2025-01-15'
+				? { ...day, expectedMin: 10, expectedMax: 30 }
+				: day
+		);
 
 		const publishedPosts = [
 			{ date: '2025-01-15', title: 'Ice cream is good for your health' },
@@ -541,13 +559,9 @@ describe( 'TrafficChart', () => {
 		}
 
 		it( 'should fill the typical range in #e3d1ff at half opacity, with no edge lines', async () => {
-			render(
-				<TrafficChart
-					dailyTraffic={ dailyTraffic }
-					typicalTrafficRange={ typicalTrafficRange }
-				/>,
-				{ registry }
-			);
+			render( <TrafficChart dailyTraffic={ dailyTrafficWithRange } />, {
+				registry,
+			} );
 
 			const { data, options } = await getLastChartProps();
 
@@ -569,8 +583,7 @@ describe( 'TrafficChart', () => {
 		it( 'should keep the line #462083 and 3px wide with the typical range and the posts', async () => {
 			render(
 				<TrafficChart
-					dailyTraffic={ dailyTraffic }
-					typicalTrafficRange={ typicalTrafficRange }
+					dailyTraffic={ dailyTrafficWithRange }
 					publishedPosts={ publishedPosts }
 				/>,
 				{ registry }
@@ -602,13 +615,14 @@ describe( 'TrafficChart', () => {
 			] );
 		} );
 
-		it( 'should end the value axis above the typical range for a range with no visitors', async () => {
+		it( 'should end the value axis above the typical range for a range with no visits', async () => {
 			render(
 				<TrafficChart
-					dailyTraffic={ noVisits }
-					typicalTrafficRange={ [
-						{ date: '2025-01-14', min: 100, max: 300 },
-					] }
+					dailyTraffic={ noVisits.map( ( day, index ) =>
+						index === 0
+							? { ...day, expectedMin: 100, expectedMax: 300 }
+							: day
+					) }
 				/>,
 				{ registry }
 			);
@@ -621,8 +635,7 @@ describe( 'TrafficChart', () => {
 		it( 'should list the "Typical traffic range" and "Published post" legend items after the traffic item', async () => {
 			const { getAllByRole, waitForRegistry } = render(
 				<TrafficChart
-					dailyTraffic={ dailyTraffic }
-					typicalTrafficRange={ typicalTrafficRange }
+					dailyTraffic={ dailyTrafficWithRange }
 					publishedPosts={ publishedPosts }
 				/>,
 				{ registry }
@@ -643,7 +656,7 @@ describe( 'TrafficChart', () => {
 			).toHaveStyle( { backgroundColor: '#e3d1ff' } );
 			expect(
 				within( rangeItem ).getByRole( 'button', {
-					name: /^Site Kit analyzes the last 18 months of your traffic history to estimate a typical range/,
+					name: /^Site Kit analyzes the last 12 months of your traffic history to estimate a typical range/,
 				} )
 			).toBeInTheDocument();
 			expect(
@@ -663,10 +676,8 @@ describe( 'TrafficChart', () => {
 		it( 'should list only the traffic legend item when no day the chart plots has a typical range or a post', async () => {
 			const { getAllByRole, waitForRegistry } = render(
 				<TrafficChart
+					// Every day has null bounds.
 					dailyTraffic={ dailyTraffic }
-					typicalTrafficRange={ [
-						{ date: '2025-01-13', min: 10, max: 30 },
-					] }
 					publishedPosts={ [
 						{
 							date: '2025-01-17',
@@ -688,8 +699,7 @@ describe( 'TrafficChart', () => {
 		it( "should read each day's typical range, and each post after its day, to a screen reader", async () => {
 			const { container, waitForRegistry } = render(
 				<TrafficChart
-					dailyTraffic={ dailyTraffic }
-					typicalTrafficRange={ typicalTrafficRange }
+					dailyTraffic={ dailyTrafficWithRange }
 					publishedPosts={ publishedPosts }
 				/>,
 				{ registry }
@@ -698,21 +708,52 @@ describe( 'TrafficChart', () => {
 			await waitForRegistry();
 
 			expect( getScreenReaderLines( container ) ).toEqual( [
-				'January 14, 2025: 55 visitors',
-				'January 15, 2025: 14 visitors, typical range 10 to 30',
+				'January 14, 2025: 55 visits',
+				'January 15, 2025: 14 visits, typical range 10 to 30',
 				'Post published on January 15, 2025: Ice cream is good for your health',
 				'Post published on January 15, 2025: Eat ice cream every day',
-				'January 16, 2025: 3 visitors',
+				'January 16, 2025: 3 visits',
+			] );
+		} );
+
+		it( 'should draw the bounds of each day as they are, and read them to a screen reader with their decimals', async () => {
+			const { container, waitForRegistry } = render(
+				<TrafficChart
+					dailyTraffic={ dailyTraffic.map( ( day, index ) =>
+						index === 0
+							? day
+							: { ...day, expectedMin: 10.4, expectedMax: 31.6 }
+					) }
+				/>,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			const { data } = await getLastChartProps();
+
+			// The first day has no typical range, so the band starts on the
+			// second day.
+			expect( data.slice( 1 ) ).toEqual( [
+				[ new Date( 2025, 0, 14 ), 55, null, null, '55' ],
+				[ new Date( 2025, 0, 15 ), 14, 10.4, 31.6, '14' ],
+				[ new Date( 2025, 0, 16 ), 3, 10.4, 31.6, '3' ],
+			] );
+			expect( getScreenReaderLines( container ) ).toEqual( [
+				'January 14, 2025: 55 visits',
+				'January 15, 2025: 14 visits, typical range 10.4 to 31.6',
+				'January 16, 2025: 3 visits, typical range 10.4 to 31.6',
 			] );
 		} );
 
 		it( 'should draw neither the typical range nor the posts, nor list them in the legend, while the property is gathering data', async () => {
 			const { container, getAllByRole, waitForRegistry } = render(
 				<TrafficChart
-					dailyTraffic={ dailyTraffic }
-					typicalTrafficRange={ [
-						{ date: '2025-01-14', min: 10, max: 30 },
-					] }
+					dailyTraffic={ dailyTraffic.map( ( day ) => ( {
+						...day,
+						expectedMin: 10,
+						expectedMax: 30,
+					} ) ) }
 					publishedPosts={ [
 						{
 							date: '2025-01-14',

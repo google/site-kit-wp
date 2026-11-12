@@ -76,11 +76,13 @@ import {
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
 import {
+	BenchmarkingDailyTrafficRow,
 	BenchmarkingKeyFactor,
 	DecodedBenchmarkingResponse,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { addDays } from '@/js/util';
 import { ErrorObject } from '@/js/util/errors';
 
 interface FreshMetricsFigures {
@@ -854,9 +856,37 @@ export function provideRecentActivitySurveyState(
 }
 
 /**
+ * Gives each day the typical range the design draws: a quarter below and above
+ * the average of the seven days centered on it, and at least 5 visits either
+ * way, so the band follows the line.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} dailyTraffic The visits on each day, oldest first.
+ * @return {Array.<Object>} The same days, each with the bounds of its typical range.
+ */
+export function addTypicalTrafficRange(
+	dailyTraffic: BenchmarkingDailyTrafficRow[]
+): BenchmarkingDailyTrafficRow[] {
+	return dailyTraffic.map( ( day, index ) => {
+		const week = dailyTraffic.slice( Math.max( 0, index - 3 ), index + 4 );
+		const average =
+			week.reduce( ( total, { visits } ) => total + visits, 0 ) /
+			week.length;
+		const margin = Math.max( average / 4, 5 );
+
+		return {
+			...day,
+			expectedMin: Math.max( 0, Math.round( average - margin ) ),
+			expectedMax: Math.round( average + margin ),
+		};
+	} );
+}
+
+/**
  * Builds a decoded benchmarking response with the figures of the design: its
- * total visits, its visits on each day of the date range, and its key factor
- * cards.
+ * total visits, its visits and typical range on each day of the date range,
+ * and its key factor cards.
  *
  * @since n.e.x.t
  *
@@ -870,7 +900,12 @@ export function createBenchmarkingResponse(
 ): DecodedBenchmarkingResponse {
 	return {
 		visits: PLACEHOLDER_TOTAL_VISITS,
-		dailyTraffic: getPlaceholderDailyTraffic( startDate, endDate ),
+		dailyTraffic: addTypicalTrafficRange(
+			getPlaceholderDailyTraffic( startDate, endDate )
+		),
+		// The site recorded traffic on every day of the year of history the
+		// response reads, so every day of the range has a typical range.
+		firstTrafficDate: addDays( startDate, -364 ),
 		keyFactors: KEY_FACTORS,
 	};
 }

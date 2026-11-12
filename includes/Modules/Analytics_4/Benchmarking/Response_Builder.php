@@ -73,16 +73,18 @@ class Response_Builder {
 	 * @since 1.190.0
 	 * @since 1.191.0 Returns `visits` in place of `visitors`, and each day's count as `visits`.
 	 * @since 1.192.0 `dailyTraffic` changed from the 395 days that end on the end date to the days of the selected period.
+	 * @since n.e.x.t Gives each day of `dailyTraffic` its expected range, and returns `firstTrafficDate`.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
 	 * @return array|WP_Error {
 	 *     The assembled response, or the error a failed report returned.
 	 *
-	 *     @type array $visits         Visit totals for the selected period and the one before it.
-	 *     @type array $dailyTraffic   List of the days of the selected period, oldest first, each as `array( 'date' => 'YYYY-MM-DD', 'visits' => int )`.
-	 *     @type array $dimensions     Dimension codes, in the order the Traffic overview tab shows them.
-	 *     @type array $contextualData Ranked rows, keyed by the dimension they belong to.
+	 *     @type array       $visits           Visit totals for the selected period and the one before it.
+	 *     @type array       $dailyTraffic     List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day with fewer than `Expected_Baseline::MINIMUM_HISTORY_DAYS` days of recorded traffic up to and including it.
+	 *     @type string|null $firstTrafficDate The first day of the daily report with visits, as `YYYY-MM-DD`, or null when no day has any.
+	 *     @type array       $dimensions       Dimension codes, in the order the Traffic overview tab shows them.
+	 *     @type array       $contextualData   Ranked rows, keyed by the dimension they belong to.
 	 * }
 	 */
 	public function build( $start_date, $end_date ) {
@@ -94,8 +96,9 @@ class Response_Builder {
 			return $reports;
 		}
 
-		$daily_series  = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
-		$compare_range = $report_options->get_compare_range();
+		$daily_series      = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
+		$expected_baseline = new Expected_Baseline( $daily_series );
+		$compare_range     = $report_options->get_compare_range();
 
 		$visits = array(
 			'current'  => $this->sum_visits( $daily_series, $start_date, $end_date ),
@@ -116,10 +119,11 @@ class Response_Builder {
 		$ranked_data = $this->rank_contextual_data( $contextual_data, $visits );
 
 		return array(
-			'visits'         => $visits,
-			'dailyTraffic'   => $this->get_daily_traffic( $daily_series, $start_date ),
-			'dimensions'     => $ranked_data['dimensions'],
-			'contextualData' => $ranked_data['contextualData'],
+			'visits'           => $visits,
+			'dailyTraffic'     => $this->get_daily_traffic( $daily_series, $start_date, $expected_baseline ),
+			'firstTrafficDate' => $this->get_first_traffic_date( $daily_series ),
+			'dimensions'       => $ranked_data['dimensions'],
+			'contextualData'   => $ranked_data['contextualData'],
 		);
 	}
 
@@ -269,9 +273,10 @@ class Response_Builder {
 	 * Gets the rows of a report, as plain arrays.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Each row has its `count` in place of its `visitors`, since the daily series counts visits.
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $report A report from a batch call.
-	 * @return array List of rows, each with its dimension `values` in the order the report asked for them, its `dateRange`, and its `visitors`.
+	 * @return array List of rows, each with its dimension `values` in the order the report asked for them, its `dateRange`, and its `count`, the value of the report's one metric: the visits of a day of the daily series, or the visitors of a dimension value.
 	 */
 	private function get_report_rows( Google_Service_AnalyticsData_RunReportResponse $report ) {
 		$dimension_names = array_map(
@@ -296,7 +301,7 @@ class Response_Builder {
 			$rows[] = array(
 				'values'    => array_values( $values ),
 				'dateRange' => $date_range,
-				'visitors'  => (int) $row->getMetricValues()[0]->getValue(),
+				'count'     => (int) $row->getMetricValues()[0]->getValue(),
 			);
 		}
 
@@ -320,10 +325,10 @@ class Response_Builder {
 	 * @return array List of days, each with `visits` and a `date` as `YYYY-MM-DD`.
 	 */
 	private function get_daily_series( array $report_rows, $first_date, $end_date ) {
-		$visitors_by_date = array();
+		$visits_by_date = array();
 
 		foreach ( $report_rows as $report_row ) {
-			$visitors_by_date[ $report_row['values'][0] ] = $report_row['visitors'];
+			$visits_by_date[ $report_row['values'][0] ] = $report_row['count'];
 		}
 
 		$utc          = new DateTimeZone( 'UTC' );
@@ -336,7 +341,7 @@ class Response_Builder {
 		while ( $date <= $end ) {
 			$daily_series[] = array(
 				'date'   => $date->format( 'Y-m-d' ),
-				'visits' => $visitors_by_date[ $date->format( 'Ymd' ) ] ?? 0,
+				'visits' => $visits_by_date[ $date->format( 'Ymd' ) ] ?? 0,
 			);
 
 			$date = $date->modify( '+1 day' );
@@ -346,24 +351,63 @@ class Response_Builder {
 	}
 
 	/**
-	 * Gets the days of the selected period from the daily series, oldest first.
+	 * Gets the days of the selected period from the daily series, oldest first,
+	 * each with the bounds of its expected range.
 	 *
-	 * The daily series starts with the compare period, which `dailyTraffic`
-	 * leaves out.
+	 * The daily series starts with the history the expected range is fitted on,
+	 * which `dailyTraffic` leaves out.
 	 *
 	 * @since 1.192.0
+	 * @since n.e.x.t Added the `$expected_baseline` parameter, and gives each day `expectedMin` and `expectedMax`.
 	 *
-	 * @param array  $daily_series The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
-	 * @param string $start_date   The first day of the selected period, as `YYYY-MM-DD`.
-	 * @return array List of days from `$start_date` on, keyed from `0`.
+	 * @param array             $daily_series      The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
+	 * @param string            $start_date        The first day of the selected period, as `YYYY-MM-DD`.
+	 * @param Expected_Baseline $expected_baseline The expected range of the same daily series.
+	 * @return array List of days from `$start_date` on, keyed from `0`, each with `date`, `visits`, `expectedMin` and `expectedMax`.
 	 */
-	private function get_daily_traffic( array $daily_series, $start_date ) {
-		return array_values(
-			array_filter(
-				$daily_series,
-				fn( $day ) => $day['date'] >= $start_date
-			)
-		);
+	private function get_daily_traffic( array $daily_series, $start_date, Expected_Baseline $expected_baseline ) {
+		$daily_traffic = array();
+
+		foreach ( $daily_series as $position => $day ) {
+			if ( $day['date'] < $start_date ) {
+				continue;
+			}
+
+			// The fit reads the day's position in the whole daily series, so it
+			// sees the history before the selected period.
+			$fit = $expected_baseline->get_fit( $position );
+
+			$daily_traffic[] = array(
+				'date'        => $day['date'],
+				'visits'      => $day['visits'],
+				'expectedMin' => $fit['expectedMin'],
+				'expectedMax' => $fit['expectedMax'],
+			);
+		}
+
+		return $daily_traffic;
+	}
+
+	/**
+	 * Gets the first day of the daily series with visits.
+	 *
+	 * The expected range counts a site's history from this day, so the days
+	 * before it, when the site wasn't measured yet, don't count as days with no
+	 * visits.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $daily_series The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
+	 * @return string|null The day, as `YYYY-MM-DD`, or null when no day has visits.
+	 */
+	private function get_first_traffic_date( array $daily_series ) {
+		foreach ( $daily_series as $day ) {
+			if ( $day['visits'] > 0 ) {
+				return $day['date'];
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -550,7 +594,7 @@ class Response_Builder {
 					);
 				}
 
-				$pairs[ $value ][ $count_key ] += $report_row['visitors'];
+				$pairs[ $value ][ $count_key ] += $report_row['count'];
 			}
 		}
 

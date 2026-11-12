@@ -39,29 +39,41 @@ class Response_EncoderTest extends TestCase {
 	 */
 	private function get_fixture_response() {
 		return array(
-			'visits'       => array(
+			'visits'           => array(
 				'current'  => 412,
 				'previous' => 388,
 			),
-			'dailyTraffic' => array(
+			'dailyTraffic'     => array(
 				array(
-					'date'   => '2025-08-18',
-					'visits' => 132,
+					'date'        => '2025-08-18',
+					'visits'      => 132,
+					'expectedMin' => null,
+					'expectedMax' => null,
 				),
 				array(
-					'date'   => '2025-08-19',
-					'visits' => 0,
+					'date'        => '2025-08-19',
+					'visits'      => 0,
+					'expectedMin' => 118.4,
+					'expectedMax' => 183.1,
 				),
 				array(
-					'date'   => '2025-08-20',
-					'visits' => 147,
+					'date'        => '2025-08-20',
+					'visits'      => 147,
+					'expectedMin' => 124.3,
+					'expectedMax' => 191.5,
 				),
 				array(
-					'date'   => '2025-08-21',
-					'visits' => 96,
+					'date'        => '2025-08-21',
+					'visits'      => 96,
+					'expectedMin' => 117.9,
+					'expectedMax' => 182.6,
 				),
 			),
-			'keyFactors'   => array(
+			// 26 days before the first plotted day, so `2025-08-18` is the 27th day
+			// with recorded traffic, which has no expected range, and `2025-08-19`
+			// is the 28th, which has one.
+			'firstTrafficDate' => '2025-07-23',
+			'keyFactors'       => array(
 				array(
 					'kind'       => 'REFERRING_SITE',
 					'label'      => 'Facebook',
@@ -342,7 +354,7 @@ class Response_EncoderTest extends TestCase {
 		);
 	}
 
-	public function test_encode__rounds_shares_and_writes_every_other_number_as_an_integer() {
+	public function test_encode__rounds_shares_and_writes_every_count_as_an_integer() {
 		$encoded = $this->encoder->encode(
 			array(
 				'dailyTraffic' => array(
@@ -380,6 +392,126 @@ class Response_EncoderTest extends TestCase {
 		$this->assertSame( array( array( array( 6, 1, 71, 20, 16.9 ) ) ), $encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], "An attribute's share should be rounded to one decimal place, and its counts should be integers." );
 		$this->assertSame( array( 132 ), $encoded[ Wire_Format::MEMBER_DAILY_VISITS ], 'A daily count should be an integer.' );
 		$this->assertSame( array( 412, 388 ), $encoded[ Wire_Format::MEMBER_VISIT_TOTALS ], 'The period totals should be integers.' );
+	}
+
+	public function test_encode__writes_the_expected_range_of_each_day_in_the_order_of_the_daily_counts() {
+		$encoded = $this->encoder->encode(
+			array(
+				'dailyTraffic' => array(
+					array(
+						'date'        => '2025-08-18',
+						'visits'      => 132,
+						'expectedMin' => 118.4,
+						'expectedMax' => 183.1,
+					),
+					array(
+						'date'        => '2025-08-19',
+						'visits'      => 0,
+						'expectedMin' => null,
+						'expectedMax' => null,
+					),
+					array(
+						'date'   => '2025-08-20',
+						'visits' => 147,
+					),
+					array(
+						'date'        => '2025-08-21',
+						'visits'      => 96,
+						'expectedMin' => 117.9,
+						'expectedMax' => 182.6,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 118.4, 183.1 ),
+				null,
+				null,
+				array( 117.9, 182.6 ),
+			),
+			$encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ],
+			'Each day should have its bounds at its own position, and a day whose bounds are null, or a day with no bounds, should have null.'
+		);
+	}
+
+	public function test_encode__rounds_the_bounds_of_the_expected_range_to_one_decimal() {
+		$encoded = $this->encoder->encode(
+			array(
+				'dailyTraffic' => array(
+					array(
+						'date'        => '2025-08-18',
+						'visits'      => 132,
+						'expectedMin' => 118.44,
+						'expectedMax' => 183.16,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( array( 118.4, 183.2 ) ),
+			$encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ],
+			'The bounds `118.44` and `183.16` should be encoded as `118.4` and `183.2`.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_first_traffic_dates
+	 *
+	 * @param string $first_traffic_date The first day with recorded traffic, as `YYYY-MM-DD`.
+	 * @param int    $day_offset         The number of days from the first plotted day, `2025-08-18`, to that day.
+	 */
+	public function test_encode__writes_the_first_traffic_day_as_its_offset_from_the_first_plotted_day( $first_traffic_date, $day_offset ) {
+		$response                     = $this->get_fixture_response();
+		$response['firstTrafficDate'] = $first_traffic_date;
+
+		$encoded = $this->encoder->encode( $response );
+
+		$this->assertSame(
+			$day_offset,
+			$encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ],
+			"A `firstTrafficDate` of `$first_traffic_date` should be encoded as $day_offset days from `2025-08-18`."
+		);
+	}
+
+	public function data_first_traffic_dates() {
+		return array(
+			'18 days before the first plotted day' => array( '2025-07-31', -18 ),
+			'on the first plotted day'             => array( '2025-08-18', 0 ),
+			'5 days after the first plotted day'   => array( '2025-08-23', 5 ),
+		);
+	}
+
+	public function test_encode__writes_null_as_the_first_traffic_day_when_there_is_none() {
+		$response                     = $this->get_fixture_response();
+		$response['firstTrafficDate'] = null;
+
+		$this->assertNull(
+			$this->encoder->encode( $response )[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ],
+			'A `firstTrafficDate` of null should be encoded as null.'
+		);
+
+		unset( $response['firstTrafficDate'] );
+
+		$this->assertNull(
+			$this->encoder->encode( $response )[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ],
+			'A response with no `firstTrafficDate` should encode it as null.'
+		);
+	}
+
+	public function test_encode__writes_an_empty_expected_range_and_no_first_traffic_day_for_an_empty_daily_series() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'dailyTraffic'     => array(),
+				'firstTrafficDate' => '2025-07-23',
+			)
+		);
+
+		$this->assertCount( 9, $encoded, 'The encoded response should have nine members.' );
+		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'An empty `dailyTraffic` should give an empty list of expected ranges.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ], 'With no first plotted day to count from, the first traffic day should be encoded as null.' );
 	}
 
 	public function test_encode__writes_no_date_but_the_first() {

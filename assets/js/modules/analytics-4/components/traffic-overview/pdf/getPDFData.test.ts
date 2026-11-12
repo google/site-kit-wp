@@ -280,7 +280,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( dataTable.addColumn ).toHaveBeenNthCalledWith(
 			2,
 			'number',
-			'Users'
+			'Visits'
 		);
 
 		const [ rows ] = dataTable.addRows.mock.calls[ 0 ];

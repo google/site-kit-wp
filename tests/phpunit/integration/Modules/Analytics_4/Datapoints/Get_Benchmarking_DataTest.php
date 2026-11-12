@@ -351,21 +351,28 @@ class Get_Benchmarking_DataTest extends TestCase {
 	public function test_rest_endpoint__answers_with_the_encoded_response() {
 		$builder = $this->enable_datapoint(
 			array(
-				'visits'       => array(
+				'visits'           => array(
 					'current'  => 1200,
 					'previous' => 1000,
 				),
-				'dailyTraffic' => array(
+				'dailyTraffic'     => array(
 					array(
-						'date'   => '2026-08-19',
-						'visits' => 40,
+						'date'        => '2026-08-19',
+						'visits'      => 40,
+						'expectedMin' => null,
+						'expectedMax' => null,
 					),
 					array(
-						'date'   => '2026-08-20',
-						'visits' => 55,
+						'date'        => '2026-08-20',
+						'visits'      => 55,
+						'expectedMin' => 31.4,
+						'expectedMax' => 62.8,
 					),
 				),
-				'keyFactors'   => array(
+				// `2026-08-20` is the 28th day with recorded traffic, the first day
+				// with an expected range.
+				'firstTrafficDate' => '2026-07-24',
+				'keyFactors'       => array(
 					array(
 						'kind'       => 'CHANNEL',
 						'label'      => 'Organic Search',
@@ -396,6 +403,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( array( 'Organic Search' ), $data[ Wire_Format::MEMBER_STRINGS ], 'The response should carry the card label in its string table.' );
 		$this->assertSame( array( array( 0, 0, 700, 600, 58.3 ) ), $data[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry the `CHANNEL` card as a list of its kind, label, counts and share.' );
 		$this->assertSame( array( array() ), $data[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry one empty list of attributes for the card.' );
+		$this->assertSame( array( null, array( 31.4, 62.8 ) ), $data[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'The response should carry the expected range of each day, and null for the day without one.' );
+		$this->assertSame( -26, $data[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ], 'The response should carry the first day with recorded traffic as its offset from the first plotted day.' );
 	}
 
 	public function test_rest_endpoint__is_not_registered_without_the_feature_flag() {

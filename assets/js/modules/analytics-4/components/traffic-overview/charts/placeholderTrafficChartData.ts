@@ -21,7 +21,7 @@
  */
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getDateString, stringToDate } from '@/js/util';
-import { PublishedPost, TypicalTrafficRangeDay } from './getTrafficChartData';
+import { PublishedPost } from './getTrafficChartData';
 
 /**
  * The visits the design plots for each of its 28 days, oldest first. They
@@ -44,17 +44,18 @@ const PLACEHOLDER_POSTS = [
 ];
 
 /**
- * Gets the visits the Traffic Overview chart plots until it reads them from
- * the benchmarking response.
+ * Gets the visits the Traffic Overview chart plots where the panel reads no
+ * benchmarking response.
  *
  * The design's 28 days of visits stretch or shrink to cover the range, so the
- * line keeps the design's shape over a range of any length.
+ * line keeps the design's shape over a range of any length. No day has a
+ * typical range.
  *
  * @since n.e.x.t
  *
  * @param {string} startDate The range's first day, as `YYYY-MM-DD`.
  * @param {string} endDate   The range's last day, as `YYYY-MM-DD`.
- * @return {Array.<Object>} One row for each day of the range, oldest first.
+ * @return {Array.<Object>} One row for each day of the range, oldest first, each with null bounds.
  */
 export function getPlaceholderDailyTraffic(
 	startDate: string,
@@ -90,37 +91,8 @@ export function getPlaceholderDailyTraffic(
 				before +
 					( position - Math.floor( position ) ) * ( after - before )
 			),
-		};
-	} );
-}
-
-/**
- * Gets the typical range the Traffic Overview chart draws until it reads the
- * range from the benchmarking response.
- *
- * Each day's range runs a quarter below and above the average of the seven
- * days centered on it, and at least 5 visits either way, so the band follows
- * the line, as in the design.
- *
- * @since n.e.x.t
- *
- * @param {Array.<Object>} [dailyTraffic] Optional. The visits on each day, oldest first.
- * @return {Array.<Object>} One range for each day.
- */
-export function getPlaceholderTypicalTrafficRange(
-	dailyTraffic: BenchmarkingDailyTrafficRow[] = []
-): TypicalTrafficRangeDay[] {
-	return dailyTraffic.map( ( { date }, index ) => {
-		const week = dailyTraffic.slice( Math.max( 0, index - 3 ), index + 4 );
-		const average =
-			week.reduce( ( total, { visits } ) => total + visits, 0 ) /
-			week.length;
-		const margin = Math.max( average / 4, 5 );
-
-		return {
-			date,
-			min: Math.max( 0, Math.round( average - margin ) ),
-			max: Math.round( average + margin ),
+			expectedMin: null,
+			expectedMax: null,
 		};
 	} );
 }

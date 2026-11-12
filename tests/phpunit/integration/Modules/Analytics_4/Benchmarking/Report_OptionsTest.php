@@ -68,13 +68,13 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_daily_series_options__counts_visitors_by_day_from_the_first_day_of_the_compare_period_to_the_end_date() {
+	public function test_get_daily_series_options__counts_sessions_by_day_from_364_days_before_the_start_date_to_the_end_date() {
 		$this->assertSame(
 			array(
-				'startDate'  => '2026-07-22',
+				'startDate'  => '2025-08-20',
 				'endDate'    => '2026-09-15',
 				'metrics'    => array(
-					array( 'name' => 'totalUsers' ),
+					array( 'name' => 'sessions' ),
 				),
 				'dimensions' => array(
 					array( 'name' => 'date' ),
@@ -86,7 +86,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_daily_series_options(),
-			'The `get_daily_series_options()` method should ask for `totalUsers` by `date`, oldest first, from `2026-07-22` to `2026-09-15`.'
+			'The `get_daily_series_options()` method should ask for `sessions` by `date`, oldest first, from `2025-08-20` to `2026-09-15`.'
 		);
 	}
 
@@ -94,18 +94,18 @@ class Report_OptionsTest extends TestCase {
 	 * @dataProvider data_period_lengths
 	 *
 	 * @param string $start_date        The first day of a period that ends on `2026-09-15`.
-	 * @param string $series_start_date The first day of the period's compare period.
+	 * @param string $series_start_date The day 364 days before the first day of the period.
 	 */
-	public function test_get_daily_series_options__starts_on_the_first_day_of_the_compare_period( $start_date, $series_start_date ) {
+	public function test_get_daily_series_options__starts_364_days_before_the_start_date( $start_date, $series_start_date ) {
 		$options = ( new Report_Options( $start_date, '2026-09-15' ) )->get_daily_series_options();
 
-		$this->assertSame( $series_start_date, $options['startDate'], "The daily series of the period from `$start_date` to `2026-09-15` should start on `$series_start_date`, the first day of its compare period." );
+		$this->assertSame( $series_start_date, $options['startDate'], "The daily series of the period from `$start_date` to `2026-09-15` should start on `$series_start_date`, 364 days before the period." );
 	}
 
 	public function data_period_lengths() {
 		return array(
-			'7 days'  => array( '2026-09-09', '2026-09-02' ),
-			'90 days' => array( '2026-06-18', '2026-03-20' ),
+			'7 days'  => array( '2026-09-09', '2025-09-10' ),
+			'90 days' => array( '2026-06-18', '2025-06-19' ),
 		);
 	}
 

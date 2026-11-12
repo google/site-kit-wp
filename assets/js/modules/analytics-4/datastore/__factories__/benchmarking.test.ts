@@ -61,7 +61,15 @@ describe( 'provideBenchmarkingData', () => {
 			{ startDate: '2026-08-19', endDate: '2026-09-15' },
 			{
 				visits: { current: 0, previous: 0 },
-				dailyTraffic: [ { date: '2025-08-18', visits: 0 } ],
+				dailyTraffic: [
+					{
+						date: '2025-08-18',
+						visits: 0,
+						expectedMin: null,
+						expectedMax: null,
+					},
+				],
+				firstTrafficDate: null,
 				keyFactors: [],
 			}
 		);
@@ -72,7 +80,15 @@ describe( 'provideBenchmarkingData', () => {
 				.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 		).toEqual( {
 			visits: { current: 0, previous: 0 },
-			dailyTraffic: [ { date: '2025-08-18', visits: 0 } ],
+			dailyTraffic: [
+				{
+					date: '2025-08-18',
+					visits: 0,
+					expectedMin: null,
+					expectedMax: null,
+				},
+			],
+			firstTrafficDate: null,
 			keyFactors: [],
 		} );
 	} );

@@ -25,17 +25,17 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { addTypicalTrafficRange } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import { PublishedPost, TypicalTrafficRangeDay } from './getTrafficChartData';
+import { PublishedPost } from './getTrafficChartData';
 import {
 	getPlaceholderDailyTraffic,
 	getPlaceholderPublishedPosts,
-	getPlaceholderTypicalTrafficRange,
 } from './placeholderTrafficChartData';
 import TrafficChart from './TrafficChart';
 
@@ -66,14 +66,12 @@ function commonSetup( registry: WPDataRegistry ) {
 }
 
 interface TrafficChartStoryProps {
-	/** The visits on each day the chart shows, oldest first. */
+	/** The visits on each day the chart shows, oldest first, each with the bounds of its typical range. */
 	dailyTraffic: BenchmarkingDailyTrafficRow[];
 	/** Sets the registry state before the story renders. */
 	setupRegistry: ( registry: WPDataRegistry ) => void;
 	/** Whether the Analytics property is still gathering data. */
 	gatheringData?: boolean;
-	/** The typical range of visitors for each day that has one. */
-	typicalTrafficRange?: TypicalTrafficRangeDay[];
 	/** The posts published in the range. */
 	publishedPosts?: PublishedPost[];
 }
@@ -82,7 +80,6 @@ function Template( {
 	dailyTraffic: storyDailyTraffic,
 	setupRegistry,
 	gatheringData,
-	typicalTrafficRange,
 	publishedPosts,
 }: TrafficChartStoryProps ) {
 	// The chart's styles are scoped to the widget and the panel, so the story
@@ -94,7 +91,6 @@ function Template( {
 					<TrafficChart
 						dailyTraffic={ storyDailyTraffic }
 						gatheringData={ gatheringData }
-						typicalTrafficRange={ typicalTrafficRange }
 						publishedPosts={ publishedPosts }
 					/>
 				</div>
@@ -105,7 +101,7 @@ function Template( {
 
 /**
  * This story runs no visual check, because the `TrafficOverviewWidget` Main
- * Dashboard scenario already captures the chart with visitors.
+ * Dashboard scenario already captures the chart with visits.
  */
 export const Ready = Template.bind( {} ) as Story< TrafficChartStoryProps >;
 Ready.storyName = 'Ready';
@@ -115,8 +111,8 @@ Ready.args = {
 };
 
 /**
- * The band behind the line is the typical range of visitors for each day, and
- * a dot on the line marks each day with a published post. This story runs no
+ * The band behind the line is the typical range of visits for each day, and a
+ * dot on the line marks each day with a published post. This story runs no
  * visual check, because the `TrafficOverviewWidget` Typical Traffic scenario
  * already captures the chart with both.
  */
@@ -126,10 +122,33 @@ export const TypicalTrafficRangeAndPublishedPosts = Template.bind(
 TypicalTrafficRangeAndPublishedPosts.storyName =
 	'Typical Traffic Range And Published Posts';
 TypicalTrafficRangeAndPublishedPosts.args = {
-	dailyTraffic,
-	typicalTrafficRange: getPlaceholderTypicalTrafficRange( dailyTraffic ),
+	dailyTraffic: addTypicalTrafficRange( dailyTraffic ),
 	publishedPosts: getPlaceholderPublishedPosts( dailyTraffic ),
 	setupRegistry: commonSetup,
+};
+
+/**
+ * The site recorded its first traffic partway into the range, so the days
+ * before its 28th day of traffic have no typical range. The band starts on
+ * that day, and the line on the first day of the range.
+ */
+export const TypicalTrafficRangeFromPartwayIntoTheRange = Template.bind(
+	{}
+) as Story< TrafficChartStoryProps >;
+TypicalTrafficRangeFromPartwayIntoTheRange.storyName =
+	'Typical Traffic Range From Partway Into The Range';
+TypicalTrafficRangeFromPartwayIntoTheRange.args = {
+	dailyTraffic: addTypicalTrafficRange( dailyTraffic ).map(
+		( day, dayIndex ) =>
+			dayIndex < 10
+				? { ...day, expectedMin: null, expectedMax: null }
+				: day
+	),
+	setupRegistry: commonSetup,
+};
+TypicalTrafficRangeFromPartwayIntoTheRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	viewport: 'large',
 };
 
 /**

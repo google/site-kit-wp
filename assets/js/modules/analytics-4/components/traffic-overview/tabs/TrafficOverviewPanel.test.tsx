@@ -45,7 +45,10 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import { DecodedBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import {
+	BenchmarkingDailyTrafficRow,
+	DecodedBenchmarkingResponse,
+} from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	act,
@@ -260,11 +263,9 @@ describe( 'TrafficOverviewPanel', () => {
 
 		// Google Charts draws nothing under Jest, so this test reads the
 		// chart's screen-reader lines instead.
+		expect( getByText( 'January 9, 2025: 39 visits' ) ).toBeInTheDocument();
 		expect(
-			getByText( 'January 9, 2025: 39 visitors' )
-		).toBeInTheDocument();
-		expect(
-			getByText( 'February 5, 2025: 152 visitors' )
+			getByText( 'February 5, 2025: 152 visits' )
 		).toBeInTheDocument();
 		expect( getByText( '1.2K' ) ).toHaveClass(
 			'googlesitekit-traffic-overview__total-visits-figure'
@@ -754,8 +755,8 @@ describe( 'TrafficOverviewPanel', () => {
 			provideBenchmarkingResponse(
 				registry,
 				createResponse( {
-					dailyTraffic: dailyTraffic.map( ( { date }, index ) => ( {
-						date,
+					dailyTraffic: dailyTraffic.map( ( day, index ) => ( {
+						...day,
 						visits: 100 + index,
 					} ) ),
 				} )
@@ -769,10 +770,10 @@ describe( 'TrafficOverviewPanel', () => {
 			// chart's screen-reader lines instead. Each line goes on to name
 			// the day's typical range.
 			expect(
-				getByText( /^January 9, 2025: 100 visitors,/ )
+				getByText( /^January 9, 2025: 100 visits,/ )
 			).toBeInTheDocument();
 			expect(
-				getByText( /^February 5, 2025: 127 visitors,/ )
+				getByText( /^February 5, 2025: 127 visits,/ )
 			).toBeInTheDocument();
 		} );
 
@@ -1166,6 +1167,48 @@ describe( 'TrafficOverviewPanel', () => {
 		} );
 
 		/**
+		 * Stores a benchmarking response for the selected date range with the
+		 * figures of the design, and each day changed by `mapDay`.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Function} mapDay Gets a day of the response from the design's day and its position.
+		 * @return {void}
+		 */
+		function provideDailyTraffic(
+			mapDay: (
+				day: BenchmarkingDailyTrafficRow,
+				index: number
+			) => BenchmarkingDailyTrafficRow
+		) {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+			const response = createBenchmarkingResponse( startDate, endDate );
+
+			provideBenchmarkingResponse( registry, {
+				...response,
+				dailyTraffic: response.dailyTraffic.map( mapDay ),
+			} );
+		}
+
+		/**
+		 * Renders the panel on the main dashboard with the typicalTraffic
+		 * feature, where the panel reads the benchmarking response.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {Object} The render result.
+		 */
+		function renderPanel() {
+			return render( <TrafficOverviewPanel />, {
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+		}
+
+		/**
 		 * Reads the labels of the chart's legend items.
 		 *
 		 * @since n.e.x.t
@@ -1200,6 +1243,73 @@ describe( 'TrafficOverviewPanel', () => {
 			] );
 		} );
 
+		it( 'should draw the typical range of each day of the benchmarking response', async () => {
+			provideDailyTraffic( ( day ) => ( {
+				...day,
+				expectedMin: 118.4,
+				expectedMax: 183.1,
+			} ) );
+
+			const { getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			// Google Charts draws nothing under Jest, so this test reads the
+			// chart's screen-reader lines instead.
+			expect(
+				getByText(
+					'January 9, 2025: 39 visits, typical range 118.4 to 183.1'
+				)
+			).toBeInTheDocument();
+			expect(
+				getByText(
+					'February 5, 2025: 152 visits, typical range 118.4 to 183.1'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should draw no typical range on a day of the benchmarking response without bounds', async () => {
+			// The first ten days have fewer than 28 days of recorded traffic.
+			provideDailyTraffic( ( day, index ) =>
+				index < 10
+					? { ...day, expectedMin: null, expectedMax: null }
+					: day
+			);
+
+			const { container, getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'January 9, 2025: 39 visits' )
+			).toBeInTheDocument();
+			expect(
+				getByText( /^January 19, 2025: \d+ visits, typical range / )
+			).toBeInTheDocument();
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+				'Typical traffic range',
+				'Published post',
+			] );
+		} );
+
+		it( 'should leave the typical range out of the legend when no day of the benchmarking response has bounds', async () => {
+			provideDailyTraffic( ( day ) => ( {
+				...day,
+				expectedMin: null,
+				expectedMax: null,
+			} ) );
+
+			const { container, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+				'Published post',
+			] );
+		} );
+
 		it( 'should draw neither without the typicalTraffic feature', async () => {
 			const { container, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
@@ -1229,7 +1339,7 @@ describe( 'TrafficOverviewPanel', () => {
 
 			// The day's line has no typical range.
 			expect(
-				getByText( 'January 9, 2025: 39 visitors' )
+				getByText( 'January 9, 2025: 39 visits' )
 			).toBeInTheDocument();
 			expect( getLegendLabels( container ) ).toEqual( [
 				'Last 28 days traffic',

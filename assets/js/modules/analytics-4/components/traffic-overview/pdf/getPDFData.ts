@@ -138,10 +138,11 @@ function getLineChartPoints(
 /**
  * Builds the Google Charts `DataTable` for the All Visitors line chart.
  *
- * The table has the "Day" and "Users" columns of the dashboard chart's table,
+ * The table has the "Day" and "Visits" columns of the dashboard chart's table,
  * which `getTrafficChartData()` builds.
  *
  * @since 1.189.0
+ * @since n.e.x.t Names the second column "Visits" in place of "Users".
  *
  * @param {Array<Object>} points Parsed chart points.
  * @return {Object} A `google.visualization.DataTable` instance.
@@ -156,7 +157,7 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
 
 	const dataTable = new visualization.DataTable();
 	dataTable.addColumn( 'date', __( 'Day', 'google-site-kit' ) );
-	dataTable.addColumn( 'number', __( 'Users', 'google-site-kit' ) );
+	dataTable.addColumn( 'number', __( 'Visits', 'google-site-kit' ) );
 	dataTable.addRows( points.map( ( { date, value } ) => [ date, value ] ) );
 
 	return dataTable;

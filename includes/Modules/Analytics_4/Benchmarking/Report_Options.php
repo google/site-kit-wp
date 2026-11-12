@@ -89,23 +89,35 @@ class Report_Options {
 	}
 
 	/**
-	 * Gets the options of the report that counts visitors by day, from the
-	 * compare period's first day to the selected period's last day.
+	 * Gets the options of the report that counts visits by day, from
+	 * `Expected_Baseline::MAXIMUM_HISTORY_DAYS - 1` days before the selected
+	 * period's first day to its last day.
 	 *
-	 * `Response_Builder::build()` adds up the visitors of each period from this
-	 * report, and returns the days of the selected period alone as `dailyTraffic`.
+	 * A visit is a session. The traffic line, the period totals and the
+	 * expected range all come from this report, so they all count visits.
+	 *
+	 * `Expected_Baseline` fits each day of the selected period on up to
+	 * `Expected_Baseline::MAXIMUM_HISTORY_DAYS` days that end on that day, so
+	 * the first day of the period needs the 364 days before it. The report
+	 * covers the compare period too, since no period is longer than
+	 * `MAXIMUM_PERIOD_DAYS` days. `Response_Builder::build()` adds up the
+	 * visits of each period from this report, and returns the days of the
+	 * selected period alone as `dailyTraffic`.
 	 *
 	 * @since 1.190.0
 	 * @since 1.192.0 The report starts on the first day of the compare period, in place of the first of the 395 days that end on the last day of the selected period.
+	 * @since n.e.x.t The report counts `sessions` in place of `totalUsers`, and starts 364 days before the first day of the selected period in place of the first day of the compare period.
 	 *
 	 * @return array Report request options array.
 	 */
 	public function get_daily_series_options() {
+		$history_days = Expected_Baseline::MAXIMUM_HISTORY_DAYS - 1;
+
 		return array(
-			'startDate'  => $this->get_compare_range()['startDate'],
+			'startDate'  => $this->create_date( $this->start_date )->modify( "-{$history_days} days" )->format( 'Y-m-d' ),
 			'endDate'    => $this->end_date,
 			'metrics'    => array(
-				array( 'name' => 'totalUsers' ),
+				array( 'name' => 'sessions' ),
 			),
 			'dimensions' => array(
 				array( 'name' => 'date' ),

@@ -24,7 +24,6 @@ import { getDateString } from '@/js/util';
 import {
 	getPlaceholderDailyTraffic,
 	getPlaceholderPublishedPosts,
-	getPlaceholderTypicalTrafficRange,
 } from './placeholderTrafficChartData';
 
 /**
@@ -39,6 +38,8 @@ function createDailyTraffic( visits: number[] ): BenchmarkingDailyTrafficRow[] {
 	return visits.map( ( value, index ) => ( {
 		date: getDateString( new Date( 2025, 0, 10 + index ) ),
 		visits: value,
+		expectedMin: null,
+		expectedMax: null,
 	} ) );
 }
 
@@ -53,15 +54,21 @@ describe( 'getPlaceholderDailyTraffic', () => {
 		expect( dailyTraffic[ 0 ] ).toEqual( {
 			date: '2025-01-09',
 			visits: 39,
+			expectedMin: null,
+			expectedMax: null,
 		} );
 		// The dip under the first post.
 		expect( dailyTraffic[ 3 ] ).toEqual( {
 			date: '2025-01-12',
 			visits: 25,
+			expectedMin: null,
+			expectedMax: null,
 		} );
 		expect( dailyTraffic[ 27 ] ).toEqual( {
 			date: '2025-02-05',
 			visits: 152,
+			expectedMin: null,
+			expectedMax: null,
 		} );
 	} );
 
@@ -101,66 +108,37 @@ describe( 'getPlaceholderDailyTraffic', () => {
 		expect( dailyTraffic[ 0 ] ).toEqual( {
 			date: '2025-01-01',
 			visits: 39,
+			expectedMin: null,
+			expectedMax: null,
 		} );
 		expect( dailyTraffic[ 89 ] ).toEqual( {
 			date: '2025-03-31',
 			visits: 152,
+			expectedMin: null,
+			expectedMax: null,
 		} );
 	} );
 
 	it( "should give a range of one day the design's last visits", () => {
 		expect(
 			getPlaceholderDailyTraffic( '2025-02-05', '2025-02-05' )
-		).toEqual( [ { date: '2025-02-05', visits: 152 } ] );
-	} );
-} );
-
-describe( 'getPlaceholderTypicalTrafficRange', () => {
-	it( 'should run each day a quarter below and above the average of the seven days centered on it', () => {
-		const range = getPlaceholderTypicalTrafficRange(
-			createDailyTraffic( [ 10, 20, 30, 40, 50, 60, 70 ] )
-		);
-
-		expect( range ).toHaveLength( 7 );
-		// The first day averages itself and the three days after it: 25.
-		expect( range[ 0 ] ).toEqual( {
-			date: '2025-01-10',
-			min: 19,
-			max: 31,
-		} );
-		// The middle day averages all seven days: 40.
-		expect( range[ 3 ] ).toEqual( {
-			date: '2025-01-13',
-			min: 30,
-			max: 50,
-		} );
-		// The last day averages itself and the three days before it: 55.
-		expect( range[ 6 ] ).toEqual( {
-			date: '2025-01-16',
-			min: 41,
-			max: 69,
-		} );
-	} );
-
-	it( 'should keep each range at least 5 visits either way, and never below 0', () => {
-		expect(
-			getPlaceholderTypicalTrafficRange(
-				createDailyTraffic( [ 8, 8, 8 ] )
-			)
 		).toEqual( [
-			{ date: '2025-01-10', min: 3, max: 13 },
-			{ date: '2025-01-11', min: 3, max: 13 },
-			{ date: '2025-01-12', min: 3, max: 13 },
+			{
+				date: '2025-02-05',
+				visits: 152,
+				expectedMin: null,
+				expectedMax: null,
+			},
 		] );
-
-		expect(
-			getPlaceholderTypicalTrafficRange( createDailyTraffic( [ 0 ] ) )
-		).toEqual( [ { date: '2025-01-10', min: 0, max: 5 } ] );
 	} );
 
-	it( 'should give no range without daily traffic', () => {
-		expect( getPlaceholderTypicalTrafficRange() ).toEqual( [] );
-		expect( getPlaceholderTypicalTrafficRange( [] ) ).toEqual( [] );
+	it( 'should give no day a typical range', () => {
+		expect(
+			getPlaceholderDailyTraffic( '2025-01-09', '2025-02-05' ).filter(
+				( { expectedMin, expectedMax } ) =>
+					expectedMin !== null || expectedMax !== null
+			)
+		).toEqual( [] );
 	} );
 } );
 

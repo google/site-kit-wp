@@ -42,6 +42,10 @@ export interface BenchmarkingDailyTrafficRow {
 	date: string;
 	/** Visits on that day. */
 	visits: number;
+	/** The fewest visits that are normal for that day, or null on a day without a band. */
+	expectedMin: number | null;
+	/** The most visits that are normal for that day, or null on a day without a band. */
+	expectedMax: number | null;
 }
 
 export interface BenchmarkingKeyFactorAttribute {
@@ -77,6 +81,8 @@ export interface DecodedBenchmarkingResponse {
 	visits: BenchmarkingVisits;
 	/** One row per day, in ascending date order. */
 	dailyTraffic: BenchmarkingDailyTrafficRow[];
+	/** The first day with recorded traffic, as `YYYY-MM-DD`, or null when the site has none. */
+	firstTrafficDate: string | null;
 	/** The key factor cards, in the order the response ranked them. */
 	keyFactors: BenchmarkingKeyFactor[];
 }

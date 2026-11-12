@@ -42,11 +42,7 @@ import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
 import ChartLegend, { ChartLegendItem } from './ChartLegend';
 import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
 import { getPropertyCreatedMarkerDate } from './getPropertyCreatedMarkerDate';
-import {
-	PublishedPost,
-	TypicalTrafficRangeDay,
-	getTrafficChartData,
-} from './getTrafficChartData';
+import { PublishedPost, getTrafficChartData } from './getTrafficChartData';
 import { getTrafficLegendItem } from './getTrafficLegendItem';
 import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
 import {
@@ -56,14 +52,12 @@ import {
 } from './trafficChartOptions';
 
 export interface TrafficChartProps {
-	/** The visits on each day of the selected range, oldest first. */
+	/** The visits on each day of the selected range, oldest first. The bounds on each day's row are its typical range, which the chart draws as a band behind the line, and leaves empty on a day with null bounds. */
 	dailyTraffic?: BenchmarkingDailyTrafficRow[];
 	/** Whether the daily traffic has arrived. */
 	loaded?: boolean;
 	/** Whether the Analytics property is still gathering data. */
 	gatheringData?: boolean;
-	/** The typical range of visitors for each day that has one, which the chart draws as a band behind the line. */
-	typicalTrafficRange?: TypicalTrafficRangeDay[];
 	/** The posts published in the selected range. The chart marks the day of each with a dot on the line. */
 	publishedPosts?: PublishedPost[];
 }
@@ -72,7 +66,6 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 	dailyTraffic,
 	loaded = true,
 	gatheringData = false,
-	typicalTrafficRange,
 	publishedPosts,
 } ) => {
 	const { startDate, endDate } = useSelect(
@@ -95,7 +88,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 		chartData,
 		days,
 		ticks,
-		hasVisitors,
+		hasVisits,
 		hasTypicalTrafficRange,
 		hasPublishedPosts,
 	} = getTrafficChartData( {
@@ -103,7 +96,6 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 		startDate,
 		endDate,
 		gatheringData,
-		typicalTrafficRange,
 		publishedPosts,
 	} );
 
@@ -131,9 +123,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			// the axis above both the line and the typical range.
 			viewWindow: {
 				...TRAFFIC_CHART_OPTIONS.vAxis.viewWindow,
-				...( hasVisitors || hasTypicalTrafficRange
-					? {}
-					: { max: 100 } ),
+				...( hasVisits || hasTypicalTrafficRange ? {} : { max: 100 } ),
 			},
 		},
 	};
@@ -149,7 +139,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			swatch: 'area',
 			info: createInterpolateElement(
 				__(
-					'Site Kit analyzes the last 18 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. <a>Learn more</a>',
+					'Site Kit analyzes the last 12 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{
@@ -206,33 +196,33 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			{ loaded && <ChartLegend items={ legendItems } /> }
 			{ loaded &&
 				! gatheringData &&
-				days.map( ( { date, visitors, typicalRange, posts } ) => (
+				days.map( ( { date, visits, typicalRange, posts } ) => (
 					<Fragment key={ getDateString( date ) }>
 						<VisuallyHidden>
 							{ typicalRange
 								? sprintf(
-										/* translators: 1: a day, such as "January 15, 2025". 2: the visitors on that day, such as "1.2K". 3: the fewest visitors that are typical for that day. 4: the most visitors that are typical for that day */
+										/* translators: 1: a day, such as "January 15, 2025". 2: the visits on that day, such as "1.2K". 3: the fewest visits that are typical for that day. 4: the most visits that are typical for that day */
 										_n(
-											'%1$s: %2$s visitor, typical range %3$s to %4$s',
-											'%1$s: %2$s visitors, typical range %3$s to %4$s',
-											visitors,
+											'%1$s: %2$s visit, typical range %3$s to %4$s',
+											'%1$s: %2$s visits, typical range %3$s to %4$s',
+											visits,
 											'google-site-kit'
 										),
 										dayFormatter.format( date ),
-										numFmt( visitors ),
+										numFmt( visits ),
 										numFmt( typicalRange.min ),
 										numFmt( typicalRange.max )
 								  )
 								: sprintf(
-										/* translators: 1: a day, such as "January 15, 2025". 2: the visitors on that day, such as "1.2K" */
+										/* translators: 1: a day, such as "January 15, 2025". 2: the visits on that day, such as "1.2K" */
 										_n(
-											'%1$s: %2$s visitor',
-											'%1$s: %2$s visitors',
-											visitors,
+											'%1$s: %2$s visit',
+											'%1$s: %2$s visits',
+											visits,
 											'google-site-kit'
 										),
 										dayFormatter.format( date ),
-										numFmt( visitors )
+										numFmt( visits )
 								  ) }
 						</VisuallyHidden>
 						{ posts.map( ( { title }, index ) => (

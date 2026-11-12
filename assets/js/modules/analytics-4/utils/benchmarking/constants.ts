@@ -36,6 +36,8 @@ export const MEMBER_DAILY_VISITS = 3;
 export const MEMBER_VISIT_TOTALS = 4;
 export const MEMBER_KEY_FACTORS = 5;
 export const MEMBER_KEY_FACTOR_ATTRIBUTES = 6;
+export const MEMBER_DAILY_EXPECTED_RANGES = 7;
+export const MEMBER_FIRST_TRAFFIC_DAY_OFFSET = 8;
 
 /**
  * The driver kinds of a key factor card, in the order they travel as. A kind's

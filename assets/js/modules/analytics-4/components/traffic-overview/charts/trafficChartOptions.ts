@@ -113,7 +113,7 @@ export const TRAFFIC_CHART_OPTIONS = {
 		0: {
 			color: TRAFFIC_CHART_LINE_COLOR,
 			lineWidth: 3,
-			// The visitor counts are on the right, because Google Charts renders
+			// The visit counts are on the right, because Google Charts renders
 			// the second value axis there.
 			targetAxisIndex: 1,
 		},
