@@ -211,7 +211,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the prompt is dismissed permanently, that is, with an expiry of 0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Prompt slug.

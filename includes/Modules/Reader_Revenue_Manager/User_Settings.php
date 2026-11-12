@@ -45,7 +45,7 @@ class User_Settings extends User_Setting {
 	 * Gets the default value.
 	 *
 	 * @since 1.185.0
-	 * @since n.e.x.t Added the `completedExpressSetups` setting.
+	 * @since 1.192.0 Added the `completedExpressSetups` setting.
 	 *
 	 * @return array The default value.
 	 */
@@ -61,7 +61,7 @@ class User_Settings extends User_Setting {
 	 *
 	 * Keys missing from the saved value fall back to their defaults.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return array The settings.
 	 */
@@ -79,7 +79,7 @@ class User_Settings extends User_Setting {
 	 * Merges an array of settings to update.
 	 *
 	 * @since 1.185.0
-	 * @since n.e.x.t Merges the `completedExpressSetups` setting.
+	 * @since 1.192.0 Merges the `completedExpressSetups` setting.
 	 *
 	 * @param array $partial Partial settings array to save.
 	 * @return bool True on success, false on failure.
@@ -160,7 +160,7 @@ class User_Settings extends User_Setting {
 	 * Entries are only ever added: a key that already exists keeps its
 	 * original timestamp.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array $old_value Current value.
 	 * @param mixed $new_value Value to merge.
@@ -178,7 +178,7 @@ class User_Settings extends User_Setting {
 	 * Sanitizes express setup timestamps, keeping only string keys with integer values.
 	 *
 	 * @since 1.185.0
-	 * @since n.e.x.t Renamed from `sanitize_last_actioned_express_setups()`, as it also sanitizes the completed express setups.
+	 * @since 1.192.0 Renamed from `sanitize_last_actioned_express_setups()`, as it also sanitizes the completed express setups.
 	 *
 	 * @param mixed $value Value to sanitize.
 	 * @return array The sanitized express setup timestamps.

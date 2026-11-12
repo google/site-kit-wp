@@ -81,6 +81,9 @@ class Google_Proxy {
 	/**
 	 * Required scopes list.
 	 *
+	 * Only set by setup, when an administrator signs in. Site Kit's service treats a site fields sync
+	 * without scopes as unattended and doesn't let it change the site's URL.
+	 *
 	 * @since 1.68.0
 	 * @var array
 	 */
@@ -99,6 +102,8 @@ class Google_Proxy {
 
 	/**
 	 * Sets required scopes to use when the site is registering at proxy.
+	 *
+	 * Call this only for a sync started by an administrator signing in; see `$required_scopes`.
 	 *
 	 * @since 1.68.0
 	 *
@@ -290,7 +295,7 @@ class Google_Proxy {
 	 * Sends a request to the Google Proxy server.
 	 *
 	 * @since 1.27.0
-	 * @since n.e.x.t Added the `method` argument.
+	 * @since 1.192.0 Added the `method` argument.
 	 *
 	 * @param string      $uri Endpoint to send the request to.
 	 * @param Credentials $credentials Credentials instance.
@@ -767,7 +772,7 @@ class Google_Proxy {
 	/**
 	 * Sends feedback to the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
@@ -795,7 +800,7 @@ class Google_Proxy {
 	/**
 	 * Sends a benchmarking insight request to the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
@@ -841,7 +846,7 @@ class Google_Proxy {
 	/**
 	 * Gets an AI operation from the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.

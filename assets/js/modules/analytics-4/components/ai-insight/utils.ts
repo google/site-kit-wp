@@ -27,7 +27,7 @@ interface TextSegment {
  * Splits text into plain and bold segments, where bold text is wrapped in a `**` pair.
  * An unclosed `**` stays in a plain segment as characters.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {string} text The text to split.
  * @return {Array.<TextSegment>} The segments in their original order, without empty ones.

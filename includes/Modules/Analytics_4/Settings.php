@@ -71,7 +71,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Returns keys for view-only settings.
 	 *
 	 * @since 1.113.0
-	 * @since n.e.x.t Always includes `freshDataIncludesWooCommerceProducts`.
+	 * @since 1.192.0 Always includes `freshDataIncludesWooCommerceProducts`.
 	 *
 	 * @return array An array of keys for view-only settings.
 	 */
@@ -91,7 +91,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the default value.
 	 *
 	 * @since 1.30.0
-	 * @since n.e.x.t Always includes `freshDataIncludesWooCommerceProducts`.
+	 * @since 1.192.0 Always includes `freshDataIncludesWooCommerceProducts`.
 	 *
 	 * @return array
 	 */
