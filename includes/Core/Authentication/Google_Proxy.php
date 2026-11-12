@@ -54,7 +54,8 @@ class Google_Proxy {
 	/**
 	 * Endpoint of an AI operation, with its ID in place of `%s`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
+	 * @since n.e.x.t Renamed from `BENCHMARKING_INSIGHT_OPERATION_URI`.
 	 */
 	const AI_OPERATION_URI = '/v1/ai/operations/%s';
 
@@ -847,6 +848,7 @@ class Google_Proxy {
 	 * Gets an AI operation from the proxy.
 	 *
 	 * @since 1.192.0
+	 * @since n.e.x.t Renamed from `get_benchmarking_insight_operation()`.
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
