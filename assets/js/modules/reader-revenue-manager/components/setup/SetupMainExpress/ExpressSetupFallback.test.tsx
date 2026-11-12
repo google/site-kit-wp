@@ -30,8 +30,6 @@ import {
 } from '@tests/js/test-utils';
 import ExpressSetupFallback from './ExpressSetupFallback';
 
-jest.mock( './PoweredBy', () => () => null );
-
 const ERROR_TITLE = 'We couldn’t set up your survey';
 
 const storeError = {
