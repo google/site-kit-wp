@@ -68,7 +68,7 @@ interface RecentActivitySurveyTriggersOptions {
  *    post was published 7 days or less ago, or the user has visited the card
  *    3 or more times and the tab became available 10 to 14 days ago.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object}  options                 Hook options.
  * @param {boolean} options.isEnabled       Whether the widget shows the Recent activity tab, with Analytics connected.

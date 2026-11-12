@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC, MouseEvent, ReactNode } from 'react';
+
+/**
  * WordPress dependencies
  */
 import {
@@ -30,8 +35,8 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { Button, SpinnerButton } from 'googlesitekit-components';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import OptIn from '@/js/components/OptIn';
 import ResetButton from '@/js/components/ResetButton';
@@ -40,38 +45,59 @@ import StepHint from '@/js/components/setup/StepHint';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ForwardableParams } from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 
-export default function Actions( {
+interface ActionsProps {
+	proxySetupURL?: string;
+	onButtonClick: (
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) => void;
+	forwardableParams?: ForwardableParams;
+	complete: boolean;
+	inProgressFeedback?: ReactNode;
+	ctaFeedback?: ReactNode;
+	isSettingUp?: boolean;
+}
+
+const Actions: FC< ActionsProps > = ( {
 	proxySetupURL,
 	onButtonClick,
 	forwardableParams = {},
 	complete,
 	inProgressFeedback,
 	ctaFeedback,
-} ) {
+	isSettingUp = false,
+} ) => {
 	const viewContext = useViewContext();
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const isSecondAdmin = useSelect( ( select ) =>
-		select( CORE_SITE ).hasConnectedAdmins()
+	const isSecondAdmin = useSelect(
+		( select: Select ) => select( CORE_SITE ).hasConnectedAdmins(),
+		[]
 	);
-	const hasMultipleAdmins = useSelect( ( select ) =>
-		select( CORE_SITE ).hasMultipleAdmins()
+	const hasMultipleAdmins = useSelect(
+		( select: Select ) => select( CORE_SITE ).hasMultipleAdmins(),
+		[]
 	);
 	const hasViewableModules = useSelect(
-		( select ) => !! select( CORE_USER ).getViewableModules()?.length
+		( select: Select ) =>
+			!! select( CORE_USER ).getViewableModules()?.length,
+		[]
 	);
-	const isResettable = useSelect( ( select ) =>
-		select( CORE_SITE ).isResettable()
+	const isResettable = useSelect(
+		( select: Select ) => select( CORE_SITE ).isResettable(),
+		[]
 	);
-	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL(
-			'googlesitekit-dashboard',
-			forwardableParams
-		)
+	const dashboardURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getAdminURL(
+				'googlesitekit-dashboard',
+				forwardableParams
+			),
+		[ forwardableParams ]
 	);
 
 	const goToSharedDashboard = useCallback( () => {
@@ -94,11 +120,11 @@ export default function Actions( {
 		viewContext,
 	] );
 
-	const learnMoreLink = useSelect( ( select ) => {
+	const learnMoreLink = useSelect( ( select: Select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'why-connect-google-account'
 		);
-	} );
+	}, [] );
 
 	const optInProps = { trackEventAction: 'setup_flow_v3_tracking_optin' };
 
@@ -109,23 +135,26 @@ export default function Actions( {
 			<OptIn { ...optInProps } />
 
 			<div className="googlesitekit-start-setup-wrap">
-				<Button
+				{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
+				<SpinnerButton
 					className="googlesitekit-start-setup"
 					href={ proxySetupURL }
 					onClick={ onButtonClick }
-					disabled={ ! complete }
+					disabled={ ! complete || isSettingUp }
+					isSaving={ isSettingUp }
 				>
 					{ _x(
 						'Sign in with Google',
 						'Prompt to authenticate Site Kit with Google Account',
 						'google-site-kit'
 					) }
-				</Button>
+				</SpinnerButton>
 				{ inProgressFeedback }
 				{ hasMultipleAdmins &&
 					isSecondAdmin &&
 					hasViewableModules &&
 					complete && (
+						// @ts-expect-error - The `Button` component is not typed yet.
 						<Button onClick={ goToSharedDashboard } tertiary>
 							{ __(
 								'Skip sign-in and view limited dashboard',
@@ -134,6 +163,7 @@ export default function Actions( {
 						</Button>
 					) }
 				{ ! isSecondAdmin && isResettable && complete && (
+					// @ts-expect-error - The `ResetButton` component is not typed yet.
 					<ResetButton />
 				) }
 			</div>
@@ -164,4 +194,6 @@ export default function Actions( {
 			/>
 		</Fragment>
 	);
-}
+};
+
+export default Actions;

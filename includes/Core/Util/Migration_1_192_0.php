@@ -20,7 +20,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings as Reader_Revenue_Ma
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 
 /**
- * Class Migration_N_E_X_T.
+ * Class Migration_1_192_0.
  *
  * Sites that updated from 1.176.0 or earlier to 1.185.0 or later skipped the
  * older migrations, because `Migration_1_185_0` ran first and saved its
@@ -32,15 +32,15 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_
  * 1.163.0 and still stores `oneTapOnAllPages` as false, this migration turns
  * One Tap off, even if `oneTapEnabled` is true.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  * @access private
  * @ignore
  */
-class Migration_N_E_X_T {
+class Migration_1_192_0 {
 	/**
 	 * Target DB version.
 	 */
-	const DB_VERSION = 'n.e.x.t';
+	const DB_VERSION = '1.192.0';
 
 	/**
 	 * DB version option name.
@@ -50,7 +50,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Context
 	 */
 	protected Context $context;
@@ -58,7 +58,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Options
 	 */
 	protected Options $options;
@@ -66,7 +66,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Analytics_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Analytics_Settings
 	 */
 	protected Analytics_Settings $analytics_settings;
@@ -74,7 +74,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Audience_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Audience_Settings
 	 */
 	protected Audience_Settings $audience_settings;
@@ -82,7 +82,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Sign_In_With_Google_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Sign_In_With_Google_Settings
 	 */
 	protected Sign_In_With_Google_Settings $sign_in_with_google_settings;
@@ -90,7 +90,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Reader_Revenue_Manager_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 * @var Reader_Revenue_Manager_Settings
 	 */
 	protected Reader_Revenue_Manager_Settings $rrm_settings;
@@ -98,7 +98,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param Context $context Plugin context instance.
 	 * @param Options $options Optional. Options instance.
@@ -118,7 +118,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Registers hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
@@ -127,7 +127,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
@@ -154,7 +154,7 @@ class Migration_N_E_X_T {
 	 * A site that turned Analytics off after migrating still lists the legacy
 	 * slug, but its Analytics 4 settings were deleted, so this returns false.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return bool True if Analytics 4 settings are stored and `analytics` is active without `analytics-4`.
 	 */
@@ -173,7 +173,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Copies the legacy Analytics settings over to Analytics 4.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	protected function migrate_legacy_analytics_settings() {
 		( new Migration_1_123_0( $this->context, $this->options ) )->migrate_legacy_analytics_settings();
@@ -182,7 +182,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Activates Analytics 4 and copies the legacy Analytics sharing settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	protected function migrate_legacy_analytics_module() {
 		$migration_1_123_0 = new Migration_1_123_0( $this->context, $this->options );
@@ -197,7 +197,7 @@ class Migration_N_E_X_T {
 	 * The keys are only removed, not copied, when their audiences belong to
 	 * another property than the current one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	protected function migrate_audience_settings() {
 		if ( ! $this->analytics_settings->has() ) {
@@ -242,7 +242,7 @@ class Migration_N_E_X_T {
 	 * A site that changed its property after skipping 1.150.0 still has the
 	 * old property's audiences in its Analytics settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param array $analytics_settings Analytics settings.
 	 * @return bool True if every audience name starts with `properties/{propertyID}/` for the current property.
@@ -271,7 +271,7 @@ class Migration_N_E_X_T {
 	 * Runs only when the stored settings still have `oneTapOnAllPages`, so
 	 * One Tap is left as it is on a site without that key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	protected function migrate_one_tap_enabled_setting() {
 		$sign_in_with_google_settings = $this->sign_in_with_google_settings->get();
@@ -294,7 +294,7 @@ class Migration_N_E_X_T {
 	 * `contentPolicyState` is already set, this keeps both and only removes
 	 * the legacy `contentPolicyStatus`, which can be older.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	protected function migrate_rrm_content_policy_status() {
 		$rrm_settings = $this->rrm_settings->get();

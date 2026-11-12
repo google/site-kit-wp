@@ -693,7 +693,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} );
 	} );
 
-	it( 'should show an error notification and prevent navigation when saving initial setup settings fails', async () => {
+	it( 'should show an error notification, prevent navigation and leave "Sign in with Google" clickable with no spinner when saving initial setup settings fails', async () => {
 		fetchMock.postOnce(
 			initialSetupSettingsEndpoint,
 			{
@@ -738,11 +738,18 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			).toBeInTheDocument();
 		} );
 
+		const button = getByRole( 'button', { name: /sign in with google/i } );
+
+		expect( button ).toBeEnabled();
+		expect(
+			within( button ).queryByRole( 'progressbar' )
+		).not.toBeInTheDocument();
+
 		expect( global.location.assign ).not.toHaveBeenCalled();
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'should retry plugin setup when the Analytics activation error notification CTA is clicked', async () => {
+	it( 'should leave "Sign in with Google" clickable with no spinner when Analytics activation fails, then show the spinner again and retry the setup when "Retry plugin setup" is clicked', async () => {
 		fetchMock.postOnce(
 			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' ),
 			{
@@ -797,9 +804,27 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 		expect( global.location.assign ).toHaveBeenCalledTimes( 0 );
 
+		const buttonAfterFailure = getByRole( 'button', {
+			name: /sign in with google/i,
+		} );
+
+		expect( buttonAfterFailure ).toBeEnabled();
+		expect(
+			within( buttonAfterFailure ).queryByRole( 'progressbar' )
+		).not.toBeInTheDocument();
+
 		fireEvent.click(
 			getByRole( 'button', { name: /retry plugin setup/i } )
 		);
+
+		const buttonDuringRetry = getByRole( 'button', {
+			name: /sign in with google/i,
+		} );
+
+		expect( buttonDuringRetry ).toBeDisabled();
+		expect(
+			within( buttonDuringRetry ).getByRole( 'progressbar' )
+		).toBeInTheDocument();
 
 		const proxySetupURL = registry.select( CORE_SITE ).getProxySetupURL();
 
@@ -819,6 +844,214 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				expectedURL
+			);
+		} );
+	} );
+
+	it( 'should show a spinner on the Sign in with Google button and disable it after a click, with the Analytics checkbox unticked', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		// The click replaces the `a` element with a disabled `button`, so find it again.
+		const button = getByRole( 'button', {
+			name: /sign in with google/i,
+		} );
+
+		expect( button ).toBeDisabled();
+		expect(
+			within( button ).getByRole( 'progressbar' )
+		).toBeInTheDocument();
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+		} );
+	} );
+
+	it( 'should show a spinner on the Sign in with Google button and disable it after a click, with the Analytics checkbox ticked', async () => {
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' ),
+			{ body: { success: true } }
+		);
+
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			{
+				body: {
+					authenticated: true,
+					requiredScopes: [
+						'https://www.googleapis.com/auth/analytics.readonly',
+					],
+					grantedScopes: [],
+					unsatisfiedScopes: [
+						'https://www.googleapis.com/auth/analytics.readonly',
+					],
+					needsReauthentication: true,
+				},
+			}
+		);
+
+		// Set the Analytics checkbox to true.
+		registry.dispatch( CORE_FORMS ).setValues( ANALYTICS_NOTICE_FORM_NAME, {
+			[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+		} );
+
+		provideModuleRegistrations( registry );
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		// The click replaces the `a` element with a disabled `button`, so find it again.
+		const button = getByRole( 'button', {
+			name: /sign in with google/i,
+		} );
+
+		expect( button ).toBeDisabled();
+		expect(
+			within( button ).getByRole( 'progressbar' )
+		).toBeInTheDocument();
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+		} );
+	} );
+
+	it( 'should stop the spinner when the page is restored from the back/forward cache, so the button can be clicked again', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+		} );
+
+		const button = getByRole( 'button', { name: /sign in with google/i } );
+
+		expect(
+			within( button ).getByRole( 'progressbar' )
+		).toBeInTheDocument();
+
+		act( () => {
+			global.dispatchEvent(
+				new global.PageTransitionEvent( 'pageshow', {
+					persisted: true,
+				} )
+			);
+		} );
+
+		const restoredButton = getByRole( 'button', {
+			name: /sign in with google/i,
+		} );
+
+		expect( restoredButton ).toBeEnabled();
+		expect(
+			within( restoredButton ).queryByRole( 'progressbar' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should keep the spinner and the disabled button after the pageshow event of a normal page load', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+		} );
+
+		act( () => {
+			global.dispatchEvent(
+				new global.PageTransitionEvent( 'pageshow', {
+					persisted: false,
+				} )
+			);
+		} );
+
+		const button = getByRole( 'button', { name: /sign in with google/i } );
+
+		expect( button ).toBeDisabled();
+		expect(
+			within( button ).getByRole( 'progressbar' )
+		).toBeInTheDocument();
+	} );
+
+	describe( 'the pageshow listener', () => {
+		let addEventListenerSpy;
+		let removeEventListenerSpy;
+
+		beforeEach( () => {
+			addEventListenerSpy = jest.spyOn( global, 'addEventListener' );
+			removeEventListenerSpy = jest.spyOn(
+				global,
+				'removeEventListener'
+			);
+		} );
+
+		afterEach( () => {
+			addEventListenerSpy.mockRestore();
+			removeEventListenerSpy.mockRestore();
+		} );
+
+		it( 'should be removed when the splash screen unmounts', async () => {
+			const { unmount, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+				}
+			);
+
+			await waitForRegistry();
+
+			const [ , onPageShow ] = addEventListenerSpy.mock.calls.find(
+				( [ type ] ) => type === 'pageshow'
+			);
+
+			unmount();
+
+			expect( removeEventListenerSpy ).toHaveBeenCalledWith(
+				'pageshow',
+				onPageShow
 			);
 		} );
 	} );

@@ -72,7 +72,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 * analysis is site-wide, so there is no per-page version of it to ask for.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t The longest period it accepts changed from 197 days to 90.
+	 * @since 1.192.0 The longest period it accepts changed from 197 days to 90.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date, for a `startDate` later than `endDate`, or for a period longer than `Report_Options::MAXIMUM_PERIOD_DAYS` days.

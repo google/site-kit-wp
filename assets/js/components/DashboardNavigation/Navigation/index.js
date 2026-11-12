@@ -198,7 +198,7 @@ export default function Navigation() {
 	/**
 	 * Selects a chip and scrolls to its section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param {string} chipID The chip ID.
 	 * @return {void}
