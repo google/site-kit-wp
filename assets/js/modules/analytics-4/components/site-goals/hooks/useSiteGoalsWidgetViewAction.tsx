@@ -47,7 +47,7 @@ interface UseSiteGoalsWidgetViewActionOptions {
  *
  * @since 1.183.0
  * @since 1.190.0 Treated a breakdown without plugin conversion tracking as not enabled.
- * @since n.e.x.t Reported the tabbed breakdown while plugin conversion tracking is off and the tabs stay.
+ * @since 1.192.0 Reported the tabbed breakdown while plugin conversion tracking is off and the tabs stay.
  *
  * @param {Object}  options                    Hook options.
  * @param {string}  options.breakdownDimension The breakdown custom dimension slug for this goal type.

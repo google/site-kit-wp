@@ -94,6 +94,28 @@ class ScreensTest extends TestCase {
 		$this->screens = new Screens( $context, $assets );
 	}
 
+	public function tear_down() {
+		// Some tests set the current hook suffix, which must not carry over to other tests.
+		unset( $GLOBALS['hook_suffix'] );
+
+		parent::tear_down();
+	}
+
+	/**
+	 * @dataProvider data_empty_hook_suffix
+	 *
+	 * @param string|null $hook_suffix Empty hook suffix.
+	 */
+	public function test_get_screen__empty_hook_suffix( $hook_suffix ) {
+		$this->assertNull( $this->screens->get_screen( $hook_suffix ), 'No screen should be returned for an empty hook suffix.' );
+	}
+
+	public function data_empty_hook_suffix() {
+		return array(
+			'null'         => array( null ),
+			'empty string' => array( '' ),
+		);
+	}
 
 	public function data_removal_of_admin_notices() {
 		return array(

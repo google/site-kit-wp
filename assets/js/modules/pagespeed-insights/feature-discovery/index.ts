@@ -31,7 +31,7 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
-import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
+import pageSpeedInsightsScreenshotURL from '@/svg/screenshots/pagespeed-insights-speed.svg?path';
 
 /**
  * Registers PageSpeed Insights module features in the Feature Discovery catalog.
@@ -109,13 +109,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: pageSpeedInsightsScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
+						'Screenshot of the speed section of the Site Kit dashboard showing field data from real users for Largest Contentful Paint, Cumulative Layout Shift and Interaction to Next Paint, each colored by how well the page performs',
 						'google-site-kit'
 					),
-					width: 292,
-					height: 210,
+					width: 620,
+					height: 349,
 				},
 			],
 		},

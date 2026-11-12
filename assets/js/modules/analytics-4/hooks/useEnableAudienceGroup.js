@@ -46,7 +46,7 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
  * audiences that could not be created.
  *
  * @since 1.132.0
- * @since n.e.x.t Added the `initialFailedAudiences` option.
+ * @since 1.192.0 Added the `initialFailedAudiences` option.
  *
  * @param {Object}   [options]                        Optional. Options.
  * @param {string}   [options.redirectURL]            Optional. URL to return to after the OAuth flow.

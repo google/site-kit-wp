@@ -24,6 +24,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MODULE_SETUP,
 } from '@/js/googlesitekit/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
@@ -1209,6 +1210,73 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 				openSpy.mockRestore();
 			} );
+		} );
+	} );
+
+	describe( 'resetting the incomplete setup reminder', () => {
+		let resetReminder: jest.SpyInstance;
+
+		beforeEach( () => {
+			resetReminder = jest
+				.spyOn(
+					registry.dispatch( CORE_FEATURE_DISCOVERY ),
+					'resetIncompleteSetupReminder'
+				)
+				.mockResolvedValue( undefined );
+		} );
+
+		afterEach( () => {
+			resetReminder.mockRestore();
+		} );
+
+		it.each( Object.entries( STEP_CONTENT ) )(
+			'should reset only for an incomplete step: %s',
+			async ( step, content ) => {
+				global.location.href = `http://example.com/?cta=newsletter-signup&step=${ step }`;
+
+				if ( step === 'terms-of-service' ) {
+					connectPublication( registry, publicationWithoutTerms );
+				} else if ( step !== 'connect-publication' ) {
+					connectPublication( registry, completePublication );
+				}
+
+				const { findByText } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				expect( await findByText( content ) ).toBeInTheDocument();
+
+				if ( step === 'setup-complete' ) {
+					expect( resetReminder ).not.toHaveBeenCalled();
+				} else {
+					expect( resetReminder ).toHaveBeenCalledWith(
+						'newsletter-signup'
+					);
+				}
+			}
+		);
+
+		it( 'should not reset before the initial step resolves', () => {
+			global.location.href = 'http://example.com/?cta=newsletter-signup';
+			registry = createTestRegistry() as Registry;
+
+			resetReminder.mockRestore();
+
+			resetReminder = jest
+				.spyOn(
+					registry.dispatch( CORE_FEATURE_DISCOVERY ),
+					'resetIncompleteSetupReminder'
+				)
+				.mockResolvedValue( undefined );
+
+			freezeFetch(
+				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
+			);
+			freezeFetch( settingsEndpoint );
+
+			render( <SetupCTANewsletterSignup />, { registry } );
+
+			expect( resetReminder ).not.toHaveBeenCalled();
 		} );
 	} );
 

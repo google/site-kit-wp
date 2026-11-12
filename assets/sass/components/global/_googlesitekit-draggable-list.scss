@@ -26,11 +26,11 @@
 
 	.googlesitekit-draggable-list__item {
 		align-items: center;
-		border-block: 2px solid transparent;
 		display: flex;
 		gap: 4px 14px;
 		margin: 0;
 		min-width: 0;
+		padding-block: 2px;
 		position: relative;
 	}
 
@@ -38,30 +38,30 @@
 		opacity: 0.25;
 	}
 
-	.googlesitekit-draggable-list__item--inserting-before {
-		border-block-start-color: currentcolor;
+	// The drop position is drawn over the item's edge, so it takes no space,
+	// and a list can remove the items' padding to sit them flush.
+	.googlesitekit-draggable-list__item--inserting-before::before,
+	.googlesitekit-draggable-list__item--inserting-after::after {
+		background: currentcolor;
+		block-size: 2px;
+		content: "";
+		inset-inline: 0;
+		position: absolute;
 	}
 
-	.googlesitekit-draggable-list__item--inserting-after {
-		border-block-end-color: currentcolor;
+	.googlesitekit-draggable-list__item--inserting-before::before {
+		inset-block-start: 0;
 	}
 
-	.googlesitekit-draggable-list__handle {
+	.googlesitekit-draggable-list__item--inserting-after::after {
+		inset-block-end: 0;
+	}
+
+	.googlesitekit-draggable-list__handle .googlesitekit-action-button__button:enabled {
 		cursor: grab;
 
 		&:active {
 			cursor: grabbing;
-		}
-	}
-
-	.googlesitekit-draggable-list__item:has(> .mdc-text-field + .mdc-text-field-helper-line) {
-		display: grid;
-		grid-auto-rows: max-content;
-		grid-template-columns: max-content auto;
-		padding-block: 4px;
-
-		.mdc-text-field-helper-line {
-			grid-column: 2;
 		}
 	}
 }

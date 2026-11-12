@@ -156,13 +156,14 @@ class CTATest extends TestCase {
 		);
 		$original_schedule = wp_next_scheduled( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
 
+		$before = time();
 		$this->synchronization->synchronize( array() );
 
 		$new_schedule = wp_next_scheduled( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
 
 		$this->assertNotFalse( $new_schedule, 'Cron should remain scheduled.' );
 		$this->assertNotSame( $original_schedule, $new_schedule, 'Cron should be rescheduled.' );
-		$this->assertGreaterThanOrEqual( time() + HOUR_IN_SECONDS - 1, $new_schedule, 'Cron should run approximately one hour from now.' );
+		$this->assertGreaterThanOrEqual( $before + HOUR_IN_SECONDS, $new_schedule, 'Cron should run approximately one hour from now.' );
 	}
 
 	private function create_cta( $name = '', $type = '', $state = 'ACTIVE', $display_name = null ) {

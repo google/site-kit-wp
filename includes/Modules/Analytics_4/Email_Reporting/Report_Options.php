@@ -135,7 +135,7 @@ class Report_Options extends Base_Report_Options {
 	 * Whether Analytics has detected any ecommerce event.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Checks the events with `Site_Goals\Report_Options::has_detected_events()`.
+	 * @since 1.192.0 Checks the events with `Site_Goals\Report_Options::has_detected_events()`.
 	 *
 	 * @return bool True when the detected events hold an ecommerce event, false otherwise.
 	 */
@@ -147,7 +147,7 @@ class Report_Options extends Base_Report_Options {
 	 * Whether Analytics has detected any lead generation event.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Checks the events with `Site_Goals\Report_Options::has_detected_events()`.
+	 * @since 1.192.0 Checks the events with `Site_Goals\Report_Options::has_detected_events()`.
 	 *
 	 * @return bool True when the detected events hold a lead event, false otherwise.
 	 */
@@ -453,7 +453,7 @@ class Report_Options extends Base_Report_Options {
 	 * The options count `purchase` when the detected events hold it, and `add_to_cart` otherwise.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Builds the options with `Site_Goals\Report_Options::get_key_action_options()`.
+	 * @since 1.192.0 Builds the options with `Site_Goals\Report_Options::get_key_action_options()`.
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the count by, such as
 	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
@@ -471,7 +471,7 @@ class Report_Options extends Base_Report_Options {
 	 * Gets report options for the lead generation key action count.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Builds the options with `Site_Goals\Report_Options::get_key_action_options()`.
+	 * @since 1.192.0 Builds the options with `Site_Goals\Report_Options::get_key_action_options()`.
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the count by, such as
 	 *                                 `googlesitekit_form_id`. Default empty, which returns one row per
@@ -492,7 +492,7 @@ class Report_Options extends Base_Report_Options {
 	 * store event.
 	 *
 	 * @since 1.188.0
-	 * @since n.e.x.t Counts the events with `Site_Goals\Report_Options::get_event_count_options()`.
+	 * @since 1.192.0 Counts the events with `Site_Goals\Report_Options::get_event_count_options()`.
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug the card groups by, such as
 	 *                                 `googlesitekit_event_provider`. Default empty, which returns
@@ -515,7 +515,7 @@ class Report_Options extends Base_Report_Options {
 	 * Gets report options that name the groups the lead generation card shows.
 	 *
 	 * @since 1.188.0
-	 * @since n.e.x.t Counts the events with `Site_Goals\Report_Options::get_event_count_options()`.
+	 * @since 1.192.0 Counts the events with `Site_Goals\Report_Options::get_event_count_options()`.
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug the card groups by, such as
 	 *                                 `googlesitekit_form_id`. Default empty, which returns one row
@@ -565,7 +565,7 @@ class Report_Options extends Base_Report_Options {
 	 * The key action rate divides the key action count by the session count.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Builds the options with `Site_Goals\Report_Options::get_engagement_options()`.
+	 * @since 1.192.0 Builds the options with `Site_Goals\Report_Options::get_engagement_options()`.
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the rows by, such as
 	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
@@ -581,7 +581,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * The options are made on each call, because `set_detected_events()` runs after the constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @return Site_Goals_Report_Options Site Goals report options for the email's two periods.
 	 */

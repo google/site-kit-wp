@@ -46,6 +46,20 @@ export function getFeatureIncompleteSetupReminderKey( slug: string ) {
 }
 
 /**
+ * Returns whether the provided key is a feature incomplete setup reminder key.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} key Key to check.
+ * @return {boolean} Whether the provided key is a feature incomplete setup reminder key.
+ */
+export function isFeatureIncompleteSetupReminderKey( key: string ) {
+	const prefix = getFeatureIncompleteSetupReminderKey( '' );
+
+	return key.startsWith( prefix );
+}
+
+/**
  * Gets the feature newness key for a feature.
  *
  * @since 1.188.0
@@ -73,7 +87,7 @@ export function getFeatureSetupSurveyTriggerID( slug: string ) {
  * Gets the feedback group for a feature's relevancy feedback.
  *
  * @since 1.189.0
- * @since n.e.x.t Renamed from `getFeatureRelevancyTriggerID()`, dropped the `reason` segment (now sent as the feedback `value`), and returns a feedback group instead of a survey trigger ID.
+ * @since 1.192.0 Renamed from `getFeatureRelevancyTriggerID()`, dropped the `reason` segment (now sent as the feedback `value`), and returns a feedback group instead of a survey trigger ID.
  *
  * @param {string} slug Feature slug.
  * @return {string} Feedback group.

@@ -19,7 +19,7 @@
 /**
  * Gets the day the Analytics property was created, when a chart plots that day.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {(string|undefined)} propertyCreateDate The day the Analytics property was created, as `YYYY-MM-DD`, or `undefined` when it is not known.
  * @param {string}             firstDate          The first day the chart plots, as `YYYY-MM-DD`.
