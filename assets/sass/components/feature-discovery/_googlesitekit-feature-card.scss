@@ -24,7 +24,6 @@
 		--googlesitekit-feature-card-dot-size: 12px;
 
 		container: feature-card / inline-size;
-		padding-inline-end: $grid-gap-phone;
 	}
 
 	.googlesitekit-feature-card__layout {
@@ -33,6 +32,7 @@
 
 		@container feature-card ( inline-size > 600px ) {
 			grid-template: 'status heading meta' 'status content content' / min-content auto 1fr;
+			padding-inline-end: $grid-gap-phone;
 		}
 	}
 

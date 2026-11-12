@@ -124,38 +124,6 @@ AllServicesFiltered.play = async () => {
 	chip?.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
 };
 
-export const AllServicesWithSetupError = Template.bind(
-	{}
-) as Story< StoryArgs >;
-AllServicesWithSetupError.storyName = 'All services with Analytics setup error';
-AllServicesWithSetupError.parameters = { route: '/all-services' };
-AllServicesWithSetupError.args = {
-	setupRegistry: ( registry: Registry ) => {
-		provideModules( registry, sampleModules );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveInitialSiteKitVersion( INITIAL_VERSION );
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
-
-		provideFeatures( registry, sampleFeatures );
-
-		registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
-			{
-				code: 'activation_failed',
-				message: 'Could not activate service.',
-				data: { status: 500 },
-			},
-			'setupFeature',
-			[ 'analytics-setup' ]
-		);
-	},
-};
-AllServicesWithSetupError.scenario = {
-	readySelector: '.googlesitekit-feature-setup-error-notice',
-};
-
 export const AllServicesWithSetupSuccess = Template.bind(
 	{}
 ) as Story< StoryArgs >;
@@ -212,6 +180,43 @@ AllServicesWithInPlaceSetupSuccess.args = {
 };
 AllServicesWithInPlaceSetupSuccess.scenario = {
 	readySelector: '.googlesitekit-feature-success-notice',
+};
+
+export const AllServicesWithInPlaceSetupError = Template.bind(
+	{}
+) as Story< StoryArgs >;
+AllServicesWithInPlaceSetupError.storyName =
+	'All services with in-place setup error notice';
+AllServicesWithInPlaceSetupError.parameters = {
+	route: ALL_SERVICES_TAB_PATH,
+};
+AllServicesWithInPlaceSetupError.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideModules( registry, sampleModules );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveInitialSiteKitVersion( INITIAL_VERSION );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+
+		provideFeatures( registry, sampleFeatures );
+		provideNotifications( registry, [] );
+
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
+			{
+				code: 'internal_server_error',
+				message: 'The settings could not be saved.',
+				data: { status: 500 },
+			},
+			'setupFeature',
+			[ 'key-metrics' ]
+		);
+	},
+};
+AllServicesWithInPlaceSetupError.scenario = {
+	readySelector: '.googlesitekit-feature-setup-error-notice',
 };
 
 export const WhatsNewUnread = Template.bind( {} ) as Story< StoryArgs >;
@@ -305,6 +310,33 @@ WhatsNewWithInPlaceSetupSuccess.args = {
 };
 WhatsNewWithInPlaceSetupSuccess.scenario = {
 	readySelector: '.googlesitekit-feature-success-notice',
+};
+
+export const WhatsNewWithInPlaceSetupError = Template.bind(
+	{}
+) as Story< StoryArgs >;
+WhatsNewWithInPlaceSetupError.storyName =
+	'"What’s new" with in-place setup error notice';
+WhatsNewWithInPlaceSetupError.parameters = { route: WHATS_NEW_TAB_PATH };
+WhatsNewWithInPlaceSetupError.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+		provideNotifications( registry, [] );
+
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
+			{
+				code: 'internal_server_error',
+				message: 'The settings could not be saved.',
+				data: { status: 500 },
+			},
+			'setupFeature',
+			[ 'dashboard-sharing' ]
+		);
+	},
+};
+WhatsNewWithInPlaceSetupError.scenario = {
+	readySelector: '.googlesitekit-feature-setup-error-notice',
 };
 
 function provideReaderRevenueManager(

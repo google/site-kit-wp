@@ -46,8 +46,13 @@
 		min-block-size: 546px;
 		padding-block: 0 var(--googlesitekit-feature-discovery-padding-l);
 
-		.googlesitekit-feature-card {
+		.googlesitekit-feature-list-item {
 			margin-inline: calc(var(--googlesitekit-feature-discovery-padding-s) - var(--googlesitekit-feature-discovery-padding-m));
+			padding-inline: calc(var(--googlesitekit-feature-discovery-padding-m) - var(--googlesitekit-feature-discovery-padding-s));
+
+			&:has(.googlesitekit-feature-card) {
+				padding-inline-start: 0;
+			}
 		}
 	}
 
