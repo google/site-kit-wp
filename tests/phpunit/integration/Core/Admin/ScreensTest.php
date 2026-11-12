@@ -386,7 +386,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_initialize__no_redirect_to_key_metrics_setup_for_an_intent() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 		$this->set_analytics_setup_complete( true );
 		$this->set_has_site_purpose_answer( false );
@@ -398,7 +397,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_initialize__no_redirect_to_analytics_setup_for_an_intent() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 		$this->set_analytics_setup_complete( false );
 
@@ -409,7 +407,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_initialize__redirect_to_key_metrics_setup_for_an_unregistered_intent() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 		$this->set_analytics_setup_complete( true );
 		$this->set_has_site_purpose_answer( false );
@@ -616,7 +613,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_render__intent_and_code_fill_the_intent_attributes() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
 		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
@@ -645,7 +641,6 @@ class ScreensTest extends TestCase {
 	 * @dataProvider data_requests_without_a_usable_intent
 	 */
 	public function test_dashboard_render__intent_attributes_stay_empty( $query_args ) {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
 		foreach ( $query_args as $key => $value ) {
@@ -673,20 +668,7 @@ class ScreensTest extends TestCase {
 		$this->assertStringContainsString( 'data-intent-code=""', $output, 'An intent that reports itself unavailable should not bring its code along.' );
 	}
 
-	public function test_dashboard_render__intent_attributes_stay_empty_while_the_ads_feature_flag_is_off() {
-		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
-
-		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
-		$_GET['intent_code'] = 'abc123';
-
-		$output = $this->render_dashboard_screen();
-
-		$this->assertStringContainsString( 'data-intent-slug=""', $output, 'The Ads intent should not be rendered while adsConversionTrackingIntent is off.' );
-		$this->assertStringContainsString( 'data-intent-code=""', $output, 'The Ads intent code should not be rendered while adsConversionTrackingIntent is off.' );
-	}
-
 	public function test_dashboard_render__intent_attributes_stay_empty_for_a_view_only_user() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->switch_to_view_only_user( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
 
 		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ), 'A view-only user should reach the dashboard.' );
@@ -705,7 +687,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_render__script_in_the_code_argument_is_escaped() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
 		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
@@ -718,7 +699,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_render__the_code_argument_is_escaped_only_on_output() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
 		// A code that already reads like an entity comes out as `a&amp;amp;b`
@@ -732,7 +712,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_render__script_in_the_intent_argument_renders_nothing() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
 		$_GET['intent']      = '"><script>alert(1)</script>';
@@ -834,7 +813,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_access_denied__redirect_to_splash_with_the_intent_purpose() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->switch_to_signed_out_admin();
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
@@ -853,7 +831,6 @@ class ScreensTest extends TestCase {
 	 * @dataProvider data_requests_without_a_usable_intent
 	 */
 	public function test_dashboard_access_denied__redirect_to_splash_without_the_intent_purpose( $query_args ) {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->switch_to_signed_out_admin();
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
