@@ -7,7 +7,7 @@ description: >
   check or watch a PR's checks, or to work through test failures on a pull request (e.g.
   "why is CI failing on #12345", "check the failures on my PR", "/check-pr-failures 12345").
 argument-hint: "[pr-number]"
-allowed-tools: Read Grep Glob Edit Write Bash(gh pr checks *) Bash(gh pr view *) Bash(gh run list *) Bash(gh run view *) Bash(gh api --method GET *) Bash(gh issue list *) Bash(git merge-base *) Bash(git worktree *) Bash(npm install *) Bash(npm run build:test *) Bash(npm run test:e2e *) Bash(npm run test:visualtest *)
+allowed-tools: Read Grep Glob Edit Write Bash(gh pr checks *) Bash(gh pr view *) Bash(gh run list *) Bash(gh run view *) Bash(gh api --method GET *) Bash(gh issue list *) Bash(git merge-base *) Bash(git worktree *) Bash(npm install *) Bash(npm run build:test *) Bash(npm run test:e2e *) Bash(npm run test:visualtest *) Bash(npm -w tests/js run test:js *) Bash(composer test *)
 ---
 
 # Check a pull request's CI failures
