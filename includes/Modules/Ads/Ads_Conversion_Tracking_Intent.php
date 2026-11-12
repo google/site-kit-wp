@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Modules\Ads;
 
 use Google\Site_Kit\Core\Intents\Intent;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class for the intent to set up Ads conversion tracking.
@@ -38,16 +37,5 @@ class Ads_Conversion_Tracking_Intent extends Intent {
 	 */
 	public function get_id() {
 		return self::INTENT_ID;
-	}
-
-	/**
-	 * Checks whether the intent can currently be handled.
-	 *
-	 * @since 1.188.0
-	 *
-	 * @return bool True if the `adsConversionTrackingIntent` feature flag is enabled, false otherwise.
-	 */
-	public function is_available() {
-		return Feature_Flags::enabled( 'adsConversionTrackingIntent' );
 	}
 }
