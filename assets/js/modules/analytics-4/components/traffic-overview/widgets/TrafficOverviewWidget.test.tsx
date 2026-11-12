@@ -41,6 +41,7 @@ import {
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	getExpiryFromNow,
+	provideBenchmarkingResponse,
 	provideFreshMetricsReports,
 	provideRecentActivitySurveyState,
 	requestedTimerSlugs,
@@ -666,6 +667,10 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should render the AI disclosure and the "Sources: Analytics Search Console" footer on the Traffic overview tab when the `typicalTraffic` and `trafficInsights` feature flags are enabled', async () => {
+		// With the `typicalTraffic` feature, the panel reads the benchmarking
+		// response.
+		provideBenchmarkingResponse( registry );
+
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{

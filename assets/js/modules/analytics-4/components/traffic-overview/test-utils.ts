@@ -32,6 +32,8 @@ import { getQueryArg } from '@wordpress/url';
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
+import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	FreshDataDateRange,
@@ -65,6 +67,7 @@ import {
 	getDateDimensionValues,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
 import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
@@ -72,6 +75,10 @@ import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
+import {
+	BenchmarkingKeyFactor,
+	DecodedBenchmarkingResponse,
+} from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { ErrorObject } from '@/js/util/errors';
@@ -155,6 +162,83 @@ export const INSUFFICIENT_PERMISSIONS_ERROR: ErrorObject = {
 	message: 'User does not have sufficient permissions for this property.',
 	data: { status: 403, reason: 'insufficientPermissions' },
 };
+
+/**
+ * The key factor cards of the design.
+ *
+ * @since n.e.x.t
+ */
+export const KEY_FACTORS: BenchmarkingKeyFactor[] = [
+	{
+		kind: 'CHANNEL',
+		label: 'Referral',
+		current: 245,
+		previous: 180,
+		sharePct: 52.4,
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/Ice-cream-is-good-for-your-health/',
+				current: 46,
+				previous: 30,
+				sharePct: 12.9,
+			},
+			{
+				kind: 'REFERRING_SITE',
+				label: 'facebook.com',
+				current: 92,
+				previous: 60,
+				sharePct: 25.8,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Video',
+		current: 168,
+		previous: 120,
+		sharePct: 38.7,
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/Eat-ice-cream-every-day/',
+				current: 53,
+				previous: 30,
+				sharePct: 18.5,
+			},
+			{
+				kind: 'PLATFORM',
+				label: 'YouTube',
+				current: 72,
+				previous: 60,
+				sharePct: 9.7,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Search',
+		current: 379,
+		previous: 400,
+		sharePct: 100,
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/best-ice-cream-shops-guide/',
+				current: 38,
+				previous: 40,
+				sharePct: 9.5,
+			},
+			{
+				kind: 'SEARCH_KEYWORD',
+				label: 'healthy ice cream types',
+				current: 17,
+				previous: 20,
+				sharePct: 14.3,
+			},
+		],
+	},
+];
 
 /**
  * Gets the report arguments of `LATEST_POST` for the registry's reference date
@@ -767,4 +851,51 @@ export function provideRecentActivitySurveyState(
 	registry
 		.dispatch( CORE_USER )
 		.receiveGetDismissedPrompts( dismissedPrompts );
+}
+
+/**
+ * Builds a decoded benchmarking response with the figures of the design: its
+ * total visits, its visits on each day of the date range, and its key factor
+ * cards.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
+ * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
+ * @return {Object} The decoded response.
+ */
+export function createBenchmarkingResponse(
+	startDate: string,
+	endDate: string
+): DecodedBenchmarkingResponse {
+	return {
+		visits: PLACEHOLDER_TOTAL_VISITS,
+		dailyTraffic: getPlaceholderDailyTraffic( startDate, endDate ),
+		keyFactors: KEY_FACTORS,
+	};
+}
+
+/**
+ * Stores a benchmarking response for the selected date range, so the Traffic
+ * overview panel renders it without a request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry   The registry with the selected date range.
+ * @param {Object} [response] Optional. The decoded response to store. Default is the response `createBenchmarkingResponse()` builds for the range.
+ * @return {void}
+ */
+export function provideBenchmarkingResponse(
+	registry: WPDataRegistry,
+	response?: DecodedBenchmarkingResponse
+) {
+	const { startDate, endDate } = registry
+		.select( CORE_USER )
+		.getDateRangeDates();
+
+	provideBenchmarkingData(
+		registry,
+		{ startDate, endDate },
+		response ?? createBenchmarkingResponse( startDate, endDate )
+	);
 }

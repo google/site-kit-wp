@@ -36,10 +36,16 @@ import {
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	createBenchmarkingResponse,
+	getSectionClassNames,
+	provideBenchmarkingResponse,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { DecodedBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	act,
@@ -241,11 +247,12 @@ describe( 'TrafficOverviewPanel', () => {
 		);
 	} );
 
-	it( 'should draw the placeholder visits for each day of the selected range in the chart', async () => {
+	it( 'should draw the placeholder visits for each day of the selected range in the chart, and show the placeholder total visits, without the typicalTraffic feature', async () => {
 		const { getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -259,6 +266,9 @@ describe( 'TrafficOverviewPanel', () => {
 		expect(
 			getByText( 'February 5, 2025: 152 visitors' )
 		).toBeInTheDocument();
+		expect( getByText( '1.2K' ) ).toHaveClass(
+			'googlesitekit-traffic-overview__total-visits-figure'
+		);
 	} );
 
 	it( 'should show the placeholder values in the three columns of the traffic breakdown', async () => {
@@ -627,9 +637,340 @@ describe( 'TrafficOverviewPanel', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
+	describe( 'benchmarking response', () => {
+		const benchmarkingEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+		);
+
+		const benchmarkingError = {
+			code: 'test_error',
+			message: 'The benchmarking request failed.',
+			data: { status: 500, reason: 'backendError' },
+		};
+
+		/**
+		 * Renders the panel on the main dashboard with the typicalTraffic
+		 * feature, where the panel reads the benchmarking response.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {Object} The render result.
+		 */
+		function renderPanel() {
+			return render( <TrafficOverviewPanel />, {
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+		}
+
+		/**
+		 * Builds a benchmarking response for the selected date range with the
+		 * figures of the design, and the given fields in place of theirs.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} [fields] Optional. The fields to set.
+		 * @return {Object} The decoded response.
+		 */
+		function createResponse(
+			fields: Partial< DecodedBenchmarkingResponse > = {}
+		): DecodedBenchmarkingResponse {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			return {
+				...createBenchmarkingResponse( startDate, endDate ),
+				...fields,
+			};
+		}
+
+		/**
+		 * Stores an error for the benchmarking request over the selected date
+		 * range, and finishes its resolution, so the store sends no request.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {void}
+		 */
+		function provideBenchmarkingError() {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setErrorForSelector(
+					benchmarkingError,
+					'getBenchmarkingData',
+					[ startDate, endDate ]
+				);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getBenchmarkingData', [
+					startDate,
+					endDate,
+				] );
+		}
+
+		beforeEach( () => {
+			provideTotalsReport( 843, 700 );
+		} );
+
+		it( 'should request the benchmarking response for the selected date range', async () => {
+			fetchMock.get( benchmarkingEndpoint, {
+				body: benchmarkingData,
+				status: 200,
+			} );
+
+			const { waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint, {
+				query: { startDate: '2025-01-09', endDate: '2025-02-05' },
+			} );
+		} );
+
+		it( 'should show the total visits of the benchmarking response', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( { visits: { current: 4321, previous: 3000 } } )
+			);
+
+			const { getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect( getByText( '4.3K' ) ).toHaveClass(
+				'googlesitekit-traffic-overview__total-visits-figure'
+			);
+		} );
+
+		it( 'should draw the visits on each day of the benchmarking response in the chart', async () => {
+			const { dailyTraffic } = createResponse();
+
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( {
+					dailyTraffic: dailyTraffic.map( ( { date }, index ) => ( {
+						date,
+						visits: 100 + index,
+					} ) ),
+				} )
+			);
+
+			const { getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			// Google Charts draws nothing under Jest, so this test reads the
+			// chart's screen-reader lines instead. Each line goes on to name
+			// the day's typical range.
+			expect(
+				getByText( /^January 9, 2025: 100 visitors,/ )
+			).toBeInTheDocument();
+			expect(
+				getByText( /^February 5, 2025: 127 visitors,/ )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should render the key factor cards of the benchmarking response', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( {
+					keyFactors: [
+						{
+							kind: 'CHANNEL',
+							label: 'Email',
+							current: 90,
+							previous: 40,
+							sharePct: 61.2,
+							attributes: [],
+						},
+					],
+				} )
+			);
+
+			const { container, getByRole, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factor'
+				)
+			).toHaveLength( 1 );
+			expect(
+				getByRole( 'heading', { name: 'Email' } )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should say that no channel changed notably when the benchmarking response has no key factor cards', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( { keyFactors: [] } )
+			);
+
+			const { getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					'No channel changed notably compared with the previous 28 days'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should render the sections as placeholders while the benchmarking response is still loading, and render them together when it arrives', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			// A started resolution sends no request, so the response stays
+			// on its way.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getBenchmarkingData', [
+					startDate,
+					endDate,
+				] );
+
+			const { container, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			const placeholderCardSelector =
+				'.googlesitekit-traffic-overview__key-factor--loading';
+
+			expect( getPlaceholderCounts( container ) ).toEqual( {
+				totalVisitors: 1,
+				chart: 1,
+				breakdownRows: 15,
+			} );
+			expect(
+				container.querySelectorAll( placeholderCardSelector )
+			).toHaveLength( 3 );
+
+			act( () => {
+				provideBenchmarkingResponse( registry );
+			} );
+
+			expect( getPlaceholderCounts( container ) ).toEqual( {
+				totalVisitors: 0,
+				chart: 0,
+				breakdownRows: 0,
+			} );
+			expect(
+				container.querySelector( placeholderCardSelector )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render the report error and its "Retry" button in place of the sections when the benchmarking request fails', async () => {
+			provideBenchmarkingError();
+
+			const { container, getByRole, getByText, waitForRegistry } =
+				renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'The benchmarking request failed.' )
+			).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Retry' } )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__total-visitors'
+				)
+			).toBeNull();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__chart'
+				)
+			).toBeNull();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors'
+				)
+			).toBeNull();
+		} );
+
+		it( 'should request the benchmarking response once again and render the sections on a "Retry" click', async () => {
+			provideBenchmarkingError();
+			fetchMock.get( benchmarkingEndpoint, {
+				body: benchmarkingData,
+				status: 200,
+			} );
+
+			const { container, getByRole, queryByText, waitForRegistry } =
+				renderPanel();
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+			await waitFor( () =>
+				expect(
+					queryByText( 'The benchmarking request failed.' )
+				).not.toBeInTheDocument()
+			);
+			await waitForRegistry();
+
+			// `ReportError` and the panel's `onRetry` both invalidate the
+			// resolution, and the two send one request.
+			expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint );
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__chart'
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should send no benchmarking request for a view-only user who cannot view Analytics', async () => {
+			provideUserCapabilities( registry, {
+				[ getMetaCapabilityPropertyName(
+					PERMISSION_READ_SHARED_MODULE_DATA,
+					MODULE_SLUG_ANALYTICS_4
+				) ]: false,
+			} );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getPlaceholderCounts( container ) ).toEqual( {
+				totalVisitors: 1,
+				chart: 1,
+				breakdownRows: 15,
+			} );
+			expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
+		} );
+	} );
+
 	describe( 'key factors', () => {
 		const keyFactorsSelector =
 			'.googlesitekit-traffic-overview__key-factors';
+
+		beforeEach( () => {
+			// The panel reads the key factors from the benchmarking response.
+			provideBenchmarkingResponse( registry );
+		} );
 
 		it( 'should render the key factors between the traffic chart and the traffic breakdown on the main dashboard', async () => {
 			const { container, waitForRegistry } = render(
@@ -653,6 +994,7 @@ describe( 'TrafficOverviewPanel', () => {
 
 		it( 'should name the number of days in the selected date range in the heading of the key factors', async () => {
 			registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
+			provideBenchmarkingResponse( registry );
 
 			const { getByRole, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
@@ -817,6 +1159,12 @@ describe( 'TrafficOverviewPanel', () => {
 	describe( 'typical traffic range and published posts', () => {
 		const entityURL = 'https://example.com/about/';
 
+		beforeEach( () => {
+			// The chart draws both along the visits of the benchmarking
+			// response.
+			provideBenchmarkingResponse( registry );
+		} );
+
 		/**
 		 * Reads the labels of the chart's legend items.
 		 *
@@ -913,6 +1261,12 @@ describe( 'TrafficOverviewPanel', () => {
 	describe( 'traffic insight', () => {
 		const trafficInsightSelector =
 			'.googlesitekit-traffic-overview__traffic-insight';
+
+		beforeEach( () => {
+			// With the typicalTraffic feature, the panel waits for the
+			// benchmarking response before it renders the insight.
+			provideBenchmarkingResponse( registry );
+		} );
 
 		it( 'should render the traffic insight above the visitor figures on the main dashboard', async () => {
 			const { container, waitForRegistry } = render(

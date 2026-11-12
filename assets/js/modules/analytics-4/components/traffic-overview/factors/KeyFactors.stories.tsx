@@ -24,13 +24,11 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
+import { KEY_FACTORS } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
 import KeyFactors from './KeyFactors';
-import {
-	PLACEHOLDER_KEY_FACTORS,
-	PLACEHOLDER_KEY_FACTORS_INSIGHT,
-} from './placeholderKeyFactors';
+import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from './placeholderKeyFactors';
 
 const REFERENCE_SITE_URL = 'https://example.com';
 
@@ -130,7 +128,7 @@ function Template( {
 export const Default = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
 Default.storyName = 'Default';
 Default.args = {
-	keyFactors: PLACEHOLDER_KEY_FACTORS,
+	keyFactors: KEY_FACTORS,
 	insight: PLACEHOLDER_KEY_FACTORS_INSIGHT,
 };
 Default.scenario = {};
@@ -142,7 +140,7 @@ export const WithoutInsight = Template.bind(
 ) as Story< KeyFactorsStoryProps >;
 WithoutInsight.storyName = 'Without Insight';
 WithoutInsight.args = {
-	keyFactors: PLACEHOLDER_KEY_FACTORS,
+	keyFactors: KEY_FACTORS,
 };
 
 export const NoNotableChange = Template.bind(

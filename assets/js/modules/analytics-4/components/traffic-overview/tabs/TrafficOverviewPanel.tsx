@@ -49,17 +49,20 @@ import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/
 import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors';
-import {
-	PLACEHOLDER_KEY_FACTORS,
-	PLACEHOLDER_KEY_FACTORS_INSIGHT,
-} from '@/js/modules/analytics-4/components/traffic-overview/factors/placeholderKeyFactors';
+import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/factors/placeholderKeyFactors';
 import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const TrafficOverviewPanel: FC = () => {
-	const { totalsReport, loaded, errors } = useTrafficOverviewReports();
+	const {
+		totalsReport,
+		benchmarkingResponse,
+		loaded,
+		errors,
+		retryBenchmarkingData,
+	} = useTrafficOverviewReports();
 
 	const canViewSharedAnalytics4 = useCanViewSharedModule(
 		MODULE_SLUG_ANALYTICS_4
@@ -73,7 +76,8 @@ const TrafficOverviewPanel: FC = () => {
 		[ canViewSharedAnalytics4 ]
 	);
 
-	const { isShown: showKeyFactors } = useKeyFactorsVisibility();
+	const { isAvailable: hasKeyFactors, isShown: showKeyFactors } =
+		useKeyFactorsVisibility();
 	const trafficInsightsEnabled = useFeature( 'trafficInsights' );
 
 	const { startDate, endDate } = useSelect(
@@ -93,8 +97,18 @@ const TrafficOverviewPanel: FC = () => {
 
 	const isLoading = ! loaded || isGatheringData === undefined;
 
-	// TODO: Read the visits on each day from the benchmarking response.
-	const dailyTraffic = getPlaceholderDailyTraffic( startDate, endDate );
+	// The panel reads the benchmarking response wherever it has the key
+	// factors.
+	//
+	// TODO: Give the chart and the total visits figures of their own on the
+	// entity dashboard and without the `typicalTraffic` feature, where the
+	// panel reads no benchmarking response.
+	const dailyTraffic = hasKeyFactors
+		? benchmarkingResponse?.dailyTraffic
+		: getPlaceholderDailyTraffic( startDate, endDate );
+	const totalVisits = hasKeyFactors
+		? benchmarkingResponse?.visits
+		: PLACEHOLDER_TOTAL_VISITS;
 
 	return (
 		<div
@@ -106,6 +120,9 @@ const TrafficOverviewPanel: FC = () => {
 				<ReportError
 					moduleSlug={ MODULE_SLUG_ANALYTICS_4 }
 					error={ errors }
+					// `ReportError` offers "Retry" for an error of a selector
+					// other than `getReport` only with `onRetry`.
+					onRetry={ retryBenchmarkingData }
 				/>
 			) }
 			{ errors.length === 0 && (
@@ -123,9 +140,7 @@ const TrafficOverviewPanel: FC = () => {
 						) }
 						<TotalVisitors
 							report={ totalsReport }
-							// TODO: Read the total visits from the benchmarking
-							// response.
-							totalVisits={ PLACEHOLDER_TOTAL_VISITS }
+							totalVisits={ totalVisits }
 							loaded={ ! isLoading }
 							gatheringData={ isGatheringData }
 						/>
@@ -153,11 +168,12 @@ const TrafficOverviewPanel: FC = () => {
 						}
 					/>
 					{ showKeyFactors && (
-						// TODO: Read the key factors and whether they have
-						// arrived from the benchmarking response, and their
-						// summary from the generated insight.
+						// TODO: Read the summary of the cards from the
+						// generated insight.
 						<KeyFactors
-							keyFactors={ PLACEHOLDER_KEY_FACTORS }
+							keyFactors={
+								benchmarkingResponse?.keyFactors ?? []
+							}
 							loaded={ ! isLoading }
 							insight={
 								trafficInsightsEnabled

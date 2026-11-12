@@ -52,6 +52,7 @@ import {
 	createBreakdownReport,
 	getExpiryFromNow,
 	getRecentTrafficBreakdownReportOptions,
+	provideBenchmarkingResponse,
 	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
@@ -282,7 +283,13 @@ export const TypicalTraffic = Template.bind(
 ) as Story< TrafficOverviewWidgetStoryProps >;
 TypicalTraffic.storyName = 'Typical Traffic (typicalTraffic enabled)';
 TypicalTraffic.args = {
-	...MainDashboard.args,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		// With the `typicalTraffic` feature, the Traffic overview tab reads the
+		// benchmarking response.
+		provideBenchmarkingResponse( registry );
+	},
 };
 TypicalTraffic.parameters = {
 	features: [ 'typicalTraffic' ],
@@ -297,7 +304,7 @@ export const TypicalTrafficWithInsights = Template.bind(
 TypicalTrafficWithInsights.storyName =
 	'Typical Traffic With Insights (typicalTraffic and trafficInsights enabled)';
 TypicalTrafficWithInsights.args = {
-	...MainDashboard.args,
+	...TypicalTraffic.args,
 };
 TypicalTrafficWithInsights.parameters = {
 	features: [ 'typicalTraffic', 'trafficInsights' ],

@@ -29,6 +29,9 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getTotalsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { DecodedBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import { useBenchmarkingData } from './useBenchmarkingData';
+import { useKeyFactorsVisibility } from './useKeyFactorsVisibility';
 import { useTrafficReport } from './useTrafficReport';
 
 export interface TrafficOverviewReports {
@@ -37,23 +40,38 @@ export interface TrafficOverviewReports {
 	 * before it.
 	 */
 	totalsReport?: Report;
-	/** `true` when the totals report has finished resolving. */
+	/**
+	 * The benchmarking response for the selected range. The hook requests it
+	 * only where the panel has the key factors.
+	 */
+	benchmarkingResponse?: DecodedBenchmarkingResponse;
+	/**
+	 * `true` once the totals report has finished resolving, and the
+	 * benchmarking response has arrived or failed where the hook requests it.
+	 */
 	loaded: boolean;
 	/**
-	 * The totals report's error, alone in the array, or an empty array when
-	 * the report did not fail. The "Retry" button re-requests the reports whose
-	 * errors it receives.
+	 * The totals report's error, then the benchmarking request's error, or an
+	 * empty array when neither failed. The "Retry" button requests again the
+	 * data whose errors it receives.
 	 */
 	errors: Array< Record< string, unknown > >;
+	/** Requests the benchmarking response again after its request fails. */
+	retryBenchmarkingData: () => void;
 }
 
 /**
- * Resolves the GA4 report the Traffic Overview panel needs.
+ * Resolves the GA4 report and the benchmarking response the Traffic Overview
+ * panel needs.
+ *
+ * The benchmarking response covers the whole site, and only the
+ * `typicalTraffic` feature adds its datapoint, so the hook requests it only
+ * where the panel has the key factors.
  *
  * @since 1.188.0
- * @since n.e.x.t Removed the daily-visitors report and the three breakdown reports.
+ * @since n.e.x.t Removed the daily-visitors report and the three breakdown reports, and added the benchmarking response.
  *
- * @return {Object} The totals report, whether it has finished, and its error.
+ * @return {Object} The totals report and the benchmarking response, whether they have finished, their errors, and a function that requests the benchmarking response again.
  */
 export function useTrafficOverviewReports(): TrafficOverviewReports {
 	const { compareStartDate, compareEndDate } = useSelect(
@@ -69,21 +87,35 @@ export function useTrafficOverviewReports(): TrafficOverviewReports {
 
 	const totals = useTrafficReport( totalsReportOptions );
 
-	const loaded = useSelect(
+	const { isAvailable: hasKeyFactors } = useKeyFactorsVisibility();
+
+	const {
+		response: benchmarkingResponse,
+		error: benchmarkingError,
+		retry: retryBenchmarkingData,
+	} = useBenchmarkingData( { isEnabled: hasKeyFactors } );
+
+	const totalsLoaded = useSelect(
 		( select: Select ) =>
 			! select( MODULES_ANALYTICS_4 ).areReportsLoading( totals.args ),
 		[ totals.args ]
 	);
 
-	const errors = useSelect(
+	const totalsErrors = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getReportErrors( totals.args ),
 		[ totals.args ]
 	);
 
+	const benchmarkingLoaded = !! benchmarkingResponse || !! benchmarkingError;
+
 	return {
 		totalsReport: totals.report,
-		loaded,
-		errors,
+		benchmarkingResponse,
+		loaded: totalsLoaded && ( ! hasKeyFactors || benchmarkingLoaded ),
+		errors: benchmarkingError
+			? [ ...totalsErrors, benchmarkingError ]
+			: totalsErrors,
+		retryBenchmarkingData,
 	};
 }

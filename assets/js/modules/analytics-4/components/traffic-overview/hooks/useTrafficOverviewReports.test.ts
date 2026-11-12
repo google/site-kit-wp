@@ -24,13 +24,19 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { decodedBenchmarkingResponse } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
+import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
@@ -255,5 +261,191 @@ describe( 'useTrafficOverviewReports', () => {
 
 		expect( result.current.loaded ).toBe( true );
 		expect( result.current.errors ).toEqual( [ error ] );
+	} );
+
+	describe( 'the benchmarking response', () => {
+		const benchmarkingEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+		);
+
+		const benchmarkingError = {
+			code: 'internal_server_error',
+			message: 'The benchmarking request failed.',
+			data: { status: 500 },
+		};
+
+		beforeEach( () => {
+			// The hook reads whether the property is gathering data to tell
+			// whether the panel has the key factors.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+		} );
+
+		/**
+		 * Stores an error for the benchmarking request over the selected
+		 * range, and finishes its resolution, so the store sends no request.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {void}
+		 */
+		function provideBenchmarkingError() {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setErrorForSelector(
+					benchmarkingError,
+					'getBenchmarkingData',
+					[ '2025-01-09', '2025-02-05' ]
+				);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getBenchmarkingData', [
+					'2025-01-09',
+					'2025-02-05',
+				] );
+		}
+
+		it( 'should request the benchmarking response for the selected range, and return it, on the main dashboard with the typicalTraffic feature', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			fetchMock.get( benchmarkingEndpoint, {
+				body: benchmarkingData,
+				status: 200,
+			} );
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint, {
+				query: { startDate: '2025-01-09', endDate: '2025-02-05' },
+			} );
+			expect( result.current.benchmarkingResponse ).toEqual(
+				decodedBenchmarkingResponse
+			);
+			expect( result.current.loaded ).toBe( true );
+			expect( result.current.errors ).toEqual( [] );
+		} );
+
+		it( 'should not request the benchmarking response, or wait for it, without the typicalTraffic feature', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			// `fetchMock` answers no benchmarking request in this test, so a
+			// request would fail it.
+			expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
+			expect( result.current.benchmarkingResponse ).toBeUndefined();
+			expect( result.current.loaded ).toBe( true );
+		} );
+
+		it( 'should not request the benchmarking response, or wait for it, on the entity dashboard', async () => {
+			provideSiteInfo( registry, {
+				currentEntityURL: 'https://example.com/about/',
+			} );
+			provideAnalytics4MockReport(
+				registry,
+				getExpectedArgs( 'https://example.com/about/' )
+			);
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
+			expect( result.current.benchmarkingResponse ).toBeUndefined();
+			expect( result.current.loaded ).toBe( true );
+		} );
+
+		it( 'should leave `loaded` set to `false` while the benchmarking response is still loading', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			freezeFetch( benchmarkingEndpoint );
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( result.current.loaded ).toBe( false );
+		} );
+
+		it( 'should set `loaded` to `true` and return the error of the benchmarking request when it fails', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			provideBenchmarkingError();
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( result.current.loaded ).toBe( true );
+			expect( result.current.errors ).toEqual( [ benchmarkingError ] );
+		} );
+
+		it( 'should return the error of the totals report before the error of the benchmarking request when both fail', async () => {
+			const expectedArgs = getExpectedArgs();
+			const totalsError = {
+				code: 'test_error',
+				message: 'The total visitors report failed.',
+				data: {},
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setErrorForSelector( totalsError, 'getReport', [
+					expectedArgs,
+				] );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ expectedArgs ] );
+			provideBenchmarkingError();
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( result.current.errors ).toEqual( [
+				totalsError,
+				benchmarkingError,
+			] );
+		} );
 	} );
 } );
