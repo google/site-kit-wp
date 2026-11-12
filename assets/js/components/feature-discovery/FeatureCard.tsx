@@ -197,7 +197,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 
 	const allBadges = [ ...userBadges, ...badges ];
 
-	const hasMeta = allBadges.length || isDismissible;
+	const hasMeta = allBadges.length > 0 || isDismissible;
 
 	return (
 		<article className="googlesitekit-feature-card">
