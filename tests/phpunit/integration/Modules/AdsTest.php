@@ -86,7 +86,6 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_register_persistent__ads_intent_is_registered_while_the_ads_module_is_active() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->activate_modules( Ads::MODULE_SLUG );
 
 		remove_all_actions( 'googlesitekit_intents_register' );
@@ -107,8 +106,6 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_register_persistent__ads_intent_is_registered_while_the_ads_module_is_not_active() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
-
 		remove_all_actions( 'googlesitekit_intents_register' );
 
 		$modules = new Modules( $this->context );
@@ -123,29 +120,6 @@ class AdsTest extends TestCase {
 			Ads_Conversion_Tracking_Intent::class,
 			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
 			'The Ads intent should be registered even though the Ads module is not active.'
-		);
-	}
-
-	public function test_register_persistent__ads_intent_is_withheld_while_the_feature_flag_is_off() {
-		remove_all_actions( 'googlesitekit_intents_register' );
-
-		$modules = new Modules( $this->context );
-		$modules->register();
-
-		$intents = new Intents();
-		$intents->register();
-
-		$this->assertNull(
-			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
-			'The Ads intent should not be returned while adsConversionTrackingIntent is disabled.'
-		);
-
-		$this->enable_feature( 'adsConversionTrackingIntent' );
-
-		$this->assertInstanceOf(
-			Ads_Conversion_Tracking_Intent::class,
-			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
-			'The registry already held the intent, so the null above came from the flag.'
 		);
 	}
 
