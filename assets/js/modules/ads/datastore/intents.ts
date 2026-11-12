@@ -81,6 +81,7 @@ const actions = {
 	 * the Site Kit Service. Stops at the first step that fails.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Leaves out `tracked_conversion_ids` when the site tracks no conversion events.
 	 *
 	 * @param {string} intentCode Code the Site Kit Service created for the intent.
 	 * @param {string} tagID      Google tag ID to save as the conversion ID, e.g. `AW-123456789`.
@@ -158,7 +159,8 @@ const actions = {
 			);
 
 			// Google Ads pre-selects the conversion actions for these events.
-			// A site that tracks none still sends the parameter, empty.
+			// When the site tracks none, the parameter is left out, because
+			// `addQueryArgs()` skips a parameter whose value is `undefined`.
 			const trackedConversionEvents: string[] =
 				select( MODULES_ADS ).getSupportedConversionEvents() || [];
 
@@ -166,7 +168,9 @@ const actions = {
 				returnURL: addQueryArgs( response?.return_url, {
 					// The redirect alone doesn't tell Google Ads the tag was placed.
 					sitekit_status: 'success',
-					tracked_conversion_ids: trackedConversionEvents.join( ',' ),
+					tracked_conversion_ids: trackedConversionEvents.length
+						? trackedConversionEvents.join( ',' )
+						: undefined,
 				} ),
 			};
 		}
