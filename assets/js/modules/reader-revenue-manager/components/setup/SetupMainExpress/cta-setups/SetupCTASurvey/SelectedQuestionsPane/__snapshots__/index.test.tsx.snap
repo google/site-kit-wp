@@ -41,24 +41,24 @@ exports[`SelectedQuestionsPane should render the questions in the order given, e
               class="googlesitekit-rrm-survey-question-row__actions"
             >
               <div
-                class="googlesitekit-action-button"
+                class="googlesitekit-action-button googlesitekit-draggable-list__handle"
               >
                 <button
                   aria-describedby="googlesitekit-draggable-list-instructions-0"
                   aria-label="Move question 1"
-                  class="googlesitekit-action-button__button googlesitekit-draggable-list__handle"
+                  class="googlesitekit-action-button__button"
                   type="button"
                 >
                   <svg />
                 </button>
               </div>
               <div
-                class="googlesitekit-action-button"
+                class="googlesitekit-action-button googlesitekit-rrm-survey-question-row__action"
               >
                 <button
                   aria-describedby="googlesitekit-rrm-survey-question-row-action-0 googlesitekit-rrm-survey-question-row-question-2"
                   aria-label="Remove question"
-                  class="googlesitekit-action-button__button googlesitekit-rrm-survey-question-row__action"
+                  class="googlesitekit-action-button__button"
                   type="button"
                 >
                   <svg />
@@ -93,24 +93,24 @@ exports[`SelectedQuestionsPane should render the questions in the order given, e
               class="googlesitekit-rrm-survey-question-row__actions"
             >
               <div
-                class="googlesitekit-action-button"
+                class="googlesitekit-action-button googlesitekit-draggable-list__handle"
               >
                 <button
                   aria-describedby="googlesitekit-draggable-list-instructions-0"
                   aria-label="Move question 2"
-                  class="googlesitekit-action-button__button googlesitekit-draggable-list__handle"
+                  class="googlesitekit-action-button__button"
                   type="button"
                 >
                   <svg />
                 </button>
               </div>
               <div
-                class="googlesitekit-action-button"
+                class="googlesitekit-action-button googlesitekit-rrm-survey-question-row__action"
               >
                 <button
                   aria-describedby="googlesitekit-rrm-survey-question-row-action-1 googlesitekit-rrm-survey-question-row-question-5"
                   aria-label="Remove question"
-                  class="googlesitekit-action-button__button googlesitekit-rrm-survey-question-row__action"
+                  class="googlesitekit-action-button__button"
                   type="button"
                 >
                   <svg />
@@ -145,24 +145,24 @@ exports[`SelectedQuestionsPane should render the questions in the order given, e
               class="googlesitekit-rrm-survey-question-row__actions"
             >
               <div
-                class="googlesitekit-action-button"
+                class="googlesitekit-action-button googlesitekit-draggable-list__handle"
               >
                 <button
                   aria-describedby="googlesitekit-draggable-list-instructions-0"
                   aria-label="Move question 3"
-                  class="googlesitekit-action-button__button googlesitekit-draggable-list__handle"
+                  class="googlesitekit-action-button__button"
                   type="button"
                 >
                   <svg />
                 </button>
               </div>
               <div
-                class="googlesitekit-action-button"
+                class="googlesitekit-action-button googlesitekit-rrm-survey-question-row__action"
               >
                 <button
                   aria-describedby="googlesitekit-rrm-survey-question-row-action-2 googlesitekit-rrm-survey-question-row-question-8"
                   aria-label="Remove question"
-                  class="googlesitekit-action-button__button googlesitekit-rrm-survey-question-row__action"
+                  class="googlesitekit-action-button__button"
                   type="button"
                 >
                   <svg />
