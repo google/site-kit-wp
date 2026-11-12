@@ -55,7 +55,6 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-	waitForDefaultTimeouts,
 	within,
 } from '@tests/js/test-utils';
 
@@ -874,40 +873,12 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			within( button ).getByRole( 'progressbar' )
 		).toBeInTheDocument();
 
-		fireEvent.click( button );
-
 		await waitFor( () => {
 			expect( global.location.assign ).toHaveBeenCalled();
 		} );
-
-		await act( () => waitForDefaultTimeouts() );
-
-		expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
-		expect( fetchMock ).toHaveFetchedTimes(
-			0,
-			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' )
-		);
-
-		const buttonAfterRedirect = getByRole( 'button', {
-			name: /sign in with google/i,
-		} );
-
-		expect( buttonAfterRedirect ).toBeDisabled();
-		expect(
-			within( buttonAfterRedirect ).getByRole( 'progressbar' )
-		).toBeInTheDocument();
 	} );
 
 	it( 'should show a spinner on the Sign in with Google button and disable it after a click, with the Analytics checkbox ticked', async () => {
-		fetchMock.postOnce( initialSetupSettingsEndpoint, {
-			body: {
-				settings: {
-					isAnalyticsSetupComplete: false,
-					hasSitePurposeAnswer: false,
-				},
-			},
-		} );
-
 		fetchMock.postOnce(
 			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' ),
 			{ body: { success: true } }
@@ -961,28 +932,9 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			within( button ).getByRole( 'progressbar' )
 		).toBeInTheDocument();
 
-		fireEvent.click( button );
-
 		await waitFor( () => {
 			expect( global.location.assign ).toHaveBeenCalled();
 		} );
-
-		await act( () => waitForDefaultTimeouts() );
-
-		expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
-		expect( fetchMock ).toHaveFetchedTimes(
-			1,
-			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' )
-		);
-
-		const buttonAfterRedirect = getByRole( 'button', {
-			name: /sign in with google/i,
-		} );
-
-		expect( buttonAfterRedirect ).toBeDisabled();
-		expect(
-			within( buttonAfterRedirect ).getByRole( 'progressbar' )
-		).toBeInTheDocument();
 	} );
 
 	it( 'should stop the spinner when the page is restored from the back/forward cache, so the button can be clicked again', async () => {

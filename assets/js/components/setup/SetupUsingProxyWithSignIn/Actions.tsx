@@ -51,9 +51,11 @@ import { trackEvent } from '@/js/util';
 
 interface ActionsProps {
 	proxySetupURL?: string;
-	onButtonClick?: ( event: MouseEvent ) => void;
+	onButtonClick: (
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) => void;
 	forwardableParams?: ForwardableParams;
-	complete?: boolean;
+	complete: boolean;
 	inProgressFeedback?: ReactNode;
 	ctaFeedback?: ReactNode;
 	isSettingUp?: boolean;
