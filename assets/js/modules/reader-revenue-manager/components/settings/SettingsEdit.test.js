@@ -249,6 +249,12 @@ describe( 'SettingsEdit', () => {
 	} );
 
 	describe( 'with configured CTAs', () => {
+		const configuredCTA = {
+			type: 'newsletter-signup',
+			state: 'ACTIVE',
+			displayName: 'Weekly newsletter',
+		};
+
 		beforeEach( () => {
 			registry = createTestRegistryWithFeatures( [ 'rrmExpressSetup' ] );
 			setupRegistry();
@@ -259,7 +265,7 @@ describe( 'SettingsEdit', () => {
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
 					...settings,
-					configuredCTAs: { 'cta-1': 'newsletter-signup' },
+					configuredCTAs: { 'cta-1': configuredCTA },
 				} );
 
 			const { getByRole, waitForRegistry } = render( <SettingsEdit />, {
@@ -292,7 +298,7 @@ describe( 'SettingsEdit', () => {
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
 					...settings,
-					configuredCTAs: { 'cta-1': 'newsletter-signup' },
+					configuredCTAs: { 'cta-1': configuredCTA },
 				} );
 
 			const { getByText, getByRole, waitForRegistry } = render(
@@ -306,9 +312,7 @@ describe( 'SettingsEdit', () => {
 			await waitForRegistry();
 
 			expect( getByText( 'CTAs' ) ).toBeInTheDocument();
-			expect(
-				getByText( 'Newsletter sign-up form' )
-			).toBeInTheDocument();
+			expect( getByText( 'Weekly newsletter' ) ).toBeInTheDocument();
 
 			const expectedURL = registry
 				.select( MODULES_READER_REVENUE_MANAGER )
@@ -319,18 +323,22 @@ describe( 'SettingsEdit', () => {
 			).toHaveAttribute( 'href', expectedURL );
 		} );
 
-		it( 'should render a link for each configured CTA', async () => {
+		it( 'should render each configured CTA by its name, or its type label when it has none, with a link', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
 					...settings,
 					configuredCTAs: {
-						'cta-1': 'newsletter-signup',
-						'cta-2': 'newsletter-signup',
+						'cta-1': configuredCTA,
+						'cta-2': {
+							...configuredCTA,
+							state: 'DRAFT',
+							displayName: '',
+						},
 					},
 				} );
 
-			const { getAllByRole, waitForRegistry } = render(
+			const { getByText, getAllByRole, waitForRegistry } = render(
 				<SettingsEdit />,
 				{
 					registry,
@@ -340,6 +348,10 @@ describe( 'SettingsEdit', () => {
 
 			await waitForRegistry();
 
+			expect( getByText( 'Weekly newsletter' ) ).toBeInTheDocument();
+			expect(
+				getByText( 'Newsletter sign-up form' )
+			).toBeInTheDocument();
 			expect(
 				getAllByRole( 'link', { name: /Manage settings/i } )
 			).toHaveLength( 2 );
@@ -368,7 +380,7 @@ describe( 'SettingsEdit', () => {
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
 					...settings,
-					configuredCTAs: { 'cta-1': 'newsletter-signup' },
+					configuredCTAs: { 'cta-1': configuredCTA },
 				} );
 
 			const { queryByText, queryByRole, waitForRegistry } = render(
@@ -383,7 +395,7 @@ describe( 'SettingsEdit', () => {
 
 			expect( queryByText( 'CTAs' ) ).not.toBeInTheDocument();
 			expect(
-				queryByText( 'Newsletter sign-up form' )
+				queryByText( 'Weekly newsletter' )
 			).not.toBeInTheDocument();
 			expect(
 				queryByRole( 'link', { name: /Manage settings/i } )
@@ -400,7 +412,7 @@ describe( 'SettingsEdit', () => {
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
 					...settings,
-					configuredCTAs: { 'cta-1': 'newsletter-signup' },
+					configuredCTAs: { 'cta-1': configuredCTA },
 				} );
 
 			const { getByText, waitForRegistry } = render( <SettingsEdit />, {

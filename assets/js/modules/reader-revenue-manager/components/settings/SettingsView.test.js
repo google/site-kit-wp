@@ -193,7 +193,11 @@ describe( 'SettingsView', () => {
 			snippetMode: 'post_types',
 			postTypes: [ 'post' ],
 			configuredCTAs: {
-				'cta-1': 'newsletter-signup',
+				'cta-1': {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: 'Weekly newsletter',
+				},
 			},
 		};
 
@@ -215,19 +219,25 @@ describe( 'SettingsView', () => {
 			await waitForRegistry();
 
 			expect( getByText( 'CTAs' ) ).toBeInTheDocument();
-			expect(
-				getByText( 'Newsletter sign-up form' )
-			).toBeInTheDocument();
+			expect( getByText( 'Weekly newsletter' ) ).toBeInTheDocument();
 		} );
 
-		it( 'should display the configured CTAs as a comma-separated list', async () => {
+		it( 'should display the configured CTAs as a comma-separated list, using the type label for a CTA without a display name', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
 					...settings,
 					configuredCTAs: {
-						'cta-1': 'newsletter-signup',
-						'cta-2': 'newsletter-signup',
+						'cta-1': {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+						'cta-2': {
+							type: 'newsletter-signup',
+							state: 'DRAFT',
+							displayName: '',
+						},
 					},
 				} );
 
@@ -239,7 +249,7 @@ describe( 'SettingsView', () => {
 			await waitForRegistry();
 
 			expect(
-				getByText( 'Newsletter sign-up form, Newsletter sign-up form' )
+				getByText( 'Weekly newsletter, Newsletter sign-up form' )
 			).toBeInTheDocument();
 		} );
 

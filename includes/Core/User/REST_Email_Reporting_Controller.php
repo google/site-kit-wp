@@ -88,6 +88,7 @@ class REST_Email_Reporting_Controller {
 	 *
 	 * @since 1.162.0
 	 * @since 1.185.0 Added the `email-reporting-next-report` route.
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -132,17 +133,20 @@ class REST_Email_Reporting_Controller {
 						'permission_callback' => $can_view_dashboard,
 						'args'                => array(
 							'data' => array(
-								'type'       => 'object',
-								'required'   => true,
-								'properties' => array(
+								'type'        => 'object',
+								'description' => __( 'Email report settings to save.', 'google-site-kit' ),
+								'required'    => true,
+								'properties'  => array(
 									'settings' => array(
 										'type'          => 'object',
+										'description'   => __( 'Email report settings of the current user. Each one left out keeps its saved value.', 'google-site-kit' ),
 										'required'      => true,
 										'minProperties' => 1,
 										'additionalProperties' => false,
 										'properties'    => array(
 											'frequency'  => array(
 												'type' => 'string',
+												'description' => __( 'How often to send the current user an email report.', 'google-site-kit' ),
 												'enum' => array(
 													Email_Reporting_Settings::FREQUENCY_WEEKLY,
 													Email_Reporting_Settings::FREQUENCY_MONTHLY,
@@ -151,6 +155,7 @@ class REST_Email_Reporting_Controller {
 											),
 											'subscribed' => array(
 												'type' => 'boolean',
+												'description' => __( 'Whether the current user gets email reports.', 'google-site-kit' ),
 											),
 										),
 									),
@@ -158,6 +163,11 @@ class REST_Email_Reporting_Controller {
 							),
 						),
 					),
+				),
+				array(
+					'schema' => function () {
+						return $this->get_email_reporting_settings_schema();
+					},
 				)
 			),
 			new REST_Route(
@@ -173,7 +183,65 @@ class REST_Email_Reporting_Controller {
 						},
 						'permission_callback' => $can_view_dashboard,
 					),
+				),
+				array(
+					'schema' => function () {
+						return $this->get_next_report_schema();
+					},
 				)
+			),
+		);
+	}
+
+	/**
+	 * Gets the REST schema of the email reporting settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array REST schema.
+	 */
+	private function get_email_reporting_settings_schema() {
+		return array(
+			'$schema'     => 'http://json-schema.org/draft-04/schema#',
+			'title'       => 'email-reporting-settings',
+			'description' => __( 'Email report settings of the current user.', 'google-site-kit' ),
+			'type'        => 'object',
+			'properties'  => array(
+				'subscribed' => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the current user gets email reports.', 'google-site-kit' ),
+				),
+				'frequency'  => array(
+					'type'        => 'string',
+					'description' => __( 'How often the current user gets an email report.', 'google-site-kit' ),
+					'enum'        => array(
+						Email_Reporting_Settings::FREQUENCY_WEEKLY,
+						Email_Reporting_Settings::FREQUENCY_MONTHLY,
+						Email_Reporting_Settings::FREQUENCY_QUARTERLY,
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * Gets the REST schema of the next email report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array REST schema.
+	 */
+	private function get_next_report_schema() {
+		return array(
+			'$schema'     => 'http://json-schema.org/draft-04/schema#',
+			'title'       => 'email-reporting-next-report',
+			'description' => __( 'The next email report of the current user.', 'google-site-kit' ),
+			'type'        => 'object',
+			'properties'  => array(
+				'timestamp' => array(
+					'type'        => 'integer',
+					'description' => __( 'Unix time of the next email report, for the frequency of the current user.', 'google-site-kit' ),
+				),
 			),
 		);
 	}

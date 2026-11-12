@@ -39,8 +39,8 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '@/js/hooks/useDashboardType';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
 	RECENT_ACTIVITY_TAB_ID,
@@ -48,6 +48,8 @@ import {
 	TYPICAL_TRAFFIC_TAB_ID,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useHasTypicalTrafficTab } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useHasTypicalTrafficTab';
+import { useRecentActivitySurveyTriggers } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentActivitySurveyTriggers';
+import { useRecordRecentActivityTabOpen } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityTabOpen';
 import RecentActivityFooter from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityFooter';
 import RecentActivityPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/RecentActivityPanel';
 import TrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TrafficOverviewPanel';
@@ -85,7 +87,6 @@ const TrafficOverviewWidget = forwardRef<
 	>;
 
 	const viewContext = useViewContext();
-	const freshDataEnabled = useFeature( 'freshData' );
 	const dashboardType = useDashboardType();
 
 	const isAnalyticsConnected = useSelect(
@@ -96,10 +97,6 @@ const TrafficOverviewWidget = forwardRef<
 
 	const shouldShowRecentActivityTab = useSelect(
 		( select: Select ) => {
-			if ( ! freshDataEnabled ) {
-				return false;
-			}
-
 			// The Recent activity tab shows data for the whole site, but the entity
 			// dashboard shows data for one page.
 			if ( dashboardType === DASHBOARD_TYPE_ENTITY ) {
@@ -129,13 +126,26 @@ const TrafficOverviewWidget = forwardRef<
 
 			return isDismissed === undefined ? undefined : ! isDismissed;
 		},
-		[ freshDataEnabled, dashboardType, isAnalyticsConnected ]
+		[ dashboardType, isAnalyticsConnected ]
 	);
 
 	const hasTypicalTrafficTab = useHasTypicalTrafficTab();
 
 	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );
 	const [ hasTrackedView, setHasTrackedView ] = useState( false );
+	const recordRecentActivityTabOpen = useRecordRecentActivityTabOpen();
+
+	const isViewOnly = useViewOnly();
+
+	// The surveys ask about the Recent activity reports, which need Analytics.
+	// View-only users can't get surveys.
+	useRecentActivitySurveyTriggers( {
+		isEnabled:
+			! isViewOnly &&
+			shouldShowRecentActivityTab === true &&
+			isAnalyticsConnected === true,
+		hasBeenInView,
+	} );
 
 	const tabs: TrafficOverviewTabDescriptor[] = [];
 
@@ -220,6 +230,10 @@ const TrafficOverviewWidget = forwardRef<
 				'change_tab',
 				tabID
 			);
+
+			if ( tabID === RECENT_ACTIVITY_TAB_ID ) {
+				recordRecentActivityTabOpen();
+			}
 		}
 
 		setActiveTabID( tabID );

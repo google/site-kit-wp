@@ -13,22 +13,18 @@
 namespace Google\Site_Kit\Tests\Core\User;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 use Google\Site_Kit\Core\Email_Reporting\Frequency_Planner;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use Google\Site_Kit\Core\User\REST_Email_Reporting_Controller;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 
 class REST_Email_Reporting_ControllerTest extends TestCase {
 
-	use Fake_Site_Connection_Trait;
 	use RestTestTrait;
 
 	/**
@@ -66,7 +62,6 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$this->context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options           = new Options( $this->context );
 		$user_options      = new User_Options( $this->context );
 		$this->settings    = new Email_Reporting_Settings( $user_options );
 		$frequency_planner = new Frequency_Planner();
@@ -75,7 +70,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			$this->settings,
 			$scheduler
 		);
-		$this->grant_view_dashboard_permission( $options, $user_options );
+		$this->grant_dashboard_permission();
 
 		$this->register_email_log_dependencies();
 	}
@@ -158,6 +153,27 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertEqualSets( $routes, $get_routes, 'Expected routes for user email reporting settings and next report to be registered' );
 	}
 
+	public function test_get_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$saved_settings = array(
+			'subscribed' => true,
+			'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
+		);
+		$this->settings->set( $saved_settings );
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status(), 'Fetching the email reporting settings should return success response.' );
+		$this->assertEqualSetsWithIndex( $saved_settings, $response->get_data(), 'Response should return the saved email reporting settings.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/email-reporting-settings', 'Email reporting settings response should match its resource schema.' );
+	}
+
 	public function test_get_next_report_returns_scheduled_initiator_timestamp() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
@@ -181,6 +197,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			$response->get_data()['timestamp'],
 			'Response should return the timestamp of the currently scheduled initiator event for the saved frequency.'
 		);
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/email-reporting-next-report', 'Next report response should match its resource schema.' );
 	}
 
 	public function test_get_next_report_falls_back_when_no_initiator_scheduled() {
@@ -229,6 +246,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status(), 'Subscribing should return success response.' );
 		$this->assertTrue( (bool) $response->get_data()['subscribed'], 'Response should return subscribed state as true.' );
 		$this->assertSame( Email_Reporting_Settings::FREQUENCY_MONTHLY, $response->get_data()['frequency'], 'Response should return updated frequency.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/email-reporting-settings', 'Subscribing response should match its resource schema.' );
 
 		$logs = get_posts(
 			array(
@@ -263,6 +281,61 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertNotFalse( $worker_timestamp, 'Worker event should be scheduled for the confirmation batch.' );
 		$this->assertNotFalse( $fallback_timestamp, 'Fallback event should be scheduled for the confirmation batch.' );
 		$this->assertSame( $worker_timestamp, $fallback_timestamp, 'Worker and fallback should use the same immediate timestamp.' );
+	}
+
+	/**
+	 * @dataProvider provider_set_settings__invalid_data
+	 *
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
+	 */
+	public function test_set_settings__invalid_data( $body, $expected_code ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$saved_settings = array(
+			'subscribed' => true,
+			'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
+		);
+		$this->settings->set( $saved_settings );
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-settings' );
+		$request->set_body_params( $body );
+
+		$this->assertRESTRequestRejected( $request, $expected_code );
+		$this->assertEqualSetsWithIndex( $saved_settings, $this->settings->get(), 'Invalid data should keep the saved email reporting settings.' );
+	}
+
+	public function provider_set_settings__invalid_data() {
+		return array(
+			'no data'                                  => array(
+				array(),
+				'rest_missing_callback_param',
+			),
+			'data has no settings'                     => array(
+				array( 'data' => array() ),
+				'rest_invalid_param',
+			),
+			'settings is empty'                        => array(
+				array( 'data' => array( 'settings' => array() ) ),
+				'rest_invalid_param',
+			),
+			'settings has a key that is not a setting' => array(
+				array( 'data' => array( 'settings' => array( 'favoriteColor' => 'blue' ) ) ),
+				'rest_invalid_param',
+			),
+			'a frequency outside its set'              => array(
+				array( 'data' => array( 'settings' => array( 'frequency' => 'daily' ) ) ),
+				'rest_invalid_param',
+			),
+			'subscribed is not a boolean'              => array(
+				array( 'data' => array( 'settings' => array( 'subscribed' => 'often' ) ) ),
+				'rest_invalid_param',
+			),
+		);
 	}
 
 	/**
@@ -308,24 +381,5 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$email_log = new Email_Log( $this->context );
 		$email_log->register();
 		do_action( 'init' );
-	}
-
-	/**
-	 * Grants current user dashboard access requirements in tests.
-	 *
-	 * @param Options      $options      Options instance.
-	 * @param User_Options $user_options User_Options instance.
-	 */
-	private function grant_view_dashboard_permission( Options $options, User_Options $user_options ) {
-		$this->fake_proxy_site_connection();
-		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
-
-		$authentication = new Authentication( $this->context, $options, $user_options );
-		$authentication->verification()->set( true );
-		$authentication->get_oauth_client()->set_token(
-			array(
-				'access_token' => 'valid-auth-token',
-			)
-		);
 	}
 }

@@ -37,6 +37,7 @@ import { __ } from '@wordpress/i18n';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import BannerModal from '@/js/components/BannerModal/index';
+import { HELP_MENU_BUTTON_CLASS } from '@/js/components/help/constants';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -239,7 +240,7 @@ const WelcomeModal: FC< WelcomeModalProps > = ( { id, Notification } ) => {
 	}, [ modalVariant, dismissItem ] );
 
 	const tooltipSettings = {
-		target: '.googlesitekit-help-menu__button',
+		target: `.${ HELP_MENU_BUTTON_CLASS }`,
 		tooltipSlug: 'welcome-modal',
 		content: __(
 			'You can always take the dashboard tour from the help menu',

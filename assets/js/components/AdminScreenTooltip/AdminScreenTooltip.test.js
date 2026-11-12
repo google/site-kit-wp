@@ -276,6 +276,49 @@ describe( 'AdminMenuTooltip', () => {
 		);
 	} );
 
+	it( 'should remove the tooltip body class when the tooltip is hidden without being dismissed', async () => {
+		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+			isTooltipVisible: true,
+			title: 'Test Title',
+			content: 'Test Content',
+			dismissLabel: 'Got it',
+			tooltipSlug: 'test-tooltip-slug',
+		} );
+
+		render(
+			<div className="googlesitekit-plugin">
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<AdminScreenTooltip />
+			</div>,
+			{ registry }
+		);
+
+		// Wait for Joyride tooltip's useInterval to render.
+		act( () => {
+			jest.advanceTimersByTime( 1000 );
+		} );
+
+		await waitFor( () => {
+			expect( document.body ).toHaveClass(
+				'googlesitekit-showing-tooltip'
+			);
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( 'admin-screen-tooltip', undefined );
+		} );
+
+		expect( document.body ).not.toHaveClass(
+			'googlesitekit-showing-tooltip'
+		);
+	} );
+
 	it( 'should use the provided tracking label when tracking GA events', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
 		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {

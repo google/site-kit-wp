@@ -327,7 +327,7 @@ $traffic-overview-column-gap: 42px;
 				padding: 16px $grid-gap-desktop;
 			}
 
-			.googlesitekit-thumbs-survey-trigger {
+			.googlesitekit-thumbs-feedback {
 				align-self: flex-end;
 
 				// The thumb buttons are 32px around 20px icons. This margin
@@ -339,7 +339,7 @@ $traffic-overview-column-gap: 42px;
 				}
 			}
 
-			.googlesitekit-thumbs-survey-trigger__button.mdc-button {
+			.googlesitekit-thumbs-feedback__button.mdc-button {
 				@include mdc-button-ink-color( $c-blue-b-700 );
 			}
 		}
@@ -616,22 +616,28 @@ $traffic-overview-column-gap: 42px;
 			margin-bottom: 12px;
 		}
 
-		// The labels are short, so the value takes the remaining width, and a
-		// long value, e.g. a referring site, is cut off instead of its label.
-		.googlesitekit-table-tile__row {
-			grid-template-columns: auto minmax(0, 1fr);
+		// When a tile is too narrow for a label and its number, the label wraps
+		// instead of being cut off.
+		.googlesitekit-table-tile__cell--label {
+			white-space: normal;
 		}
 
-		// The tiles align the value to the end of its column, which lets a long
-		// value overflow it, so the value fills the column instead, and its
-		// preview block keeps to the end.
-		.googlesitekit-table-tile__cell--value {
-			justify-self: stretch;
-			overflow: hidden;
-			text-overflow: ellipsis;
+		// The labels are short, so the value takes the remaining width, and a
+		// long value, e.g. a referring site, is cut off instead of its label.
+		.googlesitekit-traffic-overview__latest-post-row--truncate-value {
+			grid-template-columns: auto minmax(0, 1fr);
 
-			.googlesitekit-preview-block {
-				margin-left: auto;
+			// The tiles align the value to the end of its column, which lets a
+			// long value overflow it, so the value fills the column instead, and
+			// its preview block keeps to the end.
+			.googlesitekit-table-tile__cell--value {
+				justify-self: stretch;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				.googlesitekit-preview-block {
+					margin-left: auto;
+				}
 			}
 		}
 

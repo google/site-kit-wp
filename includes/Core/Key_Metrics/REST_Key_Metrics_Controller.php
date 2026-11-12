@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Core\Key_Metrics;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -89,6 +88,7 @@ class REST_Key_Metrics_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.93.0
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -106,8 +106,14 @@ class REST_Key_Metrics_Controller {
 						return new WP_REST_Response( $this->settings->get() );
 					},
 					'permission_callback' => $has_capabilities,
+				),
+				array(
+					'schema' => function () {
+						return $this->get_key_metrics_settings_schema();
+					},
 				)
 			),
+			// WordPress merges this endpoint into the route above, and keeps that route's schema.
 			new REST_Route(
 				'core/user/data/key-metrics',
 				array(
@@ -121,31 +127,6 @@ class REST_Key_Metrics_Controller {
 						$settings = $data['settings'];
 
 						if ( isset( $settings['widgetSlugs'] ) ) {
-							$num_widgets = count( $settings['widgetSlugs'] );
-							if ( ! $num_widgets ) {
-								return new WP_Error(
-									'rest_invalid_param',
-									__( 'Selected metrics cannot be empty.', 'google-site-kit' ),
-									array( 'status' => 400 )
-								);
-							}
-							// Additional check is needed to ensure that we have no more than $max_num_widgets
-							// slugs provided. This is required until we drop support for WP versions below 5.5.0, after
-							// which we can solely rely on `maxItems` in the schema validation (see below).
-							// See https://github.com/WordPress/WordPress/blob/965fcddcf68cf4fd122ae24b992e242dfea1d773/wp-includes/rest-api.php#L1922-L1925.
-							$max_num_widgets = 8;
-							if ( $num_widgets > $max_num_widgets ) {
-								return new WP_Error(
-									'rest_invalid_param',
-									sprintf(
-										/* translators: %d: maximum number of key metrics that can be selected. */
-										__( 'No more than %d key metrics can be selected.', 'google-site-kit' ),
-										$max_num_widgets
-									),
-									array( 'status' => 400 )
-								);
-							}
-
 							$key_metrics_setup_already_done_by_user = $this->key_metrics_setup_completed_by->get();
 							if ( empty( $key_metrics_setup_already_done_by_user ) ) {
 								$current_user_id = get_current_user_id();
@@ -161,22 +142,27 @@ class REST_Key_Metrics_Controller {
 					'permission_callback' => $has_capabilities,
 					'args'                => array(
 						'data' => array(
-							'type'       => 'object',
-							'required'   => true,
-							'properties' => array(
+							'type'        => 'object',
+							'description' => __( 'Key metrics settings to save.', 'google-site-kit' ),
+							'required'    => true,
+							'properties'  => array(
 								'settings' => array(
-									'type'       => 'object',
-									'required'   => true,
-									'properties' => array(
+									'type'        => 'object',
+									'description' => __( 'Key metrics settings of the current user.', 'google-site-kit' ),
+									'required'    => true,
+									'properties'  => array(
 										'isWidgetHidden' => array(
-											'type'     => 'boolean',
-											'required' => true,
+											'type'        => 'boolean',
+											'description' => __( 'Whether to hide the key metrics section of the dashboard.', 'google-site-kit' ),
+											'required'    => true,
 										),
 										'widgetSlugs'    => array(
-											'type'     => 'array',
-											'required' => false,
-											'maxItems' => 8,
-											'items'    => array(
+											'type'        => 'array',
+											'description' => __( 'Slugs of the key metric widgets to show.', 'google-site-kit' ),
+											'required'    => false,
+											'minItems'    => 1,
+											'maxItems'    => 8,
+											'items'       => array(
 												'type' => 'string',
 											),
 										),
@@ -186,6 +172,35 @@ class REST_Key_Metrics_Controller {
 						),
 					),
 				)
+			),
+		);
+	}
+
+	/**
+	 * Gets the REST schema of the key metrics settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array REST schema.
+	 */
+	private function get_key_metrics_settings_schema() {
+		return array(
+			'$schema'     => 'http://json-schema.org/draft-04/schema#',
+			'title'       => 'key-metrics',
+			'description' => __( 'Key metrics settings of the current user.', 'google-site-kit' ),
+			'type'        => 'object',
+			'properties'  => array(
+				'widgetSlugs'    => array(
+					'type'        => 'array',
+					'description' => __( 'Slugs of the key metric widgets the current user picked.', 'google-site-kit' ),
+					'items'       => array(
+						'type' => 'string',
+					),
+				),
+				'isWidgetHidden' => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the current user hid the key metrics section of the dashboard.', 'google-site-kit' ),
+				),
 			),
 		);
 	}

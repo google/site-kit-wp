@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\User_Surveys\Survey_Queue;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -103,6 +102,7 @@ class REST_User_Input_Controller {
 	 * Gets related REST routes.
 	 *
 	 * @since 1.90.0
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @return array List of REST_Route objects.
 	 */
@@ -139,14 +139,6 @@ class REST_User_Input_Controller {
 						'callback'            => function ( WP_REST_Request $request ) {
 							$data = $request->get_param( 'data' );
 
-							if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
-								return new WP_Error(
-									'rest_missing_callback_param',
-									__( 'Missing settings data.', 'google-site-kit' ),
-									array( 'status' => 400 )
-								);
-							}
-
 							$answers = $this->user_input->set_answers( $data['settings'] );
 
 							if ( ! empty( $answers['purpose']['values'] ) ) {
@@ -174,17 +166,22 @@ class REST_User_Input_Controller {
 						},
 						'args'                => array(
 							'data' => array(
-								'type'       => 'object',
-								'required'   => true,
-								'properties' => array(
+								'type'        => 'object',
+								'description' => __( 'User input answers to save.', 'google-site-kit' ),
+								'required'    => true,
+								'properties'  => array(
 									'settings' => array(
-										'type'      => 'object',
-										'required'  => true,
-										'questions' => array_fill_keys(
+										'type'        => 'object',
+										'description' => __( 'Answers to save, by question.', 'google-site-kit' ),
+										'required'    => true,
+										'additionalProperties' => false,
+										'properties'  => array_fill_keys(
 											array_keys( User_Input::get_questions() ),
 											array(
-												'type'  => 'array',
-												'items' => array( 'type' => 'string' ),
+												'type'     => 'array',
+												'description' => __( 'Values picked as the answer to the question.', 'google-site-kit' ),
+												'required' => true,
+												'items'    => array( 'type' => 'string' ),
 											)
 										),
 									),
@@ -192,8 +189,67 @@ class REST_User_Input_Controller {
 							),
 						),
 					),
+				),
+				array(
+					'schema' => function () {
+						return $this->get_user_input_settings_schema();
+					},
 				)
 			),
+		);
+	}
+
+	/**
+	 * Gets the REST schema of the user input answers.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array REST schema.
+	 */
+	private function get_user_input_settings_schema() {
+		$answer = array(
+			'type'        => 'object',
+			'description' => __( 'Answer to the question.', 'google-site-kit' ),
+			'properties'  => array(
+				'values'     => array(
+					'type'        => 'array',
+					'description' => __( 'Values picked as the answer.', 'google-site-kit' ),
+					'items'       => array(
+						'type' => 'string',
+					),
+				),
+				'scope'      => array(
+					'type'        => 'string',
+					'description' => __( 'Whether the answer is for the whole site or for the current user alone.', 'google-site-kit' ),
+					'enum'        => array( 'site', 'user' ),
+				),
+				'answeredBy' => array(
+					'type'        => 'integer',
+					'description' => __( 'ID of the user who answered a site question.', 'google-site-kit' ),
+				),
+				'author'     => array(
+					'type'        => 'object',
+					'description' => __( 'The user who answered a site question, where that is another user. Only a user who can list users gets it.', 'google-site-kit' ),
+					'properties'  => array(
+						'photo' => array(
+							'type'        => 'string',
+							'description' => __( 'Avatar URL of that user.', 'google-site-kit' ),
+						),
+						'login' => array(
+							'type'        => array( 'string', 'boolean' ),
+							'description' => __( 'Login name of that user, or false where that user no longer exists.', 'google-site-kit' ),
+						),
+					),
+				),
+			),
+		);
+
+		return array(
+			'$schema'     => 'http://json-schema.org/draft-04/schema#',
+			'title'       => 'user-input-settings',
+			'description' => __( 'Answers to the user input questions, by question.', 'google-site-kit' ),
+			'type'        => 'object',
+			'properties'  => array_fill_keys( array_keys( User_Input::get_questions() ), $answer ),
 		);
 	}
 }

@@ -36,7 +36,8 @@ class Newsletter_Signup_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	 * Boolean configuration fields, mapped to their model setters.
 	 */
 	const BOOLEAN_FIELDS = array(
-		'nameRequired' => 'setNameRequired',
+		'nameRequired'  => 'setNameRequired',
+		'optInRequired' => 'setOptInRequired',
 	);
 
 	/**

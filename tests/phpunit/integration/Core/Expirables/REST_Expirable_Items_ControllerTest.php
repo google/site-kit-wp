@@ -94,6 +94,7 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 		$this->assertEqualsWithDelta( time() + 100, $data['foo'], 2, 'GET endpoint should return foo timer.' );
 		$this->assertEqualsWithDelta( time() + 100, $data['bar'], 2, 'GET endpoint should return bar timer.' );
 		$this->assertEqualsWithDelta( time() - 10, $data['baz'], 2, 'GET endpoint should return expired baz timer.' );
+		$this->assertMatchesRouteResourceSchema( $data, 'core/user/data/expirable-items', 'GET endpoint response should match its resource schema.' );
 	}
 
 	public function test_set_expirable_item_timers() {
@@ -114,6 +115,10 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 						'slug'       => 'bar',
 						'expiration' => 100,
 					),
+					array(
+						'slug'       => 'qux',
+						'expiration' => 1,
+					),
 				),
 			)
 		);
@@ -122,6 +127,121 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 
 		$this->assertEqualsWithDelta( time() + 100, $data['foo'], 2, 'Timer update endpoint should preserve foo timer.' );
 		$this->assertEqualsWithDelta( time() - 10, $data['baz'], 2, 'Timer update endpoint should preserve expired baz timer.' );
+		$this->assertEqualsWithDelta( time() + 100, $data['bar'], 2, 'Timer update endpoint should set the bar timer.' );
+		$this->assertEqualsWithDelta( time() + 1, $data['qux'], 2, 'Timer update endpoint should set the qux timer.' );
+	}
+
+	/**
+	 * @dataProvider provider_set_expirable_item_timers__invalid_data
+	 *
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
+	 */
+	public function test_set_expirable_item_timers__invalid_data( $body, $expected_code ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$this->grant_manage_options_permission();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/set-expirable-item-timers' );
+		$request->set_body_params( $body );
+
+		$this->assertRESTRequestRejected( $request, $expected_code );
+		$this->assertEmpty( $this->expirable_items->get(), 'Timer update endpoint should set no timer for invalid data.' );
+	}
+
+	public function provider_set_expirable_item_timers__invalid_data() {
+		return array(
+			'no data'                           => array(
+				array(),
+				'rest_missing_callback_param',
+			),
+			'data is not a list of items'       => array(
+				array( 'data' => 'foo' ),
+				'rest_invalid_param',
+			),
+			'item slug is not a string'         => array(
+				array(
+					'data' => array(
+						array(
+							'slug'       => 123,
+							'expiration' => 100,
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
+			'item expiration is not an integer' => array(
+				array(
+					'data' => array(
+						array(
+							'slug'       => 'foo',
+							'expiration' => 'soon',
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
+			'item expiration is 0'              => array(
+				array(
+					'data' => array(
+						array(
+							'slug'       => 'foo',
+							'expiration' => 0,
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
+			'item has another property'         => array(
+				array(
+					'data' => array(
+						array(
+							'slug'       => 'foo',
+							'expiration' => 100,
+							'other'      => 'value',
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
+			'empty list'                        => array(
+				array( 'data' => array() ),
+				'rest_invalid_param',
+			),
+			'item has no slug'                  => array(
+				array( 'data' => array( array( 'expiration' => 100 ) ) ),
+				'rest_invalid_param',
+			),
+			'item slug is empty'                => array(
+				array(
+					'data' => array(
+						array(
+							'slug'       => '',
+							'expiration' => 100,
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
+			'item has no expiration'            => array(
+				array( 'data' => array( array( 'slug' => 'foo' ) ) ),
+				'rest_invalid_param',
+			),
+			'good item before an empty one'     => array(
+				array(
+					'data' => array(
+						array(
+							'slug'       => 'foo',
+							'expiration' => 100,
+						),
+						array(),
+					),
+				),
+				'rest_invalid_param',
+			),
+		);
 	}
 
 	private function grant_manage_options_permission() {

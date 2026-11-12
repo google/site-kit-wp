@@ -40,12 +40,19 @@ import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
-	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { setPendingSetup } from '@/js/googlesitekit/feature-discovery/pending-setup';
+import { createNotifications } from '@/js/googlesitekit/notifications';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { registerNotifications as registerReaderRevenueManagerNotifications } from '@/js/modules/reader-revenue-manager/notifications';
 import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
@@ -60,27 +67,6 @@ import FeatureDiscoveryApp from './FeatureDiscoveryApp';
 interface StoryArgs {
 	setupRegistry?: ( registry: Registry ) => void | Promise< void >;
 }
-
-// A feature that is already set up, as one the user has just returned to the
-// hub from setting up.
-const SET_UP_FEATURE: Partial< Feature > = {
-	slug: 'set-up-feature',
-	title: 'Earn money by placing ads on your site',
-	setup: {
-		type: FEATURE_SETUP_TYPES.SETUP_FLOW,
-		ctaLabel: 'Set up AdSense',
-		isEnabled: () => true,
-	},
-	successNotice: {
-		title: 'Success! AdSense is set up',
-		description: 'You are now monetizing your website with relevant ads',
-		cta: {
-			label: 'Show me',
-			getURL: () =>
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard#monetization',
-		},
-	},
-};
 
 const AUDIENCE_CHIP_SELECTOR =
 	'.googlesitekit-category-filter-chips .mdc-chip[data-chip-id="audience"]';
@@ -186,14 +172,45 @@ AllServicesWithSetupSuccess.args = {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 
-		provideFeatures( registry, [ ...sampleFeatures, SET_UP_FEATURE ] );
+		provideFeatures( registry, sampleFeatures );
 		provideNotifications( registry, [] );
 
 		// Stored where the hub reads it on mount, as on a return from setup.
-		await setPendingSetup( 'set-up-feature', ALL_SERVICES_TAB_PATH );
+		await setPendingSetup( 'enabled-test-feature', ALL_SERVICES_TAB_PATH );
 	},
 };
 AllServicesWithSetupSuccess.scenario = {
+	readySelector: '.googlesitekit-feature-success-notice',
+};
+
+export const AllServicesWithInPlaceSetupSuccess = Template.bind(
+	{}
+) as Story< StoryArgs >;
+AllServicesWithInPlaceSetupSuccess.storyName =
+	'All services with in-place setup success notice';
+AllServicesWithInPlaceSetupSuccess.parameters = {
+	route: ALL_SERVICES_TAB_PATH,
+};
+AllServicesWithInPlaceSetupSuccess.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideModules( registry, sampleModules );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveInitialSiteKitVersion( INITIAL_VERSION );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+
+		provideFeatures( registry, sampleFeatures );
+		provideNotifications( registry, [] );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( SUCCEEDED_FEATURES_UI_KEY, [ 'key-metrics' ] );
+	},
+};
+AllServicesWithInPlaceSetupSuccess.scenario = {
 	readySelector: '.googlesitekit-feature-success-notice',
 };
 
@@ -248,7 +265,7 @@ WhatsNewWithSetupSuccess.storyName = '"What’s new" with setup success notice';
 WhatsNewWithSetupSuccess.parameters = { route: WHATS_NEW_TAB_PATH };
 WhatsNewWithSetupSuccess.args = {
 	setupRegistry: async ( registry: Registry ) => {
-		provideFeatures( registry, [ ...WHATS_NEW_FEATURES, SET_UP_FEATURE ] );
+		provideFeatures( registry, [ ...WHATS_NEW_FEATURES ] );
 		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
 		// The auto-updates notice also qualifies, so the story shows the
 		// success notice taking precedence over it.
@@ -262,11 +279,117 @@ WhatsNewWithSetupSuccess.args = {
 		provideNotifications( registry, [] );
 
 		// Stored where the hub reads it on mount, as on a return from setup.
-		await setPendingSetup( 'set-up-feature', WHATS_NEW_TAB_PATH );
+		await setPendingSetup( 'enabled-test-feature', WHATS_NEW_TAB_PATH );
 	},
 };
 WhatsNewWithSetupSuccess.scenario = {
 	readySelector: '.googlesitekit-feature-success-notice',
+};
+
+export const WhatsNewWithInPlaceSetupSuccess = Template.bind(
+	{}
+) as Story< StoryArgs >;
+WhatsNewWithInPlaceSetupSuccess.storyName =
+	'"What’s new" with in-place setup success notice';
+WhatsNewWithInPlaceSetupSuccess.parameters = { route: WHATS_NEW_TAB_PATH };
+WhatsNewWithInPlaceSetupSuccess.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+		provideNotifications( registry, [] );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( SUCCEEDED_FEATURES_UI_KEY, [ 'dashboard-sharing' ] );
+	},
+};
+WhatsNewWithInPlaceSetupSuccess.scenario = {
+	readySelector: '.googlesitekit-feature-success-notice',
+};
+
+function provideReaderRevenueManager(
+	registry: Registry,
+	{
+		paymentOption,
+		publicationOnboardingState = PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+	}: { paymentOption: string; publicationOnboardingState?: string }
+) {
+	provideModules( registry, [
+		{
+			slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+			active: true,
+			connected: true,
+		},
+	] );
+	provideModuleRegistrations( registry );
+
+	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
+		publicationID: '1234',
+		publicationOnboardingState,
+		paymentOption,
+		productIDs: [ 'product-a', 'product-b' ],
+		productID: 'product-a',
+	} );
+
+	registerReaderRevenueManagerNotifications(
+		createNotifications( registry )
+	);
+}
+
+export const WhatsNewWithRRMSetupSuccess = Template.bind(
+	{}
+) as Story< StoryArgs >;
+WhatsNewWithRRMSetupSuccess.storyName =
+	'"What’s new" with Reader Revenue Manager setup success notice';
+WhatsNewWithRRMSetupSuccess.parameters = { route: WHATS_NEW_TAB_PATH };
+WhatsNewWithRRMSetupSuccess.args = {
+	setupRegistry: async ( registry: Registry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+		provideNotifications( registry, [] );
+
+		provideReaderRevenueManager( registry, {
+			paymentOption: 'subscriptions',
+		} );
+
+		await setPendingSetup(
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			WHATS_NEW_TAB_PATH
+		);
+	},
+};
+WhatsNewWithRRMSetupSuccess.scenario = {
+	readySelector: '.googlesitekit-notice--success',
+};
+
+export const AllServicesWithRRMPublicationApprovedOverlay = Template.bind(
+	{}
+) as Story< StoryArgs >;
+AllServicesWithRRMPublicationApprovedOverlay.storyName =
+	'"All services" with Reader Revenue Manager publication approved overlay';
+AllServicesWithRRMPublicationApprovedOverlay.parameters = {
+	route: ALL_SERVICES_TAB_PATH,
+};
+AllServicesWithRRMPublicationApprovedOverlay.args = {
+	setupRegistry: async ( registry: Registry ) => {
+		provideFeatures( registry, sampleFeatures );
+		registry
+			.dispatch( CORE_USER )
+			.receiveInitialSiteKitVersion( INITIAL_VERSION );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+		provideNotifications( registry, [] );
+
+		provideReaderRevenueManager( registry, { paymentOption: '' } );
+
+		await setPendingSetup(
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			ALL_SERVICES_TAB_PATH
+		);
+	},
+};
+AllServicesWithRRMPublicationApprovedOverlay.scenario = {
+	readySelector: '.googlesitekit-overlay-card',
 };
 
 export const WhatsNewEmpty = Template.bind( {} ) as Story< StoryArgs >;

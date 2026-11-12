@@ -126,6 +126,22 @@ function Template() {
 					/>
 				</Cell>
 				<Cell size={ 12 }>
+					<h3>Reminder Notice</h3>
+					<Notice
+						title="Almost there! Finish your newsletter sign-up form"
+						description="Complete setup to make it live and start building a list of your most interested visitors"
+						ctaButton={ {
+							label: 'Complete setup',
+							onClick: () => {},
+						} }
+						dismissButton={ {
+							label: 'Maybe later',
+							onClick: () => {},
+						} }
+						type={ NOTICE_TYPES.REMINDER }
+					/>
+				</Cell>
+				<Cell size={ 12 }>
 					<h3>Error Notice</h3>
 					<Notice
 						title="Potential Analytics tracking loss"

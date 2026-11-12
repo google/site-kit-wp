@@ -39,7 +39,7 @@ import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-dr
 export interface EventProviderDeactivatedNoticeCopy {
 	/** The notice heading, which names the kind of plugin Site Kit can no longer find. */
 	title: string;
-	/** The notice body, which ends with a `Learn more` link to the conversion tracking page. */
+	/** The notice body, which ends with a `Learn more` link to the Site Goals supported plugins page. */
 	description: ReactNode;
 }
 
@@ -47,6 +47,7 @@ export interface EventProviderDeactivatedNoticeCopy {
  * Gets the deactivated plugin notice copy for a goal type.
  *
  * @since 1.187.0
+ * @since 1.192.0 Pointed the `Learn more` link to the Site Goals supported plugins page.
  *
  * @param {GoalType} goalType The goal type of the widget that shows the notice.
  * @return {EventProviderDeactivatedNoticeCopy} The `title` and `description`.
@@ -57,7 +58,7 @@ export function useEventProviderDeactivatedNoticeCopy(
 	const learnMoreURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getDocumentationLinkURL(
-				'plugin-conversion-tracking'
+				'site-goals-supported-plugins'
 			),
 		[]
 	) as string;

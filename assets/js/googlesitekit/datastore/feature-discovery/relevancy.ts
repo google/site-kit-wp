@@ -29,7 +29,7 @@ import {
 	VOTE_DIRECTION_DOWN,
 	VOTE_DIRECTION_UP,
 	VoteDirection,
-} from '@/js/components/surveys/constants';
+} from '@/js/components/feedback/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { FeatureDiscoveryState } from './types';
 import { getFeatureRelevancyVoteSlug } from './utils';

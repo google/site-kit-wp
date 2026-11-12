@@ -223,7 +223,16 @@ export const WithConfiguredCTAs = Template.bind( {} );
 WithConfiguredCTAs.storyName = 'With Configured CTAs';
 WithConfiguredCTAs.args = {
 	configuredCTAs: {
-		'cta-1': 'newsletter-signup',
+		'cta-1': {
+			type: 'newsletter-signup',
+			state: 'ACTIVE',
+			displayName: 'Weekly newsletter',
+		},
+		'cta-2': {
+			type: 'newsletter-signup',
+			state: 'DRAFT',
+			displayName: '',
+		},
 	},
 	setupRegistry: ( registry ) => {
 		setupPublicationsWithProduct( registry, 0, 'product-b' );

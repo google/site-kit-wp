@@ -34,7 +34,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
-	setEnabledFeatures,
 	untilResolved,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -73,9 +72,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 	} );
 
 	describe( 'shouldIncludeWooCommerceProducts', () => {
-		it( 'should return true when the flag is enabled, Analytics is connected, WooCommerce is active, and the setting is on', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
+		it( 'should return true when Analytics is connected, WooCommerce is active, and the setting is on', () => {
 			provideIncludeProductsState( registry );
 
 			expect(
@@ -85,19 +82,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toBe( true );
 		} );
 
-		it( 'should return false when the freshData flag is disabled', () => {
-			provideIncludeProductsState( registry );
-
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.shouldIncludeWooCommerceProducts()
-			).toBe( false );
-		} );
-
 		it( 'should return false when Analytics is not connected', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideIncludeProductsState( registry, {
 				analyticsConnected: false,
 			} );
@@ -110,8 +95,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return false when WooCommerce is installed but not active', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideIncludeProductsState( registry, {
 				wooCommerceActive: false,
 			} );
@@ -124,8 +107,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return false when the setting is off', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideIncludeProductsState( registry, { setting: false } );
 
 			expect(
@@ -136,8 +117,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return undefined while WooCommerce activation status is unresolved', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideModules( registry, [
 				{
 					slug: MODULE_SLUG_ANALYTICS_4,
@@ -158,8 +137,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return undefined while the setting is unresolved', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			fetchMock.getOnce( analytics4SettingsEndpoint, {
 				body: { [ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: true },
 				status: 200,
@@ -187,8 +164,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 
 	describe( 'getExcludedProducts', () => {
 		it( 'should return the path that every product URL starts with when the setting to include products is off', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideIncludeProductsState( registry, {
 				setting: false,
 				productPathPrefix: '/product/',
@@ -200,8 +175,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return the product post type for the `googlesitekit_post_type` custom dimension when product URLs share no path and the Analytics property has the dimension', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideIncludeProductsState( registry, {
 				setting: false,
 				productPathPrefix: null,
@@ -214,8 +187,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( "should return null when product URLs share no path and the Analytics property doesn't have the `googlesitekit_post_type` custom dimension", () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideIncludeProductsState( registry, {
 				setting: false,
 				productPathPrefix: null,
@@ -228,8 +199,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( "should return null when product URLs share no path and the user can't sync the unknown custom dimensions of the Analytics property", async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			// A user who hasn't signed in with Google, such as a view-only user,
 			// can't sync the custom dimensions.
 			provideUserAuthentication( registry, { authenticated: false } );
@@ -254,8 +223,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return undefined while the custom dimensions of the Analytics property sync', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideUserAuthentication( registry );
 			provideUserCapabilities( registry );
 			provideIncludeProductsState( registry, {
@@ -285,8 +252,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return null when the setting to include products is on', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideIncludeProductsState( registry, {
 				setting: true,
 				productPathPrefix: '/product/',
@@ -298,8 +263,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return null when WooCommerce is not active, even when the setting to include products is off and product URLs share a path', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideIncludeProductsState( registry, {
 				wooCommerceActive: false,
 				setting: false,
@@ -312,8 +275,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return null when the site has no product post type, even when the setting to include products is off', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideIncludeProductsState( registry, {
 				setting: false,
 				productPostType: null,
@@ -326,8 +287,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return undefined while the setting to include products loads', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			fetchMock.getOnce( analytics4SettingsEndpoint, {
 				body: { [ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: false },
 				status: 200,
@@ -354,8 +313,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return null when the Analytics settings request fails', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			fetchMock.getOnce( analytics4SettingsEndpoint, {
 				body: {
 					code: 'internal_server_error',
@@ -389,8 +346,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return undefined while the module list loads, after the setting to include products has loaded', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			freezeFetch(
 				new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
 			);
@@ -638,8 +593,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return posts and products together, newest first, when the "Include products in Recent activity" setting is on', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideSiteInfo( registry, { wooCommerceActive: true } );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
@@ -736,8 +689,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should not request products when the "Include products in Recent activity" setting is off', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideSiteInfo( registry, { wooCommerceActive: true } );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
@@ -785,8 +736,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should include products when the site info, the Analytics settings, and the module list load after `getRecentContent()` is called', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			// The site info loads from `_googlesitekitBaseData`.
 			global._googlesitekitBaseData = {
 				...baseData,
@@ -872,8 +821,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return posts and omit products when the Analytics settings fail to load', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideSiteInfo( registry, { wooCommerceActive: true } );
 
 			fetchMock.getOnce( analytics4SettingsEndpoint, {
@@ -1021,8 +968,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return `undefined` and store the error for `getErrorForSelector()` when the products request fails', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
 			provideSiteInfo( registry, { wooCommerceActive: true } );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {

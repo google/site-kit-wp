@@ -218,16 +218,14 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 			apiErrors.length || ! setupError ? apiErrors : [ setupError ];
 
 		return (
-			<article className="googlesitekit-feature-card googlesitekit-feature-card--custom">
-				<AudienceSegmentationSetupErrorWidget
-					Widget={ ( { children } ) => children }
-					errors={ errors }
-					isAudienceCreationVariant={ isAudienceCreationError }
-					onRetry={ handleRetry }
-					onDismiss={ handleDismiss }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-				/>
-			</article>
+			<AudienceSegmentationSetupErrorWidget
+				Widget={ ( { children } ) => children }
+				errors={ errors }
+				isAudienceCreationVariant={ isAudienceCreationError }
+				onRetry={ handleRetry }
+				onDismiss={ handleDismiss }
+				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+			/>
 		);
 	}
 

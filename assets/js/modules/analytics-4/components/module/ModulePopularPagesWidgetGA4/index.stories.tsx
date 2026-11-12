@@ -309,18 +309,8 @@ const LATEST_CONTENT_REPORT = {
 	} ) ),
 };
 
-export const TopContentFreshData = Template.bind( {} ) as Story;
-TopContentFreshData.storyName = 'Top Content (freshData enabled)';
-TopContentFreshData.args = {
-	setupRegistry: Loaded.args?.setupRegistry,
-};
-TopContentFreshData.parameters = {
-	features: [ 'freshData' ],
-};
-TopContentFreshData.scenario = {};
-
 export const LatestContent = Template.bind( {} ) as Story;
-LatestContent.storyName = 'Latest Content (freshData enabled)';
+LatestContent.storyName = 'Latest Content';
 LatestContent.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		Loaded.args?.setupRegistry?.( registry );
@@ -332,16 +322,12 @@ LatestContent.args = {
 			} );
 	},
 };
-LatestContent.parameters = {
-	features: [ 'freshData' ],
-};
 LatestContent.scenario = {
 	clickSelector: '#googlesitekit-latest-content-tab',
 };
 
 export const LatestContentReportError = Template.bind( {} ) as Story;
-LatestContentReportError.storyName =
-	'Latest Content, Report Error (freshData enabled)';
+LatestContentReportError.storyName = 'Latest Content, Report Error';
 LatestContentReportError.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		Loaded.args?.setupRegistry?.( registry );
@@ -360,24 +346,36 @@ LatestContentReportError.args = {
 			.finishResolution( 'getReport', [ LATEST_CONTENT_REPORT_OPTIONS ] );
 	},
 };
-LatestContentReportError.parameters = {
-	features: [ 'freshData' ],
-};
 LatestContentReportError.scenario = {
 	clickSelector: '#googlesitekit-latest-content-tab',
 };
 
+export const LatestContentGatheringData = Template.bind( {} ) as Story;
+LatestContentGatheringData.storyName = 'Latest Content, Gathering Data';
+LatestContentGatheringData.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		DataUnavailable.args?.setupRegistry?.( registry );
+		provideRecentContent( registry, RECENT_CONTENT, { count: 10 } );
+		// Analytics has no rows for the posts while it is gathering data.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{},
+			{
+				options: LATEST_CONTENT_REPORT_OPTIONS,
+			}
+		);
+	},
+};
+LatestContentGatheringData.scenario = {
+	clickSelector: '#googlesitekit-latest-content-tab',
+};
+
 export const LatestContentNoPublishedPosts = Template.bind( {} ) as Story;
-LatestContentNoPublishedPosts.storyName =
-	'Latest Content, No Published Posts (freshData enabled)';
+LatestContentNoPublishedPosts.storyName = 'Latest Content, No Published Posts';
 LatestContentNoPublishedPosts.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		Loaded.args?.setupRegistry?.( registry );
 		provideRecentContent( registry, [], { count: 10 } );
 	},
-};
-LatestContentNoPublishedPosts.parameters = {
-	features: [ 'freshData' ],
 };
 
 export default {

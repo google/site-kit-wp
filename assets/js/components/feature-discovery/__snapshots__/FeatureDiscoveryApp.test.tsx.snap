@@ -158,6 +158,9 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
   <div
     class="googlesitekit-module-page googlesitekit-feature-discovery"
   >
+    <div>
+      SetupCTAOverlays
+    </div>
     <div
       class="mdc-layout-grid"
     >

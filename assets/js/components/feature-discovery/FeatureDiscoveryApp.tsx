@@ -25,13 +25,15 @@ import { Link, useLocation } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
+import { Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DashboardSharingDialog from '@/js/components/dashboard-sharing/DashboardSharingDialog';
 import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
 import {
@@ -43,6 +45,7 @@ import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCo
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
+import SetupCTAOverlays from '@/js/components/notifications/SetupCTAOverlays';
 import PDFExportRoot from '@/js/components/pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from '@/js/components/pdf-export/PDFSectionsSelectionPanel';
 import Typography from '@/js/components/Typography';
@@ -53,6 +56,12 @@ import {
 	TYPE_LABEL,
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
+import {
+	CORE_FEATURE_DISCOVERY,
+	SUCCEEDED_FEATURES_UI_KEY,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { Cell, Grid, Row } from '@/js/material-components';
 import AllServicesTab from './all-services/AllServicesTab';
@@ -84,6 +93,58 @@ const FeatureDiscoveryApp: FC = () => {
 	useFeatureCountCache();
 	const hasConsumedPendingSetup = useConsumePendingSetup();
 
+	// Watches every feature's connection state, so that a feature set up
+	// without leaving the hub shows its success notice in place of its card.
+	const connectedFeatures = useSelect( ( select: Select ) => {
+		const { getFeatures, isFeatureConnected } = select(
+			CORE_FEATURE_DISCOVERY
+		);
+
+		return getFeatures().reduce(
+			(
+				acc: Record< string, boolean | undefined >,
+				{ slug }: Feature
+			) => ( { ...acc, [ slug ]: isFeatureConnected( slug ) } ),
+			{}
+		);
+	}, [] );
+	const previousConnectedFeatures = usePrevious( connectedFeatures );
+
+	const succeededFeatures = useSelect(
+		( select: Select ): string[] =>
+			select( CORE_UI ).getValue( SUCCEEDED_FEATURES_UI_KEY ) || [],
+		[]
+	);
+
+	const { setValue } = useDispatch( CORE_UI );
+
+	useEffect( () => {
+		// Without a previous state, as on the first render, nothing has just
+		// been set up: a feature already connected on load is not flagged.
+		if ( ! previousConnectedFeatures ) {
+			return;
+		}
+
+		const newlySucceeded = Object.keys( connectedFeatures ).filter(
+			( slug ) =>
+				previousConnectedFeatures[ slug ] === false &&
+				connectedFeatures[ slug ] === true &&
+				! succeededFeatures.includes( slug )
+		);
+
+		if ( newlySucceeded.length > 0 ) {
+			setValue( SUCCEEDED_FEATURES_UI_KEY, [
+				...succeededFeatures,
+				...newlySucceeded,
+			] );
+		}
+	}, [
+		connectedFeatures,
+		previousConnectedFeatures,
+		setValue,
+		succeededFeatures,
+	] );
+
 	const breakpoint = useBreakpoint();
 	const location = useLocation();
 
@@ -103,6 +164,7 @@ const FeatureDiscoveryApp: FC = () => {
 				<HelpMenu />
 			</Header>
 			<div className="googlesitekit-module-page googlesitekit-feature-discovery">
+				{ hasConsumedPendingSetup && <SetupCTAOverlays /> }
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>

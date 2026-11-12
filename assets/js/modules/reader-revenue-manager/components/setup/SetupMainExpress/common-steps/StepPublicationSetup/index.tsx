@@ -24,19 +24,20 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
-import { Select, useSelect } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import { CREATE_PUBLICATION_EVENT_LABEL } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
@@ -65,6 +66,22 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	onComplete,
 } ) => {
 	const trackEvent = useExpressSetupTrackEvent();
+
+	const [ cta ] = useQueryArg( 'cta' );
+
+	const { fetchGetCTAs } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+
+	// In a CTA setup, load the connected publication's CTAs before completing
+	// the step, so the step stays in place while they load and the next step
+	// opens with the existing CTA check already done. If the request fails,
+	// the next step requests the CTAs again and shows the error.
+	const onPublicationConnected = useCallback( async () => {
+		if ( cta ) {
+			await fetchGetCTAs();
+		}
+
+		onComplete();
+	}, [ cta, fetchGetCTAs, onComplete ] );
 
 	const [ showPublicationCreate, setShowPublicationCreate ] =
 		useFormValue< boolean >(
@@ -139,12 +156,12 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 			{ showPublicationCreate ? (
 				<CreatePublication
 					description={ createDescription }
-					onComplete={ onComplete }
+					onComplete={ onPublicationConnected }
 				/>
 			) : (
 				<ConnectPublication
 					description={ connectDescription }
-					onComplete={ onComplete }
+					onComplete={ onPublicationConnected }
 				/>
 			) }
 

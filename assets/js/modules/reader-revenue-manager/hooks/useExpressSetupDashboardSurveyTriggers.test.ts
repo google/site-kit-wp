@@ -32,6 +32,7 @@ import {
 import {
 	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
+	triggeredIDs,
 } from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
@@ -54,15 +55,6 @@ describe( 'useExpressSetupDashboardSurveyTriggers', () => {
 	const NOT_INTERACTED = 'view_rrm_newsletter-signup_not_interacted';
 
 	let registry: Registry;
-
-	function triggeredIDs(): string[] {
-		return fetchMock
-			.calls( surveyTriggerEndpoint )
-			.map(
-				( call ) =>
-					JSON.parse( String( call[ 1 ]?.body ) ).data.triggerID
-			);
-	}
 
 	function provideUserSettings( settings: Record< string, unknown > ) {
 		fetchMock.get( userSettingsEndpoint, {

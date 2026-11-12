@@ -101,7 +101,7 @@ final class Assets {
 			return;
 		}
 
-		$this->add_amp_dev_mode_attributes( $this->get_assets() );
+		$this->add_amp_dev_mode_attributes();
 
 		add_action(
 			'admin_print_scripts-edit.php',
@@ -290,16 +290,25 @@ final class Assets {
 	/**
 	 * Add data-ampdevmode attributes to assets.
 	 *
-	 * @todo What about dependencies?
+	 * The asset list is read when a tag is printed, so that assets added later
+	 * through the `googlesitekit_assets` filter are included.
 	 *
-	 * @param Asset[] $assets Assets.
+	 * @since n.e.x.t Reads the asset list when a tag is printed, instead of taking it as an argument.
+	 *
+	 * @todo What about dependencies?
 	 */
-	private function add_amp_dev_mode_attributes( $assets ) {
+	private function add_amp_dev_mode_attributes() {
 		add_filter(
 			'script_loader_tag',
-			function ( $tag, $handle ) use ( $assets ) {
+			function ( $tag, $handle ) {
+				if ( ! $this->context->is_amp() ) {
+					return $tag;
+				}
+
+				$assets = $this->get_assets();
+
 				// TODO: 'hoverintent-js' can be removed from here at some point, see https://github.com/ampproject/amp-wp/pull/3928.
-				if ( $this->context->is_amp() && ( isset( $assets[ $handle ] ) && ( $assets[ $handle ] instanceof Script || 'hoverintent-js' === $handle ) ) ) {
+				if ( isset( $assets[ $handle ] ) && ( $assets[ $handle ] instanceof Script || 'hoverintent-js' === $handle ) ) {
 					$tag = preg_replace( '/(?<=<script)(?=\s|>)/i', ' data-ampdevmode', $tag );
 				}
 				return $tag;
@@ -310,8 +319,14 @@ final class Assets {
 
 		add_filter(
 			'style_loader_tag',
-			function ( $tag, $handle ) use ( $assets ) {
-				if ( $this->context->is_amp() && isset( $assets[ $handle ] ) && $assets[ $handle ] instanceof Stylesheet ) {
+			function ( $tag, $handle ) {
+				if ( ! $this->context->is_amp() ) {
+					return $tag;
+				}
+
+				$assets = $this->get_assets();
+
+				if ( isset( $assets[ $handle ] ) && $assets[ $handle ] instanceof Stylesheet ) {
 					$tag = preg_replace( '/(?<=<link)(?=\s|>)/i', ' data-ampdevmode', $tag );
 				}
 				return $tag;
@@ -651,6 +666,7 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
+						'googlesitekit-notifications',
 					),
 				)
 			),
@@ -735,10 +751,13 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-admin-pointers-tracking',
+				'googlesitekit-admin-pointers',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-admin-pointers-tracking.js',
-					'dependencies' => $this->get_asset_dependencies(),
+					'src'          => $base_url . 'js/googlesitekit-admin-pointers.js',
+					'dependencies' => array_merge(
+						$dependencies,
+						array( 'wp-pointer', 'googlesitekit-admin-pointers-data' )
+					),
 				)
 			),
 			// WP Dashboard assets.
@@ -995,6 +1014,7 @@ final class Assets {
 	 * Gets the inline dashboard sharing data.
 	 *
 	 * @since 1.49.0
+	 * @since 1.192.0 Outputs `settings` as an object, also when no module has sharing settings.
 	 *
 	 * @return array The dashboard sharing inline data to be output.
 	 */
@@ -1014,8 +1034,10 @@ final class Assets {
 			}
 		}
 
-		$settings                = new Module_Sharing_Settings( new Options( $this->context ) );
-		$inline_data['settings'] = $settings->get();
+		$settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		// Cast to an object so that empty settings are output as `{}` and not `[]`,
+		// because JS adds module keys to this value when sharing settings change.
+		$inline_data['settings'] = (object) $settings->get();
 
 		/**
 		 * Filters the dashboard sharing inline data to pass to JS.

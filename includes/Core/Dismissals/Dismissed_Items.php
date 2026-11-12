@@ -139,6 +139,7 @@ class Dismissed_Items extends User_Setting {
 	 * Gets dismissed items.
 	 *
 	 * @since 1.37.0
+	 * @since n.e.x.t Returns each slug as a string.
 	 *
 	 * @return array Dismissed items array.
 	 */
@@ -146,7 +147,8 @@ class Dismissed_Items extends User_Setting {
 		$dismissed_items = $this->get();
 		$dismissed_items = $this->filter_dismissed_items( $dismissed_items );
 
-		return array_keys( $dismissed_items );
+		// PHP stores a numeric slug, such as '0', as an integer key.
+		return array_map( 'strval', array_keys( $dismissed_items ) );
 	}
 
 	/**

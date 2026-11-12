@@ -613,6 +613,22 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 			expect( await checkRequirements( registry ) ).toBe( false );
 		} );
 
+		it( 'should still be active for the newsletter sign-up feature', async () => {
+			provideFeatures( registry, [
+				{
+					slug: 'newsletter-signup',
+					setup: { isEnabled: () => true },
+					successNotice,
+				},
+			] );
+			providePendingSetup( {
+				featureSlug: 'newsletter-signup',
+				returnTab,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+		} );
+
 		it( 'should be active when the pending feature is now set up', async () => {
 			provideFeature( { isEnabled: true } );
 			providePendingSetup( { featureSlug: 'test-feature', returnTab } );

@@ -56,7 +56,7 @@ describe( 'isSiteGoalsBreakdownEnabled', () => {
 			false,
 		],
 	] )(
-		'for a user who can manage options, returns the expected state when %s',
+		'should return the expected state when %s',
 		(
 			_,
 			hasBreakdownDimensions,
@@ -65,43 +65,9 @@ describe( 'isSiteGoalsBreakdownEnabled', () => {
 		) => {
 			expect(
 				isSiteGoalsBreakdownEnabled( hasBreakdownDimensions, {
-					canManageOptions: true,
 					isConversionTrackingEnabled,
 				} )
 			).toBe( expected );
 		}
 	);
-
-	it.each( [
-		[ 'the dimensions exist', true, true ],
-		[ 'the dimensions are missing', false, false ],
-	] )(
-		'for a user who cannot read the setting, follows the dimensions alone when %s',
-		( _, hasBreakdownDimensions, expected ) => {
-			expect(
-				isSiteGoalsBreakdownEnabled( hasBreakdownDimensions, {
-					canManageOptions: false,
-					isConversionTrackingEnabled: undefined,
-				} )
-			).toBe( expected );
-		}
-	);
-
-	it( 'returns undefined while the capabilities are loading', () => {
-		expect(
-			isSiteGoalsBreakdownEnabled( true, {
-				canManageOptions: undefined,
-				isConversionTrackingEnabled: undefined,
-			} )
-		).toBeUndefined();
-	} );
-
-	it( 'returns false when the dimensions are missing while the capabilities are loading', () => {
-		expect(
-			isSiteGoalsBreakdownEnabled( false, {
-				canManageOptions: undefined,
-				isConversionTrackingEnabled: undefined,
-			} )
-		).toBe( false );
-	} );
 } );

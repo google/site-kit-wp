@@ -169,6 +169,51 @@ describe( 'useRecordExpressSetupProgress', () => {
 		} );
 	} );
 
+	it( 'should remove the entry when the existing CTA step begins', () => {
+		renderHook(
+			() =>
+				useRecordExpressSetupProgress(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+					EXPRESS_SETUP_STEPS.EXISTING_CTA
+				),
+			{ registry }
+		);
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, userSettingsEndpoint );
+		expect( fetchMock ).toHaveFetched( userSettingsEndpoint, {
+			body: {
+				data: {
+					lastActionedExpressSetups: {
+						[ ENTRY_KEY ]: null,
+					},
+				},
+			},
+		} );
+	} );
+
+	it( 'should not save a completed entry when the existing CTA step begins, even with a ctaID', () => {
+		global.location.href = `http://example.com/?cta=${ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP }&ctaID=a1b2c3`;
+
+		renderHook(
+			() =>
+				useRecordExpressSetupProgress(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+					EXPRESS_SETUP_STEPS.EXISTING_CTA
+				),
+			{ registry }
+		);
+
+		expect( fetchMock ).toHaveFetched( userSettingsEndpoint, {
+			body: {
+				data: {
+					lastActionedExpressSetups: {
+						[ ENTRY_KEY ]: null,
+					},
+				},
+			},
+		} );
+	} );
+
 	describe( 'completedExpressSetups', () => {
 		const CTA_ID = 'a1b2c3';
 

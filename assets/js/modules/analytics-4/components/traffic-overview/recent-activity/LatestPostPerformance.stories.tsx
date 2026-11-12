@@ -52,6 +52,8 @@ interface LatestPostPerformanceStoryProps {
 	setupRegistry: ( registry: WPDataRegistry ) => void;
 	/** Pauses the preview blocks' animation, which VRT otherwise turns off, leaving the blocks blank. */
 	pauseAnimation?: boolean;
+	/** The width of the widget in pixels, which the panel fills. Defaults to the width of the story's canvas. */
+	width?: number;
 }
 
 /**
@@ -81,9 +83,51 @@ function commonSetup(
 	provideLatestPost( registry );
 }
 
+/**
+ * Stores a referring site and a keyword too long for their rows, in place of
+ * the reports' short values.
+ *
+ * @since 1.192.0
+ *
+ * @param {Object} registry The registry with the latest post's reports.
+ * @return {void}
+ */
+function provideLongTextValues( registry: WPDataRegistry ) {
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport(
+			createBreakdownReport( [
+				[
+					'some-really-long-referring-subdomain.example-newsletter.com',
+					23,
+				],
+			] ),
+			{
+				options:
+					getLatestPostAnalyticsReportOptions( registry ).topReferrer,
+			}
+		);
+
+	const keywordOptions = getLatestPostKeywordReportOptions( registry );
+
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+		[
+			{
+				keys: [ 'is ice cream actually good for your health or not' ],
+				clicks: 12,
+			},
+		],
+		{ options: keywordOptions }
+	);
+	registry
+		.dispatch( MODULES_SEARCH_CONSOLE )
+		.finishResolution( 'getReport', [ keywordOptions ] );
+}
+
 function Template( {
 	setupRegistry,
 	pauseAnimation = false,
+	width,
 }: LatestPostPerformanceStoryProps ) {
 	// The section's styles are scoped to the widget and the panel, so the
 	// story renders inside both.
@@ -94,6 +138,7 @@ function Template( {
 					'googlesitekit-widget--analyticsTrafficOverview',
 					{ 'googlesitekit-vrt-animation-paused': pauseAnimation }
 				) }
+				style={ { width } }
 			>
 				<div className="googlesitekit-traffic-overview__panel googlesitekit-traffic-overview__panel--recent-activity">
 					<LatestPostPerformance />
@@ -191,42 +236,71 @@ LongValues.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideLatestPostAnalyticsReports( registry );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				createBreakdownReport( [
-					[
-						'some-really-long-referring-subdomain.example-newsletter.com',
-						23,
-					],
-				] ),
-				{
-					options:
-						getLatestPostAnalyticsReportOptions( registry )
-							.topReferrer,
-				}
-			);
-
-		const keywordOptions = getLatestPostKeywordReportOptions( registry );
-
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
-			[
-				{
-					keys: [
-						'is ice cream actually good for your health or not',
-					],
-					clicks: 12,
-				},
-			],
-			{ options: keywordOptions }
-		);
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.finishResolution( 'getReport', [ keywordOptions ] );
+		provideLongTextValues( registry );
 	},
 };
 LongValues.scenario = {};
+
+/**
+ * The tiles at their narrowest side by side, with the panel as wide as in a
+ * 961px window with the WordPress admin menu expanded. The labels of number
+ * rows wrap, numbers show in full, and long text values are cut off.
+ */
+export const NarrowTiles = Template.bind(
+	{}
+) as Story< LatestPostPerformanceStoryProps >;
+NarrowTiles.storyName = 'Narrow Tiles';
+NarrowTiles.args = {
+	width: 753,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideLatestPostAnalyticsReports( registry );
+		provideLongTextValues( registry );
+
+		const { visitors, engagement, purchases } =
+			getLatestPostAnalyticsReportOptions( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [ { value: 'new' } ],
+						metricValues: [ { value: '234567' } ],
+					},
+					{
+						dimensionValues: [ { value: 'returning' } ],
+						metricValues: [ { value: '123456' } ],
+					},
+				],
+				totals: [ { metricValues: [ { value: '358023' } ] } ],
+			},
+			{ options: visitors }
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						metricValues: [
+							{ value: '4523' },
+							{ value: '123456' },
+						],
+					},
+				],
+			},
+			{ options: engagement }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				createBreakdownReport( [ [ 'purchase', 123456 ] ] ),
+				{ options: purchases }
+			);
+	},
+};
+NarrowTiles.scenario = {
+	// The tiles sit side by side only from 960px.
+	viewport: 'large',
+};
 
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/LatestPostPerformance',

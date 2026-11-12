@@ -135,6 +135,7 @@
 @import "components/global/googlesitekit-preview-table";
 @import "components/global/googlesitekit-progress-segments";
 @import "components/global/googlesitekit-progress-indicator";
+@import "components/global/googlesitekit-repeatable-text-field";
 @import "components/global/googlesitekit-repeater";
 @import "components/global/googlesitekit-scrollable-tabs";
 @import "components/global/googlesitekit-selection-box";
@@ -232,7 +233,7 @@
 @import "components/feature-discovery/googlesitekit-effort-indicator";
 @import "components/feature-discovery/googlesitekit-feature-card";
 @import "components/feature-discovery/googlesitekit-feature-details-panel";
-@import "components/feature-discovery/googlesitekit-feature-error-notice";
+@import "components/feature-discovery/googlesitekit-feature-list-item";
 @import "components/feature-discovery/googlesitekit-feature-service-identity";
 @import "components/feature-discovery/googlesitekit-whats-new";
 
@@ -250,6 +251,9 @@
 
 // User Feedback
 @import "components/surveys";
+
+// Feedback
+@import "components/feedback";
 
 // Banner
 @import "components/banner/googlesitekit-banner";

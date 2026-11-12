@@ -59,7 +59,8 @@ import {
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
-	SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE,
+	SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE,
+	SITE_GOALS_FEEDBACK_NAMESPACE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -689,7 +690,10 @@ const OnlineStorePerformanceWidget = forwardRef<
 				) }
 
 				<FeedbackPrompt
-					voteID={ SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE }
+					feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
+					feedbackGroup={
+						SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE
+					}
 					gaTrackingEventArgs={ {
 						category: `${ viewContext }_site-goals-widget-survey`,
 						label: GOAL_TYPES.ECOMMERCE,

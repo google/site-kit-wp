@@ -28,20 +28,46 @@ import {
 } from './settings';
 
 describe( 'getConfiguredCTAList', () => {
-	it( 'should return the CTA ID, type, and display label for each configured CTA', () => {
+	it( 'should return the CTA ID, type, and display name for each configured CTA', () => {
 		expect(
 			getConfiguredCTAList( {
-				'cta-1': 'newsletter-signup',
-				'cta-2': 'newsletter-signup',
+				'cta-1': {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: 'Weekly newsletter',
+				},
+				'cta-2': {
+					type: 'newsletter-signup',
+					state: 'DRAFT',
+					displayName: 'Daily newsletter',
+				},
 			} )
 		).toEqual( [
 			{
 				ctaID: 'cta-1',
 				ctaType: 'newsletter-signup',
-				label: 'Newsletter sign-up form',
+				label: 'Weekly newsletter',
 			},
 			{
 				ctaID: 'cta-2',
+				ctaType: 'newsletter-signup',
+				label: 'Daily newsletter',
+			},
+		] );
+	} );
+
+	it( 'should use the type label for a CTA with an empty display name', () => {
+		expect(
+			getConfiguredCTAList( {
+				'cta-1': {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: '',
+				},
+			} )
+		).toEqual( [
+			{
+				ctaID: 'cta-1',
 				ctaType: 'newsletter-signup',
 				label: 'Newsletter sign-up form',
 			},
@@ -51,14 +77,22 @@ describe( 'getConfiguredCTAList', () => {
 	it( 'omits CTAs with an unrecognised type', () => {
 		expect(
 			getConfiguredCTAList( {
-				'cta-1': 'newsletter-signup',
-				'cta-2': 'not-a-cta-type',
+				'cta-1': {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: 'Weekly newsletter',
+				},
+				'cta-2': {
+					type: 'not-a-cta-type',
+					state: 'ACTIVE',
+					displayName: 'Unknown',
+				},
 			} )
 		).toEqual( [
 			{
 				ctaID: 'cta-1',
 				ctaType: 'newsletter-signup',
-				label: 'Newsletter sign-up form',
+				label: 'Weekly newsletter',
 			},
 		] );
 	} );

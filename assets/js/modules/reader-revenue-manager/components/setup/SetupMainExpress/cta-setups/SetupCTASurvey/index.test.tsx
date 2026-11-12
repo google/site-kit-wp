@@ -176,6 +176,59 @@ describe( 'SetupCTASurvey', () => {
 		expect( steps[ 5 ] ).toHaveTextContent( 'Setup complete' );
 	} );
 
+	describe( 'existing CTA step', () => {
+		it( 'shows the survey copy without the stepper', async () => {
+			global.location.href =
+				'http://example.com/?cta=survey&step=existing-cta';
+
+			connectPublication( registry, completePublication );
+
+			const { container, getByText, waitForRegistry } = render(
+				<SetupCTASurvey />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			await waitFor( () => {
+				expect(
+					getByText(
+						'We found an existing survey for this publication'
+					)
+				).toBeInTheDocument();
+			} );
+
+			expect(
+				getByText( /Site Kit can’t create a survey/ )
+			).toBeInTheDocument();
+			expect(
+				getByText( /To change who sees your survey/ )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( '.googlesitekit-stepper' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'shows the stepper on a step in the sequence', async () => {
+			global.location.href =
+				'http://example.com/?cta=survey&step=terms-of-service';
+
+			connectPublication( registry, publicationWithoutTerms );
+
+			const { container, waitForRegistry } = render( <SetupCTASurvey />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			await waitFor( () => {
+				expect(
+					container.querySelector( '.googlesitekit-stepper' )
+				).toBeInTheDocument();
+			} );
+		} );
+	} );
+
 	describe( 'completing a step', () => {
 		// `publications[ 2 ]` has not accepted the terms of service;
 		// `publications[ 0 ]` has.

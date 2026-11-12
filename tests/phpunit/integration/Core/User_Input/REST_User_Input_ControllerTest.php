@@ -134,6 +134,46 @@ class REST_User_Input_ControllerTest extends TestCase {
 			$response->get_data(),
 			'User input settings response should include the stored site and user answers.'
 		);
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/user-input-settings', 'User input settings response should match its resource schema.' );
+	}
+
+	public function test_get_answers__answered_by_another_user() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$other_user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		( new User_Input( $context, null, new User_Options( $context, $other_user->ID ) ) )->set_answers(
+			array( 'purpose' => array( 'purpose1' ) )
+		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings' );
+		$response = rest_get_server()->dispatch( $request );
+		$purpose  = $response->get_data()['purpose'];
+
+		$this->assertEquals( $other_user->ID, $purpose['answeredBy'], 'The purpose answer should name the user who gave it.' );
+		$this->assertEquals( $other_user->user_login, $purpose['author']['login'], 'The purpose answer should give the login of the user who gave it.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/user-input-settings', 'User input settings response with an answer by another user should match its resource schema.' );
+	}
+
+	public function test_get_answers__answered_by_a_deleted_user() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$other_user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$context       = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		( new User_Input( $context, null, new User_Options( $context, $other_user_id ) ) )->set_answers(
+			array( 'purpose' => array( 'purpose1' ) )
+		);
+		self::delete_user( $other_user_id );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertFalse( $response->get_data()['purpose']['author']['login'], 'The purpose answer should give no login once the user who gave it is deleted.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/user-input-settings', 'User input settings response with an answer by a deleted user should match its resource schema.' );
 	}
 
 	public function test_set_answers() {
@@ -179,6 +219,8 @@ class REST_User_Input_ControllerTest extends TestCase {
 			'Key Metrics setup should be incomplete before user input is submitted.'
 		);
 
+		$response = rest_get_server()->dispatch( $request );
+
 		$this->assertEqualSets(
 			array(
 				'purpose'                 => array(
@@ -200,9 +242,10 @@ class REST_User_Input_ControllerTest extends TestCase {
 					'answeredBy' => get_current_user_id(),
 				),
 			),
-			rest_get_server()->dispatch( $request )->get_data(),
+			$response->get_data(),
 			'User input update response should include the submitted answers with their scopes.'
 		);
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/user-input-settings', 'User input update response should match its resource schema.' );
 
 		// Verify that the `user_input_answered_other_survey` survey is dequeued.
 		$this->assertEquals(
@@ -216,6 +259,121 @@ class REST_User_Input_ControllerTest extends TestCase {
 			get_current_user_id(),
 			$this->key_metrics_setup_completed_by->get(),
 			'Submitting user input should record the current user as completing Key Metrics setup.'
+		);
+	}
+
+	/**
+	 * @dataProvider provider_set_answers__invalid_data
+	 *
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
+	 */
+	public function test_set_answers__invalid_data( $body, $expected_code ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$this->user_input->set_answers(
+			array(
+				'purpose' => array( 'purpose1' ),
+				'goals'   => array( 'goal1' ),
+			)
+		);
+		$answers = $this->user_input->get_answers();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings' );
+		$request->set_body_params( $body );
+
+		$this->assertRESTRequestRejected( $request, $expected_code );
+		$this->assertEquals( $answers, $this->user_input->get_answers(), 'User input endpoint should keep the saved answers for invalid data.' );
+	}
+
+	public function provider_set_answers__invalid_data() {
+		return array(
+			'no data'                                   => array(
+				array(),
+				'rest_missing_callback_param',
+			),
+			'data is not an object'                     => array(
+				array( 'data' => 'purpose1' ),
+				'rest_invalid_param',
+			),
+			'settings is not an object'                 => array(
+				array( 'data' => array( 'settings' => 'purpose1' ) ),
+				'rest_invalid_param',
+			),
+			'an answer is not a list'                   => array(
+				array(
+					'data' => array(
+						'settings' => array(
+							'purpose'                 => array( 'kind' => 'purpose2' ),
+							'postFrequency'           => array( 'daily' ),
+							'goals'                   => array( 'goal2' ),
+							'includeConversionEvents' => array( 'contact' ),
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
+			'an answer is not a list of strings'        => array(
+				array(
+					'data' => array(
+						'settings' => array(
+							'purpose'                 => array( 'purpose2' ),
+							'postFrequency'           => array( 'daily' ),
+							'goals'                   => array( array( 'goal2' ) ),
+							'includeConversionEvents' => array( 'contact' ),
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
+			'settings has a key that is not a question' => array(
+				array(
+					'data' => array(
+						'settings' => array(
+							'purpose'                 => array( 'purpose2' ),
+							'postFrequency'           => array( 'daily' ),
+							'goals'                   => array( 'goal2' ),
+							'includeConversionEvents' => array( 'contact' ),
+							'favoriteColor'           => array( 'blue' ),
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
+			'data has no settings'                      => array(
+				array( 'data' => array() ),
+				'rest_invalid_param',
+			),
+			'settings is empty'                         => array(
+				array( 'data' => array( 'settings' => array() ) ),
+				'rest_invalid_param',
+			),
+			'settings leaves out purpose'               => array(
+				array(
+					'data' => array(
+						'settings' => array(
+							'postFrequency'           => array( 'daily' ),
+							'goals'                   => array( 'goal2' ),
+							'includeConversionEvents' => array( 'contact' ),
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
+			'settings leaves out goals'                 => array(
+				array(
+					'data' => array(
+						'settings' => array(
+							'purpose'                 => array( 'purpose2' ),
+							'postFrequency'           => array( 'daily' ),
+							'includeConversionEvents' => array( 'contact' ),
+						),
+					),
+				),
+				'rest_invalid_param',
+			),
 		);
 	}
 }

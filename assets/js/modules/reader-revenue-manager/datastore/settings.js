@@ -167,7 +167,11 @@ export function validateCanSubmitChanges( select ) {
 		invariant(
 			isPlainObject( configuredCTAs ) &&
 				Object.values( configuredCTAs ).every(
-					( ctaType ) => typeof ctaType === 'string'
+					( cta ) =>
+						isPlainObject( cta ) &&
+						typeof cta.type === 'string' &&
+						typeof cta.state === 'string' &&
+						typeof cta.displayName === 'string'
 				),
 			INVARIANT_INVALID_CONFIGURED_CTAS
 		);

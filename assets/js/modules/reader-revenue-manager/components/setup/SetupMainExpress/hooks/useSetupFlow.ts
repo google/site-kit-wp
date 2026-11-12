@@ -25,9 +25,14 @@ import { useCallback, useEffect, useState } from 'react';
  * Internal dependencies
  */
 import { Registry, Select, useRegistry, useSelect } from 'googlesitekit-data';
+import { existingCTAStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepExistingCTA';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
+import useHasExistingCTAs from './useHasExistingCTAs';
 import useStep from './useStep';
 
 /**
@@ -84,13 +89,23 @@ export function findBlockingStep(
  *
  * The current step stays `undefined` until the initial step resolves.
  *
+ * When a `ctaType` is given, the flow also checks, once per publication,
+ * whether the publication already has a CTA of that type. If it does, the
+ * flow opens the existing CTA step in place of any step between the first and
+ * the last, as only one CTA of each type can be created.
+ *
  * @since 1.190.0
  * @since 1.191.0 Returns no current step until the initial step resolves.
+ * @since 1.192.0 Added the `ctaType` parameter and the existing CTA step.
  *
- * @param {Array.<Object>} steps Ordered step definitions. Must be referentially stable.
+ * @param {Array.<Object>} steps     Ordered step definitions. Must be referentially stable.
+ * @param {string}         [ctaType] Optional. The express setup CTA type, one of `EXPRESS_SETUP_CTAS`.
  * @return {Object} The current step definition, and a callback that advances to the next step that is not yet complete.
  */
-export default function useSetupFlow( steps: SetupStep[] ): {
+export default function useSetupFlow(
+	steps: SetupStep[],
+	ctaType?: typeof EXPRESS_SETUP_CTAS[ keyof typeof EXPRESS_SETUP_CTAS ]
+): {
 	currentStep: SetupStep | undefined;
 	advance: () => void;
 } {
@@ -127,7 +142,32 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 
 	const currentIndex = steps.findIndex( ( step ) => step.slug === slug );
 
+	// Only a CTA flow has an existing CTA step to show. Other flows don't
+	// provide its copy, so the step is treated as unrecognised there.
+	const isExistingCTAsStep = !! ctaType && slug === existingCTAStep.slug;
+
+	// The publication setup step runs before a publication is connected and
+	// the setup complete step follows the CTA being created, so neither is
+	// checked.
+	const checkExistingCTAs = ! (
+		currentIndex === 0 ||
+		currentIndex === steps.length - 1 ||
+		isExistingCTAsStep
+	);
+
+	// The CTAs are only requested where they are checked. On the publication
+	// setup step the publication ID is set before its settings are saved, so
+	// requesting them then fails for the missing organization ID.
+	const hasExistingCTAs = useHasExistingCTAs(
+		checkExistingCTAs ? publicationID : undefined,
+		ctaType
+	);
+
 	useEffect( () => {
+		if ( isExistingCTAsStep ) {
+			return;
+		}
+
 		// Bail while the settings are still resolving, and while a connected
 		// publication is still being looked up or cannot be found. An empty
 		// publication ID is a resolved "nothing connected" and falls through.
@@ -137,6 +177,20 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 
 		if ( publicationID && publication === undefined ) {
 			return;
+		}
+
+		// Wait for the existing CTA check, then show the existing CTA step in
+		// place of any step that would create a second CTA.
+		if ( checkExistingCTAs ) {
+			if ( hasExistingCTAs === undefined ) {
+				return;
+			}
+
+			if ( hasExistingCTAs ) {
+				setStep( existingCTAStep.slug );
+
+				return;
+			}
 		}
 
 		// Entering the flow, or on a step that is not part of it, such as a
@@ -165,7 +219,10 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 		setHasResolvedStep( true );
 	}, [
 		blockingSlug,
+		checkExistingCTAs,
 		currentIndex,
+		hasExistingCTAs,
+		isExistingCTAsStep,
 		publication,
 		publicationID,
 		resolvedSlug,
@@ -176,6 +233,10 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 	// Reads the registry when called rather than a value captured at render,
 	// as steps call `onComplete` straight after saving their changes.
 	const advance = useCallback( () => {
+		if ( isExistingCTAsStep ) {
+			return;
+		}
+
 		const nextStep = resolveStep(
 			steps,
 			registry.select as Select,
@@ -193,10 +254,22 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 
 			setStep( nextStep.slug );
 		}
-	}, [ currentIndex, registry, setStep, steps ] );
+	}, [ currentIndex, isExistingCTAsStep, registry, setStep, steps ] );
 
-	return {
-		currentStep: hasResolvedStep ? steps[ currentIndex ] : undefined,
-		advance,
-	};
+	let currentStep: SetupStep | undefined;
+
+	// A step that opens with an existing CTA already found shows the existing
+	// CTA step straight away, before the effect sets it as the current step.
+	if (
+		isExistingCTAsStep ||
+		( checkExistingCTAs && hasExistingCTAs && publication !== undefined )
+	) {
+		currentStep = existingCTAStep;
+	} else if ( checkExistingCTAs && hasExistingCTAs === undefined ) {
+		currentStep = undefined;
+	} else if ( hasResolvedStep ) {
+		currentStep = steps[ currentIndex ];
+	}
+
+	return { currentStep, advance };
 }

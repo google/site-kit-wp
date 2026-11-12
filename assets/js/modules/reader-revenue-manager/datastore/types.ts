@@ -16,6 +16,17 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { type CallToActionState } from './cta-types';
+
+export interface ConfiguredCTA {
+	type: string;
+	state: CallToActionState;
+	displayName: string;
+}
+
 export interface ReaderRevenueManagerSettings {
 	publicationID?: string;
 	publicationOnboardingState?: string;
@@ -25,7 +36,7 @@ export interface ReaderRevenueManagerSettings {
 	paymentOption?: string;
 	productID?: string;
 	organizationID?: string;
-	configuredCTAs?: Record< string, string >;
+	configuredCTAs?: Record< string, ConfiguredCTA >;
 	contentPolicyState?: string;
 	policyInfoLink?: string;
 }

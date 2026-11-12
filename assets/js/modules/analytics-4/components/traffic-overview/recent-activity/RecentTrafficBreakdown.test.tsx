@@ -35,10 +35,13 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { RECENT_ACTIVITY_INTERACTION_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	createBreakdownReport,
 	createTitlesReport,
 	forDimensions,
+	provideRecentActivitySurveyState,
+	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { plainPermalinkTopPosts } from '@/js/modules/analytics-4/datastore/__fixtures__';
@@ -46,10 +49,12 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { provideIncludeProductsState } from '@/js/modules/analytics-4/datastore/test-utils';
 import * as tracking from '@/js/util/tracking';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
 	screen,
+	waitFor,
 	within,
 } from '@tests/js/test-utils';
 import {
@@ -212,7 +217,31 @@ describe( 'RecentTrafficBreakdown', () => {
 		provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		provideRecentActivitySurveyState( registry );
+		fetchMock.post( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
 	} );
+
+	// A post link click records an interaction, so the tests wait for its
+	// request rather than let it finish during the next test.
+	async function waitForInteraction() {
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint, {
+				body: {
+					data: [
+						{
+							slug: RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+							expiration:
+								RECENT_ACTIVITY_INTERACTION_TIMER.expiresInSeconds,
+						},
+					],
+				},
+			} )
+		);
+		await act( () => new Promise( ( resolve ) => setTimeout( resolve ) ) );
+	}
 
 	it( 'should render the "What’s affecting recent traffic?" heading, then the posts, channels, and referrals columns', async () => {
 		mockReportRequests();
@@ -327,7 +356,7 @@ describe( 'RecentTrafficBreakdown', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should track `click_post_link` labeled `top-posts` when a post title is clicked', async () => {
+	it( 'should track `click_post_link` labeled `top-posts` and record an interaction when a post title is clicked', async () => {
 		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -348,6 +377,8 @@ describe( 'RecentTrafficBreakdown', () => {
 			'click_post_link',
 			'top-posts'
 		);
+
+		await waitForInteraction();
 	} );
 
 	it( 'should not request a title for a page that had no visitors', async () => {
@@ -679,6 +710,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render the loading state in each column while its report loads', async () => {
+		provideIncludeProductsState( registry, { wooCommerceActive: false } );
 		freezeFetch( reportEndpoint, { repeat: 3 } );
 
 		const { container } = render( <RecentTrafficBreakdown />, {
@@ -810,7 +842,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
-			features: [ 'freshData' ],
 		} );
 
 		await waitForRegistry();
@@ -882,7 +913,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
-			features: [ 'freshData' ],
 		} );
 
 		await waitForRegistry();
@@ -970,7 +1000,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			] );
 		} );
 
-		it( 'should track `click_post_link` labeled `top-posts` when a post title is clicked', async () => {
+		it( 'should track `click_post_link` labeled `top-posts` and record an interaction when a post title is clicked', async () => {
 			fetchMock.get( topPostsEndpoint, {
 				body: plainPermalinkTopPosts,
 				status: 200,
@@ -996,6 +1026,8 @@ describe( 'RecentTrafficBreakdown', () => {
 				'click_post_link',
 				'top-posts'
 			);
+
+			await waitForInteraction();
 		} );
 
 		it( 'should not request the report of visitors by `pagePath` or the report of page titles', async () => {

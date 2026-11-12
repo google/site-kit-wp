@@ -59,6 +59,9 @@ describe( 'SettingsModules', () => {
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetAdminBarSettings( { enabled: true } );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWPDashboardWidgetSettings( { enabled: true } );
 	} );
 
 	afterAll( () => {

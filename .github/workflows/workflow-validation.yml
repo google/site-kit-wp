@@ -25,11 +25,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --only-upgrade ca-certificates
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
       - id: github-yaml-files
         run: echo "files=$(find .github/ \( -name '*.yml' -o -name '*.yaml' \) -print0 | xargs -0)" >> "$GITHUB_OUTPUT"
-      - uses: sethvargo/ratchet@c7c58082b6096c976e42dfcc1ddab83f97d61c28 # ratchet:sethvargo/ratchet@main
+      # Excluded so the commit and `version` (v0.12.0) are only updated
+      # together, here and in update-pinned-actions.yml.
+      - uses: sethvargo/ratchet@9ca118155b0f79464185703a50da367e111107cd # ratchet:exclude
         with:
+          version: v0.12.0
           files: ${{ steps.github-yaml-files.outputs.files }}
       - uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d # ratchet:reviewdog/action-actionlint@v1
         env:

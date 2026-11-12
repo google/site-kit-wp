@@ -32,15 +32,32 @@ import {
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	RECENT_ACTIVITY_INTERACTION_TIMER,
+	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
+	RECENT_ACTIVITY_TAB_OPENED_TIMER,
+	TRAFFIC_OVERVIEW_WIDGET_SLUG,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { provideFreshMetricsReports } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	getExpiryFromNow,
+	provideFreshMetricsReports,
+	provideRecentActivitySurveyState,
+	requestedTimerSlugs,
+	setExpirableItemTimersEndpoint,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util/dates';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import {
+	dismissPromptEndpoint,
+	dismissedPromptsEndpoint,
+} from '@tests/js/mock-dismiss-prompt-endpoints';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -73,6 +90,10 @@ describe( 'TrafficOverviewWidget', () => {
 	);
 
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
+
+	const expirableItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/expirable-items'
+	);
 
 	const searchAnalyticsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
@@ -113,6 +134,12 @@ describe( 'TrafficOverviewWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+		provideRecentActivitySurveyState( registry );
+		fetchMock.post( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
+		fetchMock.post( dismissPromptEndpoint, { body: {}, status: 200 } );
 	} );
 
 	it( 'renders the widget with no header', async () => {
@@ -136,7 +163,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBeNull();
 	} );
 
-	it( 'renders one tab labeled "Traffic overview" at the top of the widget body', async () => {
+	it( 'renders the "Traffic overview" tab first, at the top of the widget body', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -149,7 +176,6 @@ describe( 'TrafficOverviewWidget', () => {
 
 		const tabs = screen.getAllByRole( 'tab' );
 
-		expect( tabs ).toHaveLength( 1 );
 		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic overview' );
 		expect(
 			container.querySelector( '.googlesitekit-widget__body' )
@@ -259,28 +285,6 @@ describe( 'TrafficOverviewWidget', () => {
 		).toHaveTextContent( 'Source: Analytics' );
 	} );
 
-	it( 'renders nothing when Analytics is not connected', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: false,
-			},
-		] );
-
-		const { container, waitForRegistry } = render(
-			<TrafficOverviewWidget { ...widgetComponentProps } />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'does not sends a report request when the widget is out of view', async () => {
 		const { waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
@@ -317,13 +321,12 @@ describe( 'TrafficOverviewWidget', () => {
 		);
 	} );
 
-	it( 'should show a "Recent activity" tab with a "Beta" badge after the "Traffic overview" tab when the `freshData` feature flag is enabled', async () => {
+	it( 'should show a "Recent activity" tab with a "Beta" badge after the "Traffic overview" tab', async () => {
 		const { waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -337,7 +340,7 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( within( tabs[ 1 ] ).getByText( 'Beta' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render the Recent activity panel and the "Sources: Analytics Search Console" footer when the `freshData` feature flag is enabled and the user selects the "Recent activity" tab', async () => {
+	it( 'should render the Recent activity panel and the "Sources: Analytics Search Console" footer when the user selects the "Recent activity" tab', async () => {
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.setPropertyID( 'https://example.com/' );
@@ -364,7 +367,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -388,7 +390,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toHaveTextContent( 'Sources: Analytics Search Console' );
 	} );
 
-	it( 'should show the "Recent activity" tab alone, with a "Set up Analytics" button and no footer, when the `freshData` feature flag is enabled and Analytics is not connected', async () => {
+	it( 'should show the "Recent activity" tab alone, with a "Set up Analytics" button and no footer, when Analytics is not connected', async () => {
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -405,7 +407,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -423,7 +424,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBeNull();
 	} );
 
-	it( 'should render nothing when the `freshData` feature flag is enabled, Analytics is not connected, and the user has dismissed the Analytics setup CTA', async () => {
+	it( 'should render nothing when Analytics is not connected and the user has dismissed the Analytics setup CTA', async () => {
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -444,7 +445,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -453,13 +453,12 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should show the "Traffic overview" tab alone when the `freshData` feature flag is enabled and the widget is on the entity dashboard', async () => {
+	it( 'should show the "Traffic overview" tab alone when the widget is on the entity dashboard', async () => {
 		const { waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -471,7 +470,7 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic overview' );
 	} );
 
-	it( 'should render nothing when the `freshData` feature flag is enabled, Analytics is not connected, and the widget is on the entity dashboard', async () => {
+	it( 'should render nothing when Analytics is not connected and the widget is on the entity dashboard', async () => {
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -488,7 +487,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -497,7 +495,7 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render nothing, and should keep the widget active, when the `freshData` feature flag is enabled, Analytics is not connected, and the dismissed items have not loaded', async () => {
+	it( 'should render nothing, and should keep the widget active, when Analytics is not connected and the dismissed items have not loaded', async () => {
 		const dismissedItemsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/dismissed-items'
 		);
@@ -520,7 +518,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -536,7 +533,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBe( true );
 	} );
 
-	it( 'should render nothing, and should mark the widget as inactive, when the `freshData` feature flag is enabled, Analytics is not connected, and the dismissed items fail to load', async () => {
+	it( 'should render nothing, and should mark the widget as inactive, when Analytics is not connected and the dismissed items fail to load', async () => {
 		const dismissedItemsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/dismissed-items'
 		);
@@ -564,7 +561,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -579,7 +575,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBe( false );
 	} );
 
-	it( 'should show the "Recent activity" tab with a "Set up Analytics" button when the `freshData` feature flag is enabled, Analytics is not connected, the dismissed items fail to load, and the user then dismisses another item', async () => {
+	it( 'should show the "Recent activity" tab with a "Set up Analytics" button when Analytics is not connected, the dismissed items fail to load, and the user then dismisses another item', async () => {
 		const dismissedItemsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/dismissed-items'
 		);
@@ -617,7 +613,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -639,7 +634,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render nothing when the `freshData` feature flag is enabled and the list of modules has not loaded', async () => {
+	it( 'should render nothing when the list of modules has not loaded', async () => {
 		const modulesEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/modules/data/list'
 		);
@@ -655,7 +650,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -680,7 +674,6 @@ describe( 'TrafficOverviewWidget', () => {
 
 		const tabs = screen.getAllByRole( 'tab' );
 
-		expect( tabs ).toHaveLength( 2 );
 		expect( tabs[ 0 ] ).toHaveAccessibleName( 'Traffic overview' );
 		expect( tabs[ 1 ] ).toHaveAccessibleName( 'Typical traffic Beta' );
 		expect( tabs[ 0 ].querySelector( 'svg' ) ).toBeNull();
@@ -690,12 +683,12 @@ describe( 'TrafficOverviewWidget', () => {
 		).toHaveAccessibleName( 'Traffic overview' );
 	} );
 
-	it( 'should render "Typical traffic" between "Traffic overview" and "Recent activity" when the `typicalTraffic` and `freshData` feature flags are enabled', async () => {
+	it( 'should render "Typical traffic" between "Traffic overview" and "Recent activity" when the `typicalTraffic` feature flag is enabled', async () => {
 		const { waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'typicalTraffic', 'freshData' ],
+				features: [ 'typicalTraffic' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -820,12 +813,14 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should track `view_widget` labeled `googlesitekit-traffic-overview-tab` once when the card first enters the viewport, and not again on a re-render or a second entry', async () => {
+		// Once the card is in view, the survey triggers read the latest post.
+		fetchMock.get( postsEndpoint, { body: [], status: 200 } );
+
 		const { container, rerender, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -854,6 +849,8 @@ describe( 'TrafficOverviewWidget', () => {
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		await waitForRegistry();
 	} );
 
 	it( 'should not track `view_widget` again when the user selects another tab', async () => {
@@ -863,6 +860,7 @@ describe( 'TrafficOverviewWidget', () => {
 			),
 			{ body: benchmarkingData, status: 200 }
 		);
+		fetchMock.get( postsEndpoint, { body: [], status: 200 } );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
@@ -903,7 +901,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -931,7 +928,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -957,7 +953,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -976,33 +971,6 @@ describe( 'TrafficOverviewWidget', () => {
 			'mainDashboard_traffic-insights',
 			'view_widget',
 			'googlesitekit-recent-activity-tab'
-		);
-	} );
-
-	it( 'should track `view_widget` when the `freshData` feature flag is off', async () => {
-		const { container, waitForRegistry } = render(
-			<TrafficOverviewWidget { ...widgetComponentProps } />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		act( () => {
-			simulateIntersection(
-				container.querySelector(
-					'.googlesitekit-widget--analyticsTrafficOverview'
-				) as Element,
-				true
-			);
-		} );
-
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_traffic-insights',
-			'view_widget',
-			'googlesitekit-traffic-overview-tab'
 		);
 	} );
 
@@ -1033,7 +1001,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -1093,7 +1060,6 @@ describe( 'TrafficOverviewWidget', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -1110,7 +1076,7 @@ describe( 'TrafficOverviewWidget', () => {
 		);
 	} );
 
-	it( 'should track `change_tab` labeled `googlesitekit-typical-traffic-tab` when the `freshData` feature flag is off and `typicalTraffic` is on', async () => {
+	it( 'should track `change_tab` labeled `googlesitekit-typical-traffic-tab` when the `typicalTraffic` feature flag is enabled', async () => {
 		fetchMock.get(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
@@ -1140,5 +1106,272 @@ describe( 'TrafficOverviewWidget', () => {
 			'change_tab',
 			'googlesitekit-typical-traffic-tab'
 		);
+	} );
+	describe( 'the Recent activity survey', () => {
+		const recentPost = {
+			id: 12,
+			date: '2026-09-24T10:05:00',
+			date_gmt: '2026-09-24T14:05:00',
+			link: 'http://example.com/autumn-recipes/',
+			title: { rendered: 'Autumn recipes' },
+		};
+
+		function renderWidget(
+			features: string[] = [],
+			viewContext = VIEW_CONTEXT_MAIN_DASHBOARD
+		) {
+			return render(
+				<TrafficOverviewWidget { ...widgetComponentProps } />,
+				{
+					registry,
+					viewContext,
+					features,
+				}
+			);
+		}
+
+		function clickTab( name: string ) {
+			fireEvent.click( screen.getByRole( 'tab', { name } ) );
+		}
+
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.setPropertyID( 'https://example.com/' );
+			provideFreshMetricsReports( registry, {
+				totalVisitors: 157,
+				searchPerformance: { clicks: 72, impressions: 8000 },
+			} );
+			fetchMock.get( postsEndpoint, {
+				body: [ recentPost ],
+				status: 200,
+			} );
+			fetchMock.get( searchAnalyticsEndpoint, {
+				body: [],
+				status: 200,
+			} );
+		} );
+
+		it( 'should start the "tab available" timer when the widget shows the Recent activity tab', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+			] );
+		} );
+
+		it( 'should not start the "tab available" timer when the widget does not show the Recent activity tab', async () => {
+			const { waitForRegistry } = renderWidget(
+				[],
+				VIEW_CONTEXT_ENTITY_DASHBOARD
+			);
+
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [] );
+		} );
+
+		it( 'should start the "tab opened" timer, and record no interaction, when the user selects the Recent activity tab for the first time', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+
+			await waitForRegistry();
+			await waitFor( () =>
+				expect( requestedTimerSlugs() ).toEqual( [
+					RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+					RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+				] )
+			);
+
+			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint, {
+				body: {
+					data: [
+						{
+							slug: RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+							expiration:
+								RECENT_ACTIVITY_TAB_OPENED_TIMER.expiresInSeconds,
+						},
+					],
+				},
+			} );
+		} );
+
+		it( 'should record the tab open only once per page load', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+			await waitForRegistry();
+
+			clickTab( 'Traffic overview' );
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+				RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
+			] );
+		} );
+
+		it( 'should record an interaction when the user opens the tab in a later page load', async () => {
+			// The user opened the tab in an earlier page load.
+			const tabOpenedTimer = {
+				[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]:
+					getExpiryFromNow( DAY_IN_SECONDS ),
+			};
+			provideRecentActivitySurveyState( registry, {
+				expirableItems: tabOpenedTimer,
+			} );
+			// The response to a timer request has all the user's expirable
+			// items, so the "tab available" timer keeps the "tab opened" one.
+			fetchMock.post(
+				setExpirableItemTimersEndpoint,
+				{ body: tabOpenedTimer, status: 200 },
+				{ overwriteRoutes: true }
+			);
+
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Recent activity Beta' );
+
+			await waitForRegistry();
+			await waitFor( () =>
+				expect( requestedTimerSlugs() ).toEqual( [
+					RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+					RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+				] )
+			);
+		} );
+
+		it( 'should record nothing when the user selects another tab', async () => {
+			fetchMock.get(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+				),
+				{ body: benchmarkingData, status: 200 }
+			);
+
+			const { waitForRegistry } = renderWidget( [ 'typicalTraffic' ] );
+
+			await waitForRegistry();
+
+			clickTab( 'Typical traffic Beta' );
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+			] );
+		} );
+
+		it( 'should record nothing when the user clicks the tab already shown', async () => {
+			const { waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			clickTab( 'Traffic overview' );
+			await waitForRegistry();
+
+			expect( requestedTimerSlugs() ).toEqual( [
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
+			] );
+		} );
+
+		it( 'should not start the timers, count the visit or trigger a survey when Analytics is not connected', async () => {
+			// A new registry, without the expirable items and the dismissed
+			// prompts that the outer `beforeEach()` stores, so the survey
+			// triggers would have to request them.
+			registry = createTestRegistry();
+			registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+			provideUserInfo( registry );
+			provideSiteInfo( registry );
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+					connected: false,
+				},
+			] );
+			provideModuleRegistrations( registry );
+			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			fetchMock.get( expirableItemsEndpoint, { body: {}, status: 200 } );
+			fetchMock.get( dismissedPromptsEndpoint, {
+				body: {},
+				status: 200,
+			} );
+			fetchMock.post( surveyTriggerEndpoint, { body: {}, status: 200 } );
+
+			const { container, waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			act( () => {
+				simulateIntersection(
+					container.querySelector(
+						'.googlesitekit-widget--analyticsTrafficOverview'
+					) as Element,
+					true
+				);
+			} );
+
+			await waitForRegistry();
+
+			// The Recent activity tab still shows, with its Analytics setup CTA.
+			expect(
+				screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole( 'button', { name: 'Set up Analytics' } )
+			).toBeInTheDocument();
+
+			expect( fetchMock ).not.toHaveFetched( expirableItemsEndpoint );
+			expect( fetchMock ).not.toHaveFetched(
+				setExpirableItemTimersEndpoint
+			);
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+			expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
+		} );
+
+		it( 'should not start the timers, count the visit or request the latest post for a view-only user', async () => {
+			const { container, waitForRegistry } = renderWidget(
+				[],
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+
+			await waitForRegistry();
+
+			act( () => {
+				simulateIntersection(
+					container.querySelector(
+						'.googlesitekit-widget--analyticsTrafficOverview'
+					) as Element,
+					true
+				);
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
+			).toBeInTheDocument();
+
+			expect( fetchMock ).not.toHaveFetched(
+				setExpirableItemTimersEndpoint
+			);
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+			expect( fetchMock ).not.toHaveFetched( postsEndpoint );
+		} );
 	} );
 } );

@@ -29,16 +29,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { VoteDirection } from '@/js/components/surveys/constants';
-import ThumbsSurveyTrigger from '@/js/components/surveys/ThumbsSurveyTrigger';
+import { VoteDirection } from '@/js/components/feedback/constants';
+import ThumbsFeedback from '@/js/components/feedback/ThumbsFeedback';
 import Typography from '@/js/components/Typography';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 import { trackEvent } from '@/js/util';
 
 interface FeedbackPromptProps {
-	/** Identifier used to build the survey trigger string. */
-	voteID: string;
+	/** The product area the feedback is about. */
+	feedbackNamespace: string;
+	/** The item within the namespace the feedback is about. */
+	feedbackGroup: string;
 	/**
 	 * The vote event's category and label, such as
 	 * `{ category: 'mainDashboard_site-goals-widget-survey', label: 'ecommerce' }`.
@@ -50,6 +52,8 @@ interface FeedbackPromptProps {
 	 * keep as their accessible name.
 	 */
 	hideQuestion?: boolean;
+	/** Called with the vote's direction, after the vote is tracked. */
+	onVote?: ( direction: VoteDirection ) => void;
 }
 
 /**
@@ -58,17 +62,22 @@ interface FeedbackPromptProps {
  * @since 1.182.0
  * @since 1.190.0 Replaced the `goalType` prop with `gaTrackingEventArgs`.
  * @since 1.191.0 Added the `hideQuestion` prop to show only the thumbs.
+ * @since 1.192.0 Added the `onVote` prop. Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
  *
  * @param props                     Component props.
- * @param props.voteID              Identifier used to build the survey trigger string.
+ * @param props.feedbackNamespace   The product area the feedback is about.
+ * @param props.feedbackGroup       The item within the namespace the feedback is about.
  * @param props.gaTrackingEventArgs Category and label used to track the vote event.
  * @param [props.hideQuestion]      Optional. Whether to hide the "Is this section helpful?" text.
+ * @param [props.onVote]            Optional. Called with the vote's direction, after the vote is tracked.
  * @return React element.
  */
 const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
-	voteID,
+	feedbackNamespace,
+	feedbackGroup,
 	gaTrackingEventArgs,
 	hideQuestion,
+	onVote,
 } ) => {
 	const breakpoint = useBreakpoint();
 	// On mobile the feedback row isn't right-aligned, so `top-end` pushes the
@@ -82,18 +91,21 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 			direction === 'up' ? 'vote_up' : 'vote_down',
 			gaTrackingEventArgs.label
 		);
+
+		onVote?.( direction );
 	}
 
-	const thumbsSurveyTrigger = (
-		<ThumbsSurveyTrigger
-			voteID={ voteID }
+	const thumbsFeedback = (
+		<ThumbsFeedback
+			feedbackNamespace={ feedbackNamespace }
+			feedbackGroup={ feedbackGroup }
 			onVote={ handleVote }
 			popperPlacement={ popperPlacement }
 		/>
 	);
 
 	if ( hideQuestion ) {
-		return thumbsSurveyTrigger;
+		return thumbsFeedback;
 	}
 
 	return (
@@ -105,7 +117,7 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 			>
 				{ __( 'Is this section helpful?', 'google-site-kit' ) }
 			</Typography>
-			{ thumbsSurveyTrigger }
+			{ thumbsFeedback }
 		</div>
 	);
 };

@@ -41,6 +41,8 @@ interface LatestPostMetricRowProps {
 	moduleSlug?: string;
 	/** Requests the metric's report again, from the "Retry" of its error. */
 	onRetry?: () => void;
+	/** Whether a value too long for the row is cut off, e.g. a referring site. */
+	truncateValue?: boolean;
 }
 
 const LatestPostMetricRow: FC< LatestPostMetricRowProps > = ( {
@@ -50,6 +52,7 @@ const LatestPostMetricRow: FC< LatestPostMetricRowProps > = ( {
 	error,
 	moduleSlug,
 	onRetry,
+	truncateValue = false,
 } ) => {
 	const hasError = ! loading && !! error;
 
@@ -58,6 +61,8 @@ const LatestPostMetricRow: FC< LatestPostMetricRowProps > = ( {
 			className={ classnames( 'googlesitekit-table-tile__row', {
 				'googlesitekit-traffic-overview__latest-post-row--error':
 					hasError,
+				'googlesitekit-traffic-overview__latest-post-row--truncate-value':
+					truncateValue,
 			} ) }
 		>
 			<div className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--label">

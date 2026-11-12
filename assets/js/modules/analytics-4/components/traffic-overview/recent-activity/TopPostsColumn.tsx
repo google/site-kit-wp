@@ -32,17 +32,16 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useViewContext from '@/js/hooks/useViewContext';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
 import { useReportPageTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportPageTitles';
-import { trackEvent } from '@/js/util';
+import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
 import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 import { getTopPostsReportOptions } from './reportOptions';
 import { getPageURL } from './utils/getPageURL';
 
 const TopPostsColumn: FC = () => {
-	const viewContext = useViewContext();
+	const trackPostLinkClick = useTrackPostLinkClick( 'top-posts' );
 
 	const siteURL = useSelect(
 		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
@@ -66,14 +65,6 @@ const TopPostsColumn: FC = () => {
 		pagePaths,
 		reportOptions
 	);
-
-	function trackPostLinkClick() {
-		trackEvent(
-			`${ viewContext }_recent-activity`,
-			'click_post_link',
-			'top-posts'
-		);
-	}
 
 	const rows = pathRows.map( ( row ) => ( {
 		...row,

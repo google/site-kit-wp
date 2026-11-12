@@ -29,25 +29,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import useViewContext from '@/js/hooks/useViewContext';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { usePlainPermalinkTopPostsColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePlainPermalinkTopPostsColumn';
-import { trackEvent } from '@/js/util';
+import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
 import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 
 const PlainPermalinkTopPostsColumn: FC = () => {
-	const viewContext = useViewContext();
+	const trackPostLinkClick = useTrackPostLinkClick( 'top-posts' );
 
 	const { rows, loading, error, retry, zeroState } =
 		usePlainPermalinkTopPostsColumn();
-
-	function trackPostLinkClick() {
-		trackEvent(
-			`${ viewContext }_recent-activity`,
-			'click_post_link',
-			'top-posts'
-		);
-	}
 
 	return (
 		<TableTile

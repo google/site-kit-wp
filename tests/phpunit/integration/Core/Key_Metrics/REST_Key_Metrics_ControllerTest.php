@@ -96,6 +96,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data(), 'GET endpoint should return stored key metrics settings.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/key-metrics', 'GET endpoint response should match its resource schema.' );
 	}
 
 	public function test_set_settings() {
@@ -108,7 +109,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			array(
 				'data' => array(
 					'settings' => array(
-						'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4', 'widget5' ),
+						'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4', 'widget5', 'widget6', 'widget7' ),
 						'isWidgetHidden' => false,
 					),
 				),
@@ -118,6 +119,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 200, $response->get_status(), 'POST endpoint should accept valid key metrics settings.' );
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/key-metrics', 'POST endpoint response should match its resource schema.' );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$request->set_body_params(
@@ -236,52 +238,93 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 	/**
 	 * @dataProvider provider_wrong_data
+	 *
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_set_settings__wrong_data( $settings ) {
+	public function test_set_settings__wrong_data( $body, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'settings' => $settings,
-				),
-			)
+		$original_settings = array(
+			'widgetSlugs'    => array( 'widgetA' ),
+			'isWidgetHidden' => false,
 		);
+		$this->settings->register();
+		$this->settings->set( $original_settings );
 
-		$response = rest_get_server()->dispatch( $request );
-		$this->assertEquals( 400, $response->get_status(), 'POST endpoint should reject malformed settings data.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'Malformed settings data should return REST param error.' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params( $body );
+
+		$this->assertRESTRequestRejected( $request, $expected_code );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get(), 'POST endpoint should keep the saved settings for malformed data.' );
 	}
 
 	public function provider_wrong_data() {
 		return array(
-			'wrong data type'       => array(
-				'{}',
+			'no data'                         => array(
+				array(),
+				'rest_missing_callback_param',
 			),
-			'too many widget slugs' => array(
+			'data has no settings'            => array(
+				array( 'data' => array() ),
+				'rest_invalid_param',
+			),
+			'wrong data type'                 => array(
+				array( 'data' => array( 'settings' => '{}' ) ),
+				'rest_invalid_param',
+			),
+			'settings has no isWidgetHidden'  => array(
+				array( 'data' => array( 'settings' => array( 'widgetSlugs' => array( 'widgetA', 'widgetB' ) ) ) ),
+				'rest_invalid_param',
+			),
+			'isWidgetHidden is not a boolean' => array(
+				array( 'data' => array( 'settings' => array( 'isWidgetHidden' => 'hidden' ) ) ),
+				'rest_invalid_param',
+			),
+			'a widget slug is not a string'   => array(
 				array(
-					'widgetSlugs'    => array(
-						'widget0',
-						'widget1',
-						'widget2',
-						'widget3',
-						'widget4',
-						'widget5',
-						'widget6',
-						'widget7',
-						'widget8',
+					'data' => array(
+						'settings' => array(
+							'widgetSlugs'    => array( array( 'widgetA' ) ),
+							'isWidgetHidden' => false,
+						),
 					),
-					'isWidgetHidden' => true,
 				),
+				'rest_invalid_param',
 			),
-			'no widget slugs'       => array(
+			'too many widget slugs'           => array(
 				array(
-					'widgetSlugs'    => array(),
-					'isWidgetHidden' => true,
+					'data' => array(
+						'settings' => array(
+							'widgetSlugs'    => array(
+								'widget0',
+								'widget1',
+								'widget2',
+								'widget3',
+								'widget4',
+								'widget5',
+								'widget6',
+								'widget7',
+								'widget8',
+							),
+							'isWidgetHidden' => true,
+						),
+					),
 				),
+				'rest_invalid_param',
+			),
+			'no widget slugs'                 => array(
+				array(
+					'data' => array(
+						'settings' => array(
+							'widgetSlugs'    => array(),
+							'isWidgetHidden' => true,
+						),
+					),
+				),
+				'rest_invalid_param',
 			),
 		);
 	}

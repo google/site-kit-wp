@@ -37,6 +37,7 @@ import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
+	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
@@ -56,12 +57,14 @@ import {
 	LATEST_POST,
 	createBreakdownReport,
 	createDailyTrafficRows,
+	getExpiryFromNow,
 	getRecentTrafficBreakdownReportOptions,
 	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
+	provideRecentActivitySurveyState,
 	provideRecentTrafficBreakdownReports,
 	provideSiteVisitorsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
@@ -194,7 +197,7 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
  *
  * @since 1.190.0
  * @since 1.191.0 Puts the reports of the recent traffic breakdown in the store too.
- * @since n.e.x.t Puts the reports of the recent traffic breakdown and of the site's visitors in the store too.
+ * @since 1.192.0 Puts the reports of the recent traffic breakdown and of the site's visitors, and the state of the Recent activity survey triggers, in the store too.
  *
  * @param {Object} registry The registry to put the property, the post, and the reports in.
  * @return {void}
@@ -257,6 +260,16 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	provideLatestPostAnalyticsReports( registry );
 	provideLatestPostKeywordReport( registry );
 	provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
+	// The Recent activity survey triggers read the expirable items and the
+	// dismissed prompts. The "tab available" timer is running already, so
+	// the story doesn't start it.
+	provideRecentActivitySurveyState( registry, {
+		expirableItems: {
+			[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: getExpiryFromNow(
+				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.expiresInSeconds
+			),
+		},
+	} );
 }
 
 interface TrafficOverviewWidgetStoryProps {
@@ -453,16 +466,13 @@ ReportFailure.args = {
 export const RecentActivity = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
-RecentActivity.storyName = 'Recent Activity (freshData enabled)';
+RecentActivity.storyName = 'Recent Activity';
 RecentActivity.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
 		provideRecentActivityData( registry );
 	},
-};
-RecentActivity.parameters = {
-	features: [ 'freshData' ],
 };
 RecentActivity.scenario = {
 	viewport: 'large',
@@ -473,7 +483,7 @@ export const RecentActivityAnalyticsNotConnected = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivityAnalyticsNotConnected.storyName =
-	'Recent Activity, Analytics Not Connected (freshData enabled)';
+	'Recent Activity, Analytics Not Connected';
 RecentActivityAnalyticsNotConnected.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		provideModules( registry, [
@@ -490,9 +500,6 @@ RecentActivityAnalyticsNotConnected.args = {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	},
 };
-RecentActivityAnalyticsNotConnected.parameters = {
-	features: [ 'freshData' ],
-};
 RecentActivityAnalyticsNotConnected.scenario = {
 	viewport: 'large',
 };
@@ -500,8 +507,7 @@ RecentActivityAnalyticsNotConnected.scenario = {
 export const RecentActivityGatheringData = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
-RecentActivityGatheringData.storyName =
-	'Recent Activity, Gathering Data (freshData enabled)';
+RecentActivityGatheringData.storyName = 'Recent Activity, Gathering Data';
 RecentActivityGatheringData.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
@@ -509,9 +515,6 @@ RecentActivityGatheringData.args = {
 		provideRecentActivityData( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 	},
-};
-RecentActivityGatheringData.parameters = {
-	features: [ 'freshData' ],
 };
 RecentActivityGatheringData.scenario = {
 	viewport: 'large',
@@ -522,7 +525,7 @@ export const RecentActivityNoPublishedPosts = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivityNoPublishedPosts.storyName =
-	'Recent Activity, No Published Posts (freshData enabled)';
+	'Recent Activity, No Published Posts';
 RecentActivityNoPublishedPosts.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
@@ -534,9 +537,6 @@ RecentActivityNoPublishedPosts.args = {
 			LATEST_POST_RECENT_CONTENT_OPTIONS
 		);
 	},
-};
-RecentActivityNoPublishedPosts.parameters = {
-	features: [ 'freshData' ],
 };
 RecentActivityNoPublishedPosts.scenario = {
 	viewport: 'large',
@@ -550,8 +550,7 @@ RecentActivityNoPublishedPosts.scenario = {
 export const RecentActivityAccessError = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
-RecentActivityAccessError.storyName =
-	'Recent Activity, Access Error (freshData enabled)';
+RecentActivityAccessError.storyName = 'Recent Activity, Access Error';
 RecentActivityAccessError.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
@@ -571,9 +570,6 @@ RecentActivityAccessError.args = {
 			] );
 	},
 };
-RecentActivityAccessError.parameters = {
-	features: [ 'freshData' ],
-};
 RecentActivityAccessError.scenario = {
 	viewport: 'large',
 	clickSelector: '#googlesitekit-recent-activity-tab',
@@ -587,8 +583,7 @@ RecentActivityAccessError.scenario = {
 export const RecentActivityZeroData = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
-RecentActivityZeroData.storyName =
-	'Recent Activity, Zero Data (freshData enabled)';
+RecentActivityZeroData.storyName = 'Recent Activity, Zero Data';
 RecentActivityZeroData.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
@@ -600,9 +595,6 @@ RecentActivityZeroData.args = {
 			searchPerformance: { clicks: 0, impressions: 0 },
 		} );
 	},
-};
-RecentActivityZeroData.parameters = {
-	features: [ 'freshData' ],
 };
 RecentActivityZeroData.scenario = {
 	viewport: 'large',
@@ -617,8 +609,7 @@ RecentActivityZeroData.scenario = {
 export const RecentActivitySectionError = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
-RecentActivitySectionError.storyName =
-	'Recent Activity, Section Error (freshData enabled)';
+RecentActivitySectionError.storyName = 'Recent Activity, Section Error';
 RecentActivitySectionError.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
@@ -640,9 +631,6 @@ RecentActivitySectionError.args = {
 			] );
 	},
 };
-RecentActivitySectionError.parameters = {
-	features: [ 'freshData' ],
-};
 RecentActivitySectionError.scenario = {
 	viewport: 'large',
 	clickSelector: '#googlesitekit-recent-activity-tab',
@@ -651,8 +639,7 @@ RecentActivitySectionError.scenario = {
 export const RecentActivityNoRecentVisits = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
-RecentActivityNoRecentVisits.storyName =
-	'Recent Activity, No Recent Visits (freshData enabled)';
+RecentActivityNoRecentVisits.storyName = 'Recent Activity, No Recent Visits';
 RecentActivityNoRecentVisits.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
@@ -669,9 +656,6 @@ RecentActivityNoRecentVisits.args = {
 			referrals: {},
 		} );
 	},
-};
-RecentActivityNoRecentVisits.parameters = {
-	features: [ 'freshData' ],
 };
 RecentActivityNoRecentVisits.scenario = {
 	viewport: 'large',

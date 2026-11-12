@@ -72,15 +72,17 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		$this->dismissed_items->add( 'foo' );
 		$this->dismissed_items->add( 'bar', 100 );
 		$this->dismissed_items->add( 'baz', -10 );
+		$this->dismissed_items->add( '0' );
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSets(
-			array( 'foo', 'bar' ),
+			array( 'foo', 'bar', '0' ),
 			$response->get_data(),
 			'Dismissed items response should contain non-expired items.'
 		);
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/dismissed-items', 'Dismissed items response should match its resource schema.' );
 	}
 
 
@@ -149,11 +151,16 @@ class REST_Dismissals_ControllerTest extends TestCase {
 
 	/**
 	 * @dataProvider provider_dismissed_item_deletions__wrong_data
+	 *
+	 * @param mixed  $data          Request data.
+	 * @param string $expected_code Expected error code.
 	 */
-	public function test_delete_dismissed_items__wrong_data( $data ) {
+	public function test_delete_dismissed_items__wrong_data( $data, $expected_code ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
+
+		$this->dismissed_items->add( 'foo' );
 
 		$request = new WP_REST_Request( 'DELETE', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items' );
 		$request->set_body_params(
@@ -161,28 +168,43 @@ class REST_Dismissals_ControllerTest extends TestCase {
 				'data' => $data,
 			)
 		);
-		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 400, $response->get_status(), 'Invalid dismissed items response should use bad request status.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'Invalid dismissed items response should include invalid param code.' );
+		$this->assertRESTRequestRejected( $request, $expected_code );
+		$this->assertEquals( array( 'foo' ), $this->dismissed_items->get_dismissed_items(), 'Invalid dismissed items request should remove no item.' );
 	}
 
 	public function provider_dismissed_item_deletions__wrong_data() {
 		return array(
+			'no data'                                      => array(
+				null,
+				'rest_missing_callback_param',
+			),
 			'empty object'                                 => array(
 				array(),
+				'rest_invalid_param',
 			),
 			'wrong data type'                              => array(
 				'{}',
+				'rest_invalid_param',
 			),
 			'invalid property'                             => array(
-				array( 'some-invalid-property' => 'value' ),
+				array(
+					'slugs'                 => array( 'foo' ),
+					'some-invalid-property' => 'value',
+				),
+				'rest_invalid_param',
+			),
+			'empty slugs list'                             => array(
+				array( 'slugs' => array() ),
+				'rest_invalid_param',
 			),
 			'slugs array containing non-string'            => array(
 				array( 'slugs' => array( 123 ) ),
+				'rest_invalid_param',
 			),
 			'slugs array containing string and non-string' => array(
 				array( 'slugs' => array( '123', 456 ) ),
+				'rest_invalid_param',
 			),
 		);
 	}
@@ -209,6 +231,95 @@ class REST_Dismissals_ControllerTest extends TestCase {
 			array( 'foo', 'bar' ),
 			rest_get_server()->dispatch( $request )->get_data(),
 			'Dismiss item response should contain active dismissed items.'
+		);
+	}
+
+	/**
+	 * @dataProvider provider_dismiss_item__permanent
+	 *
+	 * @param array $data Request data.
+	 */
+	public function test_dismiss_item__permanent( $data ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismiss-item' );
+		$request->set_body_params( array( 'data' => $data ) );
+
+		$this->assertEquals( array( 'bar' ), rest_get_server()->dispatch( $request )->get_data(), 'Dismiss item response should contain the dismissed item.' );
+		$this->assertSame( 0, $this->dismissed_items->get()['bar'], 'Dismiss item endpoint should dismiss the item permanently.' );
+	}
+
+	public function provider_dismiss_item__permanent() {
+		return array(
+			'expiration is 0'        => array(
+				array(
+					'slug'       => 'bar',
+					'expiration' => 0,
+				),
+			),
+			'expiration is negative' => array(
+				array(
+					'slug'       => 'bar',
+					'expiration' => -1,
+				),
+			),
+			'no expiration'          => array(
+				array( 'slug' => 'bar' ),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider provider_dismiss_item__invalid_data
+	 *
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
+	 */
+	public function test_dismiss_item__invalid_data( $body, $expected_code ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismiss-item' );
+		$request->set_body_params( $body );
+
+		$this->assertRESTRequestRejected( $request, $expected_code );
+		$this->assertEmpty( $this->dismissed_items->get(), 'Dismiss item endpoint should dismiss no item for invalid data.' );
+	}
+
+	public function provider_dismiss_item__invalid_data() {
+		return array(
+			'no data'                      => array(
+				array(),
+				'rest_missing_callback_param',
+			),
+			'data is not an object'        => array(
+				array( 'data' => 'foo' ),
+				'rest_invalid_param',
+			),
+			'slug is not a string'         => array(
+				array( 'data' => array( 'slug' => 123 ) ),
+				'rest_invalid_param',
+			),
+			'expiration is not an integer' => array(
+				array(
+					'data' => array(
+						'slug'       => 'foo',
+						'expiration' => 'soon',
+					),
+				),
+				'rest_invalid_param',
+			),
+			'data has no slug'             => array(
+				array( 'data' => array( 'expiration' => 100 ) ),
+				'rest_invalid_param',
+			),
+			'slug is empty'                => array(
+				array( 'data' => array( 'slug' => '' ) ),
+				'rest_invalid_param',
+			),
 		);
 	}
 }

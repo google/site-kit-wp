@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager Newsletter CTA preview component.
+ * Reader Revenue Manager Newsletter CTA preview pane.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,63 +17,129 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { useInstanceId } from '@wordpress/compose';
+import { createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import useFormValue from '@/js/hooks/useFormValue';
-import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
-import CTAPreview, {
-	CTA_PREVIEW_TAB_INLINE,
-	CTA_PREVIEW_TAB_POPUP,
-} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAPreview';
-import { EXPRESS_SETUP_CTA_FORMS } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import InlinePane from './InlinePane';
-import PopupPane from './PopupPane';
+import Typography from '@/js/components/Typography';
+import {
+	SIZE_LARGE,
+	SIZE_SMALL,
+	TYPE_LABEL,
+	TYPE_TITLE,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 
-export default function Preview() {
-	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
+interface PreviewProps {
+	consentEnabled?: boolean;
+	consentText?: string;
+	ctaBody?: string;
+	ctaTitle?: string;
+	publicationName?: string;
+}
 
-	const [ ctaTitle ] = useFormValue< string >(
-		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
-		NEWSLETTER_SIGNUP_FORM.CTA_TITLE
+const Preview: FC< PreviewProps > = ( {
+	consentEnabled,
+	consentText,
+	ctaBody,
+	ctaTitle,
+	publicationName,
+} ) => {
+	const instanceID = useInstanceId(
+		Preview,
+		'googlesitekit-rrm-cta-preview-pane'
 	);
-	const [ ctaBody ] = useFormValue< string >(
-		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
-		NEWSLETTER_SIGNUP_FORM.CTA_BODY
-	);
-	const [ consentEnabled ] = useFormValue< boolean >(
-		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
-		NEWSLETTER_SIGNUP_FORM.CONSENT_ENABLED
-	);
-	const [ consentText ] = useFormValue< string >(
-		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
-		NEWSLETTER_SIGNUP_FORM.CONSENT_TEXT
-	);
-
-	const paneProps = {
-		ctaTitle,
-		ctaBody,
-		consentEnabled: !! consentEnabled,
-		consentText,
-	};
-
-	const title =
-		activeTab === CTA_PREVIEW_TAB_INLINE
-			? __( 'How this would look?', 'google-site-kit' )
-			: __( 'See how it looks', 'google-site-kit' );
 
 	return (
-		<CTAPreview
-			className="googlesitekit-rrm-newsletter-preview-shell"
-			title={ title }
-			onTabChange={ setActiveTab }
-			popupContent={ <PopupPane { ...paneProps } /> }
-			inlineContent={ <InlinePane { ...paneProps } /> }
-		/>
+		<div className="googlesitekit-rrm-cta-preview-pane">
+			<div className="googlesitekit-rrm-cta-preview-pane__header">
+				<P
+					className="googlesitekit-rrm-cta-preview-pane__publication"
+					size={ SIZE_SMALL }
+				>
+					{ publicationName ||
+						__( 'Publication name', 'google-site-kit' ) }
+				</P>
+				{ ctaTitle && (
+					<Typography as="h4" size={ SIZE_LARGE } type={ TYPE_TITLE }>
+						{ ctaTitle }
+					</Typography>
+				) }
+				{ ctaBody && (
+					<P size={ SIZE_SMALL } type={ TYPE_LABEL }>
+						{ ctaBody }
+					</P>
+				) }
+			</div>
+			<div className="googlesitekit-rrm-cta-preview-pane__newsletter">
+				{ consentEnabled && (
+					<label
+						className="googlesitekit-rrm-cta-preview-pane__newsletter-consent"
+						htmlFor={ `${ instanceID }` }
+					>
+						<input
+							className="googlesitekit-rrm-cta-preview-pane__checkbox"
+							id={ `${ instanceID }` }
+							name={ `${ instanceID }` }
+							type="checkbox"
+							disabled
+							readOnly
+						/>
+						{ consentText ||
+							__(
+								'Your consent text will show here',
+								'google-site-kit'
+							) }
+					</label>
+				) }
+				<div className="googlesitekit-rrm-cta-preview-pane__legal">
+					{ createInterpolateElement(
+						sprintf(
+							/* translators: %1$s is the publication name. */
+							__(
+								'By continuing, you agree to provide your email and name (if applicable) to %1$s through a Google service. Google delivers your information under its <a>Terms of Service</a> and <a>Privacy Policy</a>. %1$s’s use of your data is subject to their own <a>terms</a> and <a>privacy policy</a>.',
+								'google-site-kit'
+							),
+							publicationName ||
+								__( 'Publication name', 'google-site-kit' )
+						),
+						{
+							a: (
+								<span className="googlesitekit-rrm-cta-preview-pane__link" />
+							),
+						}
+					) }
+				</div>
+			</div>
+			<div className="googlesitekit-rrm-cta-preview-pane__actions">
+				<button
+					className="googlesitekit-rrm-cta-preview-pane__button"
+					type="button"
+					disabled
+				>
+					{ __( 'Continue with email', 'google-site-kit' ) }
+				</button>
+				{ __( 'or', 'google-site-kit' ) }
+				<button
+					className="googlesitekit-rrm-cta-preview-pane__button"
+					type="button"
+					disabled
+				>
+					{ __( 'Continue with Google', 'google-site-kit' ) }
+				</button>
+			</div>
+		</div>
 	);
-}
+};
+
+export default Preview;

@@ -33,7 +33,10 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	LATEST_POST_RECENT_CONTENT_OPTIONS,
+	RECENT_ACTIVITY_INTERACTION_TIMER,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { FRESH_DATA_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	INSUFFICIENT_PERMISSIONS_ERROR,
@@ -48,8 +51,10 @@ import {
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
+	provideRecentActivitySurveyState,
 	provideRecentTrafficBreakdownReports,
 	provideSiteVisitorsReport,
+	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -120,7 +125,7 @@ describe( 'RecentActivityPanel', () => {
 	 * had failed. The report is already in the store from `beforeEach()`, so
 	 * a mocked request wouldn't be sent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 *
 	 * @param {Object} error The error of the report.
 	 * @return {void}
@@ -732,6 +737,11 @@ describe( 'RecentActivityPanel', () => {
 				[],
 				LATEST_POST_RECENT_CONTENT_OPTIONS
 			);
+			provideRecentActivitySurveyState( registry );
+			fetchMock.post( setExpirableItemTimersEndpoint, {
+				body: {},
+				status: 200,
+			} );
 		} );
 
 		afterEach( () => {
@@ -759,6 +769,73 @@ describe( 'RecentActivityPanel', () => {
 			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
 				'mainDashboard_recent-activity',
 				'view_all_recent_posts'
+			);
+		} );
+
+		it( 'should record an interaction when it tracks `view_all_recent_posts`', async () => {
+			render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 2999 );
+			} );
+
+			expect( fetchMock ).not.toHaveFetched(
+				setExpirableItemTimersEndpoint
+			);
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 1 );
+			} );
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				'mainDashboard_recent-activity',
+				'view_all_recent_posts'
+			);
+			// The data store resolves the expirable items on a timer before it
+			// saves the interaction.
+			await act( async () => {
+				await jest.runOnlyPendingTimersAsync();
+			} );
+
+			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint, {
+				body: {
+					data: [
+						{
+							slug: RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+							expiration:
+								RECENT_ACTIVITY_INTERACTION_TIMER.expiresInSeconds,
+						},
+					],
+				},
+			} );
+		} );
+
+		it( 'should not record an interaction when it does not track `view_all_recent_posts`', async () => {
+			const { unmount } = render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 2999 );
+			} );
+
+			unmount();
+
+			await act( async () => {
+				await jest.advanceTimersByTimeAsync( 1 );
+			} );
+
+			await act( async () => {
+				await jest.runOnlyPendingTimersAsync();
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+			expect( fetchMock ).not.toHaveFetched(
+				setExpirableItemTimersEndpoint
 			);
 		} );
 

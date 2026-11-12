@@ -87,6 +87,7 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 			$response->get_data(),
 			'Get dismissed tours should contain expected values.'
 		);
+		$this->assertMatchesRouteResourceSchema( $response->get_data(), 'core/user/data/dismissed-tours', 'Get dismissed tours response should match its resource schema.' );
 	}
 
 	public function test_post_dismiss_tour() {
@@ -100,34 +101,63 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismiss-tour' );
 		$request->set_body_params(
 			array(
-				'data' => array(), // no slug.
+				'data' => array(
+					'slug' => 'feature_z',
+				),
 			)
 		);
 		$this->assertTrue( current_user_can( Permissions::SETUP ), 'Current user should be allowed to dismiss tours.' );
 		$response = rest_get_server()->dispatch( $request );
 		/* @var WP_REST_Response $response Response instance. */
 
-		$this->assertEquals( 400, $response->get_status(), 'Dismiss tour endpoint should reject missing slug.' );
-		$this->assertEquals(
-			'missing_required_param',
-			$response->get_data()['code'],
-			'Dismiss tour endpoint should report missing slug parameter.'
-		);
-
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slug' => 'feature_z',
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
 		$this->assertEquals( 200, $response->get_status(), 'Dismiss tour endpoint should accept valid slug.' );
 		$this->assertEqualSets(
 			array( 'feature_x', 'feature_y', 'feature_z' ),
 			$response->get_data(),
 			'Dismiss tour endpoint should return updated dismissed tours.'
+		);
+	}
+
+	/**
+	 * @dataProvider provider_post_dismiss_tour__invalid_data
+	 *
+	 * @param array  $body          Request body.
+	 * @param string $expected_code Expected error code.
+	 */
+	public function test_post_dismiss_tour__invalid_data( $body, $expected_code ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismiss-tour' );
+		$request->set_body_params( $body );
+
+		$this->assertRESTRequestRejected( $request, $expected_code );
+		$this->assertEmpty( $this->dismissed_tours->get(), 'Dismiss tour endpoint should save no tour for invalid data.' );
+	}
+
+	public function provider_post_dismiss_tour__invalid_data() {
+		return array(
+			'no data'               => array(
+				array(),
+				'rest_missing_callback_param',
+			),
+			'data is not an object' => array(
+				array( 'data' => 'feature_z' ),
+				'rest_invalid_param',
+			),
+			'slug is not a string'  => array(
+				array( 'data' => array( 'slug' => 123 ) ),
+				'rest_invalid_param',
+			),
+			'data has no slug'      => array(
+				array( 'data' => array() ),
+				'rest_invalid_param',
+			),
+			'slug is empty'         => array(
+				array( 'data' => array( 'slug' => '' ) ),
+				'rest_invalid_param',
+			),
 		);
 	}
 }

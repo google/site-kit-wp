@@ -44,6 +44,7 @@
 	.googlesitekit-rrm-express-setup-step__form-controls {
 		display: grid;
 		gap: $grid-gap-phone;
+		grid-template-columns: minmax(0, 1fr);
 		max-inline-size: 500px;
 
 		.mdc-text-field {

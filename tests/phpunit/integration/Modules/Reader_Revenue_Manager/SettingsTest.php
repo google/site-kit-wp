@@ -129,8 +129,16 @@ class SettingsTest extends SettingsTestCase {
 		$this->settings->register();
 
 		$configured_ctas = array(
-			'9d2418415-ab3a' => 'newsletter-signup',
-			'8j8152411-cd4b' => 'survey',
+			'9d2418415-ab3a' => array(
+				'type'        => 'newsletter-signup',
+				'state'       => 'ACTIVE',
+				'displayName' => 'Weekly newsletter',
+			),
+			'8j8152411-cd4b' => array(
+				'type'        => 'newsletter-signup',
+				'state'       => 'DRAFT',
+				'displayName' => '',
+			),
 		);
 
 		$options                   = $this->settings->get();
@@ -258,27 +266,87 @@ class SettingsTest extends SettingsTestCase {
 			'configuredCTAs with valid entries'            => array(
 				'configuredCTAs',
 				array(
-					'9d2418415-ab3a' => 'newsletter-signup',
-					'8j8152411-cd4b' => 'survey',
+					'9d2418415-ab3a' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Weekly newsletter',
+					),
+					'8j8152411-cd4b' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'DRAFT',
+						'displayName' => '',
+					),
 				),
 				array(
-					'9d2418415-ab3a' => 'newsletter-signup',
-					'8j8152411-cd4b' => 'survey',
+					'9d2418415-ab3a' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Weekly newsletter',
+					),
+					'8j8152411-cd4b' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'DRAFT',
+						'displayName' => '',
+					),
 				),
 			),
 			'configuredCTAs with empty array'              => array( 'configuredCTAs', array(), array() ),
 			'configuredCTAs with invalid type'             => array( 'configuredCTAs', 'not-an-array', array() ),
 			'configuredCTAs with number'                   => array( 'configuredCTAs', 123, array() ),
-			'configuredCTAs with invalid entries dropped'  => array(
+			'configuredCTAs with old-format entries'       => array(
 				'configuredCTAs',
 				array(
 					'9d2418415-ab3a' => 'newsletter-signup',
-					'8j8152411-cd4b' => 123,
-					'7f1042311-ef5c' => array( 'survey' ),
-					0                => 'numeric-key',
+				),
+				array(),
+			),
+			'configuredCTAs with invalid entries dropped'  => array(
+				'configuredCTAs',
+				array(
+					'9d2418415-ab3a' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Weekly newsletter',
+					),
+					'missing-type'   => array(
+						'state'       => 'ACTIVE',
+						'displayName' => 'Weekly newsletter',
+					),
+					'missing-state'  => array(
+						'type'        => 'newsletter-signup',
+						'displayName' => 'Weekly newsletter',
+					),
+					'missing-name'   => array(
+						'type'  => 'newsletter-signup',
+						'state' => 'ACTIVE',
+					),
+					'numeric-type'   => array(
+						'type'        => 123,
+						'state'       => 'ACTIVE',
+						'displayName' => 'Weekly newsletter',
+					),
+					'numeric-state'  => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 123,
+						'displayName' => 'Weekly newsletter',
+					),
+					'null-name'      => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => null,
+					),
+					0                => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Numeric key',
+					),
 				),
 				array(
-					'9d2418415-ab3a' => 'newsletter-signup',
+					'9d2418415-ab3a' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Weekly newsletter',
+					),
 				),
 			),
 		);

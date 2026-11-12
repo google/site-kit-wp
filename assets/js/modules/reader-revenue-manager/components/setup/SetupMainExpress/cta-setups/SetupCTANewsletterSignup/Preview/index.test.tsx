@@ -19,251 +19,158 @@
 /**
  * Internal dependencies
  */
-import { Registry } from '@/js/googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
-import { EXPRESS_SETUP_CTA_FORMS } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-	screen,
-} from '@tests/js/test-utils';
+import { render, screen } from '@tests/js/test-utils';
 import Preview from './index';
-import InlinePane from './InlinePane';
-import PopupPane from './PopupPane';
 
-function renderPreview(
-	formValues: Record< string, string | boolean > = {},
-	registry: Registry = createTestRegistry() as Registry
-) {
-	registry
-		.dispatch( CORE_FORMS )
-		.setValues( EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP, formValues );
+const defaultProps = {
+	publicationName: 'Example Publication',
+	ctaTitle: 'Get our newsletter',
+	ctaBody: 'The latest stories in your inbox.',
+};
 
-	return render( <Preview />, { registry } );
-}
+describe( 'Newsletter Preview', () => {
+	it( 'should render the title and body from props', () => {
+		render( <Preview { ...defaultProps } /> );
 
-describe( 'Preview', () => {
-	it( 'should render the popup heading and description by default', () => {
-		renderPreview();
-
-		expect( screen.getByText( 'See how it looks' ) ).toBeInTheDocument();
 		expect(
-			screen.getByText(
-				'The CTA will be implemented automatically as a pop-up. To display it inline, you will need to add a code snippet to the relevant page.'
-			)
+			screen.getByRole( 'heading', { name: defaultProps.ctaTitle } )
 		).toBeInTheDocument();
+
+		expect( screen.getByText( defaultProps.ctaBody ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render the Pop-up and Inline tabs', () => {
-		renderPreview();
+	it( 'should render the publication name in the header and disclaimer', () => {
+		render( <Preview { ...defaultProps } /> );
 
 		expect(
-			screen.getByRole( 'tab', { name: /pop-up/i } )
+			screen.getByText( defaultProps.publicationName, { exact: true } )
 		).toBeInTheDocument();
-		expect(
-			screen.getByRole( 'tab', { name: /inline/i } )
-		).toBeInTheDocument();
-	} );
 
-	it( 'should render popup pane content by default', () => {
-		renderPreview( {
-			[ NEWSLETTER_SIGNUP_FORM.CTA_TITLE ]: 'My Newsletter',
-			[ NEWSLETTER_SIGNUP_FORM.CTA_BODY ]: 'Sign up today.',
-		} );
+		const disclaimer = screen.getByText( /By continuing, you agree/ );
 
-		// Popup tab is active by default, popup content should be visible.
-		expect( screen.getByText( 'My Newsletter' ) ).toBeInTheDocument();
-	} );
+		expect( disclaimer ).toHaveTextContent(
+			'to Example Publication through a Google service.'
+		);
 
-	it( 'should show inline pane content when the Inline tab is clicked', () => {
-		renderPreview( {
-			[ NEWSLETTER_SIGNUP_FORM.CTA_TITLE ]: 'My Newsletter',
-			[ NEWSLETTER_SIGNUP_FORM.CTA_BODY ]: 'Sign up today.',
-			[ NEWSLETTER_SIGNUP_FORM.CONSENT_ENABLED ]: false,
-		} );
-
-		const inlineTab = screen.getByRole( 'tab', { name: /inline/i } );
-		fireEvent.click( inlineTab );
-
-		// Both popup and inline panes share the same content so verify rendering.
-		expect( screen.getByText( 'My Newsletter' ) ).toBeInTheDocument();
-		expect( screen.getByText( 'Sign up today.' ) ).toBeInTheDocument();
-	} );
-
-	it( 'should update the heading when switching to the Inline tab', () => {
-		renderPreview();
-
-		expect( screen.getByText( 'See how it looks' ) ).toBeInTheDocument();
-
-		const inlineTab = screen.getByRole( 'tab', { name: /inline/i } );
-		fireEvent.click( inlineTab );
+		expect( disclaimer ).toHaveTextContent(
+			'Example Publication’s use of your data is subject to their own terms and privacy policy.'
+		);
 
 		expect(
-			screen.getByText( 'How this would look?' )
-		).toBeInTheDocument();
-		expect(
-			screen.queryByText( 'See how it looks' )
+			screen.queryByText( 'Publication name' )
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render CTA title and body when not provided', () => {
-		renderPreview();
+	it( 'should use the placeholder publication name in the disclaimer when none is supplied', () => {
+		render( <Preview { ...defaultProps } publicationName={ undefined } /> );
 
 		expect(
-			screen.queryByRole( 'heading', { name: /your form header/i } )
-		).not.toBeInTheDocument();
-	} );
-} );
-
-describe( 'PopupPane', () => {
-	it( 'should render the publication name label', () => {
-		render( <PopupPane /> );
-
-		expect( screen.getByText( 'Publication name' ) ).toBeInTheDocument();
+			screen.getByText( /By continuing, you agree/ )
+		).toHaveTextContent( 'to Publication name through a Google service.' );
 	} );
 
-	it( 'should render CTA title when provided', () => {
-		render( <PopupPane ctaTitle="Your form header" /> );
+	it.each( [ undefined, '' ] )(
+		'should omit the title when it is %s',
+		( ctaTitle ) => {
+			render( <Preview { ...defaultProps } ctaTitle={ ctaTitle } /> );
 
-		expect( screen.getByText( 'Your form header' ) ).toBeInTheDocument();
-	} );
+			expect( screen.queryByRole( 'heading' ) ).not.toBeInTheDocument();
+			expect(
+				screen.getByText( defaultProps.ctaBody )
+			).toBeInTheDocument();
+		}
+	);
 
-	it( 'should render CTA body when provided', () => {
-		render( <PopupPane ctaBody="Your newsletter sign-up form text" /> );
+	it.each( [ undefined, '' ] )(
+		'should omit the body when it is %s',
+		( ctaBody ) => {
+			render( <Preview { ...defaultProps } ctaBody={ ctaBody } /> );
 
-		expect(
-			screen.getByText( 'Your newsletter sign-up form text' )
-		).toBeInTheDocument();
-	} );
+			expect(
+				screen.queryByText( defaultProps.ctaBody )
+			).not.toBeInTheDocument();
 
-	it( 'should not render the consent row when consentEnabled is false', () => {
-		render( <PopupPane consentEnabled={ false } /> );
+			expect(
+				screen.getByRole( 'heading', { name: defaultProps.ctaTitle } )
+			).toBeInTheDocument();
+		}
+	);
 
-		expect( screen.queryByRole( 'checkbox' ) ).not.toBeInTheDocument();
-	} );
+	it.each( [ undefined, false ] )(
+		'should omit consent when consentEnabled is %s',
+		( consentEnabled ) => {
+			render(
+				<Preview
+					{ ...defaultProps }
+					consentEnabled={ consentEnabled }
+					consentText="I agree to receive updates."
+				/>
+			);
 
-	it( 'should render the consent row when consentEnabled is true', () => {
+			expect( screen.queryByRole( 'checkbox' ) ).not.toBeInTheDocument();
+
+			expect(
+				screen.queryByText( 'I agree to receive updates.' )
+			).not.toBeInTheDocument();
+		}
+	);
+
+	it( 'should render the consent text with a disabled, unchecked checkbox when enabled', () => {
 		render(
-			<PopupPane
-				consentText="Your consent text will show here"
+			<Preview
+				{ ...defaultProps }
+				consentText="I agree to receive updates."
 				consentEnabled
 			/>
 		);
 
-		expect( screen.getByRole( 'checkbox' ) ).toBeInTheDocument();
-		expect(
-			screen.getByText( 'Your consent text will show here' )
-		).toBeInTheDocument();
-	} );
-
-	it( 'should render the default consent text when consentEnabled is true but no consentText is given', () => {
-		render( <PopupPane consentEnabled /> );
-
-		expect(
-			screen.getByText( 'Your consent text will show here' )
-		).toBeInTheDocument();
-	} );
-
-	it( 'should render the disabled Continue with email button', () => {
-		render( <PopupPane /> );
-
-		const button = screen.getByRole( 'button', {
-			name: /continue with email/i,
+		const checkbox = screen.getByRole( 'checkbox', {
+			name: 'I agree to receive updates.',
 		} );
-		expect( button ).toBeDisabled();
+
+		expect( checkbox ).toBeDisabled();
+		expect( checkbox ).not.toBeChecked();
 	} );
 
-	it( 'should render the disabled Continue with Google button', () => {
-		render( <PopupPane /> );
-
-		const button = screen.getByRole( 'button', {
-			name: /continue with google/i,
-		} );
-		expect( button ).toBeDisabled();
-	} );
-
-	it( 'should render the disclaimer text with non-functional link spans', () => {
-		render( <PopupPane /> );
-
-		// Verify "Terms of Service" link span is present.
-		expect( screen.getByText( 'Terms of Service' ) ).toBeInTheDocument();
-		// Verify "Privacy Policy" link span is present.
-		expect( screen.getByText( 'Privacy Policy' ) ).toBeInTheDocument();
-		// Verify disclaimer links are rendered as spans (non-functional).
-		const tos = screen.getByText( 'Terms of Service' );
-		expect( tos.tagName ).toBe( 'SPAN' );
-		const pp = screen.getByText( 'Privacy Policy' );
-		expect( pp.tagName ).toBe( 'SPAN' );
-	} );
-} );
-
-describe( 'InlinePane', () => {
-	it( 'should render the publication name label', () => {
-		render( <InlinePane /> );
-
-		expect( screen.getByText( 'Publication name' ) ).toBeInTheDocument();
-	} );
-
-	it( 'should render CTA title when provided', () => {
-		render( <InlinePane ctaTitle="Your form header" /> );
-
-		expect( screen.getByText( 'Your form header' ) ).toBeInTheDocument();
-	} );
-
-	it( 'should render CTA body when provided', () => {
-		render( <InlinePane ctaBody="Your newsletter sign-up form text" /> );
+	it( 'should render the placeholder consent text when no consent text is supplied', () => {
+		render( <Preview { ...defaultProps } consentEnabled /> );
 
 		expect(
-			screen.getByText( 'Your newsletter sign-up form text' )
-		).toBeInTheDocument();
+			screen.getByRole( 'checkbox', {
+				name: 'Your consent text will show here',
+			} )
+		).toBeDisabled();
 	} );
 
-	it( 'should not render the consent row when consentEnabled is false', () => {
-		render( <InlinePane consentEnabled={ false } /> );
+	it.each( [ 'Continue with email', 'Continue with Google' ] )(
+		'should disable the %s button',
+		( name ) => {
+			render( <Preview { ...defaultProps } /> );
 
-		expect( screen.queryByRole( 'checkbox' ) ).not.toBeInTheDocument();
-	} );
+			expect( screen.getByRole( 'button', { name } ) ).toBeDisabled();
+		}
+	);
 
-	it( 'should render the consent row when consentEnabled is true', () => {
-		render(
-			<InlinePane
-				consentText="Your consent text will show here"
-				consentEnabled
-			/>
-		);
+	it( 'should render disclaimer links as non-interactive spans', () => {
+		render( <Preview { ...defaultProps } /> );
 
-		expect( screen.getByRole( 'checkbox' ) ).toBeInTheDocument();
-		expect(
-			screen.getByText( 'Your consent text will show here' )
-		).toBeInTheDocument();
-	} );
+		[
+			'Terms of Service',
+			'Privacy Policy',
+			'terms',
+			'privacy policy',
+		].forEach( ( text ) => {
+			const link = screen.getByText( text, { exact: true } );
 
-	it( 'should render the disabled Continue with email button', () => {
-		render( <InlinePane /> );
+			expect( link.tagName ).toBe( 'SPAN' );
 
-		const button = screen.getByRole( 'button', {
-			name: /continue with email/i,
+			expect( link ).toHaveClass(
+				'googlesitekit-rrm-cta-preview-pane__link'
+			);
+
+			expect( link ).not.toHaveAttribute( 'href' );
 		} );
-		expect( button ).toBeDisabled();
-	} );
 
-	it( 'should render the disabled Continue with Google button', () => {
-		render( <InlinePane /> );
-
-		const button = screen.getByRole( 'button', {
-			name: /continue with google/i,
-		} );
-		expect( button ).toBeDisabled();
-	} );
-
-	it( 'should render the disclaimer text with non-functional link spans', () => {
-		render( <InlinePane /> );
-
-		const tos = screen.getByText( 'Terms of Service' );
-		expect( tos.tagName ).toBe( 'SPAN' );
-		const pp = screen.getByText( 'Privacy Policy' );
-		expect( pp.tagName ).toBe( 'SPAN' );
+		expect( screen.queryByRole( 'link' ) ).not.toBeInTheDocument();
 	} );
 } );

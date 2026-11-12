@@ -48,6 +48,7 @@ import {
 	provideSiteInfo,
 	provideTimezone,
 	provideUserInfo,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import { getLatestContentReportArgs } from './latestContentReportOptions';
 import LatestContentTable from './LatestContentTable';
@@ -122,6 +123,24 @@ describe( 'LatestContentTable', () => {
 		).map( ( header ) => header.textContent );
 	}
 
+	/**
+	 * Gets the text of every cell in each body row of the table.
+	 *
+	 * @since 1.192.0
+	 *
+	 * @param {Element} container The element the table is rendered in.
+	 * @return {Array<Array<string|null>>} The cell texts, one list per row.
+	 */
+	function getBodyRowCells( container: Element ) {
+		return Array.from(
+			container.querySelectorAll( '.googlesitekit-table__body-row' )
+		).map( ( row ) =>
+			Array.from(
+				row.querySelectorAll( '.googlesitekit-table__body-item' )
+			).map( ( cell ) => cell.textContent )
+		);
+	}
+
 	function renderTable() {
 		return render(
 			<LatestContentTable WidgetReportError={ WidgetReportError } />,
@@ -146,9 +165,6 @@ describe( 'LatestContentTable', () => {
 		] );
 		provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsGatheringData( false );
 
 		provideRecentContent( registry, RECENT_CONTENT, { count: 10 } );
 	} );
@@ -203,14 +219,8 @@ describe( 'LatestContentTable', () => {
 
 			await waitForRegistry();
 
-			const postedCells = Array.from(
-				container.querySelectorAll( '.googlesitekit-table__body-row' )
-			).map( ( row ) =>
-				Array.from(
-					row.querySelectorAll( '.googlesitekit-table__body-item' )
-				)
-					.slice( 0, 2 )
-					.map( ( cell ) => cell.textContent )
+			const postedCells = getBodyRowCells( container ).map( ( cells ) =>
+				cells.slice( 0, 2 )
 			);
 
 			expect( postedCells ).toEqual( [
@@ -229,14 +239,8 @@ describe( 'LatestContentTable', () => {
 
 		await waitForRegistry();
 
-		const rows = Array.from(
-			container.querySelectorAll( '.googlesitekit-table__body-row' )
-		).map( ( row ) =>
-			Array.from(
-				row.querySelectorAll( '.googlesitekit-table__body-item' )
-			)
-				.slice( 2 )
-				.map( ( cell ) => cell.textContent )
+		const rows = getBodyRowCells( container ).map( ( cells ) =>
+			cells.slice( 2 )
 		);
 
 		expect( rows ).toEqual( [
@@ -419,15 +423,13 @@ describe( 'LatestContentTable', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsGatheringData( false );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
 			.setErrorForSelector( ERROR, 'getRecentContent', [
 				{ count: 10 },
 			] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getRecentContent', [ { count: 10 } ] );
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { container, getByText, waitForRegistry } = renderTable();
 
@@ -441,11 +443,13 @@ describe( 'LatestContentTable', () => {
 	} );
 
 	it( 'should show a message and request no report when the site has no published posts', async () => {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 		provideRecentContent( registry, [], { count: 10 } );
 
-		const { getByText, waitForRegistry } = renderTable();
+		const { getByText } = renderTable();
 
-		await waitForRegistry();
+		// Nothing changes in the registry without posts, so wait for any request to be sent instead.
+		await waitForDefaultTimeouts();
 
 		expect(
 			getByText(
@@ -455,22 +459,54 @@ describe( 'LatestContentTable', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'should show the gathering data notice instead of zeros', async () => {
+	it( 'should list every post with zeros when Analytics is gathering data', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( REPORT, {
-			options: getReportArgs(),
-		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{},
+			{
+				options: getReportArgs(),
+			}
+		);
 
-		const { container, getByText, waitForRegistry } = renderTable();
+		const { container, queryByText, waitForRegistry } = renderTable();
 
 		await waitForRegistry();
 
-		expect( getByText( /gathering data/i ) ).toBeInTheDocument();
+		expect( getBodyRowCells( container ) ).toEqual( [
+			[
+				'Oct 7',
+				'11:30 PM',
+				'Published this morning/published-this-morning/',
+				'0',
+				'0',
+				'0%',
+				'0s',
+			],
+			[
+				'Oct 1',
+				'12:05 PM',
+				'Popular older post/popular-older-post/',
+				'0',
+				'0',
+				'0%',
+				'0s',
+			],
+		] );
+		expect( queryByText( /gathering data/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should show the no published content message when Analytics is gathering data and the site has no published posts', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+		provideRecentContent( registry, [], { count: 10 } );
+
+		const { getByText, queryByText } = renderTable();
+
 		expect(
-			container.querySelector(
-				'.googlesitekit-table__body-row:not(.googlesitekit-table__body-row--no-data)'
+			getByText(
+				'No published content yet: your latest posts will appear here once you publish them'
 			)
-		).not.toBeInTheDocument();
+		).toBeInTheDocument();
+		expect( queryByText( /gathering data/i ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should show the title with its publish time and one metric at a time on small screens', async () => {
@@ -492,11 +528,7 @@ describe( 'LatestContentTable', () => {
 			'Session Duration',
 		] );
 
-		const firstRowCells = Array.from(
-			container.querySelectorAll(
-				'.googlesitekit-table__body-row:first-child .googlesitekit-table__body-item'
-			)
-		).map( ( cell ) => cell.textContent );
+		const [ firstRowCells ] = getBodyRowCells( container );
 
 		expect( firstRowCells ).toEqual( [
 			'Oct 7 11:30 PMPublished this morning/published-this-morning/',

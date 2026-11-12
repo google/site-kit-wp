@@ -23,10 +23,13 @@ import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/const
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { PostWindow, getPostWindow } from './utils/getPostWindow';
+import { getReferencePermalink } from './utils/getReferencePermalink';
 
 export interface PostReportArgs extends PostWindow {
 	/** The URL of the post, e.g. `https://example.com/hello-world/`. */
 	permalink: string;
+	/** The URL of the post on the site that Site Kit reports on, used by the Search Console report. */
+	referencePermalink: string;
 }
 
 export interface SearchConsoleReportOptions extends PostWindow {
@@ -44,17 +47,27 @@ export interface SearchConsoleReportOptions extends PostWindow {
  * Gets the permalink and the date range of the reports about a post.
  *
  * @since 1.191.0
+ * @since 1.192.0 Also gets the post's URL on the site that Site Kit reports on.
  *
- * @param {Object} post          The post, with its permalink and its publish time.
- * @param {string} referenceDate The reference date, e.g. `2026-10-08`.
- * @return {Object} The post's permalink, and the `startDate` and the `endDate` of its reports.
+ * @param {Object} post             The post, with its permalink and its publish time.
+ * @param {string} referenceDate    The reference date, e.g. `2026-10-08`.
+ * @param {string} homeURL          The home URL of the WordPress site.
+ * @param {string} referenceSiteURL The URL of the site that Site Kit reports on.
+ * @return {Object} The post's permalink, its URL on the site that Site Kit reports on, and the `startDate` and the `endDate` of its reports.
  */
 export function getPostReportArgs(
 	post: Pick< RecentContentItem, 'permalink' | 'publishedAt' >,
-	referenceDate: string
+	referenceDate: string,
+	homeURL: string,
+	referenceSiteURL: string
 ): PostReportArgs {
 	return {
 		permalink: post.permalink,
+		referencePermalink: getReferencePermalink(
+			post.permalink,
+			homeURL,
+			referenceSiteURL
+		),
 		...getPostWindow( post.publishedAt, referenceDate ),
 	};
 }
@@ -220,8 +233,9 @@ export function getPurchasesReportOptions(
  * that brought the post the most clicks.
  *
  * @since 1.191.0
+ * @since 1.192.0 Requests the post's URL on the site that Site Kit reports on.
  *
- * @param {Object} args The post's permalink and date range.
+ * @param {Object} args The post's URL on the site that Site Kit reports on, and its date range.
  * @return {Object} The Search Console report options.
  */
 export function getTopKeywordReportOptions(
@@ -231,7 +245,7 @@ export function getTopKeywordReportOptions(
 		startDate: args.startDate,
 		endDate: args.endDate,
 		dimensions: 'query',
-		url: args.permalink,
+		url: args.referencePermalink,
 		limit: 1,
 		reportID: 'search-console_latest-post-performance_top-keyword',
 	};

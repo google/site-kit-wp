@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import { createTestRegistry } from '@tests/js/utils';
 import { CORE_USER } from './constants';
 import { Feedback } from './feedback';
@@ -34,10 +35,6 @@ describe( 'core/user feedback', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 	} );
-
-	const feedbackEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/feedback'
-	);
 
 	const feedback: Feedback = {
 		namespace: 'feature_hub',

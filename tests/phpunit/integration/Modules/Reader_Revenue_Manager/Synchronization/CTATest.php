@@ -49,7 +49,11 @@ class CTATest extends TestCase {
 		$this->settings->set(
 			array(
 				'configuredCTAs' => array(
-					'old-cta' => 'newsletter-signup',
+					'old-cta' => array(
+						'type'        => 'newsletter-signup',
+						'state'       => 'ACTIVE',
+						'displayName' => 'Old CTA',
+					),
 				),
 			)
 		);
@@ -68,8 +72,8 @@ class CTATest extends TestCase {
 	public function test_synchronize__updates_configured_ctas() {
 		$this->synchronization->synchronize(
 			array(
-				$this->create_cta( 'organizations/1/publications/1/ctas/9d2418415-ab3a', 'NEWSLETTER_SIGNUP' ),
-				$this->create_cta( 'organizations/1/publications/1/ctas/8j8152411-cd4b', 'NEWSLETTER_SIGNUP' ),
+				$this->create_cta( 'organizations/1/publications/1/ctas/9d2418415-ab3a', 'NEWSLETTER_SIGNUP', 'ACTIVE', 'Weekly newsletter' ),
+				$this->create_cta( 'organizations/1/publications/1/ctas/8j8152411-cd4b', 'NEWSLETTER_SIGNUP', 'DRAFT' ),
 				$this->create_cta( 'organizations/1/publications/1/ctas/unknown-type', 'UNKNOWN_TYPE' ),
 				$this->create_cta( '', 'NEWSLETTER_SIGNUP' ),
 				$this->create_cta( 'organizations/1/publications/1/ctas/', 'NEWSLETTER_SIGNUP' ),
@@ -80,11 +84,36 @@ class CTATest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'9d2418415-ab3a' => 'newsletter-signup',
-				'8j8152411-cd4b' => 'newsletter-signup',
+				'9d2418415-ab3a' => array(
+					'type'        => 'newsletter-signup',
+					'state'       => 'ACTIVE',
+					'displayName' => 'Weekly newsletter',
+				),
+				'8j8152411-cd4b' => array(
+					'type'        => 'newsletter-signup',
+					'state'       => 'DRAFT',
+					'displayName' => '',
+				),
 			),
 			$this->settings->get()['configuredCTAs'],
-			'Configured CTAs should contain only valid ID-to-slug entries.'
+			'Configured CTAs should contain only valid CTAs, each with its type, state and display name, and an empty display name when the CTA has none.'
+		);
+	}
+
+	public function test_synchronize__updates_renamed_cta() {
+		$cta_name = 'organizations/1/publications/1/ctas/9d2418415-ab3a';
+
+		$this->synchronization->synchronize(
+			array( $this->create_cta( $cta_name, 'NEWSLETTER_SIGNUP', 'ACTIVE', 'Weekly newsletter' ) )
+		);
+		$this->synchronization->synchronize(
+			array( $this->create_cta( $cta_name, 'NEWSLETTER_SIGNUP', 'ACTIVE', 'Daily newsletter' ) )
+		);
+
+		$this->assertSame(
+			'Daily newsletter',
+			$this->settings->get()['configuredCTAs']['9d2418415-ab3a']['displayName'],
+			'A renamed CTA should be stored with its new display name.'
 		);
 	}
 
@@ -95,19 +124,22 @@ class CTATest extends TestCase {
 		);
 		$original_schedule = wp_next_scheduled( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
 
+		$before = time();
 		$this->synchronization->synchronize( array() );
 
 		$new_schedule = wp_next_scheduled( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
 
 		$this->assertNotFalse( $new_schedule, 'Cron should remain scheduled.' );
 		$this->assertNotSame( $original_schedule, $new_schedule, 'Cron should be rescheduled.' );
-		$this->assertGreaterThanOrEqual( time() + HOUR_IN_SECONDS - 1, $new_schedule, 'Cron should run approximately one hour from now.' );
+		$this->assertGreaterThanOrEqual( $before + HOUR_IN_SECONDS, $new_schedule, 'Cron should run approximately one hour from now.' );
 	}
 
-	private function create_cta( $name = '', $type = '' ) {
+	private function create_cta( $name = '', $type = '', $state = 'ACTIVE', $display_name = null ) {
 		$cta = new WCP_CTA();
 		$cta->setName( $name );
 		$cta->setType( $type );
+		$cta->setState( $state );
+		$cta->setDisplayName( $display_name );
 
 		return $cta;
 	}
