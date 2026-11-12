@@ -16,11 +16,14 @@
  * limitations under the License.
  */
 
+$bp-feature-card: 600px;
+
 .googlesitekit-plugin {
 
 	.googlesitekit-feature-card {
 		--googlesitekit-feature-card-gap-s: 6px;
 		--googlesitekit-feature-card-gap-m: 10px;
+		--googlesitekit-feature-card-gap-l: 16px;
 		--googlesitekit-feature-card-dot-size: 12px;
 
 		container: feature-card / inline-size;
@@ -30,16 +33,10 @@
 		display: grid;
 		grid-template: '. meta' 'status heading' 'status content' / min-content auto;
 
-		@container feature-card ( inline-size > 600px ) {
+		@container feature-card ( inline-size > #{$bp-feature-card} ) {
 			grid-template: 'status heading meta' 'status content content' / min-content auto 1fr;
 			padding-inline-end: $grid-gap-phone;
 		}
-	}
-
-	// The last card closes the "What's new?" list, where the other tabs keep
-	// the rule under every card.
-	.googlesitekit-whats-new .googlesitekit-feature-card:last-child {
-		border-bottom: none;
 	}
 
 	.googlesitekit-feature-card__status {
@@ -66,13 +63,12 @@
 	.googlesitekit-feature-card__meta {
 		align-items: center;
 		display: flex;
-		flex: 1;
 		flex-wrap: nowrap;
 		gap: var(--googlesitekit-feature-card-gap-m);
 		grid-area: meta;
 		padding-block-end: var(--googlesitekit-feature-card-gap-m);
 
-		@container feature-card ( inline-size > 600px ) {
+		@container feature-card ( inline-size > #{$bp-feature-card} ) {
 			padding-block-end: 0;
 			padding-inline-start: var(--googlesitekit-feature-card-gap-m);
 		}
@@ -83,7 +79,7 @@
 		flex-shrink: 0;
 		margin-inline-start: auto;
 
-		@container feature-card ( inline-size > 600px ) {
+		@container feature-card ( inline-size > #{$bp-feature-card} ) {
 			align-self: start;
 		}
 	}
@@ -121,9 +117,9 @@
 	.googlesitekit-feature-card__footer {
 		align-items: center;
 		display: grid;
-		gap: var(--googlesitekit-feature-card-gap-m);
+		gap: var(--googlesitekit-feature-card-gap-l);
 
-		@container feature-card ( inline-size > 600px ) {
+		@container feature-card ( inline-size > #{$bp-feature-card} ) {
 			display: flex;
 			flex-wrap: wrap;
 		}
@@ -142,6 +138,14 @@
 
 			svg circle {
 				stroke: currentColor;
+			}
+		}
+
+		@container feature-card ( inline-size <= #{$bp-feature-card} ) {
+
+			.mdc-button {
+				min-block-size: 32px;
+				padding-block: 6px;
 			}
 		}
 	}
