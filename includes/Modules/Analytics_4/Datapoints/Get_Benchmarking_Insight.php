@@ -32,6 +32,20 @@ use WP_Error;
 class Get_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 
 	/**
+	 * The statuses of a failed read of an operation that the browser acts on.
+	 *
+	 * The service refuses a read with a 400, a 403 or a 404, and never with a
+	 * 409 or a 429, since a read spends none of its rate limit. Any other
+	 * failure of the read, such as a 503 for a read that ran past its time
+	 * limit, is a 500, so the browser never takes a failed read for an
+	 * operation that an instance shutdown interrupted. Only an operation that
+	 * failed with code 503 is a 503.
+	 *
+	 * @since n.e.x.t
+	 */
+	const PASSED_ERROR_STATUSES = array( 400, 403, 404 );
+
+	/**
 	 * The longest operation ID the datapoint accepts.
 	 *
 	 * @since n.e.x.t

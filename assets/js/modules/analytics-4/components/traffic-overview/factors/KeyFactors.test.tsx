@@ -367,6 +367,39 @@ describe( 'KeyFactors', () => {
 		);
 	} );
 
+	it( 'should keep the same polite live region from the placeholder of the insight to the insight, so a screen reader reads the insight out once it arrives', () => {
+		const { container, rerender } = renderKeyFactors( {
+			insightLoading: true,
+		} );
+
+		const liveRegion = container.querySelector(
+			'.googlesitekit-traffic-overview__key-factors-insight'
+		);
+
+		expect( liveRegion ).toHaveAttribute( 'aria-live', 'polite' );
+
+		rerender(
+			<KeyFactors
+				keyFactors={ [ REFERRAL, ORGANIC_SEARCH ] }
+				daysInSelectedRange={ 28 }
+				referenceSiteURL={ REFERENCE_SITE_URL }
+				insight={ INSIGHT }
+			/>
+		);
+
+		// A live region announces a change to its content, not a region that
+		// replaces it, so the insight arrives in the same element.
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors-insight'
+			)
+		).toBe( liveRegion );
+		expect( liveRegion ).toHaveAttribute( 'aria-live', 'polite' );
+		expect( liveRegion ).toHaveTextContent(
+			'Referral traffic from substack.com is up most'
+		);
+	} );
+
 	it( 'should render a placeholder for the insight above the cards while the insight loads', () => {
 		const { container } = renderKeyFactors( { insightLoading: true } );
 

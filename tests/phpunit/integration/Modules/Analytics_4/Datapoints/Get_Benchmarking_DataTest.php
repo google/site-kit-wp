@@ -370,8 +370,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 						'expectedMax' => 62.8,
 					),
 				),
-				// `2026-08-20` is the 28th day with recorded traffic, the first day
-				// with an expected range.
+				// The first day with recorded traffic, 26 days before the first
+				// plotted day.
 				'firstTrafficDate' => '2026-07-24',
 				'keyFactors'       => array(
 					array(

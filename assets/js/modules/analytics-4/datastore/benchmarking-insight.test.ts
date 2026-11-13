@@ -30,11 +30,12 @@ import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { BenchmarkingInsight } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '@/js/util';
-import { createTestRegistry } from '@tests/js/utils';
+import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import {
 	benchmarkingInsight,
 	decodedBenchmarkingResponse,
 	provideBenchmarkingData,
+	provideBenchmarkingInsight,
 } from './__factories__/benchmarking';
 import {
 	BENCHMARKING_INSIGHT_DEADLINE,
@@ -960,6 +961,117 @@ describe( 'modules/analytics-4 benchmarking-insight', () => {
 						endDate,
 					} )
 			).toThrow( 'insight must be an object or null.' );
+		} );
+	} );
+
+	describe( 'clearBenchmarkingData', () => {
+		const otherStartDate = '2026-06-18';
+
+		it( 'should delete the insight of the dates from the store and its cache entry, and keep the insight of another date range', async () => {
+			const otherRangeKey = createCacheKey(
+				'modules',
+				'analytics-4',
+				'benchmarking-generated-insight',
+				{ startDate: otherStartDate, endDate, locale }
+			);
+
+			provideResponseWithPayload();
+			provideBenchmarkingInsight( registry, { startDate, endDate } );
+			provideBenchmarkingInsight( registry, {
+				startDate: otherStartDate,
+				endDate,
+			} );
+			await setItem(
+				getCacheKey(),
+				{ insight: benchmarkingInsight },
+				{ ttl: DAY_IN_SECONDS }
+			);
+			await setItem(
+				otherRangeKey,
+				{ insight: benchmarkingInsight },
+				{ ttl: DAY_IN_SECONDS }
+			);
+
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.clearBenchmarkingData( startDate, endDate );
+
+			expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				cacheHit: false,
+			} );
+			expect( await getItem( otherRangeKey ) ).toMatchObject( {
+				cacheHit: true,
+				value: { insight: benchmarkingInsight },
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getBenchmarkingInsight( otherStartDate, endDate )
+			).toEqual( benchmarkingInsight );
+
+			// Selecting the insight starts a new resolution, which waits for
+			// a new benchmarking response.
+			freezeFetch( benchmarkingDataEndpoint );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getBenchmarkingInsight( startDate, endDate )
+			).toBeUndefined();
+		} );
+
+		it( 'should ask for the insight again when its dates are selected again', async () => {
+			fetchMock.getOnce( benchmarkingDataEndpoint, {
+				body: [ ...benchmarkingData, locale, payload ],
+			} );
+			fetchMock.postOnce( insightEndpoint, {
+				body: { insight: benchmarkingInsight },
+			} );
+
+			expect( await resolveInsight() ).toEqual( benchmarkingInsight );
+
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.clearBenchmarkingData( startDate, endDate );
+
+			fetchMock.getOnce( benchmarkingDataEndpoint, {
+				body: [ ...benchmarkingData, locale, payload ],
+			} );
+			fetchMock.postOnce( insightEndpoint, {
+				body: {
+					insight: {
+						...benchmarkingInsight,
+						analysis: 'A new insight.',
+					},
+				},
+			} );
+
+			expect( await resolveInsight() ).toMatchObject( {
+				analysis: 'A new insight.',
+			} );
+			expect( fetchMock ).toHaveFetchedTimes( 2, insightEndpoint, {
+				method: 'POST',
+			} );
+		} );
+
+		it( 'should send no request when the store has no benchmarking response for the dates', async () => {
+			provideBenchmarkingInsight( registry, { startDate, endDate } );
+
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.clearBenchmarkingData( startDate, endDate );
+
+			expect( fetchMock ).not.toHaveFetched();
+		} );
+	} );
+
+	describe( 'clearBenchmarkingInsight', () => {
+		it( 'should throw an error when a date is not written as `YYYY-MM-DD`, such as `2026-8-19`', () => {
+			expect( () =>
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.clearBenchmarkingInsight( '2026-8-19', endDate )
+			).toThrow( 'Valid startDate and endDate values are required' );
 		} );
 	} );
 } );

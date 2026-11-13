@@ -168,10 +168,10 @@ class Report_OptionsTest extends TestCase {
 						'desc'   => true,
 					),
 				),
-				'limit'            => 50,
+				'limit'            => 500,
 			),
 			$this->report_options->$method(),
-			"The `{$method}()` method should ask for up to 50 rows of `sessions` by `{$dimension}`, in the selected period and the compare period."
+			"The `{$method}()` method should ask for up to 500 rows of `sessions` by `{$dimension}`, in the selected period and the compare period."
 		);
 	}
 
@@ -201,7 +201,7 @@ class Report_OptionsTest extends TestCase {
 						'desc'   => true,
 					),
 				),
-				'limit'            => 50,
+				'limit'            => 500,
 				'dimensionFilters' => array(
 					'newVsReturning' => array(
 						'filterType'    => 'emptyFilter',
@@ -210,7 +210,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_visitor_mix_options(),
-			'The `get_visitor_mix_options()` method should ask for up to 50 rows of `sessions` by `newVsReturning`, in the selected period and the compare period, excluding the rows that are neither new nor returning.'
+			'The `get_visitor_mix_options()` method should ask for up to 500 rows of `sessions` by `newVsReturning`, in the selected period and the compare period, excluding the rows that are neither new nor returning.'
 		);
 	}
 
@@ -233,7 +233,7 @@ class Report_OptionsTest extends TestCase {
 						'desc'   => true,
 					),
 				),
-				'limit'            => 50,
+				'limit'            => 500,
 				'dimensionFilters' => array(
 					'sessionSource' => array(
 						'filterType'    => 'stringFilter',
@@ -244,7 +244,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_referrers_options(),
-			'The `get_referrers_options()` method should ask for up to 50 rows of `sessions` by `sessionSource`, in the selected period and the compare period, excluding the `(direct)` row.'
+			'The `get_referrers_options()` method should ask for up to 500 rows of `sessions` by `sessionSource`, in the selected period and the compare period, excluding the `(direct)` row.'
 		);
 	}
 
@@ -269,7 +269,7 @@ class Report_OptionsTest extends TestCase {
 						'desc'   => true,
 					),
 				),
-				'limit'            => 50,
+				'limit'            => 500,
 				'dimensionFilters' => array(
 					'customEvent:googlesitekit_post_date' => array(
 						'filterType'    => 'emptyFilter',
@@ -278,7 +278,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_content_options(),
-			'The `get_content_options()` method should ask for up to 50 rows of `sessions` by `pagePath`, `pageTitle`, and `customEvent:googlesitekit_post_date`, in the selected period and the compare period, excluding the rows with no post date.'
+			'The `get_content_options()` method should ask for up to 500 rows of `sessions` by `pagePath`, `pageTitle`, and `customEvent:googlesitekit_post_date`, in the selected period and the compare period, excluding the rows with no post date.'
 		);
 	}
 
@@ -301,7 +301,7 @@ class Report_OptionsTest extends TestCase {
 						'desc'   => true,
 					),
 				),
-				'limit'            => 50,
+				'limit'            => 500,
 				'dimensionFilters' => array(
 					'customEvent:googlesitekit_post_categories' => array(
 						'filterType'    => 'emptyFilter',
@@ -310,7 +310,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_categories_options(),
-			'The `get_categories_options()` method should ask for up to 50 rows of `sessions` by `customEvent:googlesitekit_post_categories`, in the selected period and the compare period, excluding the rows with no category.'
+			'The `get_categories_options()` method should ask for up to 500 rows of `sessions` by `customEvent:googlesitekit_post_categories`, in the selected period and the compare period, excluding the rows with no category.'
 		);
 	}
 }

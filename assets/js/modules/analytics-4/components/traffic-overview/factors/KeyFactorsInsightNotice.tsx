@@ -40,9 +40,15 @@ const KeyFactorsInsightNotice: FC< KeyFactorsInsightNoticeProps > = ( {
 	text,
 	loading = false,
 } ) => {
+	// The insight arrives seconds after the rest of the panel, so the notice is
+	// a polite live region from its placeholder on, and a screen reader reads
+	// the insight out once it replaces the placeholder.
 	if ( loading ) {
 		return (
-			<div className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__key-factors-insight">
+			<div
+				className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__key-factors-insight"
+				aria-live="polite"
+			>
 				<PreviewBlock width="100%" height="72px" />
 			</div>
 		);
@@ -55,7 +61,10 @@ const KeyFactorsInsightNotice: FC< KeyFactorsInsightNoticeProps > = ( {
 	return (
 		// The notice shares its look, and so its classes, with the Recent
 		// activity tab's insight notice.
-		<div className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__key-factors-insight">
+		<div
+			className="googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__key-factors-insight"
+			aria-live="polite"
+		>
 			<div className="googlesitekit-traffic-overview__insight-notice-content">
 				<div className="googlesitekit-traffic-overview__insight-notice-message">
 					<span className="googlesitekit-traffic-overview__insight-notice-icon">

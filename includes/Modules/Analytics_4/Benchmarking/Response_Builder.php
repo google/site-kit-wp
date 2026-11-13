@@ -83,7 +83,7 @@ class Response_Builder {
 	 *     The assembled response, or the error a failed report returned.
 	 *
 	 *     @type array       $visits           Visit totals for the selected period and the one before it.
-	 *     @type array       $dailyTraffic     List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day with fewer than `Expected_Baseline::MINIMUM_HISTORY_DAYS` days of recorded traffic up to and including it.
+	 *     @type array       $dailyTraffic     List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the expected range of the period, as `Period_Baseline::get_daily_ranges()` spreads it over the period's days. The bounds are null on every day when the period has no expected range, with fewer than `Period_Baseline::get_min_range_history_days()` days of recorded traffic up to and including its last day.
 	 *     @type string|null $firstTrafficDate The first day of the daily report with visits, as `YYYY-MM-DD`, or null when no day has any.
 	 *     @type array       $dimensions       Dimension codes, in the order the Traffic overview tab shows them.
 	 *     @type array       $contextualData   Ranked rows, keyed by the dimension they belong to.
@@ -94,14 +94,13 @@ class Response_Builder {
 		$report_options = new Report_Options( $start_date, $end_date );
 		$requests       = $this->get_report_requests( $report_options );
 		$reports        = $this->run_reports( $requests );
-
 		if ( is_wp_error( $reports ) ) {
 			return $reports;
 		}
 
-		$daily_series      = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
-		$expected_baseline = new Expected_Baseline( $daily_series );
-		$compare_range     = $report_options->get_compare_range();
+		$daily_series    = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
+		$period_baseline = Period_Baseline::from_daily_series( $daily_series );
+		$compare_range   = $report_options->get_compare_range();
 
 		$visits = array(
 			'current'  => $this->sum_visits( $daily_series, $start_date, $end_date ),
@@ -123,7 +122,7 @@ class Response_Builder {
 
 		$response = array(
 			'visits'           => $visits,
-			'dailyTraffic'     => $this->get_daily_traffic( $daily_series, $start_date, $expected_baseline ),
+			'dailyTraffic'     => $this->get_daily_traffic( $daily_series, $start_date, $end_date, $period_baseline ),
 			'firstTrafficDate' => $this->get_first_traffic_date( $daily_series ),
 			'dimensions'       => $ranked_data['dimensions'],
 			'contextualData'   => $ranked_data['contextualData'],
@@ -370,34 +369,39 @@ class Response_Builder {
 	 * which `dailyTraffic` leaves out.
 	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Added the `$expected_baseline` parameter, and gives each day `expectedMin` and `expectedMax`.
+	 * @since n.e.x.t Added the `$end_date` and `$period_baseline` parameters, and gives each day `expectedMin` and `expectedMax`.
 	 *
-	 * @param array             $daily_series      The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
-	 * @param string            $start_date        The first day of the selected period, as `YYYY-MM-DD`.
-	 * @param Expected_Baseline $expected_baseline The expected range of the same daily series.
+	 * @param array           $daily_series    The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
+	 * @param string          $start_date      The first day of the selected period, as `YYYY-MM-DD`.
+	 * @param string          $end_date        The last day of the selected period, as `YYYY-MM-DD`.
+	 * @param Period_Baseline $period_baseline The model of the same daily series.
 	 * @return array List of days from `$start_date` on, keyed from `0`, each with `date`, `visits`, `expectedMin` and `expectedMax`.
 	 */
-	private function get_daily_traffic( array $daily_series, $start_date, Expected_Baseline $expected_baseline ) {
-		$daily_traffic = array();
+	private function get_daily_traffic( array $daily_series, $start_date, $end_date, Period_Baseline $period_baseline ) {
+		$period_days = array_values(
+			array_filter(
+				$daily_series,
+				fn( $day ) => $day['date'] >= $start_date
+			)
+		);
 
-		foreach ( $daily_series as $position => $day ) {
-			if ( $day['date'] < $start_date ) {
-				continue;
-			}
+		// The band under the period is the range of the period's verdict, which
+		// the insight request sends as its `baseline`, spread over its days.
+		$daily_ranges = $period_baseline->get_daily_ranges( $end_date, count( $period_days ) );
 
-			// The fit reads the day's position in the whole daily series, so it
-			// sees the history before the selected period.
-			$fit = $expected_baseline->get_fit( $position );
+		return array_map(
+			function ( $day ) use ( $daily_ranges ) {
+				$daily_range = isset( $daily_ranges[ $day['date'] ] ) ? $daily_ranges[ $day['date'] ] : null;
 
-			$daily_traffic[] = array(
-				'date'        => $day['date'],
-				'visits'      => $day['visits'],
-				'expectedMin' => $fit['expectedMin'],
-				'expectedMax' => $fit['expectedMax'],
-			);
-		}
-
-		return $daily_traffic;
+				return array(
+					'date'        => $day['date'],
+					'visits'      => $day['visits'],
+					'expectedMin' => $daily_range ? $daily_range['expected_min'] : null,
+					'expectedMax' => $daily_range ? $daily_range['expected_max'] : null,
+				);
+			},
+			$period_days
+		);
 	}
 
 	/**

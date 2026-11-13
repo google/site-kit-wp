@@ -456,6 +456,24 @@ class Get_Benchmarking_InsightTest extends TestCase {
 
 	public function data_service_errors() {
 		return array(
+			'400'                  => array(
+				400,
+				array(),
+				400,
+				array(
+					'status' => 400,
+					'reason' => 'OPERATION_NOT_FOUND',
+				),
+			),
+			'403'                  => array(
+				403,
+				array(),
+				403,
+				array(
+					'status' => 403,
+					'reason' => 'OPERATION_NOT_FOUND',
+				),
+			),
 			'404'                  => array(
 				404,
 				array(),
@@ -465,14 +483,39 @@ class Get_Benchmarking_InsightTest extends TestCase {
 					'reason' => 'OPERATION_NOT_FOUND',
 				),
 			),
+			// A read spends none of the service's rate limit, so the service
+			// never answers it with a 409 or a 429.
+			'409 with Retry-After' => array(
+				409,
+				array( 'retry-after' => '5' ),
+				500,
+				array(
+					'status'     => 500,
+					'reason'     => 'OPERATION_NOT_FOUND',
+					'retryAfter' => 5,
+				),
+			),
 			'429 with Retry-After' => array(
 				429,
 				array( 'retry-after' => '60' ),
-				429,
+				500,
 				array(
-					'status'     => 429,
+					'status'     => 500,
 					'reason'     => 'OPERATION_NOT_FOUND',
 					'retryAfter' => 60,
+				),
+			),
+			// Only an operation that failed with code 503 is a 503, so the
+			// browser asks for the insight again only when an instance
+			// shutdown interrupted its generation.
+			'503 with Retry-After' => array(
+				503,
+				array( 'retry-after' => '5' ),
+				500,
+				array(
+					'status'     => 500,
+					'reason'     => 'OPERATION_NOT_FOUND',
+					'retryAfter' => 5,
 				),
 			),
 			'401'                  => array(

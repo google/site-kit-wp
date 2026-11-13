@@ -44,6 +44,7 @@ import { createCacheKey } from '@/js/googlesitekit/api';
 import { deleteItem, getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	BenchmarkingInsight,
@@ -51,7 +52,10 @@ import {
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '@/js/util';
 import { ErrorObject } from '@/js/util/errors';
-import { BenchmarkingDataParams } from './benchmarking';
+import {
+	BenchmarkingDataParams,
+	validateBenchmarkingDataParams,
+} from './benchmarking';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 const { clearSelectorError, setErrorForSelector } = errorStoreActions;
@@ -110,6 +114,7 @@ const RESUBMITTED_OPERATION_STATUSES = [ 404, 503 ];
 
 const RESOLVE_BENCHMARKING_INSIGHT = 'RESOLVE_BENCHMARKING_INSIGHT';
 const RECEIVE_BENCHMARKING_INSIGHT = 'RECEIVE_BENCHMARKING_INSIGHT';
+const CLEAR_BENCHMARKING_INSIGHT = 'CLEAR_BENCHMARKING_INSIGHT';
 
 interface SubmitBenchmarkingInsightResponse {
 	/** The ID of the operation that generates the insight, when the service has to generate it. */
@@ -757,6 +762,73 @@ const baseActions = {
 			payload: { insight, startDate, endDate },
 		};
 	},
+
+	/**
+	 * Deletes the generated insight of a date range from the store and from
+	 * the storage of the API cache, so the next `getBenchmarkingInsight()`
+	 * call for those dates asks for it again.
+	 *
+	 * The key of the cache entry has the locale that the benchmarking response
+	 * for the same dates names, so the entry is deleted only while the store
+	 * has that response. `clearBenchmarkingData()` calls this action before it
+	 * deletes the response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
+	 * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
+	 * @return {Object} Generator instance.
+	 */
+	clearBenchmarkingInsight: createValidatedAction(
+		( startDate: string, endDate: string ) =>
+			validateBenchmarkingDataParams( { startDate, endDate } ),
+		function* (
+			startDate: string,
+			endDate: string
+		): Generator< unknown, void, unknown > {
+			const registry = ( yield commonActions.getRegistry() ) as Registry;
+			const { getBenchmarkingData, hasFinishedResolution } =
+				registry.select( MODULES_ANALYTICS_4 );
+
+			// Reading the response before its request has finished would send
+			// the request.
+			const hasBenchmarkingResponse = hasFinishedResolution(
+				'getBenchmarkingData',
+				[ startDate, endDate ]
+			);
+			const benchmarkingResponse:
+				| DecodedBenchmarkingResponse
+				| undefined = hasBenchmarkingResponse
+				? getBenchmarkingData( startDate, endDate )
+				: undefined;
+
+			// The entry is deleted even while the API cache is off, since it
+			// may have been written while the cache was on.
+			if ( benchmarkingResponse?.insightPayload ) {
+				yield commonActions.await(
+					deleteItem(
+						getInsightCacheKey(
+							startDate,
+							endDate,
+							benchmarkingResponse.insightLocale || ''
+						)
+					)
+				);
+			}
+
+			yield {
+				type: CLEAR_BENCHMARKING_INSIGHT,
+				payload: { startDate, endDate },
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.invalidateResolution( 'getBenchmarkingInsight', [
+					startDate,
+					endDate,
+				] );
+		}
+	),
 };
 
 const baseControls = {
@@ -787,6 +859,14 @@ const baseReducer = createReducer(
 				const { insight, startDate, endDate } = payload;
 				state.benchmarkingInsights[ `${ startDate }::${ endDate }` ] =
 					insight;
+				break;
+			}
+
+			case CLEAR_BENCHMARKING_INSIGHT: {
+				const { startDate, endDate } = payload;
+				delete state.benchmarkingInsights[
+					`${ startDate }::${ endDate }`
+				];
 				break;
 			}
 

@@ -56,6 +56,34 @@ describe( 'TrafficInsightNotice', () => {
 		);
 	} );
 
+	it( 'should keep the same polite live region from the placeholder to the insight, so a screen reader reads the insight out once it arrives', () => {
+		const { container, rerender } = render(
+			<TrafficInsightNotice loading />
+		);
+
+		const liveRegion = container.querySelector(
+			'.googlesitekit-traffic-overview__traffic-insight'
+		);
+
+		expect( liveRegion ).toHaveAttribute( 'aria-live', 'polite' );
+
+		rerender(
+			<TrafficInsightNotice text="Your traffic is within your typical range" />
+		);
+
+		// A live region announces a change to its content, not a region that
+		// replaces it, so the insight arrives in the same element.
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__traffic-insight'
+			)
+		).toBe( liveRegion );
+		expect( liveRegion ).toHaveAttribute( 'aria-live', 'polite' );
+		expect( liveRegion ).toHaveTextContent(
+			'Your traffic is within your typical range'
+		);
+	} );
+
 	it.each( [
 		[ 'null', null ],
 		[ 'an empty string', '' ],

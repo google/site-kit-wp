@@ -25,8 +25,9 @@ use DateTimeZone;
  *
  * The range is a forecast of the judged period's total, fitted only on the
  * days before the period's first day, so nothing inside the period can move
- * it. That is unlike Expected_Baseline, which gives the chart its daily band
- * and fits each day's band on that day and the days before it.
+ * it. The chart draws the same range under the period, spread over its days
+ * by the site's weekday pattern (§5.6), so the band under the period is the
+ * band its verdict used.
  *
  * The model always fits 28-day blocks, whatever the period's length. It
  * removes spikes and outages from the reference, the up to 365 days before
@@ -241,6 +242,33 @@ class Period_Baseline {
 	}
 
 	/**
+	 * Creates the model of a site's daily series, from its first day with
+	 * visits on.
+	 *
+	 * The site's history counts from the first day it recorded traffic, so the
+	 * days before it, when the site wasn't measured yet, count neither towards
+	 * the history a range needs nor as last year's days without visits. This
+	 * is also the series the service's reference client reads, since Analytics
+	 * reports no row for a day without visits.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $daily_series The days of the daily series, oldest first, each as `array( 'date' => 'YYYY-MM-DD', 'visits' => int )`.
+	 * @return Period_Baseline The model of the days from the first day with visits on, which has no day when no day has visits.
+	 */
+	public static function from_daily_series( array $daily_series ) {
+		$daily_series = array_values( $daily_series );
+
+		foreach ( $daily_series as $position => $day ) {
+			if ( $day['visits'] > 0 ) {
+				return new self( array_slice( $daily_series, $position ) );
+			}
+		}
+
+		return new self( array() );
+	}
+
+	/**
 	 * Gets the fewest days of history, up to and including a period's last day,
 	 * that give the period a range: the period and two 28-day reference blocks.
 	 *
@@ -280,6 +308,69 @@ class Period_Baseline {
 			'expected_range_min' => (int) max( 0, round( $model['center'] - $model['margin'] ) ),
 			'expected_range_max' => (int) round( $model['center'] + $model['margin'] ),
 		);
+	}
+
+	/**
+	 * Gets the expected range of each day of the period that ends on a day:
+	 * the band the chart draws under the period.
+	 *
+	 * The period's range is spread over its days by the weekday factors: each
+	 * day gets the range times its weekday's share of the period's weight. So
+	 * the band keeps the range of the period's verdict across the period while
+	 * its weekday shape changes, and the days add up to the range to within
+	 * the rounding. This is the service's `dailyBand()` in
+	 * `internal/ai/expected_range.go` for the block that ends on the target
+	 * date, which §5.6 of its design specifies.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $target_date The period's last day, as `YYYY-MM-DD`: the last complete day.
+	 * @param int    $period_days The period's length in days. A length that is not above `0` is read as 28.
+	 * @return array|null The range of each day of the period, oldest first and keyed by its date as `YYYY-MM-DD`, with `expected_min` and `expected_max` rounded half away from zero to one decimal place; or null when the period has no range, as get_range() has none.
+	 */
+	public function get_daily_ranges( $target_date, $period_days ) {
+		$model = $this->get_model( $target_date, $period_days );
+
+		if ( null === $model ) {
+			return null;
+		}
+
+		$end       = self::parse_date( $target_date );
+		$days      = self::get_period_days( $period_days );
+		$range_min = max( 0, $model['center'] - $model['margin'] );
+		$range_max = max( 0, $model['center'] + $model['margin'] );
+		$ranges    = array();
+
+		for ( $offset = $days - 1; $offset >= 0; $offset-- ) {
+			$day   = self::shift_day( $end, -$offset );
+			$share = $model['dow_factors_sunday_first'][ (int) $day->format( 'w' ) ] / $model['period_weight'];
+
+			$ranges[ $day->format( 'Y-m-d' ) ] = array(
+				'expected_min' => round( $range_min * $share * 10 ) / 10,
+				'expected_max' => round( $range_max * $share * 10 ) / 10,
+			);
+		}
+
+		return $ranges;
+	}
+
+	/**
+	 * Gets the number of days of history up to and including a day: the days
+	 * from the earliest row on.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $target_date The last day, as `YYYY-MM-DD`.
+	 * @return int The number of days, or `0` when no row is on or before the day.
+	 */
+	public function get_history_days( $target_date ) {
+		$end = self::parse_date( $target_date );
+
+		if ( null === $end || null === $this->first_day || $this->first_day > $end ) {
+			return 0;
+		}
+
+		return $this->first_day->diff( $end )->days + 1;
 	}
 
 	/**

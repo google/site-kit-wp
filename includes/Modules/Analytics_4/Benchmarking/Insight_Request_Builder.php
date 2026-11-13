@@ -114,8 +114,7 @@ class Insight_Request_Builder {
 			return null;
 		}
 
-		$recorded_history = $this->get_recorded_history( $daily_series );
-		$period_baseline  = new Period_Baseline( $recorded_history );
+		$period_baseline = Period_Baseline::from_daily_series( $daily_series );
 
 		$request = array(
 			'end_date'       => $end_date,
@@ -137,7 +136,7 @@ class Insight_Request_Builder {
 		if ( null !== $baseline ) {
 			$request['baseline'] = $baseline;
 		} else {
-			$request['history_days'] = count( $recorded_history );
+			$request['history_days'] = $period_baseline->get_history_days( $end_date );
 		}
 
 		$request_contextual_data = $this->build_contextual_data( $contextual_data, $days_in_period );
@@ -162,32 +161,6 @@ class Insight_Request_Builder {
 		$utc = new DateTimeZone( 'UTC' );
 
 		return ( new DateTimeImmutable( $start_date, $utc ) )->diff( new DateTimeImmutable( $end_date, $utc ) )->days + 1;
-	}
-
-	/**
-	 * Gets the days of the daily series from the first day with visits on.
-	 *
-	 * The site's history counts from the first day it recorded traffic, so the
-	 * days before it, when the site wasn't measured yet, count neither towards
-	 * the history the expected range needs nor as a year-ago period without
-	 * visits. This is also what the service's reference client reads, since
-	 * Analytics reports no row for a day without visits.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $daily_series The days of the daily series, oldest first, each with `date` and `visits`.
-	 * @return array The days from the first day with visits on, or an empty list when no day has visits.
-	 */
-	private function get_recorded_history( array $daily_series ) {
-		$daily_series = array_values( $daily_series );
-
-		foreach ( $daily_series as $position => $day ) {
-			if ( $day['visits'] > 0 ) {
-				return array_slice( $daily_series, $position );
-			}
-		}
-
-		return array();
 	}
 
 	/**

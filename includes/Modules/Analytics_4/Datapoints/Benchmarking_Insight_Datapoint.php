@@ -42,7 +42,8 @@ abstract class Benchmarking_Insight_Datapoint extends Shareable_Datapoint implem
 	/**
 	 * The statuses of a failed service request the browser acts on. Each of
 	 * them means one thing to the store that waits for the insight. Any other
-	 * failure, including a transport error that has no status, is a 500.
+	 * failure, including a transport error that has no status, is a 500. A
+	 * datapoint that the service answers with fewer of them overrides the list.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -182,7 +183,7 @@ abstract class Benchmarking_Insight_Datapoint extends Shareable_Datapoint implem
 		$status     = isset( $error_data['status'] ) ? (int) $error_data['status'] : 0;
 
 		$data = array(
-			'status' => in_array( $status, self::PASSED_ERROR_STATUSES, true ) ? $status : 500,
+			'status' => in_array( $status, static::PASSED_ERROR_STATUSES, true ) ? $status : 500,
 		);
 
 		foreach ( array( 'reason', 'retryAfter' ) as $key ) {

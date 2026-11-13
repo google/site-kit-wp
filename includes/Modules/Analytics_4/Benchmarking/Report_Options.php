@@ -35,11 +35,18 @@ class Report_Options {
 	const MAXIMUM_PERIOD_DAYS = 90;
 
 	/**
-	 * The most rows a dimension report asks Analytics for in each of its periods.
+	 * The most rows a dimension report asks for.
+	 *
+	 * A row that the report cuts off in one period counts as a row without
+	 * visits in that period, and so as a row that changed by all of its
+	 * visits. The limit is far above the number of rows the response and the
+	 * insight request keep, so that the rows they keep are not cut off in
+	 * either period.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Raised from 50 to 500.
 	 */
-	const REPORT_ROW_LIMIT = 50;
+	const REPORT_ROW_LIMIT = 500;
 
 	/**
 	 * How far back, in days, last year's periods sit: 52 whole weeks, so each
@@ -107,8 +114,7 @@ class Report_Options {
 	 * The report covers the selected period, the compare period, and the same
 	 * two periods 52 weeks earlier, which the insight request sends as last
 	 * year's visits. That also covers the 365 days before the selected period,
-	 * more than `Expected_Baseline` fits the first day of the period on and as
-	 * many as `Period_Baseline` fits the period's expected range on.
+	 * as many as `Period_Baseline` fits the period's expected range on.
 	 * `Response_Builder::build()` adds up the visits of each period from this
 	 * report, and returns the days of the selected period alone as
 	 * `dailyTraffic`.

@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use DateTimeImmutable;
 use DateTimeZone;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Expected_Baseline;
+use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Period_Baseline;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -565,7 +565,7 @@ class Response_BuilderTest extends TestCase {
 				),
 			),
 			array_slice( $daily_traffic, 0, 3 ),
-			'`dailyTraffic` should list 0 visits for `2026-08-20`, and keep `2026-08-21` as the third day. None of the three days has 28 days of recorded traffic, so none has an expected range.'
+			'`dailyTraffic` should list 0 visits for `2026-08-20`, and keep `2026-08-21` as the third day. The site recorded its first visits on `2026-08-19`, too late for the period to have an expected range, so none of the three days has one.'
 		);
 	}
 
@@ -824,14 +824,17 @@ class Response_BuilderTest extends TestCase {
 
 		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
 
+		// The period's range is `2341` to `3259` visits: a center of `2800` and
+		// a margin of `458.97`, which the traffic-size default sets for a site
+		// without misses. Each day has its 28th of it.
 		$this->assertSame(
-			array_fill( 0, 28, array( 77.6, 122.4 ) ),
+			array_fill( 0, 28, array( 83.6, 116.4 ) ),
 			$this->get_expected_ranges( $daily_traffic ),
-			'With 100 visits on every day of the daily report, each of the 28 days should have `77.6` to `122.4` as its expected range.'
+			'With 100 visits on every day of the daily report, each of the 28 days should have `83.6` to `116.4` as its expected range.'
 		);
 	}
 
-	public function test_build__gives_each_day_the_expected_range_fitted_on_the_daily_report() {
+	public function test_build__gives_each_day_its_share_of_the_expected_range_of_the_period() {
 		$get_visits        = fn( $position ) => 150 + ( $position * 37 ) % 91 - ( 0 === $position % 7 ? 60 : 0 );
 		$this->report_rows = array(
 			'date' => $this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ),
@@ -847,22 +850,68 @@ class Response_BuilderTest extends TestCase {
 			$this->report_rows['date']
 		);
 
-		$expected_baseline = new Expected_Baseline( $daily_series );
+		$daily_ranges = Period_Baseline::from_daily_series( $daily_series )->get_daily_ranges( '2026-09-15', 28 );
 
-		// `2026-08-19`, the first day of the selected period, is at position 364
-		// of the daily report.
 		$this->assertSame(
 			array_map(
-				function ( $position ) use ( $expected_baseline ) {
-					$fit = $expected_baseline->get_fit( $position );
-
-					return array( $fit['expectedMin'], $fit['expectedMax'] );
-				},
-				range( 364, 391 )
+				fn( $daily_range ) => array( $daily_range['expected_min'], $daily_range['expected_max'] ),
+				array_values( $daily_ranges )
 			),
 			$this->get_expected_ranges( $daily_traffic ),
-			'Each day should have the expected range `Expected_Baseline` fits for the same day of the same daily report.'
+			'Each day should have the share of the period\'s expected range that `Period_Baseline` gives it for the same daily report.'
 		);
+	}
+
+	public function test_build__gives_the_selected_period_the_expected_range_of_its_insight_request() {
+		$this->enable_feature( 'trafficInsights' );
+
+		$get_visits        = fn( $position ) => 150 + ( $position * 37 ) % 91 - ( 0 === $position % 7 ? 60 : 0 );
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ),
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+		$baseline = $response['insightRequest']['baseline'];
+
+		// Each day's bounds are rounded to one decimal, so the 28 days add up to
+		// the range to within 1.4 visits, and the range's own bounds are rounded
+		// to whole visits.
+		$this->assertEqualsWithDelta(
+			$baseline['expected_range_min'],
+			array_sum( array_column( $response['dailyTraffic'], 'expectedMin' ) ),
+			2,
+			'The fewest visits of the days should add up to the fewest visits of the range the insight request sends.'
+		);
+		$this->assertEqualsWithDelta(
+			$baseline['expected_range_max'],
+			array_sum( array_column( $response['dailyTraffic'], 'expectedMax' ) ),
+			2,
+			'The most visits of the days should add up to the most visits of the range the insight request sends.'
+		);
+	}
+
+	public function test_build__gives_a_weekday_with_fewer_visits_a_lower_expected_range() {
+		// `2025-08-20` is a Wednesday, so positions 3 and 4 of each week are the
+		// Saturday and the Sunday.
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows(
+				'2025-08-20',
+				'2026-09-15',
+				fn( $position ) => in_array( $position % 7, array( 3, 4 ), true ) ? 40 : 120
+			),
+		);
+
+		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
+
+		foreach ( $daily_traffic as $day ) {
+			$weekday = ( new DateTimeImmutable( $day['date'], new DateTimeZone( 'UTC' ) ) )->format( 'w' );
+
+			if ( in_array( $weekday, array( '0', '6' ), true ) ) {
+				$this->assertSame( array( 38.2, 53.3 ), array( $day['expectedMin'], $day['expectedMax'] ), "`{$day['date']}` is on a weekend, which has 40 visits a day, so it should have the expected range of a weekend day." );
+			} else {
+				$this->assertSame( array( 98.3, 137.1 ), array( $day['expectedMin'], $day['expectedMax'] ), "`{$day['date']}` is on a weekday, which has 120 visits a day, so it should have the expected range of a weekday." );
+			}
+		}
 	}
 
 	public function test_build__gives_a_day_with_no_visits_after_a_year_of_visits_an_expected_range() {
@@ -875,31 +924,47 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( '2026-08-19', $daily_traffic[0]['date'], '`dailyTraffic` should start on `2026-08-19`, and list no day of the history before it.' );
 		$this->assertCount( 28, $daily_traffic, '`dailyTraffic` should list the 28 days of the selected period alone.' );
 
+		// The range is fitted on the year of 100 visits a day before the period,
+		// as in the steady year above, so the period's own visits don't move it.
 		foreach ( $daily_traffic as $day ) {
 			$this->assertSame( 0, $day['visits'], "`{$day['date']}` should have no visits." );
-			$this->assertIsFloat( $day['expectedMin'], "`{$day['date']}` should have the fewest visits of an expected range." );
-			$this->assertIsFloat( $day['expectedMax'], "`{$day['date']}` should have the most visits of an expected range." );
+			$this->assertSame( array( 83.6, 116.4 ), array( $day['expectedMin'], $day['expectedMax'] ), "`{$day['date']}` should have the expected range of a site with 100 visits a day." );
 		}
 	}
 
-	public function test_build__gives_an_expected_range_only_to_a_day_with_28_days_of_recorded_traffic() {
+	/**
+	 * @dataProvider data_recorded_traffic_histories
+	 *
+	 * @param string $first_date The first day of the daily report with visits, as `YYYY-MM-DD`.
+	 * @param bool   $has_range  Whether the selected period should have an expected range.
+	 */
+	public function test_build__gives_the_period_an_expected_range_from_84_days_of_recorded_traffic( $first_date, $has_range ) {
 		$this->report_rows = array(
-			'date' => $this->get_daily_report_rows( '2026-08-01', '2026-09-15', fn() => 100 ),
+			'date' => $this->get_daily_report_rows( $first_date, '2026-09-15', fn() => 100 ),
 		);
 
 		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
 
 		foreach ( $daily_traffic as $day ) {
-			if ( $day['date'] < '2026-08-28' ) {
-				$this->assertSame( array( null, null ), array( $day['expectedMin'], $day['expectedMax'] ), "`{$day['date']}` has fewer than 28 days of recorded traffic, from `2026-08-01`, so it should have no expected range." );
+			if ( $has_range ) {
+				$this->assertIsFloat( $day['expectedMin'], "With recorded traffic from `$first_date`, `{$day['date']}` should have the fewest visits of an expected range." );
+				$this->assertIsFloat( $day['expectedMax'], "With recorded traffic from `$first_date`, `{$day['date']}` should have the most visits of an expected range." );
 			} else {
-				$this->assertIsFloat( $day['expectedMin'], "`{$day['date']}` has at least 28 days of recorded traffic, from `2026-08-01`, so it should have the fewest visits of an expected range." );
-				$this->assertIsFloat( $day['expectedMax'], "`{$day['date']}` has at least 28 days of recorded traffic, from `2026-08-01`, so it should have the most visits of an expected range." );
+				$this->assertSame( array( null, null ), array( $day['expectedMin'], $day['expectedMax'] ), "With recorded traffic from `$first_date`, `{$day['date']}` should have no expected range." );
 			}
 		}
 	}
 
-	public function test_build__does_not_change_the_expected_range_of_an_earlier_day_when_the_last_day_changes() {
+	public function data_recorded_traffic_histories() {
+		// A 28-day period needs the period and two 28-day blocks before it.
+		return array(
+			'84 days, from 2026-06-24' => array( '2026-06-24', true ),
+			'83 days, from 2026-06-25' => array( '2026-06-25', false ),
+			'46 days, from 2026-08-01' => array( '2026-08-01', false ),
+		);
+	}
+
+	public function test_build__does_not_change_the_expected_range_when_the_visits_of_the_selected_period_change() {
 		$get_visits        = fn( $position ) => 150 + ( $position * 37 ) % 91;
 		$this->report_rows = array(
 			'date' => $this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ),
@@ -907,20 +972,18 @@ class Response_BuilderTest extends TestCase {
 
 		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
 
-		// The last row is `2026-09-15`.
-		$this->report_rows['date'][ count( $this->report_rows['date'] ) - 1 ][1] = 9999;
+		// The rows of the selected period, from `2026-08-19`, are the last 28.
+		foreach ( array_keys( array_slice( $this->report_rows['date'], -28, null, true ) ) as $position ) {
+			$this->report_rows['date'][ $position ][1] = 9999;
+		}
 
 		$changed_daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
 
-		$this->assertNotSame(
-			$this->get_expected_ranges( array_slice( $daily_traffic, -1 ) ),
-			$this->get_expected_ranges( array_slice( $changed_daily_traffic, -1 ) ),
-			'`2026-09-15` should have an expected range of its own once its visits change.'
-		);
+		$this->assertSame( 9999, $changed_daily_traffic[0]['visits'], '`2026-08-19` should have the changed visits.' );
 		$this->assertSame(
-			$this->get_expected_ranges( array_slice( $daily_traffic, 0, 27 ) ),
-			$this->get_expected_ranges( array_slice( $changed_daily_traffic, 0, 27 ) ),
-			'Every day before `2026-09-15` should keep its expected range whatever the visits on `2026-09-15`.'
+			$this->get_expected_ranges( $daily_traffic ),
+			$this->get_expected_ranges( $changed_daily_traffic ),
+			'The expected range is fitted only on the days before the selected period, so the visits of the period should not move it.'
 		);
 	}
 
@@ -1293,11 +1356,11 @@ class Response_BuilderTest extends TestCase {
 					'end_date'           => '2026-09-15',
 					'compare_start_date' => '2026-07-22',
 					'compare_end_date'   => '2026-08-18',
-					'row_limit'          => 50,
+					'row_limit'          => 500,
 				),
 			),
 			$filter_args,
-			'The filter should receive the rows built from the Analytics reports, before they are ranked, and the two periods with the row limit of `50`.'
+			'The filter should receive the rows built from the Analytics reports, before they are ranked, and the two periods with the row limit of `500`.'
 		);
 	}
 
