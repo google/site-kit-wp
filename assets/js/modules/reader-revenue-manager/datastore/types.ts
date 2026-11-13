@@ -40,3 +40,15 @@ export interface ReaderRevenueManagerSettings {
 	contentPolicyState?: string;
 	policyInfoLink?: string;
 }
+
+export interface SurveyQuestionAnswer {
+	id: number;
+	label: string;
+}
+
+export interface SurveyQuestion {
+	id: number;
+	label: string;
+	answers: SurveyQuestionAnswer[];
+	hasConfigurableAnswers: boolean;
+}

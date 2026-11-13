@@ -485,6 +485,77 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			expect( select.getCTAs() ).toEqual( [ ctaB ] );
 		} );
 
+		it( 'should refetch the survey question catalog when changing publication settings', async () => {
+			const dispatch = registry.dispatch(
+				MODULES_READER_REVENUE_MANAGER
+			);
+
+			const select = registry.select( MODULES_READER_REVENUE_MANAGER );
+
+			const surveyQuestionCatalogEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/reader-revenue-manager/data/survey-question-catalog'
+			);
+
+			const questionA = {
+				id: 1,
+				label: 'Question A',
+				answers: [ { id: 1, label: 'Answer A' } ],
+				hasConfigurableAnswers: false,
+			};
+			const questionB = {
+				id: 2,
+				label: 'Question B',
+				answers: [ { id: 2, label: 'Answer B' } ],
+				hasConfigurableAnswers: true,
+			};
+
+			dispatch.receiveGetSettings( {
+				...validSettings,
+				publicationID: 'publication-a',
+			} );
+
+			dispatch.receiveGetSurveyQuestionCatalog( {
+				publicationID: 'publication-a',
+				questions: [ questionA ],
+			} );
+
+			expect( select.getSurveyQuestionCatalog() ).toEqual( [
+				questionA,
+			] );
+
+			const newSettings = {
+				...validSettings,
+				publicationID: 'publication-b',
+			};
+
+			fetchMock.postOnce( settingsEndpoint, { body: newSettings } );
+			fetchMock.getOnce( surveyQuestionCatalogEndpoint, {
+				body: {
+					publicationID: 'publication-b',
+					questions: [ questionB ],
+				},
+			} );
+
+			dispatch.setSettings( newSettings );
+
+			await dispatch.submitChanges();
+
+			expect( select.getSurveyQuestionCatalog() ).toBeUndefined();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationSurveyQuestionCatalog( 'publication-b' );
+
+			expect( select.getSurveyQuestionCatalog() ).toEqual( [
+				questionB,
+			] );
+			expect( fetchMock ).toHaveFetchedTimes(
+				1,
+				surveyQuestionCatalogEndpoint
+			);
+		} );
+
 		it( 'should dispatch saveSettings', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
