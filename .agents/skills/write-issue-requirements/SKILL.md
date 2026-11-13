@@ -174,21 +174,24 @@ numbers in one message rather than stopping repeatedly.
 
 ## Step 5 — Write the description
 
-The description is where the rationale for the issue is primarily written. It answers "why does this issue
-exist, and what problem does it solve" for someone who will never read the design doc or the
-support thread. Write the sections that belong to the type you settled in Step 1.
+The description answers "why does this issue exist, and what problem does it solve" for someone
+who will never read the design doc or the support thread. Write the sections that belong to the
+type you settled in Step 1.
 
 ### A feature request: the Feature Description
 
+One short paragraph, usually two or three sentences:
+
 - **Open with the gap.** What happens today, and where it falls short. Name the concrete thing
-  that doesn't cover the case — the existing component, the class, the API behavior.
+  that doesn't cover the case — the existing component or behavior.
 - **State what the issue adds for the user**, in one sentence.
-- **Outline the work involved for engineers.** Split the description when the work has more than one part (server + frontend, two
-  surfaces, markup + asset), using bold run-in headings.
-- **Carry over the decisions the issue depends on**, and why — the constraint that an acceptance
-  criterion compresses into a single line. "Why the value is stored per-user rather than
-  per-site" lives here.
-- **Prose paragraphs.** No bullets of criteria, no implementation instructions, no file trees.
+- **Add a decision the criteria depend on**, with its reason, only when the criteria would be
+  hard to understand without it: "The value is stored per user, because each user picks their
+  own date range."
+
+Then link the hosted design doc and the Figma design, when there are any. No bullets of
+criteria, no outline of the work, no implementation instructions and no file trees; how the work
+splits up is the Implementation Brief's job.
 
 ### A bug report: the Bug Description and Steps to reproduce
 
@@ -291,12 +294,21 @@ and the fix stay out of the criteria, in the same way technique does for a featu
 
 ### Shape
 
-- A flat list of `*` bullets.
-- **One outcome per bullet.** Nest a second level when a single outcome has an enumerable set of
-  cases — the conditions under which a hook must not fire, the values a param may take, the
-  forms excluded from a match rule.
-- A **table** when a criterion enumerates a lookup that prose would obscure (each widget slug
-  and the module that owns it). Inline it; never link out to it.
+- A flat list of `*` bullets, usually five to nine. When an issue needs many more, it is probably
+  more than one issue; say so in your reply (Step 7).
+- **One outcome per bullet, in one sentence.** Most bullets fit on one or two lines.
+- Nest a second level only when one outcome has a short set of cases that a tester checks one by
+  one, such as the pages where a notice must not appear.
+- No tables, and no sub-bullets that explain or justify the bullet above them.
+
+Criteria at the right length read like this:
+
+```
+* For the online store widget, the email backend retrieves the sales rate and total sales for the report period and the previous period.
+* Recipients receive Site Goals data only when they can access Analytics data under existing sharing permissions.
+* Breakdown reports run only when the site's breakdown custom dimensions exist and have data.
+* The reports run only when the `siteGoals` feature flag is enabled.
+```
 
 ### Content
 
@@ -309,17 +321,20 @@ Each bullet states an outcome:
   Name a class, hook or filter when the outcome itself is server behavior someone verifies on the
   server; do not name the internals that merely produce a visible result. Names the issue invents
   are spelled out in full words — `character_count`, never `char_cnt`.
-- **Give the input that produces the outcome**, in the form a tester can paste or click: the
-  exact `href`, URL, setting value or sequence of clicks. `https://wa.me/15551234567` is
-  verifiable; "a WhatsApp link with a recipient" is not.
+- **Give an input only when the outcome can't be checked without it**, in the form a tester can
+  paste or click: the exact `href`, URL or setting value. `https://wa.me/15551234567` is
+  verifiable; "a WhatsApp link with a recipient" is not. One input per outcome; a longer list of
+  inputs to try belongs in the QA Brief.
 - **State the whole outcome, not half of it.** "`https://notwa.me/1555` must not classify" leaves
   out *as what*; "clicking it sends no event" is complete. A criterion the reader has to
   interpret cannot be graded.
 - **List every case you refer to as a group.** "Share links are excluded" is not checkable until
-  the criterion writes out the share links it means. Give the members inline, or in a table the
-  criterion carries.
-- **Give the values**: `viewContext: 'mainDashboard'`, `dateRange: 'last-28-days'`, `limit: 3`,
-  a 300-second cache TTL.
+  the criterion writes out the share links it means. Give the members inline, in the same
+  sentence.
+- **Give the values the tester checks**: `viewContext: 'mainDashboard'`, `dateRange:
+  'last-28-days'`, `limit: 3`, a 300-second cache TTL.
+- **Copy user-facing text exactly from the Figma design**, and link the Figma frame it comes
+  from. Don't take it from a screenshot in the design doc.
 - **State cardinality** when it matters: "at most once per request", "exactly once per page
   view", "exactly one of the four states".
 - **Say what must stay unchanged** when the change touches shared code, naming the consumers
@@ -329,8 +344,9 @@ Each bullet states an outcome:
 
 A criterion states the outcome of implementing the brief, and nothing else. Cut:
 
-- **Rationale.** No "because", "since", "so that", "— the same reasoning as X". If a bullet
-  explains itself, the explanation belongs in the Feature Description.
+- **Rationale.** No "because", "since", "so that", "— the same reasoning as X". If a reason is
+  needed at all, it goes in the Feature Description when it is about behavior, and in the
+  Implementation Brief when it is about the code.
 - **Technique and mechanism.** *How* the plugin matches, parses, stores or listens is the brief's
   job. "The value falls back to the site default when the user setting is unset" is an outcome;
   "read with `array_key_exists()` rather than `isset()`", "a single delegated listener on
@@ -338,6 +354,9 @@ A criterion states the outcome of implementing the brief, and nothing else. Cut:
   outcome and its counter-example ("an explicit `null` is preserved"), drop the rest.
 - **Negative parentheticals.** No "(not an `id`)", "(not the raw response)", "rather than
   assumed to be the first entry". State what it *is*.
+- **Edge-case catalogs.** A decision for each corner case (zero sessions, an empty string, an
+  unclosed tag) goes to the Implementation Brief, and a list of inputs to try goes to the QA
+  Brief. The criteria keep the main outcomes and the boundaries a user would notice.
 - **Restatements.** Name the thing once, in the bullet that defines when it happens. Never add
   a separate "the selector is named `X`" bullet, and never re-justify the name.
 - **Work that isn't being done.** No "no new setting is registered", "no Storybook story is
@@ -353,6 +372,9 @@ and that a test can assert: "the notification is not rendered when …", "an unc
 contributes nothing", "the legacy option is not written", "the payload carries the slug and
 nothing else", "nothing is enqueued when the feature flag is off". A boundary with no observable
 edge — nothing a tester could do that would show the difference — is not one the issue needs.
+
+Read the finished criteria as the QA engineer. Delete every bullet they would not check, join
+bullets that check the same thing, and cut every clause that does not change what they check.
 
 ## Step 7 — Report what did not go in the issue
 
@@ -385,6 +407,10 @@ Everything you decided, cut or discovered belongs in your reply to the user — 
   template gives them, except for environment facts the user actually stated.
 - **Plain, simple words.** No idioms, no metaphors, no unexplained jargon, no half sentences.
   Name who does what to what, and list the members of every set you name — see Steps 5 and 6.
+- **Short description.** A Feature Description is one paragraph of two or three sentences, plus
+  links — see Step 5.
+- **Short criteria.** Usually five to nine bullets, one outcome in one sentence each. No tables,
+  no explanations, no edge-case catalogs — see Step 6.
 - **Criteria are observable behavior.** Written for whoever verifies the feature by using it, not
   for whoever writes the code. Anything that can only be checked by reading the source belongs in
   the Implementation Brief.
