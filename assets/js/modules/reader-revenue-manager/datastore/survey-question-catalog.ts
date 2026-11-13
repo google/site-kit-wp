@@ -31,7 +31,6 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { combineStores } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
@@ -50,10 +49,6 @@ type GetSurveyQuestionCatalogResponse = {
 interface SurveyQuestionCatalogState {
 	surveyQuestionCatalog: Record< string, SurveyQuestion[] >;
 }
-
-type Registry = WPDataRegistry & {
-	resolveSelect: WPDataRegistry[ 'select' ];
-};
 
 const fetchGetSurveyQuestionCatalogStore = createFetchStore( {
 	baseName: 'getSurveyQuestionCatalog',
@@ -79,58 +74,18 @@ const baseInitialState: SurveyQuestionCatalogState = {
 	surveyQuestionCatalog: {},
 };
 
-const baseActions = {
-	/**
-	 * Invalidates the survey question catalog resolution, so it is requested
-	 * again.
-	 *
-	 * The stored catalogs are kept, as each publication's catalog is stored
-	 * under its own publication ID and cannot be mistaken for another's.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Object} The dispatched action results.
-	 */
-	*resetSurveyQuestionCatalog(): Generator< unknown, unknown, unknown > {
+const baseResolvers = {
+	*getPublicationSurveyQuestionCatalog(
+		publicationID: string
+	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as WPDataRegistry;
-
-		yield errorStoreActions.clearSelectorErrors(
-			'getSurveyQuestionCatalog'
-		);
-
-		return registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.invalidateResolutionForStoreSelector( 'getSurveyQuestionCatalog' );
-	},
-};
-
-const baseResolvers = {
-	*getSurveyQuestionCatalog(): Generator< unknown, void, unknown > {
-		const registryResult = yield commonActions.getRegistry();
-		const registry = registryResult as Registry;
-
-		// The saved publication ID decides whether to fetch, so wait for the
-		// settings before reading it.
-		yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-				.getSettings()
-		);
-
-		const publicationID = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getSavedPublicationID();
-
-		// No connected publication to get the catalog for.
-		if ( ! publicationID ) {
-			return;
-		}
 
 		if (
 			registry
 				.select( MODULES_READER_REVENUE_MANAGER )
-				.getSurveyQuestionCatalog() !== undefined
+				.getPublicationSurveyQuestionCatalog( publicationID ) !==
+			undefined
 		) {
 			return;
 		}
@@ -142,39 +97,65 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
+	 * Gets the survey question catalog stored for a publication.
+	 *
+	 * The resolution is keyed by the publication ID, so a change of the
+	 * connected publication starts a new request without resetting anything.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param  state         Data store's state.
+	 * @param  publicationID Publication ID.
+	 * @return {(Array.<Object>|undefined)} The catalog questions; `undefined` if not loaded yet.
+	 */
+	getPublicationSurveyQuestionCatalog(
+		state: SurveyQuestionCatalogState,
+		publicationID: string
+	): SurveyQuestion[] | undefined {
+		return state.surveyQuestionCatalog[ publicationID ];
+	},
+
+	/**
 	 * Gets the survey question catalog of the connected publication.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  state Data store's state.
 	 * @return {(Array.<Object>|undefined)} The catalog questions; `undefined` if not loaded yet.
 	 */
 	getSurveyQuestionCatalog: createRegistrySelector(
-		( select: Select ) =>
-			(
-				state: SurveyQuestionCatalogState
-			): SurveyQuestion[] | undefined => {
-				const savedPublicationID = select(
-					MODULES_READER_REVENUE_MANAGER
-				).getSavedPublicationID();
-
-				if ( ! savedPublicationID ) {
-					return undefined;
-				}
-
-				// A publication that has been picked but not saved yet has no
-				// catalog of its own here; the stored one belongs to the
-				// publication the server still answers for.
-				if (
-					select(
-						MODULES_READER_REVENUE_MANAGER
-					).getPublicationID() !== savedPublicationID
-				) {
-					return undefined;
-				}
-
-				return state.surveyQuestionCatalog[ savedPublicationID ];
+		( select: Select ) => (): SurveyQuestion[] | undefined => {
+			// Read the settings so they load, as the saved publication ID
+			// comes from them.
+			if (
+				select( MODULES_READER_REVENUE_MANAGER ).getSettings() ===
+				undefined
+			) {
+				return undefined;
 			}
+
+			const savedPublicationID = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getSavedPublicationID();
+
+			if ( ! savedPublicationID ) {
+				return undefined;
+			}
+
+			// A publication that has been picked but not saved yet has no
+			// catalog of its own here; the server still answers for the
+			// saved publication.
+			if (
+				select( MODULES_READER_REVENUE_MANAGER ).getPublicationID() !==
+				savedPublicationID
+			) {
+				return undefined;
+			}
+
+			return select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationSurveyQuestionCatalog( savedPublicationID );
+		}
 	),
 };
 
@@ -189,7 +170,6 @@ interface Store {
 
 const store = combineStores( fetchGetSurveyQuestionCatalogStore, {
 	initialState: baseInitialState,
-	actions: baseActions,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
 } ) as Store;

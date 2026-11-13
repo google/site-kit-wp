@@ -545,7 +545,7 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			await untilResolved(
 				registry,
 				MODULES_READER_REVENUE_MANAGER
-			).getSurveyQuestionCatalog();
+			).getPublicationSurveyQuestionCatalog( 'publication-b' );
 
 			expect( select.getSurveyQuestionCatalog() ).toEqual( [
 				questionB,

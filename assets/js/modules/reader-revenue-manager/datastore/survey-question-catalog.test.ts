@@ -77,6 +77,9 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 	/**
 	 * Connects a publication by receiving it as the saved settings.
 	 *
+	 * The settings are also set, as a save does, since received settings do
+	 * not replace settings that are already in the store.
+	 *
 	 * @since n.e.x.t
 	 * @private
 	 *
@@ -92,6 +95,10 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setSettings( settings );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.finishResolution( 'getSettings', [] );
 	}
 
@@ -101,79 +108,35 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 		connectPublication();
 	} );
 
-	describe( 'actions', () => {
-		describe( 'resetSurveyQuestionCatalog', () => {
-			it( 'should invalidate the resolution while keeping the stored catalog', async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSurveyQuestionCatalog( {
-						publicationID: connectedPublication.publicationID,
-						questions,
-					} );
+	const otherPublication = {
+		organizationID: 'WXYZ5678',
+		publicationID: 'WXYZ_567-8',
+	};
 
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.finishResolution( 'getSurveyQuestionCatalog', [] );
+	const otherQuestions: SurveyQuestion[] = [
+		{
+			id: 7,
+			label: 'What is your employment status?',
+			answers: [ { id: 5, label: 'Employed' } ],
+			hasConfigurableAnswers: false,
+		},
+	];
 
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.resetSurveyQuestionCatalog();
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.hasFinishedResolution( 'getSurveyQuestionCatalog', [] )
-				).toBe( false );
-
-				// The catalog is stored under the publication it was fetched
-				// for, so it cannot be mistaken for another publication's.
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getSurveyQuestionCatalog()
-				).toEqual( questions );
-			} );
-
-			it( 'should clear the stored error of the selector', async () => {
-				const error = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-
-				fetchMock.getOnce( surveyQuestionCatalogEndpoint, {
-					body: error,
-					status: 500,
-				} );
-
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getSurveyQuestionCatalog();
-
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getSurveyQuestionCatalog();
-
-				expect( console ).toHaveErrored();
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getErrorForSelector( 'getSurveyQuestionCatalog', [] )
-				).toMatchObject( error );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.resetSurveyQuestionCatalog();
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getErrorForSelector( 'getSurveyQuestionCatalog', [] )
-				).toBeUndefined();
-			} );
-		} );
-	} );
+	/**
+	 * Waits for the catalog of the given publication to resolve.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} publicationID Publication ID.
+	 * @return {Promise} Resolves once the catalog has resolved.
+	 */
+	function untilCatalogResolved( publicationID: string ) {
+		return untilResolved(
+			registry,
+			MODULES_READER_REVENUE_MANAGER
+		).getPublicationSurveyQuestionCatalog( publicationID );
+	}
 
 	describe( 'selectors', () => {
 		describe( 'getSurveyQuestionCatalog', () => {
@@ -192,10 +155,9 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 						.getSurveyQuestionCatalog()
 				).toBeUndefined();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getSurveyQuestionCatalog();
+				await untilCatalogResolved(
+					connectedPublication.publicationID
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes(
 					1,
@@ -214,13 +176,43 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 				).toEqual( questions );
 			} );
 
+			it( 'should store the error of a failed request for the selector', async () => {
+				const error = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( surveyQuestionCatalogEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getSurveyQuestionCatalog();
+
+				await untilCatalogResolved(
+					connectedPublication.publicationID
+				);
+
+				expect( console ).toHaveErrored();
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getErrorForSelector( 'getSurveyQuestionCatalog', [] )
+				).toMatchObject( error );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSurveyQuestionCatalog()
+				).toBeUndefined();
+			} );
+
 			it( 'should store a response under the publication it names', () => {
 				// A different publication is connected by the time the
 				// response lands.
-				connectPublication( {
-					organizationID: 'WXYZ5678',
-					publicationID: 'WXYZ_567-8',
-				} );
+				connectPublication( otherPublication );
 
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -233,15 +225,15 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 					MODULES_READER_REVENUE_MANAGER
 				);
 
-				// The newly connected publication has no catalog of its own.
-				expect( select.getSurveyQuestionCatalog() ).toBeUndefined();
-
 				// Connecting the publication the response named shows its
-				// catalog.
+				// catalog, without a request.
 				connectPublication();
 
 				expect( select.getSurveyQuestionCatalog() ).toEqual(
 					questions
+				);
+				expect( fetchMock ).not.toHaveFetched(
+					surveyQuestionCatalogEndpoint
 				);
 			} );
 
@@ -249,12 +241,15 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 				registry = createTestRegistry();
 				freezeFetch( settingsEndpoint );
 
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getSurveyQuestionCatalog();
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSurveyQuestionCatalog()
+				).toBeUndefined();
 
 				await waitForDefaultTimeouts();
 
+				expect( fetchMock ).toHaveFetched( settingsEndpoint );
 				expect( fetchMock ).not.toHaveFetched(
 					surveyQuestionCatalogEndpoint
 				);
@@ -272,19 +267,29 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 						.getSurveyQuestionCatalog()
 				).toBeUndefined();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getSurveyQuestionCatalog();
+				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).not.toHaveFetched(
 					surveyQuestionCatalogEndpoint
 				);
+			} );
+
+			it( 'should not fetch the catalog while a different publication is selected', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setPublicationID( otherPublication.publicationID );
+
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSurveyQuestionCatalog()
 				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).not.toHaveFetched(
+					surveyQuestionCatalogEndpoint
+				);
 			} );
 
 			it( 'should not fetch a catalog that is already loaded', async () => {
@@ -301,10 +306,9 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 						.getSurveyQuestionCatalog()
 				).toEqual( questions );
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getSurveyQuestionCatalog();
+				await untilCatalogResolved(
+					connectedPublication.publicationID
+				);
 
 				expect( fetchMock ).not.toHaveFetched(
 					surveyQuestionCatalogEndpoint
@@ -324,10 +328,9 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getSurveyQuestionCatalog();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getSurveyQuestionCatalog();
+				await untilCatalogResolved(
+					connectedPublication.publicationID
+				);
 
 				registry
 					.select( MODULES_READER_REVENUE_MANAGER )
@@ -337,6 +340,122 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes(
 					1,
+					surveyQuestionCatalogEndpoint
+				);
+			} );
+
+			it( 'should fetch the new catalog after the saved publication changes', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSurveyQuestionCatalog( {
+						publicationID: connectedPublication.publicationID,
+						questions,
+					} );
+
+				fetchMock.getOnce( surveyQuestionCatalogEndpoint, {
+					body: {
+						publicationID: otherPublication.publicationID,
+						questions: otherQuestions,
+					},
+					status: 200,
+				} );
+
+				connectPublication( otherPublication );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSurveyQuestionCatalog()
+				).toBeUndefined();
+
+				await untilCatalogResolved( otherPublication.publicationID );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSurveyQuestionCatalog()
+				).toEqual( otherQuestions );
+			} );
+
+			it( 'should return the first catalog again after saving another publication and then the first one', async () => {
+				fetchMock.getOnce( surveyQuestionCatalogEndpoint, {
+					body: {
+						publicationID: connectedPublication.publicationID,
+						questions,
+					},
+					status: 200,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getSurveyQuestionCatalog();
+
+				await untilCatalogResolved(
+					connectedPublication.publicationID
+				);
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSurveyQuestionCatalog( {
+						publicationID: otherPublication.publicationID,
+						questions: otherQuestions,
+					} );
+
+				connectPublication( otherPublication );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSurveyQuestionCatalog()
+				).toEqual( otherQuestions );
+
+				connectPublication();
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSurveyQuestionCatalog()
+				).toEqual( questions );
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					surveyQuestionCatalogEndpoint
+				);
+			} );
+
+			it( 'should return the catalog again after selecting another publication and then the saved one', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSurveyQuestionCatalog( {
+						publicationID: connectedPublication.publicationID,
+						questions,
+					} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setPublicationID( otherPublication.publicationID );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSurveyQuestionCatalog()
+				).toBeUndefined();
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setPublicationID( connectedPublication.publicationID );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSurveyQuestionCatalog()
+				).toEqual( questions );
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).not.toHaveFetched(
 					surveyQuestionCatalogEndpoint
 				);
 			} );
