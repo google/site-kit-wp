@@ -33,11 +33,26 @@ import { __ } from '@wordpress/i18n';
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import AccessErrorIllustration from '@/svg/graphics/recent-activity-access-error.svg';
 import RecentActivityMessage from './RecentActivityMessage';
 
 const RecentActivityAccessError: FC = () => {
+	const isViewOnly = useViewOnly();
+
+	// As with the "Request access" button of a report error, a view-only
+	// dashboard shows no link. Its Analytics settings don't include the
+	// account, property or web data stream IDs the URL is built from.
+	const requestAccessURL = useSelect(
+		( select: Select ) =>
+			isViewOnly
+				? undefined
+				: select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL(),
+		[ isViewOnly ]
+	);
+
 	// The tab shows this state only when the user can't view the Analytics
 	// data. So "get help" leads to the page about the permissions Analytics
 	// needs, as "Get help" of a report error does for a permissions error.
@@ -50,9 +65,21 @@ const RecentActivityAccessError: FC = () => {
 	);
 
 	const helpText = createInterpolateElement(
-		__( 'Try refreshing or <a>get help</a>', 'google-site-kit' ),
+		__(
+			'<RequestAccess>Request access</RequestAccess> or <HelpLink>get help</HelpLink>',
+			'google-site-kit'
+		),
 		{
-			a: <Link href={ helpURL } external hideExternalIndicator />,
+			RequestAccess: requestAccessURL ? (
+				<Link
+					href={ requestAccessURL }
+					external
+					hideExternalIndicator
+				/>
+			) : (
+				<span />
+			),
+			HelpLink: <Link href={ helpURL } external hideExternalIndicator />,
 		}
 	);
 
