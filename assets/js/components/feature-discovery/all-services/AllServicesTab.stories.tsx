@@ -94,6 +94,24 @@ WithInPlaceSetupSuccessNotice.args = {
 	},
 };
 
+export const WithInPlaceSetupErrorNotice = Template.bind( {} ) as Story;
+WithInPlaceSetupErrorNotice.storyName = 'With In-Place Setup Error Notice';
+WithInPlaceSetupErrorNotice.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideSiteInfo( registry );
+
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
+			{
+				code: 'internal_server_error',
+				message: 'The settings could not be saved.',
+				data: { status: 500 },
+			},
+			'setupFeature',
+			[ 'key-metrics' ]
+		);
+	},
+};
+
 export default {
 	title: 'Components/Feature Discovery/AllServicesTab',
 	component: AllServicesTab,

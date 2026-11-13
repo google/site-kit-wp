@@ -19,10 +19,12 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-feature-discovery {
+		--googlesitekit-feature-discovery-padding-s: 0px;
 		--googlesitekit-feature-discovery-padding-m: 16px;
 		--googlesitekit-feature-discovery-padding-l: 24px;
 
 		@media ( min-width: $bp-tablet ) {
+			--googlesitekit-feature-discovery-padding-s: 36px;
 			--googlesitekit-feature-discovery-padding-m: 36px;
 			--googlesitekit-feature-discovery-padding-l: 48px;
 		}
@@ -43,6 +45,15 @@
 	.googlesitekit-feature-discovery__content {
 		min-block-size: 546px;
 		padding-block: 0 var(--googlesitekit-feature-discovery-padding-l);
+
+		.googlesitekit-feature-list-item {
+			margin-inline: calc(var(--googlesitekit-feature-discovery-padding-s) - var(--googlesitekit-feature-discovery-padding-m));
+			padding-inline: calc(var(--googlesitekit-feature-discovery-padding-m) - var(--googlesitekit-feature-discovery-padding-s));
+
+			&:has(.googlesitekit-feature-card) {
+				padding-inline-start: 0;
+			}
+		}
 	}
 
 	.googlesitekit-feature-discovery__description,
