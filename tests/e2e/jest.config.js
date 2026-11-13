@@ -20,6 +20,9 @@ module.exports = {
 	transform: {
 		'^.+\\.[jt]sx?$': path.join( __dirname, 'babel-transform' ),
 	},
+	moduleNameMapper: {
+		'^@/(.*)$': path.resolve( __dirname, '../../assets/$1' ),
+	},
 	// Exclude uuid package from transformation ignore patterns because it uses ESM syntax
 	// that needs to be transformed by Babel for Jest to process correctly.
 	transformIgnorePatterns: [ '/node_modules/(?!(uuid)/)' ],

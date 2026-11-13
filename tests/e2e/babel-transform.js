@@ -18,19 +18,7 @@
  * External dependencies
  */
 const babelJest = require( 'babel-jest' );
-const path = require( 'path' );
 
 module.exports = babelJest.createTransformer( {
 	presets: [ '@wordpress/babel-preset-default' ],
-	plugins: [
-		[
-			require.resolve( 'babel-plugin-module-resolver' ),
-			{
-				alias: {
-					'@': path.resolve( __dirname, '../../assets' ),
-				},
-				extensions: [ '.js', '.jsx', '.ts', '.tsx' ],
-			},
-		],
-	],
 } );
