@@ -19,8 +19,14 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import type { FeatureCategorySlug } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import * as tracking from '@/js/util/tracking';
 import { fireEvent, render, screen } from '@tests/js/test-utils';
 import CategoryFilterChips from './CategoryFilterChips';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 function expectSelected( label: string, selected = true ) {
 	const chip = screen.getByText( label ).closest( '.mdc-chip' ) as Element;
@@ -30,6 +36,10 @@ function expectSelected( label: string, selected = true ) {
 }
 
 describe( 'CategoryFilterChips', () => {
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
 	it( 'should have All services selected by default', () => {
 		render(
 			<CategoryFilterChips
@@ -83,5 +93,71 @@ describe( 'CategoryFilterChips', () => {
 		fireEvent.click( screen.getByText( 'All services' ) );
 
 		expect( onToggleCategory ).toHaveBeenCalledWith( null );
+	} );
+
+	describe( 'GA event tracking', () => {
+		it.each( [
+			// "All services" is selected while no category is, so a category
+			// is selected for it to be selectable.
+			[ 'All services', 'all', [ 'audience' ] ],
+			[ 'Know your audience', 'know-your-audience', [] ],
+			[ 'Engage your visitors', 'engage-your-visitors', [] ],
+			[ 'Monetize', 'monetize', [] ],
+			[ 'Drive traffic', 'drive-traffic', [] ],
+			[ 'Manage privacy', 'manage-privacy', [] ],
+			[ 'Improve site speed', 'improve-site-speed', [] ],
+			[ 'Collaborate', 'collaborate', [] ],
+		] as [ string, string, FeatureCategorySlug[] ][] )(
+			'should track the select_category_filter event when the "%s" chip is selected',
+			( chipLabel, eventLabel, selectedCategories ) => {
+				render(
+					<CategoryFilterChips
+						onToggleCategory={ () => {} }
+						selectedCategories={ selectedCategories }
+					/>,
+					{ viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+				);
+
+				fireEvent.click( screen.getByText( chipLabel ) );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_FEATURE_DISCOVERY }_all-services`,
+					'select_category_filter',
+					eventLabel
+				);
+			}
+		);
+
+		it( 'should not track the select_category_filter event when a category chip is deselected', () => {
+			const onToggleCategory = jest.fn();
+
+			render(
+				<CategoryFilterChips
+					onToggleCategory={ onToggleCategory }
+					selectedCategories={ [ 'audience' ] }
+				/>,
+				{ viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			fireEvent.click( screen.getByText( 'Know your audience' ) );
+
+			expect( onToggleCategory ).toHaveBeenCalledWith( 'audience' );
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should not track the select_category_filter event when the already selected "All services" chip is clicked', () => {
+			render(
+				<CategoryFilterChips
+					onToggleCategory={ () => {} }
+					selectedCategories={ [] }
+				/>,
+				{ viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			fireEvent.click( screen.getByText( 'All services' ) );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+		} );
 	} );
 } );

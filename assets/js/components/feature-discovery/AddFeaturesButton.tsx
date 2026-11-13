@@ -25,6 +25,7 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -37,12 +38,15 @@ import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useFeature } from '@/js/hooks/useFeature';
+import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { trackEvent } from '@/js/util';
 import PlusHeavy from '@/svg/icons/plus-heavy.svg';
 
 const AddFeaturesButton: FC = () => {
 	const featureDiscoveryHubEnabled = useFeature( 'featureDiscoveryHub' );
 	const viewOnlyDashboard = useViewOnly();
+	const viewContext = useViewContext();
 
 	const instanceID = useInstanceId( AddFeaturesButton );
 	const ariaDescribedBy = `googlesitekit-add-features-button-description-${ instanceID }`;
@@ -64,6 +68,14 @@ const AddFeaturesButton: FC = () => {
 		[ isButtonVisible ]
 	);
 
+	const onClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_headerbar`,
+			'click_add_features',
+			hasNewFeatures ? 'new_features' : 'no_new_features'
+		);
+	}, [ hasNewFeatures, viewContext ] );
+
 	if ( ! isButtonVisible ) {
 		return null;
 	}
@@ -76,6 +88,7 @@ const AddFeaturesButton: FC = () => {
 				}
 				className="googlesitekit-add-features-button"
 				href={ featuresURL }
+				onClick={ onClick }
 			>
 				<PlusHeavy
 					className="googlesitekit-add-features-button__icon"
