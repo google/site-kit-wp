@@ -129,7 +129,15 @@ class Get_CTAsTest extends TestCase {
 		$response = new ListCtasResponse();
 		$response->setCtas( array( $cta ) );
 
-		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+		$parsed = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+
+		$this->assertSame(
+			'saved-publication',
+			$parsed['publicationID'],
+			'The response should name the publication the CTAs belong to.'
+		);
+
+		$ctas = $parsed['ctas'];
 
 		$this->assertCount( 1, $ctas, 'The response should contain the publication CTAs.' );
 		$this->assertSame(
@@ -160,7 +168,7 @@ class Get_CTAsTest extends TestCase {
 			)
 		);
 
-		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) )['ctas'];
 
 		$this->assertSame(
 			array(
@@ -182,11 +190,16 @@ class Get_CTAsTest extends TestCase {
 		);
 	}
 
-	public function test_parse_response__returns_empty_array_when_no_ctas() {
+	public function test_parse_response__names_the_publication_when_there_are_no_ctas() {
+		$parsed = $this->datapoint->parse_response( new ListCtasResponse(), $this->get_data_request( array() ) );
+
 		$this->assertSame(
-			array(),
-			$this->datapoint->parse_response( new ListCtasResponse(), $this->get_data_request( array() ) ),
-			'The datapoint should return an empty array when the publication has no CTAs.'
+			array(
+				'publicationID' => 'saved-publication',
+				'ctas'          => array(),
+			),
+			$parsed,
+			'An empty list should still name the publication it is for.'
 		);
 	}
 

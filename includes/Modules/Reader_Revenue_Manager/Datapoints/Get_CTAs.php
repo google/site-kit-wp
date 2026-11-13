@@ -69,13 +69,20 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 	 * Parses a response.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Excludes CTAs that are neither active nor draft, such as deleted CTAs.
+	 * @since n.e.x.t Names the publication, and excludes CTAs that are neither active nor draft.
 	 *
 	 * @param mixed        $response List CTAs response.
 	 * @param Data_Request $data     Data request object.
-	 * @return array CTA resources.
+	 * @return array {
+	 *     Connected publication CTAs.
+	 *
+	 *     @type string $publicationID Publication the CTAs belong to.
+	 *     @type array  $ctas          CTA resources.
+	 * }
 	 */
 	public function parse_response( $response, Data_Request $data ) {
+		$publication = $this->get_connected_publication();
+
 		$ctas = array_values(
 			array_filter(
 				(array) $response->getCtas(),
@@ -91,6 +98,9 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 
 		$this->synchronization->synchronize( $ctas );
 
-		return $ctas;
+		return array(
+			'publicationID' => $publication['publicationID'],
+			'ctas'          => $ctas,
+		);
 	}
 }
