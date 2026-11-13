@@ -25,7 +25,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
@@ -83,13 +82,11 @@ describe( 'TrafficOverviewPanel', () => {
 	 *
 	 * @param {number} currentValue  Visitors over the selected range.
 	 * @param {number} previousValue Visitors over the range before it.
-	 * @param {string} [url]         Optional. The entity URL the report covers.
 	 * @return {void}
 	 */
 	function provideTotalsReport(
 		currentValue: number,
-		previousValue: number,
-		url?: string
+		previousValue: number
 	) {
 		const { startDate, endDate, compareStartDate, compareEndDate } =
 			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
@@ -107,7 +104,6 @@ describe( 'TrafficOverviewPanel', () => {
 					endDate,
 					compareStartDate,
 					compareEndDate,
-					...( url ? { url } : {} ),
 				} ),
 			}
 		);
@@ -229,26 +225,6 @@ describe( 'TrafficOverviewPanel', () => {
 		await waitForRegistry();
 
 		expect( getByText( '843' ) ).toHaveClass(
-			'googlesitekit-traffic-overview__unique-visitors-figure'
-		);
-	} );
-
-	it( 'should build the unique visitors from the entity-scoped totals report', async () => {
-		const entityURL = 'https://example.com/about/';
-
-		provideSiteInfo( registry, { currentEntityURL: entityURL } );
-		// Only the entity-scoped report is in the store, so these values can
-		// only come from the request that has the URL.
-		provideTotalsReport( 500, 400, entityURL );
-
-		const { getByText, waitForRegistry } = render(
-			<TrafficOverviewPanel />,
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( getByText( '500' ) ).toHaveClass(
 			'googlesitekit-traffic-overview__unique-visitors-figure'
 		);
 	} );
@@ -1069,32 +1045,6 @@ describe( 'TrafficOverviewPanel', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		it( 'should leave out the key factors on the entity dashboard', async () => {
-			provideSiteInfo( registry, {
-				currentEntityURL: 'https://example.com/about/',
-			} );
-
-			const { container, waitForRegistry } = render(
-				<TrafficOverviewPanel />,
-				{
-					registry,
-					features: [ 'typicalTraffic' ],
-					viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-				}
-			);
-
-			await waitForRegistry();
-
-			expect(
-				container.querySelector(
-					'.googlesitekit-traffic-overview__breakdown'
-				)
-			).toBeInTheDocument();
-			expect(
-				container.querySelector( keyFactorsSelector )
-			).not.toBeInTheDocument();
-		} );
-
 		it( 'should leave out the key factors while the property is gathering data', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -1166,8 +1116,6 @@ describe( 'TrafficOverviewPanel', () => {
 	} );
 
 	describe( 'typical traffic range and published posts', () => {
-		const entityURL = 'https://example.com/about/';
-
 		beforeEach( () => {
 			// The chart draws both along the visits of the benchmarking
 			// response.
@@ -1326,29 +1274,6 @@ describe( 'TrafficOverviewPanel', () => {
 
 			await waitForRegistry();
 
-			expect( getLegendLabels( container ) ).toEqual( [
-				'Last 28 days traffic',
-			] );
-		} );
-
-		it( 'should draw neither on the entity dashboard', async () => {
-			provideSiteInfo( registry, { currentEntityURL: entityURL } );
-
-			const { container, getByText, waitForRegistry } = render(
-				<TrafficOverviewPanel />,
-				{
-					registry,
-					features: [ 'typicalTraffic' ],
-					viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-				}
-			);
-
-			await waitForRegistry();
-
-			// The day's line has no typical range.
-			expect(
-				getByText( 'January 9, 2025: 39 visits' )
-			).toBeInTheDocument();
 			expect( getLegendLabels( container ) ).toEqual( [
 				'Last 28 days traffic',
 			] );
@@ -1612,32 +1537,6 @@ describe( 'TrafficOverviewPanel', () => {
 				).not.toBeInTheDocument();
 			}
 		);
-
-		it( 'should leave out the traffic insight on the entity dashboard', async () => {
-			provideSiteInfo( registry, {
-				currentEntityURL: 'https://example.com/about/',
-			} );
-
-			const { container, waitForRegistry } = render(
-				<TrafficOverviewPanel />,
-				{
-					registry,
-					features: [ 'typicalTraffic', 'trafficInsights' ],
-					viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-				}
-			);
-
-			await waitForRegistry();
-
-			expect(
-				container.querySelector(
-					'.googlesitekit-traffic-overview__total-visitors'
-				)
-			).toBeInTheDocument();
-			expect(
-				container.querySelector( trafficInsightSelector )
-			).not.toBeInTheDocument();
-		} );
 
 		it( 'should leave out the traffic insight while the property is gathering data', async () => {
 			registry

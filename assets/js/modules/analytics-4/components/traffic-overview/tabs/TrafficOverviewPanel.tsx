@@ -106,9 +106,9 @@ const TrafficOverviewPanel: FC = () => {
 	// factors. Each day of the response carries its typical range, which the
 	// chart draws behind the line.
 	//
-	// TODO: Give the chart and the total visits figures of their own on the
-	// entity dashboard and without the `typicalTraffic` feature, where the
-	// panel reads no benchmarking response.
+	// TODO: Give the chart and the total visits figures of their own without
+	// the `typicalTraffic` feature, where the panel reads no benchmarking
+	// response.
 	const dailyTraffic = hasKeyFactors
 		? benchmarkingResponse?.dailyTraffic
 		: getPlaceholderDailyTraffic( startDate, endDate );

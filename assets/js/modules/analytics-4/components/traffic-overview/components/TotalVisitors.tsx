@@ -49,14 +49,23 @@ import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
-import { BenchmarkingVisits } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { calculateChange, numFmt } from '@/js/util';
+
+export interface TotalVisits {
+	/** The visits over the selected range. */
+	current: number;
+	/**
+	 * The visits over the range before it. Without them, the figures show no
+	 * change.
+	 */
+	previous?: number;
+}
 
 export interface TotalVisitorsProps {
 	/** The totals report, whose selected range holds the unique visitors. */
 	report?: Report;
-	/** The visits over the selected range and over the range before it. */
-	totalVisits?: BenchmarkingVisits;
+	/** The visits over the selected range, and over the range before it. */
+	totalVisits?: TotalVisits;
 	/** Whether the figures have arrived. */
 	loaded?: boolean;
 	/** Whether the Analytics property is still gathering data. */
@@ -75,14 +84,16 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( {
 	);
 
 	const currentVisits = totalVisits?.current || 0;
-	const previousVisits = totalVisits?.previous || 0;
+	const previousVisits = totalVisits?.previous;
 
-	// The report's totals hold the selected range then the range before it.
+	// The report's totals hold the selected range first.
 	const uniqueVisitors = getMetricValue( report?.totals?.[ 0 ] );
 
 	// `ChangeBadge` renders nothing when the previous value is zero. Asking
 	// the same question here stops the label being left on its own.
-	const hasChange = calculateChange( previousVisits, currentVisits ) !== null;
+	const hasChange =
+		previousVisits !== undefined &&
+		calculateChange( previousVisits, currentVisits ) !== null;
 
 	return (
 		<div className="googlesitekit-traffic-overview__total-visitors">

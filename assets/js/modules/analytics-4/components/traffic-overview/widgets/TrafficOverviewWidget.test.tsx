@@ -477,6 +477,42 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic overview' );
 	} );
 
+	it( 'should head the visitor figures of the "Traffic overview" panel with "Traffic over time" on the entity dashboard', async () => {
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			within(
+				screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
+			).getByRole( 'heading', { name: 'Traffic over time' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should not head the visitor figures of the "Traffic overview" panel with "Traffic over time" on the main dashboard', async () => {
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			within(
+				screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
+			).queryByRole( 'heading', { name: 'Traffic over time' } )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'should render nothing when Analytics is not connected and the widget is on the entity dashboard', async () => {
 		provideModules( registry, [
 			{

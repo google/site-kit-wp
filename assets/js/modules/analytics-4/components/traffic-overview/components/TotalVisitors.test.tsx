@@ -113,6 +113,27 @@ describe( 'TotalVisitors', () => {
 		).toHaveTextContent( '0%' );
 	} );
 
+	it.each( [ 1000, 0 ] )(
+		'should render the figure and no badge for %d visits without the previous total',
+		( current ) => {
+			const { container, queryByText } = render(
+				<TotalVisitors totalVisits={ { current } } />
+			);
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__total-visits-figure'
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( '.googlesitekit-change-badge' )
+			).toBeNull();
+			expect(
+				queryByText( 'Vs. prev. 28 days' )
+			).not.toBeInTheDocument();
+		}
+	);
+
 	it( 'should replace both figures and the change badge with a placeholder while the figures load', () => {
 		const { container, queryByText } = render(
 			<TotalVisitors

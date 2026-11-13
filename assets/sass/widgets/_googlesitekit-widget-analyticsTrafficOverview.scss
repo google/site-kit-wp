@@ -47,6 +47,11 @@ $traffic-overview-column-gap: 42px;
 			gap: 16px;
 		}
 
+		.googlesitekit-traffic-overview__summary-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
 		// The total visits and the unique visitors stack on phones, and sit
 		// side by side from tablets up.
 		.googlesitekit-traffic-overview__total-visitors {

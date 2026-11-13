@@ -23,10 +23,32 @@ import type { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 
 const TOTALS_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs';
+const DAILY_VISITS_REPORT_ID =
+	'analytics-4_dashboard-all-traffic-widget-ga4_widget_dailyVisitsArgs';
 
 export const TOTAL_USERS_METRIC: ReportOptions[ 'metrics' ] = [
 	{ name: 'totalUsers' },
 ];
+
+/**
+ * The report-options fragment for the report of visits on each day of the
+ * selected range, which the Traffic Overview panel reads on the entity
+ * dashboard. A visit is a GA4 session, and the report's totals hold the visits
+ * over the whole range.
+ *
+ * The fragment has no `startDate`, `endDate`, or `url`. `useTrafficReport`
+ * adds them.
+ *
+ * @since n.e.x.t
+ */
+export const DAILY_VISITS_REPORT_OPTIONS: Pick<
+	ReportOptions,
+	'metrics' | 'dimensions' | 'reportID'
+> = {
+	metrics: [ { name: 'sessions' } ],
+	dimensions: [ 'date' ],
+	reportID: DAILY_VISITS_REPORT_ID,
+};
 
 /**
  * Builds the report-options fragment for the All Visitors totals report.

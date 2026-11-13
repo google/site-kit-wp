@@ -49,6 +49,7 @@ import {
 import { useRecentActivitySurveyTriggers } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentActivitySurveyTriggers';
 import { useRecordRecentActivityTabOpen } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityTabOpen';
 import RecentActivityFooter from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityFooter';
+import EntityTrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/EntityTrafficOverviewPanel';
 import RecentActivityPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/RecentActivityPanel';
 import TrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TrafficOverviewPanel';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -143,12 +144,17 @@ const TrafficOverviewWidget = forwardRef<
 
 	const tabs: TrafficOverviewTabDescriptor[] = [];
 
-	// The Traffic overview tab shows Analytics reports only.
+	// The Traffic overview tab shows Analytics reports only. The entity
+	// dashboard shows one page, so its panel leaves out what describes the
+	// whole site.
 	if ( isAnalyticsConnected ) {
 		tabs.push( {
 			id: TRAFFIC_OVERVIEW_TAB_ID,
 			label: __( 'Traffic overview', 'google-site-kit' ),
-			PanelComponent: TrafficOverviewPanel,
+			PanelComponent:
+				dashboardType === DASHBOARD_TYPE_ENTITY
+					? EntityTrafficOverviewPanel
+					: TrafficOverviewPanel,
 			FooterComponent: TrafficOverviewFooter,
 		} );
 	}

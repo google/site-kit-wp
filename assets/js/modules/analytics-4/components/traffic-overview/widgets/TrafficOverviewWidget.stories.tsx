@@ -45,7 +45,10 @@ import {
 	FRESH_DATA_FETCH_OPTIONS,
 	getSiteVisitorsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
-import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import {
+	DAILY_VISITS_REPORT_OPTIONS,
+	getTotalsReportArgs,
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	EARLIER_POST,
 	INSUFFICIENT_PERMISSIONS_ERROR,
@@ -164,6 +167,34 @@ function getTotalsArgs( registry: WPDataRegistry ): ReportOptions {
  */
 function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 	provideAnalytics4MockReport( registry, getTotalsArgs( registry ) );
+}
+
+/**
+ * Puts the reports the Traffic Overview panel reads on the entity dashboard in
+ * the store, for the current entity URL, so a story renders without sending a
+ * report request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the reports in.
+ * @return {void}
+ */
+function provideEntityTrafficReports( registry: WPDataRegistry ) {
+	const { startDate, endDate } = registry
+		.select( CORE_USER )
+		.getDateRangeDates();
+	const url = registry.select( CORE_SITE ).getCurrentEntityURL();
+
+	provideAnalytics4MockReport(
+		registry,
+		getTotalsReportArgs( { startDate, endDate, url } )
+	);
+	provideAnalytics4MockReport( registry, {
+		...DAILY_VISITS_REPORT_OPTIONS,
+		startDate,
+		endDate,
+		url,
+	} );
 }
 
 /**
@@ -333,12 +364,6 @@ TypicalTrafficWithInsights.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
-/**
- * This story sets no `scenario`, so it runs no visual check. A current entity
- * URL changes only the report requests and the footer link's address, and
- * `useTrafficOverviewReports.test.ts` and `TrafficOverviewSourceLink.test.tsx`
- * already cover both.
- */
 export const EntityDashboard = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
@@ -350,8 +375,17 @@ EntityDashboard.args = {
 		provideSiteInfo( registry, {
 			currentEntityURL: 'https://example.com/about/',
 		} );
-		provideTrafficOverviewReports( registry );
+		provideEntityTrafficReports( registry );
 	},
+};
+// The panel reads no benchmarking response on the entity dashboard, so the
+// `typicalTraffic` feature shows that it leaves out the typical traffic range,
+// the published posts, and the key factors.
+EntityDashboard.parameters = {
+	features: [ 'typicalTraffic' ],
+};
+EntityDashboard.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
 export const Loading = Template.bind(
