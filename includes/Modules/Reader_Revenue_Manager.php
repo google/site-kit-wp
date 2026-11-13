@@ -60,6 +60,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_CTAs;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications_Legacy;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Survey_Question_Catalog;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Terms_Of_Service;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Save_User_Settings;
@@ -490,6 +491,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$datapoints['POST:create-cta'] = new Create_CTA(
 				array(
 					'scopes'   => array( self::MANAGE_SCOPE ),
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings' => $settings,
+				)
+			);
+		}
+
+		if ( Feature_Flags::enabled( 'rrmSurveyCTA' ) ) {
+			$datapoints['GET:survey-question-catalog'] = new Get_Survey_Question_Catalog(
+				array(
 					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
 					'settings' => $settings,
 				)

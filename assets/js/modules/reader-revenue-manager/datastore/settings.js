@@ -211,6 +211,10 @@ export async function submitChanges( { dispatch, select } ) {
 			).invalidateResolutionForStoreSelector( 'getPublication' );
 
 			await dispatch( MODULES_READER_REVENUE_MANAGER ).resetCTAs();
+
+			await dispatch(
+				MODULES_READER_REVENUE_MANAGER
+			).resetSurveyQuestionCatalog();
 		}
 	}
 
