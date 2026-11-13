@@ -87,7 +87,7 @@ export function getFeatureSetupSurveyTriggerID( slug: string ) {
  * Gets the feedback group for a feature's relevancy feedback.
  *
  * @since 1.189.0
- * @since n.e.x.t Renamed from `getFeatureRelevancyTriggerID()`, dropped the `reason` segment (now sent as the feedback `value`), and returns a feedback group instead of a survey trigger ID.
+ * @since 1.192.0 Renamed from `getFeatureRelevancyTriggerID()`, dropped the `reason` segment (now sent as the feedback `value`), and returns a feedback group instead of a survey trigger ID.
  *
  * @param {string} slug Feature slug.
  * @return {string} Feedback group.

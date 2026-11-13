@@ -37,7 +37,7 @@ import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastor
  * setting the query arg alone does not trigger a re-render. The setter does
  * nothing unless the express setup was opened with a supported `cta` query arg.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {Array} Value and setter tuple.
  */

@@ -30,7 +30,7 @@ import type { ConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/u
  * another custom dimensions CTA, which leaves conversion tracking alone.
  *
  * @since 1.190.0
- * @since n.e.x.t Held every user to the conversion tracking setting, now that any dashboard user may read it.
+ * @since 1.192.0 Held every user to the conversion tracking setting, now that any dashboard user may read it.
  *
  * @param {boolean|undefined} hasBreakdownDimensions                         Whether the breakdown custom dimensions exist, or `undefined` while loading.
  * @param {Object}            conversionTracking                             The conversion tracking setting, see `useConversionTrackingSetting`.

@@ -799,7 +799,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.30.0
 	 * @since 1.191.0 Registers `GET:plain-permalink-top-posts` with the `freshData` feature flag on.
-	 * @since n.e.x.t Always registers `GET:plain-permalink-top-posts`.
+	 * @since 1.192.0 Always registers `GET:plain-permalink-top-posts`.
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */

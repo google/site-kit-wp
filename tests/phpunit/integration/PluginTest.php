@@ -21,7 +21,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Migration_1_123_0;
 use Google\Site_Kit\Core\Util\Migration_1_185_0;
-use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
+use Google\Site_Kit\Core\Util\Migration_1_192_0;
 use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
@@ -203,9 +203,9 @@ class PluginTest extends TestCase {
 		do_action( 'init' );
 		do_action( 'admin_init' );
 
-		// `Migration_N_E_X_T` runs only once `n.e.x.t` is replaced with the release version.
-		$last_db_version = version_compare( Migration_N_E_X_T::DB_VERSION, Migration_1_185_0::DB_VERSION, '>' )
-			? Migration_N_E_X_T::DB_VERSION
+		// `Migration_1_192_0` runs only once `1.192.0` is replaced with the release version.
+		$last_db_version = version_compare( Migration_1_192_0::DB_VERSION, Migration_1_185_0::DB_VERSION, '>' )
+			? Migration_1_192_0::DB_VERSION
 			: Migration_1_185_0::DB_VERSION;
 
 		$this->assertSame( $last_db_version, $options->get( Migration_1_185_0::DB_VERSION_OPTION ), 'The database version should be the last migration version.' );

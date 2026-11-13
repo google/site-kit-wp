@@ -69,7 +69,8 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 	 * Parses a response.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Names the publication, and excludes CTAs that are neither active nor draft.
+	 * @since 1.192.0 Excludes CTAs that are neither active nor draft, such as deleted CTAs.
+	 * @since n.e.x.t Names the publication the CTAs belong to.
 	 *
 	 * @param mixed        $response List CTAs response.
 	 * @param Data_Request $data     Data request object.

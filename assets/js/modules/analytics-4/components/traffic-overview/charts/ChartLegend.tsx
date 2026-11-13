@@ -31,7 +31,7 @@ import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
  * One line the chart draws, as the legend lists it.
  *
  * @since 1.189.0
- * @since n.e.x.t Interface changed from local to exported, for `getTrafficLegendItem()`.
+ * @since 1.192.0 Interface changed from local to exported, for `getTrafficLegendItem()`.
  */
 export interface ChartLegendItem {
 	/** The name of the line, such as "Last 28 days traffic". */

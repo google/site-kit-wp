@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { fireEvent, render, screen } from '@tests/js/test-utils';
@@ -241,5 +246,15 @@ describe( 'SurveyQuestionRow', () => {
 			leadingElement,
 			actionButton,
 		] );
+	} );
+
+	it( 'should pass the action button to actionRef', () => {
+		const actionRef = createRef< HTMLButtonElement >();
+
+		renderRow( { actionRef, isAdded: true } );
+
+		expect( actionRef.current ).toBe(
+			screen.getByRole( 'button', { name: 'Remove question' } )
+		);
 	} );
 } );

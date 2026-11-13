@@ -75,7 +75,7 @@ class REST_Conversion_Tracking_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.127.0
-	 * @since n.e.x.t Allowed any user who can view the dashboard to read the setting.
+	 * @since 1.192.0 Allowed any user who can view the dashboard to read the setting.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

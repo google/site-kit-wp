@@ -39,7 +39,7 @@ import TypicalTrafficChart, {
  * The selected date range stays the default `last-28-days`, from `2026-08-19`
  * to `2026-09-15`, and `GoogleChart` draws a date marker only for a day of it.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object} registry The registry to set up.
  * @return {void}

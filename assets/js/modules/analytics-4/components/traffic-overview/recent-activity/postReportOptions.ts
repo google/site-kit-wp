@@ -47,7 +47,7 @@ export interface SearchConsoleReportOptions extends PostWindow {
  * Gets the permalink and the date range of the reports about a post.
  *
  * @since 1.191.0
- * @since n.e.x.t Also gets the post's URL on the site that Site Kit reports on.
+ * @since 1.192.0 Also gets the post's URL on the site that Site Kit reports on.
  *
  * @param {Object} post             The post, with its permalink and its publish time.
  * @param {string} referenceDate    The reference date, e.g. `2026-10-08`.
@@ -233,7 +233,7 @@ export function getPurchasesReportOptions(
  * that brought the post the most clicks.
  *
  * @since 1.191.0
- * @since n.e.x.t Requests the post's URL on the site that Site Kit reports on.
+ * @since 1.192.0 Requests the post's URL on the site that Site Kit reports on.
  *
  * @param {Object} args The post's URL on the site that Site Kit reports on, and its date range.
  * @return {Object} The Search Console report options.
