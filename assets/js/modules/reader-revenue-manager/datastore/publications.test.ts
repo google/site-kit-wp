@@ -537,7 +537,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetCTAs( [ cta ] );
+					.receiveGetCTAs( {
+						publicationID: 'publication-1',
+						ctas: [ cta ],
+					} );
 			}
 
 			it( 'should throw an error if a publication object is not provided', () => {

@@ -603,16 +603,6 @@ const baseActions = {
 					contentPolicyStatus.policyInfoLink || '';
 			}
 
-			// Clear stored CTAs when the publication ID changes.
-			if (
-				publicationID !==
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getSavedPublicationID()
-			) {
-				registry.dispatch( MODULES_READER_REVENUE_MANAGER ).clearCTAs();
-			}
-
 			return registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setSettings( settings );
