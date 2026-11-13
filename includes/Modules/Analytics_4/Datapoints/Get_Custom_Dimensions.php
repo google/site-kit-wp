@@ -18,13 +18,14 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 
 /**
- * Class for reading the Site Kit custom dimensions of a given property.
+ * Class for reading the custom dimensions of a given property.
  *
  * Unlike `Sync_Custom_Dimensions`, this datapoint reads the property ID from
  * the request, so it can list the custom dimensions of a property that is not
  * yet saved in settings.
  *
  * @since 1.182.0
+ * @since n.e.x.t Returns every custom dimension on the property, not only the Site Kit ones.
  * @access private
  * @ignore
  */
@@ -52,13 +53,14 @@ class Get_Custom_Dimensions extends Datapoint implements Executable_Datapoint {
 	}
 
 	/**
-	 * Parses a response into the list of Site Kit custom dimension names on the property.
+	 * Parses a response into the list of custom dimension names on the property.
 	 *
 	 * @since 1.182.0
+	 * @since n.e.x.t Returns every parameter name, not only the `googlesitekit_`-prefixed ones.
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
-	 * @return mixed List of `googlesitekit_`-prefixed parameter names, or WP_Error on failure.
+	 * @return mixed List of parameter names, or WP_Error on failure.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
 		if ( is_wp_error( $response ) ) {
@@ -73,13 +75,6 @@ class Get_Custom_Dimensions extends Datapoint implements Executable_Datapoint {
 			return array();
 		}
 
-		$parameter_names = wp_list_pluck( $custom_dimensions, 'parameterName' );
-
-		return array_values(
-			array_filter(
-				$parameter_names,
-				fn( $dimension ) => strpos( $dimension, 'googlesitekit_' ) === 0
-			)
-		);
+		return array_values( wp_list_pluck( $custom_dimensions, 'parameterName' ) );
 	}
 }
