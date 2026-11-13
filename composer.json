@@ -111,7 +111,7 @@
     ],
     "prefix-dependencies": [
       "@composer --working-dir=php-scoper install",
-      "@php -dxdebug.mode=off php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
+      "@php bin/prefix-dependencies.php",
       "@autoload-includes",
       "@autoload-third-party",
       "@composer dump-autoload --no-dev",
