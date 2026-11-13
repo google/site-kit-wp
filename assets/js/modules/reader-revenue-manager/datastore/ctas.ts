@@ -31,7 +31,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
-import { commonActions, createReducer } from 'googlesitekit-data';
+import {
+	Select,
+	commonActions,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
@@ -40,7 +45,10 @@ import {
 	createValidatedAction,
 } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { getCTAID } from '@/js/modules/reader-revenue-manager/utils/ctas';
+import {
+	getCTAID,
+	getPublicationIDFromCTAName,
+} from '@/js/modules/reader-revenue-manager/utils/ctas';
 import {
 	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
@@ -59,8 +67,17 @@ export type CreateCTAParams = {
 	data: CreateCTAData;
 };
 
+/**
+ * `GET:ctas` response. The publication is named by the response because an
+ * empty list of CTAs cannot name it.
+ */
+type GetCTAsResponse = {
+	publicationID: string;
+	ctas: CTA[];
+};
+
 interface CTAsState {
-	ctas: CTA[] | undefined;
+	ctas: Record< string, CTA[] >;
 	settings?: ReaderRevenueManagerSettings;
 	savedSettings?: ReaderRevenueManagerSettings;
 }
@@ -160,14 +177,21 @@ const fetchGetCTAsStore = createFetchStore( {
 			{},
 			{ useCache: false }
 		),
-	reducerCallback: createReducer( ( state: CTAsState, ctas: CTA[] ) => {
-		state.ctas = ctas;
+	reducerCallback: createReducer(
+		( state: CTAsState, { publicationID, ctas }: GetCTAsResponse ) => {
+			state.ctas[ publicationID ] = ctas;
 
-		// Update settings states with configured CTAs.
-		if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
-			syncConfiguredCTAs( state, ctas );
+			// A save can land while the request is in flight, so only update
+			// the settings when the response is still for the connected
+			// publication.
+			if (
+				isFeatureEnabled( 'rrmExpressSetup' ) &&
+				publicationID === state.savedSettings?.publicationID
+			) {
+				syncConfiguredCTAs( state, ctas );
+			}
 		}
-	} ),
+	),
 } );
 
 const fetchCreateCTAStore = createFetchStore( {
@@ -177,13 +201,17 @@ const fetchCreateCTAStore = createFetchStore( {
 			data,
 		} ),
 	reducerCallback: createReducer( ( state: CTAsState, cta: CTA ) => {
+		// The created CTA names its own publication, so it is added to that
+		// publication's list rather than whichever is connected now.
+		const publicationID = getPublicationIDFromCTAName( cta.name );
+
 		// Only extend an already loaded list, otherwise the resolver would
 		// treat the single created CTA as the complete set.
-		if ( state.ctas === undefined ) {
+		if ( ! publicationID || state.ctas[ publicationID ] === undefined ) {
 			return;
 		}
 
-		state.ctas.push( cta );
+		state.ctas[ publicationID ].push( cta );
 	} ),
 	argsToParams: ( { data }: Partial< CreateCTAParams > = {} ) => ( { data } ),
 	validateParams: validateCreateCTAParams,
@@ -191,7 +219,7 @@ const fetchCreateCTAStore = createFetchStore( {
 } );
 
 const baseInitialState: CTAsState = {
-	ctas: undefined,
+	ctas: {},
 };
 
 const baseActions = {
@@ -226,25 +254,10 @@ const baseActions = {
 	),
 
 	/**
-	 * Clears the stored CTAs, leaving their resolution as it is.
+	 * Invalidates the CTAs resolution, so they are requested again.
 	 *
-	 * Use this when a different publication has been picked but not saved yet.
-	 * The server answers from the saved settings, so refetching now would
-	 * return the previous publication's CTAs. `getCTAs()` stays `undefined`
-	 * until `resetCTAs()` reloads them for the publication that was saved.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Object} Redux-style action.
-	 */
-	clearCTAs() {
-		return {
-			type: 'RESET_CTAS',
-		};
-	},
-
-	/**
-	 * Resets the CTAs in the store, so they are requested again.
+	 * The stored CTAs are kept, as each publication's CTAs are stored under
+	 * its own publication ID and cannot be mistaken for another's.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -254,10 +267,6 @@ const baseActions = {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as WPDataRegistry;
 
-		yield {
-			type: 'RESET_CTAS',
-		};
-
 		yield errorStoreActions.clearSelectorErrors( 'getCTAs' );
 
 		return registry
@@ -265,19 +274,6 @@ const baseActions = {
 			.invalidateResolutionForStoreSelector( 'getCTAs' );
 	},
 };
-
-const baseReducer = createReducer(
-	( state: CTAsState, { type }: { type: string } ) => {
-		switch ( type ) {
-			case 'RESET_CTAS':
-				state.ctas = baseInitialState.ctas;
-				break;
-
-			default:
-				break;
-		}
-	}
-);
 
 const baseResolvers = {
 	*getCTAs(): Generator< unknown, void, unknown > {
@@ -292,20 +288,19 @@ const baseResolvers = {
 				.getSettings()
 		);
 
-		const ctas = registry
+		const publicationID = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getCTAs();
-
-		if ( ctas !== undefined ) {
-			return;
-		}
+			.getSavedPublicationID();
 
 		// No connected publication to list CTAs for; skip the fetch rather
 		// than looping on `undefined`.
+		if ( ! publicationID ) {
+			return;
+		}
+
 		if (
-			! registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getSavedPublicationID()
+			registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs() !==
+			undefined
 		) {
 			return;
 		}
@@ -325,9 +320,31 @@ const baseSelectors = {
 	 * @param  state Data store's state.
 	 * @return {(Array.<Object>|undefined)} The CTAs; `undefined` if not loaded yet.
 	 */
-	getCTAs( state: CTAsState ): CTA[] | undefined {
-		return state.ctas;
-	},
+	getCTAs: createRegistrySelector(
+		( select: Select ) =>
+			( state: CTAsState ): CTA[] | undefined => {
+				const savedPublicationID = select(
+					MODULES_READER_REVENUE_MANAGER
+				).getSavedPublicationID();
+
+				if ( ! savedPublicationID ) {
+					return undefined;
+				}
+
+				// A publication that has been picked but not saved yet has no
+				// CTAs of its own here; the stored ones belong to the
+				// publication the server still answers for.
+				if (
+					select(
+						MODULES_READER_REVENUE_MANAGER
+					).getPublicationID() !== savedPublicationID
+				) {
+					return undefined;
+				}
+
+				return state.ctas[ savedPublicationID ];
+			}
+	),
 };
 
 interface Store {
@@ -342,7 +359,6 @@ interface Store {
 const store = combineStores( fetchGetCTAsStore, fetchCreateCTAStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
-	reducer: baseReducer,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
 } ) as Store;
