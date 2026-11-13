@@ -25,10 +25,26 @@ const TOTALS_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs';
 const DAILY_VISITS_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_dailyVisitsArgs';
+export const CHANNELS_BREAKDOWN_REPORT_ID =
+	'analytics-4_dashboard-all-traffic-widget-ga4_widget_channelsBreakdownArgs';
+export const LOCATIONS_BREAKDOWN_REPORT_ID =
+	'analytics-4_dashboard-all-traffic-widget-ga4_widget_locationsBreakdownArgs';
+export const DEVICES_BREAKDOWN_REPORT_ID =
+	'analytics-4_dashboard-all-traffic-widget-ga4_widget_devicesBreakdownArgs';
 
 export const TOTAL_USERS_METRIC: ReportOptions[ 'metrics' ] = [
 	{ name: 'totalUsers' },
 ];
+
+// A visit is a GA4 session.
+const SESSIONS_METRIC: ReportOptions[ 'metrics' ] = [ { name: 'sessions' } ];
+
+export interface BreakdownReportDescriptor {
+	/** The GA4 dimension that groups the breakdown report's visits, such as `country`. */
+	dimensionName: string;
+	/** A label that says which part of the plugin asked for the breakdown report. */
+	reportID: string;
+}
 
 /**
  * The report-options fragment for the report of visits on each day of the
@@ -45,7 +61,7 @@ export const DAILY_VISITS_REPORT_OPTIONS: Pick<
 	ReportOptions,
 	'metrics' | 'dimensions' | 'reportID'
 > = {
-	metrics: [ { name: 'sessions' } ],
+	metrics: SESSIONS_METRIC,
 	dimensions: [ 'date' ],
 	reportID: DAILY_VISITS_REPORT_ID,
 };
@@ -83,6 +99,45 @@ export function getTotalsReportOptions( {
 }
 
 /**
+ * Builds the report-options fragment for one breakdown dimension of the
+ * Traffic Overview panel. The report counts the visits of each value of the
+ * dimension over the selected range, most first.
+ *
+ * The fragment holds no dates, so it stays the same for every date range.
+ * `getBreakdownReportArgs` and `useTrafficReport` add the dates and the entity
+ * URL.
+ *
+ * @since 1.188.0
+ * @since n.e.x.t Added the `sessions` metric, so the report counts visits.
+ *
+ * @param {Object} options               Options.
+ * @param {string} options.dimensionName GA4 dimension to group the report by.
+ * @param {string} options.reportID      Report ID for this breakdown.
+ * @return {Object} Report-options fragment.
+ */
+export function getBreakdownReportOptions( {
+	dimensionName,
+	reportID,
+}: BreakdownReportDescriptor ): Pick<
+	ReportOptions,
+	'metrics' | 'dimensions' | 'orderby' | 'reportID'
+> {
+	return {
+		metrics: SESSIONS_METRIC,
+		dimensions: [ dimensionName ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'sessions',
+				},
+				desc: true,
+			},
+		],
+		reportID,
+	};
+}
+
+/**
  * Builds the complete GA4 `getReport` args for the All Visitors totals report.
  *
  * @since 1.181.0
@@ -114,6 +169,41 @@ export function getTotalsReportArgs( {
 			compareStartDate,
 			compareEndDate,
 		} ),
+	};
+	if ( url ) {
+		args.url = url;
+	}
+	return args;
+}
+
+/**
+ * Builds the complete GA4 `getReport` args for one breakdown dimension of the
+ * Traffic Overview panel.
+ *
+ * @since 1.183.0
+ * @since 1.189.0 Removed the `compareStartDate` and `compareEndDate` options.
+ * @since n.e.x.t Added the `sessions` metric, so the report counts visits.
+ *
+ * @param {Object} options               Options.
+ * @param {string} options.dimensionName GA4 dimension to break down by.
+ * @param {string} options.reportID      Report ID for this breakdown.
+ * @param {string} options.startDate     Report start date.
+ * @param {string} options.endDate       Report end date.
+ * @param {string} [options.url]         Entity URL filter, if any.
+ * @return {Object} GA4 getReport args.
+ */
+export function getBreakdownReportArgs( {
+	dimensionName,
+	reportID,
+	startDate,
+	endDate,
+	url,
+}: BreakdownReportDescriptor &
+	Pick< ReportOptions, 'startDate' | 'endDate' | 'url' > ): ReportOptions {
+	const args: ReportOptions = {
+		startDate,
+		endDate,
+		...getBreakdownReportOptions( { dimensionName, reportID } ),
 	};
 	if ( url ) {
 		args.url = url;

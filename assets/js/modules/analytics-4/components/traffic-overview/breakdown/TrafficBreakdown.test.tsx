@@ -108,9 +108,9 @@ describe( 'TrafficBreakdown', () => {
 			getAllByRole( 'heading' ).map( ( heading ) => heading.textContent )
 		).toEqual( [
 			'Traffic breakdown',
-			'Visitors by channels',
-			'Visitors by locations',
-			'Visitors by devices',
+			'Visits by channels',
+			'Visits by locations',
+			'Visits by devices',
 		] );
 	} );
 
@@ -134,13 +134,13 @@ describe( 'TrafficBreakdown', () => {
 		} );
 
 		expect(
-			getAllByRole( 'region', { name: 'Visitors by channels' } )
+			getAllByRole( 'region', { name: 'Visits by channels' } )
 		).toHaveLength( 1 );
 		expect(
-			getAllByRole( 'region', { name: 'Visitors by locations' } )
+			getAllByRole( 'region', { name: 'Visits by locations' } )
 		).toHaveLength( 1 );
 		expect(
-			getAllByRole( 'region', { name: 'Visitors by devices' } )
+			getAllByRole( 'region', { name: 'Visits by devices' } )
 		).toHaveLength( 1 );
 	} );
 
@@ -174,7 +174,7 @@ describe( 'TrafficBreakdown', () => {
 		} );
 
 		const channels = getByRole( 'region', {
-			name: 'Visitors by channels',
+			name: 'Visits by channels',
 		} );
 		const rows = Array.from(
 			channels.querySelectorAll(
@@ -198,7 +198,7 @@ describe( 'TrafficBreakdown', () => {
 		} );
 
 		const channels = getByRole( 'region', {
-			name: 'Visitors by channels',
+			name: 'Visits by channels',
 		} );
 		const rows = Array.from(
 			channels.querySelectorAll(
@@ -225,7 +225,7 @@ describe( 'TrafficBreakdown', () => {
 		} );
 
 		const locations = getByRole( 'region', {
-			name: 'Visitors by locations',
+			name: 'Visits by locations',
 		} );
 
 		expect( locations ).toHaveTextContent(
@@ -249,7 +249,7 @@ describe( 'TrafficBreakdown', () => {
 
 		fireEvent.click( getByText( 'Organic Search' ) );
 		fireEvent.click( getByText( '55%' ) );
-		fireEvent.click( getByText( 'Visitors by channels' ) );
+		fireEvent.click( getByText( 'Visits by channels' ) );
 
 		expect( container.innerHTML ).toBe( before );
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
@@ -313,9 +313,9 @@ describe( 'TrafficBreakdown', () => {
 			getAllByRole( 'heading' ).map( ( heading ) => heading.textContent )
 		).toEqual( [
 			'Traffic breakdown',
-			'Visitors by channels',
-			'Visitors by locations',
-			'Visitors by devices',
+			'Visits by channels',
+			'Visits by locations',
+			'Visits by devices',
 		] );
 		// Five placeholder rows in each of the three columns.
 		expect(
@@ -341,9 +341,9 @@ describe( 'TrafficBreakdown', () => {
 			getAllByRole( 'heading' ).map( ( heading ) => heading.textContent )
 		).toEqual( [
 			'Traffic breakdown',
-			'Visitors by channels',
-			'Visitors by locations',
-			'Visitors by devices',
+			'Visits by channels',
+			'Visits by locations',
+			'Visits by devices',
 		] );
 		expect( getAllByText( 'We’re still collecting data' ) ).toHaveLength(
 			3
@@ -366,7 +366,7 @@ describe( 'TrafficBreakdown', () => {
 		} );
 
 		expect(
-			getByRole( 'region', { name: 'Visitors by devices' } )
+			getByRole( 'region', { name: 'Visits by devices' } )
 		).toHaveTextContent(
 			'No data to display: your site hasn’t received any visitors yet'
 		);
@@ -380,7 +380,7 @@ describe( 'TrafficBreakdown', () => {
 		} );
 
 		const channels = getByRole( 'region', {
-			name: 'Visitors by channels',
+			name: 'Visits by channels',
 		} );
 		const bars = Array.from(
 			channels.querySelectorAll(
@@ -446,10 +446,10 @@ describe( 'TrafficBreakdown', () => {
 		} );
 
 		const channels = getByRole( 'region', {
-			name: 'Visitors by channels',
+			name: 'Visits by channels',
 		} );
 		const locations = getByRole( 'region', {
-			name: 'Visitors by locations',
+			name: 'Visits by locations',
 		} );
 		const collapsedChannels = [
 			'Direct',

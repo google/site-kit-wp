@@ -35,7 +35,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { useFeature } from '@/js/hooks/useFeature';
-import { PLACEHOLDER_TRAFFIC_BREAKDOWN } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/placeholderTrafficBreakdown';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
 import {
 	getPlaceholderDailyTraffic,
@@ -56,6 +55,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 const TrafficOverviewPanel: FC = () => {
 	const {
 		totalsReport,
+		breakdownValues,
 		benchmarkingResponse,
 		loaded,
 		errors,
@@ -177,9 +177,7 @@ const TrafficOverviewPanel: FC = () => {
 						/>
 					) }
 					<TrafficBreakdown
-						// TODO: Replace the placeholder breakdown with the
-						// site's own.
-						values={ PLACEHOLDER_TRAFFIC_BREAKDOWN }
+						values={ breakdownValues }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
 					/>

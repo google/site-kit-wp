@@ -22,9 +22,9 @@
 import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 
 /**
- * The values the traffic breakdown shows in each column until it reads the
- * site's own, keyed by the column's `id`. Each column's values are ordered by
- * visitors, most first, and the device names are lowercase, the way GA4 writes
+ * The values the Traffic Overview PDF prints in each breakdown until it reads
+ * the site's own, keyed by the column's `id`. Each column's values are ordered
+ * by visits, most first, and the device names are lowercase, the way GA4 writes
  * them.
  *
  * @since n.e.x.t
@@ -34,20 +34,20 @@ export const PLACEHOLDER_TRAFFIC_BREAKDOWN: Record<
 	TrafficBreakdownValue[]
 > = {
 	channels: [
-		{ label: 'Direct', visitors: 1200 },
-		{ label: 'Organic Search', visitors: 900 },
-		{ label: 'Organic Social', visitors: 700 },
-		{ label: 'Referral', visitors: 400 },
+		{ label: 'Direct', visits: 1200 },
+		{ label: 'Organic Search', visits: 900 },
+		{ label: 'Organic Social', visits: 700 },
+		{ label: 'Referral', visits: 400 },
 	],
 	locations: [
-		{ label: 'Singapore', visitors: 1100 },
-		{ label: 'Brazil', visitors: 800 },
-		{ label: 'China', visitors: 600 },
-		{ label: 'United States', visitors: 400 },
+		{ label: 'Singapore', visits: 1100 },
+		{ label: 'Brazil', visits: 800 },
+		{ label: 'China', visits: 600 },
+		{ label: 'United States', visits: 400 },
 	],
 	devices: [
-		{ label: 'desktop', visitors: 1800 },
-		{ label: 'mobile', visitors: 900 },
-		{ label: 'tablet', visitors: 400 },
+		{ label: 'desktop', visits: 1800 },
+		{ label: 'mobile', visits: 900 },
+		{ label: 'tablet', visits: 400 },
 	],
 };

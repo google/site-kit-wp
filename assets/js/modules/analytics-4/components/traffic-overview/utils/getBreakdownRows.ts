@@ -36,8 +36,8 @@ import { numFmt } from '@/js/util';
 export interface TrafficBreakdownValue {
 	/** The dimension value, such as `Organic Search`. */
 	label: string;
-	/** The visitors the value had. */
-	visitors: number;
+	/** The visits the value had. */
+	visits: number;
 }
 
 export interface TrafficBreakdownRow {
@@ -144,29 +144,29 @@ export function formatRoundedShare( share: number, steps: number ): string {
 /**
  * Shapes the values of a breakdown column into the rows the column renders.
  *
- * The values cover the selected range only and arrive ordered by visitors,
- * so the rows are taken as they come. Values with no visitors are left out
- * first. When more than `maxRows` values have visitors, the top values fill
+ * The values cover the selected range only and arrive ordered by visits, so
+ * the rows are taken as they come. Values with no visits are left out first.
+ * When more than `maxRows` values have visits, the top values fill
  * every row except the last, and an "Others" row adds up the rest. The
  * displayed shares add up to exactly 100%, only a lone value shows 100%, and a
- * row with visitors that gets no whole percent is displayed as `<1%` rather
+ * row with visits that gets no whole percent is displayed as `<1%` rather
  * than `0%`.
  *
  * @since 1.188.0
  * @since 1.189.0 Added `formattedPercentage` and left out values with no visitors.
  * @since n.e.x.t Added the optional `maxRows` parameter, and changed the `report` parameter to `values`.
  *
- * @param {Array<Object>} [values]  Optional. The column's values, ordered by visitors, most first.
+ * @param {Array<Object>} [values]  Optional. The column's values, ordered by visits, most first.
  * @param {number}        [maxRows] Optional. The most rows to return, counting the trailing "Others" row. Default `TRAFFIC_BREAKDOWN_MAX_ROWS`.
- * @return {Array<Object>} The rows to render, empty when no value has visitors.
+ * @return {Array<Object>} The rows to render, empty when no value has visits.
  */
 export function getBreakdownRows(
 	values: TrafficBreakdownValue[] = [],
 	maxRows = TRAFFIC_BREAKDOWN_MAX_ROWS
 ): TrafficBreakdownRow[] {
-	// Values with no visitors are left out before the cap, so none of them
-	// takes a row.
-	const valueRows = values.filter( ( { visitors } ) => visitors > 0 );
+	// Values with no visits are left out before the cap, so none of them takes
+	// a row.
+	const valueRows = values.filter( ( { visits } ) => visits > 0 );
 
 	if ( ! valueRows.length ) {
 		return [];
@@ -180,20 +180,20 @@ export function getBreakdownRows(
 					...valueRows.slice( 0, maxRows - 1 ),
 					{
 						label: __( 'Others', 'google-site-kit' ),
-						visitors: sumBy(
+						visits: sumBy(
 							valueRows.slice( maxRows - 1 ),
-							'visitors'
+							'visits'
 						),
 					},
 			  ];
 
-	const visitorCounts = shapedRows.map( ( { visitors } ) => visitors );
-	const total = sum( visitorCounts );
-	const wholePercentages = getRoundedShares( visitorCounts, 100 );
+	const visitCounts = shapedRows.map( ( { visits } ) => visits );
+	const total = sum( visitCounts );
+	const wholePercentages = getRoundedShares( visitCounts, 100 );
 
-	return shapedRows.map( ( { label, visitors }, index ) => ( {
+	return shapedRows.map( ( { label, visits }, index ) => ( {
 		label,
-		percentage: visitors / total,
+		percentage: visits / total,
 		formattedPercentage: formatRoundedShare(
 			wholePercentages[ index ],
 			100

@@ -66,6 +66,7 @@ import {
 	provideRecentActivitySurveyState,
 	provideRecentTrafficBreakdownReports,
 	provideSiteVisitorsReport,
+	provideTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -156,17 +157,18 @@ function getTotalsArgs( registry: WPDataRegistry ): ReportOptions {
 }
 
 /**
- * Puts the Traffic Overview widget's totals report in the store, so a story
- * renders without sending a report request.
+ * Puts the Traffic Overview widget's totals report and its three breakdown
+ * reports in the store, so a story renders without sending a report request.
  *
  * @since 1.189.0
- * @since n.e.x.t Puts the totals report alone in the store.
+ * @since n.e.x.t Puts the totals report and the three breakdown reports in the store.
  *
- * @param {Object} registry The registry to put the report in.
+ * @param {Object} registry The registry to put the reports in.
  * @return {void}
  */
 function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 	provideAnalytics4MockReport( registry, getTotalsArgs( registry ) );
+	provideTrafficBreakdownReports( registry );
 }
 
 /**
@@ -195,6 +197,7 @@ function provideEntityTrafficReports( registry: WPDataRegistry ) {
 		endDate,
 		url,
 	} );
+	provideTrafficBreakdownReports( registry );
 }
 
 /**
@@ -395,6 +398,7 @@ Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
+		provideTrafficBreakdownReports( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ getTotalsArgs( registry ) ] );
@@ -433,6 +437,11 @@ ZeroData.args = {
 			},
 			{ options: getTotalsArgs( registry ) }
 		);
+		provideTrafficBreakdownReports( registry, {
+			channels: [],
+			locations: [],
+			devices: [],
+		} );
 	},
 };
 
@@ -443,6 +452,7 @@ ReportFailure.storyName = 'Report Failure';
 ReportFailure.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
+		provideTrafficBreakdownReports( registry );
 
 		const totalsArgs = getTotalsArgs( registry );
 

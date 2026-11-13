@@ -43,7 +43,7 @@ import {
 import TrafficBreakdownColumn from './TrafficBreakdownColumn';
 
 export interface TrafficBreakdownProps {
-	/** The values of each column, keyed by the column's `id`, each ordered by visitors, most first. */
+	/** The values of each column, keyed by the column's `id`, each ordered by visits, most first. */
 	values: Record< string, TrafficBreakdownValue[] | undefined >;
 	/** Whether the values have arrived. */
 	loaded?: boolean;

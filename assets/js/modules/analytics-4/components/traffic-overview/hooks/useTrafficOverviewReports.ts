@@ -27,11 +27,13 @@ import { useMemo } from '@wordpress/element';
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getTotalsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { DecodedBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { useBenchmarkingData } from './useBenchmarkingData';
 import { useKeyFactorsVisibility } from './useKeyFactorsVisibility';
+import { useTrafficBreakdownReports } from './useTrafficBreakdownReports';
 import { useTrafficReport } from './useTrafficReport';
 
 export interface TrafficOverviewReports {
@@ -41,19 +43,26 @@ export interface TrafficOverviewReports {
 	 */
 	totalsReport?: Report;
 	/**
+	 * The visits of each breakdown column over the selected range, keyed by the
+	 * column's `id`, each ordered by visits, most first.
+	 */
+	breakdownValues: Record< string, TrafficBreakdownValue[] >;
+	/**
 	 * The benchmarking response for the selected range. The hook requests it
 	 * only where the panel has the key factors.
 	 */
 	benchmarkingResponse?: DecodedBenchmarkingResponse;
 	/**
-	 * `true` once the totals report has finished resolving, and the
-	 * benchmarking response has arrived or failed where the hook requests it.
+	 * `true` once the totals report and the three breakdown reports have
+	 * finished resolving, and the benchmarking response has arrived or failed
+	 * where the hook requests it.
 	 */
 	loaded: boolean;
 	/**
-	 * The totals report's error, then the benchmarking request's error, or an
-	 * empty array when neither failed. The "Retry" button requests again the
-	 * data whose errors it receives.
+	 * The errors of the totals report and of the channels, locations, and
+	 * devices reports, in that order, then the benchmarking request's error.
+	 * The array is empty when nothing failed. The "Retry" button requests
+	 * again the data whose errors it receives.
 	 */
 	errors: Array< Record< string, unknown > >;
 	/** Requests the benchmarking response again after its request fails. */
@@ -61,7 +70,7 @@ export interface TrafficOverviewReports {
 }
 
 /**
- * Resolves the GA4 report and the benchmarking response the Traffic Overview
+ * Resolves the GA4 reports and the benchmarking response the Traffic Overview
  * panel needs.
  *
  * The benchmarking response covers the whole site, and only the
@@ -69,9 +78,9 @@ export interface TrafficOverviewReports {
  * where the panel has the key factors.
  *
  * @since 1.188.0
- * @since n.e.x.t Removed the daily-visitors report and the three breakdown reports, and added the benchmarking response.
+ * @since n.e.x.t Removed the daily-visitors report, added the benchmarking response, and changed `breakdownReports` to `breakdownValues`.
  *
- * @return {Object} The totals report and the benchmarking response, whether they have finished, their errors, and a function that requests the benchmarking response again.
+ * @return {Object} The totals report, the values of each breakdown column, and the benchmarking response, whether they have finished, their errors, and a function that requests the benchmarking response again.
  */
 export function useTrafficOverviewReports(): TrafficOverviewReports {
 	const { compareStartDate, compareEndDate } = useSelect(
@@ -86,6 +95,7 @@ export function useTrafficOverviewReports(): TrafficOverviewReports {
 	);
 
 	const totals = useTrafficReport( totalsReportOptions );
+	const breakdown = useTrafficBreakdownReports();
 
 	const { isAvailable: hasKeyFactors } = useKeyFactorsVisibility();
 
@@ -95,27 +105,34 @@ export function useTrafficOverviewReports(): TrafficOverviewReports {
 		retry: retryBenchmarkingData,
 	} = useBenchmarkingData( { isEnabled: hasKeyFactors } );
 
-	const totalsLoaded = useSelect(
+	const reportsLoaded = useSelect(
 		( select: Select ) =>
-			! select( MODULES_ANALYTICS_4 ).areReportsLoading( totals.args ),
-		[ totals.args ]
+			! select( MODULES_ANALYTICS_4 ).areReportsLoading(
+				totals.args,
+				...breakdown.args
+			),
+		[ totals.args, breakdown.args ]
 	);
 
-	const totalsErrors = useSelect(
+	const reportErrors = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getReportErrors( totals.args ),
-		[ totals.args ]
+			select( MODULES_ANALYTICS_4 ).getReportErrors(
+				totals.args,
+				...breakdown.args
+			),
+		[ totals.args, breakdown.args ]
 	);
 
 	const benchmarkingLoaded = !! benchmarkingResponse || !! benchmarkingError;
 
 	return {
 		totalsReport: totals.report,
+		breakdownValues: breakdown.values,
 		benchmarkingResponse,
-		loaded: totalsLoaded && ( ! hasKeyFactors || benchmarkingLoaded ),
+		loaded: reportsLoaded && ( ! hasKeyFactors || benchmarkingLoaded ),
 		errors: benchmarkingError
-			? [ ...totalsErrors, benchmarkingError ]
-			: totalsErrors,
+			? [ ...reportErrors, benchmarkingError ]
+			: reportErrors,
 		retryBenchmarkingData,
 	};
 }

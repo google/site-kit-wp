@@ -142,9 +142,9 @@ describe( 'Traffic Overview PDF', () => {
 			} )
 		);
 
-		const channelsIndex = json.indexOf( 'Visitors by channels' );
-		const locationsIndex = json.indexOf( 'Visitors by locations' );
-		const devicesIndex = json.indexOf( 'Visitors by devices' );
+		const channelsIndex = json.indexOf( 'Visits by channels' );
+		const locationsIndex = json.indexOf( 'Visits by locations' );
+		const devicesIndex = json.indexOf( 'Visits by devices' );
 
 		expect( channelsIndex ).toBeGreaterThan( -1 );
 		expect( locationsIndex ).toBeGreaterThan( channelsIndex );
@@ -176,7 +176,7 @@ describe( 'Traffic Overview PDF', () => {
 		};
 
 		const texts = renderPDFText( <TrafficOverviewPDF data={ data } /> );
-		const channelsIndex = texts.indexOf( 'Visitors by channels' );
+		const channelsIndex = texts.indexOf( 'Visits by channels' );
 
 		// The rows are shaped by the same `getBreakdownRows()` the dashboard
 		// columns use, and each label is followed by its share.
@@ -216,8 +216,8 @@ describe( 'Traffic Overview PDF', () => {
 		};
 
 		const texts = renderPDFText( <TrafficOverviewPDF data={ data } /> );
-		const channelsIndex = texts.indexOf( 'Visitors by channels' );
-		const devicesIndex = texts.indexOf( 'Visitors by devices' );
+		const channelsIndex = texts.indexOf( 'Visits by channels' );
+		const devicesIndex = texts.indexOf( 'Visits by devices' );
 
 		expect( texts.slice( channelsIndex + 1, channelsIndex + 5 ) ).toEqual( [
 			'Direct',
@@ -258,15 +258,15 @@ describe( 'Traffic Overview PDF', () => {
 			} )
 		);
 
-		expect( json ).toContain( 'Visitors by channels' );
+		expect( json ).toContain( 'Visits by channels' );
 		expect( json ).toContain(
 			'No data to display: your site hasn’t received any visitors yet'
 		);
 		expect( json ).not.toContain( 'Organic Search' );
 
-		expect( json ).toContain( 'Visitors by locations' );
+		expect( json ).toContain( 'Visits by locations' );
 		expect( json ).toContain( 'Singapore' );
-		expect( json ).toContain( 'Visitors by devices' );
+		expect( json ).toContain( 'Visits by devices' );
 		expect( json ).toContain( 'Desktop' );
 	} );
 } );

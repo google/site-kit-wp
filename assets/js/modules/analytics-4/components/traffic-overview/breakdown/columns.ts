@@ -21,7 +21,18 @@
  */
 import { __ } from '@wordpress/i18n';
 
-export interface TrafficBreakdownColumnDescriptor {
+/**
+ * Internal dependencies
+ */
+import {
+	BreakdownReportDescriptor,
+	CHANNELS_BREAKDOWN_REPORT_ID,
+	DEVICES_BREAKDOWN_REPORT_ID,
+	LOCATIONS_BREAKDOWN_REPORT_ID,
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+
+export interface TrafficBreakdownColumnDescriptor
+	extends BreakdownReportDescriptor {
 	/** The key for this column's values, such as `channels`. */
 	id: string;
 	/** The column's heading, which also names it for a screen reader. */
@@ -32,14 +43,20 @@ export interface TrafficBreakdownColumnDescriptor {
 export const TRAFFIC_BREAKDOWN_COLUMNS: TrafficBreakdownColumnDescriptor[] = [
 	{
 		id: 'channels',
-		heading: __( 'Visitors by channels', 'google-site-kit' ),
+		heading: __( 'Visits by channels', 'google-site-kit' ),
+		dimensionName: 'sessionDefaultChannelGrouping',
+		reportID: CHANNELS_BREAKDOWN_REPORT_ID,
 	},
 	{
 		id: 'locations',
-		heading: __( 'Visitors by locations', 'google-site-kit' ),
+		heading: __( 'Visits by locations', 'google-site-kit' ),
+		dimensionName: 'country',
+		reportID: LOCATIONS_BREAKDOWN_REPORT_ID,
 	},
 	{
 		id: 'devices',
-		heading: __( 'Visitors by devices', 'google-site-kit' ),
+		heading: __( 'Visits by devices', 'google-site-kit' ),
+		dimensionName: 'deviceCategory',
+		reportID: DEVICES_BREAKDOWN_REPORT_ID,
 	},
 ];

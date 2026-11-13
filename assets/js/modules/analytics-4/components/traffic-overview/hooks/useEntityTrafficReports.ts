@@ -24,8 +24,10 @@ import {
 	DAILY_VISITS_REPORT_OPTIONS,
 	getTotalsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { useTrafficBreakdownReports } from './useTrafficBreakdownReports';
 import { useTrafficReport } from './useTrafficReport';
 
 // The panel shows no change against the range before, so the totals report
@@ -40,12 +42,18 @@ export interface EntityTrafficReports {
 	 * over the whole range in its totals.
 	 */
 	dailyVisitsReport?: Report;
-	/** `true` once both reports have finished resolving. */
+	/**
+	 * The page's visits for each breakdown column over the selected range,
+	 * keyed by the column's `id`, each ordered by visits, most first.
+	 */
+	breakdownValues: Record< string, TrafficBreakdownValue[] >;
+	/** `true` once all five reports have finished resolving. */
 	loaded: boolean;
 	/**
-	 * The totals report's error, then the daily visits report's error, or an
-	 * empty array when neither failed. The "Retry" button requests again the
-	 * reports whose errors it receives.
+	 * The errors of the totals report, the daily visits report, and the
+	 * channels, locations, and devices reports, in that order, or an empty
+	 * array when none failed. The "Retry" button requests again the reports
+	 * whose errors it receives.
 	 */
 	errors: Array< Record< string, unknown > >;
 }
@@ -56,37 +64,41 @@ export interface EntityTrafficReports {
  *
  * The benchmarking response covers the whole site, so the entity dashboard,
  * which shows one page, reads the page's visits from GA4 reports instead.
- * `useTrafficReport` limits both reports to the entity URL.
+ * `useTrafficReport` limits every report to the entity URL.
  *
  * @since n.e.x.t
  *
- * @return {Object} The totals report and the daily visits report, whether they have finished, and their errors.
+ * @return {Object} The totals report, the daily visits report, and the values of each breakdown column, whether the reports have finished, and their errors.
  */
 export function useEntityTrafficReports(): EntityTrafficReports {
 	const totals = useTrafficReport( TOTALS_REPORT_OPTIONS );
 	const dailyVisits = useTrafficReport( DAILY_VISITS_REPORT_OPTIONS );
+	const breakdown = useTrafficBreakdownReports();
 
 	const loaded = useSelect(
 		( select: Select ) =>
 			! select( MODULES_ANALYTICS_4 ).areReportsLoading(
 				totals.args,
-				dailyVisits.args
+				dailyVisits.args,
+				...breakdown.args
 			),
-		[ totals.args, dailyVisits.args ]
+		[ totals.args, dailyVisits.args, breakdown.args ]
 	);
 
 	const errors = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getReportErrors(
 				totals.args,
-				dailyVisits.args
+				dailyVisits.args,
+				...breakdown.args
 			),
-		[ totals.args, dailyVisits.args ]
+		[ totals.args, dailyVisits.args, breakdown.args ]
 	);
 
 	return {
 		totalsReport: totals.report,
 		dailyVisitsReport: dailyVisits.report,
+		breakdownValues: breakdown.values,
 		loaded,
 		errors,
 	};

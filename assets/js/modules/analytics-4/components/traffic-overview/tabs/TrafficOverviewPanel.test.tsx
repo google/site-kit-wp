@@ -37,7 +37,9 @@ import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic
 import {
 	createBenchmarkingResponse,
 	getSectionClassNames,
+	getTrafficBreakdownReportArgs,
 	provideBenchmarkingResponse,
+	provideTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -177,6 +179,9 @@ describe( 'TrafficOverviewPanel', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
+		// The breakdown reports are in the store from the start, so a test
+		// that counts report requests counts the totals report alone.
+		provideTrafficBreakdownReports( registry );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
@@ -251,7 +256,19 @@ describe( 'TrafficOverviewPanel', () => {
 		);
 	} );
 
-	it( 'should show the placeholder values in the three columns of the traffic breakdown', async () => {
+	it( 'should show the visits of each breakdown report as shares in its column of the traffic breakdown', async () => {
+		provideTrafficBreakdownReports( registry, {
+			channels: [
+				[ 'Organic Search', 30 ],
+				[ 'Direct', 10 ],
+			],
+			locations: [ [ 'Ukraine', 5 ] ],
+			devices: [
+				[ 'mobile', 3 ],
+				[ 'desktop', 1 ],
+			],
+		} );
+
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
 			{ registry }
@@ -259,23 +276,57 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		const labelsByColumn = Array.from(
+		const rowsByColumn = Array.from(
 			container.querySelectorAll(
 				'.googlesitekit-traffic-overview__breakdown-column'
 			)
 		).map( ( column ) =>
 			Array.from(
 				column.querySelectorAll(
-					'.googlesitekit-traffic-overview__breakdown-row-label'
+					'.googlesitekit-traffic-overview__breakdown-row'
 				)
-			).map( ( label ) => label.textContent )
+			).map( ( row ) => [
+				row.querySelector(
+					'.googlesitekit-traffic-overview__breakdown-row-label'
+				)?.textContent,
+				row.querySelector(
+					'.googlesitekit-traffic-overview__breakdown-row-percentage'
+				)?.textContent,
+			] )
 		);
 
-		expect( labelsByColumn ).toEqual( [
-			[ 'Direct', 'Organic Search', 'Organic Social', 'Referral' ],
-			[ 'Singapore', 'Brazil', 'China', 'United States' ],
-			[ 'desktop', 'mobile', 'tablet' ],
+		expect( rowsByColumn ).toEqual( [
+			[
+				[ 'Organic Search', '75%' ],
+				[ 'Direct', '25%' ],
+			],
+			[ [ 'Ukraine', '100%' ] ],
+			[
+				[ 'mobile', '75%' ],
+				[ 'desktop', '25%' ],
+			],
 		] );
+	} );
+
+	it( 'should say that the site has no visitors in a column whose breakdown report has no rows', async () => {
+		provideTrafficBreakdownReports( registry, {
+			channels: [ [ 'Direct', 10 ] ],
+			locations: [],
+			devices: [ [ 'desktop', 10 ] ],
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'region', { name: 'Visits by locations' } )
+		).toHaveTextContent(
+			'No data to display: your site hasn’t received any visitors yet'
+		);
 	} );
 
 	it( 'sends a report request when the panel renders', async () => {
@@ -391,6 +442,7 @@ describe( 'TrafficOverviewPanel', () => {
 
 		act( () => {
 			registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
+			provideTrafficBreakdownReports( registry );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.startResolution( 'getReport', [ getTotalsArgs() ] );
@@ -527,6 +579,100 @@ describe( 'TrafficOverviewPanel', () => {
 
 		expect( getByText( 'Request access' ) ).toBeInTheDocument();
 		expect( queryByText( 'Retry' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the three sections as placeholders while a breakdown report is still loading', async () => {
+		// The store holds the breakdown reports of the last 28 days from
+		// `beforeEach`, so the test reads the last 14 days, where it holds
+		// no devices report.
+		registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
+		provideTotalsReport( 843, 700 );
+		provideTrafficBreakdownReports( registry, {
+			channels: [ [ 'Direct', 10 ] ],
+			locations: [ [ 'Ukraine', 10 ] ],
+		} );
+
+		const { devices } = getTrafficBreakdownReportArgs( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ devices ] );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getPlaceholderCounts( container ) ).toEqual( {
+			totalVisitors: 1,
+			chart: 1,
+			breakdownRows: 15,
+		} );
+	} );
+
+	it( 'should render the report error in place of the three sections when a breakdown report fails, and request the report again on a "Retry" click', async () => {
+		// The store holds the breakdown reports of the last 28 days from
+		// `beforeEach`, so the test reads the last 14 days, where it holds
+		// no locations report for "Retry" to find.
+		registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
+		provideTotalsReport( 843, 700 );
+		provideTrafficBreakdownReports( registry, {
+			channels: [ [ 'Direct', 10 ] ],
+			devices: [ [ 'desktop', 10 ] ],
+		} );
+
+		const { locations } = getTrafficBreakdownReportArgs( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'The locations report failed.',
+				data: { status: 500, reason: 'backendError' },
+			},
+			'getReport',
+			[ locations ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ locations ] );
+
+		const {
+			container,
+			getByRole,
+			getByText,
+			queryByText,
+			waitForRegistry,
+		} = render( <TrafficOverviewPanel />, { registry } );
+
+		await waitForRegistry();
+
+		expect(
+			getByText( 'The locations report failed.' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__breakdown'
+			)
+		).toBeNull();
+
+		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint )
+		);
+		await waitFor( () =>
+			expect(
+				queryByText( 'The locations report failed.' )
+			).not.toBeInTheDocument()
+		);
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__breakdown'
+			)
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render the "Gathering data…" notice, and "We’re still collecting data" in each of the three columns, while the property is gathering data', async () => {

@@ -32,6 +32,7 @@ import { getQueryArg } from '@wordpress/url';
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
@@ -66,6 +67,7 @@ import {
 	getComparisonDateRange,
 	getDateDimensionValues,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
+import { getBreakdownReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -450,18 +452,109 @@ export function createBreakdownReport(
 }
 
 /**
- * Builds the values of a traffic breakdown column from label and visitor
+ * Builds the values of a traffic breakdown column from label and visits
  * pairs, in the order given.
  *
  * @since n.e.x.t
  *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
+ * @param {Array<Array>} pairs `[ label, visits ]` pairs.
  * @return {Array<Object>} The column's values.
  */
 export function createBreakdownValues(
 	pairs: Array< [ string, number ] >
 ): TrafficBreakdownValue[] {
-	return pairs.map( ( [ label, visitors ] ) => ( { label, visitors } ) );
+	return pairs.map( ( [ label, visits ] ) => ( { label, visits } ) );
+}
+
+/**
+ * The visits of each column of the Traffic Overview breakdown, keyed by the
+ * column's `id`, each as `[ label, visits ]` pairs ordered by visits, most
+ * first. The device names are lowercase, the way GA4 writes them.
+ *
+ * @since n.e.x.t
+ */
+export const TRAFFIC_BREAKDOWN_PAIRS: Record<
+	string,
+	Array< [ string, number ] >
+> = {
+	channels: [
+		[ 'Direct', 1200 ],
+		[ 'Organic Search', 900 ],
+		[ 'Organic Social', 700 ],
+		[ 'Referral', 400 ],
+	],
+	locations: [
+		[ 'Singapore', 1100 ],
+		[ 'Brazil', 800 ],
+		[ 'China', 600 ],
+		[ 'United States', 400 ],
+	],
+	devices: [
+		[ 'desktop', 1800 ],
+		[ 'mobile', 900 ],
+		[ 'tablet', 400 ],
+	],
+};
+
+/**
+ * Builds the arguments the Traffic Overview panel passes to `getReport` for
+ * the channels, locations, and devices reports of its breakdown, over the
+ * selected date range and for the current entity URL.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry with the selected date range and the entity URL.
+ * @return {Object} The arguments of each report, keyed by the column's `id`.
+ */
+export function getTrafficBreakdownReportArgs(
+	registry: WPDataRegistry
+): Record< string, ReportOptions > {
+	const { startDate, endDate } = registry
+		.select( CORE_USER )
+		.getDateRangeDates();
+	const url = registry.select( CORE_SITE ).getCurrentEntityURL() || undefined;
+
+	return Object.fromEntries(
+		TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, dimensionName, reportID } ) => [
+			id,
+			getBreakdownReportArgs( {
+				dimensionName,
+				reportID,
+				startDate,
+				endDate,
+				url,
+			} ),
+		] )
+	);
+}
+
+/**
+ * Puts the channels, locations, and devices reports of the Traffic Overview
+ * breakdown in the store, over the selected date range and for the current
+ * entity URL, so the breakdown renders without sending a request for them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry        The registry with the selected date range and the entity URL.
+ * @param {Object} [pairsByColumn] Optional. The `[ label, visits ]` pairs of each column, keyed by the column's `id`. A column left out gets no report. Default `TRAFFIC_BREAKDOWN_PAIRS`.
+ * @return {void}
+ */
+export function provideTrafficBreakdownReports(
+	registry: WPDataRegistry,
+	pairsByColumn: Record<
+		string,
+		Array< [ string, number ] >
+	> = TRAFFIC_BREAKDOWN_PAIRS
+) {
+	const argsByColumn = getTrafficBreakdownReportArgs( registry );
+
+	Object.entries( pairsByColumn ).forEach( ( [ id, pairs ] ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( createBreakdownReport( pairs ), {
+				options: argsByColumn[ id ],
+			} );
+	} );
 }
 
 /**

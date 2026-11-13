@@ -34,7 +34,10 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	getSectionClassNames,
+	provideTrafficBreakdownReports,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -148,7 +151,8 @@ describe( 'EntityTrafficOverviewPanel', () => {
 	}
 
 	/**
-	 * Puts both reports in the store, with mock figures.
+	 * Puts all five reports in the store, with mock figures for the totals
+	 * and the daily visits.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -157,6 +161,7 @@ describe( 'EntityTrafficOverviewPanel', () => {
 	function provideReports() {
 		provideAnalytics4MockReport( registry, getTotalsArgs() );
 		provideAnalytics4MockReport( registry, getDailyVisitsArgs() );
+		provideTrafficBreakdownReports( registry );
 	}
 
 	/**
@@ -351,6 +356,74 @@ describe( 'EntityTrafficOverviewPanel', () => {
 		expect( getByText( 'February 5, 2025: 0 visits' ) ).toBeInTheDocument();
 	} );
 
+	it( "should show the page's visits of each breakdown report as shares in its column of the traffic breakdown", async () => {
+		provideReports();
+		provideTrafficBreakdownReports( registry, {
+			channels: [
+				[ 'Organic Search', 30 ],
+				[ 'Direct', 10 ],
+			],
+			locations: [ [ 'Ukraine', 5 ] ],
+			devices: [
+				[ 'mobile', 3 ],
+				[ 'desktop', 1 ],
+			],
+		} );
+
+		const { container, waitForRegistry } = renderPanel();
+
+		await waitForRegistry();
+
+		const rowsByColumn = Array.from(
+			container.querySelectorAll(
+				'.googlesitekit-traffic-overview__breakdown-column'
+			)
+		).map( ( column ) =>
+			Array.from(
+				column.querySelectorAll(
+					'.googlesitekit-traffic-overview__breakdown-row'
+				)
+			).map( ( row ) => [
+				row.querySelector(
+					'.googlesitekit-traffic-overview__breakdown-row-label'
+				)?.textContent,
+				row.querySelector(
+					'.googlesitekit-traffic-overview__breakdown-row-percentage'
+				)?.textContent,
+			] )
+		);
+
+		expect( rowsByColumn ).toEqual( [
+			[
+				[ 'Organic Search', '75%' ],
+				[ 'Direct', '25%' ],
+			],
+			[ [ 'Ukraine', '100%' ] ],
+			[
+				[ 'mobile', '75%' ],
+				[ 'desktop', '25%' ],
+			],
+		] );
+		// The store holds every report for the entity URL, so a request
+		// would mean the panel asked for a report without it.
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+	} );
+
+	it( 'should say that the page has no visitors in a column whose breakdown report has no rows', async () => {
+		provideReports();
+		provideTrafficBreakdownReports( registry, { locations: [] } );
+
+		const { getByRole, waitForRegistry } = renderPanel();
+
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'region', { name: 'Visits by locations' } )
+		).toHaveTextContent(
+			'No data to display: your page hasn’t received any visitors yet'
+		);
+	} );
+
 	it( 'should draw neither the typical traffic range nor the published posts in the chart', async () => {
 		provideReports();
 
@@ -417,6 +490,7 @@ describe( 'EntityTrafficOverviewPanel', () => {
 		const dailyVisitsArgs = getDailyVisitsArgs();
 
 		provideAnalytics4MockReport( registry, getTotalsArgs() );
+		provideTrafficBreakdownReports( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test_error',

@@ -36,7 +36,6 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
-import { PLACEHOLDER_TRAFFIC_BREAKDOWN } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/placeholderTrafficBreakdown';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
@@ -48,7 +47,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const EntityTrafficOverviewPanel: FC = () => {
-	const { totalsReport, dailyVisitsReport, loaded, errors } =
+	const { totalsReport, dailyVisitsReport, breakdownValues, loaded, errors } =
 		useEntityTrafficReports();
 
 	const canViewSharedAnalytics4 = useCanViewSharedModule(
@@ -116,9 +115,7 @@ const EntityTrafficOverviewPanel: FC = () => {
 						gatheringData={ isGatheringData }
 					/>
 					<TrafficBreakdown
-						// TODO: Replace the placeholder breakdown with the
-						// page's own.
-						values={ PLACEHOLDER_TRAFFIC_BREAKDOWN }
+						values={ breakdownValues }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
 					/>

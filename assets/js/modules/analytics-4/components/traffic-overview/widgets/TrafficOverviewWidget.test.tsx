@@ -310,7 +310,7 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'should send the report request when the widget scrolls into view', async () => {
+	it( 'should send the report requests when the widget scrolls into view', async () => {
 		const { setInView, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -324,10 +324,11 @@ describe( 'TrafficOverviewWidget', () => {
 
 		act( () => setInView!( true ) );
 
-		// The request does not start on the render that brings the widget
-		// into view, so this check waits for it.
+		// The requests do not start on the render that brings the widget
+		// into view, so this check waits for them: one for the totals report,
+		// and one for each of the three breakdown reports.
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 4, reportEndpoint )
 		);
 	} );
 
