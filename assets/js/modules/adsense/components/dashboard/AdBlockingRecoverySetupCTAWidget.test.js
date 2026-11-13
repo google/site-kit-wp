@@ -53,6 +53,7 @@ import {
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
+	waitForSurveyTrigger,
 } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -61,9 +62,9 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
-	waitForDefaultTimeouts,
 } from '@tests/js/test-utils';
 import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
 
@@ -102,6 +103,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
 				active: true,
@@ -332,7 +334,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				'view_notification'
 			);
 
-			await waitForDefaultTimeouts();
+			await waitForSurveyTrigger();
 		} );
 
 		it( 'should trigger a survey when in-view', async () => {
@@ -463,6 +465,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 
 			expect( global.location.assign ).toHaveBeenCalled();
 			expect( global.location.assign ).toHaveBeenCalledWith( abrURL );
+
+			await waitForSurveyTrigger();
 		} );
 
 		it( 'should dismiss the CTA and open the tooltip when dismiss button is clicked', async () => {
@@ -506,6 +510,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 					},
 				} )
 			);
+
+			await waitForSurveyTrigger();
 		} );
 
 		it( 'should fire track event when "learn more" is clicked', async () => {

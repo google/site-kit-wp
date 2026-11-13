@@ -30,6 +30,7 @@ import {
 	muteFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	subscribeUntil,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -60,6 +61,7 @@ describe( 'core/site Google tag gateway', () => {
 		describe( 'saveGoogleTagGatewaySettings', () => {
 			it( 'saves the settings and returns the response', async () => {
 				provideUserAuthentication( registry );
+				provideUserCapabilities( registry );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
@@ -163,6 +165,7 @@ describe( 'core/site Google tag gateway', () => {
 
 			it( 'should trigger the GTG setup completed survey when GTG setting is enabled', async () => {
 				provideUserAuthentication( registry );
+				provideUserCapabilities( registry );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 

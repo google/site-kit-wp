@@ -28,6 +28,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 } from '@tests/js/test-utils';
 import {
@@ -104,6 +105,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 	it( 'should send no survey trigger while the saved slugs are still loading', async () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		// This promise never resolves, and the request for the saved slugs
 		// never finishes.
 		fetchMock.get( dismissedItemsEndpoint, new Promise( () => {} ) );

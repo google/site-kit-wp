@@ -36,6 +36,7 @@ import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
+	waitForSurveyTrigger,
 } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -43,6 +44,7 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -61,6 +63,7 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry
 			.dispatch( MODULES_ADSENSE )
@@ -198,6 +201,8 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 
 		expect( global.location.assign ).toHaveBeenCalled();
 		expect( global.location.assign ).toHaveBeenCalledWith( abrURL );
+
+		await waitForSurveyTrigger();
 	} );
 
 	it( 'should fire track event when learn more is clicked', async () => {
@@ -226,6 +231,8 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 		);
 
 		await waitForRegistry();
+
+		await waitForSurveyTrigger();
 	} );
 
 	it( 'should trigger a survey when rendered', async () => {

@@ -34,6 +34,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	waitFor,
 } from '@tests/js/test-utils';
 
@@ -60,6 +61,7 @@ export function renderJSON( element: ReactElement ) {
  *
  * @since 1.184.0
  * @since 1.186.0 Added the `dismissedItems` parameter.
+ * @since n.e.x.t Gives the user capabilities too.
  *
  * @param  registry       The test registry the component under test renders with.
  * @param  dismissedItems The slugs already in WordPress user meta. They pick one of the three PDF export surveys.
@@ -71,6 +73,7 @@ export function setupSurveyTriggerTest(
 ) {
 	provideSiteInfo( registry );
 	provideUserAuthentication( registry );
+	provideUserCapabilities( registry );
 	registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 	registry.dispatch( CORE_USER ).receiveGetDismissedItems( dismissedItems );
 

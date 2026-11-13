@@ -35,7 +35,11 @@ import {
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
+import {
+	CORE_USER,
+	GLOBAL_SURVEYS_TIMEOUT_SLUG,
+	PERMISSION_AUTHENTICATE,
+} from './constants';
 
 const fetchTriggerSurveyStore = createFetchStore( {
 	baseName: 'triggerSurvey',
@@ -133,6 +137,7 @@ const baseActions = {
 	 * Triggers a survey.
 	 *
 	 * @since 1.34.0
+	 * @since n.e.x.t Sends no request for a user without the `googlesitekit_authenticate` capability.
 	 *
 	 * @param {string} triggerID     Trigger ID for the survey.
 	 * @param {Object} options       Survey options.
@@ -160,6 +165,7 @@ const baseActions = {
 				isSurveyTimedOut,
 				isSurveyTriggerLocked,
 				getSurveyTimeouts,
+				hasCapability,
 			} = select( CORE_USER );
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 			const { isUsingProxy } = select( CORE_SITE );
@@ -180,6 +186,15 @@ const baseActions = {
 				);
 
 				if ( ! isAuthenticated() || ! isUsingProxy() ) {
+					return {};
+				}
+
+				yield commonActions.await(
+					resolveSelect( CORE_USER ).getCapabilities()
+				);
+
+				// The survey routes refuse a user without this capability, even with a Google token.
+				if ( ! hasCapability( PERMISSION_AUTHENTICATE ) ) {
 					return {};
 				}
 
@@ -270,11 +285,21 @@ const baseResolvers = {
 	},
 
 	*getSurveyTimeouts() {
-		const { select } = yield commonActions.getRegistry();
-		const surveyTimeouts = select( CORE_USER ).getSurveyTimeouts();
-		if ( surveyTimeouts === undefined ) {
-			yield fetchGetSurveyTimeoutsStore.actions.fetchGetSurveyTimeouts();
+		const { select, resolveSelect } = yield commonActions.getRegistry();
+		if ( select( CORE_USER ).getSurveyTimeouts() !== undefined ) {
+			return;
 		}
+
+		yield commonActions.await(
+			resolveSelect( CORE_USER ).getCapabilities()
+		);
+
+		// Leave the timeouts `undefined`, because an empty list makes the survey components request a survey the route refuses.
+		if ( ! select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE ) ) {
+			return;
+		}
+
+		yield fetchGetSurveyTimeoutsStore.actions.fetchGetSurveyTimeouts();
 	},
 };
 
@@ -333,9 +358,10 @@ const baseSelectors = {
 	 * Gets the list of survey timeouts.
 	 *
 	 * @since 1.73.0
+	 * @since n.e.x.t Stays `undefined` for a user without the `googlesitekit_authenticate` capability.
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string[]|undefined)} Array of surveys slugs, `undefined` if not resolved yet.
+	 * @return {(string[]|undefined)} Array of surveys slugs, `undefined` if not resolved yet or for a user without the `googlesitekit_authenticate` capability.
 	 */
 	getSurveyTimeouts( state ) {
 		return state.surveyTimeouts;
@@ -348,7 +374,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Item slug.
-	 * @return {(boolean|undefined)} TRUE if timed out, otherwise FALSE, `undefined` if not resolved yet.
+	 * @return {(boolean|undefined)} TRUE if timed out, otherwise FALSE, `undefined` if not resolved yet or for a user without the `googlesitekit_authenticate` capability.
 	 */
 	isSurveyTimedOut: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const timeouts = select( CORE_USER ).getSurveyTimeouts();
@@ -374,7 +400,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.98.0
 	 *
-	 * @return {(boolean|undefined)} TRUE if surveys are on cooldown, otherwise FALSE, `undefined` if not resolved yet.
+	 * @return {(boolean|undefined)} TRUE if surveys are on cooldown, otherwise FALSE, `undefined` if not resolved yet or for a user without the `googlesitekit_authenticate` capability.
 	 */
 	areSurveysOnCooldown: createRegistrySelector( ( select ) => () => {
 		return select( CORE_USER ).isSurveyTimedOut(

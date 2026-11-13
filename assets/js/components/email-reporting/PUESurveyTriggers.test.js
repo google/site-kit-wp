@@ -38,6 +38,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 } from '@tests/js/test-utils';
 import PUESurveyTriggers from './PUESurveyTriggers';
@@ -56,6 +57,7 @@ describe( 'PUESurveyTriggers', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		// IMPORTANT: seed dismissed state BEFORE registering the
 		// notification so `registerNotification`'s internal

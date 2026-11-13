@@ -14,9 +14,30 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import { waitFor } from '@testing-library/react';
+
 export const surveyTriggerEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/survey-trigger'
 );
+
+/**
+ * Waits for the request a test sends to the survey trigger endpoint.
+ *
+ * Without the wait, a trigger still on its way when the test ends finishes in
+ * the next test, and uses that test's mocks.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Promise} Resolves once the endpoint got a request.
+ */
+export function waitForSurveyTrigger() {
+	return waitFor( () =>
+		expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
+	);
+}
 
 /**
  * Gets the trigger IDs of the requests to the survey trigger endpoint, in the

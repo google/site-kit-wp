@@ -36,6 +36,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 } from '@tests/js/test-utils';
 import { EXPRESS_SETUP_SCOPES } from './constants';
@@ -60,6 +61,7 @@ describe( 'SetupMainExpress', () => {
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
 		mockSurveyEndpoints();
 

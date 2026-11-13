@@ -29,6 +29,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	provideUserInfo,
 	render,
 	waitFor,
@@ -52,6 +53,7 @@ describe( 'Analytics EnhancedConversionsNotification', () => {
 		provideSiteInfo( registry );
 		provideUserInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '123456',

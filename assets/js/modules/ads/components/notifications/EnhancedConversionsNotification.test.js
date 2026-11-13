@@ -28,6 +28,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -49,6 +50,7 @@ describe( 'Ads EnhancedConversionsNotification', () => {
 
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		mockSurveyEndpoints();
 	} );
