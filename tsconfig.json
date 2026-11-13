@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": ".",
     "checkJs": false,
     "esModuleInterop": true,
     "jsx": "preserve",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "noImplicitAny": true,
     "noEmit": true,
     "paths": {
@@ -15,7 +16,7 @@
         "./tests/*"
       ],
       "@wordpress-core/*": [
-        "@wordpress/*"
+        "./node_modules/@wordpress/*"
       ],
       "googlesitekit-api": [
         "./assets/js/googlesitekit-api"
@@ -46,12 +47,18 @@
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "strict": false,
     "typeRoots": [
       "./assets/js/types",
       "./node_modules/@types"
     ],
     "strictNullChecks": true,
-    "target": "es5"
+    "target": "es2015",
+    "types": [
+      "google.accounts",
+      "jest",
+      "node"
+    ]
   },
   "include": [
     "assets",

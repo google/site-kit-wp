@@ -169,6 +169,10 @@ module.exports = function ( mode, rules, ANALYZE ) {
 				emitError: true,
 				emitWarning: true,
 				failOnError: true,
+				// Enforced by `npm run lint:js` instead, since its `packageDir` resolves from the working directory and the build runs from `assets/`.
+				overrideConfig: {
+					rules: { 'import/no-extraneous-dependencies': 'off' },
+				},
 			} ),
 			// Warn if any of the disallowed PDF dependencies are bundled into the
 			// main `googlesitekit-vendor` chunk.

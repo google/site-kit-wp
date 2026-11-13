@@ -56,8 +56,8 @@
 	"husky": {
 		"hooks": {
 			"pre-commit": "lint-staged",
-			"prepare-commit-msg": "php -f bin/prepare-commit-msg.php $HUSKY_GIT_PARAMS",
-			"commit-msg": "php -f bin/check-commit-msg.php $HUSKY_GIT_PARAMS",
+			"prepare-commit-msg": "php -f bin/prepare-commit-msg.php \"$HUSKY_GIT_PARAMS\"",
+			"commit-msg": "php -f bin/check-commit-msg.php \"$HUSKY_GIT_PARAMS\"",
 			"pre-push": "./bin/check-protected-branch.sh"
 		}
 	},
@@ -99,27 +99,27 @@
 	"devDependencies": {
 		"@babel/preset-typescript": "^7.27.1",
 		"@shopify/jest-dom-mocks": "^5.2.0",
+		"@testing-library/dom": "^7.31.2",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^4.0.0",
 		"@types/faker": "^5.0.0",
 		"@types/google.accounts": "^0.0.18",
 		"@types/node": "^24.12.4",
-		"@typescript-eslint/eslint-plugin": "^6.21.0",
-		"@typescript-eslint/parser": "^6.21.0",
+		"@typescript-eslint/eslint-plugin": "^8.72.1",
+		"@typescript-eslint/parser": "^8.72.1",
 		"@wordpress/browserslist-config": "^6.46.0",
-		"@wordpress/eslint-plugin": "^7.1.0",
+		"@wordpress/eslint-plugin": "^15.1.0",
 		"@wordpress/jest-console": "^8.23.0",
 		"@wordpress/jest-preset-default": "^12.23.0",
 		"@wordpress/prettier-config": "^2.0",
 		"@wordpress/stylelint-config": "^23.0.0",
 		"archiver": "^8.0.0",
-		"babel-eslint": "^10.1.0",
 		"babel-loader": "^10.1.1",
 		"esbuild-register": "^3.6.0",
-		"eslint": "^7.32.0",
+		"eslint": "^8.57.1",
 		"eslint-import-resolver-alias": "^1.1.2",
-		"eslint-import-resolver-typescript": "^2.7.1",
+		"eslint-import-resolver-typescript": "^4.4.5",
 		"eslint-plugin-filenames": "^1.3.2",
 		"eslint-plugin-import": "^2.25.3",
 		"eslint-plugin-jest": "^22.21.0",
@@ -130,13 +130,14 @@
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"eslint-plugin-sitekit": "file:packages/eslint-plugin",
 		"eslint-plugin-unicorn": "^40.1.0",
-		"eslint-scope": "^5.1.0",
 		"fetch-mock": "^9.11.0",
 		"fetch-mock-jest": "^1.5.0",
 		"fs-extra": "^11.3.5",
 		"git-repo-info": "^2.1.1",
 		"glob-to-regexp": "^0.4.1",
+		"history": "^4.10.1",
 		"husky": "^3.1.0",
+		"jest-mock": "^29.7.0",
 		"lint-staged": "^17.0.5",
 		"node-fetch": "^2.7.0",
 		"patch-package": "^8.0.0",
@@ -152,7 +153,7 @@
 		"stylelint-order": "^6.0.0",
 		"stylelint-scss": "^6.0.0",
 		"tsc-files": "^1.1.4",
-		"typescript": "^5.9.3",
+		"typescript": "^6.0.3",
 		"webpack-cli": "^7.0.2"
 	},
 	"overrides": {
@@ -161,9 +162,6 @@
 		},
 		"react-dom": {
 			".": "^17.0.0"
-		},
-		"@typescript-eslint/typescript-estree@^6": {
-			"minimatch": "^9.0.7"
 		},
 		"@typescript-eslint/typescript-estree@^1": {
 			"semver": "^7.5.4"

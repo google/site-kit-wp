@@ -63,6 +63,7 @@ describe( 'global features badge', () => {
 
 	function loadEntry() {
 		jest.isolateModules( () => {
+			// eslint-disable-next-line @typescript-eslint/no-require-imports -- `jest.isolateModules` needs a synchronous load; `import()` would resolve after the callback returns.
 			require( './googlesitekit-features-badge' );
 		} );
 	}

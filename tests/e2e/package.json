@@ -23,6 +23,8 @@
 		"lodash": "^4.17.21"
 	},
 	"devDependencies": {
-		"@types/jest": "^29.5.14"
+		"@types/jest": "^29.5.14",
+		"cross-spawn": "^7.0.6",
+		"jest-matcher-utils": "^29.7.0"
 	}
 }
