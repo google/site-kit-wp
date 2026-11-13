@@ -24,18 +24,24 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import { FEATURE_SETUP_ERROR_NOTIFICATION_EVENT_ID } from '@/js/components/feature-discovery/constants';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { sanitizeHTML } from '@/js/util';
 import {
 	ErrorObject,
@@ -43,6 +49,9 @@ import {
 	isInsufficientPermissionsError,
 	isRetryableErrorType,
 } from '@/js/util/errors';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+
+const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
 const sanitizeArgs = {
 	ALLOWED_TAGS: [ 'a' ],
@@ -64,6 +73,30 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 	onDismiss,
 	isRetrying = false,
 } ) => {
+	const trackEvents = useNotificationEvents(
+		FEATURE_SETUP_ERROR_NOTIFICATION_EVENT_ID,
+		undefined,
+		{
+			viewAction: 'setup_error',
+			confirmAction: 'retry_setup',
+			dismissAction: 'dismiss_setup_error',
+		}
+	);
+
+	const onClickDismiss = useCallback( () => {
+		trackEvents.dismiss( slug );
+		onDismiss();
+	}, [ trackEvents, slug, onDismiss ] );
+
+	const onClickRetry = useCallback( () => {
+		trackEvents.confirm( slug );
+		onRetry();
+	}, [ trackEvents, slug, onRetry ] );
+
+	const onInView = useCallback( () => {
+		trackEvents.view( slug );
+	}, [ trackEvents, slug ] );
+
 	const featureTitle = useSelect(
 		( select: Select ) => {
 			const feature = select( CORE_FEATURE_DISCOVERY ).getFeature( slug );
@@ -137,7 +170,7 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 	}
 
 	return (
-		<Notice
+		<NoticeWithIntersectionObserver
 			className="googlesitekit-feature-setup-error-notice"
 			type={ NOTICE_TYPES.ERROR }
 			title={ sprintf(
@@ -150,15 +183,16 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 				isRetryableErrorType( error )
 					? {
 							label: __( 'Retry', 'google-site-kit' ),
-							onClick: onRetry,
+							onClick: onClickRetry,
 							inProgress: isRetrying,
 					  }
 					: undefined
 			}
 			dismissButton={ {
 				label: __( 'Got it', 'google-site-kit' ),
-				onClick: onDismiss,
+				onClick: onClickDismiss,
 			} }
+			onInView={ onInView }
 		/>
 	);
 };

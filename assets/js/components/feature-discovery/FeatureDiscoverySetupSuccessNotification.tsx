@@ -25,9 +25,11 @@ import { ElementType, FC } from 'react';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { FEATURE_SETUP_SUCCESS_NOTIFICATION_EVENT_ID } from '@/js/components/feature-discovery/constants';
 import FeatureSuccessNotice from '@/js/components/feature-discovery/FeatureSuccessNotice';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 
 interface FeatureDiscoverySetupSuccessNotificationProps {
 	id: string;
@@ -37,6 +39,8 @@ interface FeatureDiscoverySetupSuccessNotificationProps {
 const FeatureDiscoverySetupSuccessNotification: FC<
 	FeatureDiscoverySetupSuccessNotificationProps
 > = ( { id, Notification } ) => {
+	const viewContext = useViewContext();
+
 	const slug = useSelect(
 		( select: Select ) =>
 			select( CORE_FEATURE_DISCOVERY ).getPendingSetup()?.featureSlug,
@@ -58,9 +62,18 @@ const FeatureDiscoverySetupSuccessNotification: FC<
 		return null;
 	}
 
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_${ FEATURE_SETUP_SUCCESS_NOTIFICATION_EVENT_ID }`,
+		label: slug,
+	};
+
 	return (
-		<Notification>
-			<FeatureSuccessNotice slug={ slug } onDismiss={ onDismiss } />
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
+			<FeatureSuccessNotice
+				slug={ slug }
+				onDismiss={ onDismiss }
+				trackViewEvent={ false }
+			/>
 		</Notification>
 	);
 };

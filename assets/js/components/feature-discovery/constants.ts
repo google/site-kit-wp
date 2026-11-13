@@ -59,3 +59,7 @@ export const MODULE_SLUG_TO_FEATURE_SLUG: Record< string, string > = {
 	[ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ]: 'sign-in-with-google',
 	[ MODULE_SLUG_READER_REVENUE_MANAGER ]: 'reader-revenue-manager',
 };
+
+export const FEATURE_SETUP_ERROR_NOTIFICATION_EVENT_ID = 'feature-setup';
+export const FEATURE_SETUP_SUCCESS_NOTIFICATION_EVENT_ID =
+	'feature-setup-success-notification';
