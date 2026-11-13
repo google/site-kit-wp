@@ -35,13 +35,18 @@ import renderGoogleChartToDataURI, {
 	getVisualization,
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { PLACEHOLDER_TRAFFIC_BREAKDOWN } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/placeholderTrafficBreakdown';
-import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
-import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+import {
+	getBreakdownReportArgs,
+	getDailyVisitsReportArgs,
+	getTotalsReportArgs,
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	TrafficBreakdownRow,
 	getBreakdownRows,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { getBreakdownValuesFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownValuesFromReport';
+import { getDailyTrafficFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getDailyTrafficFromReport';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,
@@ -92,15 +97,15 @@ export interface GetPDFDataParams {
 export interface TrafficOverviewPDFData {
 	/** The totals report, the daily traffic, and the breakdown rows, or `null` when the export is canceled. */
 	data: {
-		/** GA4 totals report with the current and comparison range totals. */
-		totalsReport: Report;
-		/** The visits on each day of the range, oldest first, which the line chart is drawn from. */
+		/** GA4 totals report with the current and comparison range totals, or `undefined` when its request fails. */
+		totalsReport?: Report;
+		/** The visits on each day of the range, oldest first, which the line chart is drawn from. A day without visits reads zero. */
 		dailyTraffic: BenchmarkingDailyTrafficRow[];
-		/** Ranked rows for the channels breakdown. */
+		/** Ranked rows for the channels breakdown, empty when no channel has visits. */
 		channelBreakdown: TrafficBreakdownRow[];
-		/** Ranked rows for the locations breakdown. */
+		/** Ranked rows for the locations breakdown, empty when no location has visits. */
 		locationBreakdown: TrafficBreakdownRow[];
-		/** Ranked rows for the devices breakdown. */
+		/** Ranked rows for the devices breakdown, empty when no device has visits. */
 		deviceBreakdown: TrafficBreakdownRow[];
 	} | null;
 	/** Rendered chart images as JPEG data URIs. */
@@ -248,17 +253,22 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 }
 
 /**
- * Loads the totals report and the line chart image for the Traffic Overview
- * PDF section.
+ * Loads the reports and the line chart image for the Traffic Overview PDF
+ * section.
  *
- * Fetches the totals report, and stops early when the signal is aborted. Then
- * it draws the line chart of the placeholder daily traffic as a JPEG data URI
- * for the PDF. The rows of each placeholder breakdown are shaped with the same
- * `getBreakdownRows()` the dashboard's columns use, so the printed rows always
+ * Fetches the totals report, the daily visits report, and the three breakdown
+ * reports, with the entity URL on an entity dashboard, and stops early when
+ * the signal is aborted. Then it draws the line chart of the visits on each day
+ * as a JPEG data URI for the PDF. The daily traffic and the rows of each
+ * breakdown are shaped with the same `getDailyTrafficFromReport()` and
+ * `getBreakdownRows()` the dashboard uses, so the printed figures always
  * match.
  *
+ * A report that fails reads as a report without rows, so the rest of the
+ * section still prints.
+ *
  * @since 1.189.0
- * @since n.e.x.t Draws the line chart and the breakdowns from placeholder data, so it fetches only the totals report.
+ * @since n.e.x.t Draws the line chart from the daily visits report, and shapes the breakdown rows from the visits of each value.
  *
  * @param {Object}      params          Loader parameters.
  * @param {Object}      params.registry WordPress data registry.
@@ -287,20 +297,51 @@ export default async function getPDFData( {
 		url,
 	} );
 
+	const dailyVisitsArgs = getDailyVisitsReportArgs( {
+		startDate,
+		endDate,
+		url,
+	} );
+
+	// In the order of `TRAFFIC_BREAKDOWN_COLUMNS`: channels, locations, devices.
+	const breakdownArgsList = TRAFFIC_BREAKDOWN_COLUMNS.map(
+		( { dimensionName, reportID } ) =>
+			getBreakdownReportArgs( {
+				dimensionName,
+				reportID,
+				startDate,
+				endDate,
+				url,
+			} )
+	);
+
+	const argsList = [ totalsArgs, dailyVisitsArgs, ...breakdownArgsList ];
+
 	// The registry remembers each `getReport` call by its arguments, and
 	// every abort signal looks the same to it. After a canceled or failed
-	// run, the registry would treat the call below as already done and
-	// return an `undefined` report without fetching. Invalidate the earlier
-	// call, so this run fetches the report again. A report that already
+	// run, the registry would treat the calls below as already done and
+	// return `undefined` reports without fetching. Invalidate the earlier
+	// calls, so this run fetches the reports again. A report that already
 	// loaded stays in state, so a successful earlier run adds no extra
 	// request.
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.invalidateResolution( 'getReport', [ totalsArgs, { signal } ] );
+	const { invalidateResolution } = registry.dispatch( MODULES_ANALYTICS_4 );
+	argsList.forEach( ( args ) =>
+		invalidateResolution( 'getReport', [ args, { signal } ] )
+	);
 
-	const totalsReport = await registry
-		.resolveSelect( MODULES_ANALYTICS_4 )
-		.getReport( totalsArgs, { signal } );
+	const [
+		totalsReport,
+		dailyVisitsReport,
+		channelsReport,
+		locationsReport,
+		devicesReport,
+	]: Array< Report | undefined > = await Promise.all(
+		argsList.map( ( args ) =>
+			registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getReport( args, { signal } )
+		)
+	);
 
 	if ( signal.aborted ) {
 		return { data: null };
@@ -313,8 +354,11 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
-	// TODO: Read the visits on each day from the benchmarking response.
-	const dailyTraffic = getPlaceholderDailyTraffic( startDate, endDate );
+	const dailyTraffic = getDailyTrafficFromReport(
+		dailyVisitsReport,
+		startDate,
+		endDate
+	);
 	const points = getLineChartPoints( dailyTraffic );
 
 	const lineChart = await renderGoogleChartToDataURI( {
@@ -331,16 +375,19 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
-	// TODO: Replace the placeholder breakdown with the site's own.
-	const { channels, locations, devices } = PLACEHOLDER_TRAFFIC_BREAKDOWN;
-
 	return {
 		data: {
 			totalsReport,
 			dailyTraffic,
-			channelBreakdown: getBreakdownRows( channels ),
-			locationBreakdown: getBreakdownRows( locations ),
-			deviceBreakdown: getBreakdownRows( devices ),
+			channelBreakdown: getBreakdownRows(
+				getBreakdownValuesFromReport( channelsReport )
+			),
+			locationBreakdown: getBreakdownRows(
+				getBreakdownValuesFromReport( locationsReport )
+			),
+			deviceBreakdown: getBreakdownRows(
+				getBreakdownValuesFromReport( devicesReport )
+			),
 		},
 		chartImages: {
 			lineChart,

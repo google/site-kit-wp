@@ -22,6 +22,7 @@
 import {
 	getBreakdownReportArgs,
 	getBreakdownReportOptions,
+	getDailyVisitsReportArgs,
 } from './reportOptions';
 
 describe( 'getBreakdownReportOptions', () => {
@@ -88,5 +89,41 @@ describe( 'getBreakdownReportArgs', () => {
 		} );
 
 		expect( args ).not.toHaveProperty( 'url' );
+	} );
+} );
+
+describe( 'getDailyVisitsReportArgs', () => {
+	it( 'should return the dates, the sessions metric, the date dimension, and the report ID of the daily visits report', () => {
+		expect(
+			getDailyVisitsReportArgs( {
+				startDate: '2025-01-08',
+				endDate: '2025-02-04',
+			} )
+		).toEqual( {
+			startDate: '2025-01-08',
+			endDate: '2025-02-04',
+			metrics: [ { name: 'sessions' } ],
+			dimensions: [ 'date' ],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_dailyVisitsArgs',
+		} );
+	} );
+
+	it( 'should add the URL to the args when it receives an entity URL', () => {
+		expect(
+			getDailyVisitsReportArgs( {
+				startDate: '2025-01-08',
+				endDate: '2025-02-04',
+				url: 'https://example.com/about/',
+			} )
+		).toEqual( {
+			startDate: '2025-01-08',
+			endDate: '2025-02-04',
+			metrics: [ { name: 'sessions' } ],
+			dimensions: [ 'date' ],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_dailyVisitsArgs',
+			url: 'https://example.com/about/',
+		} );
 	} );
 } );

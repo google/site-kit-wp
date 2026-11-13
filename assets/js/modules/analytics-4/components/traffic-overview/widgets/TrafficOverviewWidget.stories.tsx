@@ -46,7 +46,7 @@ import {
 	getSiteVisitorsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
-	DAILY_VISITS_REPORT_OPTIONS,
+	getDailyVisitsReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
@@ -191,12 +191,10 @@ function provideEntityTrafficReports( registry: WPDataRegistry ) {
 		registry,
 		getTotalsReportArgs( { startDate, endDate, url } )
 	);
-	provideAnalytics4MockReport( registry, {
-		...DAILY_VISITS_REPORT_OPTIONS,
-		startDate,
-		endDate,
-		url,
-	} );
+	provideAnalytics4MockReport(
+		registry,
+		getDailyVisitsReportArgs( { startDate, endDate, url } )
+	);
 	provideTrafficBreakdownReports( registry );
 }
 

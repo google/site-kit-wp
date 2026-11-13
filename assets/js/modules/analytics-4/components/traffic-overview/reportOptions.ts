@@ -48,9 +48,9 @@ export interface BreakdownReportDescriptor {
 
 /**
  * The report-options fragment for the report of visits on each day of the
- * selected range, which the Traffic Overview panel reads on the entity
- * dashboard. A visit is a GA4 session, and the report's totals hold the visits
- * over the whole range.
+ * selected range. The Traffic Overview panel reads it on the entity dashboard,
+ * and its PDF export on every dashboard. A visit is a GA4 session, and the
+ * report's totals hold the visits over the whole range.
  *
  * The fragment has no `startDate`, `endDate`, or `url`. `useTrafficReport`
  * adds them.
@@ -169,6 +169,36 @@ export function getTotalsReportArgs( {
 			compareStartDate,
 			compareEndDate,
 		} ),
+	};
+	if ( url ) {
+		args.url = url;
+	}
+	return args;
+}
+
+/**
+ * Builds the complete GA4 `getReport` args for the report of visits on each
+ * day of the selected range. They equal the args `useTrafficReport` builds
+ * from `DAILY_VISITS_REPORT_OPTIONS`, so the PDF export reads the report the
+ * entity dashboard has loaded.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} options           Options.
+ * @param {string} options.startDate Report start date.
+ * @param {string} options.endDate   Report end date.
+ * @param {string} [options.url]     Entity URL filter, if any.
+ * @return {Object} GA4 getReport args.
+ */
+export function getDailyVisitsReportArgs( {
+	startDate,
+	endDate,
+	url,
+}: Pick< ReportOptions, 'startDate' | 'endDate' | 'url' > ): ReportOptions {
+	const args: ReportOptions = {
+		startDate,
+		endDate,
+		...DAILY_VISITS_REPORT_OPTIONS,
 	};
 	if ( url ) {
 		args.url = url;
