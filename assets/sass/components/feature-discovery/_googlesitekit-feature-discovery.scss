@@ -26,6 +26,27 @@
 			--googlesitekit-feature-discovery-padding-m: 36px;
 			--googlesitekit-feature-discovery-padding-l: 48px;
 		}
+
+		// The tab bar sticks directly below the sticky Site Kit header, and the
+		// All services category chips stick below the tab bar. Offsets match
+		// `.googlesitekit-navigation`, which sticks below the same header.
+		--googlesitekit-feature-discovery-sticky-top: 68px;
+		--googlesitekit-feature-discovery-tab-bar-height: 57px; // 56px tabs + 1px border.
+
+		body.admin-bar & {
+
+			@media (min-width: $width-tablet + 1 + px) {
+				--googlesitekit-feature-discovery-sticky-top: 114px;
+			}
+
+			@media (min-width: $bp-wpAdminBarTablet) {
+				--googlesitekit-feature-discovery-sticky-top: 100px;
+			}
+
+			@media (min-width: $width-desktop + 1 + px) {
+				--googlesitekit-feature-discovery-sticky-top: 116px;
+			}
+		}
 	}
 
 	.googlesitekit-feature-discovery__header {
@@ -38,6 +59,18 @@
 	.googlesitekit-feature-discovery__header,
 	.googlesitekit-feature-discovery__tab-bar {
 		padding-inline: var(--googlesitekit-feature-discovery-padding-m);
+	}
+
+	.googlesitekit-feature-discovery__tab-bar {
+		background-color: $c-base;
+		position: sticky;
+		top: var(--googlesitekit-feature-discovery-sticky-top);
+		z-index: 10;
+
+		body.googlesitekit-showing-feature-tour &,
+		body.googlesitekit-showing-tooltip & {
+			position: static;
+		}
 	}
 
 	.googlesitekit-feature-discovery__content {
