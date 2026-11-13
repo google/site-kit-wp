@@ -253,6 +253,80 @@ describe( 'SettingsView', () => {
 			).toBeInTheDocument();
 		} );
 
+		it( 'should display survey CTAs by name, or as "Survey" without one, alongside newsletter CTAs when the `rrmSurveyCTA` feature flag is enabled', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...settings,
+					configuredCTAs: {
+						'cta-1': {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+						'cta-2': {
+							type: 'survey',
+							state: 'ACTIVE',
+							displayName: 'Reader survey',
+						},
+						'cta-3': {
+							type: 'survey',
+							state: 'DRAFT',
+							displayName: '',
+						},
+					},
+				} );
+
+			const { getByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmExpressSetup', 'rrmSurveyCTA' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'Weekly newsletter, Reader survey, Survey' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not display saved survey CTAs when the `rrmSurveyCTA` feature flag is disabled', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...settings,
+					configuredCTAs: {
+						'cta-1': {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+						'cta-2': {
+							type: 'survey',
+							state: 'ACTIVE',
+							displayName: 'Reader survey',
+						},
+						'cta-3': {
+							type: 'survey',
+							state: 'DRAFT',
+							displayName: '',
+						},
+					},
+				} );
+
+			const { getByText, queryByText, waitForRegistry } = render(
+				<SettingsView />,
+				{
+					registry,
+					features: [ 'rrmExpressSetup' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( 'Weekly newsletter' ) ).toBeInTheDocument();
+			expect( queryByText( /survey/i ) ).not.toBeInTheDocument();
+		} );
+
 		it( 'should not display the CTAs item when there are no configured CTAs', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )

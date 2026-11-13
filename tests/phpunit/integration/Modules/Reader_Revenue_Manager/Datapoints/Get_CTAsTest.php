@@ -19,6 +19,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\ListCtasResponse;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\SurveyConfig;
 
 /**
  * @group Modules
@@ -141,6 +142,53 @@ class Get_CTAsTest extends TestCase {
 			),
 			$this->module->get_settings()->get()['configuredCTAs'],
 			'The CTA response should be synchronized with module settings using CTA IDs and express-setup slugs.'
+		);
+	}
+
+	public function test_parse_response__returns_survey_config() {
+		$survey_config = array(
+			'customMessage' => 'Help us learn more about you',
+			'questions'     => array(
+				array(
+					'customQuestion' => array(
+						'id'            => 'custom-question-1',
+						'displayText'   => 'Which section do you read most?',
+						'answerChoices' => array(
+							array( 'displayText' => 'News' ),
+							array( 'displayText' => 'Sport' ),
+						),
+					),
+				),
+				array( 'presetQuestion' => array( 'questionId' => 3 ) ),
+			),
+			'reportUrl'     => 'https://lookerstudio.google.com/reporting/1',
+		);
+
+		$cta = $this->create_cta( 'survey-cta', Cta::STATE_DRAFT );
+		$cta->setType( Cta::TYPE_SURVEY );
+		$cta->setDisplayName( 'Reader survey' );
+		$cta->setSurveyConfig( new SurveyConfig( $survey_config ) );
+
+		$response = new ListCtasResponse();
+		$response->setCtas( array( $cta ) );
+
+		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+
+		$this->assertEquals(
+			$survey_config,
+			json_decode( wp_json_encode( $ctas[0]->toSimpleObject() ), true )['surveyConfig'],
+			'The survey CTA should be returned with its configuration, including the response-only fields.'
+		);
+		$this->assertSame(
+			array(
+				'survey-cta' => array(
+					'type'        => 'survey',
+					'state'       => 'DRAFT',
+					'displayName' => 'Reader survey',
+				),
+			),
+			$this->module->get_settings()->get()['configuredCTAs'],
+			'The survey CTA should be synchronized with module settings using the survey slug.'
 		);
 	}
 

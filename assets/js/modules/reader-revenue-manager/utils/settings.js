@@ -24,13 +24,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { isFeatureEnabled } from '@/js/features';
 import { CTA_TYPE_LABELS } from '@/js/modules/reader-revenue-manager/constants';
+import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
  * Gets the configured CTAs as a list of CTA IDs, types, and display labels.
  *
  * @since 1.188.0
  * @since 1.192.0 Uses the CTA's display name as the label, falling back to the type label.
+ * @since n.e.x.t Lists survey CTAs when the `rrmSurveyCTA` feature flag is enabled.
  *
  * @param {Object} configuredCTAs The `configuredCTAs` setting value, keyed by CTA ID with an object of the CTA's `type`, `state` and `displayName` as the value.
  * @return {Array.<Object>} List of objects with `ctaID`, `ctaType`, and `label` properties.
@@ -40,8 +43,14 @@ export function getConfiguredCTAList( configuredCTAs ) {
 		return [];
 	}
 
+	const isSurveyCTAEnabled = isFeatureEnabled( 'rrmSurveyCTA' );
+
 	return Object.entries( configuredCTAs )
-		.filter( ( [ , { type } ] ) => !! CTA_TYPE_LABELS[ type ] )
+		.filter(
+			( [ , { type } ] ) =>
+				!! CTA_TYPE_LABELS[ type ] &&
+				( isSurveyCTAEnabled || type !== EXPRESS_SETUP_CTAS.SURVEY )
+		)
 		.map( ( [ ctaID, { type, displayName } ] ) => ( {
 			ctaID,
 			ctaType: type,
