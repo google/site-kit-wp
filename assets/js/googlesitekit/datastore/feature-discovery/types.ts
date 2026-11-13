@@ -29,6 +29,7 @@ import type { ErrorObject } from '@/js/util/errors';
 import type {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
+	FEATURE_CATEGORY_ANY,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from './constants';
@@ -160,3 +161,7 @@ export interface FeatureDiscoveryState {
 	pendingSetup: PendingSetup | null;
 	setupInProgress: Record< string, boolean >;
 }
+
+export type FeatureCategoryChipID =
+	| FeatureCategorySlug
+	| typeof FEATURE_CATEGORY_ANY;

@@ -28,6 +28,8 @@ import { BadgeProps } from '@/js/components/Badge';
 import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import {
 	FeatureBadge,
+	FeatureCategoryChipID,
+	FeatureCategorySlug,
 	FeatureEffort,
 } from '@/js/googlesitekit/datastore/feature-discovery/types';
 
@@ -48,6 +50,8 @@ export const FEATURE_CATEGORIES = {
 	PRODUCTIVITY: 'productivity',
 } as const;
 
+export const FEATURE_CATEGORY_ANY = 'all-services';
+
 // The curated order the categories are displayed in.
 export const FEATURE_CATEGORY_ORDER = [
 	FEATURE_CATEGORIES.AUDIENCE,
@@ -58,6 +62,71 @@ export const FEATURE_CATEGORY_ORDER = [
 	FEATURE_CATEGORIES.PERFORMANCE,
 	FEATURE_CATEGORIES.PRODUCTIVITY,
 ] as const;
+
+export const FEATURE_CATEGORY_TITLES: Record< FeatureCategorySlug, string > = {
+	[ FEATURE_CATEGORIES.AUDIENCE ]: __(
+		'Get to know your audience',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.ENGAGEMENT ]: __(
+		'Engage your visitors',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.MONETIZATION ]: __(
+		'Earn money from your content',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.TRAFFIC ]: __(
+		'Drive traffic to your site',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.PRIVACY ]: __( 'Manage privacy', 'google-site-kit' ),
+	[ FEATURE_CATEGORIES.PERFORMANCE ]: __(
+		'Improve your site speed and experience',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.PRODUCTIVITY ]: __(
+		'Collaborate and save time',
+		'google-site-kit'
+	),
+};
+
+export const FEATURE_CATEGORY_CHIP_LABELS: Record<
+	FeatureCategoryChipID,
+	string
+> = {
+	[ FEATURE_CATEGORY_ANY ]: __( 'All services', 'google-site-kit' ),
+	[ FEATURE_CATEGORIES.AUDIENCE ]: __(
+		'Know your audience',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.ENGAGEMENT ]: __(
+		'Engage your visitors',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.MONETIZATION ]: __( 'Monetize', 'google-site-kit' ),
+	[ FEATURE_CATEGORIES.TRAFFIC ]: __( 'Drive traffic', 'google-site-kit' ),
+	[ FEATURE_CATEGORIES.PRIVACY ]: __( 'Manage privacy', 'google-site-kit' ),
+	[ FEATURE_CATEGORIES.PERFORMANCE ]: __(
+		'Improve site speed',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.PRODUCTIVITY ]: __( 'Collaborate', 'google-site-kit' ),
+};
+
+export const FEATURE_CATEGORY_CHIP_EVENT_LABELS: Record<
+	FeatureCategoryChipID,
+	string
+> = {
+	[ FEATURE_CATEGORY_ANY ]: 'all',
+	[ FEATURE_CATEGORIES.AUDIENCE ]: 'know-your-audience',
+	[ FEATURE_CATEGORIES.ENGAGEMENT ]: 'engage-your-visitors',
+	[ FEATURE_CATEGORIES.MONETIZATION ]: 'monetize',
+	[ FEATURE_CATEGORIES.TRAFFIC ]: 'drive-traffic',
+	[ FEATURE_CATEGORIES.PRIVACY ]: 'manage-privacy',
+	[ FEATURE_CATEGORIES.PERFORMANCE ]: 'improve-site-speed',
+	[ FEATURE_CATEGORIES.PRODUCTIVITY ]: 'collaborate',
+};
 
 // Low is "Just a few clicks", medium "A short setup", high "In depth setup".
 export const FEATURE_EFFORTS = {

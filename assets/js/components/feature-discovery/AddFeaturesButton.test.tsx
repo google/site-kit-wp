@@ -24,7 +24,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import { preventNavigation } from '@/js/event-providers/content-events/test-utils';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_CATEGORIES,
@@ -34,12 +38,17 @@ import {
 import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
+	fireEvent,
 	provideSiteInfo,
 	render,
 } from '@tests/js/test-utils';
 import AddFeaturesButton from './AddFeaturesButton';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AddFeaturesButton', () => {
 	const buttonLabel = 'Add features';
@@ -71,6 +80,10 @@ describe( 'AddFeaturesButton', () => {
 			.receiveInitialSiteKitVersion( siteKitVersion );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'renders correctly', () => {
@@ -182,5 +195,56 @@ describe( 'AddFeaturesButton', () => {
 		expect(
 			queryByRole( 'link', { name: buttonLabel } )
 		).not.toBeInTheDocument();
+	} );
+
+	describe( 'GA event tracking', () => {
+		beforeEach( () => {
+			global.document.addEventListener( 'click', preventNavigation );
+		} );
+
+		afterEach( () => {
+			global.document.removeEventListener( 'click', preventNavigation );
+		} );
+
+		it( 'tracks the click_add_features event with the new_features label when there are new features', () => {
+			const { getByRole } = render( <AddFeaturesButton />, {
+				registry,
+				features: [ 'featureDiscoveryHub' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			fireEvent.click( getByRole( 'link', { name: buttonLabel } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar`,
+				'click_add_features',
+				'new_features'
+			);
+		} );
+
+		it( 'tracks the click_add_features event with the no_new_features label when there are no new features', () => {
+			// Mark the test feature as seen.
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+				[ getFeatureNewnessKey( 'test-feature' ) ]: Math.floor(
+					Date.now() / 1000
+				),
+			} );
+
+			const { getByRole } = render( <AddFeaturesButton />, {
+				registry,
+				features: [ 'featureDiscoveryHub' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			fireEvent.click( getByRole( 'link', { name: buttonLabel } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar`,
+				'click_add_features',
+				'no_new_features'
+			);
+		} );
 	} );
 } );

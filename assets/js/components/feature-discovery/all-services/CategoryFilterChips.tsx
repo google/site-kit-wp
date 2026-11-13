@@ -22,11 +22,6 @@
 import { FC, useCallback } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
@@ -34,13 +29,19 @@ import {
 	ChipMultiSelect,
 	ChipMultiSelectItem,
 } from '@/js/components/ChipMultiSelect';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_CATEGORY_ANY,
+	FEATURE_CATEGORY_CHIP_EVENT_LABELS,
+	FEATURE_CATEGORY_CHIP_LABELS,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type {
 	FeatureCategory,
+	FeatureCategoryChipID,
 	FeatureCategorySlug,
 } from '@/js/googlesitekit/datastore/feature-discovery/types';
-
-const ALL_SERVICES_CHIP_ID = 'all-services';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 const NoCheckMark: FC = () => null;
 
@@ -53,20 +54,26 @@ const CategoryFilterChips: FC< CategoryFilterChipsProps > = ( {
 	selectedCategories,
 	onToggleCategory,
 } ) => {
+	const viewContext = useViewContext();
+
 	const handleToggleChip = useCallback(
-		( chipID?: string ) => {
-			if ( ! chipID ) {
-				return;
+		( chipID: FeatureCategoryChipID, isSelected: boolean ) => {
+			if ( isSelected ) {
+				trackEvent(
+					`${ viewContext }_all-services`,
+					'select_category_filter',
+					FEATURE_CATEGORY_CHIP_EVENT_LABELS[ chipID ]
+				);
 			}
 
-			if ( chipID === ALL_SERVICES_CHIP_ID ) {
+			if ( chipID === FEATURE_CATEGORY_ANY ) {
 				onToggleCategory( null );
 				return;
 			}
 
 			onToggleCategory( chipID as FeatureCategorySlug );
 		},
-		[ onToggleCategory ]
+		[ onToggleCategory, viewContext ]
 	);
 
 	const categories = useSelect( ( select: Select ) => {
@@ -77,11 +84,11 @@ const CategoryFilterChips: FC< CategoryFilterChipsProps > = ( {
 		<div className="googlesitekit-category-filter-chips">
 			<ChipMultiSelect onToggleChip={ handleToggleChip }>
 				<ChipMultiSelectItem
-					id={ ALL_SERVICES_CHIP_ID }
+					id={ FEATURE_CATEGORY_ANY }
 					selected={ selectedCategories.length === 0 }
 					CheckMark={ NoCheckMark }
 				>
-					{ __( 'All services', 'google-site-kit' ) }
+					{ FEATURE_CATEGORY_CHIP_LABELS[ FEATURE_CATEGORY_ANY ] }
 				</ChipMultiSelectItem>
 
 				{ categories.map( ( category: FeatureCategory ) => (
