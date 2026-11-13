@@ -109,7 +109,7 @@ describe( 'SetupMainExpress', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( [] );
+			.receiveGetCTAs( { publicationID, ctas: [] } );
 
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,
@@ -144,7 +144,7 @@ describe( 'SetupMainExpress', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( [] );
+			.receiveGetCTAs( { publicationID, ctas: [] } );
 
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,

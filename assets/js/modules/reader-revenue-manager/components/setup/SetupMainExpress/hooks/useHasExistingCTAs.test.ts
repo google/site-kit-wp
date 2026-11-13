@@ -56,7 +56,7 @@ describe( 'useHasExistingCTAs', () => {
 	function receiveCTAs( ctas: unknown[] ) {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( ctas );
+			.receiveGetCTAs( { publicationID: PUBLICATION_ID, ctas } );
 	}
 
 	beforeEach( () => {

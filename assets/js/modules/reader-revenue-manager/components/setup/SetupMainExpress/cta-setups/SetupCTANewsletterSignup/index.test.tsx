@@ -158,7 +158,9 @@ function connectPublication( registry: Registry, publication: Publication ) {
 
 	providePublications( registry, [ publication ] );
 
-	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( [] );
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetCTAs( { publicationID, ctas: [] } );
 }
 
 /**
@@ -242,7 +244,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( ctas );
+			.receiveGetCTAs( { publicationID: readyPublicationID, ctas } );
 
 		return settings;
 	}
@@ -253,8 +255,17 @@ describe( 'SetupCTANewsletterSignup', () => {
 			status: 200,
 		} );
 
-		// By default, the publication has no CTAs.
-		fetchMock.get( ctasEndpoint, { body: [], status: 200 } );
+		// By default, the publication has no CTAs. Like the server, the
+		// response names whichever publication is connected.
+		fetchMock.get( ctasEndpoint, () => ( {
+			body: {
+				publicationID: registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getSavedPublicationID(),
+				ctas: [],
+			},
+			status: 200,
+		} ) );
 
 		registry = createTestRegistry() as Registry;
 		provideUserAuthentication( registry, {
@@ -1425,7 +1436,10 @@ describe( 'SetupCTANewsletterSignup', () => {
 			} );
 
 			fetchMock.getOnce( ctasEndpoint, {
-				body: [ newsletterCTA ],
+				body: {
+					publicationID: readyPublicationID,
+					ctas: [ newsletterCTA ],
+				},
 				status: 200,
 			} );
 

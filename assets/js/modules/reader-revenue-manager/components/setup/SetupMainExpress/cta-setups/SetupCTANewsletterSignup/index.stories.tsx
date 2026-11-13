@@ -124,9 +124,10 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 		postTypes: [],
 	} );
 
-	registry
-		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( [ NEWSLETTER_CTA ] );
+	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
+		publicationID: PUBLICATION_ID,
+		ctas: [ NEWSLETTER_CTA ],
+	} );
 }
 
 function connectPublication(
@@ -139,7 +140,9 @@ function connectPublication(
 // The steps before the CTA exists, so there is none for the existing CTA check
 // to find.
 function provideNoCTAs( registry: WPDataRegistry ) {
-	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( [] );
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetCTAs( { publicationID: PUBLICATION_ID, ctas: [] } );
 }
 
 function Template() {
@@ -238,9 +241,10 @@ SetupCompleteWithPreExistingCTAs.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		connectPublication( registry, COMPLETE_PUBLICATION );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( [ PRE_EXISTING_CTA, NEWSLETTER_CTA ] );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
+			publicationID: PUBLICATION_ID,
+			ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ],
+		} );
 	},
 };
 SetupCompleteWithPreExistingCTAs.scenario = {};

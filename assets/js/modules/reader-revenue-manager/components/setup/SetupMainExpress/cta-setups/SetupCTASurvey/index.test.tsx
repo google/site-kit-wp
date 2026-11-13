@@ -117,7 +117,9 @@ function connectPublication( registry: Registry, publication: Publication ) {
 
 	providePublications( registry, [ publication ] );
 
-	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( [] );
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetCTAs( { publicationID, ctas: [] } );
 }
 
 describe( 'SetupCTASurvey', () => {

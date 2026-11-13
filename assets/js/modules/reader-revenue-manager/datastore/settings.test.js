@@ -454,7 +454,10 @@ describe( 'modules/reader-revenue-manager settings', () => {
 				publicationID: 'publication-a',
 			} );
 
-			dispatch.receiveGetCTAs( [ ctaA ] );
+			dispatch.receiveGetCTAs( {
+				publicationID: 'publication-a',
+				ctas: [ ctaA ],
+			} );
 
 			expect( select.getCTAs() ).toEqual( [ ctaA ] );
 
@@ -464,7 +467,9 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			};
 
 			fetchMock.postOnce( settingsEndpoint, { body: newSettings } );
-			fetchMock.getOnce( ctasEndpoint, { body: [ ctaB ] } );
+			fetchMock.getOnce( ctasEndpoint, {
+				body: { publicationID: 'publication-b', ctas: [ ctaB ] },
+			} );
 
 			dispatch.setSettings( newSettings );
 
