@@ -163,7 +163,7 @@
 			".": "^17.0.0"
 		},
 		"@typescript-eslint/typescript-estree@^6": {
-			"minimatch": "^9.0.7"
+			"minimatch": "^11.0.1"
 		},
 		"@typescript-eslint/typescript-estree@^1": {
 			"semver": "^7.5.4"
@@ -173,6 +173,9 @@
 		},
 		"fetch-mock": {
 			"path-to-regexp": "^3.3.0"
+		},
+		"archiver": {
+			"readdir-glob": "^4.0.0"
 		},
 		"postcss-selector-parser": "^7.1.6",
 		"prismjs": "^1.30.0",
