@@ -72,10 +72,9 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns false when there are no configured CTAs', () => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [],
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetCTAs( { publicationID: PUBLICATION_ID, ctas: [] } );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,
@@ -85,10 +84,9 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns false when there is only the CTA just created in this setup flow', () => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [ cta ],
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetCTAs( { publicationID: PUBLICATION_ID, ctas: [ cta ] } );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,
@@ -99,8 +97,8 @@ describe( 'useHasPreExistingCTAs', () => {
 
 	it( 'returns true when there is more than one configured CTA', () => {
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
+			publicationID: PUBLICATION_ID,
 			ctas: [ cta, otherCTA ],
-			params: { publicationID: PUBLICATION_ID },
 		} );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {

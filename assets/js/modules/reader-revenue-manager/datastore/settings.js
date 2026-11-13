@@ -209,6 +209,8 @@ export async function submitChanges( { dispatch, select } ) {
 			await dispatch(
 				MODULES_READER_REVENUE_MANAGER
 			).invalidateResolutionForStoreSelector( 'getPublication' );
+
+			await dispatch( MODULES_READER_REVENUE_MANAGER ).resetCTAs();
 		}
 	}
 

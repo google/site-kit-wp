@@ -447,13 +447,13 @@ describe( 'useSetupFlow', () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetCTAs( {
+					publicationID: PUBLICATION_ID,
 					ctas: [
 						{
 							name: `organizations/ABCD1234/publications/${ PUBLICATION_ID }/ctas/1`,
 							type: CTA_TYPES.NEWSLETTER_SIGNUP,
 						},
 					],
-					params: { publicationID: PUBLICATION_ID },
 				} );
 
 			const { result } = renderHook(
@@ -528,8 +528,10 @@ describe( 'useSetupFlow', () => {
 			actHook( () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-					.setPublicationID( publications[ 1 ].publicationId );
+					.receiveGetSettings( {
+						// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+						publicationID: publications[ 1 ].publicationId,
+					} );
 
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -667,8 +669,8 @@ describe( 'useSetupFlow', () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetCTAs( {
+					publicationID: PUBLICATION_ID,
 					ctas,
-					params: { publicationID: PUBLICATION_ID },
 				} );
 		}
 

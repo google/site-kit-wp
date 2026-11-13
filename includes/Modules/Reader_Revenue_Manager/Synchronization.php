@@ -66,12 +66,10 @@ class Synchronization {
 	public function register() {
 		$settings              = $this->reader_revenue_manager->get_settings()->get();
 		$publication_datapoint = 'publications';
-		$data_callback         = null;
 
 		// Use the `GET:publication` datapoint if the organizationID is set.
 		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) && ! empty( $settings['organizationID'] ) ) {
 			$publication_datapoint = 'publication';
-			$data_callback         = array( $this, 'get_datapoint_data' );
 		}
 
 		$crons = array(
@@ -79,8 +77,7 @@ class Synchronization {
 				$this->reader_revenue_manager,
 				$this->user_options,
 				Publication::CRON_SYNCHRONIZE_PUBLICATION,
-				$publication_datapoint,
-				$data_callback
+				$publication_datapoint
 			),
 		);
 
@@ -89,8 +86,7 @@ class Synchronization {
 				$this->reader_revenue_manager,
 				$this->user_options,
 				CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS,
-				'ctas',
-				array( $this, 'get_datapoint_data' )
+				'ctas'
 			);
 		}
 
@@ -111,23 +107,5 @@ class Synchronization {
 				}
 			);
 		}
-	}
-
-	/**
-	 * Gets request data for datapoints that identify a publication.
-	 *
-	 * @since 1.188.0
-	 *
-	 * @return array Datapoint request data.
-	 */
-	public function get_datapoint_data() {
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-
-		return array_filter(
-			array(
-				'organizationID' => $settings['organizationID'],
-				'publicationID'  => $settings['publicationID'],
-			)
-		);
 	}
 }

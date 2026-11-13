@@ -32,3 +32,32 @@ export function getCTAID( name?: string ): string | undefined {
 
 	return name.split( '/' ).pop() || undefined;
 }
+
+/**
+ * Gets the publication ID from a WCP CTA resource name.
+ *
+ * CTA resource names take the form
+ * `organizations/{organization}/publications/{publication}/ctas/{cta}`, so a
+ * CTA says which publication it belongs to.
+ *
+ * @since n.e.x.t
+ *
+ * @param  name Optional CTA resource name.
+ * @return {string|undefined} Publication ID, or undefined if none can be determined.
+ */
+export function getPublicationIDFromCTAName(
+	name?: string
+): string | undefined {
+	if ( ! name ) {
+		return undefined;
+	}
+
+	const parts = name.split( '/' );
+	const publicationIndex = parts.indexOf( 'publications' ) + 1;
+
+	if ( publicationIndex === 0 ) {
+		return undefined;
+	}
+
+	return parts[ publicationIndex ] || undefined;
+}

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { getCTAID } from './ctas';
+import { getCTAID, getPublicationIDFromCTAName } from './ctas';
 
 describe( 'getCTAID', () => {
 	it( 'should return the last segment of the resource name', () => {
@@ -37,5 +37,34 @@ describe( 'getCTAID', () => {
 
 	it( 'should return undefined when the resource name has no last segment', () => {
 		expect( getCTAID( 'publications/ABC123/ctas/' ) ).toBeUndefined();
+	} );
+} );
+
+describe( 'getPublicationIDFromCTAName', () => {
+	it( 'should return the publication segment of the resource name', () => {
+		expect(
+			getPublicationIDFromCTAName(
+				'organizations/ABCD1234/publications/ABCD_123-4/ctas/9d2418415-ab3a'
+			)
+		).toBe( 'ABCD_123-4' );
+	} );
+
+	it( 'should return undefined when there is no resource name', () => {
+		expect( getPublicationIDFromCTAName() ).toBeUndefined();
+		expect( getPublicationIDFromCTAName( '' ) ).toBeUndefined();
+	} );
+
+	it( 'should return undefined when the resource name names no publication', () => {
+		expect(
+			getPublicationIDFromCTAName( 'organizations/ABCD1234' )
+		).toBeUndefined();
+	} );
+
+	it( 'should return undefined when the publication segment is empty', () => {
+		expect(
+			getPublicationIDFromCTAName(
+				'organizations/ABCD1234/publications/'
+			)
+		).toBeUndefined();
 	} );
 } );

@@ -218,7 +218,14 @@ describe( 'StepPublicationSetup', () => {
 			global.location.href =
 				'http://example.com/?cta=newsletter-signup&step=connect-publication';
 
-			fetchMock.getOnce( ctasEndpoint, { body: [], status: 200 } );
+			fetchMock.getOnce( ctasEndpoint, {
+				body: {
+					// eslint-disable-next-line sitekit/acronym-case
+					publicationID: publications[ 3 ].publicationId,
+					ctas: [],
+				},
+				status: 200,
+			} );
 
 			const onComplete = jest.fn();
 

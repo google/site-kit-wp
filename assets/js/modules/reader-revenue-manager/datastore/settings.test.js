@@ -429,6 +429,62 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 1, publicationEndpoint );
 		} );
 
+		it( 'should refetch the CTAs when changing publication settings', async () => {
+			const dispatch = registry.dispatch(
+				MODULES_READER_REVENUE_MANAGER
+			);
+
+			const select = registry.select( MODULES_READER_REVENUE_MANAGER );
+
+			const ctasEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+			);
+
+			const ctaA = {
+				name: 'organizations/organization-a/publications/publication-a/ctas/cta-a',
+				type: 'NEWSLETTER_SIGNUP',
+			};
+			const ctaB = {
+				name: 'organizations/organization-b/publications/publication-b/ctas/cta-b',
+				type: 'NEWSLETTER_SIGNUP',
+			};
+
+			dispatch.receiveGetSettings( {
+				...validSettings,
+				publicationID: 'publication-a',
+			} );
+
+			dispatch.receiveGetCTAs( {
+				publicationID: 'publication-a',
+				ctas: [ ctaA ],
+			} );
+
+			expect( select.getCTAs() ).toEqual( [ ctaA ] );
+
+			const newSettings = {
+				...validSettings,
+				publicationID: 'publication-b',
+			};
+
+			fetchMock.postOnce( settingsEndpoint, { body: newSettings } );
+			fetchMock.getOnce( ctasEndpoint, {
+				body: { publicationID: 'publication-b', ctas: [ ctaB ] },
+			} );
+
+			dispatch.setSettings( newSettings );
+
+			await dispatch.submitChanges();
+
+			expect( select.getCTAs() ).toBeUndefined();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getCTAs();
+
+			expect( select.getCTAs() ).toEqual( [ ctaB ] );
+		} );
+
 		it( 'should dispatch saveSettings', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )

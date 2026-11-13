@@ -145,17 +145,22 @@ const userSettingsEndpoint = new RegExp(
  * @return {void}
  */
 function connectPublication( registry: Registry, publication: Publication ) {
+	// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+	const publicationID = publication.publicationId;
+
+	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
+		publicationID,
+	} );
+
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		.setPublicationID( publication.publicationId );
+		.setPublicationID( publicationID );
 
 	providePublications( registry, [ publication ] );
 
-	// CTAs are keyed by the publication ID, so receive them after setting it.
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [], params: {} } );
+		.receiveGetCTAs( { publicationID, ctas: [] } );
 }
 
 /**
@@ -239,7 +244,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas, params: {} } );
+			.receiveGetCTAs( { publicationID: readyPublicationID, ctas } );
 
 		return settings;
 	}
@@ -250,8 +255,17 @@ describe( 'SetupCTANewsletterSignup', () => {
 			status: 200,
 		} );
 
-		// By default, the publication has no CTAs.
-		fetchMock.get( ctasEndpoint, { body: [], status: 200 } );
+		// By default, the publication has no CTAs. Like the server, the
+		// response names whichever publication is connected.
+		fetchMock.get( ctasEndpoint, () => ( {
+			body: {
+				publicationID: registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getSavedPublicationID(),
+				ctas: [],
+			},
+			status: 200,
+		} ) );
 
 		registry = createTestRegistry() as Registry;
 		provideUserAuthentication( registry, {
@@ -1422,7 +1436,10 @@ describe( 'SetupCTANewsletterSignup', () => {
 			} );
 
 			fetchMock.getOnce( ctasEndpoint, {
-				body: [ newsletterCTA ],
+				body: {
+					publicationID: readyPublicationID,
+					ctas: [ newsletterCTA ],
+				},
 				status: 200,
 			} );
 
