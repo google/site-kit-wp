@@ -45,20 +45,17 @@ import {
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
 	RECENT_ACTIVITY_TAB_ID,
 	TRAFFIC_OVERVIEW_TAB_ID,
-	TYPICAL_TRAFFIC_TAB_ID,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { useHasTypicalTrafficTab } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useHasTypicalTrafficTab';
 import { useRecentActivitySurveyTriggers } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentActivitySurveyTriggers';
 import { useRecordRecentActivityTabOpen } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityTabOpen';
 import RecentActivityFooter from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityFooter';
+import EntityTrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/EntityTrafficOverviewPanel';
 import RecentActivityPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/RecentActivityPanel';
 import TrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TrafficOverviewPanel';
-import TypicalTrafficPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficPanel';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import SparkleIcon from '@/svg/icons/sparkle.svg';
-import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
+import TrafficOverviewFooter from './TrafficOverviewFooter';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -129,8 +126,6 @@ const TrafficOverviewWidget = forwardRef<
 		[ dashboardType, isAnalyticsConnected ]
 	);
 
-	const hasTypicalTrafficTab = useHasTypicalTrafficTab();
-
 	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );
 	const [ hasTrackedView, setHasTrackedView ] = useState( false );
 	const recordRecentActivityTabOpen = useRecordRecentActivityTabOpen();
@@ -149,24 +144,18 @@ const TrafficOverviewWidget = forwardRef<
 
 	const tabs: TrafficOverviewTabDescriptor[] = [];
 
-	// The Traffic overview tab shows Analytics reports only.
+	// The Traffic overview tab shows Analytics reports only. The entity
+	// dashboard shows one page, so its panel leaves out what describes the
+	// whole site.
 	if ( isAnalyticsConnected ) {
 		tabs.push( {
 			id: TRAFFIC_OVERVIEW_TAB_ID,
 			label: __( 'Traffic overview', 'google-site-kit' ),
-			PanelComponent: TrafficOverviewPanel,
-			FooterComponent: TrafficOverviewSourceLink,
-		} );
-	}
-
-	if ( hasTypicalTrafficTab ) {
-		tabs.push( {
-			id: TYPICAL_TRAFFIC_TAB_ID,
-			label: __( 'Typical traffic', 'google-site-kit' ),
-			Icon: SparkleIcon,
-			isBeta: true,
-			PanelComponent: TypicalTrafficPanel,
-			FooterComponent: TrafficOverviewSourceLink,
+			PanelComponent:
+				dashboardType === DASHBOARD_TYPE_ENTITY
+					? EntityTrafficOverviewPanel
+					: TrafficOverviewPanel,
+			FooterComponent: TrafficOverviewFooter,
 		} );
 	}
 
@@ -214,8 +203,6 @@ const TrafficOverviewWidget = forwardRef<
 		return <WidgetNull />;
 	}
 
-	// Only the selected tab's panel mounts, so the Typical Traffic request is
-	// not sent until a reader selects its tab.
 	const { PanelComponent, FooterComponent } = shownTab;
 
 	// When Analytics is not connected, the widget shows no report, so it has

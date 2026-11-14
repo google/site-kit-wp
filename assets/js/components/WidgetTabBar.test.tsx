@@ -25,7 +25,7 @@ import WidgetTabBar, { WidgetTab } from './WidgetTabBar';
 describe( 'WidgetTabBar', () => {
 	const tabs: WidgetTab[] = [
 		{ id: 'traffic-overview', label: 'Traffic overview' },
-		{ id: 'typical-traffic', label: 'Typical traffic' },
+		{ id: 'recent-activity', label: 'Recent activity' },
 	];
 
 	/**
@@ -59,16 +59,16 @@ describe( 'WidgetTabBar', () => {
 			renderedTabs.map( ( tab ) => [ tab.id, tab.textContent ] )
 		).toEqual( [
 			[ 'traffic-overview', 'Traffic overview' ],
-			[ 'typical-traffic', 'Typical traffic' ],
+			[ 'recent-activity', 'Recent activity' ],
 		] );
 	} );
 
 	it( 'marks the active tab as selected', () => {
-		renderTabBar( 'typical-traffic' );
+		renderTabBar( 'recent-activity' );
 
 		expect(
 			screen.getByRole( 'tab', { selected: true } )
-		).toHaveTextContent( 'Typical traffic' );
+		).toHaveTextContent( 'Recent activity' );
 	} );
 
 	it( 'marks the first tab as selected when the active tab id does not match any tab', () => {
@@ -83,10 +83,10 @@ describe( 'WidgetTabBar', () => {
 		const { onTabChange } = renderTabBar();
 
 		fireEvent.click(
-			screen.getByRole( 'tab', { name: 'Typical traffic' } )
+			screen.getByRole( 'tab', { name: 'Recent activity' } )
 		);
 
-		expect( onTabChange ).toHaveBeenCalledWith( 'typical-traffic' );
+		expect( onTabChange ).toHaveBeenCalledWith( 'recent-activity' );
 		expect( onTabChange ).toHaveBeenCalledTimes( 1 );
 	} );
 
@@ -101,7 +101,7 @@ describe( 'WidgetTabBar', () => {
 		fireEvent.keyDown( tabList, { key: 'ArrowRight', keyCode: 39 } );
 		fireEvent.keyDown( tabList, { key: 'Enter', keyCode: 13 } );
 
-		expect( onTabChange ).toHaveBeenLastCalledWith( 'typical-traffic' );
+		expect( onTabChange ).toHaveBeenLastCalledWith( 'recent-activity' );
 
 		fireEvent.keyDown( tabList, { key: 'ArrowLeft', keyCode: 37 } );
 		fireEvent.keyDown( tabList, { key: 'Enter', keyCode: 13 } );
@@ -126,36 +126,6 @@ describe( 'WidgetTabBar', () => {
 		).toHaveTextContent( 'Traffic overview' );
 	} );
 
-	it( 'should render the icon before the label, hidden from assistive technology', () => {
-		render(
-			<WidgetTabBar
-				tabs={ [
-					{ id: 'traffic-overview', label: 'Traffic overview' },
-					{
-						id: 'typical-traffic',
-						label: 'Typical traffic',
-						// The Jest mock for SVG files renders a bare `<svg />` and
-						// ignores its props, so this icon passes them on to show what
-						// the tab bar sets.
-						Icon: ( props ) => <svg { ...props } />,
-						isBeta: true,
-					},
-				] }
-				activeTabID="traffic-overview"
-				onTabChange={ jest.fn() }
-			/>
-		);
-
-		const tab = screen.getByRole( 'tab', {
-			name: 'Typical traffic Beta',
-		} );
-		const icon =
-			tab.querySelector( '.mdc-tab__content' )?.firstElementChild;
-
-		expect( icon ).toHaveClass( 'googlesitekit-widget-tab-bar__tab-icon' );
-		expect( icon ).toHaveAttribute( 'aria-hidden', 'true' );
-	} );
-
 	it( 'should call `onTabChange` with the tab `id` when the "Beta" badge is clicked', () => {
 		const onTabChange = jest.fn();
 
@@ -164,8 +134,8 @@ describe( 'WidgetTabBar', () => {
 				tabs={ [
 					{ id: 'traffic-overview', label: 'Traffic overview' },
 					{
-						id: 'typical-traffic',
-						label: 'Typical traffic',
+						id: 'recent-activity',
+						label: 'Recent activity',
 						isBeta: true,
 					},
 				] }
@@ -177,17 +147,7 @@ describe( 'WidgetTabBar', () => {
 		fireEvent.click( screen.getByText( 'Beta' ) );
 
 		expect( onTabChange ).toHaveBeenCalledTimes( 1 );
-		expect( onTabChange ).toHaveBeenCalledWith( 'typical-traffic' );
-	} );
-
-	it( 'should render no icon for a tab without an `Icon`', () => {
-		renderTabBar();
-
-		expect(
-			screen
-				.getByRole( 'tab', { name: 'Traffic overview' } )
-				.querySelector( '.googlesitekit-widget-tab-bar__tab-icon' )
-		).toBeNull();
+		expect( onTabChange ).toHaveBeenCalledWith( 'recent-activity' );
 	} );
 
 	it( 'should select the tab whose `id` is `activeTabID` after a tab is added between two others', () => {
@@ -206,7 +166,7 @@ describe( 'WidgetTabBar', () => {
 			<WidgetTabBar
 				tabs={ [
 					{ id: 'traffic-overview', label: 'Traffic overview' },
-					{ id: 'typical-traffic', label: 'Typical traffic' },
+					{ id: 'added-tab', label: 'Added tab' },
 					{ id: 'recent-activity', label: 'Recent activity' },
 				] }
 				activeTabID="recent-activity"

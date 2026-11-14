@@ -76,13 +76,14 @@ const CLEAR_BENCHMARKING_DATA = 'CLEAR_BENCHMARKING_DATA';
  * Throws an error when either date is missing or isn't a valid `YYYY-MM-DD` date.
  *
  * @since 1.190.0
+ * @since n.e.x.t Exported, so the benchmarking insight validates its dates the same way.
  *
  * @param {Object} params           The date range.
  * @param {string} params.startDate The first day of the date range.
  * @param {string} params.endDate   The last day of the date range.
  * @return {void}
  */
-function validateBenchmarkingDataParams( {
+export function validateBenchmarkingDataParams( {
 	startDate,
 	endDate,
 }: Partial< BenchmarkingDataParams > ): void {
@@ -163,7 +164,12 @@ const baseActions = {
 	 * the API cache, so the next `getBenchmarkingData()` call for those dates
 	 * requests it again.
 	 *
+	 * The generated insight of the date range is written from the request
+	 * that the response carries, so the action deletes it too, with
+	 * `clearBenchmarkingInsight()`.
+	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Deletes the generated insight of the date range too.
 	 *
 	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
 	 * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
@@ -178,6 +184,15 @@ const baseActions = {
 		): Generator< unknown, void, unknown > {
 			const registry =
 				( yield commonActions.getRegistry() ) as WPDataRegistry;
+
+			// The key of the insight's cache entry has the locale that the
+			// response names, so the insight goes while the store still has
+			// the response.
+			yield commonActions.await(
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.clearBenchmarkingInsight( startDate, endDate )
+			);
 
 			yield commonActions.await(
 				deleteItem(

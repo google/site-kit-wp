@@ -37,12 +37,16 @@ import {
 	DEVICES_BREAKDOWN_REPORT_ID,
 	LOCATIONS_BREAKDOWN_REPORT_ID,
 	getBreakdownReportArgs,
-	getGraphReportArgs,
+	getDailyVisitsReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	createBreakdownReport,
+	createBreakdownValues,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Report } from '@/js/modules/analytics-4/datastore/types';
 import {
 	createTestRegistry,
 	provideSiteInfo,
@@ -84,6 +88,7 @@ const reportEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/report'
 );
 
+/** A 28-day range, and the 28 days before it. */
 const DATES = {
 	startDate: '2025-01-08',
 	endDate: '2025-02-04',
@@ -91,99 +96,117 @@ const DATES = {
 	compareEndDate: '2025-01-07',
 };
 
-/**
- * Builds one breakdown's report args at the shared `DATES`.
- *
- * @since 1.189.0
- *
- * @param {string} dimensionName Breakdown dimension name.
- * @param {string} reportID      Report ID for cache isolation.
- * @param {string} [url]         Current entity URL, when the test provides one.
- * @return {Object} Args for `getBreakdownReportArgs()`.
- */
-function breakdownArgsFor(
-	dimensionName: string,
-	reportID: string,
-	url?: string
-) {
-	return getBreakdownReportArgs( {
-		dimensionName,
-		reportID,
-		startDate: DATES.startDate,
-		endDate: DATES.endDate,
-		url,
-	} );
-}
+type Dates = typeof DATES;
 
-const channelsArgs = breakdownArgsFor(
-	'sessionDefaultChannelGrouping',
-	CHANNELS_BREAKDOWN_REPORT_ID
-);
-const locationsArgs = breakdownArgsFor(
-	'country',
-	LOCATIONS_BREAKDOWN_REPORT_ID
-);
-const devicesArgs = breakdownArgsFor(
-	'deviceCategory',
-	DEVICES_BREAKDOWN_REPORT_ID
-);
+const TOTALS_REPORT: Report = {
+	totals: [ { metricValues: [ { value: '100' } ] } ],
+};
 
 function setGoogle( value: unknown ) {
 	( global as unknown as { google?: unknown } ).google = value;
 }
 
 /**
- * Seeds the totals and graph reports so `getPDFData` resolves them from state
- * without a network request.
+ * Builds the arguments of the five reports `getPDFData` reads.
  *
- * @since 1.189.0
+ * @since n.e.x.t
  *
- * @param {Object} testRegistry Registry to seed.
- * @return {void}
+ * @param {Object} [dates] Optional. The date range. Default `DATES`.
+ * @param {string} [url]   Optional. The current entity URL.
+ * @return {Object} The arguments of each report, keyed by report.
  */
-function seedTotalsAndGraphReports( testRegistry: Registry ) {
-	testRegistry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport(
-			{ totals: [ { metricValues: [ { value: '100' } ] } ] },
-			{ options: getTotalsReportArgs( DATES ) }
-		);
-	testRegistry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		{ rows: [] },
-		{
-			options: getGraphReportArgs( {
-				startDate: DATES.startDate,
-				endDate: DATES.endDate,
-			} ),
-		}
-	);
+function getReportArgs( dates: Dates = DATES, url?: string ) {
+	const { startDate, endDate } = dates;
+
+	return {
+		totals: getTotalsReportArgs( { ...dates, url } ),
+		dailyVisits: getDailyVisitsReportArgs( { startDate, endDate, url } ),
+		channels: getBreakdownReportArgs( {
+			dimensionName: 'sessionDefaultChannelGrouping',
+			reportID: CHANNELS_BREAKDOWN_REPORT_ID,
+			startDate,
+			endDate,
+			url,
+		} ),
+		locations: getBreakdownReportArgs( {
+			dimensionName: 'country',
+			reportID: LOCATIONS_BREAKDOWN_REPORT_ID,
+			startDate,
+			endDate,
+			url,
+		} ),
+		devices: getBreakdownReportArgs( {
+			dimensionName: 'deviceCategory',
+			reportID: DEVICES_BREAKDOWN_REPORT_ID,
+			startDate,
+			endDate,
+			url,
+		} ),
+	};
+}
+
+type ReportKey = keyof ReturnType< typeof getReportArgs >;
+
+interface SeedReportsOptions
+	extends Partial< Record< ReportKey, Report | null > > {
+	/** The date range. Default `DATES`. */
+	dates?: Dates;
+	/** The current entity URL. */
+	url?: string;
 }
 
 /**
- * Seeds the channels, locations, and devices breakdown reports with one row
- * each, so none of them resolve to `null`.
+ * Puts the five reports `getPDFData` reads in the store, so it resolves them
+ * without a request. A report the options leave out has no rows, and one they
+ * set to `null` stays out of the store.
  *
- * @since 1.189.0
+ * @since n.e.x.t
  *
- * @param {Object} testRegistry Registry to seed.
+ * @param {Object} testRegistry    The registry to put the reports in.
+ * @param {Object} [options]       Optional. The date range, the entity URL, and the reports to put in the store, keyed by report.
+ * @param {Object} [options.dates] Optional. The date range. Default `DATES`.
+ * @param {string} [options.url]   Optional. The current entity URL.
  * @return {void}
  */
-function seedDefaultBreakdownReports( testRegistry: Registry ) {
-	testRegistry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( createBreakdownReport( [ [ 'Direct', 1 ] ] ), {
-			options: channelsArgs,
-		} );
-	testRegistry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( createBreakdownReport( [ [ 'Brazil', 1 ] ] ), {
-			options: locationsArgs,
-		} );
-	testRegistry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( createBreakdownReport( [ [ 'Mobile', 1 ] ] ), {
-			options: devicesArgs,
-		} );
+function seedReports(
+	testRegistry: Registry,
+	{ dates = DATES, url, ...reports }: SeedReportsOptions = {}
+) {
+	const argsByReport = getReportArgs( dates, url );
+	const reportsByKey: Record< ReportKey, Report | null > = {
+		totals: TOTALS_REPORT,
+		dailyVisits: { rows: [] },
+		channels: createBreakdownReport( [] ),
+		locations: createBreakdownReport( [] ),
+		devices: createBreakdownReport( [] ),
+		...reports,
+	};
+
+	( Object.keys( argsByReport ) as ReportKey[] ).forEach( ( key ) => {
+		const report = reportsByKey[ key ];
+
+		if ( report ) {
+			testRegistry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( report, {
+					options: argsByReport[ key ],
+				} );
+		}
+	} );
+}
+
+/**
+ * Builds a daily visits report from `[ YYYYMMDD, visits ]` pairs. Its rows
+ * have the shape of a breakdown report's: one dimension value and one metric
+ * value.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Array>} pairs `[ YYYYMMDD, visits ]` pairs.
+ * @return {Object} The daily visits report.
+ */
+function createDailyVisitsReport( pairs: Array< [ string, number ] > ) {
+	return createBreakdownReport( pairs );
 }
 
 describe( 'Traffic Overview getPDFData', () => {
@@ -213,31 +236,8 @@ describe( 'Traffic Overview getPDFData', () => {
 		setGoogle( undefined );
 	} );
 
-	it( 'builds the five reports with the selected range and no entity URL', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				{ totals: [] },
-				{ options: getTotalsReportArgs( DATES ) }
-			);
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{ rows: [] },
-			{
-				options: getGraphReportArgs( {
-					startDate: DATES.startDate,
-					endDate: DATES.endDate,
-				} ),
-			}
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, { options: channelsArgs } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, { options: locationsArgs } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, { options: devicesArgs } );
+	it( 'should read the totals, daily visits, and breakdown reports over the selected range, with no entity URL', async () => {
+		seedReports( registry );
 
 		const result = await getPDFData( {
 			registry,
@@ -247,64 +247,22 @@ describe( 'Traffic Overview getPDFData', () => {
 
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 		expect( result.data ).toEqual( {
-			totalsReport: { totals: [] },
-			graphReport: { rows: [] },
+			totalsReport: TOTALS_REPORT,
+			dailyTraffic: expect.any( Array ),
 			channelBreakdown: [],
 			locationBreakdown: [],
 			deviceBreakdown: [],
 		} );
 	} );
 
-	it( 'builds the five reports with the current entity URL when one is set', async () => {
+	it( 'should read each report with the current entity URL when one is set', async () => {
 		const entityURL = 'https://example.com/post-1';
 		provideSiteInfo( registry, { currentEntityURL: entityURL } );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				{ totals: [] },
-				{ options: getTotalsReportArgs( { ...DATES, url: entityURL } ) }
-			);
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{ rows: [] },
-			{
-				options: getGraphReportArgs( {
-					startDate: DATES.startDate,
-					endDate: DATES.endDate,
-					url: entityURL,
-				} ),
-			}
-		);
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{ rows: [] },
-			{
-				options: breakdownArgsFor(
-					'sessionDefaultChannelGrouping',
-					CHANNELS_BREAKDOWN_REPORT_ID,
-					entityURL
-				),
-			}
-		);
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{ rows: [] },
-			{
-				options: breakdownArgsFor(
-					'country',
-					LOCATIONS_BREAKDOWN_REPORT_ID,
-					entityURL
-				),
-			}
-		);
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{ rows: [] },
-			{
-				options: breakdownArgsFor(
-					'deviceCategory',
-					DEVICES_BREAKDOWN_REPORT_ID,
-					entityURL
-				),
-			}
-		);
+		seedReports( registry, {
+			url: entityURL,
+			channels: createBreakdownReport( [ [ 'Direct', 1 ] ] ),
+		} );
 
 		const result = await getPDFData( {
 			registry,
@@ -313,18 +271,20 @@ describe( 'Traffic Overview getPDFData', () => {
 		} );
 
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
-		expect( result.data ).toEqual( {
-			totalsReport: { totals: [] },
-			graphReport: { rows: [] },
-			channelBreakdown: [],
-			locationBreakdown: [],
-			deviceBreakdown: [],
-		} );
+		expect( result.data?.totalsReport ).toEqual( TOTALS_REPORT );
+		expect( result.data?.channelBreakdown ).toEqual( [
+			{ label: 'Direct', percentage: 1, formattedPercentage: '100%' },
+		] );
 	} );
 
-	it( 'returns chartImages holding only lineChart', async () => {
-		seedTotalsAndGraphReports( registry );
-		seedDefaultBreakdownReports( registry );
+	it( 'should give the visits on each day of the range from the daily visits report, with zero visits on a day the report leaves out', async () => {
+		seedReports( registry, {
+			dailyVisits: createDailyVisitsReport( [
+				[ '20250108', 10 ],
+				[ '20250109', 20 ],
+				[ '20250204', 30 ],
+			] ),
+		} );
 
 		const result = await getPDFData( {
 			registry,
@@ -332,171 +292,60 @@ describe( 'Traffic Overview getPDFData', () => {
 			signal: new AbortController().signal,
 		} );
 
-		expect( result.chartImages ).toEqual( {
-			lineChart: LINE_CHART_DATA_URI,
+		const dailyTraffic = result.data?.dailyTraffic;
+
+		// One row for each of the 28 days, from the first day to the last.
+		expect( dailyTraffic ).toHaveLength( 28 );
+		expect( dailyTraffic?.[ 0 ] ).toEqual( {
+			date: '2025-01-08',
+			visits: 10,
+			expectedMin: null,
+			expectedMax: null,
 		} );
-		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 1 );
-		expect(
-			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].chartType
-		).toBe( 'LineChart' );
-	} );
-
-	it( 'should write the value labels in short form, make their space 45 pixels wide, and label every day of a 7-day range', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				{ totals: [ { metricValues: [ { value: '8400' } ] } ] },
-				{ options: getTotalsReportArgs( DATES ) }
-			);
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{
-				rows: [
-					[ '20250108', '900' ],
-					[ '20250109', '1200' ],
-					[ '20250110', '1500' ],
-					[ '20250111', '1100' ],
-					[ '20250112', '1300' ],
-					[ '20250113', '1000' ],
-					[ '20250114', '1400' ],
-				].map( ( [ date, users ] ) => ( {
-					dimensionValues: [ { value: date } ],
-					metricValues: [ { value: users } ],
-				} ) ),
-			},
-			{
-				options: getGraphReportArgs( {
-					startDate: DATES.startDate,
-					endDate: DATES.endDate,
-				} ),
-			}
-		);
-		seedDefaultBreakdownReports( registry );
-
-		await getPDFData( {
-			registry,
-			dates: DATES,
-			signal: new AbortController().signal,
+		expect( dailyTraffic?.[ 1 ] ).toEqual( {
+			date: '2025-01-09',
+			visits: 20,
+			expectedMin: null,
+			expectedMax: null,
 		} );
-
-		expect(
-			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
-		).toMatchObject( {
-			chartArea: { right: 45 },
-			hAxis: {
-				ticks: [
-					{ f: 'Jan 8' },
-					{ f: 'Jan 9' },
-					{ f: 'Jan 10' },
-					{ f: 'Jan 11' },
-					{ f: 'Jan 12' },
-					{ f: 'Jan 13' },
-					{ f: 'Jan 14' },
-				],
-			},
-			vAxis: { format: 'short' },
+		expect( dailyTraffic?.[ 2 ] ).toEqual( {
+			date: '2025-01-10',
+			visits: 0,
+			expectedMin: null,
+			expectedMax: null,
+		} );
+		expect( dailyTraffic?.[ 27 ] ).toEqual( {
+			date: '2025-02-04',
+			visits: 30,
+			expectedMin: null,
+			expectedMax: null,
 		} );
 	} );
 
-	it( 'draws the line chart with one point for each day in the graph report', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				{ totals: [ { metricValues: [ { value: '100' } ] } ] },
-				{ options: getTotalsReportArgs( DATES ) }
-			);
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{
-				rows: [
-					{
-						dimensionValues: [ { value: '20250108' } ],
-						metricValues: [ { value: '10' } ],
-					},
-					{
-						dimensionValues: [ { value: '20250109' } ],
-						metricValues: [ { value: '20' } ],
-					},
-				],
-			},
-			{
-				options: getGraphReportArgs( {
-					startDate: DATES.startDate,
-					endDate: DATES.endDate,
-				} ),
-			}
-		);
-
-		seedDefaultBreakdownReports( registry );
-
-		const signal = new AbortController().signal;
-		const result = await getPDFData( { registry, dates: DATES, signal } );
-
-		expect( mockEnsureGoogleChartsLoaded ).toHaveBeenCalledTimes( 1 );
-
-		expect( dataTable.addColumn ).toHaveBeenNthCalledWith(
-			1,
-			'date',
-			'Day'
-		);
-		expect( dataTable.addColumn ).toHaveBeenNthCalledWith(
-			2,
-			'number',
-			'Users'
-		);
-		expect( dataTable.addRows ).toHaveBeenCalledWith( [
-			[ new Date( 2025, 0, 8 ), 10 ],
-			[ new Date( 2025, 0, 9 ), 20 ],
-		] );
-
-		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 1 );
-
-		const renderArgs = mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ];
-
-		expect( renderArgs.chartType ).toBe( 'LineChart' );
-		expect( renderArgs.width ).toBe( 1085 );
-		expect( renderArgs.height ).toBe( 133 );
-		expect( renderArgs.signal ).toBe( signal );
-		expect( renderArgs.dataTable ).toBe( dataTable );
-		expect( renderArgs.options ).toMatchObject( {
-			curveType: 'function',
-			colors: [ '#462083' ],
-			legend: { position: 'none' },
-		} );
-
-		expect( result.chartImages?.lineChart ).toBe(
-			'data:image/jpeg;base64,TElORQ=='
-		);
-	} );
-
-	it( 'shapes each breakdown report with getBreakdownRows()', async () => {
-		seedTotalsAndGraphReports( registry );
-		const channelReport = createBreakdownReport( [
+	it( 'should shape the visits of each breakdown report with `getBreakdownRows()`', async () => {
+		const channelPairs: Array< [ string, number ] > = [
 			[ 'Organic Search', 60 ],
 			[ 'Direct', 20 ],
 			[ 'Referral', 20 ],
-		] );
-		const locationReport = createBreakdownReport( [
+		];
+		const locationPairs: Array< [ string, number ] > = [
 			[ 'Singapore', 60 ],
 			[ 'Brazil', 50 ],
 			[ 'China', 40 ],
 			[ 'United States', 30 ],
 			[ 'India', 20 ],
 			[ 'Canada', 10 ],
-		] );
-		const deviceReport = createBreakdownReport( [
-			[ 'Desktop', 3 ],
-			[ 'Mobile', 1 ],
-		] );
+		];
+		const devicePairs: Array< [ string, number ] > = [
+			[ 'desktop', 3 ],
+			[ 'mobile', 1 ],
+		];
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( channelReport, { options: channelsArgs } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( locationReport, { options: locationsArgs } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( deviceReport, { options: devicesArgs } );
+		seedReports( registry, {
+			channels: createBreakdownReport( channelPairs ),
+			locations: createBreakdownReport( locationPairs ),
+			devices: createBreakdownReport( devicePairs ),
+		} );
 
 		const result = await getPDFData( {
 			registry,
@@ -505,35 +354,29 @@ describe( 'Traffic Overview getPDFData', () => {
 		} );
 
 		expect( result.data?.channelBreakdown ).toEqual(
-			getBreakdownRows( channelReport )
+			getBreakdownRows( createBreakdownValues( channelPairs ) )
 		);
 		expect( result.data?.locationBreakdown ).toEqual(
-			getBreakdownRows( locationReport )
+			getBreakdownRows( createBreakdownValues( locationPairs ) )
 		);
-		// The six-country report collapses to the top four plus one "Others"
-		// row, matching the card's column.
+		// The six countries collapse to the top four and an "Others" row, as
+		// in the dashboard's column.
 		expect( result.data?.locationBreakdown ).toHaveLength( 5 );
-		expect( result.data?.deviceBreakdown ).toEqual(
-			getBreakdownRows( deviceReport )
-		);
+		expect( result.data?.deviceBreakdown ).toEqual( [
+			{ label: 'desktop', percentage: 0.75, formattedPercentage: '75%' },
+			{ label: 'mobile', percentage: 0.25, formattedPercentage: '25%' },
+		] );
 	} );
 
-	it( 'leaves a failed breakdown report null while the other two still resolve', async () => {
-		seedTotalsAndGraphReports( registry );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( createBreakdownReport( [ [ 'Direct', 1 ] ] ), {
-				options: channelsArgs,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( createBreakdownReport( [ [ 'Mobile', 1 ] ] ), {
-				options: devicesArgs,
-			} );
+	it( 'should give no rows for a breakdown whose report fails, while the other two still have theirs', async () => {
+		seedReports( registry, {
+			channels: createBreakdownReport( [ [ 'Direct', 1 ] ] ),
+			locations: null,
+			devices: createBreakdownReport( [ [ 'mobile', 1 ] ] ),
+		} );
 
-		// The `country` dimension is unique to the locations request among the
-		// three breakdowns, since the report ID is a cache key, not part of the
-		// request URL.
+		// The `country` dimension is unique to the locations request, since the
+		// report ID is a cache key, not part of the request URL.
 		fetchMock.get(
 			( url ) =>
 				reportEndpoint.test( url ) &&
@@ -556,17 +399,131 @@ describe( 'Traffic Overview getPDFData', () => {
 			signal: new AbortController().signal,
 		} );
 
-		expect( result.data?.locationBreakdown ).toBeNull();
+		expect( result.data?.locationBreakdown ).toEqual( [] );
 		expect( result.data?.channelBreakdown ).toEqual( [
 			{ label: 'Direct', percentage: 1, formattedPercentage: '100%' },
 		] );
 		expect( result.data?.deviceBreakdown ).toEqual( [
-			{ label: 'Mobile', percentage: 1, formattedPercentage: '100%' },
+			{ label: 'mobile', percentage: 1, formattedPercentage: '100%' },
 		] );
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'stops before requesting anything when the signal is already aborted', async () => {
+	it( 'should return chartImages holding only lineChart', async () => {
+		seedReports( registry );
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		expect( result.chartImages ).toEqual( {
+			lineChart: LINE_CHART_DATA_URI,
+		} );
+		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 1 );
+		expect(
+			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].chartType
+		).toBe( 'LineChart' );
+	} );
+
+	it( 'should write the value labels in short form, make their space 45 pixels wide, and label every day of a 7-day range', async () => {
+		const sevenDays = {
+			startDate: '2025-01-08',
+			endDate: '2025-01-14',
+			compareStartDate: '2025-01-01',
+			compareEndDate: '2025-01-07',
+		};
+
+		seedReports( registry, {
+			dates: sevenDays,
+			dailyVisits: createDailyVisitsReport( [
+				[ '20250108', 40 ],
+				[ '20250111', 152 ],
+			] ),
+		} );
+
+		await getPDFData( {
+			registry,
+			dates: sevenDays,
+			signal: new AbortController().signal,
+		} );
+
+		// The busiest day has 152 visits, so the labels are written in short
+		// form.
+		expect(
+			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+		).toMatchObject( {
+			chartArea: { right: 45 },
+			hAxis: {
+				ticks: [
+					{ f: 'Jan 8' },
+					{ f: 'Jan 9' },
+					{ f: 'Jan 10' },
+					{ f: 'Jan 11' },
+					{ f: 'Jan 12' },
+					{ f: 'Jan 13' },
+					{ f: 'Jan 14' },
+				],
+			},
+			vAxis: { format: 'short' },
+		} );
+	} );
+
+	it( 'should draw the line chart with one point for each day of the range', async () => {
+		seedReports( registry, {
+			dailyVisits: createDailyVisitsReport( [
+				[ '20250108', 39 ],
+				[ '20250204', 152 ],
+			] ),
+		} );
+
+		const signal = new AbortController().signal;
+		const result = await getPDFData( { registry, dates: DATES, signal } );
+
+		expect( mockEnsureGoogleChartsLoaded ).toHaveBeenCalledTimes( 1 );
+
+		expect( dataTable.addColumn ).toHaveBeenNthCalledWith(
+			1,
+			'date',
+			'Day'
+		);
+		expect( dataTable.addColumn ).toHaveBeenNthCalledWith(
+			2,
+			'number',
+			'Visits'
+		);
+
+		const [ rows ] = dataTable.addRows.mock.calls[ 0 ];
+
+		// One point for each of the 28 days, from the first day to the last.
+		// A day the report leaves out is drawn at zero.
+		expect( rows ).toHaveLength( 28 );
+		expect( rows[ 0 ] ).toEqual( [ new Date( 2025, 0, 8 ), 39 ] );
+		expect( rows[ 1 ] ).toEqual( [ new Date( 2025, 0, 9 ), 0 ] );
+		expect( rows[ 27 ] ).toEqual( [ new Date( 2025, 1, 4 ), 152 ] );
+
+		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 1 );
+
+		const renderArgs = mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ];
+
+		expect( renderArgs.chartType ).toBe( 'LineChart' );
+		expect( renderArgs.width ).toBe( 1085 );
+		expect( renderArgs.height ).toBe( 133 );
+		expect( renderArgs.signal ).toBe( signal );
+		expect( renderArgs.dataTable ).toBe( dataTable );
+		expect( renderArgs.options ).toMatchObject( {
+			curveType: 'function',
+			colors: [ '#462083' ],
+			legend: { position: 'none' },
+		} );
+
+		expect( result.chartImages?.lineChart ).toBe(
+			'data:image/jpeg;base64,TElORQ=='
+		);
+	} );
+
+	it( 'should stop before requesting anything when the signal is already aborted', async () => {
 		const controller = new AbortController();
 		controller.abort();
 
@@ -582,25 +539,10 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 	} );
 
-	it( 'stops after the reports resolve when the signal aborts before the chart renders', async () => {
+	it( 'should stop after the reports resolve when the signal aborts before the chart renders', async () => {
 		const controller = new AbortController();
 
-		seedTotalsAndGraphReports( registry );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( createBreakdownReport( [] ), {
-				options: channelsArgs,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( createBreakdownReport( [] ), {
-				options: locationsArgs,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( createBreakdownReport( [] ), {
-				options: devicesArgs,
-			} );
+		seedReports( registry );
 
 		// The export is canceled while Google Charts loads, so the abort
 		// check after it stops the run before the line chart renders.
@@ -619,11 +561,10 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 	} );
 
-	it( 'stops after the chart renders when the signal is aborted', async () => {
+	it( 'should stop after the chart renders when the signal is aborted', async () => {
 		const controller = new AbortController();
 
-		seedTotalsAndGraphReports( registry );
-		seedDefaultBreakdownReports( registry );
+		seedReports( registry );
 
 		mockRenderGoogleChartToDataURI.mockReset().mockImplementation( () => {
 			controller.abort();
@@ -639,7 +580,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( result ).toEqual( { data: null } );
 	} );
 
-	it( 'forwards the abort signal to each report request', async () => {
+	it( 'should forward the abort signal to each report request', async () => {
 		fetchMock.get( reportEndpoint, { body: { rows: [] }, status: 200 } );
 
 		const { signal } = new AbortController();
@@ -658,13 +599,10 @@ describe( 'Traffic Overview getPDFData', () => {
 			.calls( reportEndpoint )
 			.map( ( [ , options ] ) => options?.signal );
 
-		expect( signals ).toHaveLength( 5 );
-		signals.forEach( ( forwardedSignal ) => {
-			expect( forwardedSignal ).toBe( signal );
-		} );
+		expect( signals ).toEqual( Array( 5 ).fill( signal ) );
 	} );
 
-	it( 'fetches the reports again when a new run starts after a canceled run', async () => {
+	it( 'should fetch the reports again when a new run starts after a canceled run', async () => {
 		const firstController = new AbortController();
 		const deferredResolvers: Array< () => void > = [];
 		let requestCount = 0;
@@ -712,7 +650,6 @@ describe( 'Traffic Overview getPDFData', () => {
 
 		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 10 );
 		expect( secondRun.data?.totalsReport ).toEqual( { rows: [] } );
-		expect( secondRun.data?.graphReport ).toEqual( { rows: [] } );
 		expect( secondRun.chartImages?.lineChart ).toBe(
 			'data:image/jpeg;base64,TElORQ=='
 		);

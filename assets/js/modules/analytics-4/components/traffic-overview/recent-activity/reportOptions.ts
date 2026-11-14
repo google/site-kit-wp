@@ -27,10 +27,7 @@ import {
 	INSIGHT_COMPARISON_WEEK_OFFSETS,
 	getComparisonDateRange,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
-import {
-	TOTAL_USERS_METRIC,
-	getGraphReportArgs,
-} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { TOTAL_USERS_METRIC } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { ExcludedProducts } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { MINUTE_IN_SECONDS } from '@/js/util';
@@ -60,9 +57,9 @@ export const FRESH_DATA_FETCH_OPTIONS: ReportFetchOptions = {
 /**
  * Builds the GA4 `getReport` args for the insight notice's report.
  *
- * The report holds the visitors per day, like the traffic chart's report,
- * from the start of the earliest comparison window to the last day of the date
- * range, which covers the date range and every comparison window.
+ * The report holds the visitors per day, from the start of the earliest
+ * comparison window to the last day of the date range, which covers the date
+ * range and every comparison window.
  *
  * @since 1.191.0
  *
@@ -80,10 +77,11 @@ export function getInsightReportArgs(
 	);
 
 	return {
-		...getGraphReportArgs( {
-			startDate: earliestComparison.startDate,
-			endDate: dateRange.endDate,
-		} ),
+		startDate: earliestComparison.startDate,
+		endDate: dateRange.endDate,
+		metrics: TOTAL_USERS_METRIC,
+		dimensions: [ 'date' ],
+		orderby: [ { dimension: { dimensionName: 'date' } } ],
 		reportID: INSIGHT_REPORT_ID,
 	};
 }

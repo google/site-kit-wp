@@ -39,29 +39,41 @@ class Response_EncoderTest extends TestCase {
 	 */
 	private function get_fixture_response() {
 		return array(
-			'visits'       => array(
+			'visits'           => array(
 				'current'  => 412,
 				'previous' => 388,
 			),
-			'dailyTraffic' => array(
+			'dailyTraffic'     => array(
 				array(
-					'date'   => '2025-08-18',
-					'visits' => 132,
+					'date'        => '2025-08-18',
+					'visits'      => 132,
+					'expectedMin' => null,
+					'expectedMax' => null,
 				),
 				array(
-					'date'   => '2025-08-19',
-					'visits' => 0,
+					'date'        => '2025-08-19',
+					'visits'      => 0,
+					'expectedMin' => 118.4,
+					'expectedMax' => 183.1,
 				),
 				array(
-					'date'   => '2025-08-20',
-					'visits' => 147,
+					'date'        => '2025-08-20',
+					'visits'      => 147,
+					'expectedMin' => 124.3,
+					'expectedMax' => 191.5,
 				),
 				array(
-					'date'   => '2025-08-21',
-					'visits' => 96,
+					'date'        => '2025-08-21',
+					'visits'      => 96,
+					'expectedMin' => 117.9,
+					'expectedMax' => 182.6,
 				),
 			),
-			'keyFactors'   => array(
+			// 26 days before the first plotted day, so `2025-08-18` is the 27th day
+			// with recorded traffic, which has no expected range, and `2025-08-19`
+			// is the 28th, which has one.
+			'firstTrafficDate' => '2025-07-23',
+			'keyFactors'       => array(
 				array(
 					'kind'       => 'REFERRING_SITE',
 					'label'      => 'Facebook',
@@ -342,7 +354,7 @@ class Response_EncoderTest extends TestCase {
 		);
 	}
 
-	public function test_encode__rounds_shares_and_writes_every_other_number_as_an_integer() {
+	public function test_encode__rounds_shares_and_writes_every_count_as_an_integer() {
 		$encoded = $this->encoder->encode(
 			array(
 				'dailyTraffic' => array(
@@ -382,6 +394,126 @@ class Response_EncoderTest extends TestCase {
 		$this->assertSame( array( 412, 388 ), $encoded[ Wire_Format::MEMBER_VISIT_TOTALS ], 'The period totals should be integers.' );
 	}
 
+	public function test_encode__writes_the_expected_range_of_each_day_in_the_order_of_the_daily_counts() {
+		$encoded = $this->encoder->encode(
+			array(
+				'dailyTraffic' => array(
+					array(
+						'date'        => '2025-08-18',
+						'visits'      => 132,
+						'expectedMin' => 118.4,
+						'expectedMax' => 183.1,
+					),
+					array(
+						'date'        => '2025-08-19',
+						'visits'      => 0,
+						'expectedMin' => null,
+						'expectedMax' => null,
+					),
+					array(
+						'date'   => '2025-08-20',
+						'visits' => 147,
+					),
+					array(
+						'date'        => '2025-08-21',
+						'visits'      => 96,
+						'expectedMin' => 117.9,
+						'expectedMax' => 182.6,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 118.4, 183.1 ),
+				null,
+				null,
+				array( 117.9, 182.6 ),
+			),
+			$encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ],
+			'Each day should have its bounds at its own position, and a day whose bounds are null, or a day with no bounds, should have null.'
+		);
+	}
+
+	public function test_encode__rounds_the_bounds_of_the_expected_range_to_one_decimal() {
+		$encoded = $this->encoder->encode(
+			array(
+				'dailyTraffic' => array(
+					array(
+						'date'        => '2025-08-18',
+						'visits'      => 132,
+						'expectedMin' => 118.44,
+						'expectedMax' => 183.16,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( array( 118.4, 183.2 ) ),
+			$encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ],
+			'The bounds `118.44` and `183.16` should be encoded as `118.4` and `183.2`.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_first_traffic_dates
+	 *
+	 * @param string $first_traffic_date The first day with recorded traffic, as `YYYY-MM-DD`.
+	 * @param int    $day_offset         The number of days from the first plotted day, `2025-08-18`, to that day.
+	 */
+	public function test_encode__writes_the_first_traffic_day_as_its_offset_from_the_first_plotted_day( $first_traffic_date, $day_offset ) {
+		$response                     = $this->get_fixture_response();
+		$response['firstTrafficDate'] = $first_traffic_date;
+
+		$encoded = $this->encoder->encode( $response );
+
+		$this->assertSame(
+			$day_offset,
+			$encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ],
+			"A `firstTrafficDate` of `$first_traffic_date` should be encoded as $day_offset days from `2025-08-18`."
+		);
+	}
+
+	public function data_first_traffic_dates() {
+		return array(
+			'18 days before the first plotted day' => array( '2025-07-31', -18 ),
+			'on the first plotted day'             => array( '2025-08-18', 0 ),
+			'5 days after the first plotted day'   => array( '2025-08-23', 5 ),
+		);
+	}
+
+	public function test_encode__writes_null_as_the_first_traffic_day_when_there_is_none() {
+		$response                     = $this->get_fixture_response();
+		$response['firstTrafficDate'] = null;
+
+		$this->assertNull(
+			$this->encoder->encode( $response )[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ],
+			'A `firstTrafficDate` of null should be encoded as null.'
+		);
+
+		unset( $response['firstTrafficDate'] );
+
+		$this->assertNull(
+			$this->encoder->encode( $response )[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ],
+			'A response with no `firstTrafficDate` should encode it as null.'
+		);
+	}
+
+	public function test_encode__writes_an_empty_expected_range_and_no_first_traffic_day_for_an_empty_daily_series() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'dailyTraffic'     => array(),
+				'firstTrafficDate' => '2025-07-23',
+			)
+		);
+
+		$this->assertCount( 9, $encoded, 'The encoded response should have nine members.' );
+		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'An empty `dailyTraffic` should give an empty list of expected ranges.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ], 'With no first plotted day to count from, the first traffic day should be encoded as null.' );
+	}
+
 	public function test_encode__writes_no_date_but_the_first() {
 		$encoded = $this->encode_as_sent( $this->get_fixture_response() );
 
@@ -399,6 +531,87 @@ class Response_EncoderTest extends TestCase {
 			'2025-08-18',
 			$encoded[ Wire_Format::MEMBER_FIRST_DATE ],
 			'The first plotted day should be the date of the first row of `dailyTraffic`.'
+		);
+	}
+
+	public function test_encode__writes_nine_members_for_a_response_without_an_insight_payload() {
+		$response                  = $this->get_fixture_response();
+		$response['insightLocale'] = 'de_DE';
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 9, $encoded, 'A response without `insightPayload` should keep its nine members, even with a locale.' );
+		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_LOCALE, $encoded, 'A response without `insightPayload` should have no insight locale member.' );
+		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_PAYLOAD, $encoded, 'A response without `insightPayload` should have no insight payload member.' );
+	}
+
+	public function test_encode__writes_the_insight_locale_and_the_insight_payload_as_members_9_and_10() {
+		$response                   = $this->get_fixture_response();
+		$response['insightLocale']  = 'de_DE_formal';
+		$response['insightPayload'] = 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl';
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 11, $encoded, 'A response with `insightPayload` should have eleven members.' );
+		// The browser reads the members by their positions, so the positions
+		// are named here rather than read from `Wire_Format`.
+		$this->assertSame( range( 0, 10 ), array_keys( $encoded ), 'The response should stay a list, so it is sent as a JSON array.' );
+		$this->assertSame( 'de_DE_formal', $encoded[9], 'The locale of the insight should be at position 9.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[10], 'The payload should be at position 10.' );
+		$this->assertSame( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 9 should be the locale of the insight, as it is.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 10 should be the payload, as it is.' );
+		$this->assertSame(
+			$this->encode_as_sent( $this->get_fixture_response() ),
+			array_slice( $encoded, 0, 9 ),
+			'The first nine members should be the same as those of the response without the insight members.'
+		);
+		$this->assertNotContains( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_STRINGS ], 'The locale should not be added to the string table.' );
+	}
+
+	public function test_encode__writes_null_as_the_insight_payload_when_there_is_no_insight_to_request() {
+		$response                   = $this->get_fixture_response();
+		$response['insightLocale']  = 'de_DE';
+		$response['insightPayload'] = null;
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 11, $encoded, 'A response with a null `insightPayload` should still have eleven members.' );
+		$this->assertSame( 'de_DE', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 9 should be the locale of the insight.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 10 should be null when there is no insight to request.' );
+	}
+
+	public function test_encode__writes_null_as_the_insight_locale_when_the_response_has_none() {
+		$response                   = $this->get_fixture_response();
+		$response['insightPayload'] = 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl';
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 9 should be null for a response without `insightLocale`.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 10 should be the payload.' );
+	}
+
+	/**
+	 * @dataProvider data_unusable_insight_strings
+	 *
+	 * @param mixed $value A value that is not a non-empty string.
+	 */
+	public function test_encode__writes_null_for_an_insight_member_that_is_not_a_non_empty_string( $value ) {
+		$response                   = $this->get_fixture_response();
+		$response['insightLocale']  = $value;
+		$response['insightPayload'] = $value;
+
+		$encoded = $this->encoder->encode( $response );
+
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'An insight locale that is not a non-empty string should be encoded as null.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'An insight payload that is not a non-empty string should be encoded as null.' );
+	}
+
+	public function data_unusable_insight_strings() {
+		return array(
+			'an empty string' => array( '' ),
+			'a number'        => array( 123 ),
+			'a list'          => array( array( 'payload' ) ),
+			'false'           => array( false ),
 		);
 	}
 

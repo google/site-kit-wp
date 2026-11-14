@@ -24,15 +24,37 @@ import { provideTimezone } from '@tests/js/test-utils';
 import { decodeBenchmarkingResponse } from './decodeBenchmarkingResponse';
 
 describe( 'decodeBenchmarkingResponse', () => {
-	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, and `keyFactors`', () => {
+	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, `firstTrafficDate`, and `keyFactors`', () => {
 		expect( decodeBenchmarkingResponse( benchmarkingData ) ).toEqual( {
 			visits: { current: 412, previous: 388 },
 			dailyTraffic: [
-				{ date: '2025-08-18', visits: 132 },
-				{ date: '2025-08-19', visits: 0 },
-				{ date: '2025-08-20', visits: 147 },
-				{ date: '2025-08-21', visits: 96 },
+				{
+					date: '2025-08-18',
+					visits: 132,
+					expectedMin: null,
+					expectedMax: null,
+				},
+				{
+					date: '2025-08-19',
+					visits: 0,
+					expectedMin: 118.4,
+					expectedMax: 183.1,
+				},
+				{
+					date: '2025-08-20',
+					visits: 147,
+					expectedMin: 124.3,
+					expectedMax: 191.5,
+				},
+				{
+					date: '2025-08-21',
+					visits: 96,
+					expectedMin: 117.9,
+					expectedMax: 182.6,
+				},
 			],
+			// 26 days before the first plotted day.
+			firstTrafficDate: '2025-07-23',
 			keyFactors: [
 				{
 					kind: 'REFERRING_SITE',
@@ -112,6 +134,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ 0, 0 ],
 				[],
 				[],
+				new Array( 90 ).fill( null ),
+				null,
 			] );
 			const dates =
 				decoded?.dailyTraffic.map( ( { date } ) => date ) ?? [];
@@ -125,8 +149,32 @@ describe( 'decodeBenchmarkingResponse', () => {
 			expect( decoded?.dailyTraffic[ 45 ] ).toEqual( {
 				date: '2026-03-18',
 				visits: 0,
+				expectedMin: null,
+				expectedMax: null,
 			} );
 		} );
+
+		it.each( [
+			[ 'before', '2026-04-20', -30, '2026-03-21' ],
+			[ 'after', '2026-04-01', 10, '2026-04-11' ],
+		] )(
+			'should decode a first traffic day %s the first plotted day, across the clock change, to its own date',
+			( _label, firstDate, dayOffset, firstTrafficDate ) => {
+				expect(
+					decodeBenchmarkingResponse( [
+						1,
+						[],
+						firstDate,
+						[ 132 ],
+						[ 412, 388 ],
+						[],
+						[],
+						[ null ],
+						dayOffset,
+					] )?.firstTrafficDate
+				).toBe( firstTrafficDate );
+			}
+		);
 	} );
 
 	it.each( [
@@ -141,6 +189,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ 412, 388 ],
 			[ [ 0, labelIndex, 210, 222, 40.3 ] ],
 			[ [] ],
+			[ null ],
+			null,
 		] );
 
 		expect( decoded?.keyFactors[ 0 ].label ).toBeNull();
@@ -154,26 +204,110 @@ describe( 'decodeBenchmarkingResponse', () => {
 
 	it.each( [
 		[ 'a response that is not an array', { version: 1 } ],
-		[ 'a response of fewer than seven members', [ 1, [], '2025-08-18' ] ],
+		[ 'a response of fewer than nine members', [ 1, [], '2025-08-18' ] ],
 		[
-			'a response of more than seven members',
+			'a response of eight members',
+			( benchmarkingData as unknown[] ).slice( 0, 8 ),
+		],
+		[
+			'a response of ten members',
 			[ ...( benchmarkingData as unknown[] ), [] ],
+		],
+		[
+			'a response of twelve members',
+			[ ...( benchmarkingData as unknown[] ), 'en_US', 'payload', null ],
 		],
 	] )( 'decodes %s to null', ( _label, encoded ) => {
 		expect( decodeBenchmarkingResponse( encoded ) ).toBeNull();
 	} );
 
+	it( 'should decode the locale and the request of the generated insight from a response of eleven members', () => {
+		const decoded = decodeBenchmarkingResponse( [
+			...( benchmarkingData as unknown[] ),
+			'de_DE_formal',
+			'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl',
+		] );
+
+		expect( decoded ).toEqual( {
+			...decodeBenchmarkingResponse( benchmarkingData ),
+			insightLocale: 'de_DE_formal',
+			insightPayload: 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl',
+		} );
+	} );
+
+	it( 'should leave out the locale and the request of the generated insight from a response of nine members', () => {
+		const decoded = decodeBenchmarkingResponse( benchmarkingData );
+
+		expect( decoded ).not.toHaveProperty( 'insightLocale' );
+		expect( decoded ).not.toHaveProperty( 'insightPayload' );
+	} );
+
+	it.each( [
+		[ 'null', null, null ],
+		[ 'empty strings', '', '' ],
+		[ 'not strings', 3, [ 'payload' ] ],
+	] )(
+		'should decode the locale and the request of the generated insight to null, and keep the rest of the response, when they are %s',
+		( _label, locale, payload ) => {
+			const decoded = decodeBenchmarkingResponse( [
+				...( benchmarkingData as unknown[] ),
+				locale,
+				payload,
+			] );
+
+			expect( decoded ).toEqual( {
+				...decodeBenchmarkingResponse( benchmarkingData ),
+				insightLocale: null,
+				insightPayload: null,
+			} );
+		}
+	);
+
 	it( "should decode the encoder's output for an empty series without throwing", () => {
 		// What Response_Encoder writes when `dailyTraffic` is empty: no first
 		// date, because there is no day to write.
-		const encoded = [ 1, [], null, [], [ 0, 0 ], [], [] ];
+		const encoded = [ 1, [], null, [], [ 0, 0 ], [], [], [], null ];
 
 		expect( () => decodeBenchmarkingResponse( encoded ) ).not.toThrow();
 		expect( decodeBenchmarkingResponse( encoded ) ).toEqual( {
 			visits: { current: 0, previous: 0 },
 			dailyTraffic: [],
+			firstTrafficDate: null,
 			keyFactors: [],
 		} );
+	} );
+
+	it.each( [
+		[ null, null ],
+		[ 0, '2025-08-18' ],
+		[ 5, '2025-08-23' ],
+		[ -26, '2025-07-23' ],
+	] )(
+		'should decode a first traffic day offset of %p to a `firstTrafficDate` of %p',
+		( dayOffset, firstTrafficDate ) => {
+			const encoded = [ ...( benchmarkingData as unknown[] ) ];
+			encoded[ 8 ] = dayOffset;
+
+			expect(
+				decodeBenchmarkingResponse( encoded )?.firstTrafficDate
+			).toBe( firstTrafficDate );
+		}
+	);
+
+	it( 'should decode an empty series with a first traffic day offset to null, since it has no first plotted day to count from', () => {
+		expect(
+			decodeBenchmarkingResponse( [
+				1,
+				[],
+				null,
+				[],
+				[ 0, 0 ],
+				[],
+				[],
+				[],
+				5,
+			] )
+		).toBeNull();
 	} );
 
 	it.each( [
@@ -192,6 +326,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ 412, 388 ],
 					[],
 					[],
+					[ null, null ],
+					null,
 				] )
 			).toBeNull();
 		}
@@ -205,6 +341,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 		[ 'visit totals', 4 ],
 		[ 'key factor cards', 5 ],
 		[ 'key factor attributes', 6 ],
+		[ 'expected ranges', 7 ],
 	] )(
 		'should decode a response whose %s is not a list to null',
 		( _label, member ) => {
@@ -216,7 +353,13 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ 412, 388 ],
 				[ [ 0, 0, 1, 2, 3.5 ] ],
 				[ [] ],
+				[ [ 118.4, 183.1 ] ],
+				-26,
 			];
+
+			// The response as written decodes, so only the hostile member
+			// makes it unreadable.
+			expect( decodeBenchmarkingResponse( encoded ) ).not.toBeNull();
 
 			[ null, 5, 'x', {} ].forEach( ( hostile ) => {
 				const broken = [ ...encoded ];
@@ -245,6 +388,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 						[ 1, 0, 1, 2, 3.5 ],
 					],
 					attributes,
+					[ null ],
+					null,
 				] )
 			).toBeNull();
 		}
@@ -265,8 +410,72 @@ describe( 'decodeBenchmarkingResponse', () => {
 					visitTotals,
 					[],
 					[],
+					[ null ],
+					null,
 				] )
 			).toBeNull();
+		}
+	);
+
+	it.each( [
+		[ 'one entry more', [ null, null ] ],
+		[ 'one entry fewer', [] ],
+	] )(
+		'should decode a response whose expected ranges have %s than the daily counts to null',
+		( _label, expectedRanges ) => {
+			expect(
+				decodeBenchmarkingResponse( [
+					1,
+					[],
+					'2025-08-18',
+					[ 132 ],
+					[ 412, 388 ],
+					[],
+					[],
+					expectedRanges,
+					null,
+				] )
+			).toBeNull();
+		}
+	);
+
+	it.each( [
+		[ 'a single number', [ 118.4 ] ],
+		[ 'three numbers', [ 118.4, 183.1, 200 ] ],
+		[ 'a number and a string', [ 118.4, '183.1' ] ],
+		[ 'a number and null', [ 118.4, null ] ],
+		[ 'a number', 118.4 ],
+		[ 'an object', { expectedMin: 118.4, expectedMax: 183.1 } ],
+	] )(
+		'should decode a response with an expected range of %s to null',
+		( _label, expectedRange ) => {
+			expect(
+				decodeBenchmarkingResponse( [
+					1,
+					[],
+					'2025-08-18',
+					[ 132, 147 ],
+					[ 412, 388 ],
+					[],
+					[],
+					[ null, expectedRange ],
+					null,
+				] )
+			).toBeNull();
+		}
+	);
+
+	it.each( [
+		[ 'a fraction of a day', 1.5 ],
+		[ 'a string', '-18' ],
+		[ 'a list', [] ],
+	] )(
+		'should decode a response whose first traffic day offset is %s to null',
+		( _label, dayOffset ) => {
+			const encoded = [ ...( benchmarkingData as unknown[] ) ];
+			encoded[ 8 ] = dayOffset;
+
+			expect( decodeBenchmarkingResponse( encoded ) ).toBeNull();
 		}
 	);
 
@@ -291,6 +500,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ 412, 388 ],
 				[ card, [ 0, 0, 1, 2, 3.5 ] ],
 				[ [], [] ],
+				[ null ],
+				null,
 			] );
 
 			expect( decoded?.keyFactors ).toEqual( [
@@ -315,6 +526,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ 412, 388 ],
 			[ [ 0, 0, 1, 2, 3.5 ] ],
 			[ [ [ 6, 0, 1, 2 ], null, [ 6, 0, 3, 4, 5.5 ] ] ],
+			[ null ],
+			null,
 		] );
 
 		expect( decoded?.keyFactors[ 0 ].attributes ).toEqual( [
@@ -337,6 +550,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ 412, 388 ],
 			[ [ 0, 0, 1, 2, 3.5 ] ],
 			[ 'not a list' ],
+			[ null ],
+			null,
 		] );
 
 		expect( decoded?.keyFactors ).toEqual( [
@@ -372,6 +587,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[],
 				[],
 			],
+			[ null ],
+			null,
 		] );
 
 		expect( decoded?.keyFactors.map( ( { kind } ) => kind ) ).toEqual( [
@@ -415,6 +632,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ 1, 1, 58, 12, 15.1 ],
 				],
 			],
+			[ null ],
+			null,
 		] );
 
 		// Both cards with an unknown kind are left out with their own

@@ -56,10 +56,10 @@ export interface TrafficReport {
 /**
  * Resolves one of the Traffic Overview widget's GA4 reports.
  *
- * The hook adds the selected date range and the total users metric to the
- * options it receives. On an entity dashboard it also adds the entity URL. On a
- * view-only dashboard it sends no request until the user's role can view
- * Analytics.
+ * The hook adds the selected date range to the options it receives, and the
+ * total users metric where they name no metrics. On an entity dashboard it
+ * also adds the entity URL. On a view-only dashboard it sends no request until
+ * the user's role can view Analytics.
  *
  * @since 1.188.0
  *

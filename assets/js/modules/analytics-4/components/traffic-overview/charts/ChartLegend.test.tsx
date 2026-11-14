@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render } from '@tests/js/test-utils';
+import { render, within } from '@tests/js/test-utils';
 import ChartLegend from './ChartLegend';
 
 describe( 'ChartLegend', () => {
@@ -48,5 +48,77 @@ describe( 'ChartLegend', () => {
 				'.googlesitekit-traffic-overview__chart-legend-line'
 			)
 		).toHaveStyle( { backgroundColor: '#b8bdb9' } );
+	} );
+
+	it( "should show an item's color in a block for an area, and in a dot for a point", () => {
+		const { getAllByRole } = render(
+			<ChartLegend
+				items={ [
+					{
+						label: 'Typical traffic range',
+						color: '#e3d1ff',
+						swatch: 'area',
+					},
+					{
+						label: 'Published post',
+						color: '#a983e6',
+						swatch: 'dot',
+					},
+				] }
+			/>
+		);
+
+		const [ areaItem, dotItem ] = getAllByRole( 'listitem' );
+
+		expect(
+			areaItem.querySelector(
+				'.googlesitekit-traffic-overview__chart-legend-area'
+			)
+		).toHaveStyle( { backgroundColor: '#e3d1ff' } );
+		expect(
+			dotItem.querySelector(
+				'.googlesitekit-traffic-overview__chart-legend-dot'
+			)
+		).toHaveStyle( { backgroundColor: '#a983e6' } );
+	} );
+
+	it( 'should show an info icon named by the item\'s info, then a "Beta" badge, after the label', () => {
+		const { getByRole } = render(
+			<ChartLegend
+				items={ [
+					{
+						label: 'Typical traffic range',
+						color: '#e3d1ff',
+						swatch: 'area',
+						info: 'The range of visits that is typical for each day.',
+						isBeta: true,
+					},
+				] }
+			/>
+		);
+
+		const item = getByRole( 'listitem' );
+
+		expect(
+			within( item ).getByRole( 'button', {
+				name: 'The range of visits that is typical for each day.',
+			} )
+		).toBeInTheDocument();
+		expect( within( item ).getByText( 'Beta' ) ).toHaveClass(
+			'googlesitekit-badge'
+		);
+	} );
+
+	it( 'should show no info icon and no "Beta" badge for an item without them', () => {
+		const { queryByRole, queryByText } = render(
+			<ChartLegend
+				items={ [
+					{ label: 'Last 28 days traffic', color: '#462083' },
+				] }
+			/>
+		);
+
+		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'Beta' ) ).not.toBeInTheDocument();
 	} );
 } );

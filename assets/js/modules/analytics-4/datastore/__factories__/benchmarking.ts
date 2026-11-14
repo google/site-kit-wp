@@ -28,7 +28,10 @@ import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures_
 import { BenchmarkingDataParams } from '@/js/modules/analytics-4/datastore/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { decodeBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benchmarking/decodeBenchmarkingResponse';
-import { DecodedBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import {
+	BenchmarkingInsight,
+	DecodedBenchmarkingResponse,
+} from '@/js/modules/analytics-4/utils/benchmarking/types';
 
 /**
  * The decoded `benchmarking-data.json` fixture, which is never `null` because the
@@ -65,4 +68,47 @@ export function provideBenchmarkingData(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getBenchmarkingData', [ startDate, endDate ] );
+}
+
+/**
+ * A generated insight, as `getBenchmarkingInsight()` returns it, for a site
+ * whose visits rose above their typical range.
+ *
+ * @since n.e.x.t
+ */
+export const benchmarkingInsight: BenchmarkingInsight = {
+	scenario: 'ABOVE_EXPECTED.UP',
+	teaser: 'Your site had more visits than usual for it.',
+	analysis:
+		'Over the last 28 days, your site had **1,740** visits, about 12% above what is usual for it.',
+	driver: 'Visits rose 18% (+265 visits) compared to the previous 28 days, led by **Organic Search** (+190 visits).',
+	interactionID: '01JDQ5Z6W2K8M3N4P5Q6R7S8T9',
+	modelVersion: 'gemini-3.8-flash',
+};
+
+/**
+ * Stores a generated insight for a date range, so `getBenchmarkingInsight()`
+ * returns it without a request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        registry        The registry to dispatch to.
+ * @param {Object}        dates           The date range.
+ * @param {string}        dates.startDate The first day of the date range, as `YYYY-MM-DD`.
+ * @param {string}        dates.endDate   The last day of the date range, as `YYYY-MM-DD`.
+ * @param {(Object|null)} [insight]       Optional. The insight to store, or null for none. Default is `benchmarkingInsight`.
+ * @return {void}
+ */
+export function provideBenchmarkingInsight(
+	registry: WPDataRegistry,
+	{ startDate, endDate }: BenchmarkingDataParams,
+	insight: BenchmarkingInsight | null = benchmarkingInsight
+): void {
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveBenchmarkingInsight( insight, { startDate, endDate } );
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getBenchmarkingInsight', [ startDate, endDate ] );
 }

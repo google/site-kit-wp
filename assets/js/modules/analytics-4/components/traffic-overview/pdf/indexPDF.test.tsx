@@ -26,7 +26,8 @@ import TestRenderer from 'react-test-renderer';
  * Internal dependencies
  */
 import { renderPDFText } from '@/js/components/pdf-export/test-utils';
-import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
+import { createBreakdownValues } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import TrafficOverviewPDF from './indexPDF';
 
@@ -35,11 +36,9 @@ const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
 function buildReports( {
 	currentUsers,
 	previousUsers,
-	rowCount,
 }: {
 	currentUsers: string;
 	previousUsers: string;
-	rowCount: number;
 } ) {
 	return {
 		totalsReport: {
@@ -48,11 +47,8 @@ function buildReports( {
 				{ metricValues: [ { value: previousUsers } ] },
 			],
 		},
-		graphReport: {
-			rows: Array.from( { length: rowCount }, () => ( {
-				metricValues: [ { value: '1' } ],
-			} ) ),
-		},
+		// 28 days, which the "Vs. prev. 28 days" label counts.
+		dailyTraffic: getPlaceholderDailyTraffic( '2025-01-08', '2025-02-04' ),
 		channelBreakdown: [
 			{
 				label: 'Organic Search',
@@ -85,7 +81,6 @@ function renderTree( props: ComponentProps< typeof TrafficOverviewPDF > ) {
 const DEFAULT_REPORTS = buildReports( {
 	currentUsers: '1234',
 	previousUsers: '1000',
-	rowCount: 28,
 } );
 
 describe( 'Traffic Overview PDF', () => {
@@ -125,7 +120,6 @@ describe( 'Traffic Overview PDF', () => {
 		const data = buildReports( {
 			currentUsers: '1234',
 			previousUsers: '0',
-			rowCount: 28,
 		} );
 
 		const json = JSON.stringify(
@@ -148,9 +142,9 @@ describe( 'Traffic Overview PDF', () => {
 			} )
 		);
 
-		const channelsIndex = json.indexOf( 'Visitors by channels' );
-		const locationsIndex = json.indexOf( 'Visitors by locations' );
-		const devicesIndex = json.indexOf( 'Visitors by devices' );
+		const channelsIndex = json.indexOf( 'Visits by channels' );
+		const locationsIndex = json.indexOf( 'Visits by locations' );
+		const devicesIndex = json.indexOf( 'Visits by devices' );
 
 		expect( channelsIndex ).toBeGreaterThan( -1 );
 		expect( locationsIndex ).toBeGreaterThan( channelsIndex );
@@ -170,7 +164,7 @@ describe( 'Traffic Overview PDF', () => {
 		const data = {
 			...DEFAULT_REPORTS,
 			channelBreakdown: getBreakdownRows(
-				createBreakdownReport( [
+				createBreakdownValues( [
 					[ 'Direct', 4630 ],
 					[ 'Organic Search', 3040 ],
 					[ 'Organic Social', 1560 ],
@@ -182,7 +176,7 @@ describe( 'Traffic Overview PDF', () => {
 		};
 
 		const texts = renderPDFText( <TrafficOverviewPDF data={ data } /> );
-		const channelsIndex = texts.indexOf( 'Visitors by channels' );
+		const channelsIndex = texts.indexOf( 'Visits by channels' );
 
 		// The rows are shaped by the same `getBreakdownRows()` the dashboard
 		// columns use, and each label is followed by its share.
@@ -207,13 +201,13 @@ describe( 'Traffic Overview PDF', () => {
 		const data = {
 			...DEFAULT_REPORTS,
 			channelBreakdown: getBreakdownRows(
-				createBreakdownReport( [
+				createBreakdownValues( [
 					[ 'Direct', 90 ],
 					[ '(not set)', 10 ],
 				] )
 			),
 			deviceBreakdown: getBreakdownRows(
-				createBreakdownReport( [
+				createBreakdownValues( [
 					[ 'desktop', 60 ],
 					[ 'smart tv', 30 ],
 					[ '(not set)', 10 ],
@@ -222,8 +216,8 @@ describe( 'Traffic Overview PDF', () => {
 		};
 
 		const texts = renderPDFText( <TrafficOverviewPDF data={ data } /> );
-		const channelsIndex = texts.indexOf( 'Visitors by channels' );
-		const devicesIndex = texts.indexOf( 'Visitors by devices' );
+		const channelsIndex = texts.indexOf( 'Visits by channels' );
+		const devicesIndex = texts.indexOf( 'Visits by devices' );
 
 		expect( texts.slice( channelsIndex + 1, channelsIndex + 5 ) ).toEqual( [
 			'Direct',
@@ -264,32 +258,15 @@ describe( 'Traffic Overview PDF', () => {
 			} )
 		);
 
-		expect( json ).toContain( 'Visitors by channels' );
+		expect( json ).toContain( 'Visits by channels' );
 		expect( json ).toContain(
 			'No data to display: your site hasn’t received any visitors yet'
 		);
 		expect( json ).not.toContain( 'Organic Search' );
 
-		expect( json ).toContain( 'Visitors by locations' );
+		expect( json ).toContain( 'Visits by locations' );
 		expect( json ).toContain( 'Singapore' );
-		expect( json ).toContain( 'Visitors by devices' );
+		expect( json ).toContain( 'Visits by devices' );
 		expect( json ).toContain( 'Desktop' );
-	} );
-
-	it( 'prints a breakdown’s empty state when its rows are null', () => {
-		const data = { ...DEFAULT_REPORTS, locationBreakdown: null };
-
-		const json = JSON.stringify(
-			renderTree( {
-				data,
-				chartImages: { lineChart: LINE_CHART_DATA_URI },
-			} )
-		);
-
-		expect( json ).toContain( 'Visitors by locations' );
-		expect( json ).toContain(
-			'No data to display: your site hasn’t received any visitors yet'
-		);
-		expect( json ).not.toContain( 'Singapore' );
 	} );
 } );

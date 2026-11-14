@@ -39,100 +39,114 @@ $traffic-overview-column-gap: 42px;
 			}
 		}
 
-		// Every element below carries its own typography classes, so only the
-		// colors and the layout are set here.
-		.googlesitekit-traffic-overview__total-visitors-title {
-			color: $c-surfaces-on-surface-variant;
+		// The traffic insight, where the panel has one, sits above the visitor
+		// figures.
+		.googlesitekit-traffic-overview__summary {
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+		}
+
+		.googlesitekit-traffic-overview__summary-heading {
+			color: $c-surfaces-on-surface;
 			margin: 0;
 		}
 
-		.googlesitekit-traffic-overview__total-visitors-metric {
-			align-items: flex-start;
-			display: flex;
-			gap: 14px;
-		}
-
-		.googlesitekit-traffic-overview__total-visitors-figure {
-			color: $c-surfaces-on-surface;
-		}
-
-		.googlesitekit-traffic-overview__total-visitors-change {
+		// The total visits and the unique visitors stack on phones, and sit
+		// side by side from tablets up.
+		.googlesitekit-traffic-overview__total-visitors {
 			align-items: flex-start;
 			display: flex;
 			flex-direction: column;
-			gap: 4px;
-			margin-top: 5px;
+			gap: 16px;
+
+			@media (min-width: $bp-tablet) {
+				flex-direction: row;
+				gap: 36px;
+			}
+		}
+
+		// From tablets up, a divider separates the total visits from the
+		// unique visitors.
+		.googlesitekit-traffic-overview__total-visits {
+			align-items: flex-start;
+			display: flex;
+			gap: 16px;
+
+			@media (min-width: $bp-tablet) {
+				border-right: 1px solid $c-utility-divider;
+				padding-right: 36px;
+			}
+		}
+
+		// Every element below carries its own typography classes, so only the
+		// colors and the layout are set here. The figure's box is 58px tall, as
+		// in the design: 6px shorter than its 64px line, so the label under it
+		// starts 6px before the line ends.
+		.googlesitekit-traffic-overview__total-visits-figure {
+			color: $c-surfaces-on-surface;
+			display: block;
+			height: 58px;
+		}
+
+		.googlesitekit-traffic-overview__total-visits-label {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		// The badge sits 9px down, with the comparison 3px under it.
+		.googlesitekit-traffic-overview__total-visits-change {
+			align-items: flex-start;
+			display: flex;
+			flex-direction: column;
+			gap: 3px;
+			padding-top: 9px;
 
 			.googlesitekit-change-badge {
 				margin-top: 0;
 			}
 		}
 
-		.googlesitekit-traffic-overview__total-visitors-comparison {
+		.googlesitekit-traffic-overview__total-visits-comparison {
 			color: $c-surfaces-on-background-variant;
 			margin: 0;
 		}
 
-		.googlesitekit-traffic-overview__chart {
-			margin-top: 70px;
-		}
+		// From tablets up, the figure's 28px line starts 6px down, level with
+		// the change badge, and the label 2px under it, level with the
+		// comparison.
+		.googlesitekit-traffic-overview__unique-visitors {
+			color: $c-surfaces-on-surface-variant;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
 
-		// The design puts its insight blocks 24px under the tabs, and the chart
-		// 40px under those blocks. Until the blocks exist, the chart's title
-		// takes their place, 24px under the tabs. The 24px is the panel's 20px
-		// top padding plus this 4px, in place of the 70px top margin of
-		// `.googlesitekit-traffic-overview__chart`.
-		.googlesitekit-traffic-overview__chart--typical-traffic {
-			margin-top: 4px;
-		}
-
-		// The title and the info icon flow as one line of text, so the icon
-		// follows the title's last word, even where the title wraps. The 22px
-		// end padding, the icon's 6px start margin plus its 16px width, leaves
-		// room for the icon after any line.
-		.googlesitekit-traffic-overview__typical-traffic-chart-header {
-			// The title is inline, so the header's own font size and line height
-			// set the height of each line too.
-			font-size: $fs-title-md;
-			line-height: $lh-title-md;
-
-			// Below `$bp-desktop`, the chart area sits 20px under the title: this
-			// 12px plus the 8px the chart area starts into the chart.
-			margin-bottom: 12px;
-			padding-inline-end: 22px;
-
-			// From `$bp-desktop` up, the chart area sits 10px under the title, as
-			// in the desktop frame.
-			@media (min-width: $bp-desktop) {
-				margin-bottom: 2px;
+			@media (min-width: $bp-tablet) {
+				padding-top: 6px;
 			}
 
 			.googlesitekit-typography {
-				color: $c-surfaces-on-surface;
-				display: inline;
-			}
-
-			// The -22px end margin cancels the header's 22px end padding, so the
-			// icon never wraps onto a line of its own. The 2px top margin centers
-			// the 16px icon on the title's 20px line.
-			.googlesitekit-info-tooltip {
-				color: $c-surfaces-on-background-variant;
-				display: inline-flex;
-				height: 16px;
-				margin-inline: 6px -22px;
-				margin-top: 2px;
-				vertical-align: top;
+				color: inherit;
+				margin: 0;
 			}
 		}
 
-		// `GoogleChart` draws a date marker's 18px icon above the chart area, so
-		// from `$bp-desktop` up the icon would cover the title, 10px above it.
-		// A chart that marks a day keeps the 20px it has below `$bp-desktop`.
-		.googlesitekit-traffic-overview__chart--has-date-marker
-			.googlesitekit-traffic-overview__typical-traffic-chart-header {
-			@media (min-width: $bp-desktop) {
-				margin-bottom: 12px;
+		// The info icon takes the height of its 16px icon, the height of the
+		// label's line.
+		.googlesitekit-traffic-overview__unique-visitors-label {
+			align-items: center;
+			display: flex;
+			gap: 6px;
+
+			.googlesitekit-info-tooltip {
+				display: inline-flex;
 			}
+		}
+
+		// The design puts the chart 36px under the 80px row of the visitor
+		// figures, which fill 78px of it.
+		.googlesitekit-traffic-overview__chart {
+			margin-top: 38px;
 		}
 
 		.googlesitekit-traffic-overview__chart .googlesitekit-chart {
@@ -147,6 +161,13 @@ $traffic-overview-column-gap: 42px;
 			letter-spacing: 0.4px;
 		}
 
+		// Google Charts gives the typical traffic range's area a hover of its
+		// own, with no tooltip, so a day's tooltip wouldn't open over the band.
+		// The band lets the pointer through to the chart area instead.
+		.googlesitekit-traffic-overview__chart svg path[fill="#{$c-violet-v-50}"] {
+			pointer-events: none;
+		}
+
 		.googlesitekit-traffic-overview__chart div[dir]::after {
 			background-color: $c-neutral-n-200;
 			content: "";
@@ -157,22 +178,16 @@ $traffic-overview-column-gap: 42px;
 			width: 1px;
 		}
 
+		// The items sit side by side, 57px apart, and wrap where they don't
+		// fit on one row.
 		.googlesitekit-traffic-overview__chart-legend {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 57px;
 			list-style: none;
 			margin: 4px 0 0;
 			padding: 0;
-		}
-
-		// From `$bp-desktop` up, the desktop frame centers the legend in a 28px
-		// row that starts 25px under the chart area. The 256px chart ends 24px
-		// under its chart area, which starts 8px in and is 224px tall. So 24px,
-		// plus this 7px, plus half the 16px legend item puts the item's center
-		// 39px under the chart area.
-		.googlesitekit-traffic-overview__chart--typical-traffic
-			.googlesitekit-traffic-overview__chart-legend {
-			@media (min-width: $bp-desktop) {
-				margin-top: 7px;
-			}
 		}
 
 		.googlesitekit-traffic-overview__chart-legend-item {
@@ -182,9 +197,29 @@ $traffic-overview-column-gap: 42px;
 			margin: 0;
 		}
 
+		.googlesitekit-traffic-overview__chart-legend-line,
+		.googlesitekit-traffic-overview__chart-legend-area,
+		.googlesitekit-traffic-overview__chart-legend-dot {
+			flex-shrink: 0;
+		}
+
 		.googlesitekit-traffic-overview__chart-legend-line {
 			height: 3px;
 			width: 29px;
+		}
+
+		// The swatch is as opaque as the band, which `TRAFFIC_CHART_OPTIONS`
+		// fills at 0.5.
+		.googlesitekit-traffic-overview__chart-legend-area {
+			height: 10px;
+			opacity: 0.5;
+			width: 25px;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend-dot {
+			border-radius: 50%;
+			height: 14px;
+			width: 14px;
 		}
 
 		.googlesitekit-traffic-overview__chart-legend-label.googlesitekit-typography {
@@ -194,8 +229,219 @@ $traffic-overview-column-gap: 42px;
 			line-height: 16px;
 		}
 
+		.googlesitekit-traffic-overview__chart-legend-item .googlesitekit-info-tooltip {
+			color: $c-surfaces-on-background-variant;
+			display: inline-flex;
+		}
+
+		// The badge is 24px tall, 8px taller than the rest of its row. The -4px
+		// margins keep the row 16px tall, so the legend takes the same space
+		// with the badge as without it.
+		.googlesitekit-traffic-overview__chart-legend-badge {
+			margin-block: -4px;
+		}
+
+		// The design puts the section 64px under the chart's 28px legend row,
+		// which centers its 16px legend item. The chart ends at the bottom of
+		// that item, 6px above the bottom of the row, so the gap is 70px.
+		.googlesitekit-traffic-overview__key-factors {
+			margin-top: 70px;
+		}
+
+		// Without cards, the design leaves 36px under the notice, so the
+		// breakdown sits about as far under the notice as it sits under the
+		// last attribute of the cards.
+		.googlesitekit-traffic-overview__key-factors--no-change {
+			padding-bottom: 36px;
+		}
+
+		// The title and the info icon flow as one line of text, so the icon
+		// follows the title's last word, even where the title wraps. The 22px
+		// end padding, the icon's 6px start margin plus its 16px width, leaves
+		// room for the icon after any line.
+		.googlesitekit-traffic-overview__key-factors-header {
+			font-size: $fs-title-md;
+			line-height: $lh-title-md;
+			margin-bottom: 16px;
+			padding-inline-end: 22px;
+
+			.googlesitekit-typography {
+				color: $c-surfaces-on-surface;
+				display: inline;
+				margin: 0;
+			}
+
+			// The -22px end margin cancels the header's 22px end padding, so
+			// the icon never wraps onto a line of its own. The 2px top margin
+			// centers the 16px icon on the title's 20px line.
+			.googlesitekit-info-tooltip {
+				color: $c-surfaces-on-background-variant;
+				display: inline-flex;
+				height: 16px;
+				margin-inline: 6px -22px;
+				margin-top: 2px;
+				vertical-align: top;
+			}
+		}
+
+		// An `INFO_CIRCLE` notice is white with a gray icon. The design draws
+		// this one in the colors of an `INFO` notice.
+		.googlesitekit-notice.googlesitekit-traffic-overview__key-factors-notice {
+			background-color: $c-surfaces-background;
+
+			.googlesitekit-notice__icon {
+				color: $c-surfaces-on-surface;
+			}
+		}
+
+		.googlesitekit-traffic-overview__key-factors-insight {
+			margin-bottom: 24px;
+
+			// Without cards, the summary ends the section, whose bottom
+			// padding then spaces it from the breakdown, as it does the notice.
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+
+		.googlesitekit-traffic-overview__key-factors-cards {
+			display: grid;
+			gap: 24px;
+
+			// Stacked through tablet; three columns from desktop up.
+			grid-template-columns: minmax(0, 1fr);
+
+			@media (min-width: $bp-desktop) {
+				gap: $traffic-overview-column-gap;
+
+				// Equal fractions, so one or two cards keep a third of the width.
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
+		// Every card carries the rail and the dot of the site goals goal
+		// drivers on its left. The design keeps 40px under the attributes: a
+		// 12px gap, and the 28px row for the card's feedback buttons, which
+		// appear on hover.
+		.googlesitekit-traffic-overview__key-factor {
+			min-width: 0;
+			padding: 8px 0 40px $tile-content-offset;
+			position: relative;
+
+			@include tile-connector(14px);
+		}
+
+		.googlesitekit-traffic-overview__key-factor-header {
+			align-items: flex-start;
+			display: flex;
+			gap: 10px;
+			justify-content: space-between;
+		}
+
+		// The design gives the title a 29px row, with 2px above its 24px line.
+		.googlesitekit-traffic-overview__key-factor-title {
+			color: $c-surfaces-on-surface;
+			margin: 2px 0 3px;
+			min-width: 0;
+
+			// A long name wraps instead of pushing the badge out of the card.
+			overflow-wrap: anywhere;
+		}
+
+		// The badge sits 1px down in the title's 29px row. Its colors are those
+		// of `ChangeBadge`.
+		.googlesitekit-traffic-overview__key-factor-change-badge {
+			background-color: $c-green-g-50;
+			border-radius: $br-xxs;
+			color: $c-green-g-700;
+			flex-shrink: 0;
+			margin-top: 1px;
+			padding: 4px 8px;
+			white-space: nowrap;
+		}
+
+		.googlesitekit-traffic-overview__key-factor-change-badge--negative {
+			background-color: $c-utility-error-container;
+			color: $c-utility-on-error-container;
+		}
+
+		// The design leaves 12px under the title's row and 8px above the
+		// attributes' heading.
+		.googlesitekit-traffic-overview__key-factor-attributes {
+			margin-top: 20px;
+		}
+
+		.googlesitekit-traffic-overview__key-factor-attributes-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0 0 16px;
+
+			// The heading names the driver, so a long name wraps here too.
+			overflow-wrap: anywhere;
+		}
+
+		.googlesitekit-traffic-overview__key-factor-attribute-list {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__key-factor-attribute-title {
+			color: $c-surfaces-on-surface-variant;
+			margin: 0;
+		}
+
+		// The design gives the value and its change a 24px row.
+		.googlesitekit-traffic-overview__key-factor-attribute-details {
+			align-items: center;
+			display: flex;
+			gap: 12px;
+			margin: 0;
+			min-height: 24px;
+		}
+
+		// A long value, such as a page path, is cut off with an ellipsis, so
+		// its change stays on the same line.
+		.googlesitekit-traffic-overview__key-factor-attribute-value {
+			color: $c-surfaces-on-surface;
+			flex: 1;
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.googlesitekit-traffic-overview__key-factor-attribute-change {
+			color: $c-surfaces-on-surface;
+			flex-shrink: 0;
+			white-space: nowrap;
+		}
+
+		// A placeholder card takes the classes of a card for its layout, so
+		// these margins put its blocks where the title, the badge and the
+		// attributes' heading sit.
+		.googlesitekit-traffic-overview__key-factor-title-placeholder {
+			margin: 2px 0 3px;
+		}
+
+		.googlesitekit-traffic-overview__key-factor-change-badge-placeholder {
+			flex-shrink: 0;
+			margin-top: 1px;
+		}
+
+		.googlesitekit-traffic-overview__key-factor-attributes-heading-placeholder {
+			margin-bottom: 16px;
+		}
+
 		.googlesitekit-traffic-overview__breakdown {
 			margin-top: 62px;
+		}
+
+		// The breakdown sits 48px under the key factors, which end with the
+		// space the cards keep for their feedback buttons.
+		.googlesitekit-traffic-overview__key-factors
+			+ .googlesitekit-traffic-overview__breakdown {
+			margin-top: 48px;
 		}
 
 		.googlesitekit-traffic-overview__breakdown-heading {
@@ -209,7 +455,7 @@ $traffic-overview-column-gap: 42px;
 
 			// Stacked through tablet; three columns from desktop up.
 			grid-template-columns: 1fr;
-			margin-top: 18px;
+			margin-top: 8px;
 
 			@media (min-width: $bp-desktop) {
 				gap: $traffic-overview-column-gap;
@@ -244,19 +490,31 @@ $traffic-overview-column-gap: 42px;
 
 		.googlesitekit-traffic-overview__breakdown-column-loading {
 			display: grid;
-			gap: 4px;
+			gap: 8px;
 		}
 
+		.googlesitekit-traffic-overview__breakdown-column-gathering-data {
+			color: $c-surfaces-on-background-variant;
+			margin: 0;
+		}
+
+		// A row is its label and share, with its bar under them.
 		.googlesitekit-traffic-overview__breakdown-row {
-			align-items: baseline;
 			display: flex;
-			gap: 12px;
-			justify-content: space-between;
+			flex-direction: column;
+			gap: 3px;
 		}
 
 		.googlesitekit-traffic-overview__breakdown-row
 			+ .googlesitekit-traffic-overview__breakdown-row {
-			margin-top: 4px;
+			margin-top: 8px;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row-text {
+			align-items: baseline;
+			display: flex;
+			gap: 10px;
+			justify-content: space-between;
 		}
 
 		.googlesitekit-traffic-overview__breakdown-row-label {
@@ -278,38 +536,35 @@ $traffic-overview-column-gap: 42px;
 			flex-shrink: 0;
 			white-space: nowrap;
 		}
-	}
 
-	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel--recent-activity {
-
-		@each $size in map.keys($mdc-layout-grid-columns) {
-
-			@include mdc-layout-grid-media-query_($size) {
-				$margin: map.get($mdc-layout-grid-default-margin, $size);
-
-				padding-top: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
-			}
+		// The design draws the 3px bar in a 4px slot, so 1px stays under it.
+		.googlesitekit-traffic-overview__breakdown-row-bar {
+			background-color: $c-surfaces-surface-1;
+			border-radius: 2px;
+			height: 3px;
+			margin-bottom: 1px;
 		}
 
-		.googlesitekit-traffic-overview__fresh-metrics-row {
-			display: grid;
-			gap: 32px;
-			grid-template-columns: minmax(0, 1fr);
-
-			// Each group takes a third of the row, the width of a column of
-			// the traffic breakdown below.
-			@media (min-width: $bp-desktop) {
-				gap: $traffic-overview-column-gap;
-				grid-template-columns: repeat(3, minmax(0, 1fr));
-			}
+		// The fill's width is the row's share of the column, set on the
+		// element itself.
+		.googlesitekit-traffic-overview__breakdown-row-bar-fill {
+			background-color: $c-violet-v-200;
+			border-radius: 2px;
+			height: 100%;
 		}
 
-		// The notice in place of the visitors figure spans the whole row, above
-		// the search figures.
-		.googlesitekit-traffic-overview__fresh-metrics-notice {
-			grid-column: 1 / -1;
+		// The toggle starts 14px under the columns: the design's 8px gap plus
+		// the 6px above the link. As a flex box, the link sets the height of its
+		// own line.
+		.googlesitekit-traffic-overview__breakdown-toggle.googlesitekit-cta-link {
+			@include googlesitekit-typography(label, small);
+			display: flex;
+			margin-top: 14px;
+			width: fit-content;
 		}
 
+		// The insight notice of the Recent activity tab and the one above the
+		// key factor cards share these styles.
 		.googlesitekit-traffic-overview__insight-notice-content {
 			background-color: $c-blue-b-50;
 			border-radius: $br-xxs;
@@ -359,6 +614,12 @@ $traffic-overview-column-gap: 42px;
 
 		.googlesitekit-traffic-overview__insight-notice-text {
 			margin: 0;
+
+			// The design sets the names a generated insight highlights in the
+			// medium weight, not in bold.
+			strong {
+				font-weight: $fw-medium;
+			}
 		}
 
 		.googlesitekit-traffic-overview__insight-notice-icon {
@@ -371,6 +632,37 @@ $traffic-overview-column-gap: 42px;
 			height: 30px;
 			justify-content: center;
 			width: 30px;
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel--recent-activity {
+
+		@each $size in map.keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
+
+				padding-top: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics-row {
+			display: grid;
+			gap: 32px;
+			grid-template-columns: minmax(0, 1fr);
+
+			// Each group takes a third of the row, the width of a column of
+			// the traffic breakdown below.
+			@media (min-width: $bp-desktop) {
+				gap: $traffic-overview-column-gap;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
+		// The notice in place of the visitors figure spans the whole row, above
+		// the search figures.
+		.googlesitekit-traffic-overview__fresh-metrics-notice {
+			grid-column: 1 / -1;
 		}
 
 		.googlesitekit-traffic-overview__fresh-metrics-row:not(:first-child) {
@@ -727,6 +1019,22 @@ $traffic-overview-column-gap: 42px;
 			margin-left: 4px;
 		}
 	}
+
+	// The disclosure fills the space on the left of the sources. The design
+	// shows the footer only at desktop width, so where the two don't fit side
+	// by side, the sources move under the disclosure, still on the right.
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__footer {
+		align-items: center;
+		display: flex;
+		flex: 1;
+		flex-wrap: wrap;
+		gap: 8px 16px;
+		justify-content: flex-end;
+
+		.googlesitekit-ai-disclosure {
+			flex: 1 1 auto;
+		}
+	}
 }
 
 // The padding comes on top, so the tooltip is 210px wide as in the design.
@@ -734,13 +1042,7 @@ $traffic-overview-column-gap: 42px;
 	max-width: 186px;
 }
 
-// The info tooltip's popup renders outside the widget, so a rule nested under
-// the widget doesn't reach it. The `.googlesitekit-info-tooltip__content`
-// class makes this selector more specific than the one that sets
-// `max-width: 160px` in `_googlesitekit-info-tooltip.scss`. So this rule
-// applies whatever order the two style sheets load in. With the popup's 12px
-// padding on each side, the popup is at most 235px wide, the width of the
-// design's tooltip.
-.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-info-tooltip__content--typical-traffic {
+// The padding comes on top, so the tooltip is 235px wide as in the design.
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__chart-legend-tooltip {
 	max-width: 211px;
 }

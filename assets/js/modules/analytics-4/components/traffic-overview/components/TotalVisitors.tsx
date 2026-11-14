@@ -24,6 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -34,13 +35,15 @@ import ChangeBadge from '@/js/components/ChangeBadge';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '@/js/components/GatheringDataNotice';
+import InfoTooltip from '@/js/components/InfoTooltip';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
+	SIZE_MEDIUM,
 	SIZE_SMALL,
-	TYPE_BODY,
 	TYPE_DISPLAY,
+	TYPE_HEADLINE,
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -48,10 +51,22 @@ import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-over
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { calculateChange, numFmt } from '@/js/util';
 
+export interface TotalVisits {
+	/** The visits over the selected range. */
+	current: number;
+	/**
+	 * The visits over the range before it. Without them, the figures show no
+	 * change.
+	 */
+	previous?: number;
+}
+
 export interface TotalVisitorsProps {
-	/** The totals report, holding the selected range then the range before it. */
+	/** The totals report, whose selected range holds the unique visitors. */
 	report?: Report;
-	/** Whether the totals report has arrived. */
+	/** The visits over the selected range, and over the range before it. */
+	totalVisits?: TotalVisits;
+	/** Whether the figures have arrived. */
 	loaded?: boolean;
 	/** Whether the Analytics property is still gathering data. */
 	gatheringData?: boolean;
@@ -59,6 +74,7 @@ export interface TotalVisitorsProps {
 
 const TotalVisitors: FC< TotalVisitorsProps > = ( {
 	report,
+	totalVisits,
 	loaded = true,
 	gatheringData = false,
 } ) => {
@@ -67,62 +83,91 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( {
 		[]
 	);
 
-	const [ current, previous ] = report?.totals || [];
+	const currentVisits = totalVisits?.current || 0;
+	const previousVisits = totalVisits?.previous;
 
-	const currentValue = getMetricValue( current );
-	const previousValue = getMetricValue( previous );
+	// The report's totals hold the selected range first.
+	const uniqueVisitors = getMetricValue( report?.totals?.[ 0 ] );
 
 	// `ChangeBadge` renders nothing when the previous value is zero. Asking
 	// the same question here stops the label being left on its own.
-	const hasChange = calculateChange( previousValue, currentValue ) !== null;
+	const hasChange =
+		previousVisits !== undefined &&
+		calculateChange( previousVisits, currentVisits ) !== null;
 
 	return (
 		<div className="googlesitekit-traffic-overview__total-visitors">
-			<Typography
-				as="h3"
-				type={ TYPE_BODY }
-				size={ SIZE_SMALL }
-				className="googlesitekit-traffic-overview__total-visitors-title"
-			>
-				{ __( 'Total visitors', 'google-site-kit' ) }
-			</Typography>
-			{ ! loaded && <PreviewBlock width="220px" height="64px" /> }
+			{ ! loaded && (
+				// The placeholder is as tall as the figures, so the chart
+				// under it stays in place when they arrive.
+				<PreviewBlock width="248px" height="78px" />
+			) }
 			{ loaded && gatheringData && (
 				<GatheringDataNotice style={ NOTICE_STYLE.LARGE } />
 			) }
 			{ loaded && ! gatheringData && (
-				<div className="googlesitekit-traffic-overview__total-visitors-metric">
-					<div className="googlesitekit-traffic-overview__total-visitors-figure">
-						<Typography
-							as="span"
-							type={ TYPE_DISPLAY }
-							size={ SIZE_LARGE }
-						>
-							{ numFmt( currentValue ) }
-						</Typography>
-					</div>
-					{ hasChange && (
-						<div className="googlesitekit-traffic-overview__total-visitors-change">
-							<ChangeBadge
-								previousValue={ previousValue }
-								currentValue={ currentValue }
-							/>
-							<P
-								size={ SIZE_SMALL }
-								className="googlesitekit-traffic-overview__total-visitors-comparison"
+				<Fragment>
+					<div className="googlesitekit-traffic-overview__total-visits">
+						<div className="googlesitekit-traffic-overview__total-visits-metric">
+							<Typography
+								as="span"
+								type={ TYPE_DISPLAY }
+								size={ SIZE_LARGE }
+								className="googlesitekit-traffic-overview__total-visits-figure"
 							>
-								{ sprintf(
-									/* translators: %d: number of days in the comparison period */
-									__(
-										'Vs. prev. %d days',
-										'google-site-kit'
-									),
-									comparisonDays
-								) }
+								{ numFmt( currentVisits ) }
+							</Typography>
+							<P
+								size={ SIZE_MEDIUM }
+								className="googlesitekit-traffic-overview__total-visits-label"
+							>
+								{ __( 'Total visits', 'google-site-kit' ) }
 							</P>
 						</div>
-					) }
-				</div>
+						{ hasChange && (
+							<div className="googlesitekit-traffic-overview__total-visits-change">
+								<ChangeBadge
+									previousValue={ previousVisits }
+									currentValue={ currentVisits }
+								/>
+								<P
+									size={ SIZE_SMALL }
+									className="googlesitekit-traffic-overview__total-visits-comparison"
+								>
+									{ sprintf(
+										/* translators: %d: number of days in the comparison period */
+										__(
+											'Vs. prev. %d days',
+											'google-site-kit'
+										),
+										comparisonDays
+									) }
+								</P>
+							</div>
+						) }
+					</div>
+					<div className="googlesitekit-traffic-overview__unique-visitors">
+						<Typography
+							as="span"
+							type={ TYPE_HEADLINE }
+							size={ SIZE_SMALL }
+							className="googlesitekit-traffic-overview__unique-visitors-figure"
+						>
+							{ numFmt( uniqueVisitors ) }
+						</Typography>
+						<div className="googlesitekit-traffic-overview__unique-visitors-label">
+							<P size={ SIZE_SMALL }>
+								{ __( 'Unique visitors', 'google-site-kit' ) }
+							</P>
+							<InfoTooltip
+								title={ __(
+									'Shows how many people visited your site, counting each person once.',
+									'google-site-kit'
+								) }
+							/>
+						</div>
+					</div>
+				</Fragment>
 			) }
 		</div>
 	);

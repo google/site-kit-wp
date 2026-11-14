@@ -22,6 +22,25 @@ const AXIS_LABEL_COLOR = '#6c726e';
 /** The hex value of `$c-violet-v-600`, the Sass token for the chart's line. */
 export const TRAFFIC_CHART_LINE_COLOR = '#462083';
 
+/**
+ * The hex value of `$c-violet-v-50`, the Sass token for the typical traffic
+ * range. The widget's stylesheet finds the band in the chart by this fill.
+ */
+export const TYPICAL_TRAFFIC_RANGE_COLOR = '#e3d1ff';
+
+/** The hex value of `$c-violet-v-200`, the Sass token for a published post's dot. */
+export const PUBLISHED_POST_COLOR = '#a983e6';
+
+/**
+ * The style of the point that marks a day with a published post: a dot on the
+ * line with a 3px white edge, so the line doesn't run into it.
+ *
+ * The line draws no points of its own, so `visible` shows this one. Google
+ * Charts reads `size` as the radius, to the middle of the edge, so the dot's
+ * fill is 16px across.
+ */
+export const PUBLISHED_POST_POINT_STYLE = `point { visible: true; size: 9.5; fill-color: ${ PUBLISHED_POST_COLOR }; stroke-color: #ffffff; stroke-width: 3; }`;
+
 /** The Google Charts options for the traffic chart. */
 export const TRAFFIC_CHART_OPTIONS = {
 	animation: {
@@ -69,7 +88,6 @@ export const TRAFFIC_CHART_OPTIONS = {
 			// The hex value of `$c-neutral-n-50`, the Sass token for a gridline.
 			color: '#ebeef0',
 		},
-		lineWidth: 3,
 		minorGridlines: {
 			count: 0,
 		},
@@ -95,10 +113,19 @@ export const TRAFFIC_CHART_OPTIONS = {
 		0: {
 			color: TRAFFIC_CHART_LINE_COLOR,
 			lineWidth: 3,
-			// The visitor counts are on the right, because Google Charts renders
+			// The visit counts are on the right, because Google Charts renders
 			// the second value axis there.
 			targetAxisIndex: 1,
 		},
+	},
+	// The typical traffic range is a pair of interval columns, which Google
+	// Charts fills as an area behind the line, with no edge lines. The legend's
+	// swatch for the range has the same opacity.
+	intervals: {
+		style: 'area',
+		color: TYPICAL_TRAFFIC_RANGE_COLOR,
+		fillOpacity: 0.5,
+		lineWidth: 0,
 	},
 	focusTarget: 'category',
 	crosshair: {

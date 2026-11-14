@@ -60,6 +60,7 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Utilities;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Audience;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Benchmarking_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
@@ -71,6 +72,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Data;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
@@ -1105,6 +1107,18 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
 				)
 			);
+
+			// The insight is written from the request that the response of
+			// `GET:benchmarking-data` carries.
+			if ( Feature_Flags::enabled( 'trafficInsights' ) ) {
+				$benchmarking_insight_definition = array(
+					'google_proxy' => $this->authentication->get_google_proxy(),
+					'credentials'  => $this->authentication->credentials(),
+				);
+
+				$this->datapoints['POST:benchmarking-insight'] = new Create_Benchmarking_Insight( $benchmarking_insight_definition );
+				$this->datapoints['GET:benchmarking-insight']  = new Get_Benchmarking_Insight( $benchmarking_insight_definition );
+			}
 		}
 
 		$this->datapoints['GET:plain-permalink-top-posts'] = new Get_Plain_Permalink_Top_Posts(

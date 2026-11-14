@@ -16,7 +16,10 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use DateTimeImmutable;
+use DateTimeZone;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Period_Baseline;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -147,9 +150,11 @@ class Response_BuilderTest extends TestCase {
 				fn( $dimension_name ) => array( 'name' => $dimension_name ),
 				$dimension_names
 			),
+			// The report counts the one metric it asked for, such as `sessions` for
+			// the daily series.
 			'metricHeaders'    => array(
 				array(
-					'name' => 'totalUsers',
+					'name' => $report_request['metrics'][0]['name'],
 					'type' => 'TYPE_INTEGER',
 				),
 			),
@@ -260,6 +265,46 @@ class Response_BuilderTest extends TestCase {
 				array( 'Garden', 'date_range_1', 20 ),
 				array( 'Recipes', 'date_range_1', 30 ),
 			),
+		);
+	}
+
+	/**
+	 * Gets a day for each date from one day to another, with its visits, in the
+	 * shape of the daily report's rows.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string   $first_date The first day, as `YYYY-MM-DD`.
+	 * @param string   $last_date  The last day, as `YYYY-MM-DD`.
+	 * @param callable $get_visits Gets the visits of a day from its position, `0` for `$first_date`.
+	 * @return array List of rows, each with the date as `YYYYMMDD`, then its visits.
+	 */
+	private function get_daily_report_rows( $first_date, $last_date, callable $get_visits ) {
+		$utc  = new DateTimeZone( 'UTC' );
+		$date = new DateTimeImmutable( $first_date, $utc );
+		$last = new DateTimeImmutable( $last_date, $utc );
+		$rows = array();
+
+		while ( $date <= $last ) {
+			$rows[] = array( $date->format( 'Ymd' ), $get_visits( count( $rows ) ) );
+			$date   = $date->modify( '+1 day' );
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Gets the bounds of each day of `dailyTraffic`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $daily_traffic The `dailyTraffic` rows.
+	 * @return array List of the bounds of each day, as `array( expectedMin, expectedMax )`.
+	 */
+	private function get_expected_ranges( array $daily_traffic ) {
+		return array_map(
+			fn( $day ) => array( $day['expectedMin'], $day['expectedMax'] ),
+			$daily_traffic
 		);
 	}
 
@@ -501,20 +546,26 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'date'   => '2026-08-19',
-					'visits' => 121,
+					'date'        => '2026-08-19',
+					'visits'      => 121,
+					'expectedMin' => null,
+					'expectedMax' => null,
 				),
 				array(
-					'date'   => '2026-08-20',
-					'visits' => 0,
+					'date'        => '2026-08-20',
+					'visits'      => 0,
+					'expectedMin' => null,
+					'expectedMax' => null,
 				),
 				array(
-					'date'   => '2026-08-21',
-					'visits' => 147,
+					'date'        => '2026-08-21',
+					'visits'      => 147,
+					'expectedMin' => null,
+					'expectedMax' => null,
 				),
 			),
 			array_slice( $daily_traffic, 0, 3 ),
-			'`dailyTraffic` should list 0 visits for `2026-08-20`, and keep `2026-08-21` as the third day.'
+			'`dailyTraffic` should list 0 visits for `2026-08-20`, and keep `2026-08-21` as the third day. The site recorded its first visits on `2026-08-19`, too late for the period to have an expected range, so none of the three days has one.'
 		);
 	}
 
@@ -538,11 +589,13 @@ class Response_BuilderTest extends TestCase {
 		$this->assertCount( 28, array_unique( $dates ), '`dailyTraffic` should have 28 different dates.' );
 		$this->assertSame(
 			array(
-				'date'   => '2026-08-19',
-				'visits' => 121,
+				'date'        => '2026-08-19',
+				'visits'      => 121,
+				'expectedMin' => null,
+				'expectedMax' => null,
 			),
 			$daily_traffic[0],
-			'`dailyTraffic` should start on `2026-08-19`, the first day of the selected period, with its `121` visits.'
+			'`dailyTraffic` should start on `2026-08-19`, the first day of the selected period, with its `121` visits and no expected range.'
 		);
 		$this->assertSame( '2026-09-15', $dates[27], '`dailyTraffic` should end on `2026-09-15`, the last day of the selected period.' );
 		$this->assertSame( $sorted_dates, $dates, '`dailyTraffic` should list its dates oldest first.' );
@@ -554,12 +607,417 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'date'   => '9999-12-31',
-					'visits' => 0,
+					'date'        => '9999-12-31',
+					'visits'      => 0,
+					'expectedMin' => null,
+					'expectedMax' => null,
 				),
 			),
 			$daily_traffic,
 			'`dailyTraffic` should list `9999-12-31` alone, the one day of the selected period, and end there.'
+		);
+	}
+
+	public function test_build__asks_for_the_sessions_of_each_day_from_364_days_before_the_compare_period() {
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$daily_report_request = $this->batch_requests[0]['requests'][0];
+
+		$this->assertSame(
+			array( array( 'name' => 'sessions' ) ),
+			$daily_report_request['metrics'],
+			'The daily report should count sessions, so the traffic line, the visit totals and the expected range count visits.'
+		);
+		// `assertEquals()` ignores that the Google API client writes `endDate`
+		// before `startDate`.
+		$this->assertEquals(
+			array(
+				array(
+					'startDate' => '2025-07-23',
+					'endDate'   => '2026-09-15',
+				),
+			),
+			$daily_report_request['dateRanges'],
+			'The daily report should run from `2025-07-23`, 364 days before the compare period starts on `2026-07-22`, to `2026-09-15`, so it covers last year\'s two periods.'
+		);
+	}
+
+	public function test_build__returns_no_insight_request_without_the_traffic_insights_feature() {
+		$this->provide_reports_for_every_dimension();
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array( 'visits', 'dailyTraffic', 'firstTrafficDate', 'dimensions', 'contextualData' ),
+			array_keys( $response ),
+			'Without the `trafficInsights` feature, the response should have no `insightRequest`.'
+		);
+	}
+
+	public function test_build__returns_the_insight_request_built_from_every_row_with_the_traffic_insights_feature() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->provide_reports_for_every_dimension();
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$pair = fn( $current, $previous ) => array(
+			'current'  => $current,
+			'previous' => $previous,
+		);
+
+		// The site recorded its first visits on `2026-08-18`, 29 days before the
+		// end date, which is too little history for an expected range and leaves
+		// last year's periods out. The request lists all seven referrers, where
+		// the response's rows keep the five highest scoring.
+		$this->assertSame(
+			array(
+				'end_date'        => '2026-09-15',
+				'days_in_period'  => 28,
+				'visits'          => array(
+					'current_period'  => 412,
+					'previous_period' => 388,
+				),
+				'history_days'    => 29,
+				'contextual_data' => array(
+					'traffic_channel_surges'  => array(
+						array(
+							'channel'  => 'Organic Search',
+							'sessions' => $pair( 210, 168 ),
+						),
+						array(
+							'channel'  => 'Direct',
+							'sessions' => $pair( 118, 137 ),
+						),
+						array(
+							'channel'  => 'Referral',
+							'sessions' => $pair( 47, 0 ),
+						),
+						array(
+							'channel'  => 'Email',
+							'sessions' => $pair( 42, 40 ),
+						),
+						array(
+							'channel'  => 'Affiliates',
+							'sessions' => $pair( 30, 10 ),
+						),
+						array(
+							'channel'  => 'Display',
+							'sessions' => $pair( 30, 10 ),
+						),
+					),
+					'device_shifts'           => array(
+						array(
+							'device'   => 'mobile',
+							'sessions' => $pair( 240, 200 ),
+						),
+					),
+					'user_mix_shifts'         => array(
+						array(
+							'segment'  => 'new',
+							'sessions' => $pair( 240, 200 ),
+						),
+					),
+					'referrers'               => array_map(
+						fn( $label, $current ) => array(
+							'referrer' => $label,
+							'sessions' => $pair( $current, 20 ),
+						),
+						array( 'a.example.com', 'b.example.com', 'c.example.com', 'd.example.com', 'e.example.com', 'f.example.com', 'g.example.com' ),
+						array( 80, 70, 60, 50, 45, 40, 35 )
+					),
+					'recent_content_momentum' => array(
+						array(
+							'url'                => '/a-post/',
+							'title'              => 'A post',
+							'published_days_ago' => 14,
+							'sessions'           => 30,
+						),
+						array(
+							'url'                => '/b-post/',
+							'title'              => 'B post',
+							'published_days_ago' => 14,
+							'sessions'           => 30,
+						),
+					),
+				),
+			),
+			$response['insightRequest'],
+			'With the `trafficInsights` feature, the response should carry the insight request, built from the daily series and from every row of the reports before they are ranked.'
+		);
+		$this->assertCount( 5, $response['contextualData']['referrers'], 'The response itself should still keep the five highest scoring referrers.' );
+	}
+
+	public function test_build__builds_the_insight_request_from_the_rows_a_contextual_data_callback_adds() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->report_rows = array(
+			'date' => array(
+				array( '20260818', 388 ),
+				array( '20260915', 412 ),
+			),
+		);
+
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$contextual_data['searchQueries'] = array_map(
+					fn( $n ) => array(
+						'label'            => "query $n",
+						'current'          => 100 + $n,
+						'previous'         => 100,
+						'positionCurrent'  => 2.5,
+						'positionPrevious' => null,
+					),
+					range( 1, 12 )
+				);
+
+				return $contextual_data;
+			}
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array_map( fn( $n ) => "query $n", range( 12, 3 ) ),
+			array_column( $response['insightRequest']['contextual_data']['search_query_shifts'], 'query' ),
+			'The insight request should list the 10 search queries a callback added that moved most.'
+		);
+		$this->assertSame(
+			array(
+				'current'  => 2.5,
+				'previous' => 0.0,
+			),
+			$response['insightRequest']['contextual_data']['search_query_shifts'][0]['position'],
+			'A search query should carry its positions, with `0.0` for a period it was not reported in.'
+		);
+	}
+
+	public function test_build__returns_a_null_insight_request_for_a_period_shorter_than_7_days() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->provide_reports_for_every_dimension();
+
+		$response = $this->builder->build( '2026-09-15', '2026-09-15' );
+
+		$this->assertArrayHasKey( 'insightRequest', $response, 'With the `trafficInsights` feature, the response should always have `insightRequest`.' );
+		$this->assertNull( $response['insightRequest'], 'A one-day period should have no insight request.' );
+	}
+
+	public function test_build__returns_a_null_insight_request_when_neither_period_has_a_visit() {
+		$this->enable_feature( 'trafficInsights' );
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				'current'  => 0,
+				'previous' => 0,
+			),
+			$response['visits'],
+			'Without any row in the daily report, neither period should have a visit.'
+		);
+		$this->assertNull( $response['insightRequest'], 'Two periods without a visit should have no insight request.' );
+	}
+
+	public function test_build__gives_every_day_of_a_steady_year_the_same_expected_range() {
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows( '2025-08-20', '2026-09-15', fn() => 100 ),
+		);
+
+		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
+
+		// The period's range is `2341` to `3259` visits: a center of `2800` and
+		// a margin of `458.97`, which the traffic-size default sets for a site
+		// without misses. Each day has its 28th of it.
+		$this->assertSame(
+			array_fill( 0, 28, array( 83.6, 116.4 ) ),
+			$this->get_expected_ranges( $daily_traffic ),
+			'With 100 visits on every day of the daily report, each of the 28 days should have `83.6` to `116.4` as its expected range.'
+		);
+	}
+
+	public function test_build__gives_each_day_its_share_of_the_expected_range_of_the_period() {
+		$get_visits        = fn( $position ) => 150 + ( $position * 37 ) % 91 - ( 0 === $position % 7 ? 60 : 0 );
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ),
+		);
+
+		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
+
+		$daily_series = array_map(
+			fn( $row ) => array(
+				'date'   => DateTimeImmutable::createFromFormat( '!Ymd', $row[0], new DateTimeZone( 'UTC' ) )->format( 'Y-m-d' ),
+				'visits' => $row[1],
+			),
+			$this->report_rows['date']
+		);
+
+		$daily_ranges = Period_Baseline::from_daily_series( $daily_series )->get_daily_ranges( '2026-09-15', 28 );
+
+		$this->assertSame(
+			array_map(
+				fn( $daily_range ) => array( $daily_range['expected_min'], $daily_range['expected_max'] ),
+				array_values( $daily_ranges )
+			),
+			$this->get_expected_ranges( $daily_traffic ),
+			'Each day should have the share of the period\'s expected range that `Period_Baseline` gives it for the same daily report.'
+		);
+	}
+
+	public function test_build__gives_the_selected_period_the_expected_range_of_its_insight_request() {
+		$this->enable_feature( 'trafficInsights' );
+
+		$get_visits        = fn( $position ) => 150 + ( $position * 37 ) % 91 - ( 0 === $position % 7 ? 60 : 0 );
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ),
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+		$baseline = $response['insightRequest']['baseline'];
+
+		// Each day's bounds are rounded to one decimal, so the 28 days add up to
+		// the range to within 1.4 visits, and the range's own bounds are rounded
+		// to whole visits.
+		$this->assertEqualsWithDelta(
+			$baseline['expected_range_min'],
+			array_sum( array_column( $response['dailyTraffic'], 'expectedMin' ) ),
+			2,
+			'The fewest visits of the days should add up to the fewest visits of the range the insight request sends.'
+		);
+		$this->assertEqualsWithDelta(
+			$baseline['expected_range_max'],
+			array_sum( array_column( $response['dailyTraffic'], 'expectedMax' ) ),
+			2,
+			'The most visits of the days should add up to the most visits of the range the insight request sends.'
+		);
+	}
+
+	public function test_build__gives_a_weekday_with_fewer_visits_a_lower_expected_range() {
+		// `2025-08-20` is a Wednesday, so positions 3 and 4 of each week are the
+		// Saturday and the Sunday.
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows(
+				'2025-08-20',
+				'2026-09-15',
+				fn( $position ) => in_array( $position % 7, array( 3, 4 ), true ) ? 40 : 120
+			),
+		);
+
+		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
+
+		foreach ( $daily_traffic as $day ) {
+			$weekday = ( new DateTimeImmutable( $day['date'], new DateTimeZone( 'UTC' ) ) )->format( 'w' );
+
+			if ( in_array( $weekday, array( '0', '6' ), true ) ) {
+				$this->assertSame( array( 38.2, 53.3 ), array( $day['expectedMin'], $day['expectedMax'] ), "`{$day['date']}` is on a weekend, which has 40 visits a day, so it should have the expected range of a weekend day." );
+			} else {
+				$this->assertSame( array( 98.3, 137.1 ), array( $day['expectedMin'], $day['expectedMax'] ), "`{$day['date']}` is on a weekday, which has 120 visits a day, so it should have the expected range of a weekday." );
+			}
+		}
+	}
+
+	public function test_build__gives_a_day_with_no_visits_after_a_year_of_visits_an_expected_range() {
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows( '2025-08-20', '2026-08-18', fn() => 100 ),
+		);
+
+		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
+
+		$this->assertSame( '2026-08-19', $daily_traffic[0]['date'], '`dailyTraffic` should start on `2026-08-19`, and list no day of the history before it.' );
+		$this->assertCount( 28, $daily_traffic, '`dailyTraffic` should list the 28 days of the selected period alone.' );
+
+		// The range is fitted on the year of 100 visits a day before the period,
+		// as in the steady year above, so the period's own visits don't move it.
+		foreach ( $daily_traffic as $day ) {
+			$this->assertSame( 0, $day['visits'], "`{$day['date']}` should have no visits." );
+			$this->assertSame( array( 83.6, 116.4 ), array( $day['expectedMin'], $day['expectedMax'] ), "`{$day['date']}` should have the expected range of a site with 100 visits a day." );
+		}
+	}
+
+	/**
+	 * @dataProvider data_recorded_traffic_histories
+	 *
+	 * @param string $first_date The first day of the daily report with visits, as `YYYY-MM-DD`.
+	 * @param bool   $has_range  Whether the selected period should have an expected range.
+	 */
+	public function test_build__gives_the_period_an_expected_range_from_84_days_of_recorded_traffic( $first_date, $has_range ) {
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows( $first_date, '2026-09-15', fn() => 100 ),
+		);
+
+		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
+
+		foreach ( $daily_traffic as $day ) {
+			if ( $has_range ) {
+				$this->assertIsFloat( $day['expectedMin'], "With recorded traffic from `$first_date`, `{$day['date']}` should have the fewest visits of an expected range." );
+				$this->assertIsFloat( $day['expectedMax'], "With recorded traffic from `$first_date`, `{$day['date']}` should have the most visits of an expected range." );
+			} else {
+				$this->assertSame( array( null, null ), array( $day['expectedMin'], $day['expectedMax'] ), "With recorded traffic from `$first_date`, `{$day['date']}` should have no expected range." );
+			}
+		}
+	}
+
+	public function data_recorded_traffic_histories() {
+		// A 28-day period needs the period and two 28-day blocks before it.
+		return array(
+			'84 days, from 2026-06-24' => array( '2026-06-24', true ),
+			'83 days, from 2026-06-25' => array( '2026-06-25', false ),
+			'46 days, from 2026-08-01' => array( '2026-08-01', false ),
+		);
+	}
+
+	public function test_build__does_not_change_the_expected_range_when_the_visits_of_the_selected_period_change() {
+		$get_visits        = fn( $position ) => 150 + ( $position * 37 ) % 91;
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ),
+		);
+
+		$daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
+
+		// The rows of the selected period, from `2026-08-19`, are the last 28.
+		foreach ( array_keys( array_slice( $this->report_rows['date'], -28, null, true ) ) as $position ) {
+			$this->report_rows['date'][ $position ][1] = 9999;
+		}
+
+		$changed_daily_traffic = $this->builder->build( '2026-08-19', '2026-09-15' )['dailyTraffic'];
+
+		$this->assertSame( 9999, $changed_daily_traffic[0]['visits'], '`2026-08-19` should have the changed visits.' );
+		$this->assertSame(
+			$this->get_expected_ranges( $daily_traffic ),
+			$this->get_expected_ranges( $changed_daily_traffic ),
+			'The expected range is fitted only on the days before the selected period, so the visits of the period should not move it.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_first_traffic_dates
+	 *
+	 * @param array       $report_rows        The rows of the daily report.
+	 * @param string|null $first_traffic_date The first day of the daily report with visits, as `YYYY-MM-DD`, or null.
+	 */
+	public function test_build__returns_the_first_day_of_the_daily_report_with_visits( $report_rows, $first_traffic_date ) {
+		$this->report_rows = array( 'date' => $report_rows );
+
+		$this->assertSame(
+			$first_traffic_date,
+			$this->builder->build( '2026-08-19', '2026-09-15' )['firstTrafficDate'],
+			'`firstTrafficDate` should be the first day of the daily report with visits, or null when no day has any.'
+		);
+	}
+
+	public function data_first_traffic_dates() {
+		$get_visits = fn() => 100;
+
+		return array(
+			'visits from `2026-08-01` on'  => array( $this->get_daily_report_rows( '2026-08-01', '2026-09-15', $get_visits ), '2026-08-01' ),
+			'visits on every day'          => array( $this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ), '2025-08-20' ),
+			'visits on `2026-08-01` alone' => array( array( array( '20260801', 100 ) ), '2026-08-01' ),
+			'a day with no visits first'   => array(
+				array(
+					array( '20260731', 0 ),
+					array( '20260801', 100 ),
+				),
+				'2026-08-01',
+			),
+			'no visits'                    => array( array(), null ),
 		);
 	}
 
@@ -813,14 +1271,23 @@ class Response_BuilderTest extends TestCase {
 		$decimals = array();
 		array_walk_recursive(
 			$response,
-			function ( $value ) use ( &$decimals ) {
-				if ( is_float( $value ) ) {
+			function ( $value, $key ) use ( &$decimals ) {
+				// The bounds of the expected range keep one decimal.
+				if ( is_float( $value ) && ! in_array( $key, array( 'expectedMin', 'expectedMax' ), true ) ) {
 					$decimals[] = $value;
 				}
 			}
 		);
 
-		$this->assertSame( array(), $decimals, 'The response should have no number with decimals.' );
+		$this->assertSame( array(), $decimals, 'The response should have no number with decimals other than the bounds of the expected range.' );
+
+		foreach ( $response['dailyTraffic'] as $day ) {
+			foreach ( array( 'expectedMin', 'expectedMax' ) as $bound ) {
+				if ( null !== $day[ $bound ] ) {
+					$this->assertSame( round( $day[ $bound ], 1 ), $day[ $bound ], "The `$bound` of `{$day['date']}` should have at most one decimal." );
+				}
+			}
+		}
 	}
 
 	public function test_build__does_not_save_anything_to_the_site() {
@@ -889,11 +1356,11 @@ class Response_BuilderTest extends TestCase {
 					'end_date'           => '2026-09-15',
 					'compare_start_date' => '2026-07-22',
 					'compare_end_date'   => '2026-08-18',
-					'row_limit'          => 50,
+					'row_limit'          => 500,
 				),
 			),
 			$filter_args,
-			'The filter should receive the rows built from the Analytics reports, before they are ranked, and the two periods with the row limit of `50`.'
+			'The filter should receive the rows built from the Analytics reports, before they are ranked, and the two periods with the row limit of `500`.'
 		);
 	}
 

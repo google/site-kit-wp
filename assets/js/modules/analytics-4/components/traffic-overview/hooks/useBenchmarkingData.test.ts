@@ -24,15 +24,30 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	CORE_USER,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { decodedBenchmarkingResponse } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { createTestRegistry, renderHook } from '@tests/js/test-utils';
-import { freezeFetch } from '@tests/js/utils';
+import { act, createTestRegistry, renderHook } from '@tests/js/test-utils';
+import {
+	createWaitForRegistry,
+	freezeFetch,
+	provideModules,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import { useBenchmarkingData } from './useBenchmarkingData';
 
 describe( 'useBenchmarkingData', () => {
 	let registry: WPDataRegistry;
+
+	const benchmarkingEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -70,7 +85,122 @@ describe( 'useBenchmarkingData', () => {
 			response: decodedBenchmarkingResponse,
 			loading: false,
 			error: undefined,
+			retry: expect.any( Function ),
 		} );
+	} );
+
+	it( 'should send no request and return no response when `isEnabled` is `false`', async () => {
+		const { result, waitForRegistry } = renderHook(
+			() => useBenchmarkingData( { isEnabled: false } ),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		// `fetchMock` answers no request in this test, so a request would
+		// fail it.
+		expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
+		expect( result.current.response ).toBeUndefined();
+		expect( result.current.loading ).toBe( false );
+	} );
+
+	it( 'should send no request for a view-only user whose role cannot view Analytics', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+		] );
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: false,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useBenchmarkingData(),
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
+		);
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
+		expect( result.current.response ).toBeUndefined();
+	} );
+
+	it( 'should send the request for a view-only user whose role can view Analytics', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+		] );
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: true,
+		} );
+		fetchMock.get( benchmarkingEndpoint, {
+			body: benchmarkingData,
+			status: 200,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useBenchmarkingData(),
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
+		);
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint );
+		expect( result.current.response ).toEqual(
+			decodedBenchmarkingResponse
+		);
+	} );
+
+	it( 'should request the response again, and return it, when `retry` is called after the request fails', async () => {
+		fetchMock.getOnce( benchmarkingEndpoint, {
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+		fetchMock.getOnce( benchmarkingEndpoint, {
+			body: benchmarkingData,
+			status: 200,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useBenchmarkingData(),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect( result.current.error ).toBeDefined();
+
+		const waitForRetry = createWaitForRegistry( registry );
+
+		act( () => {
+			result.current.retry();
+		} );
+
+		await waitForRetry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 2, benchmarkingEndpoint );
+		expect( result.current.response ).toEqual(
+			decodedBenchmarkingResponse
+		);
+		expect( result.current.error ).toBeUndefined();
 	} );
 
 	it( 'should return `true` for `loading` when the request is in progress', async () => {

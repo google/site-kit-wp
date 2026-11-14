@@ -24,22 +24,35 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
-	getBreakdownReportArgs,
-	getGraphReportArgs,
-	getTotalsReportArgs,
-} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+	createBenchmarkingResponse,
+	getSectionClassNames,
+	getTrafficBreakdownReportArgs,
+	provideBenchmarkingResponse,
+	provideTrafficBreakdownReports,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	benchmarkingInsight,
+	provideBenchmarkingInsight,
+} from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
+import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import {
+	BenchmarkingDailyTrafficRow,
+	DecodedBenchmarkingResponse,
+} from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	act,
@@ -71,13 +84,11 @@ describe( 'TrafficOverviewPanel', () => {
 	 *
 	 * @param {number} currentValue  Visitors over the selected range.
 	 * @param {number} previousValue Visitors over the range before it.
-	 * @param {string} [url]         Optional. The entity URL the report covers.
 	 * @return {void}
 	 */
 	function provideTotalsReport(
 		currentValue: number,
-		previousValue: number,
-		url?: string
+		previousValue: number
 	) {
 		const { startDate, endDate, compareStartDate, compareEndDate } =
 			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
@@ -95,44 +106,30 @@ describe( 'TrafficOverviewPanel', () => {
 					endDate,
 					compareStartDate,
 					compareEndDate,
-					...( url ? { url } : {} ),
 				} ),
 			}
 		);
 	}
 
 	/**
-	 * Builds the five argument sets the panel passes to `getReport`, in this
-	 * order:
-	 *
-	 * 1. totals
-	 * 2. graph
-	 * 3. channels
-	 * 4. locations
-	 * 5. devices.
+	 * Builds the arguments the panel passes to `getReport` for the totals
+	 * report, over the selected date range.
 	 *
 	 * @since 1.189.0
+	 * @since n.e.x.t Renamed from `getReportArgs()`, and builds the totals report's arguments alone.
 	 *
-	 * @param {string} [url] Optional. The entity URL the reports cover.
-	 * @return {Array<Object>} The five argument sets.
+	 * @return {Object} The totals report's arguments.
 	 */
-	function getReportArgs( url?: string ): ReportOptions[] {
+	function getTotalsArgs(): ReportOptions {
 		const { startDate, endDate, compareStartDate, compareEndDate } =
 			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
 
-		const shared = { startDate, endDate, ...( url ? { url } : {} ) };
-
-		return [
-			getTotalsReportArgs( {
-				...shared,
-				compareStartDate,
-				compareEndDate,
-			} ),
-			getGraphReportArgs( shared ),
-			...TRAFFIC_BREAKDOWN_COLUMNS.map( ( { dimensionName, reportID } ) =>
-				getBreakdownReportArgs( { ...shared, dimensionName, reportID } )
-			),
-		];
+		return getTotalsReportArgs( {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+		} );
 	}
 
 	/**
@@ -182,6 +179,9 @@ describe( 'TrafficOverviewPanel', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
+		// The breakdown reports are in the store from the start, so a test
+		// that counts report requests counts the totals report alone.
+		provideTrafficBreakdownReports( registry );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
@@ -213,14 +213,14 @@ describe( 'TrafficOverviewPanel', () => {
 		await waitForRegistry();
 
 		expect( getSectionClassNames( container ) ).toEqual( [
-			'googlesitekit-traffic-overview__total-visitors',
+			'googlesitekit-traffic-overview__summary',
 			'googlesitekit-traffic-overview__chart',
 			'googlesitekit-traffic-overview__breakdown',
 		] );
 	} );
 
-	it( 'builds the visitor total and its badge from the totals report', async () => {
-		provideTotalsReport( 1200, 1000 );
+	it( 'should build the unique visitors from the totals report', async () => {
+		provideTotalsReport( 843, 700 );
 
 		const { getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -229,42 +229,17 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		expect( getByText( '1.2K' ) ).toBeInTheDocument();
-		expect( getByText( '+20%' ) ).toBeInTheDocument();
+		expect( getByText( '843' ) ).toHaveClass(
+			'googlesitekit-traffic-overview__unique-visitors-figure'
+		);
 	} );
 
-	it( 'builds the visitor total and its badge from the entity-scoped totals report', async () => {
-		const entityURL = 'https://example.com/about/';
-
-		provideSiteInfo( registry, { currentEntityURL: entityURL } );
-		// Only the entity-scoped report is in the store, so these values can
-		// only come from the request that has the URL.
-		provideTotalsReport( 500, 400, entityURL );
-
-		const { getByText, waitForRegistry } = render(
-			<TrafficOverviewPanel />,
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( getByText( '500' ) ).toBeInTheDocument();
-		expect( getByText( '+25%' ) ).toBeInTheDocument();
-	} );
-
-	it( "shows each day's visitors in the chart", async () => {
-		provideAnalytics4MockReport(
-			registry,
-			getGraphReportArgs( {
-				startDate: '2025-01-09',
-				endDate: '2025-02-05',
-			} )
-		);
-
+	it( 'should draw the placeholder visits for each day of the selected range in the chart, and show the placeholder total visits, without the typicalTraffic feature', async () => {
 		const { getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
 			{
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -272,39 +247,86 @@ describe( 'TrafficOverviewPanel', () => {
 
 		// Google Charts draws nothing under Jest, so this test reads the
 		// chart's screen-reader lines instead.
+		expect( getByText( 'January 9, 2025: 39 visits' ) ).toBeInTheDocument();
 		expect(
-			getByText( 'January 9, 2025: 55 visitors' )
+			getByText( 'February 5, 2025: 152 visits' )
 		).toBeInTheDocument();
-		expect(
-			getByText( 'January 10, 2025: 14 visitors' )
-		).toBeInTheDocument();
+		expect( getByText( '1.2K' ) ).toHaveClass(
+			'googlesitekit-traffic-overview__total-visits-figure'
+		);
 	} );
 
-	it( "shows each day's visitors to the current URL in the chart on the entity dashboard", async () => {
-		const entityURL = 'https://example.com/about/';
+	it( 'should show the visits of each breakdown report as shares in its column of the traffic breakdown', async () => {
+		provideTrafficBreakdownReports( registry, {
+			channels: [
+				[ 'Organic Search', 30 ],
+				[ 'Direct', 10 ],
+			],
+			locations: [ [ 'Ukraine', 5 ] ],
+			devices: [
+				[ 'mobile', 3 ],
+				[ 'desktop', 1 ],
+			],
+		} );
 
-		provideSiteInfo( registry, { currentEntityURL: entityURL } );
-		provideAnalytics4MockReport(
-			registry,
-			getGraphReportArgs( {
-				startDate: '2025-01-09',
-				endDate: '2025-02-05',
-				url: entityURL,
-			} )
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
 		);
 
-		const { getByText, waitForRegistry } = render(
+		await waitForRegistry();
+
+		const rowsByColumn = Array.from(
+			container.querySelectorAll(
+				'.googlesitekit-traffic-overview__breakdown-column'
+			)
+		).map( ( column ) =>
+			Array.from(
+				column.querySelectorAll(
+					'.googlesitekit-traffic-overview__breakdown-row'
+				)
+			).map( ( row ) => [
+				row.querySelector(
+					'.googlesitekit-traffic-overview__breakdown-row-label'
+				)?.textContent,
+				row.querySelector(
+					'.googlesitekit-traffic-overview__breakdown-row-percentage'
+				)?.textContent,
+			] )
+		);
+
+		expect( rowsByColumn ).toEqual( [
+			[
+				[ 'Organic Search', '75%' ],
+				[ 'Direct', '25%' ],
+			],
+			[ [ 'Ukraine', '100%' ] ],
+			[
+				[ 'mobile', '75%' ],
+				[ 'desktop', '25%' ],
+			],
+		] );
+	} );
+
+	it( 'should say that the site has no visitors in a column whose breakdown report has no rows', async () => {
+		provideTrafficBreakdownReports( registry, {
+			channels: [ [ 'Direct', 10 ] ],
+			locations: [],
+			devices: [ [ 'desktop', 10 ] ],
+		} );
+
+		const { getByRole, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
-			{
-				registry,
-			}
+			{ registry }
 		);
 
 		await waitForRegistry();
 
 		expect(
-			getByText( 'January 9, 2025: 69 visitors' )
-		).toBeInTheDocument();
+			getByRole( 'region', { name: 'Visits by locations' } )
+		).toHaveTextContent(
+			'No data to display: your site hasn’t received any visitors yet'
+		);
 	} );
 
 	it( 'sends a report request when the panel renders', async () => {
@@ -319,21 +341,10 @@ describe( 'TrafficOverviewPanel', () => {
 		);
 	} );
 
-	it( 'renders the three sections as placeholders while one of the five reports is still loading', async () => {
-		const [
-			totalsArgs,
-			graphArgs,
-			channelsArgs,
-			locationsArgs,
-			devicesArgs,
-		] = getReportArgs();
-
-		[ totalsArgs, graphArgs, channelsArgs, locationsArgs ].forEach(
-			( options ) => provideAnalytics4MockReport( registry, options )
-		);
+	it( 'should render the three sections as placeholders while the totals report is still loading', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [ devicesArgs ] );
+			.startResolution( 'getReport', [ getTotalsArgs() ] );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -361,21 +372,12 @@ describe( 'TrafficOverviewPanel', () => {
 		).toBeNull();
 	} );
 
-	it( 'renders the visitor total, the chart and the three columns together when the last of the five reports arrives', async () => {
-		const [
-			totalsArgs,
-			graphArgs,
-			channelsArgs,
-			locationsArgs,
-			devicesArgs,
-		] = getReportArgs();
+	it( 'should render the visitor total, the chart and the three columns together when the totals report arrives', async () => {
+		const totalsArgs = getTotalsArgs();
 
-		[ totalsArgs, graphArgs, channelsArgs, locationsArgs ].forEach(
-			( options ) => provideAnalytics4MockReport( registry, options )
-		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [ devicesArgs ] );
+			.startResolution( 'getReport', [ totalsArgs ] );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -389,10 +391,10 @@ describe( 'TrafficOverviewPanel', () => {
 		).toBeNull();
 
 		act( () => {
-			provideAnalytics4MockReport( registry, devicesArgs );
+			provideAnalytics4MockReport( registry, totalsArgs );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getReport', [ devicesArgs ] );
+				.finishResolution( 'getReport', [ totalsArgs ] );
 		} );
 
 		expect(
@@ -425,9 +427,7 @@ describe( 'TrafficOverviewPanel', () => {
 	} );
 
 	it( 'returns the three sections to their placeholders when the date range changes', async () => {
-		getReportArgs().forEach( ( options ) =>
-			provideAnalytics4MockReport( registry, options )
-		);
+		provideAnalytics4MockReport( registry, getTotalsArgs() );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -442,11 +442,10 @@ describe( 'TrafficOverviewPanel', () => {
 
 		act( () => {
 			registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
-			getReportArgs().forEach( ( options ) =>
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.startResolution( 'getReport', [ options ] )
-			);
+			provideTrafficBreakdownReports( registry );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ getTotalsArgs() ] );
 		} );
 
 		expect( getPlaceholderCounts( container ) ).toEqual( {
@@ -459,34 +458,21 @@ describe( 'TrafficOverviewPanel', () => {
 		).toBeNull();
 	} );
 
-	it( 'renders the report error and its "Retry" button in place of the three sections when one report fails', async () => {
-		const [
-			totalsArgs,
-			graphArgs,
-			channelsArgs,
-			locationsArgs,
-			devicesArgs,
-		] = getReportArgs();
-
-		[ totalsArgs, graphArgs, channelsArgs, locationsArgs ].forEach(
-			( options ) =>
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetReport( {}, { options } )
-		);
+	it( 'should render the report error and its "Retry" button in place of the three sections when the report fails', async () => {
+		const totalsArgs = getTotalsArgs();
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test_error',
-				message: 'The devices report failed.',
+				message: 'The total visitors report failed.',
 				data: { status: 500, reason: 'backendError' },
 			},
 			'getReport',
-			[ devicesArgs ]
+			[ totalsArgs ]
 		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ devicesArgs ] );
+			.finishResolution( 'getReport', [ totalsArgs ] );
 
 		const { container, getByRole, getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -495,7 +481,9 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		expect( getByText( 'The devices report failed.' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'The total visitors report failed.' )
+		).toBeInTheDocument();
 		expect( getByRole( 'button', { name: 'Retry' } ) ).toBeInTheDocument();
 		expect(
 			container.querySelector(
@@ -512,21 +500,21 @@ describe( 'TrafficOverviewPanel', () => {
 		).toBeNull();
 	} );
 
-	it( 'requests the five reports again and renders the three sections on a "Retry" click', async () => {
-		getReportArgs().forEach( ( options ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
-				{
-					code: 'test_error',
-					message: 'The traffic reports failed.',
-					data: { status: 500, reason: 'backendError' },
-				},
-				'getReport',
-				[ options ]
-			);
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getReport', [ options ] );
-		} );
+	it( 'should request the report again and render the three sections on a "Retry" click', async () => {
+		const totalsArgs = getTotalsArgs();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'The total visitors report failed.',
+				data: { status: 500, reason: 'backendError' },
+			},
+			'getReport',
+			[ totalsArgs ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ totalsArgs ] );
 
 		const { container, getByRole, queryByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -538,11 +526,11 @@ describe( 'TrafficOverviewPanel', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint )
 		);
 		await waitFor( () =>
 			expect(
-				queryByText( 'The traffic reports failed.' )
+				queryByText( 'The total visitors report failed.' )
 			).not.toBeInTheDocument()
 		);
 
@@ -567,20 +555,20 @@ describe( 'TrafficOverviewPanel', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '67890' );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( '13579' );
 
-		getReportArgs().forEach( ( options ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
-				{
-					code: 'test_error',
-					message: 'Request had insufficient authentication scopes.',
-					data: { status: 403, reason: 'insufficientPermissions' },
-				},
-				'getReport',
-				[ options ]
-			);
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getReport', [ options ] );
-		} );
+		const totalsArgs = getTotalsArgs();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'Request had insufficient authentication scopes.',
+				data: { status: 403, reason: 'insufficientPermissions' },
+			},
+			'getReport',
+			[ totalsArgs ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ totalsArgs ] );
 
 		const { getByText, queryByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -593,12 +581,104 @@ describe( 'TrafficOverviewPanel', () => {
 		expect( queryByText( 'Retry' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the "Gathering data…" notice and three empty columns while the property is gathering data', async () => {
+	it( 'should render the three sections as placeholders while a breakdown report is still loading', async () => {
+		// The store holds the breakdown reports of the last 28 days from
+		// `beforeEach`, so the test reads the last 14 days, where it holds
+		// no devices report.
+		registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
+		provideTotalsReport( 843, 700 );
+		provideTrafficBreakdownReports( registry, {
+			channels: [ [ 'Direct', 10 ] ],
+			locations: [ [ 'Ukraine', 10 ] ],
+		} );
+
+		const { devices } = getTrafficBreakdownReportArgs( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ devices ] );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getPlaceholderCounts( container ) ).toEqual( {
+			totalVisitors: 1,
+			chart: 1,
+			breakdownRows: 15,
+		} );
+	} );
+
+	it( 'should render the report error in place of the three sections when a breakdown report fails, and request the report again on a "Retry" click', async () => {
+		// The store holds the breakdown reports of the last 28 days from
+		// `beforeEach`, so the test reads the last 14 days, where it holds
+		// no locations report for "Retry" to find.
+		registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
+		provideTotalsReport( 843, 700 );
+		provideTrafficBreakdownReports( registry, {
+			channels: [ [ 'Direct', 10 ] ],
+			devices: [ [ 'desktop', 10 ] ],
+		} );
+
+		const { locations } = getTrafficBreakdownReportArgs( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'The locations report failed.',
+				data: { status: 500, reason: 'backendError' },
+			},
+			'getReport',
+			[ locations ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ locations ] );
+
+		const {
+			container,
+			getByRole,
+			getByText,
+			queryByText,
+			waitForRegistry,
+		} = render( <TrafficOverviewPanel />, { registry } );
+
+		await waitForRegistry();
+
+		expect(
+			getByText( 'The locations report failed.' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__breakdown'
+			)
+		).toBeNull();
+
+		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint )
+		);
+		await waitFor( () =>
+			expect(
+				queryByText( 'The locations report failed.' )
+			).not.toBeInTheDocument()
+		);
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__breakdown'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render the "Gathering data…" notice, and "We’re still collecting data" in each of the three columns, while the property is gathering data', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 
-		getReportArgs().forEach( ( options ) =>
-			provideAnalytics4MockReport( registry, options )
-		);
+		provideAnalytics4MockReport( registry, getTotalsArgs() );
 
 		const { container, getAllByText, getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -607,14 +687,11 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		expect( getByText( 'Total visitors' ) ).toBeInTheDocument();
 		expect( getByText( 'Gathering data…' ) ).toBeInTheDocument();
-		expect(
-			getAllByText(
-				'No data to display: your site hasn’t received any visitors yet'
-			)
-		).toHaveLength( 3 );
-		// The five reports resolved, and no figure from them reaches the screen.
+		expect( getAllByText( 'We’re still collecting data' ) ).toHaveLength(
+			3
+		);
+		// Neither the report nor the placeholders put a figure on the screen.
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
 		).toBeNull();
@@ -630,9 +707,7 @@ describe( 'TrafficOverviewPanel', () => {
 		} );
 	} );
 
-	it( 'renders 0 visitors, a 0% badge and three empty columns when the reports show no traffic', async () => {
-		const [ totalsArgs, ...remainingArgs ] = getReportArgs();
-
+	it( 'should render 0 unique visitors when the totals report shows no traffic', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				totals: [
@@ -640,39 +715,25 @@ describe( 'TrafficOverviewPanel', () => {
 					{ metricValues: [ { value: '0' } ] },
 				],
 			},
-			{ options: totalsArgs }
-		);
-		remainingArgs.forEach( ( options ) =>
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetReport( {}, { options } )
+			{ options: getTotalsArgs() }
 		);
 
-		const {
-			container,
-			getAllByText,
-			getByText,
-			queryByText,
-			waitForRegistry,
-		} = render( <TrafficOverviewPanel />, { registry } );
+		const { container, getByText, queryByText, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
-		expect( getByText( '0' ) ).toBeInTheDocument();
+		expect( getByText( '0' ) ).toHaveClass(
+			'googlesitekit-traffic-overview__unique-visitors-figure'
+		);
 		expect( getPlaceholderCounts( container ) ).toEqual( {
 			totalVisitors: 0,
 			chart: 0,
 			breakdownRows: 0,
 		} );
 		expect( queryByText( 'Gathering data…' ) ).not.toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-change-badge' )
-		).toHaveTextContent( '0%' );
-		expect(
-			getAllByText(
-				'No data to display: your site hasn’t received any visitors yet'
-			)
-		).toHaveLength( 3 );
 		expect(
 			container.querySelector( '.googlesitekit-traffic-overview__chart' )
 		).toBeInTheDocument();
@@ -700,5 +761,951 @@ describe( 'TrafficOverviewPanel', () => {
 			breakdownRows: 15,
 		} );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+	} );
+
+	describe( 'benchmarking response', () => {
+		const benchmarkingEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+		);
+
+		const benchmarkingError = {
+			code: 'test_error',
+			message: 'The benchmarking request failed.',
+			data: { status: 500, reason: 'backendError' },
+		};
+
+		/**
+		 * Renders the panel on the main dashboard with the typicalTraffic
+		 * feature, where the panel reads the benchmarking response.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {Object} The render result.
+		 */
+		function renderPanel() {
+			return render( <TrafficOverviewPanel />, {
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+		}
+
+		/**
+		 * Builds a benchmarking response for the selected date range with the
+		 * figures of the design, and the given fields in place of theirs.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} [fields] Optional. The fields to set.
+		 * @return {Object} The decoded response.
+		 */
+		function createResponse(
+			fields: Partial< DecodedBenchmarkingResponse > = {}
+		): DecodedBenchmarkingResponse {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			return {
+				...createBenchmarkingResponse( startDate, endDate ),
+				...fields,
+			};
+		}
+
+		/**
+		 * Stores an error for the benchmarking request over the selected date
+		 * range, and finishes its resolution, so the store sends no request.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {void}
+		 */
+		function provideBenchmarkingError() {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setErrorForSelector(
+					benchmarkingError,
+					'getBenchmarkingData',
+					[ startDate, endDate ]
+				);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getBenchmarkingData', [
+					startDate,
+					endDate,
+				] );
+		}
+
+		beforeEach( () => {
+			provideTotalsReport( 843, 700 );
+		} );
+
+		it( 'should request the benchmarking response for the selected date range', async () => {
+			fetchMock.get( benchmarkingEndpoint, {
+				body: benchmarkingData,
+				status: 200,
+			} );
+
+			const { waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint, {
+				query: { startDate: '2025-01-09', endDate: '2025-02-05' },
+			} );
+		} );
+
+		it( 'should show the total visits of the benchmarking response', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( { visits: { current: 4321, previous: 3000 } } )
+			);
+
+			const { getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect( getByText( '4.3K' ) ).toHaveClass(
+				'googlesitekit-traffic-overview__total-visits-figure'
+			);
+		} );
+
+		it( 'should draw the visits on each day of the benchmarking response in the chart', async () => {
+			const { dailyTraffic } = createResponse();
+
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( {
+					dailyTraffic: dailyTraffic.map( ( day, index ) => ( {
+						...day,
+						visits: 100 + index,
+					} ) ),
+				} )
+			);
+
+			const { getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			// Google Charts draws nothing under Jest, so this test reads the
+			// chart's screen-reader lines instead. Each line goes on to name
+			// the day's typical range.
+			expect(
+				getByText( /^January 9, 2025: 100 visits,/ )
+			).toBeInTheDocument();
+			expect(
+				getByText( /^February 5, 2025: 127 visits,/ )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should render the key factor cards of the benchmarking response', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( {
+					keyFactors: [
+						{
+							kind: 'CHANNEL',
+							label: 'Email',
+							current: 90,
+							previous: 40,
+							sharePct: 61.2,
+							attributes: [],
+						},
+					],
+				} )
+			);
+
+			const { container, getByRole, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factor'
+				)
+			).toHaveLength( 1 );
+			expect(
+				getByRole( 'heading', { name: 'Email' } )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should say that no channel changed notably when the benchmarking response has no key factor cards', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( { keyFactors: [] } )
+			);
+
+			const { getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					'No channel changed notably compared with the previous 28 days'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should render the sections as placeholders while the benchmarking response is still loading, and render them together when it arrives', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			// A started resolution sends no request, so the response stays
+			// on its way.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getBenchmarkingData', [
+					startDate,
+					endDate,
+				] );
+
+			const { container, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			const placeholderCardSelector =
+				'.googlesitekit-traffic-overview__key-factor--loading';
+
+			expect( getPlaceholderCounts( container ) ).toEqual( {
+				totalVisitors: 1,
+				chart: 1,
+				breakdownRows: 15,
+			} );
+			expect(
+				container.querySelectorAll( placeholderCardSelector )
+			).toHaveLength( 3 );
+
+			act( () => {
+				provideBenchmarkingResponse( registry );
+			} );
+
+			expect( getPlaceholderCounts( container ) ).toEqual( {
+				totalVisitors: 0,
+				chart: 0,
+				breakdownRows: 0,
+			} );
+			expect(
+				container.querySelector( placeholderCardSelector )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render the report error and its "Retry" button in place of the sections when the benchmarking request fails', async () => {
+			provideBenchmarkingError();
+
+			const { container, getByRole, getByText, waitForRegistry } =
+				renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'The benchmarking request failed.' )
+			).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Retry' } )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__total-visitors'
+				)
+			).toBeNull();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__chart'
+				)
+			).toBeNull();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors'
+				)
+			).toBeNull();
+		} );
+
+		it( 'should request the benchmarking response once again and render the sections on a "Retry" click', async () => {
+			provideBenchmarkingError();
+			fetchMock.get( benchmarkingEndpoint, {
+				body: benchmarkingData,
+				status: 200,
+			} );
+
+			const { container, getByRole, queryByText, waitForRegistry } =
+				renderPanel();
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+			await waitFor( () =>
+				expect(
+					queryByText( 'The benchmarking request failed.' )
+				).not.toBeInTheDocument()
+			);
+			await waitForRegistry();
+
+			// `ReportError` and the panel's `onRetry` both invalidate the
+			// resolution, and the two send one request.
+			expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint );
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__chart'
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should send no benchmarking request for a view-only user who cannot view Analytics', async () => {
+			provideUserCapabilities( registry, {
+				[ getMetaCapabilityPropertyName(
+					PERMISSION_READ_SHARED_MODULE_DATA,
+					MODULE_SLUG_ANALYTICS_4
+				) ]: false,
+			} );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getPlaceholderCounts( container ) ).toEqual( {
+				totalVisitors: 1,
+				chart: 1,
+				breakdownRows: 15,
+			} );
+			expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
+		} );
+	} );
+
+	describe( 'key factors', () => {
+		const keyFactorsSelector =
+			'.googlesitekit-traffic-overview__key-factors';
+
+		beforeEach( () => {
+			// The panel reads the key factors from the benchmarking response.
+			provideBenchmarkingResponse( registry );
+		} );
+
+		it( 'should render the key factors between the traffic chart and the traffic breakdown on the main dashboard', async () => {
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getSectionClassNames( container ) ).toEqual( [
+				'googlesitekit-traffic-overview__summary',
+				'googlesitekit-traffic-overview__chart',
+				'googlesitekit-traffic-overview__key-factors',
+				'googlesitekit-traffic-overview__breakdown',
+			] );
+		} );
+
+		it( 'should name the number of days in the selected date range in the heading of the key factors', async () => {
+			registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
+			provideBenchmarkingResponse( registry );
+
+			const { getByRole, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'heading', {
+					name: 'Biggest channel shifts vs. the previous 14 days',
+				} )
+			).toBeInTheDocument();
+		} );
+
+		it.each( [
+			[ 'with', [ 'typicalTraffic', 'trafficInsights' ], true ],
+			[ 'without', [ 'typicalTraffic' ], false ],
+		] )(
+			'should render the summary above the key factor cards only %s the trafficInsights feature',
+			async ( _, features, hasInsight ) => {
+				provideBenchmarkingInsight(
+					registry,
+					registry.select( CORE_USER ).getDateRangeDates()
+				);
+
+				const { container, waitForRegistry } = render(
+					<TrafficOverviewPanel />,
+					{
+						registry,
+						features,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					container.querySelector( keyFactorsSelector )
+				).toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-traffic-overview__key-factors-insight'
+					) !== null
+				).toBe( hasInsight );
+			}
+		);
+
+		it( 'should leave out the key factors without the typicalTraffic feature', async () => {
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__breakdown'
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( keyFactorsSelector )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should leave out the key factors while the property is gathering data', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			provideAnalytics4MockReport( registry, getTotalsArgs() );
+
+			const { container, getByText, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( 'Gathering data…' ) ).toBeInTheDocument();
+			expect(
+				container.querySelector( keyFactorsSelector )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render the key factors as three placeholder cards while the totals report is still loading, and the cards once it arrives', async () => {
+			const totalsArgs = getTotalsArgs();
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ totalsArgs ] );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			const placeholderCardSelector =
+				'.googlesitekit-traffic-overview__key-factor--loading';
+
+			expect( getPlaceholderCounts( container ).breakdownRows ).toBe(
+				15
+			);
+			expect(
+				container.querySelectorAll( placeholderCardSelector )
+			).toHaveLength( 3 );
+
+			act( () => {
+				provideAnalytics4MockReport( registry, totalsArgs );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ totalsArgs ] );
+			} );
+
+			expect(
+				container.querySelector( placeholderCardSelector )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factor'
+				).length
+			).toBeGreaterThan( 0 );
+		} );
+	} );
+
+	describe( 'typical traffic range and published posts', () => {
+		beforeEach( () => {
+			// The chart draws both along the visits of the benchmarking
+			// response.
+			provideBenchmarkingResponse( registry );
+		} );
+
+		/**
+		 * Stores a benchmarking response for the selected date range with the
+		 * figures of the design, and each day changed by `mapDay`.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Function} mapDay Gets a day of the response from the design's day and its position.
+		 * @return {void}
+		 */
+		function provideDailyTraffic(
+			mapDay: (
+				day: BenchmarkingDailyTrafficRow,
+				index: number
+			) => BenchmarkingDailyTrafficRow
+		) {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+			const response = createBenchmarkingResponse( startDate, endDate );
+
+			provideBenchmarkingResponse( registry, {
+				...response,
+				dailyTraffic: response.dailyTraffic.map( mapDay ),
+			} );
+		}
+
+		/**
+		 * Renders the panel on the main dashboard with the typicalTraffic
+		 * feature, where the panel reads the benchmarking response.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {Object} The render result.
+		 */
+		function renderPanel() {
+			return render( <TrafficOverviewPanel />, {
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+		}
+
+		/**
+		 * Reads the labels of the chart's legend items.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Element} container The element the panel rendered into.
+		 * @return {Array.<string>} The label of each legend item, in order.
+		 */
+		function getLegendLabels( container: Element ) {
+			return Array.from(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__chart-legend-label'
+				)
+			).map( ( label ) => label.textContent );
+		}
+
+		it( 'should draw the typical traffic range and the published posts on the chart on the main dashboard', async () => {
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+				'Typical traffic range',
+				'Published post',
+			] );
+		} );
+
+		it( 'should draw the typical range of each day of the benchmarking response', async () => {
+			provideDailyTraffic( ( day ) => ( {
+				...day,
+				expectedMin: 118.4,
+				expectedMax: 183.1,
+			} ) );
+
+			const { getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			// Google Charts draws nothing under Jest, so this test reads the
+			// chart's screen-reader lines instead.
+			expect(
+				getByText(
+					'January 9, 2025: 39 visits, typical range 118.4 to 183.1'
+				)
+			).toBeInTheDocument();
+			expect(
+				getByText(
+					'February 5, 2025: 152 visits, typical range 118.4 to 183.1'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should draw no typical range on a day of the benchmarking response without bounds', async () => {
+			// The first ten days have fewer than 28 days of recorded traffic.
+			provideDailyTraffic( ( day, index ) =>
+				index < 10
+					? { ...day, expectedMin: null, expectedMax: null }
+					: day
+			);
+
+			const { container, getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'January 9, 2025: 39 visits' )
+			).toBeInTheDocument();
+			expect(
+				getByText( /^January 19, 2025: \d+ visits, typical range / )
+			).toBeInTheDocument();
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+				'Typical traffic range',
+				'Published post',
+			] );
+		} );
+
+		it( 'should leave the typical range out of the legend when no day of the benchmarking response has bounds', async () => {
+			provideDailyTraffic( ( day ) => ( {
+				...day,
+				expectedMin: null,
+				expectedMax: null,
+			} ) );
+
+			const { container, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+				'Published post',
+			] );
+		} );
+
+		it( 'should draw neither without the typicalTraffic feature', async () => {
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+			] );
+		} );
+
+		it( 'should draw neither while the property is gathering data', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+			] );
+		} );
+	} );
+
+	describe( 'traffic insight', () => {
+		const trafficInsightSelector =
+			'.googlesitekit-traffic-overview__traffic-insight';
+		const keyFactorsInsightSelector =
+			'.googlesitekit-traffic-overview__key-factors-insight';
+		const insightEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-insight'
+		);
+
+		beforeEach( () => {
+			// With the typicalTraffic feature, the panel waits for the
+			// benchmarking response before it renders the insight.
+			provideBenchmarkingResponse( registry );
+		} );
+
+		/**
+		 * Stores a benchmarking response for the selected date range that
+		 * carries the request of the generated insight.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {void}
+		 */
+		function provideBenchmarkingResponseWithInsightRequest() {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			provideBenchmarkingResponse( registry, {
+				...createBenchmarkingResponse( startDate, endDate ),
+				insightLocale: 'en_US',
+				insightPayload: 'signed-payload',
+			} );
+		}
+
+		it( 'should render the traffic insight above the visitor figures on the main dashboard', async () => {
+			provideBenchmarkingInsight(
+				registry,
+				registry.select( CORE_USER ).getDateRangeDates()
+			);
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			const summary = container.querySelector(
+				'.googlesitekit-traffic-overview__summary'
+			) as Element;
+
+			expect(
+				Array.from( summary.children ).map(
+					( { className } ) => className
+				)
+			).toEqual( [
+				'googlesitekit-traffic-overview__insight-notice googlesitekit-traffic-overview__traffic-insight',
+				'googlesitekit-traffic-overview__total-visitors',
+			] );
+			// The analysis compares the period with the site's typical range.
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).toHaveTextContent(
+				'Over the last 28 days, your site had 1,740 visits, about 12% above what is usual for it.'
+			);
+		} );
+
+		it( 'should render the driver of the insight above the key factor cards', async () => {
+			provideBenchmarkingInsight(
+				registry,
+				registry.select( CORE_USER ).getDateRangeDates()
+			);
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( keyFactorsInsightSelector )
+			).toHaveTextContent(
+				'Visits rose 18% (+265 visits) compared to the previous 28 days, led by Organic Search (+190 visits).'
+			);
+			expect(
+				container.querySelector(
+					`${ keyFactorsInsightSelector } strong`
+				)
+			).toHaveTextContent( 'Organic Search' );
+		} );
+
+		it( 'should render placeholders in place of the analysis and the driver while the insight loads', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getBenchmarkingInsight', [
+					startDate,
+					endDate,
+				] );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector(
+					`${ trafficInsightSelector } .googlesitekit-preview-block`
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					`${ keyFactorsInsightSelector } .googlesitekit-preview-block`
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__insight-notice-content'
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should ask for the insight with the request of the benchmarking response, and render it once it arrives', async () => {
+			provideBenchmarkingResponseWithInsightRequest();
+			fetchMock.postOnce( insightEndpoint, {
+				body: { insight: benchmarkingInsight },
+			} );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'POST',
+				body: { data: { payload: 'signed-payload' } },
+			} );
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).toHaveTextContent( 'your site had 1,740 visits' );
+			expect(
+				container.querySelector( keyFactorsInsightSelector )
+			).toHaveTextContent( 'Visits rose 18% (+265 visits)' );
+		} );
+
+		it( 'should render the figures without the insight when the request for it fails', async () => {
+			provideBenchmarkingResponseWithInsightRequest();
+			fetchMock.postOnce( insightEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( console ).toHaveErrored();
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector( keyFactorsInsightSelector )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector( '.googlesitekit-report-error' )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factor'
+				).length
+			).toBeGreaterThan( 0 );
+		} );
+
+		it.each( [
+			[ 'trafficInsights', [ 'typicalTraffic' ] ],
+			[ 'typicalTraffic', [ 'trafficInsights' ] ],
+		] )(
+			'should leave out the traffic insight without the %s feature',
+			async ( _, features ) => {
+				const { container, waitForRegistry } = render(
+					<TrafficOverviewPanel />,
+					{
+						registry,
+						features,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					container.querySelector(
+						'.googlesitekit-traffic-overview__total-visitors'
+					)
+				).toBeInTheDocument();
+				expect(
+					container.querySelector( trafficInsightSelector )
+				).not.toBeInTheDocument();
+			}
+		);
+
+		it( 'should leave out the traffic insight while the property is gathering data', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			provideAnalytics4MockReport( registry, getTotalsArgs() );
+
+			const { container, getByText, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( 'Gathering data…' ) ).toBeInTheDocument();
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).not.toBeInTheDocument();
+		} );
 	} );
 } );

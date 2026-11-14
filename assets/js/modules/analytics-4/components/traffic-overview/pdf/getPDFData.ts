@@ -38,19 +38,22 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	getBreakdownReportArgs,
-	getGraphReportArgs,
+	getDailyVisitsReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	TrafficBreakdownRow,
 	getBreakdownRows,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { getBreakdownValuesFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownValuesFromReport';
+import { getDailyTrafficFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getDailyTrafficFromReport';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
-import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import { stringToDate } from '@/js/util';
 
 export type { TrafficBreakdownRow };
 
@@ -92,18 +95,18 @@ export interface GetPDFDataParams {
 }
 
 export interface TrafficOverviewPDFData {
-	/** Loaded reports and breakdown rows, or `null` when the export is canceled. */
+	/** The totals report, the daily traffic, and the breakdown rows, or `null` when the export is canceled. */
 	data: {
-		/** GA4 totals report with the current and comparison range totals. */
-		totalsReport: Report;
-		/** GA4 report with one row per day, which the line chart is drawn from. */
-		graphReport: Report;
-		/** Ranked rows for the channels breakdown, or `null` on a missing report. */
-		channelBreakdown: TrafficBreakdownRow[] | null;
-		/** Ranked rows for the locations breakdown, or `null` on a missing report. */
-		locationBreakdown: TrafficBreakdownRow[] | null;
-		/** Ranked rows for the devices breakdown, or `null` on a missing report. */
-		deviceBreakdown: TrafficBreakdownRow[] | null;
+		/** GA4 totals report with the current and comparison range totals, or `undefined` when its request fails. */
+		totalsReport?: Report;
+		/** The visits on each day of the range, oldest first, which the line chart is drawn from. A day without visits reads zero. */
+		dailyTraffic: BenchmarkingDailyTrafficRow[];
+		/** Ranked rows for the channels breakdown, empty when no channel has visits. */
+		channelBreakdown: TrafficBreakdownRow[];
+		/** Ranked rows for the locations breakdown, empty when no location has visits. */
+		locationBreakdown: TrafficBreakdownRow[];
+		/** Ranked rows for the devices breakdown, empty when no device has visits. */
+		deviceBreakdown: TrafficBreakdownRow[];
 	} | null;
 	/** Rendered chart images as JPEG data URIs. */
 	chartImages?: {
@@ -113,51 +116,38 @@ export interface TrafficOverviewPDFData {
 }
 
 interface LineChartPoint {
-	/** Day the point covers, parsed from the row's date dimension. */
+	/** The day the point covers. */
 	date: Date;
-	/** Total users on that day, `0` when the row has no value. */
+	/** The visits on that day. */
 	value: number;
 }
 
 /**
- * Reduces the date-dimension graph report into parsed chart points.
- *
- * Rows whose date fails to parse are dropped, matching the dashboard's
- * tolerance for malformed dimension values.
+ * Turns the daily traffic into the line chart's points.
  *
  * @since 1.189.0
+ * @since n.e.x.t Changed the `graphReport` parameter to `dailyTraffic`.
  *
- * @param {Object} graphReport Date-dimension GA4 report.
- * @return {Array<Object>} Points of `{ date, value }`, ordered as returned.
+ * @param {Array<Object>} dailyTraffic The visits on each day, oldest first.
+ * @return {Array<Object>} Points of `{ date, value }`, in the same order.
  */
-function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
-	return ( graphReport?.rows || [] ).reduce< LineChartPoint[] >(
-		( points, row ) => {
-			const dateString = row.dimensionValues?.[ 0 ]?.value;
-			const date = dateString
-				? parseDimensionStringToDate( dateString )
-				: false;
-
-			if ( date instanceof Date ) {
-				points.push( {
-					date,
-					value: Number( row.metricValues?.[ 0 ]?.value ) || 0,
-				} );
-			}
-
-			return points;
-		},
-		[]
-	);
+function getLineChartPoints(
+	dailyTraffic: BenchmarkingDailyTrafficRow[]
+): LineChartPoint[] {
+	return dailyTraffic.map( ( { date, visits } ) => ( {
+		date: stringToDate( date ),
+		value: visits,
+	} ) );
 }
 
 /**
  * Builds the Google Charts `DataTable` for the All Visitors line chart.
  *
- * The table has the same columns as the dashboard chart's table, which
- * `getTrafficChartData()` builds.
+ * The table has the "Day" and "Visits" columns of the dashboard chart's table,
+ * which `getTrafficChartData()` builds.
  *
  * @since 1.189.0
+ * @since n.e.x.t Names the second column "Visits" in place of "Users".
  *
  * @param {Array<Object>} points Parsed chart points.
  * @return {Object} A `google.visualization.DataTable` instance.
@@ -172,7 +162,7 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
 
 	const dataTable = new visualization.DataTable();
 	dataTable.addColumn( 'date', __( 'Day', 'google-site-kit' ) );
-	dataTable.addColumn( 'number', __( 'Users', 'google-site-kit' ) );
+	dataTable.addColumn( 'number', __( 'Visits', 'google-site-kit' ) );
 	dataTable.addRows( points.map( ( { date, value } ) => [ date, value ] ) );
 
 	return dataTable;
@@ -263,17 +253,22 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 }
 
 /**
- * Loads the GA4 reports and the line chart image for the Traffic Overview PDF
+ * Loads the reports and the line chart image for the Traffic Overview PDF
  * section.
  *
- * Fetches the totals, graph, and three breakdown reports (channels, locations,
- * and devices) at the same time, and stops early when the signal is aborted.
- * Then it draws the line chart as a JPEG data URI for the PDF. Each breakdown's
- * rows are shaped with the same `getBreakdownRows()` the dashboard's columns
- * use, so the printed rows always match. A breakdown whose report failed gives
- * `null` rows, and the other breakdowns still render.
+ * Fetches the totals report, the daily visits report, and the three breakdown
+ * reports, with the entity URL on an entity dashboard, and stops early when
+ * the signal is aborted. Then it draws the line chart of the visits on each day
+ * as a JPEG data URI for the PDF. The daily traffic and the rows of each
+ * breakdown are shaped with the same `getDailyTrafficFromReport()` and
+ * `getBreakdownRows()` the dashboard uses, so the printed figures always
+ * match.
+ *
+ * A report that fails reads as a report without rows, so the rest of the
+ * section still prints.
  *
  * @since 1.189.0
+ * @since n.e.x.t Draws the line chart from the daily visits report, and shapes the breakdown rows from the visits of each value.
  *
  * @param {Object}      params          Loader parameters.
  * @param {Object}      params.registry WordPress data registry.
@@ -302,14 +297,13 @@ export default async function getPDFData( {
 		url,
 	} );
 
-	const graphArgs = getGraphReportArgs( {
+	const dailyVisitsArgs = getDailyVisitsReportArgs( {
 		startDate,
 		endDate,
 		url,
 	} );
 
-	// Breakdown reports use the selected range only, since there's no
-	// comparison range for a row to pair against.
+	// In the order of `TRAFFIC_BREAKDOWN_COLUMNS`: channels, locations, devices.
 	const breakdownArgsList = TRAFFIC_BREAKDOWN_COLUMNS.map(
 		( { dimensionName, reportID } ) =>
 			getBreakdownReportArgs( {
@@ -321,6 +315,8 @@ export default async function getPDFData( {
 			} )
 	);
 
+	const argsList = [ totalsArgs, dailyVisitsArgs, ...breakdownArgsList ];
+
 	// The registry remembers each `getReport` call by its arguments, and
 	// every abort signal looks the same to it. After a canceled or failed
 	// run, the registry would treat the calls below as already done and
@@ -329,29 +325,23 @@ export default async function getPDFData( {
 	// loaded stays in state, so a successful earlier run adds no extra
 	// request.
 	const { invalidateResolution } = registry.dispatch( MODULES_ANALYTICS_4 );
-	invalidateResolution( 'getReport', [ totalsArgs, { signal } ] );
-	invalidateResolution( 'getReport', [ graphArgs, { signal } ] );
-	breakdownArgsList.forEach( ( args ) =>
+	argsList.forEach( ( args ) =>
 		invalidateResolution( 'getReport', [ args, { signal } ] )
 	);
 
-	const [ totalsReport, graphReport, ...breakdownReports ] =
-		await Promise.all( [
+	const [
+		totalsReport,
+		dailyVisitsReport,
+		channelsReport,
+		locationsReport,
+		devicesReport,
+	]: Array< Report | undefined > = await Promise.all(
+		argsList.map( ( args ) =>
 			registry
 				.resolveSelect( MODULES_ANALYTICS_4 )
-				.getReport( totalsArgs, { signal } ),
-			registry
-				.resolveSelect( MODULES_ANALYTICS_4 )
-				.getReport( graphArgs, { signal } ),
-			// A breakdown report that fails is caught here, so the rest of
-			// the widget still renders and that breakdown's rows are `null`.
-			...breakdownArgsList.map( ( args ) =>
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getReport( args, { signal } )
-					.catch( () => null )
-			),
-		] );
+				.getReport( args, { signal } )
+		)
+	);
 
 	if ( signal.aborted ) {
 		return { data: null };
@@ -364,7 +354,12 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
-	const points = getLineChartPoints( graphReport );
+	const dailyTraffic = getDailyTrafficFromReport(
+		dailyVisitsReport,
+		startDate,
+		endDate
+	);
+	const points = getLineChartPoints( dailyTraffic );
 
 	const lineChart = await renderGoogleChartToDataURI( {
 		chartType: 'LineChart',
@@ -380,18 +375,19 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
-	const [ channelBreakdown, locationBreakdown, deviceBreakdown ] =
-		breakdownReports.map( ( report ) =>
-			report ? getBreakdownRows( report ) : null
-		);
-
 	return {
 		data: {
 			totalsReport,
-			graphReport,
-			channelBreakdown,
-			locationBreakdown,
-			deviceBreakdown,
+			dailyTraffic,
+			channelBreakdown: getBreakdownRows(
+				getBreakdownValuesFromReport( channelsReport )
+			),
+			locationBreakdown: getBreakdownRows(
+				getBreakdownValuesFromReport( locationsReport )
+			),
+			deviceBreakdown: getBreakdownRows(
+				getBreakdownValuesFromReport( devicesReport )
+			),
 		},
 		chartImages: {
 			lineChart,

@@ -32,6 +32,9 @@ import { getQueryArg } from '@wordpress/url';
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
+import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	FreshDataDateRange,
@@ -64,6 +67,9 @@ import {
 	getComparisonDateRange,
 	getDateDimensionValues,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
+import { getBreakdownReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
@@ -71,10 +77,14 @@ import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
-import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import {
+	BenchmarkingDailyTrafficRow,
+	BenchmarkingKeyFactor,
+	DecodedBenchmarkingResponse,
+} from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { getDateString, stringToDate } from '@/js/util';
+import { addDays } from '@/js/util';
 import { ErrorObject } from '@/js/util/errors';
 
 interface FreshMetricsFigures {
@@ -156,6 +166,83 @@ export const INSUFFICIENT_PERMISSIONS_ERROR: ErrorObject = {
 	message: 'User does not have sufficient permissions for this property.',
 	data: { status: 403, reason: 'insufficientPermissions' },
 };
+
+/**
+ * The key factor cards of the design.
+ *
+ * @since n.e.x.t
+ */
+export const KEY_FACTORS: BenchmarkingKeyFactor[] = [
+	{
+		kind: 'CHANNEL',
+		label: 'Referral',
+		current: 245,
+		previous: 180,
+		sharePct: 52.4,
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/Ice-cream-is-good-for-your-health/',
+				current: 46,
+				previous: 30,
+				sharePct: 12.9,
+			},
+			{
+				kind: 'REFERRING_SITE',
+				label: 'facebook.com',
+				current: 92,
+				previous: 60,
+				sharePct: 25.8,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Video',
+		current: 168,
+		previous: 120,
+		sharePct: 38.7,
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/Eat-ice-cream-every-day/',
+				current: 53,
+				previous: 30,
+				sharePct: 18.5,
+			},
+			{
+				kind: 'PLATFORM',
+				label: 'YouTube',
+				current: 72,
+				previous: 60,
+				sharePct: 9.7,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Search',
+		current: 379,
+		previous: 400,
+		sharePct: 100,
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/best-ice-cream-shops-guide/',
+				current: 38,
+				previous: 40,
+				sharePct: 9.5,
+			},
+			{
+				kind: 'SEARCH_KEYWORD',
+				label: 'healthy ice cream types',
+				current: 17,
+				previous: 20,
+				sharePct: 14.3,
+			},
+		],
+	},
+];
 
 /**
  * Gets the report arguments of `LATEST_POST` for the registry's reference date
@@ -362,6 +449,112 @@ export function createBreakdownReport(
 					],
 			  } ),
 	};
+}
+
+/**
+ * Builds the values of a traffic breakdown column from label and visits
+ * pairs, in the order given.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Array>} pairs `[ label, visits ]` pairs.
+ * @return {Array<Object>} The column's values.
+ */
+export function createBreakdownValues(
+	pairs: Array< [ string, number ] >
+): TrafficBreakdownValue[] {
+	return pairs.map( ( [ label, visits ] ) => ( { label, visits } ) );
+}
+
+/**
+ * The visits of each column of the Traffic Overview breakdown, keyed by the
+ * column's `id`, each as `[ label, visits ]` pairs ordered by visits, most
+ * first. The device names are lowercase, the way GA4 writes them.
+ *
+ * @since n.e.x.t
+ */
+export const TRAFFIC_BREAKDOWN_PAIRS: Record<
+	string,
+	Array< [ string, number ] >
+> = {
+	channels: [
+		[ 'Direct', 1200 ],
+		[ 'Organic Search', 900 ],
+		[ 'Organic Social', 700 ],
+		[ 'Referral', 400 ],
+	],
+	locations: [
+		[ 'Singapore', 1100 ],
+		[ 'Brazil', 800 ],
+		[ 'China', 600 ],
+		[ 'United States', 400 ],
+	],
+	devices: [
+		[ 'desktop', 1800 ],
+		[ 'mobile', 900 ],
+		[ 'tablet', 400 ],
+	],
+};
+
+/**
+ * Builds the arguments the Traffic Overview panel passes to `getReport` for
+ * the channels, locations, and devices reports of its breakdown, over the
+ * selected date range and for the current entity URL.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry with the selected date range and the entity URL.
+ * @return {Object} The arguments of each report, keyed by the column's `id`.
+ */
+export function getTrafficBreakdownReportArgs(
+	registry: WPDataRegistry
+): Record< string, ReportOptions > {
+	const { startDate, endDate } = registry
+		.select( CORE_USER )
+		.getDateRangeDates();
+	const url = registry.select( CORE_SITE ).getCurrentEntityURL() || undefined;
+
+	return Object.fromEntries(
+		TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, dimensionName, reportID } ) => [
+			id,
+			getBreakdownReportArgs( {
+				dimensionName,
+				reportID,
+				startDate,
+				endDate,
+				url,
+			} ),
+		] )
+	);
+}
+
+/**
+ * Puts the channels, locations, and devices reports of the Traffic Overview
+ * breakdown in the store, over the selected date range and for the current
+ * entity URL, so the breakdown renders without sending a request for them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry        The registry with the selected date range and the entity URL.
+ * @param {Object} [pairsByColumn] Optional. The `[ label, visits ]` pairs of each column, keyed by the column's `id`. A column left out gets no report. Default `TRAFFIC_BREAKDOWN_PAIRS`.
+ * @return {void}
+ */
+export function provideTrafficBreakdownReports(
+	registry: WPDataRegistry,
+	pairsByColumn: Record<
+		string,
+		Array< [ string, number ] >
+	> = TRAFFIC_BREAKDOWN_PAIRS
+) {
+	const argsByColumn = getTrafficBreakdownReportArgs( registry );
+
+	Object.entries( pairsByColumn ).forEach( ( [ id, pairs ] ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( createBreakdownReport( pairs ), {
+				options: argsByColumn[ id ],
+			} );
+	} );
 }
 
 /**
@@ -684,38 +877,6 @@ export function forDimensions( ...dimensions: string[] ) {
 		);
 }
 
-/**
- * Builds the daily rows of a benchmarking response, for the given number of
- * days up to and including the given last day.
- *
- * The checked-in `benchmarking-data.json` fixture has only four days.
- *
- * @since 1.192.0
- *
- * @param {number}   days      The number of rows, one for each day.
- * @param {string}   endDate   The last day, as `YYYY-MM-DD`.
- * @param {Function} getVisits Returns a day's visits, given the day's position in the rows, from `0`.
- * @return {Array.<Object>} The `{ date, visits }` rows, oldest first.
- */
-export function createDailyTrafficRows(
-	days: number,
-	endDate: string,
-	getVisits: ( dayIndex: number ) => number
-): BenchmarkingDailyTrafficRow[] {
-	// `setDate()` moves the calendar day and keeps the time of day, so a
-	// daylight-saving change inside the rows doesn't skip or repeat a day.
-	const day = stringToDate( endDate );
-	day.setDate( day.getDate() - days + 1 );
-
-	return Array.from( { length: days }, ( _value, dayIndex ) => {
-		const date = getDateString( day );
-
-		day.setDate( day.getDate() + 1 );
-
-		return { date, visits: getVisits( dayIndex ) };
-	} );
-}
-
 /** The endpoint that `setExpirableItemTimers()` posts to. */
 export const setExpirableItemTimersEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
@@ -785,4 +946,84 @@ export function provideRecentActivitySurveyState(
 	registry
 		.dispatch( CORE_USER )
 		.receiveGetDismissedPrompts( dismissedPrompts );
+}
+
+/**
+ * Gives each day the typical range the design draws: a quarter below and above
+ * the average of the seven days centered on it, and at least 5 visits either
+ * way, so the band follows the line.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} dailyTraffic The visits on each day, oldest first.
+ * @return {Array.<Object>} The same days, each with the bounds of its typical range.
+ */
+export function addTypicalTrafficRange(
+	dailyTraffic: BenchmarkingDailyTrafficRow[]
+): BenchmarkingDailyTrafficRow[] {
+	return dailyTraffic.map( ( day, index ) => {
+		const week = dailyTraffic.slice( Math.max( 0, index - 3 ), index + 4 );
+		const average =
+			week.reduce( ( total, { visits } ) => total + visits, 0 ) /
+			week.length;
+		const margin = Math.max( average / 4, 5 );
+
+		return {
+			...day,
+			expectedMin: Math.max( 0, Math.round( average - margin ) ),
+			expectedMax: Math.round( average + margin ),
+		};
+	} );
+}
+
+/**
+ * Builds a decoded benchmarking response with the figures of the design: its
+ * total visits, its visits and typical range on each day of the date range,
+ * and its key factor cards.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
+ * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
+ * @return {Object} The decoded response.
+ */
+export function createBenchmarkingResponse(
+	startDate: string,
+	endDate: string
+): DecodedBenchmarkingResponse {
+	return {
+		visits: PLACEHOLDER_TOTAL_VISITS,
+		dailyTraffic: addTypicalTrafficRange(
+			getPlaceholderDailyTraffic( startDate, endDate )
+		),
+		// The site recorded traffic on every day of the year of history the
+		// response reads, so every day of the range has a typical range.
+		firstTrafficDate: addDays( startDate, -364 ),
+		keyFactors: KEY_FACTORS,
+	};
+}
+
+/**
+ * Stores a benchmarking response for the selected date range, so the Traffic
+ * overview panel renders it without a request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry   The registry with the selected date range.
+ * @param {Object} [response] Optional. The decoded response to store. Default is the response `createBenchmarkingResponse()` builds for the range.
+ * @return {void}
+ */
+export function provideBenchmarkingResponse(
+	registry: WPDataRegistry,
+	response?: DecodedBenchmarkingResponse
+) {
+	const { startDate, endDate } = registry
+		.select( CORE_USER )
+		.getDateRangeDates();
+
+	provideBenchmarkingData(
+		registry,
+		{ startDate, endDate },
+		response ?? createBenchmarkingResponse( startDate, endDate )
+	);
 }

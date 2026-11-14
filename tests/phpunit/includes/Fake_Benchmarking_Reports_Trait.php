@@ -78,9 +78,11 @@ trait Fake_Benchmarking_Reports_Trait {
 				fn( $dimension_name ) => array( 'name' => $dimension_name ),
 				$dimension_names
 			),
+			// The report counts the one metric it asked for, such as `sessions` for
+			// the daily series.
 			'metricHeaders'    => array(
 				array(
-					'name' => 'totalUsers',
+					'name' => $report_request['metrics'][0]['name'],
 					'type' => 'TYPE_INTEGER',
 				),
 			),

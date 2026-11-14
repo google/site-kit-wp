@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 
+use DateTimeImmutable;
+use DateTimeZone;
+
 /**
  * Encodes an assembled benchmarking response for the browser.
  *
@@ -35,8 +38,10 @@ final class Response_Encoder {
 	 *
 	 * @since 1.189.0
 	 * @since 1.191.0 Encodes the key factor cards in place of the dimension rows, and reads `visits` in place of `visitors`.
+	 * @since n.e.x.t Encodes the expected range of each day and the first day with recorded traffic.
+	 * @since n.e.x.t Encodes the locale and the signed request of the generated insight when the response has them.
 	 *
-	 * @param array $response Assembled response, with `visits`, `dailyTraffic` and `keyFactors`.
+	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `firstTrafficDate` and `keyFactors`. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `firstTrafficDate` is the first day with recorded traffic, as `YYYY-MM-DD`, or null when there is none. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
 	 * @return array The encoded response.
 	 */
 	public function encode( array $response ) {
@@ -92,7 +97,40 @@ final class Response_Encoder {
 		$encoded[ Wire_Format::MEMBER_KEY_FACTORS ]           = $encoded_key_factors;
 		$encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ] = $encoded_key_factor_attributes;
 
+		$encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ] = array_map(
+			function ( $row ) {
+				return $this->encode_expected_range( $row );
+			},
+			array_values( $daily_traffic )
+		);
+
+		$encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ] = $this->encode_day_offset(
+			$encoded[ Wire_Format::MEMBER_FIRST_DATE ],
+			isset( $response['firstTrafficDate'] ) ? $response['firstTrafficDate'] : null
+		);
+
+		// Only a response built with the `trafficInsights` feature has the
+		// insight members, so a response built without it keeps the members
+		// it had before them, byte for byte.
+		if ( array_key_exists( 'insightPayload', $response ) ) {
+			$encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ]  = $this->encode_optional_string( isset( $response['insightLocale'] ) ? $response['insightLocale'] : null );
+			$encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ] = $this->encode_optional_string( $response['insightPayload'] );
+		}
+
 		return $encoded;
+	}
+
+	/**
+	 * Encodes a string that travels as itself rather than through the string
+	 * table, since no other part of the response repeats it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $value The value to encode.
+	 * @return string|null The value as a string, or null when it is not a non-empty string.
+	 */
+	private function encode_optional_string( $value ) {
+		return is_string( $value ) && '' !== $value ? $value : null;
 	}
 
 	/**
@@ -156,15 +194,59 @@ final class Response_Encoder {
 	}
 
 	/**
-	 * Encodes a share of the site's change, the only number the format keeps
-	 * decimals for.
+	 * Encodes a share of the site's change, which the format keeps decimals
+	 * for, as it does for the bounds of the expected range.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Names the bounds of the expected range as the other numbers with decimals.
 	 *
 	 * @param mixed $value Value to encode.
 	 * @return float|null The rounded value, or null when there is no value.
 	 */
 	private function encode_share( $value ) {
 		return null === $value ? null : round( (float) $value, Wire_Format::SHARE_DECIMAL_PLACES );
+	}
+
+	/**
+	 * Encodes the expected range of a day.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $row The `dailyTraffic` row, with `expectedMin` and `expectedMax`.
+	 * @return array|null The rounded bounds, as the list `[ expectedMin, expectedMax ]`, or null when the day has no expected range.
+	 */
+	private function encode_expected_range( array $row ) {
+		if ( ! isset( $row['expectedMin'], $row['expectedMax'] ) ) {
+			return null;
+		}
+
+		return array(
+			round( (float) $row['expectedMin'], Wire_Format::EXPECTED_RANGE_DECIMAL_PLACES ),
+			round( (float) $row['expectedMax'], Wire_Format::EXPECTED_RANGE_DECIMAL_PLACES ),
+		);
+	}
+
+	/**
+	 * Encodes a day as the number of days from the first plotted day.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|null $first_date The first plotted day, as `YYYY-MM-DD`.
+	 * @param string|null $date       The day to encode, as `YYYY-MM-DD`.
+	 * @return int|null The number of days from `$first_date` to `$date`, negative when `$date` is earlier, or null when either day is missing.
+	 */
+	private function encode_day_offset( $first_date, $date ) {
+		if ( null === $first_date || null === $date ) {
+			return null;
+		}
+
+		// Both days are at midnight UTC, where every day is 24 hours long, so
+		// the difference of their timestamps is a whole number of days.
+		$utc = new DateTimeZone( 'UTC' );
+
+		return intdiv(
+			( new DateTimeImmutable( $date, $utc ) )->getTimestamp() - ( new DateTimeImmutable( $first_date, $utc ) )->getTimestamp(),
+			DAY_IN_SECONDS
+		);
 	}
 }

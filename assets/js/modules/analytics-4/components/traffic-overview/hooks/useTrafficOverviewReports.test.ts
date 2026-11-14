@@ -24,13 +24,26 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import {
+	TRAFFIC_BREAKDOWN_PAIRS,
+	createBreakdownReport,
+	createBreakdownValues,
+	getTrafficBreakdownReportArgs,
+	provideTrafficBreakdownReports,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { decodedBenchmarkingResponse } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
+import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
@@ -50,97 +63,54 @@ describe( 'useTrafficOverviewReports', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
-	const byTotalUsersDescending = [
-		{ metric: { metricName: 'totalUsers' }, desc: true },
-	];
-
 	/**
-	 * Builds the five argument sets the hook passes to `getReport`, in the order
-	 * totals, graph, channels, locations, and devices.
+	 * Builds the arguments the hook passes to `getReport` for the totals
+	 * report.
 	 *
 	 * @since 1.188.0
+	 * @since n.e.x.t Builds the totals report's arguments alone.
 	 *
-	 * @param {string} [url] Optional. The entity URL to add to every argument set.
-	 * @return {Object[]} The five expected argument sets.
+	 * @param {string} [url] Optional. The entity URL to add to the arguments.
+	 * @return {Object} The expected arguments.
 	 */
-	function getExpectedArgs( url?: string ): ReportOptions[] {
+	function getExpectedArgs( url?: string ): ReportOptions {
 		// With the reference date set to 2025-02-05, the `last-28-days` range
-		// covers these dates.
-		const shared = {
+		// covers these dates, and the comparison range is the 28 days before.
+		return {
 			startDate: '2025-01-09',
 			endDate: '2025-02-05',
 			metrics: [ { name: 'totalUsers' } ],
 			...( url ? { url } : {} ),
+			compareStartDate: '2024-12-12',
+			compareEndDate: '2025-01-08',
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
 		};
+	}
 
+	/**
+	 * Builds the arguments the hook passes to `getReport` for the channels,
+	 * locations, and devices reports, in that order.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} [url] Optional. The entity URL to add to the arguments.
+	 * @return {Array.<Object>} The expected arguments of each report.
+	 */
+	function getExpectedBreakdownArgs( url?: string ): ReportOptions[] {
 		return [
-			{
-				...shared,
-				// The comparison range, the 28 days before the selected range.
-				compareStartDate: '2024-12-12',
-				compareEndDate: '2025-01-08',
-				reportID:
-					'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
-			},
-			{
-				...shared,
-				dimensions: [ 'date' ],
-				orderby: [ { dimension: { dimensionName: 'date' } } ],
-				reportID:
-					'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
-			},
-			{
-				...shared,
-				dimensions: [ 'sessionDefaultChannelGrouping' ],
-				orderby: byTotalUsersDescending,
-				reportID:
-					'analytics-4_dashboard-all-traffic-widget-ga4_widget_channelsBreakdownArgs',
-			},
-			{
-				...shared,
-				dimensions: [ 'country' ],
-				orderby: byTotalUsersDescending,
-				reportID:
-					'analytics-4_dashboard-all-traffic-widget-ga4_widget_locationsBreakdownArgs',
-			},
-			{
-				...shared,
-				dimensions: [ 'deviceCategory' ],
-				orderby: byTotalUsersDescending,
-				reportID:
-					'analytics-4_dashboard-all-traffic-widget-ga4_widget_devicesBreakdownArgs',
-			},
-		];
-	}
-
-	/**
-	 * Adds a mock report to the store for each argument set it receives.
-	 *
-	 * @since 1.188.0
-	 *
-	 * @param {Object[]} expectedArgs The argument sets to add a report under.
-	 * @return {void}
-	 */
-	function provideReports( expectedArgs: ReportOptions[] ) {
-		expectedArgs.forEach( ( args ) =>
-			provideAnalytics4MockReport( registry, args )
-		);
-	}
-
-	/**
-	 * Gets the argument sets whose `getReport` resolution has finished.
-	 *
-	 * @since 1.188.0
-	 *
-	 * @param {Object[]} expectedArgs The argument sets to check.
-	 * @return {Object[]} The argument sets the hook has finished resolving.
-	 */
-	function getResolvedArgs( expectedArgs: ReportOptions[] ) {
-		return expectedArgs.filter( ( args ) =>
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.hasFinishedResolution( 'getReport', [ args ] )
-		);
+			[ 'sessionDefaultChannelGrouping', 'channelsBreakdownArgs' ],
+			[ 'country', 'locationsBreakdownArgs' ],
+			[ 'deviceCategory', 'devicesBreakdownArgs' ],
+		].map( ( [ dimensionName, reportIDSuffix ] ) => ( {
+			startDate: '2025-01-09',
+			endDate: '2025-02-05',
+			metrics: [ { name: 'sessions' } ],
+			dimensions: [ dimensionName ],
+			orderby: [ { metric: { metricName: 'sessions' }, desc: true } ],
+			reportID: `analytics-4_dashboard-all-traffic-widget-ga4_widget_${ reportIDSuffix }`,
+			...( url ? { url } : {} ),
+		} ) );
 	}
 
 	beforeEach( () => {
@@ -158,7 +128,7 @@ describe( 'useTrafficOverviewReports', () => {
 		] );
 	} );
 
-	it( 'sends exactly five report requests', async () => {
+	it( 'should send a request for the totals report and for each of the three breakdown reports', async () => {
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { waitForRegistry } = renderHook(
@@ -168,12 +138,13 @@ describe( 'useTrafficOverviewReports', () => {
 
 		await waitForRegistry();
 
-		expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint );
+		expect( fetchMock ).toHaveFetchedTimes( 4, reportEndpoint );
 	} );
 
-	it( 'requests the total visitors, daily visitors, channels, locations, and devices reports over the selected range', async () => {
+	it( 'should request the total visitors report over the selected range, against the range before it', async () => {
 		const expectedArgs = getExpectedArgs();
-		provideReports( expectedArgs );
+		provideAnalytics4MockReport( registry, expectedArgs );
+		provideTrafficBreakdownReports( registry );
 
 		const { waitForRegistry } = renderHook(
 			() => useTrafficOverviewReports(),
@@ -182,21 +153,59 @@ describe( 'useTrafficOverviewReports', () => {
 
 		await waitForRegistry();
 
-		// The store already holds a report for each of the five argument sets,
-		// so the `getReport` resolver sends no request for them. A request for
-		// any other arguments reaches `fetchMock`, so the report endpoint
-		// is never fetched.
-		expect( getResolvedArgs( expectedArgs ) ).toEqual( expectedArgs );
+		// The store already holds the report for these arguments, so the
+		// `getReport` resolver sends no request for them. A request for any
+		// other arguments reaches `fetchMock`, so the report endpoint is never
+		// fetched.
+		expect(
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.hasFinishedResolution( 'getReport', [ expectedArgs ] )
+		).toBe( true );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'adds the entity URL to all five reports when the page has an entity URL set', async () => {
+	it( 'should request the visits of each channel, country, and device over the selected range, most first', async () => {
+		const expectedBreakdownArgs = getExpectedBreakdownArgs();
+
+		provideAnalytics4MockReport( registry, getExpectedArgs() );
+		expectedBreakdownArgs.forEach( ( args ) =>
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( createBreakdownReport( [] ), {
+					options: args,
+				} )
+		);
+
+		const { waitForRegistry } = renderHook(
+			() => useTrafficOverviewReports(),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expectedBreakdownArgs.forEach( ( args ) =>
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasFinishedResolution( 'getReport', [ args ] )
+			).toBe( true )
+		);
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+	} );
+
+	it( 'should add the entity URL to the reports when the page has an entity URL set', async () => {
 		provideSiteInfo( registry, {
 			currentEntityURL: 'https://example.com/about/',
 		} );
 
-		const expectedArgs = getExpectedArgs( 'https://example.com/about/' );
-		provideReports( expectedArgs );
+		const expectedArgs = [
+			getExpectedArgs( 'https://example.com/about/' ),
+			...getExpectedBreakdownArgs( 'https://example.com/about/' ),
+		];
+		expectedArgs.forEach( ( args ) =>
+			provideAnalytics4MockReport( registry, args )
+		);
 
 		const { waitForRegistry } = renderHook(
 			() => useTrafficOverviewReports(),
@@ -205,7 +214,13 @@ describe( 'useTrafficOverviewReports', () => {
 
 		await waitForRegistry();
 
-		expect( getResolvedArgs( expectedArgs ) ).toEqual( expectedArgs );
+		expectedArgs.forEach( ( args ) =>
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasFinishedResolution( 'getReport', [ args ] )
+			).toBe( true )
+		);
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
@@ -228,7 +243,7 @@ describe( 'useTrafficOverviewReports', () => {
 		expect( result.current.loaded ).toBe( false );
 	} );
 
-	it( 'sends all five report requests for a view-only user whose role can view Analytics', async () => {
+	it( 'should send the report requests for a view-only user whose role can view Analytics', async () => {
 		provideUserCapabilities( registry, {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
@@ -245,13 +260,11 @@ describe( 'useTrafficOverviewReports', () => {
 
 		await waitForRegistry();
 
-		expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint );
+		expect( fetchMock ).toHaveFetchedTimes( 4, reportEndpoint );
 	} );
 
-	it( 'leaves `loaded` set to `false` while any of the five reports is still loading', async () => {
+	it( 'should leave `loaded` set to `false` while the totals report is still loading', async () => {
 		freezeFetch( reportEndpoint );
-
-		provideReports( getExpectedArgs().slice( 0, 4 ) );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useTrafficOverviewReports(),
@@ -263,8 +276,23 @@ describe( 'useTrafficOverviewReports', () => {
 		expect( result.current.loaded ).toBe( false );
 	} );
 
-	it( 'sets `loaded` to `true` and returns no errors after all five reports have finished', async () => {
-		provideReports( getExpectedArgs() );
+	it( 'should leave `loaded` set to `false` while a breakdown report is still loading', async () => {
+		provideAnalytics4MockReport( registry, getExpectedArgs() );
+		freezeFetch( reportEndpoint );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useTrafficOverviewReports(),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( result.current.loaded ).toBe( false );
+	} );
+
+	it( 'should set `loaded` to `true` and return no errors once the reports have finished', async () => {
+		provideAnalytics4MockReport( registry, getExpectedArgs() );
+		provideTrafficBreakdownReports( registry );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useTrafficOverviewReports(),
@@ -277,9 +305,10 @@ describe( 'useTrafficOverviewReports', () => {
 		expect( result.current.errors ).toEqual( [] );
 	} );
 
-	it( 'returns the total visitors report as totalsReport and the daily visitors report as graphReport', async () => {
+	it( 'should return the total visitors report as totalsReport', async () => {
 		const expectedArgs = getExpectedArgs();
-		provideReports( expectedArgs );
+		provideAnalytics4MockReport( registry, expectedArgs );
+		provideTrafficBreakdownReports( registry );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useTrafficOverviewReports(),
@@ -289,20 +318,13 @@ describe( 'useTrafficOverviewReports', () => {
 		await waitForRegistry();
 
 		expect( result.current.totalsReport ).toEqual(
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getReport( expectedArgs[ 0 ] )
-		);
-		expect( result.current.graphReport ).toEqual(
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getReport( expectedArgs[ 1 ] )
+			registry.select( MODULES_ANALYTICS_4 ).getReport( expectedArgs )
 		);
 	} );
 
-	it( 'keys each breakdown report by its column id', async () => {
-		const expectedArgs = getExpectedArgs();
-		provideReports( expectedArgs );
+	it( "should return the visits of each breakdown report as its column's values, keyed by the column's id", async () => {
+		provideAnalytics4MockReport( registry, getExpectedArgs() );
+		provideTrafficBreakdownReports( registry );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useTrafficOverviewReports(),
@@ -311,32 +333,50 @@ describe( 'useTrafficOverviewReports', () => {
 
 		await waitForRegistry();
 
-		expect( Object.keys( result.current.breakdownReports ) ).toEqual( [
-			'channels',
-			'locations',
-			'devices',
-		] );
-		expect( result.current.breakdownReports.channels ).toEqual(
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getReport( expectedArgs[ 2 ] )
-		);
-		expect( result.current.breakdownReports.locations ).toEqual(
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getReport( expectedArgs[ 3 ] )
-		);
-		expect( result.current.breakdownReports.devices ).toEqual(
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getReport( expectedArgs[ 4 ] )
-		);
+		expect( result.current.breakdownValues ).toEqual( {
+			channels: createBreakdownValues( TRAFFIC_BREAKDOWN_PAIRS.channels ),
+			locations: createBreakdownValues(
+				TRAFFIC_BREAKDOWN_PAIRS.locations
+			),
+			devices: createBreakdownValues( TRAFFIC_BREAKDOWN_PAIRS.devices ),
+		} );
 	} );
 
-	it( 'returns the channels error then the devices error when both reports fail', async () => {
+	it( 'should return the error of the report when it fails', async () => {
 		const expectedArgs = getExpectedArgs();
-		provideReports( expectedArgs );
+		const error = {
+			code: 'test_error',
+			message: 'The total visitors report failed.',
+			data: {},
+		};
 
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setErrorForSelector( error, 'getReport', [ expectedArgs ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ expectedArgs ] );
+		provideTrafficBreakdownReports( registry );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useTrafficOverviewReports(),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( result.current.loaded ).toBe( true );
+		expect( result.current.errors ).toEqual( [ error ] );
+	} );
+
+	it( 'should return the errors of the totals report and of the breakdown reports in the order the hook requests them', async () => {
+		const { channels, locations, devices } =
+			getTrafficBreakdownReportArgs( registry );
+		const totalsError = {
+			code: 'test_error',
+			message: 'The total visitors report failed.',
+			data: {},
+		};
 		const channelsError = {
 			code: 'test_error',
 			message: 'The channels report failed.',
@@ -348,16 +388,23 @@ describe( 'useTrafficOverviewReports', () => {
 			data: {},
 		};
 
+		[
+			[ totalsError, getExpectedArgs() ],
+			[ devicesError, devices ],
+			[ channelsError, channels ],
+		].forEach( ( [ error, args ] ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setErrorForSelector( error, 'getReport', [ args ] );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ args ] );
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setErrorForSelector( channelsError, 'getReport', [
-				expectedArgs[ 2 ],
-			] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setErrorForSelector( devicesError, 'getReport', [
-				expectedArgs[ 4 ],
-			] );
+			.receiveGetReport( createBreakdownReport( [] ), {
+				options: locations,
+			} );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useTrafficOverviewReports(),
@@ -366,9 +413,199 @@ describe( 'useTrafficOverviewReports', () => {
 
 		await waitForRegistry();
 
+		expect( result.current.loaded ).toBe( true );
 		expect( result.current.errors ).toEqual( [
+			totalsError,
 			channelsError,
 			devicesError,
 		] );
+	} );
+
+	describe( 'the benchmarking response', () => {
+		const benchmarkingEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+		);
+
+		const benchmarkingError = {
+			code: 'internal_server_error',
+			message: 'The benchmarking request failed.',
+			data: { status: 500 },
+		};
+
+		beforeEach( () => {
+			// The hook reads whether the property is gathering data to tell
+			// whether the panel has the key factors.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+			provideTrafficBreakdownReports( registry );
+		} );
+
+		/**
+		 * Stores an error for the benchmarking request over the selected
+		 * range, and finishes its resolution, so the store sends no request.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {void}
+		 */
+		function provideBenchmarkingError() {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setErrorForSelector(
+					benchmarkingError,
+					'getBenchmarkingData',
+					[ '2025-01-09', '2025-02-05' ]
+				);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getBenchmarkingData', [
+					'2025-01-09',
+					'2025-02-05',
+				] );
+		}
+
+		it( 'should request the benchmarking response for the selected range, and return it, on the main dashboard with the typicalTraffic feature', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			fetchMock.get( benchmarkingEndpoint, {
+				body: benchmarkingData,
+				status: 200,
+			} );
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint, {
+				query: { startDate: '2025-01-09', endDate: '2025-02-05' },
+			} );
+			expect( result.current.benchmarkingResponse ).toEqual(
+				decodedBenchmarkingResponse
+			);
+			expect( result.current.loaded ).toBe( true );
+			expect( result.current.errors ).toEqual( [] );
+		} );
+
+		it( 'should not request the benchmarking response, or wait for it, without the typicalTraffic feature', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			// `fetchMock` answers no benchmarking request in this test, so a
+			// request would fail it.
+			expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
+			expect( result.current.benchmarkingResponse ).toBeUndefined();
+			expect( result.current.loaded ).toBe( true );
+		} );
+
+		it( 'should not request the benchmarking response, or wait for it, on the entity dashboard', async () => {
+			provideSiteInfo( registry, {
+				currentEntityURL: 'https://example.com/about/',
+			} );
+			provideAnalytics4MockReport(
+				registry,
+				getExpectedArgs( 'https://example.com/about/' )
+			);
+			provideTrafficBreakdownReports( registry );
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
+			expect( result.current.benchmarkingResponse ).toBeUndefined();
+			expect( result.current.loaded ).toBe( true );
+		} );
+
+		it( 'should leave `loaded` set to `false` while the benchmarking response is still loading', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			freezeFetch( benchmarkingEndpoint );
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( result.current.loaded ).toBe( false );
+		} );
+
+		it( 'should set `loaded` to `true` and return the error of the benchmarking request when it fails', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			provideBenchmarkingError();
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( result.current.loaded ).toBe( true );
+			expect( result.current.errors ).toEqual( [ benchmarkingError ] );
+		} );
+
+		it( 'should return the error of the totals report before the error of the benchmarking request when both fail', async () => {
+			const expectedArgs = getExpectedArgs();
+			const totalsError = {
+				code: 'test_error',
+				message: 'The total visitors report failed.',
+				data: {},
+			};
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setErrorForSelector( totalsError, 'getReport', [
+					expectedArgs,
+				] );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ expectedArgs ] );
+			provideBenchmarkingError();
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( result.current.errors ).toEqual( [
+				totalsError,
+				benchmarkingError,
+			] );
+		} );
 	} );
 } );

@@ -21,10 +21,10 @@
  */
 import type { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 
-export const TOTALS_REPORT_ID =
+const TOTALS_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs';
-export const GRAPH_REPORT_ID =
-	'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs';
+const DAILY_VISITS_REPORT_ID =
+	'analytics-4_dashboard-all-traffic-widget-ga4_widget_dailyVisitsArgs';
 export const CHANNELS_BREAKDOWN_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_channelsBreakdownArgs';
 export const LOCATIONS_BREAKDOWN_REPORT_ID =
@@ -36,12 +36,35 @@ export const TOTAL_USERS_METRIC: ReportOptions[ 'metrics' ] = [
 	{ name: 'totalUsers' },
 ];
 
+// A visit is a GA4 session.
+const SESSIONS_METRIC: ReportOptions[ 'metrics' ] = [ { name: 'sessions' } ];
+
 export interface BreakdownReportDescriptor {
-	/** The GA4 dimension that groups the breakdown report's `totalUsers` metric, such as `country`. */
+	/** The GA4 dimension that groups the breakdown report's visits, such as `country`. */
 	dimensionName: string;
 	/** A label that says which part of the plugin asked for the breakdown report. */
 	reportID: string;
 }
+
+/**
+ * The report-options fragment for the report of visits on each day of the
+ * selected range. The Traffic Overview panel reads it on the entity dashboard,
+ * and its PDF export on every dashboard. A visit is a GA4 session, and the
+ * report's totals hold the visits over the whole range.
+ *
+ * The fragment has no `startDate`, `endDate`, or `url`. `useTrafficReport`
+ * adds them.
+ *
+ * @since n.e.x.t
+ */
+export const DAILY_VISITS_REPORT_OPTIONS: Pick<
+	ReportOptions,
+	'metrics' | 'dimensions' | 'reportID'
+> = {
+	metrics: SESSIONS_METRIC,
+	dimensions: [ 'date' ],
+	reportID: DAILY_VISITS_REPORT_ID,
+};
 
 /**
  * Builds the report-options fragment for the All Visitors totals report.
@@ -76,35 +99,16 @@ export function getTotalsReportOptions( {
 }
 
 /**
- * Builds the report-options fragment for the All Visitors date-dimension graph report.
- *
- * @since 1.181.0
- * @since 1.189.0 Removed the `dimensionFilters` option.
- *
- * @return {Object} Report-options fragment.
- */
-export function getGraphReportOptions(): Partial< ReportOptions > {
-	return {
-		dimensions: [ 'date' ],
-		orderby: [
-			{
-				dimension: {
-					dimensionName: 'date',
-				},
-			},
-		],
-		reportID: GRAPH_REPORT_ID,
-	};
-}
-
-/**
- * Builds the report-options fragment for one All Visitors breakdown dimension.
+ * Builds the report-options fragment for one breakdown dimension of the
+ * Traffic Overview panel. The report counts the visits of each value of the
+ * dimension over the selected range, most first.
  *
  * The fragment holds no dates, so it stays the same for every date range.
- * `getBreakdownReportArgs` and `useTrafficReport` add the dates, the metrics,
- * and the entity URL.
+ * `getBreakdownReportArgs` and `useTrafficReport` add the dates and the entity
+ * URL.
  *
  * @since 1.188.0
+ * @since n.e.x.t Added the `sessions` metric, so the report counts visits.
  *
  * @param {Object} options               Options.
  * @param {string} options.dimensionName GA4 dimension to group the report by.
@@ -114,13 +118,17 @@ export function getGraphReportOptions(): Partial< ReportOptions > {
 export function getBreakdownReportOptions( {
 	dimensionName,
 	reportID,
-}: BreakdownReportDescriptor ): Partial< ReportOptions > {
+}: BreakdownReportDescriptor ): Pick<
+	ReportOptions,
+	'metrics' | 'dimensions' | 'orderby' | 'reportID'
+> {
 	return {
+		metrics: SESSIONS_METRIC,
 		dimensions: [ dimensionName ],
 		orderby: [
 			{
 				metric: {
-					metricName: 'totalUsers',
+					metricName: 'sessions',
 				},
 				desc: true,
 			},
@@ -169,10 +177,12 @@ export function getTotalsReportArgs( {
 }
 
 /**
- * Builds the complete GA4 `getReport` args for the All Visitors date-dimension graph report.
+ * Builds the complete GA4 `getReport` args for the report of visits on each
+ * day of the selected range. They equal the args `useTrafficReport` builds
+ * from `DAILY_VISITS_REPORT_OPTIONS`, so the PDF export reads the report the
+ * entity dashboard has loaded.
  *
- * @since 1.181.0
- * @since 1.189.0 Removed the `dimensionFilters` option.
+ * @since n.e.x.t
  *
  * @param {Object} options           Options.
  * @param {string} options.startDate Report start date.
@@ -180,7 +190,7 @@ export function getTotalsReportArgs( {
  * @param {string} [options.url]     Entity URL filter, if any.
  * @return {Object} GA4 getReport args.
  */
-export function getGraphReportArgs( {
+export function getDailyVisitsReportArgs( {
 	startDate,
 	endDate,
 	url,
@@ -188,8 +198,7 @@ export function getGraphReportArgs( {
 	const args: ReportOptions = {
 		startDate,
 		endDate,
-		metrics: TOTAL_USERS_METRIC,
-		...getGraphReportOptions(),
+		...DAILY_VISITS_REPORT_OPTIONS,
 	};
 	if ( url ) {
 		args.url = url;
@@ -198,10 +207,12 @@ export function getGraphReportArgs( {
 }
 
 /**
- * Builds the complete GA4 `getReport` args for one All Visitors breakdown dimension.
+ * Builds the complete GA4 `getReport` args for one breakdown dimension of the
+ * Traffic Overview panel.
  *
  * @since 1.183.0
  * @since 1.189.0 Removed the `compareStartDate` and `compareEndDate` options.
+ * @since n.e.x.t Added the `sessions` metric, so the report counts visits.
  *
  * @param {Object} options               Options.
  * @param {string} options.dimensionName GA4 dimension to break down by.
@@ -222,7 +233,6 @@ export function getBreakdownReportArgs( {
 	const args: ReportOptions = {
 		startDate,
 		endDate,
-		metrics: TOTAL_USERS_METRIC,
 		...getBreakdownReportOptions( { dimensionName, reportID } ),
 	};
 	if ( url ) {

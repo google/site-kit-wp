@@ -29,20 +29,38 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect } from 'googlesitekit-data';
+import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import ReportError from '@/js/components/ReportError';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
+import { useFeature } from '@/js/hooks/useFeature';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
+import {
+	getPlaceholderDailyTraffic,
+	getPlaceholderPublishedPosts,
+} from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
+import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
+import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors';
+import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
+import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const TrafficOverviewPanel: FC = () => {
-	const { totalsReport, graphReport, breakdownReports, loaded, errors } =
-		useTrafficOverviewReports();
+	const {
+		totalsReport,
+		breakdownValues,
+		benchmarkingResponse,
+		loaded,
+		errors,
+		retryBenchmarkingData,
+	} = useTrafficOverviewReports();
 
 	const canViewSharedAnalytics4 = useCanViewSharedModule(
 		MODULE_SLUG_ANALYTICS_4
@@ -56,7 +74,47 @@ const TrafficOverviewPanel: FC = () => {
 		[ canViewSharedAnalytics4 ]
 	);
 
+	const { isAvailable: hasKeyFactors, isShown: showKeyFactors } =
+		useKeyFactorsVisibility();
+	const trafficInsightsEnabled = useFeature( 'trafficInsights' );
+	const showInsights = showKeyFactors && trafficInsightsEnabled;
+
+	// The insight arrives after the figures, since the service generates it
+	// from them. Without an insight, the panel shows its figures alone.
+	const { insight, loading: insightLoading } = useBenchmarkingInsight( {
+		isEnabled: showInsights,
+	} );
+
+	const { startDate, endDate } = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
+		[]
+	);
+
+	const daysInSelectedRange = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
+		[]
+	);
+
+	const referenceSiteURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
+		[]
+	);
+
 	const isLoading = ! loaded || isGatheringData === undefined;
+
+	// The panel reads the benchmarking response wherever it has the key
+	// factors. Each day of the response carries its typical range, which the
+	// chart draws behind the line.
+	//
+	// TODO: Give the chart and the total visits figures of their own without
+	// the `typicalTraffic` feature, where the panel reads no benchmarking
+	// response.
+	const dailyTraffic = hasKeyFactors
+		? benchmarkingResponse?.dailyTraffic
+		: getPlaceholderDailyTraffic( startDate, endDate );
+	const totalVisits = hasKeyFactors
+		? benchmarkingResponse?.visits
+		: PLACEHOLDER_TOTAL_VISITS;
 
 	return (
 		<div
@@ -68,22 +126,58 @@ const TrafficOverviewPanel: FC = () => {
 				<ReportError
 					moduleSlug={ MODULE_SLUG_ANALYTICS_4 }
 					error={ errors }
+					// `ReportError` offers "Retry" for an error of a selector
+					// other than `getReport` only with `onRetry`.
+					onRetry={ retryBenchmarkingData }
 				/>
 			) }
 			{ errors.length === 0 && (
 				<Fragment>
-					<TotalVisitors
-						report={ totalsReport }
-						loaded={ ! isLoading }
-						gatheringData={ isGatheringData }
-					/>
+					<div className="googlesitekit-traffic-overview__summary">
+						{ showInsights && (
+							// The analysis compares the site's traffic with
+							// its typical range, which the chart draws wherever
+							// the panel shows the key factors.
+							<TrafficInsightNotice
+								text={ insight?.analysis }
+								loading={ insightLoading }
+							/>
+						) }
+						<TotalVisitors
+							report={ totalsReport }
+							totalVisits={ totalVisits }
+							loaded={ ! isLoading }
+							gatheringData={ isGatheringData }
+						/>
+					</div>
 					<TrafficChart
-						report={ graphReport }
+						dailyTraffic={ dailyTraffic }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
+						// TODO: Replace the placeholder published posts with
+						// the site's own.
+						publishedPosts={
+							showKeyFactors
+								? getPlaceholderPublishedPosts( dailyTraffic )
+								: undefined
+						}
 					/>
+					{ showKeyFactors && (
+						<KeyFactors
+							keyFactors={
+								benchmarkingResponse?.keyFactors ?? []
+							}
+							loaded={ ! isLoading }
+							// The driver describes the change against the
+							// previous period, and what carried it.
+							insight={ insight?.driver }
+							insightLoading={ insightLoading }
+							daysInSelectedRange={ daysInSelectedRange }
+							referenceSiteURL={ referenceSiteURL }
+						/>
+					) }
 					<TrafficBreakdown
-						reports={ breakdownReports }
+						values={ breakdownValues }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
 					/>

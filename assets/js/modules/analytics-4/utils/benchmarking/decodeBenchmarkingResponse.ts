@@ -19,13 +19,22 @@
 /**
  * Internal dependencies
  */
-import { getDateString, isValidDateString, stringToDate } from '@/js/util';
+import {
+	addDays,
+	getDateString,
+	isValidDateString,
+	stringToDate,
+} from '@/js/util';
 import {
 	BENCHMARKING_FORMAT_VERSION,
 	BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
 	BENCHMARKING_KEY_FACTOR_KINDS,
+	MEMBER_DAILY_EXPECTED_RANGES,
 	MEMBER_DAILY_VISITS,
 	MEMBER_FIRST_DATE,
+	MEMBER_FIRST_TRAFFIC_DAY_OFFSET,
+	MEMBER_INSIGHT_LOCALE,
+	MEMBER_INSIGHT_PAYLOAD,
 	MEMBER_KEY_FACTORS,
 	MEMBER_KEY_FACTOR_ATTRIBUTES,
 	MEMBER_STRINGS,
@@ -39,7 +48,14 @@ import {
 	DecodedBenchmarkingResponse,
 } from './types';
 
-const MEMBER_COUNT = 7;
+/** The members of a response built without the `trafficInsights` feature. */
+const MEMBER_COUNT = 9;
+
+/** The members of a response built with the `trafficInsights` feature, which adds the insight's locale and request. */
+const MEMBER_COUNT_WITH_INSIGHT = 11;
+
+/** A day's expected range, as `[ expectedMin, expectedMax ]`, or null on a day without one. */
+type EncodedExpectedRange = [ number, number ] | null;
 
 /**
  * Reads a string field, which travels as its position in the string table.
@@ -55,19 +71,40 @@ function readString( strings: string[], index: unknown ): string | null {
 }
 
 /**
+ * Checks whether a value is a day's expected range: null, or a list of two
+ * numbers.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value The value to check.
+ * @return {boolean} True when the value is null or a list of two numbers, false otherwise.
+ */
+function isExpectedRange( value: unknown ): value is EncodedExpectedRange {
+	return (
+		value === null ||
+		( Array.isArray( value ) &&
+			value.length === 2 &&
+			value.every( ( bound ) => typeof bound === 'number' ) )
+	);
+}
+
+/**
  * Builds one `dailyTraffic` row per daily count, dating each from the first
  * plotted day.
  *
  * @since 1.189.0
  * @since 1.191.0 Gives each row its count as `visits` in place of `visitors`.
+ * @since n.e.x.t Added the `expectedRanges` parameter, and gives each row `expectedMin` and `expectedMax`.
  *
- * @param {*}     firstDate   The first plotted day, as `YYYY-MM-DD`. Read only when there are counts to date.
- * @param {Array} dailyVisits One visit count per day, from that day on.
+ * @param {*}     firstDate      The first plotted day, as `YYYY-MM-DD`. Read only when there are counts to date.
+ * @param {Array} dailyVisits    One visit count per day, from that day on.
+ * @param {Array} expectedRanges One expected range per daily count, in the same order, each null or as `[ expectedMin, expectedMax ]`.
  * @return {Array} The `dailyTraffic` rows, empty when the response carried no counts.
  */
 function decodeDailyTraffic(
 	firstDate: unknown,
-	dailyVisits: number[]
+	dailyVisits: number[],
+	expectedRanges: EncodedExpectedRange[]
 ): BenchmarkingDailyTrafficRow[] {
 	if ( ! dailyVisits.length ) {
 		return [];
@@ -78,13 +115,41 @@ function decodeDailyTraffic(
 	// whose clocks change inside the plotted range.
 	const date = stringToDate( firstDate );
 
-	return dailyVisits.map( ( visits ) => {
-		const row = { date: getDateString( date ), visits };
+	return dailyVisits.map( ( visits, position ) => {
+		const [ expectedMin, expectedMax ] = expectedRanges[ position ] ?? [
+			null,
+			null,
+		];
+		const row = {
+			date: getDateString( date ),
+			visits,
+			expectedMin,
+			expectedMax,
+		};
 
 		date.setDate( date.getDate() + 1 );
 
 		return row;
 	} );
+}
+
+/**
+ * Decodes the first day with recorded traffic, which travels as its offset in
+ * days from the first plotted day.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string}      firstDate The first plotted day, as `YYYY-MM-DD`.
+ * @param {number|null} dayOffset The number of days from the first plotted day, negative for an earlier day, or null when the site has no recorded traffic.
+ * @return {string|null} The day, as `YYYY-MM-DD`, or null.
+ */
+function decodeFirstTrafficDate(
+	firstDate: string,
+	dayOffset: number | null
+): string | null {
+	// The day is counted on the calendar, so a clock change between the two
+	// days moves neither of them.
+	return dayOffset === null ? null : addDays( firstDate, dayOffset );
 }
 
 /**
@@ -173,10 +238,65 @@ function decodeKeyFactors(
 }
 
 /**
+ * Checks whether the members that describe each day hold their shapes: the
+ * daily counts, the expected range of each day, and the first day with
+ * recorded traffic, which travels as its offset from the first plotted day.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array} encoded The encoded response, with every member.
+ * @return {boolean} True when the members can be read, false otherwise.
+ */
+function dailyMembersHoldTheirShapes( encoded: unknown[] ): boolean {
+	const firstDate = encoded[ MEMBER_FIRST_DATE ];
+	const dailyVisits = encoded[ MEMBER_DAILY_VISITS ];
+	const expectedRanges = encoded[ MEMBER_DAILY_EXPECTED_RANGES ];
+	const firstTrafficDayOffset = encoded[ MEMBER_FIRST_TRAFFIC_DAY_OFFSET ];
+
+	if ( ! Array.isArray( dailyVisits ) || ! Array.isArray( expectedRanges ) ) {
+		return false;
+	}
+
+	// The encoder writes no first date for an empty series, so a day to count
+	// from is only needed once there are counts to date or a first traffic day
+	// to count to.
+	const countsFromTheFirstDate =
+		dailyVisits.length > 0 || firstTrafficDayOffset !== null;
+
+	return (
+		( ! countsFromTheFirstDate || isValidDateString( firstDate ) ) &&
+		// Each day reads its expected range from its own position, so a list
+		// of a different length gives a day another day's range.
+		expectedRanges.length === dailyVisits.length &&
+		expectedRanges.every( isExpectedRange ) &&
+		( firstTrafficDayOffset === null ||
+			Number.isInteger( firstTrafficDayOffset ) )
+	);
+}
+
+/**
+ * Reads a string member that travels as itself.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value The member's value.
+ * @return {string|null} The string, or null when the value is not a non-empty string.
+ */
+function readOptionalString( value: unknown ): string | null {
+	return typeof value === 'string' && value !== '' ? value : null;
+}
+
+/**
  * Decodes an encoded benchmarking response.
+ *
+ * A response of the `trafficInsights` feature has two more members, the
+ * insight's locale and request. A response with any other number of members
+ * cannot be read.
  *
  * @since 1.189.0
  * @since 1.191.0 Decodes the key factor cards in place of the dimension rows, and returns `visits` in place of `visitors`.
+ * @since n.e.x.t Decodes the expected range of each day and the first day with recorded traffic.
+ * @since n.e.x.t Decodes the locale and the request of the generated insight of a response that has them.
  *
  * @param {*} encoded The encoded response.
  * @return {Object|null} The decoded response, or null when it cannot be read.
@@ -186,7 +306,8 @@ export function decodeBenchmarkingResponse(
 ): DecodedBenchmarkingResponse | null {
 	if (
 		! Array.isArray( encoded ) ||
-		encoded.length !== MEMBER_COUNT ||
+		( encoded.length !== MEMBER_COUNT &&
+			encoded.length !== MEMBER_COUNT_WITH_INSIGHT ) ||
 		encoded[ MEMBER_VERSION ] !== BENCHMARKING_FORMAT_VERSION
 	) {
 		return null;
@@ -197,10 +318,11 @@ export function decodeBenchmarkingResponse(
 	const visitTotals = encoded[ MEMBER_VISIT_TOTALS ];
 	const encodedKeyFactors = encoded[ MEMBER_KEY_FACTORS ];
 	const encodedKeyFactorAttributes = encoded[ MEMBER_KEY_FACTOR_ATTRIBUTES ];
+	const expectedRanges = encoded[ MEMBER_DAILY_EXPECTED_RANGES ];
+	const firstTrafficDayOffset = encoded[ MEMBER_FIRST_TRAFFIC_DAY_OFFSET ];
 
 	const membersHoldTheirShapes =
 		Array.isArray( encoded[ MEMBER_STRINGS ] ) &&
-		Array.isArray( dailyVisits ) &&
 		// Each card reads its attributes from the same position, so a list of
 		// a different length pairs a card with another card's attributes.
 		Array.isArray( encodedKeyFactors ) &&
@@ -210,9 +332,7 @@ export function decodeBenchmarkingResponse(
 		// rather than as an unusable response.
 		Array.isArray( visitTotals ) &&
 		visitTotals.length === 2 &&
-		// The encoder writes no first date for an empty series, so a day to
-		// count from is only needed once there are counts to date.
-		( ! dailyVisits.length || isValidDateString( firstDate ) );
+		dailyMembersHoldTheirShapes( encoded );
 
 	if ( ! membersHoldTheirShapes ) {
 		return null;
@@ -221,13 +341,34 @@ export function decodeBenchmarkingResponse(
 	const strings = encoded[ MEMBER_STRINGS ] as string[];
 	const [ current, previous ] = visitTotals as number[];
 
-	return {
+	const decodedResponse: DecodedBenchmarkingResponse = {
 		visits: { current, previous },
-		dailyTraffic: decodeDailyTraffic( firstDate, dailyVisits ),
+		dailyTraffic: decodeDailyTraffic(
+			firstDate,
+			dailyVisits,
+			expectedRanges
+		),
+		firstTrafficDate: decodeFirstTrafficDate(
+			firstDate,
+			firstTrafficDayOffset
+		),
 		keyFactors: decodeKeyFactors(
 			encodedKeyFactors,
 			encodedKeyFactorAttributes,
 			strings
 		),
 	};
+
+	// The figures never depend on the insight, so an insight member that
+	// cannot be read means no insight rather than an unusable response.
+	if ( encoded.length === MEMBER_COUNT_WITH_INSIGHT ) {
+		decodedResponse.insightLocale = readOptionalString(
+			encoded[ MEMBER_INSIGHT_LOCALE ]
+		);
+		decodedResponse.insightPayload = readOptionalString(
+			encoded[ MEMBER_INSIGHT_PAYLOAD ]
+		);
+	}
+
+	return decodedResponse;
 }
