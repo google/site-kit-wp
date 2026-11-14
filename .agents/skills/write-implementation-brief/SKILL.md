@@ -6,7 +6,7 @@ description: >
   implementation brief and/or test coverage for an issue (e.g. "write the implementation brief
   for #12345", "fill in the brief and test coverage for this issue") in the google/site-kit-wp repo.
 argument-hint: "[issue-number-or-path]"
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write
+allowed-tools: Read Grep Glob Edit Write Bash(gh issue view *) Bash(gh browse *)
 ---
 
 # Write an implementation brief
@@ -27,7 +27,7 @@ so short that the scope of the work is hidden.
 
 The issue comes to you one of two ways, and only the user can tell you which:
 
-- **An issue number** — fetch it with `gh issue view <number> --json title,body,labels`.
+- **An issue number**: fetch it with `gh issue view <number> --repo google/site-kit-wp --json title,body,labels`.
 - **A path to a local issue file** — read that path. Do not go looking for it: such a file has no
   fixed home, so the user must give you the path.
 
@@ -105,8 +105,7 @@ issue", not "the issue that adds the datastore".
 **Ask the user for the number.** Never infer it from a design doc's ordering, never guess it from
 a nearby issue number, and never leave a placeholder to be filled in later:
 
-- **The issue is already in GitHub** — ask the user for its number, then confirm it is the issue
-  you mean with `gh issue view <number> --json title` before citing it.
+- **The issue is already in GitHub**: ask the user for its number, then confirm it is the issue you mean with `gh issue view <number> --repo google/site-kit-wp --json title` before citing it.
 - **The issue only exists locally** — a markdown file that has not been filed yet. Say so, and
   ask the user to create it in GitHub and give you the new number. Wait for it: a cross-reference
   is the one thing you cannot write around.
@@ -188,12 +187,18 @@ first language. Every sentence must be clear on the first reading:
 - **List the members of any set you name.** If you write "an allowlist", "the excluded hosts",
   "the usual guards", write out what is in it, inline. A set the reader has to guess at is the
   same as no set at all.
+- **Keep each sentence to 25 words or fewer.** Split a sentence past 30 words in two. Put the condition first, before what it decides: "When the flag is off, the tab renders nothing", not "The tab renders nothing when the flag is off".
+- **Write the verb, not a noun made from it.** "Decide", not "make a decision". "Check", not "perform a check". Cut the words that add length and no meaning, such as "very", "really", "basically", "actually", "genuinely" and "honestly". Write what a thing does in place of a word that rates it, such as "seamless", "powerful", "comprehensive" or "essential".
+- **Give each thing one name.** Call one thing by the same name in the whole brief and its Test Coverage, and give no name two meanings. Take the name the code or the acceptance criteria already use.
+- **State each fact as you checked it.** Write no "may", "should probably", "it is worth noting" or "could potentially" over a fact you checked in the code. Name the one thing you could not check, and leave a real choice open as a choice.
 
 Delete every bullet the engineer would do anyway, and check that every area the change touches
 is named.
 
 Read each bullet once more before you finish, and rewrite every sentence that needs a second
 reading. This applies to your reply to the user (Step 7) as much as to the issue text.
+
+When the issue already has a brief, as when the user asks you to adjust or update it, start by listing what has to survive the edit. That is each name, value, path, link, scope line and open decision. After the edit, check that each one is still there, or say in your reply why it went.
 
 **Say what to do, and nothing else.** Every bullet is an instruction. Leave a genuine
 implementation choice open rather than inventing a detail, but never leave the implementer to
@@ -237,33 +242,15 @@ and the index file to import it into.
 
 Do **not** include:
 
-- **Rationale.** No "because", no "this keeps X out of Y", no trade-off discussion, no
-  restatement of a decision's benefits. The design doc and the acceptance criteria hold the
-  *why*; the brief holds the *what*. A reason is the exception, allowed in two places only:
-  where the brief settles a real technical choice an engineer would otherwise stop and
-  question — keep it to a clause — and for a section the issue template asks for that needs
-  nothing (see the next bullet).
-- **Work that isn't needed.** No "no migration needed", "no new settings", "no REST route" for a
-  concern the issue never raised. Silence already says it. The exception is what the template
-  asks for by name — automated tests, and Storybook and VRT changes: when those aren't needed,
-  say so and say why (Step 6).
+- **Rationale.** No "because", no "this keeps X out of Y", no trade-off discussion, no restatement of a decision's benefits. The design doc and the acceptance criteria hold the *why*. The brief holds the *what*. A reason is the exception, allowed in one place only: where the brief decides a real technical choice an engineer would otherwise stop and question. Keep that reason to a clause.
+- **Work that isn't needed.** No "no migration needed", "no new settings", "no REST route" for a concern the issue never raised. Leaving the line out already says so. The exception is what the template asks for by name: automated tests, and Storybook and VRT changes. When those aren't needed, say so in one line (Step 6).
 - **Routine commands.** No lint, build, test or VRT invocations — the `implement-issue` skill's
   Step 6 owns verification, and every engineer already knows to build. Mention a command only when it
   is unusual and specific to this issue.
 - **Links to local design docs.** They don't resolve for someone reading the issue on GitHub;
   restate the constraint in one clause instead. External links — Figma, a hosted design doc —
   are fine.
-- **Plain-text line numbers.** No `includes/Core/Modules/Modules.php:212`, no "see line 212", no
-  `file:line` anywhere in the two sections. The number is wrong as soon as anyone edits the file,
-  and a reader on GitHub cannot click it. When a bullet has to point at an exact place in the
-  code, use a GitHub permalink instead — a URL pinned to a commit SHA, with the line or range on
-  the end:
-  `https://github.com/google/site-kit-wp/blob/<commit SHA>/includes/Core/Modules/Modules.php#L212-L218`.
-  Get one by opening the file on GitHub and pressing `y`, or with
-  `gh browse --no-browser --commit=<commit SHA> <path>` and adding the `#L<start>-L<end>` yourself.
-  A URL built on a branch name (`/blob/main/`, `/blob/develop/`) is **not** a permalink — it points
-  at different lines next week — so never use one. Naming the symbol is still better than linking
-  to it: link only when there is no name to give, such as an unnamed block inside a long function.
+- **Plain-text line numbers.** No `includes/Core/Modules/Modules.php:212`, no "see line 212", no `file:line` anywhere in the two sections. The number is wrong as soon as anyone edits the file, and a reader on GitHub cannot click it. When a bullet has to point at an exact place in the code, use a GitHub permalink instead. A permalink is a URL pinned to a commit SHA, with the line or range on the end: `https://github.com/google/site-kit-wp/blob/<commit SHA>/includes/Core/Modules/Modules.php#L212-L218`. Get one by opening the file on GitHub and pressing `y`, or with `gh browse --no-browser --repo google/site-kit-wp --commit=<commit SHA> <path>` and adding the `#L<start>-L<end>` yourself. A URL built on a branch name (`/blob/main/`, `/blob/develop/`) is **not** a permalink. It points at different lines next week, so never use one. Naming the symbol is still better than linking to it: link only when there is no name to give, such as an unnamed block inside a long function.
 - **Restated acceptance criteria**, a recap of the Feature Description, or background on how the
   existing system works. This covers the user-facing copy the criteria define — headings,
   descriptions, CTA labels, error text. Copy gets reworded during brief review, and a verbatim
@@ -316,16 +303,8 @@ Keep it short — a handful of bullets, not a test plan. Two shapes, both in use
   scenarios and the reference images — a new scenario for a new story, new reference images for
   a component whose rendering changes. "No VRT changes expected" is a complete answer when nothing
   the VRT job renders can move. Do not give screenshot paths.
-- **Say so when nothing is needed, and say why.** Never leave Test Coverage empty, and never drop
-  the Storybook or VRT line in silence. When the change needs no tests or no story, write one
-  bullet that says so with the reason — "No tests required because the change only edits
-  documentation", "No Storybook story required because the change adds no UI". VRT is the
-  exception: a bare "No VRT changes expected" needs no reason. An empty section reads as a
-  forgotten section, and a moderator cannot tell the two apart.
-- **Never write `N/A` for tests.** Tests are almost never inapplicable, so `N/A` reads as a
-  skipped question rather than an answer — give the reason instead, as above. The VRT line is
-  where `N/A` is allowed, because there it is often literally true: PHP-only changes, tooling and
-  build config, anything the VRT job never renders.
+- **Say so when nothing is needed, in one line with no reason.** Never leave Test Coverage empty, and never drop the Storybook or VRT line without saying so. When the change needs no tests or no story, write one bullet that says so, such as "No tests required." or "No Storybook story required.", after the bullets that add tests. A reason such as "because the change adds no UI" tells the reader nothing the line doesn't. "No VRT changes expected" stays the VRT line. An empty section reads as a forgotten section, and a moderator cannot tell the two apart.
+- **Never write `N/A` for tests.** Tests are almost never inapplicable, so `N/A` reads as a skipped question rather than an answer. Write "No tests required." instead, as above. The VRT line is where `N/A` is allowed, because there it is often literally true: PHP-only changes, tooling and build config, anything the VRT job never renders.
 - Name any new fixture, fake or mock the coverage needs, and the directory it belongs in.
 - Call out **existing** tests the change will break, so the work is budgeted rather than
   discovered mid-implementation — "Fix any failing tests/snapshots" when the blast radius isn't
