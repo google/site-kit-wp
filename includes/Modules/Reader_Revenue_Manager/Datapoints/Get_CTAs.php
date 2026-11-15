@@ -32,6 +32,14 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 	private $synchronization;
 
 	/**
+	 * Publication the request was created for.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $request_publication_id = '';
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.187.0
@@ -48,13 +56,15 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Uses the connected publication from the module settings.
+	 * @since n.e.x.t Uses the connected publication from the module settings, and records it for the response.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
 	 */
 	public function create_request( Data_Request $data_request ) {
 		$publication = $this->get_connected_publication();
+
+		$this->request_publication_id = $publication['publicationID'];
 
 		$parent = sprintf(
 			'organizations/%s/publications/%s',
@@ -70,19 +80,19 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 	 *
 	 * @since 1.187.0
 	 * @since 1.192.0 Excludes CTAs that are neither active nor draft, such as deleted CTAs.
-	 * @since n.e.x.t Names the publication the CTAs belong to.
+	 * @since n.e.x.t Names the publication the request was created for.
 	 *
 	 * @param mixed        $response List CTAs response.
 	 * @param Data_Request $data     Data request object.
 	 * @return array {
 	 *     Connected publication CTAs.
 	 *
-	 *     @type string $publicationID Publication the CTAs belong to.
+	 *     @type string $publicationID Publication the request was created for.
 	 *     @type array  $ctas          CTA resources.
 	 * }
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		$publication = $this->get_connected_publication();
+		$publication_id = $this->request_publication_id;
 
 		$ctas = array_values(
 			array_filter(
@@ -97,10 +107,16 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 			)
 		);
 
-		$this->synchronization->synchronize( $ctas );
+		// The connected publication can change while the request runs, so the
+		// settings are only updated when the response is still for it.
+		$settings = $this->settings->get();
+
+		if ( $settings['publicationID'] === $publication_id ) {
+			$this->synchronization->synchronize( $ctas );
+		}
 
 		return array(
-			'publicationID' => $publication['publicationID'],
+			'publicationID' => $publication_id,
 			'ctas'          => $ctas,
 		);
 	}

@@ -129,6 +129,8 @@ class Get_CTAsTest extends TestCase {
 		$response = new ListCtasResponse();
 		$response->setCtas( array( $cta ) );
 
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
 		$parsed = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
 
 		$this->assertSame(
@@ -168,6 +170,8 @@ class Get_CTAsTest extends TestCase {
 			)
 		);
 
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
 		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) )['ctas'];
 
 		$this->assertSame(
@@ -191,6 +195,8 @@ class Get_CTAsTest extends TestCase {
 	}
 
 	public function test_parse_response__names_the_publication_when_there_are_no_ctas() {
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
 		$parsed = $this->datapoint->parse_response( new ListCtasResponse(), $this->get_data_request( array() ) );
 
 		$this->assertSame(
@@ -200,6 +206,32 @@ class Get_CTAsTest extends TestCase {
 			),
 			$parsed,
 			'An empty list should still name the publication it is for.'
+		);
+	}
+
+	public function test_parse_response__keeps_the_publication_the_request_was_created_for() {
+		$cta = $this->create_cta( '9d2418415-ab3a', Cta::STATE_ACTIVE );
+
+		$response = new ListCtasResponse();
+		$response->setCtas( array( $cta ) );
+
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
+		// Another request connects a different publication while this one runs.
+		$this->module->get_settings()->merge( array( 'publicationID' => 'other-publication' ) );
+
+		$parsed = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+
+		$this->assertSame(
+			'saved-publication',
+			$parsed['publicationID'],
+			'The response should name the publication the request was created for.'
+		);
+
+		$this->assertSame(
+			array(),
+			(array) $this->module->get_settings()->get()['configuredCTAs'],
+			'The CTAs should not be synchronized into another publication’s settings.'
 		);
 	}
 
