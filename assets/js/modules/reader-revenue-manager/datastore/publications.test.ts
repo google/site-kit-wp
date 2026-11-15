@@ -879,10 +879,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should not return the CTAs while a different publication is selected', async () => {
-				// Reading the CTAs starts their resolver, which requests the
-				// saved publication's CTAs.
-				muteFetch( ctasEndpoint );
-
 				connectPublicationWithCTAs();
 
 				await registry
@@ -896,10 +892,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
 				).toBeUndefined();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getCTAs();
+				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
 			} );
 
 			it( 'should keep the CTAs when the connected publication is selected again', async () => {

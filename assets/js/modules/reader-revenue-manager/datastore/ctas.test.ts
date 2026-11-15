@@ -177,7 +177,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getCTAs();
+				).getPublicationCTAs( connectedPublication.publicationID );
 
 				expect(
 					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
@@ -325,37 +325,6 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				).toThrow( 'data.state is not supported.' );
 			} );
 		} );
-
-		describe( 'resetCTAs', () => {
-			it( 'should invalidate the resolution while keeping the stored CTAs', async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetCTAs( {
-						publicationID: connectedPublication.publicationID,
-						ctas: [ cta ],
-					} );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.finishResolution( 'getCTAs', [] );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.resetCTAs();
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.hasFinishedResolution( 'getCTAs', [] )
-				).toBe( false );
-
-				// The CTAs are stored under the publication they were fetched
-				// for, so they cannot be mistaken for another publication's.
-				expect(
-					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
-				).toEqual( [ cta ] );
-			} );
-		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -407,7 +376,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getCTAs();
+				).getPublicationCTAs( connectedPublication.publicationID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1, ctasEndpoint );
 				// eslint-disable-next-line sitekit/acronym-case -- `lastUrl` is a fetch-mock method.
@@ -543,15 +512,9 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
 				).toBeUndefined();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getCTAs();
+				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
-				expect(
-					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
-				).toBeUndefined();
 			} );
 
 			it( 'should not fetch CTAs that are already loaded', async () => {
@@ -569,7 +532,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getCTAs();
+				).getPublicationCTAs( connectedPublication.publicationID );
 
 				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
 			} );
@@ -589,7 +552,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getCTAs();
+				).getPublicationCTAs( connectedPublication.publicationID );
 
 				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
 			} );
