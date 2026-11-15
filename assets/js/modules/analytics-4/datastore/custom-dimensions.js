@@ -454,17 +454,19 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets the Site Kit custom dimensions available on the given property.
+	 * Gets the custom dimensions available on the given property.
 	 *
 	 * Unlike `getAvailableCustomDimensions`, this reads any property's
 	 * dimensions, so it works for a property selected in a form but not yet
-	 * saved in settings.
+	 * saved in settings. It returns every dimension on the property, not only
+	 * the Site Kit ones.
 	 *
 	 * @since 1.182.0
+	 * @since n.e.x.t Returns every custom dimension on the property, not only the `googlesitekit_`-prefixed ones.
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID GA4 property ID to get the custom dimensions for.
-	 * @return {(Array.<string>|undefined)} List of `googlesitekit_`-prefixed parameter names, or undefined if they aren't loaded yet.
+	 * @return {(Array.<string>|undefined)} List of parameter names, or undefined if they aren't loaded yet.
 	 */
 	getCustomDimensions( state, propertyID ) {
 		return state.propertyCustomDimensions?.[ propertyID ];

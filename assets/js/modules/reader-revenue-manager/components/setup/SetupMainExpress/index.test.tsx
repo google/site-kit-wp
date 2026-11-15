@@ -20,9 +20,13 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	SURVEY_CUSTOM_DIMENSIONS,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
@@ -45,6 +49,11 @@ describe( 'SetupMainExpress', () => {
 	const userSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/user-settings'
 	);
+	const customDimensionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/(custom-dimensions|create-custom-dimension)'
+	);
+
+	const propertyID = '123456';
 
 	let registry: Registry;
 
@@ -83,6 +92,13 @@ describe( 'SetupMainExpress', () => {
 			.finishResolution( 'getSettings', [] );
 
 		providePublications( registry, [] );
+
+		// The property's custom dimensions are not provided, so reading them
+		// would make a request.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID,
+			availableCustomDimensions: [],
+		} );
 	} );
 
 	it( 'renders the newsletter CTA component for newsletter-signup CTA', async () => {
@@ -118,6 +134,7 @@ describe( 'SetupMainExpress', () => {
 		await waitForRegistry();
 
 		expect( getByText( 'Set up your sign-up form' ) ).toBeInTheDocument();
+		expect( fetchMock ).not.toHaveFetched( customDimensionsEndpoint );
 	} );
 
 	it( 'renders the survey CTA component for survey CTA when rrmSurveyCTA is enabled', async () => {
@@ -146,6 +163,12 @@ describe( 'SetupMainExpress', () => {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetCTAs( { publicationID, ctas: [] } );
 
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( SURVEY_CUSTOM_DIMENSIONS, {
+				propertyID,
+			} );
+
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,
 			features: [ 'rrmSurveyCTA' ],
@@ -173,6 +196,7 @@ describe( 'SetupMainExpress', () => {
 		expect(
 			queryByText( 'Survey questions placeholder' )
 		).not.toBeInTheDocument();
+		expect( fetchMock ).not.toHaveFetched( customDimensionsEndpoint );
 	} );
 
 	it( 'renders the default express setup when no CTA is specified', async () => {
@@ -194,6 +218,7 @@ describe( 'SetupMainExpress', () => {
 		).toHaveLength( 4 );
 
 		expect( fetchMock ).not.toHaveFetched( userSettingsEndpoint );
+		expect( fetchMock ).not.toHaveFetched( customDimensionsEndpoint );
 	} );
 
 	it( 'renders the default express setup for an unknown CTA', async () => {
@@ -213,5 +238,6 @@ describe( 'SetupMainExpress', () => {
 		).not.toBeInTheDocument();
 
 		expect( fetchMock ).not.toHaveFetched( userSettingsEndpoint );
+		expect( fetchMock ).not.toHaveFetched( customDimensionsEndpoint );
 	} );
 } );
