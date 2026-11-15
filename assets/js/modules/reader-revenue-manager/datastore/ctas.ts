@@ -38,7 +38,6 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	combineStores,
@@ -81,10 +80,6 @@ interface CTAsState {
 	settings?: ReaderRevenueManagerSettings;
 	savedSettings?: ReaderRevenueManagerSettings;
 }
-
-type Registry = WPDataRegistry & {
-	resolveSelect: WPDataRegistry[ 'select' ];
-};
 
 /**
  * Syncs configured CTAs into settings and savedSettings.
@@ -252,56 +247,26 @@ const baseActions = {
 			} );
 		}
 	),
-
-	/**
-	 * Invalidates the CTAs resolution, so they are requested again.
-	 *
-	 * The stored CTAs are kept, as each publication's CTAs are stored under
-	 * its own publication ID and cannot be mistaken for another's.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Object} The dispatched action results.
-	 */
-	*resetCTAs(): Generator< unknown, unknown, unknown > {
-		const registryResult = yield commonActions.getRegistry();
-		const registry = registryResult as WPDataRegistry;
-
-		yield errorStoreActions.clearSelectorErrors( 'getCTAs' );
-
-		return registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.invalidateResolutionForStoreSelector( 'getCTAs' );
-	},
 };
 
 const baseResolvers = {
-	*getCTAs(): Generator< unknown, void, unknown > {
-		const registryResult = yield commonActions.getRegistry();
-		const registry = registryResult as Registry;
-
-		// The saved publication ID decides whether to fetch, so wait for the
-		// settings before reading it.
-		yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-				.getSettings()
-		);
-
-		const publicationID = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getSavedPublicationID();
-
-		// No connected publication to list CTAs for; skip the fetch rather
-		// than looping on `undefined`.
+	*getPublicationCTAs(
+		publicationID: string
+	): Generator< unknown, void, unknown > {
+		// No publication to list CTAs for; skip the fetch rather than looping
+		// on `undefined`.
 		if ( ! publicationID ) {
 			return;
 		}
 
-		if (
-			registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs() !==
-			undefined
-		) {
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as WPDataRegistry;
+
+		const ctas = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublicationCTAs( publicationID );
+
+		if ( ctas !== undefined ) {
 			return;
 		}
 
@@ -321,30 +286,50 @@ const baseSelectors = {
 	 * @return {(Array.<Object>|undefined)} The CTAs; `undefined` if not loaded yet.
 	 */
 	getCTAs: createRegistrySelector(
-		( select: Select ) =>
-			( state: CTAsState ): CTA[] | undefined => {
-				const savedPublicationID = select(
-					MODULES_READER_REVENUE_MANAGER
-				).getSavedPublicationID();
+		( select: Select ) => (): CTA[] | undefined => {
+			const publicationID = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationID();
 
-				if ( ! savedPublicationID ) {
-					return undefined;
-				}
+			const savedPublicationID = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getSavedPublicationID();
 
-				// A publication that has been picked but not saved yet has no
-				// CTAs of its own here; the stored ones belong to the
-				// publication the server still answers for.
-				if (
-					select(
-						MODULES_READER_REVENUE_MANAGER
-					).getPublicationID() !== savedPublicationID
-				) {
-					return undefined;
-				}
-
-				return state.ctas[ savedPublicationID ];
+			// A publication that has been picked but not saved yet has no
+			// CTAs of its own here; the stored ones belong to the publication
+			// the server still answers for.
+			if (
+				! savedPublicationID ||
+				publicationID !== savedPublicationID
+			) {
+				return undefined;
 			}
+
+			return select( MODULES_READER_REVENUE_MANAGER ).getPublicationCTAs(
+				savedPublicationID
+			);
+		}
 	),
+
+	/**
+	 * Gets the CTAs of a given publication.
+	 *
+	 * Each publication's CTAs are stored under its own publication ID, and the
+	 * resolution is keyed the same way. Selecting another publication requests
+	 * its CTAs on its own; nothing has to invalidate the previous ones.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  state         Data store's state.
+	 * @param  publicationID Publication ID to get the CTAs of.
+	 * @return {(Array.<Object>|undefined)} The CTAs; `undefined` if not loaded yet.
+	 */
+	getPublicationCTAs(
+		state: CTAsState,
+		publicationID: string
+	): CTA[] | undefined {
+		return state.ctas[ publicationID ];
+	},
 };
 
 interface Store {
