@@ -31,7 +31,7 @@ import {
 } from '@/js/components/ChipMultiSelect';
 import {
 	CORE_FEATURE_DISCOVERY,
-	FEATURE_CATEGORY_ANY,
+	FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID,
 	FEATURE_CATEGORY_CHIP_EVENT_LABELS,
 	FEATURE_CATEGORY_CHIP_LABELS,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
@@ -66,7 +66,7 @@ const CategoryFilterChips: FC< CategoryFilterChipsProps > = ( {
 				);
 			}
 
-			if ( chipID === FEATURE_CATEGORY_ANY ) {
+			if ( chipID === FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID ) {
 				onToggleCategory( null );
 				return;
 			}
@@ -84,11 +84,15 @@ const CategoryFilterChips: FC< CategoryFilterChipsProps > = ( {
 		<div className="googlesitekit-category-filter-chips">
 			<ChipMultiSelect onToggleChip={ handleToggleChip }>
 				<ChipMultiSelectItem
-					id={ FEATURE_CATEGORY_ANY }
+					id={ FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID }
 					selected={ selectedCategories.length === 0 }
 					CheckMark={ NoCheckMark }
 				>
-					{ FEATURE_CATEGORY_CHIP_LABELS[ FEATURE_CATEGORY_ANY ] }
+					{
+						FEATURE_CATEGORY_CHIP_LABELS[
+							FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID
+						]
+					}
 				</ChipMultiSelectItem>
 
 				{ categories.map( ( category: FeatureCategory ) => (

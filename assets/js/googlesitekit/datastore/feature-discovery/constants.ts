@@ -50,7 +50,8 @@ export const FEATURE_CATEGORIES = {
 	PRODUCTIVITY: 'productivity',
 } as const;
 
-export const FEATURE_CATEGORY_ANY = 'all-services';
+// ID for the "All services" chip.
+export const FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID = 'all-services';
 
 // The curated order the categories are displayed in.
 export const FEATURE_CATEGORY_ORDER = [
@@ -95,7 +96,10 @@ export const FEATURE_CATEGORY_CHIP_LABELS: Record<
 	FeatureCategoryChipID,
 	string
 > = {
-	[ FEATURE_CATEGORY_ANY ]: __( 'All services', 'google-site-kit' ),
+	[ FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID ]: __(
+		'All services',
+		'google-site-kit'
+	),
 	[ FEATURE_CATEGORIES.AUDIENCE ]: __(
 		'Know your audience',
 		'google-site-kit'
@@ -118,7 +122,7 @@ export const FEATURE_CATEGORY_CHIP_EVENT_LABELS: Record<
 	FeatureCategoryChipID,
 	string
 > = {
-	[ FEATURE_CATEGORY_ANY ]: 'all',
+	[ FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID ]: 'all',
 	[ FEATURE_CATEGORIES.AUDIENCE ]: 'know-your-audience',
 	[ FEATURE_CATEGORIES.ENGAGEMENT ]: 'engage-your-visitors',
 	[ FEATURE_CATEGORIES.MONETIZATION ]: 'monetize',

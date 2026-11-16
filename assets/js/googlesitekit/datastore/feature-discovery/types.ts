@@ -29,7 +29,7 @@ import type { ErrorObject } from '@/js/util/errors';
 import type {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
-	FEATURE_CATEGORY_ANY,
+	FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from './constants';
@@ -164,4 +164,4 @@ export interface FeatureDiscoveryState {
 
 export type FeatureCategoryChipID =
 	| FeatureCategorySlug
-	| typeof FEATURE_CATEGORY_ANY;
+	| typeof FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID;
