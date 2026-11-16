@@ -34,7 +34,11 @@ import WidgetTabBar from '@/js/components/WidgetTabBar';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import whenActive from '@/js/util/when-active';
-import { LATEST_CONTENT_TAB_ID, TOP_CONTENT_TAB_ID } from './constants';
+import {
+	CONTENT_CARD_ID,
+	LATEST_CONTENT_TAB_ID,
+	TOP_CONTENT_TAB_ID,
+} from './constants';
 import Footer from './Footer';
 import Header from './Header';
 import { useChangeContentTab } from './hooks/useChangeContentTab';
@@ -85,6 +89,7 @@ const ModulePopularPagesWidgetGA4: FC< ModulePopularPagesWidgetGA4Props > = ( {
 
 	return (
 		<Widget
+			id={ CONTENT_CARD_ID }
 			className="googlesitekit-widget--footer-v2"
 			Header={ isLatestContentActive ? LatestContentHeader : Header }
 			Footer={ Footer }
