@@ -336,7 +336,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.0.0
 	 * @since 1.9.0 Added $additional_scopes parameter.
 	 * @since 1.34.1 Updated handling of $additional_scopes to restore rewritten scope.
-	 * @since n.e.x.t Adds a `state` value.
+	 * @since 1.192.0 Adds a `state` value.
 	 *
 	 * @param string   $redirect_url      Redirect URL after authentication.
 	 * @param string   $error_redirect_url Redirect URL after authentication error.
@@ -394,7 +394,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *
 	 * @since 1.0.0
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
-	 * @since n.e.x.t Rejects a callback without a valid `state`.
+	 * @since 1.192.0 Rejects a callback without a valid `state`.
 	 */
 	public function authorize_user() {
 		// Only accept a callback for an authorization the current user started.

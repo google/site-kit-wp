@@ -277,7 +277,7 @@ abstract class OAuth_Client_Base {
 	 * Converts the given error code to a user-facing message.
 	 *
 	 * @since 1.39.0
-	 * @since n.e.x.t Added the `invalid_state` error code.
+	 * @since 1.192.0 Added the `invalid_state` error code.
 	 *
 	 * @param string $error_code Error code.
 	 * @return string Error message.

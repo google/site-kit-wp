@@ -565,7 +565,7 @@ class Google_Proxy {
 	 * Sends site fields to the proxy.
 	 *
 	 * @since 1.68.0
-	 * @since n.e.x.t Includes the `state` value that the proxy returns on every `oauth2callback` redirect.
+	 * @since 1.192.0 Includes the `state` value that the proxy returns on every `oauth2callback` redirect.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
