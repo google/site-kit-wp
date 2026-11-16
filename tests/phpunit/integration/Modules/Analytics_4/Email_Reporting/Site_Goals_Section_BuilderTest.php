@@ -111,26 +111,44 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	}
 
 	/**
-	 * Builds an engagement report split by a breakdown dimension.
+	 * Builds a report of the sessions with a key action that holds no breakdown.
+	 *
+	 * @param string $current_sessions  Count of the sessions with a key action in the current period.
+	 * @param string $previous_sessions Count of the sessions with a key action in the previous period.
+	 * @return array Report holding one row per date range.
+	 */
+	private function build_key_action_sessions_report( $current_sessions, $previous_sessions ) {
+		return $this->build_report(
+			array( 'dateRange' ),
+			array( 'sessions' ),
+			array(
+				array( array( 'date_range_0' ), array( $current_sessions ) ),
+				array( array( 'date_range_1' ), array( $previous_sessions ) ),
+			)
+		);
+	}
+
+	/**
+	 * Builds a report of the sessions with a key action split by a breakdown dimension.
 	 *
 	 * @param string $dimension_name Dimension the report splits its rows by.
-	 * @param array  $sessions       Session counts of the current and the previous period, keyed by
-	 *                               dimension value.
+	 * @param array  $sessions       Counts of the sessions with a key action in the current and the
+	 *                               previous period, keyed by dimension value.
 	 * @return array Report holding one row per dimension value and date range.
 	 */
-	private function build_engagement_report_by_dimension( $dimension_name, array $sessions ) {
+	private function build_key_action_sessions_report_by_dimension( $dimension_name, array $sessions ) {
 		$rows = array();
 
 		foreach ( $sessions as $dimension_value => $session_counts ) {
 			list( $current_sessions, $previous_sessions ) = $session_counts;
 
-			$rows[] = array( array( (string) $dimension_value, 'date_range_0' ), array( '0.55', $current_sessions ) );
-			$rows[] = array( array( (string) $dimension_value, 'date_range_1' ), array( '0.5', $previous_sessions ) );
+			$rows[] = array( array( (string) $dimension_value, 'date_range_0' ), array( $current_sessions ) );
+			$rows[] = array( array( (string) $dimension_value, 'date_range_1' ), array( $previous_sessions ) );
 		}
 
 		return $this->build_report(
 			array( $dimension_name, 'dateRange' ),
-			array( 'engagementRate', 'sessions' ),
+			array( 'sessions' ),
 			$rows
 		);
 	}
@@ -228,13 +246,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					array( array( 'purchase', '(not set)', 'date_range_1' ), array( '4' ) ),
 				)
 			),
-			'site_goals_engagement_by_provider'           => $this->build_engagement_report_by_dimension(
+			'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 				$provider_dimension,
 				array(
-					'woocommerce'            => array( '2000', '2600' ),
-					'easy-digital-downloads' => array( '875', '1000' ),
+					'woocommerce'            => array( '100', '90' ),
+					'easy-digital-downloads' => array( '20', '18' ),
 				)
 			),
+			'site_goals_engagement'                       => $this->build_engagement_report( '2000', '2600' ),
 		);
 	}
 
@@ -258,6 +277,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		$sections = $this->builder->build_sections(
 			array(
 				'site_goals_online_store_primary' => $this->build_primary_report( 'purchase', '116', '100' ),
+				'site_goals_online_store_key_action_sessions' => $this->build_key_action_sessions_report( '100', '90' ),
 				'site_goals_engagement'           => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
@@ -271,8 +291,9 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					'metrics' => array(
 						array(
 							'label' => 'Sales rate',
-							'value' => '5.8%',
-							'trend' => 50.8,
+							// 100 of the site's 2000 sessions hold a sale.
+							'value' => '5%',
+							'trend' => ( 100 / 2000 - 90 / 2600 ) / ( 90 / 2600 ) * 100,
 						),
 						array(
 							'label' => 'Total sales',
@@ -299,6 +320,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		$sections = $this->builder->build_sections(
 			array(
 				'site_goals_online_store_primary' => $this->build_primary_report( 'add_to_cart', '116', '100' ),
+				'site_goals_online_store_key_action_sessions' => $this->build_key_action_sessions_report( '100', '90' ),
 				'site_goals_engagement'           => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
@@ -320,8 +342,9 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					'metrics' => array(
 						array(
 							'label' => 'Sales rate',
-							'value' => '5.8%',
-							'trend' => 50.8,
+							// 100 of the site's 2000 sessions hold a WooCommerce sale.
+							'value' => '5%',
+							'trend' => ( 100 / 2000 - 90 / 2600 ) / ( 90 / 2600 ) * 100,
 						),
 						array(
 							'label' => 'Total sales',
@@ -335,8 +358,9 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					'metrics' => array(
 						array(
 							'label' => 'Sales rate',
-							'value' => '2.4%',
-							'trend' => 20.0,
+							// 20 of the site's 2000 sessions, not of the plugin's own sessions.
+							'value' => '1%',
+							'trend' => ( 20 / 2000 - 18 / 2600 ) / ( 18 / 2600 ) * 100,
 						),
 						array(
 							'label' => 'Total sales',
@@ -391,10 +415,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'some-other-plugin' => '90',
 					)
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
-					array( 'woocommerce' => array( '2000', '2600' ) )
+					array( 'woocommerce' => array( '100', '90' ) )
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -430,10 +455,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					$provider_dimension,
 					array( 'woocommerce' => '1200' )
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
-					array( 'woocommerce' => array( '2000', '2600' ) )
+					array( 'woocommerce' => array( '100', '90' ) )
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -468,13 +494,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'easy-digital-downloads' => '500',
 					)
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
 					array(
-						'woocommerce'            => array( '2000', '2600' ),
-						'easy-digital-downloads' => array( '875', '1000' ),
+						'woocommerce'            => array( '100', '90' ),
+						'easy-digital-downloads' => array( '20', '18' ),
 					)
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -510,13 +537,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'easy-digital-downloads' => '300',
 					)
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
 					array(
-						'woocommerce'            => array( '2000', '2600' ),
-						'easy-digital-downloads' => array( '875', '1000' ),
+						'woocommerce'            => array( '100', '90' ),
+						'easy-digital-downloads' => array( '20', '18' ),
 					)
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -549,10 +577,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'easy-digital-downloads' => '300',
 					)
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
-					array( 'woocommerce' => array( '2000', '2600' ) )
+					array( 'woocommerce' => array( '100', '90' ) )
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -599,13 +628,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'easy-digital-downloads' => '300',
 					)
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
 					array(
-						'woocommerce'            => array( '2000', '2600' ),
-						'easy-digital-downloads' => array( '0', '1000' ),
+						'woocommerce'            => array( '100', '90' ),
+						'easy-digital-downloads' => array( '0', '18' ),
 					)
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -640,10 +670,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'(not set)'   => '60',
 					)
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
-					array( 'woocommerce' => array( '2000', '2600' ) )
+					array( 'woocommerce' => array( '100', '90' ) )
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -684,13 +715,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'easy-digital-downloads' => '1',
 					)
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
 					array(
 						'woocommerce'            => array( '2', '1' ),
 						'easy-digital-downloads' => array( '1', '0' ),
 					)
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -727,10 +759,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					$provider_dimension,
 					array( 'woocommerce' => '1200' )
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
 					array( 'woocommerce' => array( '0', '0' ) )
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -767,10 +800,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					$provider_dimension,
 					array( 'woocommerce' => '1200' )
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
-					array( 'woocommerce' => array( '2000', '2600' ) )
+					array( 'woocommerce' => array( '100', '90' ) )
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -820,7 +854,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	public function test_build_sections__gives_lead_generation_one_group_and_the_breakdown_prompt() {
 		$sections = $this->builder->build_sections(
 			array(
-				'site_goals_lead_primary' => $this->build_report(
+				'site_goals_lead_primary'             => $this->build_report(
 					array( 'eventName', 'dateRange' ),
 					array( 'eventCount' ),
 					array(
@@ -830,7 +864,10 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'submit_lead_form', 'date_range_1' ), array( '48' ) ),
 					)
 				),
-				'site_goals_engagement'   => $this->build_engagement_report( '5000', '6000' ),
+				// Some sessions hold both a contact and a submit_lead_form event, so the 85
+				// completions come from 80 sessions.
+				'site_goals_lead_key_action_sessions' => $this->build_key_action_sessions_report( '80', '60' ),
+				'site_goals_engagement'               => $this->build_engagement_report( '5000', '6000' ),
 			)
 		);
 
@@ -843,8 +880,8 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					'metrics' => array(
 						array(
 							'label' => 'Form completion rate',
-							'value' => '1.7%',
-							'trend' => 50.0,
+							'value' => '1.6%',
+							'trend' => ( 80 / 5000 - 60 / 6000 ) / ( 60 / 6000 ) * 100,
 						),
 						array(
 							'label' => 'Total form completions',
@@ -855,7 +892,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 				),
 			),
 			$sections[0]['groups'],
-			'build_sections() should add up every lead event name into one nameless group.'
+			'build_sections() should add up every lead event name into one nameless group, and count each session with a lead event once in the rate.'
 		);
 		$this->assertSame(
 			array(
@@ -897,13 +934,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'(not set)'         => '90',
 					)
 				),
-				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
+				'site_goals_lead_key_action_sessions_by_form' => $this->build_key_action_sessions_report_by_dimension(
 					$form_dimension,
 					array(
-						$newsletter_form_id => array( '2000', '2600' ),
-						$missing_form_id    => array( '875', '1000' ),
+						$newsletter_form_id => array( '100', '90' ),
+						$missing_form_id    => array( '20', '18' ),
 					)
 				),
+				'site_goals_engagement'               => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -914,8 +952,8 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					'metrics' => array(
 						array(
 							'label' => 'Form completion rate',
-							'value' => '5.8%',
-							'trend' => 50.8,
+							'value' => '5%',
+							'trend' => ( 100 / 2000 - 90 / 2600 ) / ( 90 / 2600 ) * 100,
 						),
 						array(
 							'label' => 'Total form completions',
@@ -929,8 +967,8 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					'metrics' => array(
 						array(
 							'label' => 'Form completion rate',
-							'value' => '2.4%',
-							'trend' => 20.0,
+							'value' => '1%',
+							'trend' => ( 20 / 2000 - 18 / 2600 ) / ( 18 / 2600 ) * 100,
 						),
 						array(
 							'label' => 'Total form completions',
@@ -987,13 +1025,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						$quiet_form_id => '300',
 					)
 				),
-				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
+				'site_goals_lead_key_action_sessions_by_form' => $this->build_key_action_sessions_report_by_dimension(
 					$form_dimension,
 					array(
-						$busy_form_id  => array( '2000', '2600' ),
-						$quiet_form_id => array( '875', '1000' ),
+						$busy_form_id  => array( '100', '90' ),
+						$quiet_form_id => array( '20', '18' ),
 					)
 				),
+				'site_goals_engagement'           => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -1034,10 +1073,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'add_to_cart', '(not set)' ), array( '500' ) ),
 					)
 				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
 					$provider_dimension,
-					array( 'woocommerce' => array( '2000', '2600' ) )
+					array( 'woocommerce' => array( '100', '90' ) )
 				),
+				'site_goals_engagement'             => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -1051,9 +1091,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	public function test_build_sections__builds_both_sections_when_the_payload_holds_both_reports() {
 		$sections = $this->builder->build_sections(
 			array(
-				'site_goals_online_store_primary' => $this->build_primary_report( 'purchase', '116', '100' ),
-				'site_goals_lead_primary'         => $this->build_primary_report( 'contact', '30', '20' ),
-				'site_goals_engagement'           => $this->build_engagement_report( '2000', '2600' ),
+				'site_goals_online_store_primary'     => $this->build_primary_report( 'purchase', '116', '100' ),
+				'site_goals_online_store_key_action_sessions' => $this->build_key_action_sessions_report( '100', '90' ),
+				'site_goals_lead_primary'             => $this->build_primary_report( 'contact', '30', '20' ),
+				'site_goals_lead_key_action_sessions' => $this->build_key_action_sessions_report( '25', '20' ),
+				'site_goals_engagement'               => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -1073,19 +1115,25 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 			'build_sections() should list the tile labels of every group.'
 		);
 		$this->assertSame(
-			array( '5.8%', '116', '2.4%', '21', '7' ),
+			array( '5%', '116', '1%', '21', '7' ),
 			$sections[0]['values'],
 			'build_sections() should list the tile values of every group.'
 		);
 		$this->assertSame(
-			array( 50.8, 16.0, 20.0, 5.0, 75.0 ),
+			array(
+				( 100 / 2000 - 90 / 2600 ) / ( 90 / 2600 ) * 100,
+				16.0,
+				( 20 / 2000 - 18 / 2600 ) / ( 18 / 2600 ) * 100,
+				5.0,
+				75.0,
+			),
 			$sections[0]['trends'],
 			'build_sections() should list the tile trends of every group, each one beside its value.'
 		);
 		$this->assertSame(
 			array( 'TYPE_STANDARD', 'TYPE_STANDARD', 'TYPE_STANDARD', 'TYPE_STANDARD', 'TYPE_STANDARD' ),
 			$sections[0]['value_types'],
-			'build_sections() should mark every value as already formatted, so nothing reformats "5.8%" and "116".'
+			'build_sections() should mark every value as already formatted, so nothing reformats "5%" and "116".'
 		);
 	}
 
@@ -1102,6 +1150,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 			$sections = $this->builder->build_sections(
 				array(
 					'site_goals_online_store_primary' => $this->build_primary_report( 'purchase', '116', '100' ),
+					'site_goals_online_store_key_action_sessions' => $this->build_key_action_sessions_report( '116', '100' ),
 					'site_goals_engagement'           => $this->build_engagement_report( '2000', '2600' ),
 				)
 			);
@@ -1116,10 +1165,61 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		}
 	}
 
+	public function test_build_sections__counts_each_session_with_a_sale_once_so_the_rate_stays_under_one_hundred_percent() {
+		// 50 of the site's 1000 sessions each add 6 products to the cart.
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_online_store_primary' => $this->build_primary_report( 'add_to_cart', '300', '300' ),
+				'site_goals_online_store_key_action_sessions' => $this->build_key_action_sessions_report( '50', '50' ),
+				'site_goals_engagement'           => $this->build_engagement_report( '1000', '1000' ),
+			)
+		);
+
+		$this->assertSame(
+			array( '5%', '300' ),
+			array_column( $sections[0]['groups'][0]['metrics'], 'value' ),
+			'build_sections() should show an add to cart rate of 5%, the share of sessions with an add_to_cart event, not the 30% that counting every event would give.'
+		);
+	}
+
+	public function test_build_sections__divides_each_plugin_rate_by_the_site_sessions() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '60' ) ),
+						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '60' ) ),
+					)
+				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array( 'woocommerce' => '600' )
+				),
+				'site_goals_online_store_key_action_sessions_by_provider' => $this->build_key_action_sessions_report_by_dimension(
+					$provider_dimension,
+					array( 'woocommerce' => array( '40', '40' ) )
+				),
+				'site_goals_engagement'             => $this->build_engagement_report( '1000', '1000' ),
+			)
+		);
+
+		$this->assertSame(
+			'4%',
+			$sections[0]['groups'][0]['metrics'][0]['value'],
+			'build_sections() should divide the WooCommerce sessions with a sale by every session on the site.'
+		);
+	}
+
 	public function test_build_sections__reads_a_period_with_no_session_as_a_rate_of_zero() {
 		$sections = $this->builder->build_sections(
 			array(
 				'site_goals_online_store_primary' => $this->build_primary_report( 'purchase', '116', '100' ),
+				'site_goals_online_store_key_action_sessions' => $this->build_key_action_sessions_report( '100', '90' ),
 				'site_goals_engagement'           => $this->build_engagement_report( '0', '0' ),
 			)
 		);
@@ -1204,10 +1304,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'(other)'           => '90',
 					)
 				),
-				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
+				'site_goals_lead_key_action_sessions_by_form' => $this->build_key_action_sessions_report_by_dimension(
 					$form_dimension,
-					array( $newsletter_form_id => array( '2000', '2600' ) )
+					array( $newsletter_form_id => array( '100', '90' ) )
 				),
+				'site_goals_engagement'               => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -1249,10 +1350,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						''                  => '90',
 					)
 				),
-				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
+				'site_goals_lead_key_action_sessions_by_form' => $this->build_key_action_sessions_report_by_dimension(
 					$form_dimension,
-					array( $newsletter_form_id => array( '2000', '2600' ) )
+					array( $newsletter_form_id => array( '100', '90' ) )
 				),
+				'site_goals_engagement'               => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -1290,10 +1392,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					$form_dimension,
 					array( $newsletter_form_id => '10' )
 				),
-				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
+				'site_goals_lead_key_action_sessions_by_form' => $this->build_key_action_sessions_report_by_dimension(
 					$form_dimension,
 					array( $newsletter_form_id => array( '50', '50' ) )
 				),
+				'site_goals_engagement'               => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
@@ -1327,10 +1430,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 					$form_dimension,
 					array( $newsletter_form_id => '10' )
 				),
-				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
+				'site_goals_lead_key_action_sessions_by_form' => $this->build_key_action_sessions_report_by_dimension(
 					$form_dimension,
 					array( $newsletter_form_id => array( '0', '0' ) )
 				),
+				'site_goals_engagement'               => $this->build_engagement_report( '2000', '2600' ),
 			)
 		);
 
