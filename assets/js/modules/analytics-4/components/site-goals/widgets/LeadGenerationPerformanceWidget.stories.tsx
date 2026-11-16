@@ -98,6 +98,81 @@ const engagementReportOptions = {
 	reportID: 'analytics-4_site-goals_engagementReportOptions',
 };
 
+function buildKeyActionSessionsReportOptions(
+	leadEvents: string[],
+	breakdownFilter: Record< string, unknown > = {}
+) {
+	return {
+		...dates,
+		metrics: [ { name: 'sessions' } ],
+		dimensionFilters: {
+			eventName: {
+				filterType: 'inListFilter',
+				value: leadEvents,
+			},
+			...breakdownFilter,
+		},
+		reportID:
+			'analytics-4_lead-generation-performance-widget_widget_keyActionSessionsReportOptions',
+	};
+}
+
+/**
+ * Adds the Key action sessions report as a share of the mocked site sessions.
+ *
+ * A mocked sessions report could hold more sessions than the site total, which
+ * would push the rate tile above 100%.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry          Registry to add the report to.
+ * @param {Array}  leadEvents        The lead events the story detects.
+ * @param {Object} [breakdownFilter] The form tab's filter, empty for no tab.
+ * @param {number} [share]           Share of the site sessions with a Key action.
+ * @return {void}
+ */
+function provideKeyActionSessionsReport(
+	registry: WPDataRegistry,
+	leadEvents: string[],
+	breakdownFilter: Record< string, unknown > = {},
+	share = 0.045
+) {
+	const options = buildKeyActionSessionsReportOptions(
+		leadEvents,
+		breakdownFilter
+	);
+	const { totals = [] } = getAnalytics4MockResponse(
+		engagementReportOptions
+	) as {
+		totals?: {
+			dimensionValues: { value: string }[];
+			metricValues: { value: string }[];
+		}[];
+	};
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			totals: totals.map( ( { dimensionValues, metricValues } ) => ( {
+				dimensionValues,
+				metricValues: [
+					{
+						// The site sessions are the second metric.
+						value: String(
+							Math.round(
+								Number( metricValues[ 1 ].value ) * share
+							)
+						),
+					},
+				],
+			} ) ),
+		},
+		{ options }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ options ] );
+}
+
 const singleEventReportOptions = buildLeadEventsReportOptions( [
 	ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 ] );
@@ -876,6 +951,13 @@ function seedTabbedBreakdown(
 				breakdownFilter
 			)
 		);
+		provideKeyActionSessionsReport(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			breakdownFilter,
+			0.021
+		);
+		// The Engagement rate tile is scoped to the tab.
 		provideAnalytics4MockReport( registry, {
 			...engagementReportOptions,
 			dimensionFilters: breakdownFilter,
@@ -887,8 +969,12 @@ function seedTabbedBreakdown(
 		);
 	} );
 
-	// Unfiltered reports back the "Other sources" tab's view.
+	// Unfiltered reports back the "Other sources" tab's view. The site
+	// sessions also back the Key action rate on every tab.
 	provideAnalytics4MockReport( registry, singleEventReportOptions );
+	provideKeyActionSessionsReport( registry, [
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+	] );
 	provideAnalytics4MockReport( registry, engagementReportOptions );
 }
 
@@ -915,6 +1001,9 @@ Ready.args = {
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
+		provideKeyActionSessionsReport( registry, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
 		provideAnalytics4MockReport( registry, engagementReportOptions );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
@@ -933,6 +1022,9 @@ GatheringBreakdownData.args = {
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
+		provideKeyActionSessionsReport( registry, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
 		provideAnalytics4MockReport( registry, engagementReportOptions );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
@@ -1022,6 +1114,15 @@ ReadyMultipleEvents.args = {
 				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 			] );
 		provideAnalytics4MockReport( registry, multipleEventsReportOptions );
+		provideKeyActionSessionsReport(
+			registry,
+			[
+				ENUM_CONVERSION_EVENTS.CONTACT,
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			],
+			{},
+			0.062
+		);
 		provideAnalytics4MockReport( registry, engagementReportOptions );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.CONTACT,
@@ -1061,6 +1162,13 @@ Loading.args = {
 			.startResolution( 'getReport', [ singleEventReportOptions ] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildKeyActionSessionsReportOptions( [
+					ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				] ),
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ engagementReportOptions ] );
 		seedGoalDriverReports(
 			registry,
@@ -1095,6 +1203,13 @@ ZeroData.args = {
 			.receiveGetReport( zeroSessionsReport, {
 				options: engagementReportOptions,
 			} );
+
+		provideKeyActionSessionsReport(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			{},
+			0
+		);
 
 		// An empty chart report makes the tile show its zero data message.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
