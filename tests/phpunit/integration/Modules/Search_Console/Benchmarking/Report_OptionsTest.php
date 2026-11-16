@@ -19,28 +19,35 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Report_OptionsTest extends TestCase {
 
-	public function test_get_search_query_requests__asks_for_the_queries_of_each_period_with_the_row_limit() {
+	public function test_get_search_query_requests__asks_for_the_queries_their_pages_and_their_devices_of_each_period_with_the_row_limit() {
 		$report_options = new Report_Options( '2026-08-19', '2026-09-15', '2026-07-22', '2026-08-18', 50 );
+		$requests       = array();
+
+		foreach ( array(
+			''         => 'query',
+			'-pages'   => 'query,page',
+			'-devices' => 'query,device',
+		) as $suffix => $dimensions ) {
+			$requests[] = array(
+				'identifier' => "current{$suffix}",
+				'startDate'  => '2026-08-19',
+				'endDate'    => '2026-09-15',
+				'dimensions' => $dimensions,
+				'rowLimit'   => 50,
+			);
+			$requests[] = array(
+				'identifier' => "previous{$suffix}",
+				'startDate'  => '2026-07-22',
+				'endDate'    => '2026-08-18',
+				'dimensions' => $dimensions,
+				'rowLimit'   => 50,
+			);
+		}
 
 		$this->assertSame(
-			array(
-				array(
-					'identifier' => 'current',
-					'startDate'  => '2026-08-19',
-					'endDate'    => '2026-09-15',
-					'dimensions' => 'query',
-					'rowLimit'   => 50,
-				),
-				array(
-					'identifier' => 'previous',
-					'startDate'  => '2026-07-22',
-					'endDate'    => '2026-08-18',
-					'dimensions' => 'query',
-					'rowLimit'   => 50,
-				),
-			),
+			$requests,
 			$report_options->get_search_query_requests(),
-			'There should be one `query` report for the selected period and one for the compare period, each limited to 50 rows.'
+			'There should be a `query`, a `query,page` and a `query,device` report for the selected period and for the compare period, each limited to 50 rows.'
 		);
 	}
 }

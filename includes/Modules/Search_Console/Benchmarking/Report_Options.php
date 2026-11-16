@@ -79,28 +79,40 @@ class Report_Options {
 	}
 
 	/**
-	 * Gets the requests of the two search query reports, one per period.
+	 * Gets the requests of the search query reports, each once per period: the
+	 * clicks of each query, of each query on each page, and of each query on
+	 * each device.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Added the requests of each query's clicks on each page and on each device.
 	 *
-	 * @return array List of the two `searchanalytics-batch` requests, identified by `current` for the selected period and `previous` for the compare period.
+	 * @return array List of the six `searchanalytics-batch` requests. A query report is identified by `current` for the selected period and `previous` for the compare period, a page report by `current-pages` and `previous-pages`, and a device report by `current-devices` and `previous-devices`.
 	 */
 	public function get_search_query_requests() {
-		return array(
-			array(
-				'identifier' => 'current',
+		$requests = array();
+
+		foreach ( array(
+			''         => 'query',
+			'-pages'   => 'query,page',
+			'-devices' => 'query,device',
+		) as $suffix => $dimensions ) {
+			$requests[] = array(
+				'identifier' => "current{$suffix}",
 				'startDate'  => $this->start_date,
 				'endDate'    => $this->end_date,
-				'dimensions' => 'query',
+				'dimensions' => $dimensions,
 				'rowLimit'   => $this->row_limit,
-			),
-			array(
-				'identifier' => 'previous',
+			);
+
+			$requests[] = array(
+				'identifier' => "previous{$suffix}",
 				'startDate'  => $this->compare_start_date,
 				'endDate'    => $this->compare_end_date,
-				'dimensions' => 'query',
+				'dimensions' => $dimensions,
 				'rowLimit'   => $this->row_limit,
-			),
-		);
+			);
+		}
+
+		return $requests;
 	}
 }

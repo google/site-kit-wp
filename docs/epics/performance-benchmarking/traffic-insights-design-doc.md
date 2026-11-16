@@ -1067,7 +1067,7 @@ This section lists what Search Console's callback adds to the [contextual data k
 
 | Key | Row | Contributed by |
 | :---- | :---- | :---- |
-| `searchKeywords` | each row gains `positionCurrent` and `positionPrevious`: the query's average position in each window, as a float. A position is `null` for a window in which the query does not appear. | `Search_Console` |
+| `searchQueries` | each row gains `positionCurrent` and `positionPrevious`: the query's average position in each window, as a float. A position is `null` for a window in which the query does not appear. | `Search_Console` |
 | `searchClicks` | one `{ current, previous }`: the site's total clicks in each window. These totals come from requests that have no `query` dimension. | `Search_Console` |
 
 The channel × `landingPagePlusQueryString` report is not contextual data. It runs only on the response that contains the payload, and only `channel_pages` uses its rows. No callback sees this report.

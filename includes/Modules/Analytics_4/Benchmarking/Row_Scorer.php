@@ -11,35 +11,35 @@
 namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 
 /**
- * Scores a dimension row by how much of the site's change in visitors it explains.
+ * Scores a candidate driver of a key factor card by how much of the site's
+ * change in visits it explains.
  *
- * One formula scores every row in every dimension, so a channel, a device, and a
- * search query are ranked on the same scale.
+ * One formula scores every candidate of every kind, so a channel, a page, and a
+ * search keyword are ranked on the same scale.
  *
  * @since 1.190.0
+ * @since n.e.x.t Scores the candidate drivers of the key factor cards in place of the rows of each dimension.
  * @access private
  * @ignore
  */
 class Row_Scorer {
 
 	/**
-	 * What each dimension's scores are multiplied by, so a page or a referrer
-	 * counts for more than a device category.
+	 * What the score of each kind of driver is multiplied by, so a specific
+	 * driver, such as a page, scores higher than a channel with the same change.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 */
-	const DIMENSION_WEIGHTS = array(
+	const KIND_WEIGHTS = array(
 		'CONTENT'        => 1.5,
-		'SEARCH_QUERIES' => 1.4,
-		'REFERRERS'      => 1.3,
-		'CATEGORIES'     => 1.2,
-		'CHANNELS'       => 1.1,
-		'DEVICES'        => 1.0,
-		'VISITOR_MIX'    => 1.0,
+		'SEARCH_KEYWORD' => 1.4,
+		'REFERRING_SITE' => 1.3,
+		'CAMPAIGN'       => 1.2,
+		'CHANNEL'        => 1.1,
 	);
 
 	/**
-	 * A row's score is multiplied by this number when the row's visitors moved the
+	 * A candidate's score is multiplied by this number when its visits moved the
 	 * same way as the site's, and the site went up or down by at least
 	 * `SITE_DIRECTION_THRESHOLD_PERCENT`.
 	 *
@@ -48,7 +48,7 @@ class Row_Scorer {
 	const SAME_DIRECTION_BOOST = 1.25;
 
 	/**
-	 * The smallest change in the site's visitors, in percent, that counts as going
+	 * The smallest change in the site's visits, in percent, that counts as going
 	 * up or down.
 	 *
 	 * @since 1.190.0
@@ -56,118 +56,114 @@ class Row_Scorer {
 	const SITE_DIRECTION_THRESHOLD_PERCENT = 3;
 
 	/**
-	 * The smallest change in visitors a row needs to stay in the response.
+	 * The smallest change in visits a candidate needs to stay a candidate.
 	 *
 	 * @since 1.190.0
 	 */
 	const MINIMUM_ABSOLUTE_DELTA = 5;
 
 	/**
-	 * The smallest change a row needs to stay in the response, as a percentage of
-	 * the larger of the site's two visitor totals.
+	 * The smallest change a candidate needs to stay a candidate, as a percentage
+	 * of the larger of the site's two visit totals.
 	 *
 	 * @since 1.190.0
 	 */
 	const MINIMUM_TRAFFIC_IMPACT_PERCENT = 0.40;
 
 	/**
-	 * A row that moved against the site stays in the response when its change is
-	 * at least this percentage of the larger of the site's two visitor totals.
+	 * A candidate that moved against the site stays a candidate when its change
+	 * is at least this percentage of the larger of the site's two visit totals.
 	 *
 	 * @since 1.190.0
 	 */
 	const COUNTER_TREND_TRAFFIC_IMPACT_PERCENT = 1.0;
 
 	/**
-	 * A row that moved against the site also stays in the response when its own
-	 * visitors changed by at least this percentage and `COUNTER_TREND_DELTA`
-	 * visitors.
+	 * A candidate that moved against the site also stays a candidate when its own
+	 * visits changed by at least this percentage and by `COUNTER_TREND_DELTA`
+	 * visits.
 	 *
 	 * @since 1.190.0
 	 */
 	const COUNTER_TREND_SELF_CHANGE_PERCENT = 10;
 
 	/**
-	 * The smallest change in visitors that, together with
-	 * `COUNTER_TREND_SELF_CHANGE_PERCENT`, keeps a row that moved against the site.
+	 * The smallest change in visits that, together with
+	 * `COUNTER_TREND_SELF_CHANGE_PERCENT`, keeps a candidate that moved against
+	 * the site.
 	 *
 	 * @since 1.190.0
 	 */
 	const COUNTER_TREND_DELTA = 25;
 
 	/**
-	 * A device or visitor mix row is excluded when its own change is less than this
-	 * many percentage points from the site's change, because it only follows the site.
-	 *
-	 * @since 1.190.0
-	 */
-	const MACRO_DIVERGENCE_PERCENT = 5;
-
-	/**
-	 * The site's direction when its visitors went up by `SITE_DIRECTION_THRESHOLD_PERCENT` or more.
+	 * The site's direction when its visits went up by `SITE_DIRECTION_THRESHOLD_PERCENT` or more.
 	 *
 	 * @since 1.190.0
 	 */
 	const DIRECTION_UP = 'UP';
 
 	/**
-	 * The site's direction when its visitors went down by `SITE_DIRECTION_THRESHOLD_PERCENT` or more.
+	 * The site's direction when its visits went down by `SITE_DIRECTION_THRESHOLD_PERCENT` or more.
 	 *
 	 * @since 1.190.0
 	 */
 	const DIRECTION_DOWN = 'DOWN';
 
 	/**
-	 * The site's direction when its visitors changed by less than `SITE_DIRECTION_THRESHOLD_PERCENT`.
+	 * The site's direction when its visits changed by less than `SITE_DIRECTION_THRESHOLD_PERCENT`.
 	 *
 	 * @since 1.190.0
 	 */
 	const DIRECTION_STABLE = 'STABLE';
 
 	/**
-	 * The site's visitors in the selected period.
+	 * The site's visits in the selected period.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var int
 	 */
-	private $visitors_current;
+	private $visits_current;
 
 	/**
-	 * The site's visitors in the compare period.
+	 * The site's visits in the compare period.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var int
 	 */
-	private $visitors_previous;
+	private $visits_previous;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Takes the site's visits in place of its visitors.
 	 *
-	 * @param int $visitors_current  The site's visitors in the selected period.
-	 * @param int $visitors_previous The site's visitors in the compare period.
+	 * @param int $visits_current  The site's visits in the selected period.
+	 * @param int $visits_previous The site's visits in the compare period.
 	 */
-	public function __construct( $visitors_current, $visitors_previous ) {
-		$this->visitors_current  = $visitors_current;
-		$this->visitors_previous = $visitors_previous;
+	public function __construct( $visits_current, $visits_previous ) {
+		$this->visits_current  = $visits_current;
+		$this->visits_previous = $visits_previous;
 	}
 
 	/**
-	 * Scores how much of the site's change in visitors a row explains.
+	 * Scores how much of the site's change in visits a candidate explains.
 	 *
-	 * The size of the row's change counts for 60% of the score. The other 40% is
-	 * how far that change is from the change the row would show if it changed by
-	 * the same percentage as the site. The dimension's weight multiplies the sum,
-	 * and so does the boost when the row moved the same way as the site.
+	 * The size of the candidate's change counts for 60% of the score. The other
+	 * 40% is how far that change is from the change the candidate would show if
+	 * it changed by the same percentage as the site. The weight of the
+	 * candidate's kind multiplies the sum, and so does the boost when the
+	 * candidate moved the same way as the site.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Takes the kind of the candidate in place of a dimension code.
 	 *
-	 * @param string $dimension_code The dimension code the row belongs to, such as `CHANNELS`.
-	 * @param array  $row            The row, with its `current` and `previous` visitors.
-	 * @return float The row's score. A higher score explains more of the site's change.
+	 * @param string $kind The kind of the candidate, such as `CHANNEL`.
+	 * @param array  $row  The candidate, with its `current` and `previous` visits, or clicks for a search keyword.
+	 * @return float The candidate's score. A higher score explains more of the site's change.
 	 */
-	public function score_row( $dimension_code, array $row ) {
+	public function score_row( $kind, array $row ) {
 		$delta          = $row['current'] - $row['previous'];
 		$expected_delta = $row['previous'] * $this->get_site_change_percent() / 100;
 		$site_direction = $this->get_site_direction();
@@ -179,27 +175,25 @@ class Row_Scorer {
 		$excess_impact  = $this->get_traffic_impact_percent( $delta - $expected_delta );
 		$boost          = $moves_with_site ? self::SAME_DIRECTION_BOOST : 1;
 
-		return ( 0.6 * abs( $traffic_impact ) + 0.4 * abs( $excess_impact ) ) * self::DIMENSION_WEIGHTS[ $dimension_code ] * $boost;
+		return ( 0.6 * abs( $traffic_impact ) + 0.4 * abs( $excess_impact ) ) * self::KIND_WEIGHTS[ $kind ] * $boost;
 	}
 
 	/**
-	 * Checks whether a row is excluded from the response.
+	 * Checks whether a candidate is dropped.
 	 *
-	 * A row is excluded when any of these is true:
-	 * - Its change is under `MINIMUM_ABSOLUTE_DELTA` visitors or under
+	 * A candidate is dropped when either of these is true:
+	 * - Its change is under `MINIMUM_ABSOLUTE_DELTA` visits or under
 	 *   `MINIMUM_TRAFFIC_IMPACT_PERCENT`.
 	 * - It moved against the site, and neither `COUNTER_TREND_TRAFFIC_IMPACT_PERCENT`
 	 *   nor `COUNTER_TREND_SELF_CHANGE_PERCENT` together with `COUNTER_TREND_DELTA` keeps it.
-	 * - It's a `DEVICES` or `VISITOR_MIX` row whose own change is less than
-	 *   `MACRO_DIVERGENCE_PERCENT` percentage points from the site's change.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Takes the candidate alone. A device or a visitor type is never a candidate, so no rule is left for it.
 	 *
-	 * @param string $dimension_code The dimension code the row belongs to, such as `DEVICES`.
-	 * @param array  $row            The row, with its `current` and `previous` visitors.
-	 * @return bool True when the row is excluded, false when the row is ranked.
+	 * @param array $row The candidate, with its `current` and `previous` visits, or clicks for a search keyword.
+	 * @return bool True when the candidate is dropped, false when it stays a candidate.
 	 */
-	public function is_excluded_row( $dimension_code, array $row ) {
+	public function is_excluded_row( array $row ) {
 		$delta          = $row['current'] - $row['previous'];
 		$traffic_impact = abs( $this->get_traffic_impact_percent( $delta ) );
 
@@ -207,7 +201,7 @@ class Row_Scorer {
 			return true;
 		}
 
-		$self_change    = $this->get_self_change_percent( $row );
+		$self_change    = self::get_self_change_percent( $row );
 		$site_direction = $this->get_site_direction();
 
 		$moves_against_site = ( self::DIRECTION_UP === $site_direction && $delta < 0 )
@@ -216,16 +210,11 @@ class Row_Scorer {
 		$is_large_change = $traffic_impact >= self::COUNTER_TREND_TRAFFIC_IMPACT_PERCENT
 			|| ( abs( $self_change ) >= self::COUNTER_TREND_SELF_CHANGE_PERCENT && abs( $delta ) >= self::COUNTER_TREND_DELTA );
 
-		if ( $moves_against_site && ! $is_large_change ) {
-			return true;
-		}
-
-		return in_array( $dimension_code, array( 'DEVICES', 'VISITOR_MIX' ), true )
-			&& abs( $self_change - $this->get_site_change_percent() ) < self::MACRO_DIVERGENCE_PERCENT;
+		return $moves_against_site && ! $is_large_change;
 	}
 
 	/**
-	 * Gets the direction the site's visitors moved in, from the compare period
+	 * Gets the direction the site's visits moved in, from the compare period
 	 * to the selected period.
 	 *
 	 * @since 1.190.0
@@ -247,32 +236,30 @@ class Row_Scorer {
 	}
 
 	/**
-	 * Gets the change in visitors as a percentage of the larger of the site's two
+	 * Gets a change in visits as a percentage of the larger of the site's two
 	 * totals.
 	 *
 	 * @since 1.190.0
 	 *
-	 * @param int|float $change The change in visitors.
-	 * @return int|float The change as a percentage, such as `10` for 10%, or `0` when the site had no visitors in either period.
+	 * @param int|float $change The change in visits.
+	 * @return int|float The change as a percentage, such as `10` for 10%, or `0` when the site had no visits in either period.
 	 */
 	private function get_traffic_impact_percent( $change ) {
-		$site_visitors = max( $this->visitors_current, $this->visitors_previous );
+		$site_visits = max( $this->visits_current, $this->visits_previous );
 
-		return $site_visitors > 0 ? $change * 100 / $site_visitors : 0;
+		return $site_visits > 0 ? $change * 100 / $site_visits : 0;
 	}
 
 	/**
-	 * Gets the change in a row's own visitors, in percent.
-	 *
-	 * `is_excluded_row()` excludes a row with no visitors in either period before
-	 * it calls `get_self_change_percent()`.
+	 * Gets the change in a row's own visits, in percent.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Made public, so a key factor card can compare its attributes' changes with its own.
 	 *
-	 * @param array $row The row, with its `current` and `previous` visitors.
-	 * @return int|float The change in percent, such as `50` for a rise of 50%, or `100` for a row with no visitors in the compare period.
+	 * @param array $row The row, with its `current` and `previous` visits.
+	 * @return int|float The change in percent, such as `50` for a rise of 50%, or `100` for a row with no visits in the compare period.
 	 */
-	private function get_self_change_percent( array $row ) {
+	public static function get_self_change_percent( array $row ) {
 		if ( $row['previous'] > 0 ) {
 			return ( $row['current'] - $row['previous'] ) * 100 / $row['previous'];
 		}
@@ -281,15 +268,15 @@ class Row_Scorer {
 	}
 
 	/**
-	 * Gets the change in the site's visitors, in percent.
+	 * Gets the change in the site's visits, in percent.
 	 *
 	 * @since 1.190.0
 	 *
-	 * @return int|float The change in percent, such as `25` for a rise of 25%, or `0` when the site had no visitors in the compare period.
+	 * @return int|float The change in percent, such as `25` for a rise of 25%, or `0` when the site had no visits in the compare period.
 	 */
 	private function get_site_change_percent() {
-		if ( $this->visitors_previous > 0 ) {
-			return ( $this->visitors_current - $this->visitors_previous ) * 100 / $this->visitors_previous;
+		if ( $this->visits_previous > 0 ) {
+			return ( $this->visits_current - $this->visits_previous ) * 100 / $this->visits_previous;
 		}
 
 		return 0;

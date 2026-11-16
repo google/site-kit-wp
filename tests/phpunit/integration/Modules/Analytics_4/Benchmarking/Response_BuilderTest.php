@@ -39,6 +39,18 @@ class Response_BuilderTest extends TestCase {
 	use Saved_Site_Data_Trait;
 
 	/**
+	 * The dimensions of each breakdown report, joined by commas, as the fake
+	 * Analytics API keys its rows. A report filtered on a key factor card's
+	 * driver is keyed with `driver:` before its dimensions.
+	 */
+	const CHANNEL_BREAKDOWNS = 'sessionDefaultChannelGrouping,deviceCategory,newVsReturning';
+	const CHANNEL_SOURCES    = 'sessionDefaultChannelGrouping,sessionSource';
+	const CHANNEL_PAGES      = 'sessionDefaultChannelGrouping,landingPage';
+	const CHANNEL_CAMPAIGNS  = 'sessionDefaultChannelGrouping,sessionCampaignName';
+	const CONTENT            = 'pagePath,pageTitle,customEvent:googlesitekit_post_date';
+	const DRIVER_AUDIENCE    = 'driver:deviceCategory,newVsReturning';
+
+	/**
 	 * Custom_Dimensions_Data_Available instance.
 	 *
 	 * @var Custom_Dimensions_Data_Available
@@ -138,15 +150,25 @@ class Response_BuilderTest extends TestCase {
 
 	/**
 	 * Builds the report the fake Analytics API returns for one report request,
-	 * from the rows in `$report_rows` for the report's first dimension.
+	 * from the rows in `$report_rows` for the report's dimensions.
+	 *
+	 * The rows are keyed by the report's dimensions joined by commas, such as
+	 * `self::CHANNEL_PAGES`. A report filtered on a key factor card's driver can
+	 * have the same dimensions as a breakdown, so its key starts with `driver:`.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Keys the rows by every dimension of the report.
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return array The report, in the shape Analytics returns it.
 	 */
 	private function build_report( array $report_request ) {
 		$dimension_names = array_column( $report_request['dimensions'], 'name' );
+		$rows_key        = implode( ',', $dimension_names );
+
+		if ( ! empty( $this->get_driver_filters( $report_request ) ) ) {
+			$rows_key = "driver:{$rows_key}";
+		}
 
 		// Analytics adds a `dateRange` dimension to a report with two periods.
 		if ( count( $report_request['dateRanges'] ) > 1 ) {
@@ -178,7 +200,7 @@ class Response_BuilderTest extends TestCase {
 					array( 'value' => (string) $row[ count( $row ) - 1 ] ),
 				),
 			),
-			$this->report_rows[ $dimension_names[0] ] ?? array()
+			$this->report_rows[ $rows_key ] ?? array()
 		);
 
 		// Analytics omits the `rows` key from a report with no rows.
@@ -187,6 +209,29 @@ class Response_BuilderTest extends TestCase {
 		}
 
 		return $report;
+	}
+
+	/**
+	 * Gets the dimension filters of a report request, other than the filter on
+	 * the site's host name that every report has.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $report_request The report request, as the batch call sent it.
+	 * @return array The values each `inListFilter` keeps, keyed by dimension name.
+	 */
+	private function get_driver_filters( array $report_request ) {
+		$filters = array();
+
+		foreach ( $report_request['dimensionFilter']['andGroup']['expressions'] ?? array() as $expression ) {
+			$field_name = $expression['filter']['fieldName'] ?? null;
+
+			if ( null !== $field_name && 'hostName' !== $field_name ) {
+				$filters[ $field_name ] = $expression['filter']['inListFilter']['values'] ?? array();
+			}
+		}
+
+		return $filters;
 	}
 
 	/**
@@ -208,70 +253,151 @@ class Response_BuilderTest extends TestCase {
 	}
 
 	/**
-	 * Makes the fake Analytics API return rows for all seven reports, so each of
-	 * the six dimensions keeps at least one row.
+	 * Gets the dimensions of the five reports of the first batch call: the daily
+	 * series and the four channel breakdowns.
 	 *
-	 * Two channels score the same, and two pages score the same.
+	 * @since n.e.x.t
+	 *
+	 * @return array List of reports, each a list of dimension names.
+	 */
+	private function get_first_call_dimensions() {
+		return array(
+			array( 'date' ),
+			array( 'sessionDefaultChannelGrouping', 'deviceCategory', 'newVsReturning' ),
+			array( 'sessionDefaultChannelGrouping', 'sessionSource' ),
+			array( 'sessionDefaultChannelGrouping', 'landingPage' ),
+			array( 'sessionDefaultChannelGrouping', 'sessionCampaignName' ),
+		);
+	}
+
+	/**
+	 * Builds the response, and gets the rows the Analytics reports gave the
+	 * `googlesitekit_benchmarking_contextual_data` filter.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The rows, keyed by contextual data key.
+	 */
+	private function get_contextual_data() {
+		$contextual_data = array();
+
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $rows ) use ( &$contextual_data ) {
+				$contextual_data = $rows;
+
+				return $rows;
+			}
+		);
+
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		return $contextual_data;
+	}
+
+	/**
+	 * Makes the fake Analytics API return rows for every report of the first
+	 * batch call and for the content report, on a site whose first recorded
+	 * traffic is too recent for key factor cards.
+	 *
+	 * The devices and the visitor types add up to the channels, as the rows of
+	 * one breakdown do.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Returns the rows of the four channel breakdowns in place of the channel, device, visitor mix, referrer and category reports.
 	 */
 	private function provide_reports_for_every_dimension() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
-		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_categories' );
 
 		$this->report_rows = array(
-			'date'                                      => array(
+			'date'                   => array(
 				array( '20260818', 388 ),
 				array( '20260915', 412 ),
 			),
-			'sessionDefaultChannelGrouping'             => array(
-				array( 'Organic Search', 'date_range_0', 210 ),
-				array( 'Direct', 'date_range_0', 118 ),
-				array( 'Referral', 'date_range_0', 47 ),
-				array( 'Email', 'date_range_0', 42 ),
-				array( 'Affiliates', 'date_range_0', 30 ),
-				array( 'Display', 'date_range_0', 30 ),
-				array( 'Direct', 'date_range_1', 137 ),
-				array( 'Organic Search', 'date_range_1', 168 ),
-				array( 'Email', 'date_range_1', 40 ),
-				array( 'Affiliates', 'date_range_1', 10 ),
-				array( 'Display', 'date_range_1', 10 ),
+			self::CHANNEL_BREAKDOWNS => array(
+				array( 'Organic Search', 'mobile', 'new', 'date_range_0', 210 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_0', 118 ),
+				array( 'Referral', 'mobile', 'new', 'date_range_0', 47 ),
+				array( 'Email', 'desktop', 'returning', 'date_range_0', 42 ),
+				array( 'Affiliates', 'mobile', 'returning', 'date_range_0', 30 ),
+				array( 'Display', 'desktop', 'new', 'date_range_0', 30 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_1', 137 ),
+				array( 'Organic Search', 'mobile', 'new', 'date_range_1', 168 ),
+				array( 'Email', 'desktop', 'returning', 'date_range_1', 40 ),
+				array( 'Affiliates', 'mobile', 'returning', 'date_range_1', 10 ),
+				array( 'Display', 'desktop', 'new', 'date_range_1', 10 ),
 			),
-			'deviceCategory'                            => array(
-				array( 'mobile', 'date_range_0', 240 ),
-				array( 'mobile', 'date_range_1', 200 ),
+			self::CHANNEL_SOURCES    => array(
+				array( 'Direct', '(direct)', 'date_range_0', 118 ),
+				array( 'Referral', 'a.example.com', 'date_range_0', 80 ),
+				array( 'Referral', 'b.example.com', 'date_range_0', 70 ),
+				array( 'Referral', 'c.example.com', 'date_range_0', 60 ),
+				array( 'Referral', 'd.example.com', 'date_range_0', 50 ),
+				array( 'Referral', 'e.example.com', 'date_range_0', 45 ),
+				array( 'Referral', 'f.example.com', 'date_range_0', 40 ),
+				array( 'Referral', 'g.example.com', 'date_range_0', 35 ),
+				array( 'Direct', '(direct)', 'date_range_1', 137 ),
+				array( 'Referral', 'a.example.com', 'date_range_1', 20 ),
+				array( 'Referral', 'b.example.com', 'date_range_1', 20 ),
+				array( 'Referral', 'c.example.com', 'date_range_1', 20 ),
+				array( 'Referral', 'd.example.com', 'date_range_1', 20 ),
+				array( 'Referral', 'e.example.com', 'date_range_1', 20 ),
+				array( 'Referral', 'f.example.com', 'date_range_1', 20 ),
+				array( 'Referral', 'g.example.com', 'date_range_1', 20 ),
 			),
-			'newVsReturning'                            => array(
-				array( 'new', 'date_range_0', 240 ),
-				array( 'new', 'date_range_1', 200 ),
+			self::CHANNEL_PAGES      => array(
+				array( 'Organic Search', '/plant-garlic/', 'date_range_0', 120 ),
+				array( 'Organic Search', '/plant-garlic/', 'date_range_1', 100 ),
 			),
-			'sessionSource'                             => array(
-				array( 'a.example.com', 'date_range_0', 80 ),
-				array( 'b.example.com', 'date_range_0', 70 ),
-				array( 'c.example.com', 'date_range_0', 60 ),
-				array( 'd.example.com', 'date_range_0', 50 ),
-				array( 'e.example.com', 'date_range_0', 45 ),
-				array( 'f.example.com', 'date_range_0', 40 ),
-				array( 'g.example.com', 'date_range_0', 35 ),
-				array( 'a.example.com', 'date_range_1', 20 ),
-				array( 'b.example.com', 'date_range_1', 20 ),
-				array( 'c.example.com', 'date_range_1', 20 ),
-				array( 'd.example.com', 'date_range_1', 20 ),
-				array( 'e.example.com', 'date_range_1', 20 ),
-				array( 'f.example.com', 'date_range_1', 20 ),
-				array( 'g.example.com', 'date_range_1', 20 ),
+			self::CHANNEL_CAMPAIGNS  => array(
+				array( 'Email', 'spring-sale', 'date_range_0', 42 ),
+				array( 'Email', 'spring-sale', 'date_range_1', 40 ),
 			),
-			'pagePath'                                  => array(
+			self::CONTENT            => array(
 				array( '/b-post/', 'B post', '20260901', 'date_range_0', 30 ),
 				array( '/a-post/', 'A post', '20260901', 'date_range_0', 30 ),
 				array( '/b-post/', 'B post', '20260901', 'date_range_1', 10 ),
 				array( '/a-post/', 'A post', '20260901', 'date_range_1', 10 ),
 			),
-			'customEvent:googlesitekit_post_categories' => array(
-				array( 'Garden', 'date_range_0', 60 ),
-				array( 'Recipes', 'date_range_0', 15 ),
-				array( 'Garden', 'date_range_1', 20 ),
-				array( 'Recipes', 'date_range_1', 30 ),
+		);
+	}
+
+	/**
+	 * Makes the fake Analytics API return rows from which the key factor cards
+	 * are the `/plant-garlic/` page and the `Direct` channel, on a site with
+	 * recorded traffic on every day of the compare period.
+	 *
+	 * `/plant-garlic/` gains 100 of the 280 visits the channels gain, and takes
+	 * `Organic Search` out of the candidates. The pages that gain 20 visits each
+	 * have too small a share to be cards.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function provide_key_factor_reports() {
+		$pages = array(
+			array( 'Organic Search', '/plant-garlic/', 'date_range_0', 150 ),
+			array( 'Organic Search', '/plant-garlic/', 'date_range_1', 50 ),
+		);
+
+		foreach ( array( '/a/', '/b/', '/c/', '/d/', '/e/' ) as $page ) {
+			$pages[] = array( 'Organic Search', $page, 'date_range_0', 90 );
+			$pages[] = array( 'Organic Search', $page, 'date_range_1', 70 );
+		}
+
+		$this->report_rows = array(
+			'date'                   => $this->get_daily_report_rows( '2026-07-22', '2026-09-15', fn() => 25 ),
+			self::CHANNEL_BREAKDOWNS => array(
+				array( 'Organic Search', 'desktop', 'returning', 'date_range_0', 600 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_0', 380 ),
+				array( 'Organic Search', 'desktop', 'returning', 'date_range_1', 400 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_1', 300 ),
+			),
+			self::CHANNEL_PAGES      => $pages,
+			self::DRIVER_AUDIENCE    => array(
+				array( 'mobile', 'new', 'date_range_0', 110 ),
+				array( 'desktop', 'returning', 'date_range_0', 40 ),
+				array( 'mobile', 'new', 'date_range_1', 20 ),
+				array( 'desktop', 'returning', 'date_range_1', 30 ),
 			),
 		);
 	}
@@ -351,227 +477,86 @@ class Response_BuilderTest extends TestCase {
 		$this->assertCount( 2, $this->batch_requests, 'The `build()` method should make the second batch call after the first one succeeds.' );
 	}
 
-	public function test_build__asks_for_seven_reports_in_two_calls_when_the_post_date_and_the_post_categories_have_data() {
-		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
-		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_categories' );
-
-		$this->report_rows = array(
-			'date'                                      => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'sessionDefaultChannelGrouping'             => array(
-				array( 'Referral', 'date_range_0', 47 ),
-			),
-			'pagePath'                                  => array(
-				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
-			),
-			'customEvent:googlesitekit_post_categories' => array(
-				array( 'Garden', 'date_range_0', 60 ),
-			),
-		);
-
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
-		$this->assertSame(
-			array(
-				array(
-					array( 'date' ),
-					array( 'sessionDefaultChannelGrouping' ),
-					array( 'deviceCategory' ),
-					array( 'newVsReturning' ),
-					array( 'sessionSource' ),
-				),
-				array(
-					array( 'pagePath', 'pageTitle', 'customEvent:googlesitekit_post_date' ),
-					array( 'customEvent:googlesitekit_post_categories' ),
-				),
-			),
-			$this->get_requested_dimensions(),
-			'The `build()` method should ask for five reports in the first call, and for the content and category reports in a second call.'
-		);
-		$this->assertSame( array( 'channels', 'content', 'categories' ), array_keys( $response['contextualData'] ), 'The response should have rows from the channel, content, and category reports.' );
-	}
-
-	public function test_build__asks_for_the_content_report_without_the_categories_report_when_only_the_post_date_has_data() {
+	public function test_build__asks_for_six_reports_in_two_calls_when_the_post_date_has_data() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
-		$this->report_rows = array(
-			'date'                                      => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'sessionDefaultChannelGrouping'             => array(
-				array( 'Referral', 'date_range_0', 47 ),
-			),
-			'pagePath'                                  => array(
-				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
-			),
-			'customEvent:googlesitekit_post_categories' => array(
-				array( 'Garden', 'date_range_0', 60 ),
-			),
-		);
-
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+		$this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame(
 			array(
-				array(
-					array( 'date' ),
-					array( 'sessionDefaultChannelGrouping' ),
-					array( 'deviceCategory' ),
-					array( 'newVsReturning' ),
-					array( 'sessionSource' ),
-				),
+				$this->get_first_call_dimensions(),
 				array(
 					array( 'pagePath', 'pageTitle', 'customEvent:googlesitekit_post_date' ),
 				),
 			),
 			$this->get_requested_dimensions(),
-			'The `build()` method should ask for the content report in a second call, without a category report.'
+			'The `build()` method should ask for the daily series and the four channel breakdowns in the first call, and for the content report in a second call.'
 		);
-		$this->assertSame( array( 'channels', 'content' ), array_keys( $response['contextualData'] ), 'The response should have no `categories` rows while the post categories have no data.' );
 	}
 
-	public function test_build__asks_for_the_categories_report_without_the_content_report_when_only_the_post_categories_have_data() {
+	public function test_build__asks_for_five_reports_in_one_call_when_the_post_date_has_no_data() {
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array( $this->get_first_call_dimensions() ),
+			$this->get_requested_dimensions(),
+			'The `build()` method should ask for the daily series and the four channel breakdowns in one call, without the content report.'
+		);
+	}
+
+	public function test_build__does_not_ask_for_a_categories_report_when_the_post_categories_have_data() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_categories' );
-
-		$this->report_rows = array(
-			'date'                                      => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'sessionDefaultChannelGrouping'             => array(
-				array( 'Referral', 'date_range_0', 47 ),
-			),
-			'pagePath'                                  => array(
-				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
-			),
-			'customEvent:googlesitekit_post_categories' => array(
-				array( 'Garden', 'date_range_0', 60 ),
-			),
-		);
-
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
-		$this->assertSame(
-			array(
-				array(
-					array( 'date' ),
-					array( 'sessionDefaultChannelGrouping' ),
-					array( 'deviceCategory' ),
-					array( 'newVsReturning' ),
-					array( 'sessionSource' ),
-				),
-				array(
-					array( 'customEvent:googlesitekit_post_categories' ),
-				),
-			),
-			$this->get_requested_dimensions(),
-			'The `build()` method should ask for the category report in a second call, without a content report.'
-		);
-		$this->assertSame( array( 'channels', 'categories' ), array_keys( $response['contextualData'] ), 'The response should have no `content` rows while the post date has no data.' );
-	}
-
-	public function test_build__asks_for_five_reports_in_one_call_when_neither_the_post_date_nor_the_post_categories_have_data() {
-		$this->report_rows = array(
-			'date'                                      => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'sessionDefaultChannelGrouping'             => array(
-				array( 'Referral', 'date_range_0', 47 ),
-			),
-			'pagePath'                                  => array(
-				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
-			),
-			'customEvent:googlesitekit_post_categories' => array(
-				array( 'Garden', 'date_range_0', 60 ),
-			),
-		);
-
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
-		$this->assertSame(
-			array(
-				array(
-					array( 'date' ),
-					array( 'sessionDefaultChannelGrouping' ),
-					array( 'deviceCategory' ),
-					array( 'newVsReturning' ),
-					array( 'sessionSource' ),
-				),
-			),
-			$this->get_requested_dimensions(),
-			'The `build()` method should ask for five reports in one call.'
-		);
-		$this->assertSame( array( 'channels' ), array_keys( $response['contextualData'] ), 'The response should have no `content` and no `categories` rows while neither the post date nor the post categories have data.' );
-	}
-
-	public function test_build__asks_for_the_content_and_categories_reports_when_the_property_has_their_dimensions_without_recorded_data() {
 		$this->analytics->get_settings()->merge(
-			array( 'availableCustomDimensions' => array( 'googlesitekit_post_date', 'googlesitekit_post_categories' ) )
-		);
-
-		$this->report_rows = array(
-			'date'                                      => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'sessionDefaultChannelGrouping'             => array(
-				array( 'Referral', 'date_range_0', 47 ),
-			),
-			'pagePath'                                  => array(
-				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
-			),
-			'customEvent:googlesitekit_post_categories' => array(
-				array( 'Garden', 'date_range_0', 60 ),
-			),
-		);
-
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
-		$this->assertSame(
-			array(
-				array(
-					array( 'date' ),
-					array( 'sessionDefaultChannelGrouping' ),
-					array( 'deviceCategory' ),
-					array( 'newVsReturning' ),
-					array( 'sessionSource' ),
-				),
-				array(
-					array( 'pagePath', 'pageTitle', 'customEvent:googlesitekit_post_date' ),
-					array( 'customEvent:googlesitekit_post_categories' ),
-				),
-			),
-			$this->get_requested_dimensions(),
-			'The `build()` method should ask for the content and category reports when `availableCustomDimensions` lists their dimensions, even though Site Kit has not recorded that they have data.'
-		);
-		$this->assertSame( array( 'channels', 'content', 'categories' ), array_keys( $response['contextualData'] ), 'The response should have the `content` and `categories` rows of the two reports.' );
-		$this->assertSame( array( '2026-09-01' ), array_column( $response['contentMarkers'], 'date' ), 'The response should mark the post of the content report.' );
-	}
-
-	public function test_build__does_not_ask_for_a_report_whose_dimension_the_property_does_not_have() {
-		$this->analytics->get_settings()->merge(
-			array( 'availableCustomDimensions' => array( 'googlesitekit_post_author', 'googlesitekit_post_type' ) )
-		);
-
-		$this->report_rows = array(
-			'date' => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
+			array( 'availableCustomDimensions' => array( 'googlesitekit_post_categories' ) )
 		);
 
 		$this->builder->build( '2026-08-19', '2026-09-15' );
 
-		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for neither the content nor the category report when `availableCustomDimensions` lists neither of their dimensions.' );
+		$this->assertSame( array( $this->get_first_call_dimensions() ), $this->get_requested_dimensions(), 'The `build()` method should ask for no report by post category, since a category is never a key factor card.' );
 	}
 
-	public function test_build__asks_for_each_dimension_report_over_the_selected_period_and_the_28_days_before_it() {
+	public function test_build__asks_for_the_content_report_when_the_property_has_the_post_date_dimension_without_recorded_data() {
+		$this->analytics->get_settings()->merge(
+			array( 'availableCustomDimensions' => array( 'googlesitekit_post_date' ) )
+		);
+
+		$this->report_rows = array(
+			'date'        => array(
+				array( '20260818', 388 ),
+				array( '20260915', 412 ),
+			),
+			self::CONTENT => array(
+				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
+			),
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				$this->get_first_call_dimensions(),
+				array(
+					array( 'pagePath', 'pageTitle', 'customEvent:googlesitekit_post_date' ),
+				),
+			),
+			$this->get_requested_dimensions(),
+			'The `build()` method should ask for the content report when `availableCustomDimensions` lists the post date, even though Site Kit has not recorded that it has data.'
+		);
+		$this->assertSame( array( '2026-09-01' ), array_column( $response['contentMarkers'], 'date' ), 'The response should mark the post of the content report.' );
+	}
+
+	public function test_build__does_not_ask_for_the_content_report_when_the_property_does_not_have_the_post_date_dimension() {
+		$this->analytics->get_settings()->merge(
+			array( 'availableCustomDimensions' => array( 'googlesitekit_post_author', 'googlesitekit_post_type' ) )
+		);
+
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should not ask for the content report when `availableCustomDimensions` does not list the post date.' );
+	}
+
+	public function test_build__asks_for_each_breakdown_and_the_content_report_over_the_selected_period_and_the_28_days_before_it() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
-		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_categories' );
 
 		$this->builder->build( '2026-08-19', '2026-09-15' );
 
@@ -585,7 +570,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertEquals(
 			array_fill(
 				0,
-				6,
+				5,
 				array(
 					array(
 						'startDate' => '2026-08-19',
@@ -598,7 +583,7 @@ class Response_BuilderTest extends TestCase {
 				)
 			),
 			$date_ranges,
-			'The `build()` method should ask for each of the six dimension reports over `2026-08-19` to `2026-09-15`, then `2026-07-22` to `2026-08-18`, in one request.'
+			'The `build()` method should ask for the four breakdowns and the content report over `2026-08-19` to `2026-09-15`, then `2026-07-22` to `2026-08-18`, in one request each.'
 		);
 	}
 
@@ -717,13 +702,13 @@ class Response_BuilderTest extends TestCase {
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame(
-			array( 'visits', 'dailyTraffic', 'firstTrafficDate', 'dimensions', 'contextualData' ),
+			array( 'visits', 'dailyTraffic', 'firstTrafficDate', 'keyFactors', 'contentMarkers' ),
 			array_keys( $response ),
 			'Without the `trafficInsights` feature, the response should have no `insightRequest`.'
 		);
 	}
 
-	public function test_build__returns_the_insight_request_built_from_every_row_with_the_traffic_insights_feature() {
+	public function test_build__returns_the_insight_request_built_from_the_sums_of_the_breakdowns_with_the_traffic_insights_feature() {
 		$this->enable_feature( 'trafficInsights' );
 		$this->provide_reports_for_every_dimension();
 
@@ -736,8 +721,9 @@ class Response_BuilderTest extends TestCase {
 
 		// The site recorded its first visits on `2026-08-18`, 29 days before the
 		// end date, which is too little history for an expected range and leaves
-		// last year's periods out. The request lists all seven referrers, where
-		// the response's rows keep the five highest scoring.
+		// last year's periods out. The channels, devices and visitor types are
+		// the sums of the channel breakdown, and the referrers the sums of the
+		// channel and source breakdown, without `(direct)`.
 		$this->assertSame(
 			array(
 				'end_date'        => '2026-09-15',
@@ -777,13 +763,21 @@ class Response_BuilderTest extends TestCase {
 					'device_shifts'           => array(
 						array(
 							'device'   => 'mobile',
-							'sessions' => $pair( 240, 200 ),
+							'sessions' => $pair( 287, 178 ),
+						),
+						array(
+							'device'   => 'desktop',
+							'sessions' => $pair( 190, 187 ),
 						),
 					),
 					'user_mix_shifts'         => array(
 						array(
 							'segment'  => 'new',
-							'sessions' => $pair( 240, 200 ),
+							'sessions' => $pair( 287, 178 ),
+						),
+						array(
+							'segment'  => 'returning',
+							'sessions' => $pair( 190, 187 ),
 						),
 					),
 					'referrers'               => array_map(
@@ -811,9 +805,8 @@ class Response_BuilderTest extends TestCase {
 				),
 			),
 			$response['insightRequest'],
-			'With the `trafficInsights` feature, the response should carry the insight request, built from the daily series and from every row of the reports before they are ranked.'
+			'With the `trafficInsights` feature, the response should carry the insight request, built from the daily series and from the sums of the breakdowns.'
 		);
-		$this->assertCount( 5, $response['contextualData']['referrers'], 'The response itself should still keep the five highest scoring referrers.' );
 	}
 
 	public function test_build__builds_the_insight_request_from_the_rows_a_contextual_data_callback_adds() {
@@ -1116,72 +1109,99 @@ class Response_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build__pairs_each_channel_across_the_two_periods_by_its_name() {
+	public function test_build__pairs_each_breakdown_row_across_the_two_periods_by_all_of_its_values() {
 		$this->report_rows = array(
-			'date'                          => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'sessionDefaultChannelGrouping' => array(
-				array( 'Organic Search', 'date_range_0', 210 ),
-				array( 'Direct', 'date_range_0', 118 ),
-				array( 'Referral', 'date_range_0', 47 ),
-				array( 'Email', 'date_range_0', 42 ),
-				array( 'Direct', 'date_range_1', 137 ),
-				array( 'Organic Search', 'date_range_1', 168 ),
-				array( 'Email', 'date_range_1', 40 ),
+			self::CHANNEL_BREAKDOWNS => array(
+				array( 'Organic Search', 'mobile', 'new', 'date_range_0', 210 ),
+				array( 'Organic Search', 'desktop', 'new', 'date_range_0', 30 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_0', 118 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_1', 137 ),
+				array( 'Organic Search', 'mobile', 'new', 'date_range_1', 168 ),
+				array( 'Email', 'mobile', 'new', 'date_range_1', 40 ),
 			),
 		);
-
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame(
 			array(
 				array(
-					'label'    => 'Referral',
-					'current'  => 47,
-					'previous' => 0,
-				),
-				array(
-					'label'    => 'Organic Search',
+					'channel'  => 'Organic Search',
+					'device'   => 'mobile',
+					'userType' => 'new',
 					'current'  => 210,
 					'previous' => 168,
 				),
 				array(
-					'label'    => 'Direct',
+					'channel'  => 'Organic Search',
+					'device'   => 'desktop',
+					'userType' => 'new',
+					'current'  => 30,
+					'previous' => 0,
+				),
+				array(
+					'channel'  => 'Direct',
+					'device'   => 'desktop',
+					'userType' => 'returning',
 					'current'  => 118,
 					'previous' => 137,
 				),
+				array(
+					'channel'  => 'Email',
+					'device'   => 'mobile',
+					'userType' => 'new',
+					'current'  => 0,
+					'previous' => 40,
+				),
 			),
-			$response['contextualData']['channels'],
-			'`channels` should pair each channel by name, list 0 visitors for `Referral` in the compare period, exclude `Email`, and rank the rest by score.'
+			$this->get_contextual_data()['channelBreakdowns'],
+			'`channelBreakdowns` should pair each channel, device and visitor type, and list 0 visits for the period a combination is missing from.'
 		);
-		$this->assertSame( array( 'CHANNELS' ), $response['dimensions'], '`dimensions` should list `CHANNELS` alone.' );
 	}
 
-	public function test_build__lists_0_visitors_for_a_channel_missing_from_the_selected_period() {
+	public function test_build__names_the_values_of_each_breakdown_by_what_they_are() {
 		$this->report_rows = array(
-			'date'                          => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
+			self::CHANNEL_SOURCES   => array(
+				array( 'Referral', 'news.example.com', 'date_range_0', 47 ),
 			),
-			'sessionDefaultChannelGrouping' => array(
-				array( 'Paid Social', 'date_range_1', 60 ),
+			self::CHANNEL_PAGES     => array(
+				array( 'Organic Search', '/plant-garlic/', 'date_range_0', 96 ),
+			),
+			self::CHANNEL_CAMPAIGNS => array(
+				array( 'Email', 'spring-sale', 'date_range_0', 42 ),
 			),
 		);
 
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+		$contextual_data = $this->get_contextual_data();
 
 		$this->assertSame(
 			array(
-				array(
-					'label'    => 'Paid Social',
-					'current'  => 0,
-					'previous' => 60,
+				'channelBreakdowns' => array(),
+				'channelSources'    => array(
+					array(
+						'channel'  => 'Referral',
+						'source'   => 'news.example.com',
+						'current'  => 47,
+						'previous' => 0,
+					),
+				),
+				'channelPages'      => array(
+					array(
+						'channel'  => 'Organic Search',
+						'page'     => '/plant-garlic/',
+						'current'  => 96,
+						'previous' => 0,
+					),
+				),
+				'channelCampaigns'  => array(
+					array(
+						'channel'  => 'Email',
+						'campaign' => 'spring-sale',
+						'current'  => 42,
+						'previous' => 0,
+					),
 				),
 			),
-			$response['contextualData']['channels'],
-			'`channels` should list 0 visitors for `Paid Social` in the selected period.'
+			$contextual_data,
+			'Each breakdown should name its values `channel` and `source`, `page` or `campaign`.'
 		);
 	}
 
@@ -1189,67 +1209,57 @@ class Response_BuilderTest extends TestCase {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
 		$this->report_rows = array(
-			'date'     => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'pagePath' => array(
+			self::CONTENT => array(
 				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
 				array( '/mulching-in-autumn/', 'Mulching in autumn', '20260912', 'date_range_0', 40 ),
 			),
 		);
-
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame(
 			array(
 				array(
 					'url'              => '/how-to-plant-garlic/',
 					'title'            => 'How to plant garlic',
-					'visitors'         => 96,
 					'publishedDaysAgo' => 14,
+					'current'          => 96,
+					'previous'         => 0,
 				),
 				array(
 					'url'              => '/mulching-in-autumn/',
 					'title'            => 'Mulching in autumn',
-					'visitors'         => 40,
 					'publishedDaysAgo' => 3,
+					'current'          => 40,
+					'previous'         => 0,
 				),
 			),
-			$response['contextualData']['content'],
-			'`content` should have each post with its path, its title, its visitors in the selected period, and its days from publication to `2026-09-15`.'
+			$this->get_contextual_data()['content'],
+			'`content` should have each post with its path, its title, its days from publication to `2026-09-15`, and its visits in each period.'
 		);
-		$this->assertSame( array( 'CONTENT' ), $response['dimensions'], '`dimensions` should list `CONTENT` alone.' );
 	}
 
 	public function test_build__lists_a_post_once_with_the_title_of_its_first_row_in_the_selected_period() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
 		$this->report_rows = array(
-			'date'     => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'pagePath' => array(
+			self::CONTENT => array(
 				array( '/growing-tomatoes/', 'Growing tomatoes in pots', '20260801', 'date_range_1', 20 ),
 				array( '/growing-tomatoes/', 'Growing tomatoes', '20260801', 'date_range_0', 30 ),
 				array( '/growing-tomatoes/', 'Growing tomatoes in pots', '20260801', 'date_range_0', 6 ),
 			),
 		);
 
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
 		$this->assertSame(
 			array(
 				array(
 					'url'              => '/growing-tomatoes/',
 					'title'            => 'Growing tomatoes',
-					'visitors'         => 36,
 					'publishedDaysAgo' => 45,
+					'current'          => 36,
+					'previous'         => 20,
 				),
 			),
-			$response['contextualData']['content'],
-			'`content` should list the post once, with the title of its first row in the selected period, `Growing tomatoes`, and the visitors of its two rows in the selected period added together.'
+			$this->get_contextual_data()['content'],
+			'`content` should list the post once, with the title of its first row in the selected period, `Growing tomatoes`, and the visits of its rows in each period added together.'
 		);
 	}
 
@@ -1257,23 +1267,17 @@ class Response_BuilderTest extends TestCase {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
 		$this->report_rows = array(
-			'date'     => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
 			// Analytics groups the less common values of a report with many values
 			// into a row labeled `(other)`.
-			'pagePath' => array(
+			self::CONTENT => array(
 				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
 				array( '(other)', '(other)', '(other)', 'date_range_0', 80 ),
 			),
 		);
 
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
 		$this->assertSame(
 			array( '/how-to-plant-garlic/' ),
-			array_column( $response['contextualData']['content'], 'url' ),
+			array_column( $this->get_contextual_data()['content'], 'url' ),
 			"`content` should not list the `(other)` row, whose post date isn't a date."
 		);
 	}
@@ -1282,21 +1286,15 @@ class Response_BuilderTest extends TestCase {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
 		$this->report_rows = array(
-			'date'     => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'pagePath' => array(
+			self::CONTENT => array(
 				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
 				array( '/spring-planting/', 'Spring planting', '20260231', 'date_range_0', 70 ),
 			),
 		);
 
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
 		$this->assertSame(
 			array( '/how-to-plant-garlic/' ),
-			array_column( $response['contextualData']['content'], 'url' ),
+			array_column( $this->get_contextual_data()['content'], 'url' ),
 			'`content` should not list `/spring-planting/`, whose post date `20260231` is 31 February.'
 		);
 	}
@@ -1305,29 +1303,23 @@ class Response_BuilderTest extends TestCase {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
 		$this->report_rows = array(
-			'date'     => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-			'pagePath' => array(
+			self::CONTENT => array(
 				array( '/harvest-notes/', 'Harvest notes', '20260916', 'date_range_0', 50 ),
 			),
 		);
 
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
-		$this->assertSame( 0, $response['contextualData']['content'][0]['publishedDaysAgo'], 'A post dated `2026-09-16` should be reported as published 0 days before `2026-09-15`.' );
+		$this->assertSame( 0, $this->get_contextual_data()['content'][0]['publishedDaysAgo'], 'A post dated `2026-09-16` should be reported as published 0 days before `2026-09-15`.' );
 	}
 
 	public function test_build__marks_the_posts_of_the_content_report_published_in_the_selected_period() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
 		$this->report_rows = array(
-			'date'     => array(
+			'date'        => array(
 				array( '20260818', 388 ),
 				array( '20260915', 412 ),
 			),
-			'pagePath' => array(
+			self::CONTENT => array(
 				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
 				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_1', 0 ),
 				array( '/', 'Home', '20260901', 'date_range_0', 900 ),
@@ -1356,11 +1348,11 @@ class Response_BuilderTest extends TestCase {
 
 	public function test_build__marks_no_posts_when_the_property_has_no_post_date_dimension() {
 		$this->report_rows = array(
-			'date'     => array(
+			'date'        => array(
 				array( '20260818', 388 ),
 				array( '20260915', 412 ),
 			),
-			'pagePath' => array(
+			self::CONTENT => array(
 				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
 			),
 		);
@@ -1370,8 +1362,13 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( array(), $response['contentMarkers'], '`contentMarkers` should be empty when the property has no post date dimension, since the content report does not run.' );
 	}
 
-	public function test_build__ranks_rows_the_same_way_when_every_report_returns_its_rows_in_reverse_order() {
-		$this->provide_reports_for_every_dimension();
+	public function test_build__returns_the_same_response_when_every_report_returns_its_rows_in_reverse_order() {
+		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
+		$this->provide_key_factor_reports();
+		$this->report_rows[ self::CONTENT ] = array(
+			array( '/b-post/', 'B post', '20260901', 'date_range_0', 30 ),
+			array( '/a-post/', 'A post', '20260901', 'date_range_0', 30 ),
+		);
 
 		$first_response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
@@ -1379,27 +1376,34 @@ class Response_BuilderTest extends TestCase {
 
 		$second_response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
-		$this->assertCount( 6, $first_response['dimensions'], 'The response should list the six dimensions whose reports have rows.' );
+		$this->assertCount( 2, $first_response['keyFactors'], 'The response should have two key factor cards.' );
 		$this->assertSame( $first_response, $second_response, 'The `build()` method should return the same response when every report returns its rows in the reverse order.' );
 	}
 
-	public function test_build__does_not_return_a_number_with_decimals() {
-		$this->provide_reports_for_every_dimension();
+	public function test_build__returns_no_number_with_decimals_other_than_a_bound_or_a_share_with_one_decimal() {
+		$this->provide_key_factor_reports();
 
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$decimals = array();
+		$shares   = array();
 		array_walk_recursive(
 			$response,
-			function ( $value, $key ) use ( &$decimals ) {
-				// The bounds of the expected range keep one decimal.
-				if ( is_float( $value ) && ! in_array( $key, array( 'expectedMin', 'expectedMax' ), true ) ) {
+			function ( $value, $key ) use ( &$decimals, &$shares ) {
+				if ( 'sharePct' === $key ) {
+					$shares[] = $value;
+				} elseif ( is_float( $value ) && ! in_array( $key, array( 'expectedMin', 'expectedMax' ), true ) ) {
 					$decimals[] = $value;
 				}
 			}
 		);
 
-		$this->assertSame( array(), $decimals, 'The response should have no number with decimals other than the bounds of the expected range.' );
+		$this->assertSame( array(), $decimals, 'The response should have no number with decimals other than the bounds of the expected range and the shares.' );
+		$this->assertNotEmpty( $shares, 'The response should have the shares of its key factor cards.' );
+
+		foreach ( $shares as $share ) {
+			$this->assertSame( round( $share, 1 ), $share, 'A share should have at most one decimal.' );
+		}
 
 		foreach ( $response['dailyTraffic'] as $day ) {
 			foreach ( array( 'expectedMin', 'expectedMax' ) as $bound ) {
@@ -1433,13 +1437,13 @@ class Response_BuilderTest extends TestCase {
 
 	public function test_build__runs_the_contextual_data_filter_with_the_rows_built_so_far_and_the_period() {
 		$this->report_rows = array(
-			'date'                          => array(
+			'date'                   => array(
 				array( '20260818', 388 ),
 				array( '20260915', 412 ),
 			),
-			'sessionDefaultChannelGrouping' => array(
-				array( 'Organic Search', 'date_range_0', 210 ),
-				array( 'Organic Search', 'date_range_1', 168 ),
+			self::CHANNEL_BREAKDOWNS => array(
+				array( 'Organic Search', 'mobile', 'new', 'date_range_0', 210 ),
+				array( 'Organic Search', 'mobile', 'new', 'date_range_1', 168 ),
 			),
 		);
 
@@ -1460,16 +1464,18 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'channels'   => array(
+					'channelBreakdowns' => array(
 						array(
-							'label'    => 'Organic Search',
+							'channel'  => 'Organic Search',
+							'device'   => 'mobile',
+							'userType' => 'new',
 							'current'  => 210,
 							'previous' => 168,
 						),
 					),
-					'devices'    => array(),
-					'visitorMix' => array(),
-					'referrers'  => array(),
+					'channelSources'    => array(),
+					'channelPages'      => array(),
+					'channelCampaigns'  => array(),
 				),
 				array(
 					'start_date'         => '2026-08-19',
@@ -1480,7 +1486,7 @@ class Response_BuilderTest extends TestCase {
 				),
 			),
 			$filter_args,
-			'The filter should receive the rows built from the Analytics reports, before they are ranked, and the two periods with the row limit of `500`.'
+			'The filter should receive the rows built from the Analytics reports, and the two periods with the row limit of `500`.'
 		);
 	}
 
@@ -1516,7 +1522,7 @@ class Response_BuilderTest extends TestCase {
 						'label'            => 'plant garlic',
 						'current'          => '300',
 						'previous'         => 200,
-						'positionCurrent'  => 3.4,
+						'positionCurrent'  => '3.4',
 						'positionPrevious' => 4.8,
 					),
 				);
@@ -1540,11 +1546,11 @@ class Response_BuilderTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'channels'      => array(),
-				'devices'       => array(),
-				'visitorMix'    => array(),
-				'referrers'     => array(),
-				'searchQueries' => array(
+				'channelBreakdowns' => array(),
+				'channelSources'    => array(),
+				'channelPages'      => array(),
+				'channelCampaigns'  => array(),
+				'searchQueries'     => array(
 					array(
 						'label'            => 'plant garlic',
 						'current'          => 300,
@@ -1555,7 +1561,7 @@ class Response_BuilderTest extends TestCase {
 				),
 			),
 			$received_data,
-			'The callback at priority 20 should receive the rows the first callback returned after they are validated: without `browsers`, and with `current` stored as `300`.'
+			'The callback at priority 20 should receive the rows the first callback returned after they are validated: without `browsers`, and with its numeric strings stored as numbers.'
 		);
 	}
 
@@ -1594,23 +1600,179 @@ class Response_BuilderTest extends TestCase {
 		$this->assertArrayHasKey( 'searchQueries', $received_data, 'The callback at priority 20 should run after the one at priority 5, and receive its `searchQueries` rows, even though it was added first.' );
 	}
 
-	public function test_build__keeps_the_5_highest_scoring_of_40_rows_a_callback_adds_and_orders_their_dimension_by_the_sum_of_their_scores() {
-		$this->provide_reports_for_every_dimension();
+	public function test_build__returns_the_key_factor_cards_with_their_attributes() {
+		$this->provide_key_factor_reports();
 
-		$analytics_response = $this->builder->build( '2026-08-19', '2026-09-15' );
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				array(
+					'kind'       => 'CONTENT',
+					'label'      => '/plant-garlic/',
+					'current'    => 150,
+					'previous'   => 50,
+					'sharePct'   => 35.7,
+					'attributes' => array(
+						array(
+							'kind'     => 'TRAFFIC_CHANNEL',
+							'label'    => 'Organic Search',
+							'current'  => 150,
+							'previous' => 50,
+							'sharePct' => 35.7,
+						),
+						array(
+							'kind'     => 'USER_TYPE',
+							'label'    => 'new',
+							'current'  => 110,
+							'previous' => 20,
+							'sharePct' => 32.1,
+						),
+					),
+				),
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Direct',
+					'current'    => 380,
+					'previous'   => 300,
+					'sharePct'   => 28.6,
+					'attributes' => array(),
+				),
+			),
+			$response['keyFactors'],
+			'The cards should be the `/plant-garlic/` page, with its channel and the visitor type of its own report, and `Direct`, whose devices and visitor types grew as much as it did.'
+		);
+	}
+
+	public function test_build__asks_for_the_audience_and_the_sources_of_a_landing_page_card_in_a_call_of_their_own() {
+		$this->provide_key_factor_reports();
+
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				$this->get_first_call_dimensions(),
+				array(
+					array( 'deviceCategory', 'newVsReturning' ),
+					array( 'sessionDefaultChannelGrouping', 'sessionSource' ),
+				),
+			),
+			$this->get_requested_dimensions(),
+			'The `build()` method should ask for the `/plant-garlic/` card its visits by device and visitor type, and by channel and source, in a second call.'
+		);
+		$this->assertSame(
+			array_fill( 0, 2, array( 'landingPage' => array( '/plant-garlic/' ) ) ),
+			array_map( array( $this, 'get_driver_filters' ), $this->batch_requests[1]['requests'] ),
+			'Both reports should be filtered on the `/plant-garlic/` landing page.'
+		);
+	}
+
+	public function test_build__filters_the_reports_of_a_referring_site_card_on_its_sources_through_referral_and_organic_social() {
+		$this->report_rows = array(
+			'date'                   => $this->get_daily_report_rows( '2026-07-22', '2026-09-15', fn() => 25 ),
+			self::CHANNEL_BREAKDOWNS => array(
+				array( 'Organic Social', 'desktop', 'returning', 'date_range_0', 190 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_0', 700 ),
+				array( 'Organic Social', 'desktop', 'returning', 'date_range_1', 100 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_1', 500 ),
+			),
+			self::CHANNEL_SOURCES    => array(
+				array( 'Organic Social', 'm.facebook.com', 'date_range_0', 60 ),
+				array( 'Organic Social', 'facebook.com', 'date_range_0', 70 ),
+				array( 'Organic Social', 'l.facebook.com', 'date_range_0', 50 ),
+				array( 'Organic Social', 'x.com', 'date_range_0', 10 ),
+				array( 'Organic Social', 'm.facebook.com', 'date_range_1', 30 ),
+				array( 'Organic Social', 'facebook.com', 'date_range_1', 40 ),
+				array( 'Organic Social', 'l.facebook.com', 'date_range_1', 20 ),
+				array( 'Organic Social', 'x.com', 'date_range_1', 10 ),
+			),
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame( array( 'Direct', 'Facebook' ), array_column( $response['keyFactors'], 'label' ), 'The cards should be `Direct` and the `Facebook` referring site, in place of `Organic Social`.' );
+		$this->assertSame(
+			array(
+				array( 'deviceCategory', 'newVsReturning' ),
+				array( 'landingPage' ),
+			),
+			$this->get_requested_dimensions()[1],
+			'The `build()` method should ask for the `Facebook` card its visits by device and visitor type, and by landing page.'
+		);
+		$this->assertSame(
+			array_fill(
+				0,
+				2,
+				array(
+					'sessionSource'                 => array( 'facebook.com', 'l.facebook.com', 'm.facebook.com' ),
+					'sessionDefaultChannelGrouping' => array( 'Referral', 'Organic Social' ),
+				)
+			),
+			array_map( array( $this, 'get_driver_filters' ), $this->batch_requests[1]['requests'] ),
+			'Both reports should be filtered on the three Facebook sources, through `Referral` and `Organic Social`.'
+		);
+	}
+
+	public function test_build__makes_no_more_calls_when_every_key_factor_card_is_a_channel() {
+		$this->report_rows = array(
+			'date'                   => $this->get_daily_report_rows( '2026-07-22', '2026-09-15', fn() => 25 ),
+			self::CHANNEL_BREAKDOWNS => array(
+				array( 'Organic Search', 'desktop', 'returning', 'date_range_0', 600 ),
+				array( 'Organic Search', 'desktop', 'returning', 'date_range_1', 400 ),
+			),
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame( array( 'Organic Search' ), array_column( $response['keyFactors'], 'label' ), 'The only card should be `Organic Search`.' );
+		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should make no call for the attributes of a channel card.' );
+	}
+
+	public function test_build__returns_the_error_of_the_call_for_the_attributes_of_the_key_factor_cards() {
+		$this->provide_key_factor_reports();
+
+		$this->refused_batch_call = 2;
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertWPError( $response, 'The `build()` method should return an error when the call for the attributes of the cards fails.' );
+		$this->assertSame( 403, $response->get_error_code(), 'The error should have the `403` code the Analytics 4 module returned.' );
+	}
+
+	public function test_build__returns_no_key_factor_cards_while_the_compare_period_starts_before_the_first_day_with_traffic() {
+		$this->provide_key_factor_reports();
+		$this->report_rows['date'] = $this->get_daily_report_rows( '2026-07-23', '2026-09-15', fn() => 25 );
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame( '2026-07-23', $response['firstTrafficDate'], 'The first day with traffic should be `2026-07-23`, the day after the compare period starts.' );
+		$this->assertSame( array(), $response['keyFactors'], 'There should be no key factor cards while the compare period has a day before the site was measured.' );
+		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should make no call for the attributes of cards it does not return.' );
+	}
+
+	public function test_build__returns_no_key_factor_cards_when_no_day_has_traffic() {
+		$this->provide_key_factor_reports();
+		unset( $this->report_rows['date'] );
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame( array(), $response['keyFactors'], 'There should be no key factor cards when no day of the daily series has traffic.' );
+	}
+
+	public function test_build__makes_a_search_query_a_callback_adds_a_key_factor_card() {
+		$this->provide_key_factor_reports();
 
 		add_filter(
 			'googlesitekit_benchmarking_contextual_data',
 			function ( $contextual_data ) {
-				$contextual_data['searchQueries'] = array_map(
-					fn( $index ) => array(
-						'label'            => sprintf( 'query %02d', $index ),
-						'current'          => 100 + $index,
-						'previous'         => 10,
-						'positionCurrent'  => 5.0,
-						'positionPrevious' => 6.0,
+				$contextual_data['searchQueries'] = array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 160,
+						'previous'         => 20,
+						'positionCurrent'  => 2.1,
+						'positionPrevious' => 8.4,
 					),
-					range( 0, 39 )
 				);
 
 				return $contextual_data;
@@ -1620,14 +1782,9 @@ class Response_BuilderTest extends TestCase {
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame(
-			array( 'query 39', 'query 38', 'query 37', 'query 36', 'query 35' ),
-			array_column( $response['contextualData']['searchQueries'], 'label' ),
-			'`searchQueries` should keep the 5 of its 40 rows that gained the most clicks, highest first.'
-		);
-		$this->assertSame(
-			array_merge( array( 'SEARCH_QUERIES' ), $analytics_response['dimensions'] ),
-			$response['dimensions'],
-			'`dimensions` should list `SEARCH_QUERIES` first, since the scores of its 40 rows add up to more than any other dimension, and keep the order of the others.'
+			array( 'SEARCH_KEYWORD plant garlic', 'CONTENT /plant-garlic/', 'CHANNEL Direct' ),
+			array_map( fn( $card ) => "{$card['kind']} {$card['label']}", $response['keyFactors'] ),
+			'The `plant garlic` search query, which gained 140 clicks, should be the first card.'
 		);
 	}
 
@@ -1637,7 +1794,7 @@ class Response_BuilderTest extends TestCase {
 	 * @param callable $failing_callback A `googlesitekit_benchmarking_contextual_data` callback that fails.
 	 */
 	public function test_build__keeps_the_rows_of_analytics_and_of_every_other_callback_when_a_callback_fails( $failing_callback ) {
-		$this->provide_reports_for_every_dimension();
+		$this->provide_key_factor_reports();
 
 		add_filter(
 			'googlesitekit_benchmarking_contextual_data',
@@ -1645,10 +1802,10 @@ class Response_BuilderTest extends TestCase {
 				$contextual_data['searchQueries'] = array(
 					array(
 						'label'            => 'plant garlic',
-						'current'          => 300,
-						'previous'         => 200,
-						'positionCurrent'  => 3.4,
-						'positionPrevious' => 4.8,
+						'current'          => 160,
+						'previous'         => 20,
+						'positionCurrent'  => 2.1,
+						'positionPrevious' => 8.4,
 					),
 				);
 
@@ -1664,8 +1821,8 @@ class Response_BuilderTest extends TestCase {
 
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
-		$this->assertContains( 'SEARCH_QUERIES', $expected_response['dimensions'], 'The response without the failing callback should list `SEARCH_QUERIES`.' );
-		$this->assertSame( $expected_response, $response, 'The failing callback should leave the response the same, with the `searchQueries` rows of the other callback and every dimension built from Analytics reports.' );
+		$this->assertSame( 'SEARCH_KEYWORD', $expected_response['keyFactors'][0]['kind'], 'The response without the failing callback should have the search keyword card of the other callback.' );
+		$this->assertSame( $expected_response, $response, 'The failing callback should leave the response the same, with the card of the other callback and every card built from Analytics reports.' );
 	}
 
 	public function data_failing_contextual_data_callbacks() {
@@ -1682,552 +1839,5 @@ class Response_BuilderTest extends TestCase {
 				function () {},
 			),
 		);
-	}
-
-	public function test_build__removes_a_key_a_callback_adds_that_the_response_does_not_define_and_keeps_the_rest() {
-		$this->report_rows = array(
-			'date' => array(
-				array( '20260818', 388 ),
-				array( '20260915', 412 ),
-			),
-		);
-
-		add_filter(
-			'googlesitekit_benchmarking_contextual_data',
-			function ( $contextual_data ) {
-				$contextual_data['browsers']      = array(
-					array(
-						'label'    => 'Chrome',
-						'current'  => 300,
-						'previous' => 200,
-					),
-				);
-				$contextual_data['searchQueries'] = array(
-					array(
-						'label'            => 'plant garlic',
-						'current'          => '300',
-						'previous'         => 200,
-						'positionCurrent'  => '3.4',
-						'positionPrevious' => 4.8,
-					),
-				);
-
-				return $contextual_data;
-			}
-		);
-
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
-		$this->assertSame(
-			array(
-				'searchQueries' => array(
-					array(
-						'label'            => 'plant garlic',
-						'current'          => 300,
-						'previous'         => 200,
-						'positionCurrent'  => 3.4,
-						'positionPrevious' => 4.8,
-					),
-				),
-			),
-			$response['contextualData'],
-			'`contextualData` should have the `searchQueries` row, with its numeric strings stored as numbers, and no `browsers` key.'
-		);
-		$this->assertSame( array( 'SEARCH_QUERIES' ), $response['dimensions'], '`dimensions` should list `SEARCH_QUERIES` alone.' );
-	}
-
-	public function test_rank_contextual_data__keeps_the_5_highest_scoring_rows_of_a_dimension() {
-		$ranked_data = $this->builder->rank_contextual_data(
-			array(
-				'referrers' => array(
-					array(
-						'label'    => 'g.example.com',
-						'current'  => 240,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'c.example.com',
-						'current'  => 280,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'a.example.com',
-						'current'  => 300,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'f.example.com',
-						'current'  => 250,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'b.example.com',
-						'current'  => 290,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'e.example.com',
-						'current'  => 260,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'd.example.com',
-						'current'  => 270,
-						'previous' => 200,
-					),
-				),
-			),
-			array(
-				'current'  => 1000,
-				'previous' => 800,
-			)
-		);
-
-		$this->assertSame(
-			array( 'a.example.com', 'b.example.com', 'c.example.com', 'd.example.com', 'e.example.com' ),
-			array_column( $ranked_data['contextualData']['referrers'], 'label' ),
-			'`referrers` should keep its 5 highest-scoring rows, highest first, without `f.example.com` and `g.example.com`.'
-		);
-	}
-
-	public function test_rank_contextual_data__does_not_list_a_dimension_whose_rows_were_all_excluded() {
-		$ranked_data = $this->builder->rank_contextual_data(
-			array(
-				'channels' => array(
-					array(
-						'label'    => 'Organic Search',
-						'current'  => 300,
-						'previous' => 200,
-					),
-				),
-				// `Row_Scorer` excludes `desktop` for a change under 5 visitors, and
-				// `mobile` for a change under 5 percentage points from the site's 25%.
-				'devices'  => array(
-					array(
-						'label'    => 'desktop',
-						'current'  => 102,
-						'previous' => 100,
-					),
-					array(
-						'label'    => 'mobile',
-						'current'  => 128,
-						'previous' => 100,
-					),
-				),
-			),
-			array(
-				'current'  => 1000,
-				'previous' => 800,
-			)
-		);
-
-		$this->assertSame( array( 'CHANNELS' ), $ranked_data['dimensions'], '`dimensions` should not list `DEVICES` once every device row is excluded.' );
-		$this->assertSame( array( 'channels' ), array_keys( $ranked_data['contextualData'] ), '`contextualData` should have no `devices` key once every device row is excluded.' );
-	}
-
-	public function test_rank_contextual_data__does_not_count_an_excluded_row_toward_the_sum_of_its_dimension() {
-		$ranked_data = $this->builder->rank_contextual_data(
-			array(
-				// The channel row scores 11.
-				'channels' => array(
-					array(
-						'label'    => 'Organic Search',
-						'current'  => 300,
-						'previous' => 200,
-					),
-				),
-				// The `desktop` row scores 10. `mobile` would add 9.375, but `Row_Scorer`
-				// excludes it for a change under 5 percentage points from the site's 25%.
-				'devices'  => array(
-					array(
-						'label'    => 'desktop',
-						'current'  => 300,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'mobile',
-						'current'  => 625,
-						'previous' => 500,
-					),
-				),
-			),
-			array(
-				'current'  => 1000,
-				'previous' => 800,
-			)
-		);
-
-		$this->assertSame( array( 'CHANNELS', 'DEVICES' ), $ranked_data['dimensions'], "`dimensions` should list `CHANNELS` first, because the sum of `DEVICES` doesn't count the excluded `mobile` row." );
-	}
-
-	public function test_rank_contextual_data__orders_the_dimensions_by_the_sum_of_their_row_scores() {
-		$ranked_data = $this->builder->rank_contextual_data(
-			array(
-				'channels'   => array(
-					array(
-						'label'    => 'Organic Search',
-						'current'  => 300,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'Direct',
-						'current'  => 250,
-						'previous' => 200,
-					),
-				),
-				'content'    => array(
-					array(
-						'url'              => '/how-to-plant-garlic/',
-						'title'            => 'How to plant garlic',
-						'publishedDaysAgo' => 14,
-						'current'          => 300,
-						'previous'         => 200,
-					),
-				),
-				'categories' => array(
-					array(
-						'label'    => 'Garden',
-						'current'  => 250,
-						'previous' => 200,
-					),
-				),
-				'referrers'  => array(
-					array(
-						'label'    => 'news.example.com',
-						'current'  => 400,
-						'previous' => 200,
-					),
-				),
-			),
-			array(
-				'current'  => 1000,
-				'previous' => 800,
-			)
-		);
-
-		$this->assertSame(
-			array( 'REFERRERS', 'CHANNELS', 'CONTENT', 'CATEGORIES' ),
-			$ranked_data['dimensions'],
-			'`dimensions` should list `CHANNELS`, whose two rows score 15.125 together, before `CONTENT`, whose one row scores 15.'
-		);
-	}
-
-	public function test_rank_contextual_data__lists_the_dimension_with_the_higher_weight_first_when_the_rows_of_two_dimensions_have_the_same_visitors() {
-		$ranked_data = $this->builder->rank_contextual_data(
-			array(
-				'channels' => array(
-					array(
-						'label'    => 'Organic Search',
-						'current'  => 300,
-						'previous' => 200,
-					),
-				),
-				'content'  => array(
-					array(
-						'url'              => '/how-to-plant-garlic/',
-						'title'            => 'How to plant garlic',
-						'publishedDaysAgo' => 14,
-						'current'          => 300,
-						'previous'         => 200,
-					),
-				),
-			),
-			array(
-				'current'  => 1000,
-				'previous' => 800,
-			)
-		);
-
-		$this->assertSame(
-			array( 'CONTENT', 'CHANNELS' ),
-			$ranked_data['dimensions'],
-			'`dimensions` should list `CONTENT` before `CHANNELS`, since a `CONTENT` row is weighted by 1.5 and a `CHANNELS` row with the same visitors by 1.1.'
-		);
-	}
-
-	public function test_rank_contextual_data__counts_the_rows_after_the_first_5_toward_the_sum_of_their_dimension() {
-		$ranked_data = $this->builder->rank_contextual_data(
-			array(
-				// The content row scores 52.5.
-				'content'   => array(
-					array(
-						'url'              => '/how-to-plant-garlic/',
-						'title'            => 'How to plant garlic',
-						'publishedDaysAgo' => 14,
-						'current'          => 500,
-						'previous'         => 200,
-					),
-				),
-				// The 5 highest referrer rows score 48.75 together, and all 7 score
-				// 58.175.
-				'referrers' => array(
-					array(
-						'label'    => 'a.example.com',
-						'current'  => 300,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'b.example.com',
-						'current'  => 290,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'c.example.com',
-						'current'  => 280,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'd.example.com',
-						'current'  => 270,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'e.example.com',
-						'current'  => 260,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'f.example.com',
-						'current'  => 250,
-						'previous' => 200,
-					),
-					array(
-						'label'    => 'g.example.com',
-						'current'  => 240,
-						'previous' => 200,
-					),
-				),
-			),
-			array(
-				'current'  => 1000,
-				'previous' => 800,
-			)
-		);
-
-		$this->assertSame( array( 'REFERRERS', 'CONTENT' ), $ranked_data['dimensions'], '`dimensions` should list `REFERRERS` first, because its sum counts the 2 rows after the first 5.' );
-		$this->assertCount( 5, $ranked_data['contextualData']['referrers'], '`referrers` should keep 5 rows.' );
-	}
-
-	public function test_rank_contextual_data__orders_two_rows_with_the_same_score_by_label() {
-		$visitors = array(
-			'current'  => 1000,
-			'previous' => 800,
-		);
-		$email    = array(
-			'label'    => 'Email',
-			'current'  => 300,
-			'previous' => 200,
-		);
-		$direct   = array(
-			'label'    => 'Direct',
-			'current'  => 300,
-			'previous' => 200,
-		);
-
-		$email_first  = $this->builder->rank_contextual_data( array( 'channels' => array( $email, $direct ) ), $visitors );
-		$direct_first = $this->builder->rank_contextual_data( array( 'channels' => array( $direct, $email ) ), $visitors );
-
-		$this->assertSame( array( 'Direct', 'Email' ), array_column( $email_first['contextualData']['channels'], 'label' ), '`Direct` should come before `Email` when the two score the same.' );
-		$this->assertSame( $email_first, $direct_first, 'Two rows with the same score should come back in the same order, no matter which one `rank_contextual_data()` receives first.' );
-	}
-
-	public function test_rank_contextual_data__orders_two_content_rows_with_the_same_score_by_url() {
-		// By title, `/b-post/` is first, so only the URLs can put `/a-post/` first.
-		$ranked_data = $this->builder->rank_contextual_data(
-			array(
-				'content' => array(
-					array(
-						'url'              => '/b-post/',
-						'title'            => 'Autumn mulching',
-						'publishedDaysAgo' => 14,
-						'current'          => 300,
-						'previous'         => 200,
-					),
-					array(
-						'url'              => '/a-post/',
-						'title'            => 'Winter pruning',
-						'publishedDaysAgo' => 14,
-						'current'          => 300,
-						'previous'         => 200,
-					),
-				),
-			),
-			array(
-				'current'  => 1000,
-				'previous' => 800,
-			)
-		);
-
-		$this->assertSame(
-			array(
-				array(
-					'url'              => '/a-post/',
-					'title'            => 'Winter pruning',
-					'visitors'         => 300,
-					'publishedDaysAgo' => 14,
-				),
-				array(
-					'url'              => '/b-post/',
-					'title'            => 'Autumn mulching',
-					'visitors'         => 300,
-					'publishedDaysAgo' => 14,
-				),
-			),
-			$ranked_data['contextualData']['content'],
-			'`/a-post/` should come before `/b-post/` when the two score the same, and each row should report its current visitors as `visitors`.'
-		);
-	}
-
-	public function test_rank_contextual_data__lists_two_dimensions_with_the_same_sum_in_a_fixed_order() {
-		// Dimensions with the same sum are ordered by
-		// `Wire_Format::DIMENSION_INDEXES`, which has `DEVICES` before `VISITOR_MIX`.
-		$visitors    = array(
-			'current'  => 1000,
-			'previous' => 800,
-		);
-		$visitor_mix = array(
-			array(
-				'label'    => 'returning',
-				'current'  => 300,
-				'previous' => 200,
-			),
-		);
-		$devices     = array(
-			array(
-				'label'    => 'mobile',
-				'current'  => 300,
-				'previous' => 200,
-			),
-		);
-
-		$visitor_mix_first = $this->builder->rank_contextual_data(
-			array(
-				'visitorMix' => $visitor_mix,
-				'devices'    => $devices,
-			),
-			$visitors
-		);
-		$devices_first     = $this->builder->rank_contextual_data(
-			array(
-				'devices'    => $devices,
-				'visitorMix' => $visitor_mix,
-			),
-			$visitors
-		);
-
-		$this->assertSame( array( 'DEVICES', 'VISITOR_MIX' ), $visitor_mix_first['dimensions'], '`DEVICES` should come before `VISITOR_MIX` when their rows score the same.' );
-		$this->assertSame( array( 'DEVICES', 'VISITOR_MIX' ), $devices_first['dimensions'], '`DEVICES` should come before `VISITOR_MIX` no matter which one `rank_contextual_data()` receives first.' );
-	}
-
-	public function test_rank_contextual_data__ranks_search_query_rows_and_keeps_5_like_the_rows_of_any_other_dimension() {
-		$ranked_data = $this->builder->rank_contextual_data(
-			array(
-				'searchQueries' => array(
-					array(
-						'label'            => 'mulching leaves',
-						'current'          => 260,
-						'previous'         => 200,
-						'positionCurrent'  => 6.2,
-						'positionPrevious' => 7.1,
-					),
-					array(
-						'label'            => 'plant garlic',
-						'current'          => 300,
-						'previous'         => 200,
-						'positionCurrent'  => 3.4,
-						'positionPrevious' => 4.8,
-					),
-					array(
-						'label'            => 'compost bin',
-						'current'          => 202,
-						'previous'         => 200,
-						'positionCurrent'  => 9.0,
-						'positionPrevious' => 9.0,
-					),
-					array(
-						'label'            => 'raised beds',
-						'current'          => 280,
-						'previous'         => 200,
-						'positionCurrent'  => 5.0,
-						'positionPrevious' => 5.5,
-					),
-					array(
-						'label'            => 'seed trays',
-						'current'          => 250,
-						'previous'         => 200,
-						'positionCurrent'  => 8.0,
-						'positionPrevious' => 8.2,
-					),
-					array(
-						'label'            => 'garden tools',
-						'current'          => 290,
-						'previous'         => 200,
-						'positionCurrent'  => 2.5,
-						'positionPrevious' => 3.1,
-					),
-					array(
-						'label'            => 'pruning roses',
-						'current'          => 270,
-						'previous'         => 200,
-						'positionCurrent'  => 4.0,
-						'positionPrevious' => 6.0,
-					),
-				),
-				'channels'      => array(
-					array(
-						'label'    => 'Organic Search',
-						'current'  => 400,
-						'previous' => 200,
-					),
-				),
-			),
-			array(
-				'current'  => 1000,
-				'previous' => 800,
-			)
-		);
-
-		$this->assertSame(
-			array(
-				array(
-					'label'            => 'plant garlic',
-					'current'          => 300,
-					'previous'         => 200,
-					'positionCurrent'  => 3.4,
-					'positionPrevious' => 4.8,
-				),
-				array(
-					'label'            => 'garden tools',
-					'current'          => 290,
-					'previous'         => 200,
-					'positionCurrent'  => 2.5,
-					'positionPrevious' => 3.1,
-				),
-				array(
-					'label'            => 'raised beds',
-					'current'          => 280,
-					'previous'         => 200,
-					'positionCurrent'  => 5.0,
-					'positionPrevious' => 5.5,
-				),
-				array(
-					'label'            => 'pruning roses',
-					'current'          => 270,
-					'previous'         => 200,
-					'positionCurrent'  => 4.0,
-					'positionPrevious' => 6.0,
-				),
-				array(
-					'label'            => 'mulching leaves',
-					'current'          => 260,
-					'previous'         => 200,
-					'positionCurrent'  => 6.2,
-					'positionPrevious' => 7.1,
-				),
-			),
-			$ranked_data['contextualData']['searchQueries'],
-			'`searchQueries` should exclude `compost bin`, which changed by 2 clicks, and keep the 5 highest-scoring of the rest, highest first.'
-		);
-		$this->assertSame( array( 'SEARCH_QUERIES', 'CHANNELS' ), $ranked_data['dimensions'], '`dimensions` should list `SEARCH_QUERIES` first, since its row scores add up to 57.75 against 24.75 for `CHANNELS`.' );
 	}
 }

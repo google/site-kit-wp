@@ -144,12 +144,12 @@ class Report_OptionsTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_dimension_options
+	 * @dataProvider data_breakdown_options
 	 *
-	 * @param string $method    The method that returns the report options.
-	 * @param string $dimension The dimension the report counts sessions by.
+	 * @param string $method     The method that returns the report options.
+	 * @param array  $dimensions The dimensions the report counts sessions by.
 	 */
-	public function test_get_dimension_options__counts_sessions_by_the_dimension_in_the_selected_period_and_the_compare_period( $method, $dimension ) {
+	public function test_get_breakdown_options__counts_sessions_by_the_channel_and_a_dimension_in_the_selected_period_and_the_compare_period( $method, array $dimensions ) {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -159,8 +159,9 @@ class Report_OptionsTest extends TestCase {
 				'metrics'          => array(
 					array( 'name' => 'sessions' ),
 				),
-				'dimensions'       => array(
-					array( 'name' => $dimension ),
+				'dimensions'       => array_map(
+					fn( $dimension ) => array( 'name' => $dimension ),
+					$dimensions
 				),
 				'orderby'          => array(
 					array(
@@ -171,18 +172,31 @@ class Report_OptionsTest extends TestCase {
 				'limit'            => 500,
 			),
 			$this->report_options->$method(),
-			"The `{$method}()` method should ask for up to 500 rows of `sessions` by `{$dimension}`, in the selected period and the compare period."
+			sprintf( 'The `%s()` method should ask for up to 500 rows of `sessions` by `%s`, in the selected period and the compare period, with no filter.', $method, implode( '`, `', $dimensions ) )
 		);
 	}
 
-	public function data_dimension_options() {
+	public function data_breakdown_options() {
 		return array(
-			'channels' => array( 'get_channels_options', 'sessionDefaultChannelGrouping' ),
-			'devices'  => array( 'get_devices_options', 'deviceCategory' ),
+			'channel breakdowns' => array( 'get_channel_breakdowns_options', array( 'sessionDefaultChannelGrouping', 'deviceCategory', 'newVsReturning' ) ),
+			'channel sources'    => array( 'get_channel_sources_options', array( 'sessionDefaultChannelGrouping', 'sessionSource' ) ),
+			'channel pages'      => array( 'get_channel_pages_options', array( 'sessionDefaultChannelGrouping', 'landingPage' ) ),
+			'channel campaigns'  => array( 'get_channel_campaigns_options', array( 'sessionDefaultChannelGrouping', 'sessionCampaignName' ) ),
 		);
 	}
 
-	public function test_get_visitor_mix_options__counts_the_sessions_of_new_and_returning_visitors_in_the_selected_period_and_the_compare_period() {
+	/**
+	 * @dataProvider data_driver_options
+	 *
+	 * @param string $method     The method that returns the report options.
+	 * @param array  $dimensions The dimensions the report counts sessions by.
+	 */
+	public function test_get_driver_options__counts_the_sessions_of_a_driver_in_the_selected_period_and_the_compare_period( $method, array $dimensions ) {
+		$driver_filters = array(
+			'sessionSource'                 => array( 'facebook.com', 'm.facebook.com' ),
+			'sessionDefaultChannelGrouping' => array( 'Referral', 'Organic Social' ),
+		);
+
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -192,8 +206,9 @@ class Report_OptionsTest extends TestCase {
 				'metrics'          => array(
 					array( 'name' => 'sessions' ),
 				),
-				'dimensions'       => array(
-					array( 'name' => 'newVsReturning' ),
+				'dimensions'       => array_map(
+					fn( $dimension ) => array( 'name' => $dimension ),
+					$dimensions
 				),
 				'orderby'          => array(
 					array(
@@ -202,49 +217,18 @@ class Report_OptionsTest extends TestCase {
 					),
 				),
 				'limit'            => 500,
-				'dimensionFilters' => array(
-					'newVsReturning' => array(
-						'filterType'    => 'emptyFilter',
-						'notExpression' => true,
-					),
-				),
+				'dimensionFilters' => $driver_filters,
 			),
-			$this->report_options->get_visitor_mix_options(),
-			'The `get_visitor_mix_options()` method should ask for up to 500 rows of `sessions` by `newVsReturning`, in the selected period and the compare period, excluding the rows that are neither new nor returning.'
+			$this->report_options->$method( $driver_filters ),
+			sprintf( "The `%s()` method should ask for up to 500 rows of `sessions` by `%s`, in the selected period and the compare period, filtered on the driver's values.", $method, implode( '`, `', $dimensions ) )
 		);
 	}
 
-	public function test_get_referrers_options__counts_sessions_by_referring_source_in_the_selected_period_and_the_compare_period() {
-		$this->assertSame(
-			array(
-				'startDate'        => '2026-08-19',
-				'endDate'          => '2026-09-15',
-				'compareStartDate' => '2026-07-22',
-				'compareEndDate'   => '2026-08-18',
-				'metrics'          => array(
-					array( 'name' => 'sessions' ),
-				),
-				'dimensions'       => array(
-					array( 'name' => 'sessionSource' ),
-				),
-				'orderby'          => array(
-					array(
-						'metric' => array( 'metricName' => 'sessions' ),
-						'desc'   => true,
-					),
-				),
-				'limit'            => 500,
-				'dimensionFilters' => array(
-					'sessionSource' => array(
-						'filterType'    => 'stringFilter',
-						'matchType'     => 'EXACT',
-						'value'         => '(direct)',
-						'notExpression' => true,
-					),
-				),
-			),
-			$this->report_options->get_referrers_options(),
-			'The `get_referrers_options()` method should ask for up to 500 rows of `sessions` by `sessionSource`, in the selected period and the compare period, excluding the `(direct)` row.'
+	public function data_driver_options() {
+		return array(
+			'audience' => array( 'get_driver_audience_options', array( 'deviceCategory', 'newVsReturning' ) ),
+			'sources'  => array( 'get_driver_sources_options', array( 'sessionDefaultChannelGrouping', 'sessionSource' ) ),
+			'pages'    => array( 'get_driver_pages_options', array( 'landingPage' ) ),
 		);
 	}
 
@@ -279,38 +263,6 @@ class Report_OptionsTest extends TestCase {
 			),
 			$this->report_options->get_content_options(),
 			'The `get_content_options()` method should ask for up to 500 rows of `sessions` by `pagePath`, `pageTitle`, and `customEvent:googlesitekit_post_date`, in the selected period and the compare period, excluding the rows with no post date.'
-		);
-	}
-
-	public function test_get_categories_options__counts_sessions_by_post_category_in_the_selected_period_and_the_compare_period() {
-		$this->assertSame(
-			array(
-				'startDate'        => '2026-08-19',
-				'endDate'          => '2026-09-15',
-				'compareStartDate' => '2026-07-22',
-				'compareEndDate'   => '2026-08-18',
-				'metrics'          => array(
-					array( 'name' => 'sessions' ),
-				),
-				'dimensions'       => array(
-					array( 'name' => 'customEvent:googlesitekit_post_categories' ),
-				),
-				'orderby'          => array(
-					array(
-						'metric' => array( 'metricName' => 'sessions' ),
-						'desc'   => true,
-					),
-				),
-				'limit'            => 500,
-				'dimensionFilters' => array(
-					'customEvent:googlesitekit_post_categories' => array(
-						'filterType'    => 'emptyFilter',
-						'notExpression' => true,
-					),
-				),
-			),
-			$this->report_options->get_categories_options(),
-			'The `get_categories_options()` method should ask for up to 500 rows of `sessions` by `customEvent:googlesitekit_post_categories`, in the selected period and the compare period, excluding the rows with no category.'
 		);
 	}
 }

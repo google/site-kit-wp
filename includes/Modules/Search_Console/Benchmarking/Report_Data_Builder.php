@@ -41,9 +41,15 @@ class Report_Data_Builder {
 	}
 
 	/**
-	 * Builds the search query rows for the period the benchmarking response is for.
+	 * Builds the search query rows for the period the benchmarking response is
+	 * for, in one batch call.
 	 *
-	 * @since 1.190.0
+	 * Without both periods every query would look new or gone, so a key whose
+	 * report fails in either period is left out. A page is the path of its URL,
+	 * as Analytics names a landing page, and a device is in lowercase, as
+	 * Analytics names it, so the rows of both modules match.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param array $args {
 	 *     The period the rows are for, as the `googlesitekit_benchmarking_contextual_data` filter passes it.
@@ -54,9 +60,15 @@ class Report_Data_Builder {
 	 *     @type string $compare_end_date   The end date of the compare period, as `YYYY-MM-DD`.
 	 *     @type int    $row_limit          The most rows each report returns.
 	 * }
-	 * @return array List of rows, one per query, each with `label`, `current`, `previous`, `positionCurrent`, and `positionPrevious`. Empty when a report fails or neither report has rows.
+	 * @return array {
+	 *     The rows, keyed by contextual data key, without a key whose reports failed or have no rows.
+	 *
+	 *     @type array $searchQueries      List of rows, one per query, each with `label`, `current`, `previous`, `positionCurrent`, and `positionPrevious`.
+	 *     @type array $searchQueryPages   List of rows, one per query and page, each with `query`, `page`, `current`, and `previous`.
+	 *     @type array $searchQueryDevices List of rows, one per query and device, each with `query`, `device`, `current`, and `previous`.
+	 * }
 	 */
-	public function build_search_query_rows( array $args ) {
+	public function build_rows( array $args ) {
 		$report_options = new Report_Options(
 			$args['start_date'],
 			$args['end_date'],
@@ -72,12 +84,62 @@ class Report_Data_Builder {
 			)
 		);
 
-		// Without both periods every query would look new or gone, so a failed
-		// report leaves out the search queries altogether.
-		if ( is_wp_error( $reports ) || is_wp_error( $reports['current'] ) || is_wp_error( $reports['previous'] ) ) {
+		if ( is_wp_error( $reports ) ) {
 			return array();
 		}
 
+		$rows = array(
+			'searchQueries'      => $this->has_both_periods( $reports, '' ) ? $this->build_search_query_rows( $reports ) : array(),
+			'searchQueryPages'   => $this->has_both_periods( $reports, '-pages' )
+				? $this->build_breakdown_rows(
+					$reports,
+					'-pages',
+					'page',
+					function ( $url ) {
+						$path = wp_parse_url( $url, PHP_URL_PATH );
+
+						return is_string( $path ) && '' !== $path ? $path : '/';
+					}
+				)
+				: array(),
+			'searchQueryDevices' => $this->has_both_periods( $reports, '-devices' )
+				? $this->build_breakdown_rows( $reports, '-devices', 'device', 'strtolower' )
+				: array(),
+		);
+
+		return array_filter( $rows );
+	}
+
+	/**
+	 * Checks whether the reports of both periods for one breakdown succeeded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $reports The reports of the batch call, keyed by identifier.
+	 * @param string $suffix  The suffix of the breakdown's identifiers, such as `-pages`, or an empty string for the queries.
+	 * @return bool True when both reports have rows to read, otherwise false.
+	 */
+	private function has_both_periods( array $reports, $suffix ) {
+		foreach ( array( 'current', 'previous' ) as $period ) {
+			if ( ! isset( $reports[ $period . $suffix ] ) || is_wp_error( $reports[ $period . $suffix ] ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Builds the rows of the queries, each with its clicks and its average
+	 * position in both periods.
+	 *
+	 * @since 1.190.0
+	 * @since n.e.x.t Takes the reports of the batch call.
+	 *
+	 * @param array $reports The reports of the batch call, keyed by identifier.
+	 * @return array List of rows, one per query, each with `label`, `current`, `previous`, `positionCurrent`, and `positionPrevious`.
+	 */
+	private function build_search_query_rows( array $reports ) {
 		$rows = array();
 
 		foreach ( array(
@@ -99,6 +161,46 @@ class Report_Data_Builder {
 
 				$rows[ $query ][ $period ]       = (int) $report_row->getClicks();
 				$rows[ $query ][ $position_key ] = (float) $report_row->getPosition();
+			}
+		}
+
+		return array_values( $rows );
+	}
+
+	/**
+	 * Builds the rows of a breakdown of the queries' clicks by a second
+	 * dimension, each with its clicks in both periods.
+	 *
+	 * Two values that name the same thing once they are mapped, such as the
+	 * `http` and the `https` URL of a page, are one row.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array    $reports   The reports of the batch call, keyed by identifier.
+	 * @param string   $suffix    The suffix of the breakdown's identifiers, such as `-pages`.
+	 * @param string   $field     The field of the second dimension in a row, such as `page`.
+	 * @param callable $map_value Maps a value of the second dimension to the value the row lists.
+	 * @return array List of rows, one per query and value, each with `query`, the field, `current`, and `previous`.
+	 */
+	private function build_breakdown_rows( array $reports, $suffix, $field, callable $map_value ) {
+		$rows = array();
+
+		foreach ( array( 'current', 'previous' ) as $period ) {
+			foreach ( $reports[ $period . $suffix ] as $report_row ) {
+				$keys  = $report_row->getKeys();
+				$value = $map_value( $keys[1] );
+				$key   = wp_json_encode( array( $keys[0], $value ) );
+
+				if ( ! isset( $rows[ $key ] ) ) {
+					$rows[ $key ] = array(
+						'query'    => $keys[0],
+						$field     => $value,
+						'current'  => 0,
+						'previous' => 0,
+					);
+				}
+
+				$rows[ $key ][ $period ] += (int) $report_row->getClicks();
 			}
 		}
 

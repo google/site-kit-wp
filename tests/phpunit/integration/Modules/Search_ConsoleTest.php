@@ -293,9 +293,11 @@ class Search_ConsoleTest extends TestCase {
 		$contextual_data = apply_filters(
 			'googlesitekit_benchmarking_contextual_data',
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					array(
-						'label'    => 'Organic Search',
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 					),
@@ -312,14 +314,16 @@ class Search_ConsoleTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'channels'      => array(
+				'channelBreakdowns'  => array(
 					array(
-						'label'    => 'Organic Search',
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 					),
 				),
-				'searchQueries' => array(
+				'searchQueries'      => array(
 					array(
 						'label'            => 'plant garlic',
 						'current'          => 300,
@@ -328,9 +332,25 @@ class Search_ConsoleTest extends TestCase {
 						'positionPrevious' => 4.8,
 					),
 				),
+				'searchQueryPages'   => array(
+					array(
+						'query'    => 'plant garlic',
+						'page'     => '/plant-garlic/',
+						'current'  => 300,
+						'previous' => 210,
+					),
+				),
+				'searchQueryDevices' => array(
+					array(
+						'query'    => 'plant garlic',
+						'device'   => 'mobile',
+						'current'  => 300,
+						'previous' => 210,
+					),
+				),
 			),
 			$contextual_data,
-			'The filter should add the `plant garlic` query under `searchQueries`, and keep `channels` as it was.'
+			'The filter should add the `plant garlic` query under `searchQueries`, its page and its device under `searchQueryPages` and `searchQueryDevices`, and keep `channelBreakdowns` as it was.'
 		);
 	}
 
@@ -360,9 +380,11 @@ class Search_ConsoleTest extends TestCase {
 		$contextual_data = apply_filters(
 			'googlesitekit_benchmarking_contextual_data',
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					array(
-						'label'    => 'Organic Search',
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 					),
@@ -379,16 +401,18 @@ class Search_ConsoleTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					array(
-						'label'    => 'Organic Search',
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 					),
 				),
 			),
 			$contextual_data,
-			'The filter should return the contextual data unchanged, with no `searchQueries` key, when Search Console has no property.'
+			'The filter should return the contextual data unchanged, with no search query keys, when Search Console has no property.'
 		);
 		$this->assertSame( 0, $request_count, 'Search Console should not ask for a report when it has no property.' );
 	}
@@ -419,9 +443,11 @@ class Search_ConsoleTest extends TestCase {
 		$contextual_data = apply_filters(
 			'googlesitekit_benchmarking_contextual_data',
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					array(
-						'label'    => 'Organic Search',
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 					),
@@ -438,16 +464,18 @@ class Search_ConsoleTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					array(
-						'label'    => 'Organic Search',
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 					),
 				),
 			),
 			$contextual_data,
-			'The filter should return the contextual data unchanged, with no `searchQueries` key, when Search Console refuses the report.'
+			'The filter should return the contextual data unchanged, with no search query keys, when Search Console refuses the report.'
 		);
 	}
 

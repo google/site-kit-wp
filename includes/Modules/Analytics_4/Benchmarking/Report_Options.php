@@ -147,72 +147,103 @@ class Report_Options {
 	}
 
 	/**
-	 * Gets the options of the report that counts visits by channel.
+	 * Gets the options of the report that counts visits by channel, device and
+	 * visitor type.
 	 *
-	 * @since 1.190.0
-	 * @since n.e.x.t Counts visits in place of visitors.
+	 * The key factor cards take the channel candidates, the site's totals, and
+	 * the device and visitor type attributes of a channel card from it.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array Report request options array.
 	 */
-	public function get_channels_options() {
-		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping' ) );
+	public function get_channel_breakdowns_options() {
+		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'deviceCategory', 'newVsReturning' ) );
 	}
 
 	/**
-	 * Gets the options of the report that counts visits by device category.
+	 * Gets the options of the report that counts visits by channel and source.
 	 *
-	 * @since 1.190.0
-	 * @since n.e.x.t Counts visits in place of visitors.
+	 * The key factor cards take the referring site candidates, and the
+	 * referring site and platform attributes of a channel card from it.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array Report request options array.
 	 */
-	public function get_devices_options() {
-		return $this->get_dimension_options( array( 'deviceCategory' ) );
+	public function get_channel_sources_options() {
+		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'sessionSource' ) );
 	}
 
 	/**
-	 * Gets the options of the report that counts the visits of new and
-	 * returning visitors.
+	 * Gets the options of the report that counts visits by channel and landing
+	 * page.
 	 *
-	 * @since 1.190.0
-	 * @since n.e.x.t Counts visits in place of visitors.
+	 * The key factor cards take the landing page candidates, the landing page
+	 * attribute of a channel card, and the traffic channel attribute of a
+	 * landing page card from it.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array Report request options array.
 	 */
-	public function get_visitor_mix_options() {
-		return $this->get_dimension_options(
-			array( 'newVsReturning' ),
-			array(
-				// Analytics reports `(not set)` for a visitor that is neither new nor returning.
-				'newVsReturning' => array(
-					'filterType'    => 'emptyFilter',
-					'notExpression' => true,
-				),
-			)
-		);
+	public function get_channel_pages_options() {
+		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'landingPage' ) );
 	}
 
 	/**
-	 * Gets the options of the report that counts visits by referring source.
+	 * Gets the options of the report that counts visits by channel and
+	 * campaign.
 	 *
-	 * @since 1.190.0
-	 * @since n.e.x.t Counts visits in place of visitors.
+	 * The key factor cards take the campaign candidates, the campaign attribute
+	 * of a channel card, and the traffic channel attribute of a campaign card
+	 * from it.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array Report request options array.
 	 */
-	public function get_referrers_options() {
-		return $this->get_dimension_options(
-			array( 'sessionSource' ),
-			array(
-				// Analytics reports `(direct)` for a visit that no site referred.
-				'sessionSource' => array(
-					'filterType'    => 'stringFilter',
-					'matchType'     => 'EXACT',
-					'value'         => '(direct)',
-					'notExpression' => true,
-				),
-			)
-		);
+	public function get_channel_campaigns_options() {
+		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'sessionCampaignName' ) );
+	}
+
+	/**
+	 * Gets the options of the report that counts the visits of one key factor
+	 * card's driver by device and visitor type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $driver_filters The dimension filters that keep only the driver's visits, keyed by dimension name, as `Key_Factors::get_driver_filters()` returns them.
+	 * @return array Report request options array.
+	 */
+	public function get_driver_audience_options( array $driver_filters ) {
+		return $this->get_dimension_options( array( 'deviceCategory', 'newVsReturning' ), $driver_filters );
+	}
+
+	/**
+	 * Gets the options of the report that counts the visits of one key factor
+	 * card's driver by channel and source.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $driver_filters The dimension filters that keep only the driver's visits, keyed by dimension name, as `Key_Factors::get_driver_filters()` returns them.
+	 * @return array Report request options array.
+	 */
+	public function get_driver_sources_options( array $driver_filters ) {
+		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'sessionSource' ), $driver_filters );
+	}
+
+	/**
+	 * Gets the options of the report that counts the visits of one key factor
+	 * card's driver by landing page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $driver_filters The dimension filters that keep only the driver's visits, keyed by dimension name, as `Key_Factors::get_driver_filters()` returns them.
+	 * @return array Report request options array.
+	 */
+	public function get_driver_pages_options( array $driver_filters ) {
+		return $this->get_dimension_options( array( 'landingPage' ), $driver_filters );
 	}
 
 	/**
@@ -240,42 +271,19 @@ class Report_Options {
 	}
 
 	/**
-	 * Gets the options of the report that counts visits by post category.
-	 *
-	 * @since 1.190.0
-	 * @since n.e.x.t Counts visits in place of visitors.
-	 *
-	 * @return array Report request options array.
-	 */
-	public function get_categories_options() {
-		$categories_dimension = Analytics_4::CUSTOM_EVENT_PREFIX . Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES;
-
-		return $this->get_dimension_options(
-			array( $categories_dimension ),
-			array(
-				// Analytics reports `(not set)` for a page with no category, such
-				// as the home page.
-				$categories_dimension => array(
-					'filterType'    => 'emptyFilter',
-					'notExpression' => true,
-				),
-			)
-		);
-	}
-
-	/**
 	 * Gets the options of a report that counts visits by one or more
 	 * dimensions, for the selected period and the compare period in one request.
 	 *
 	 * A visit is a session, as in the daily series. A session has exactly one
-	 * channel, device, visitor type and source, so the rows of a report add up
-	 * to the period totals, which the insight request relies on.
+	 * channel, device, visitor type, source, landing page and campaign, so the
+	 * rows of a report add up to the period totals, and the rows of a breakdown
+	 * add up to the channel, page, source or campaign they break down.
 	 *
 	 * @since 1.190.0
 	 * @since n.e.x.t The report counts `sessions` in place of `totalUsers`.
 	 *
 	 * @param array $dimension_names   The dimensions to count visits by, such as `array( 'deviceCategory' )`.
-	 * @param array $dimension_filters Optional. The dimension filters, keyed by dimension name. Default empty array.
+	 * @param array $dimension_filters Optional. The dimension filters, keyed by dimension name. A list of values keeps the visits with any of them. Default empty array.
 	 * @return array Report request options array.
 	 */
 	private function get_dimension_options( array $dimension_names, array $dimension_filters = array() ) {

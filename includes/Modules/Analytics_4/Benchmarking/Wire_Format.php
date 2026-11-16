@@ -82,34 +82,6 @@ final class Wire_Format {
 	);
 
 	/**
-	 * The dimension codes `Response_Builder` ranks, in the order it lists two
-	 * dimensions with the same sum of row scores. The encoded response doesn't
-	 * carry them.
-	 */
-	const DIMENSION_INDEXES = array(
-		'CHANNELS'       => 0,
-		'DEVICES'        => 1,
-		'VISITOR_MIX'    => 2,
-		'REFERRERS'      => 3,
-		'SEARCH_QUERIES' => 4,
-		'CONTENT'        => 5,
-		'CATEGORIES'     => 6,
-	);
-
-	/**
-	 * The `contextualData` key of each dimension code.
-	 */
-	const CONTEXTUAL_DATA_KEYS = array(
-		'CHANNELS'       => 'channels',
-		'DEVICES'        => 'devices',
-		'VISITOR_MIX'    => 'visitorMix',
-		'REFERRERS'      => 'referrers',
-		'SEARCH_QUERIES' => 'searchQueries',
-		'CONTENT'        => 'content',
-		'CATEGORIES'     => 'categories',
-	);
-
-	/**
 	 * The decimal places a share of the site's change keeps. Every other number
 	 * the format carries is an integer, except the bounds of the expected range.
 	 *

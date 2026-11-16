@@ -223,29 +223,20 @@ class Get_Benchmarking_DataTest extends TestCase {
 		);
 		$this->share_modules_with_editors( $shared_module_slugs );
 
-		// The site doubles, from 200 visitors in the compare period to 400 in
-		// the selected one, while each row grows from 200 to 240. That change is
-		// big enough to count and far from the site's, so no row is left out.
+		// The site doubles, from 200 visits in the compare period to 400 in the
+		// selected one, while each row grows from 200 to 240.
 		$this->report_rows = array(
-			'date'                          => array(
+			'date'                                        => array(
 				array( '20260801', 200 ),
 				array( '20260901', 400 ),
 			),
-			'sessionDefaultChannelGrouping' => array(
-				array( 'Organic Search', 'date_range_0', 240 ),
-				array( 'Organic Search', 'date_range_1', 200 ),
+			'sessionDefaultChannelGrouping,deviceCategory,newVsReturning' => array(
+				array( 'Organic Search', 'mobile', 'new', 'date_range_0', 240 ),
+				array( 'Organic Search', 'mobile', 'new', 'date_range_1', 200 ),
 			),
-			'deviceCategory'                => array(
-				array( 'mobile', 'date_range_0', 240 ),
-				array( 'mobile', 'date_range_1', 200 ),
-			),
-			'newVsReturning'                => array(
-				array( 'new', 'date_range_0', 240 ),
-				array( 'new', 'date_range_1', 200 ),
-			),
-			'sessionSource'                 => array(
-				array( 'a.example.com', 'date_range_0', 240 ),
-				array( 'a.example.com', 'date_range_1', 200 ),
+			'sessionDefaultChannelGrouping,sessionSource' => array(
+				array( 'Referral', 'a.example.com', 'date_range_0', 240 ),
+				array( 'Referral', 'a.example.com', 'date_range_1', 200 ),
 			),
 		);
 	}
@@ -307,11 +298,11 @@ class Get_Benchmarking_DataTest extends TestCase {
 	}
 
 	/**
-	 * Records the `contextualData` keys the builder has rows for, after the
+	 * Records the contextual data keys the builder has rows for, after the
 	 * Search Console module adds its search query rows.
 	 *
 	 * The encoded response doesn't carry these rows, so the test reads them
-	 * here, before they are ranked.
+	 * here.
 	 *
 	 * @since 1.191.0
 	 */
@@ -845,12 +836,12 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( 200, $reader_response->get_status(), 'A view-only reader should get the benchmarking data.' );
 		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->google_api_authorizations['analyticsdata.googleapis.com'], 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
 		$this->assertEquals( $owner_response->get_data(), $reader_response->get_data(), 'The reader should get the response the owner gets.' );
-		$this->assertSame( array( 'channels', 'devices', 'visitorMix', 'referrers', 'searchQueries' ), $this->contextual_data_keys, 'The builder should have the channels, devices, visitor mix, referrers, and search queries for the reader.' );
-		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry no key factor cards, since the builder returns no cards.' );
-		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry no key factor attributes, since the builder returns no cards.' );
+		$this->assertSame( array( 'channelBreakdowns', 'channelSources', 'channelPages', 'channelCampaigns', 'searchQueries', 'searchQueryPages', 'searchQueryDevices' ), $this->contextual_data_keys, 'The builder should have the four channel breakdowns, and the search queries with their pages and devices, for the reader.' );
+		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry no key factor cards, since the compare period starts before the first day with traffic.' );
+		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry no key factor attributes, since it carries no cards.' );
 	}
 
-	public function test_rest_endpoint__builds_every_dimension_except_the_search_queries_for_a_view_only_reader_without_search_console_shared() {
+	public function test_rest_endpoint__builds_every_breakdown_except_the_search_queries_for_a_view_only_reader_without_search_console_shared() {
 		$this->set_up_shared_dashboard( array( Analytics_4::MODULE_SLUG ) );
 		$this->switch_to_user( $this->create_view_only_reader() );
 		$this->record_contextual_data_keys();
@@ -858,7 +849,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$response = $this->request();
 
 		$this->assertSame( 200, $response->get_status(), 'A reader without Search Console shared should get the benchmarking data.' );
-		$this->assertSame( array( 'channels', 'devices', 'visitorMix', 'referrers' ), $this->contextual_data_keys, 'The builder should have the channels, devices, visitor mix, and referrers for the reader, without the search queries.' );
+		$this->assertSame( array( 'channelBreakdowns', 'channelSources', 'channelPages', 'channelCampaigns' ), $this->contextual_data_keys, 'The builder should have the four channel breakdowns for the reader, without the search queries.' );
 	}
 
 	public function test_rest_endpoint__signs_the_insight_payload_of_a_view_only_reader_for_the_reader() {

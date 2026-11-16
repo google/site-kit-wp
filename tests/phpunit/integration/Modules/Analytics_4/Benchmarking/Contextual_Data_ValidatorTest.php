@@ -21,16 +21,18 @@ class Contextual_Data_ValidatorTest extends TestCase {
 	public function test_validate__removes_a_key_the_response_does_not_define_and_keeps_the_other_keys() {
 		$validated_data = ( new Contextual_Data_Validator() )->validate(
 			array(
-				'browsers' => array(
-					array(
-						'label'    => 'Chrome',
-						'current'  => 120,
-						'previous' => 100,
-					),
-				),
-				'channels' => array(
+				'channels'          => array(
 					array(
 						'label'    => 'Organic Search',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				),
+				'channelBreakdowns' => array(
+					array(
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 					),
@@ -40,16 +42,18 @@ class Contextual_Data_ValidatorTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					array(
-						'label'    => 'Organic Search',
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 					),
 				),
 			),
 			$validated_data,
-			'The `browsers` key should be removed, and the `channels` key kept.'
+			'The `channels` key should be removed, and the `channelBreakdowns` key kept.'
 		);
 	}
 
@@ -94,14 +98,16 @@ class Contextual_Data_ValidatorTest extends TestCase {
 	public function test_validate__removes_a_row_whose_count_is_not_numeric_and_stores_a_numeric_string_as_an_integer() {
 		$validated_data = ( new Contextual_Data_Validator() )->validate(
 			array(
-				'devices' => array(
+				'channelPages' => array(
 					array(
-						'label'    => 'mobile',
+						'channel'  => 'Organic Search',
+						'page'     => '/plant-garlic/',
 						'current'  => 'many',
 						'previous' => 200,
 					),
 					array(
-						'label'    => 'desktop',
+						'channel'  => 'Direct',
+						'page'     => '/plant-garlic/',
 						'current'  => '12',
 						'previous' => 8,
 					),
@@ -111,16 +117,17 @@ class Contextual_Data_ValidatorTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'devices' => array(
+				'channelPages' => array(
 					array(
-						'label'    => 'desktop',
+						'channel'  => 'Direct',
+						'page'     => '/plant-garlic/',
 						'current'  => 12,
 						'previous' => 8,
 					),
 				),
 			),
 			$validated_data,
-			'The `mobile` row, whose `current` is `many`, should be removed, and the `"12"` of the `desktop` row stored as `12`.'
+			'The `Organic Search` row, whose `current` is `many`, should be removed, and the `"12"` of the `Direct` row stored as `12`.'
 		);
 	}
 
@@ -209,9 +216,10 @@ class Contextual_Data_ValidatorTest extends TestCase {
 	public function test_validate__removes_a_row_whose_count_is_null() {
 		$validated_data = ( new Contextual_Data_Validator() )->validate(
 			array(
-				'referrers' => array(
+				'channelSources' => array(
 					array(
-						'label'    => 'a.example.com',
+						'channel'  => 'Referral',
+						'source'   => 'a.example.com',
 						'current'  => null,
 						'previous' => 20,
 					),
@@ -219,7 +227,7 @@ class Contextual_Data_ValidatorTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( array( 'referrers' => array() ), $validated_data, 'A row whose `current` is `null` should be removed, since only an average position can be `null`.' );
+		$this->assertSame( array( 'channelSources' => array() ), $validated_data, 'A row whose `current` is `null` should be removed, since only an average position can be `null`.' );
 	}
 
 	public function test_validate__removes_a_row_whose_number_is_not_finite() {
@@ -250,14 +258,16 @@ class Contextual_Data_ValidatorTest extends TestCase {
 	public function test_validate__removes_a_row_whose_label_is_not_a_string_or_a_number() {
 		$validated_data = ( new Contextual_Data_Validator() )->validate(
 			array(
-				'categories' => array(
+				'channelCampaigns' => array(
 					array(
-						'label'    => array( 'Garden' ),
+						'channel'  => 'Email',
+						'campaign' => array( 'spring-sale' ),
 						'current'  => 60,
 						'previous' => 20,
 					),
 					array(
-						'label'    => 2026,
+						'channel'  => 'Email',
+						'campaign' => 2026,
 						'current'  => 15,
 						'previous' => 30,
 					),
@@ -267,25 +277,28 @@ class Contextual_Data_ValidatorTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'categories' => array(
+				'channelCampaigns' => array(
 					array(
-						'label'    => '2026',
+						'channel'  => 'Email',
+						'campaign' => '2026',
 						'current'  => 15,
 						'previous' => 30,
 					),
 				),
 			),
 			$validated_data,
-			'The row whose `label` is an array should be removed, and the `2026` label of the other row stored as a string.'
+			'The row whose `campaign` is an array should be removed, and the `2026` campaign of the other row stored as a string.'
 		);
 	}
 
 	public function test_validate__removes_a_field_the_key_does_not_define() {
 		$validated_data = ( new Contextual_Data_Validator() )->validate(
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					array(
-						'label'    => 'Organic Search',
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 						'color'    => '<b>green</b>',
@@ -296,31 +309,35 @@ class Contextual_Data_ValidatorTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					array(
-						'label'    => 'Organic Search',
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
 						'current'  => 300,
 						'previous' => 200,
 					),
 				),
 			),
 			$validated_data,
-			'The `color` field, which a `channels` row does not define, should be removed.'
+			'The `color` field, which a `channelBreakdowns` row does not define, should be removed.'
 		);
 	}
 
 	public function test_validate__removes_a_key_whose_value_is_not_a_list_of_rows() {
 		$validated_data = ( new Contextual_Data_Validator() )->validate(
 			array(
-				'channels'   => 'Organic Search',
-				'devices'    => array(
-					'label'    => 'mobile',
+				'channelBreakdowns' => 'Organic Search',
+				'channelSources'    => array(
+					'channel'  => 'Referral',
+					'source'   => 'a.example.com',
 					'current'  => 240,
 					'previous' => 200,
 				),
-				'visitorMix' => array(
-					'new' => array(
-						'label'    => 'new',
+				'channelPages'      => array(
+					'/plant-garlic/' => array(
+						'channel'  => 'Direct',
+						'page'     => '/plant-garlic/',
 						'current'  => 240,
 						'previous' => 200,
 					),
@@ -328,16 +345,18 @@ class Contextual_Data_ValidatorTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( array(), $validated_data, 'A key whose value is a string, a single row, or rows keyed by label should be removed.' );
+		$this->assertSame( array(), $validated_data, 'A key whose value is a string, a single row, or rows keyed by page should be removed.' );
 	}
 
 	public function test_validate__removes_a_row_that_is_not_an_array() {
 		$validated_data = ( new Contextual_Data_Validator() )->validate(
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					'Organic Search',
 					array(
-						'label'    => 'Direct',
+						'channel'  => 'Direct',
+						'device'   => 'desktop',
+						'userType' => 'returning',
 						'current'  => 118,
 						'previous' => 137,
 					),
@@ -347,9 +366,11 @@ class Contextual_Data_ValidatorTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'channels' => array(
+				'channelBreakdowns' => array(
 					array(
-						'label'    => 'Direct',
+						'channel'  => 'Direct',
+						'device'   => 'desktop',
+						'userType' => 'returning',
 						'current'  => 118,
 						'previous' => 137,
 					),
@@ -358,5 +379,28 @@ class Contextual_Data_ValidatorTest extends TestCase {
 			$validated_data,
 			'The `Organic Search` string should be removed as a row, and the `Direct` row kept.'
 		);
+	}
+
+	public function test_validate__keeps_the_rows_of_the_search_queries_pages_and_devices() {
+		$rows = array(
+			'searchQueryPages'   => array(
+				array(
+					'query'    => 'plant garlic',
+					'page'     => '/plant-garlic/',
+					'current'  => 90,
+					'previous' => 40,
+				),
+			),
+			'searchQueryDevices' => array(
+				array(
+					'query'    => 'plant garlic',
+					'device'   => 'mobile',
+					'current'  => 70,
+					'previous' => 30,
+				),
+			),
+		);
+
+		$this->assertSame( $rows, ( new Contextual_Data_Validator() )->validate( $rows ), 'The rows of `searchQueryPages` and `searchQueryDevices` should be kept as they are.' );
 	}
 }

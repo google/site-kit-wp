@@ -64,10 +64,16 @@ trait Authenticated_Search_Console_Trait {
 
 	/**
 	 * Creates the response to a batch of search query reports, in which each
-	 * report has one `plant garlic` row: 300 clicks at position 3.4 for the
-	 * `current` report, and 210 clicks at position 4.8 for any other.
+	 * report has one `plant garlic` row: 300 clicks at position 3.4 for a report
+	 * of the selected period, whose identifier starts with `current`, and 210
+	 * clicks at position 4.8 for any other.
+	 *
+	 * A report whose identifier ends with `-pages` has the row on the
+	 * `https://example.com/plant-garlic/` page, and one whose identifier ends
+	 * with `-devices` has it on `MOBILE`.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Answers the page and device reports of each period.
 	 *
 	 * @param RequestInterface $request The batch request.
 	 * @return Response The batch response.
@@ -75,21 +81,32 @@ trait Authenticated_Search_Console_Trait {
 	protected function create_plant_garlic_batch_response( RequestInterface $request ) {
 		return FakeHttp::create_batch_response(
 			$request,
-			fn( $identifier ) => new Response(
-				200,
-				array(),
-				wp_json_encode(
-					array(
-						'rows' => array(
-							array(
-								'keys'     => array( 'plant garlic' ),
-								'clicks'   => 'current' === $identifier ? 300 : 210,
-								'position' => 'current' === $identifier ? 3.4 : 4.8,
+			function ( $identifier ) {
+				$is_current = 0 === strpos( $identifier, 'current' );
+				$keys       = array( 'plant garlic' );
+
+				if ( '-pages' === substr( $identifier, -6 ) ) {
+					$keys[] = 'https://example.com/plant-garlic/';
+				} elseif ( '-devices' === substr( $identifier, -8 ) ) {
+					$keys[] = 'MOBILE';
+				}
+
+				return new Response(
+					200,
+					array(),
+					wp_json_encode(
+						array(
+							'rows' => array(
+								array(
+									'keys'     => $keys,
+									'clicks'   => $is_current ? 300 : 210,
+									'position' => $is_current ? 3.4 : 4.8,
+								),
 							),
-						),
+						)
 					)
-				)
-			)
+				);
+			}
 		);
 	}
 }
