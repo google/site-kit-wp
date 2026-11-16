@@ -81,7 +81,7 @@ const actions = {
 	 * the Site Kit Service. Stops at the first step that fails.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t Leaves out `tracked_conversion_ids` when the site tracks no conversion events.
+	 * @since 1.192.0 Leaves out `tracked_conversion_ids` when the site tracks no conversion events.
 	 *
 	 * @param {string} intentCode Code the Site Kit Service created for the intent.
 	 * @param {string} tagID      Google tag ID to save as the conversion ID, e.g. `AW-123456789`.
