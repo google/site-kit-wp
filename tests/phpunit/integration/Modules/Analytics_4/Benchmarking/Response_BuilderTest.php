@@ -53,6 +53,13 @@ class Response_BuilderTest extends TestCase {
 	private $builder;
 
 	/**
+	 * Analytics_4 instance the builder runs its reports with.
+	 *
+	 * @var Analytics_4
+	 */
+	private $analytics;
+
+	/**
 	 * Body of each `batchRunReports` request the fake Analytics API received.
 	 *
 	 * @var array
@@ -86,7 +93,8 @@ class Response_BuilderTest extends TestCase {
 			)
 		);
 
-		$analytics = new Analytics_4( $context, $options, $user_options, $authentication );
+		$analytics       = new Analytics_4( $context, $options, $user_options, $authentication );
+		$this->analytics = $analytics;
 		$analytics->get_settings()->merge( array( 'propertyID' => '12345' ) );
 
 		FakeHttp::fake_google_http_handler(
@@ -498,6 +506,67 @@ class Response_BuilderTest extends TestCase {
 			'The `build()` method should ask for five reports in one call.'
 		);
 		$this->assertSame( array( 'channels' ), array_keys( $response['contextualData'] ), 'The response should have no `content` and no `categories` rows while neither the post date nor the post categories have data.' );
+	}
+
+	public function test_build__asks_for_the_content_and_categories_reports_when_the_property_has_their_dimensions_without_recorded_data() {
+		$this->analytics->get_settings()->merge(
+			array( 'availableCustomDimensions' => array( 'googlesitekit_post_date', 'googlesitekit_post_categories' ) )
+		);
+
+		$this->report_rows = array(
+			'date'                                      => array(
+				array( '20260818', 388 ),
+				array( '20260915', 412 ),
+			),
+			'sessionDefaultChannelGrouping'             => array(
+				array( 'Referral', 'date_range_0', 47 ),
+			),
+			'pagePath'                                  => array(
+				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
+			),
+			'customEvent:googlesitekit_post_categories' => array(
+				array( 'Garden', 'date_range_0', 60 ),
+			),
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				array(
+					array( 'date' ),
+					array( 'sessionDefaultChannelGrouping' ),
+					array( 'deviceCategory' ),
+					array( 'newVsReturning' ),
+					array( 'sessionSource' ),
+				),
+				array(
+					array( 'pagePath', 'pageTitle', 'customEvent:googlesitekit_post_date' ),
+					array( 'customEvent:googlesitekit_post_categories' ),
+				),
+			),
+			$this->get_requested_dimensions(),
+			'The `build()` method should ask for the content and category reports when `availableCustomDimensions` lists their dimensions, even though Site Kit has not recorded that they have data.'
+		);
+		$this->assertSame( array( 'channels', 'content', 'categories' ), array_keys( $response['contextualData'] ), 'The response should have the `content` and `categories` rows of the two reports.' );
+		$this->assertSame( array( '2026-09-01' ), array_column( $response['contentMarkers'], 'date' ), 'The response should mark the post of the content report.' );
+	}
+
+	public function test_build__does_not_ask_for_a_report_whose_dimension_the_property_does_not_have() {
+		$this->analytics->get_settings()->merge(
+			array( 'availableCustomDimensions' => array( 'googlesitekit_post_author', 'googlesitekit_post_type' ) )
+		);
+
+		$this->report_rows = array(
+			'date' => array(
+				array( '20260818', 388 ),
+				array( '20260915', 412 ),
+			),
+		);
+
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for neither the content nor the category report when `availableCustomDimensions` lists neither of their dimensions.' );
 	}
 
 	public function test_build__asks_for_each_dimension_report_over_the_selected_period_and_the_28_days_before_it() {
@@ -1248,6 +1317,57 @@ class Response_BuilderTest extends TestCase {
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame( 0, $response['contextualData']['content'][0]['publishedDaysAgo'], 'A post dated `2026-09-16` should be reported as published 0 days before `2026-09-15`.' );
+	}
+
+	public function test_build__marks_the_posts_of_the_content_report_published_in_the_selected_period() {
+		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
+
+		$this->report_rows = array(
+			'date'     => array(
+				array( '20260818', 388 ),
+				array( '20260915', 412 ),
+			),
+			'pagePath' => array(
+				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
+				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_1', 0 ),
+				array( '/', 'Home', '20260901', 'date_range_0', 900 ),
+				array( '/last-spring/', 'Last spring', '20260301', 'date_range_0', 300 ),
+			),
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				array(
+					'date'  => '2026-09-01',
+					'posts' => array(
+						array(
+							'title' => 'How to plant garlic',
+							'url'   => '/how-to-plant-garlic/',
+						),
+					),
+				),
+			),
+			$response['contentMarkers'],
+			'`contentMarkers` should mark `/how-to-plant-garlic/` on the day it was published, and leave out the home page and the post published before the period.'
+		);
+	}
+
+	public function test_build__marks_no_posts_when_the_property_has_no_post_date_dimension() {
+		$this->report_rows = array(
+			'date'     => array(
+				array( '20260818', 388 ),
+				array( '20260915', 412 ),
+			),
+			'pagePath' => array(
+				array( '/how-to-plant-garlic/', 'How to plant garlic', '20260901', 'date_range_0', 96 ),
+			),
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame( array(), $response['contentMarkers'], '`contentMarkers` should be empty when the property has no post date dimension, since the content report does not run.' );
 	}
 
 	public function test_build__ranks_rows_the_same_way_when_every_report_returns_its_rows_in_reverse_order() {

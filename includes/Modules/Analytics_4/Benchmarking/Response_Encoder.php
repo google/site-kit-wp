@@ -40,8 +40,9 @@ final class Response_Encoder {
 	 * @since 1.191.0 Encodes the key factor cards in place of the dimension rows, and reads `visits` in place of `visitors`.
 	 * @since n.e.x.t Encodes the expected range of each day and the first day with recorded traffic.
 	 * @since n.e.x.t Encodes the locale and the signed request of the generated insight when the response has them.
+	 * @since n.e.x.t Encodes the content markers.
 	 *
-	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `firstTrafficDate` and `keyFactors`. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `firstTrafficDate` is the first day with recorded traffic, as `YYYY-MM-DD`, or null when there is none. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
+	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `firstTrafficDate`, `keyFactors` and `contentMarkers`. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `firstTrafficDate` is the first day with recorded traffic, as `YYYY-MM-DD`, or null when there is none. Each `contentMarkers` item has a `date`, as `YYYY-MM-DD`, and its `posts`, each with `title` and `url`. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
 	 * @return array The encoded response.
 	 */
 	public function encode( array $response ) {
@@ -76,11 +77,21 @@ final class Response_Encoder {
 			$encoded_key_factor_attributes[] = $encoded_attributes;
 		}
 
+		$first_date = isset( $first_row['date'] ) ? $first_row['date'] : null;
+
+		// The markers add their titles and paths to the string table after the
+		// cards add their labels, so the cards' strings keep their positions.
+		$encoded_content_markers = $this->encode_content_markers(
+			$first_date,
+			isset( $response['contentMarkers'] ) ? $response['contentMarkers'] : array(),
+			$strings
+		);
+
 		$encoded = array();
 
 		$encoded[ Wire_Format::MEMBER_VERSION ]    = Wire_Format::FORMAT_VERSION;
 		$encoded[ Wire_Format::MEMBER_STRINGS ]    = $strings;
-		$encoded[ Wire_Format::MEMBER_FIRST_DATE ] = isset( $first_row['date'] ) ? $first_row['date'] : null;
+		$encoded[ Wire_Format::MEMBER_FIRST_DATE ] = $first_date;
 
 		$encoded[ Wire_Format::MEMBER_DAILY_VISITS ] = array_map(
 			function ( $row ) {
@@ -109,9 +120,11 @@ final class Response_Encoder {
 			isset( $response['firstTrafficDate'] ) ? $response['firstTrafficDate'] : null
 		);
 
+		$encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ] = $encoded_content_markers;
+
 		// Only a response built with the `trafficInsights` feature has the
-		// insight members, so a response built without it keeps the members
-		// it had before them, byte for byte.
+		// insight members, so a response built without it ends with the
+		// content markers.
 		if ( array_key_exists( 'insightPayload', $response ) ) {
 			$encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ]  = $this->encode_optional_string( isset( $response['insightLocale'] ) ? $response['insightLocale'] : null );
 			$encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ] = $this->encode_optional_string( $response['insightPayload'] );
@@ -152,6 +165,46 @@ final class Response_Encoder {
 			$this->encode_int( isset( $row['previous'] ) ? $row['previous'] : null ),
 			$this->encode_share( isset( $row['sharePct'] ) ? $row['sharePct'] : null ),
 		);
+	}
+
+	/**
+	 * Encodes the content markers, each as its day followed by its posts.
+	 *
+	 * A marker's day travels as its offset from the first plotted day, so the
+	 * response carries no date but the first. A marker without posts, or without
+	 * a day to count from, is left out.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|null $first_date The first plotted day, as `YYYY-MM-DD`.
+	 * @param array       $markers    The markers, oldest first, each with `date`, as `YYYY-MM-DD`, and `posts`, each with `title` and `url`.
+	 * @param array       $strings    String table, added to as strings are seen.
+	 * @return array The encoded markers, each as the list `[ dayOffset, [ title, url ], … ]`, where `title` and `url` are positions in the string table.
+	 */
+	private function encode_content_markers( $first_date, array $markers, array &$strings ) {
+		$encoded_markers = array();
+
+		foreach ( $markers as $marker ) {
+			$day_offset = $this->encode_day_offset( $first_date, isset( $marker['date'] ) ? $marker['date'] : null );
+			$posts      = isset( $marker['posts'] ) ? $marker['posts'] : array();
+
+			if ( null === $day_offset || empty( $posts ) ) {
+				continue;
+			}
+
+			$encoded_marker = array( $day_offset );
+
+			foreach ( $posts as $post ) {
+				$encoded_marker[] = array(
+					$this->encode_string( isset( $post['title'] ) ? $post['title'] : null, $strings ),
+					$this->encode_string( isset( $post['url'] ) ? $post['url'] : null, $strings ),
+				);
+			}
+
+			$encoded_markers[] = $encoded_marker;
+		}
+
+		return $encoded_markers;
 	}
 
 	/**

@@ -76,6 +76,7 @@ class Response_Builder {
 	 * @since 1.192.0 `dailyTraffic` changed from the 395 days that end on the end date to the days of the selected period.
 	 * @since n.e.x.t Gives each day of `dailyTraffic` its expected range, and returns `firstTrafficDate`.
 	 * @since n.e.x.t Returns `insightRequest` with the `trafficInsights` feature.
+	 * @since n.e.x.t Returns `contentMarkers`.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
@@ -87,6 +88,7 @@ class Response_Builder {
 	 *     @type string|null $firstTrafficDate The first day of the daily report with visits, as `YYYY-MM-DD`, or null when no day has any.
 	 *     @type array       $dimensions       Dimension codes, in the order the Traffic overview tab shows them.
 	 *     @type array       $contextualData   Ranked rows, keyed by the dimension they belong to.
+	 *     @type array       $contentMarkers   The posts published in the selected period that the chart marks, as `Content_Markers::build()` returns them. Empty when the property has no post date custom dimension, since the content report doesn't run then, or when the dimension has no data yet.
 	 *     @type array|null  $insightRequest   Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request.
 	 * }
 	 */
@@ -126,6 +128,13 @@ class Response_Builder {
 			'firstTrafficDate' => $this->get_first_traffic_date( $daily_series ),
 			'dimensions'       => $ranked_data['dimensions'],
 			'contextualData'   => $ranked_data['contextualData'],
+			// The chart marks posts from every row of the content report, not
+			// from the few rows `CONTENT` keeps once the rows are ranked.
+			'contentMarkers'   => ( new Content_Markers() )->build(
+				isset( $contextual_data['content'] ) ? $contextual_data['content'] : array(),
+				$start_date,
+				$end_date
+			),
 		);
 
 		// The insight is written from every row the reports returned, not
@@ -217,16 +226,16 @@ class Response_Builder {
 	 * Gets the options of every report the response needs.
 	 *
 	 * The `CONTENT` and `CATEGORIES` reports count visits by a custom dimension,
-	 * so each one runs only while its dimension has data.
+	 * so each one runs only when the property has its dimension. See
+	 * `has_custom_dimension()`.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Runs the `CONTENT` and `CATEGORIES` reports when the property has their dimension, whether or not Site Kit has recorded that it has data.
 	 *
 	 * @param Report_Options $report_options The report options for the selected period.
 	 * @return array Report request options, keyed by `dailyTraffic` or by dimension code, such as `CHANNELS`. The daily series is first.
 	 */
 	private function get_report_requests( Report_Options $report_options ) {
-		$data_availability = $this->custom_dimensions_data_available->get_data_availability();
-
 		$requests = array(
 			'dailyTraffic' => $report_options->get_daily_series_options(),
 			'CHANNELS'     => $report_options->get_channels_options(),
@@ -235,15 +244,44 @@ class Response_Builder {
 			'REFERRERS'    => $report_options->get_referrers_options(),
 		);
 
-		if ( $data_availability[ Analytics_4::CUSTOM_DIMENSION_POST_DATE ] ) {
+		if ( $this->has_custom_dimension( Analytics_4::CUSTOM_DIMENSION_POST_DATE ) ) {
 			$requests['CONTENT'] = $report_options->get_content_options();
 		}
 
-		if ( $data_availability[ Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ] ) {
+		if ( $this->has_custom_dimension( Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ) ) {
 			$requests['CATEGORIES'] = $report_options->get_categories_options();
 		}
 
 		return $requests;
+	}
+
+	/**
+	 * Checks whether the property has a custom dimension, so a report can ask
+	 * for it.
+	 *
+	 * The property has a dimension when the module's `availableCustomDimensions`
+	 * setting lists it, or when Site Kit has recorded that the dimension has
+	 * data. Site Kit records this only when a Key Metrics tile that needs the
+	 * dimension is shown, so the recorded state alone misses a dimension
+	 * that has data on a site without such a tile. A dimension that has no data
+	 * yet returns no rows.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $custom_dimension The custom dimension slug, such as `googlesitekit_post_date`.
+	 * @return bool True if the property has the custom dimension, otherwise false.
+	 */
+	private function has_custom_dimension( $custom_dimension ) {
+		$data_availability = $this->custom_dimensions_data_available->get_data_availability();
+
+		if ( ! empty( $data_availability[ $custom_dimension ] ) ) {
+			return true;
+		}
+
+		$settings = $this->analytics_4->get_settings()->get();
+
+		return is_array( $settings['availableCustomDimensions'] )
+			&& in_array( $custom_dimension, $settings['availableCustomDimensions'], true );
 	}
 
 	/**

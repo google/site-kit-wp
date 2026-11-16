@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useRef } from 'react';
 
 /**
  * WordPress dependencies
@@ -45,11 +45,32 @@ import { getPropertyCreatedMarkerDate } from './getPropertyCreatedMarkerDate';
 import { PublishedPost, getTrafficChartData } from './getTrafficChartData';
 import { getTrafficLegendItem } from './getTrafficLegendItem';
 import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
+import PublishedPostTooltip, {
+	PublishedPostTooltipHandle,
+} from './PublishedPostTooltip';
 import {
 	PUBLISHED_POST_COLOR,
 	TRAFFIC_CHART_OPTIONS,
 	TYPICAL_TRAFFIC_RANGE_COLOR,
 } from './trafficChartOptions';
+
+/** What Google Charts reports when the pointer moves onto or off a day. */
+interface ChartMouseEvent {
+	/** The day's row in the chart table, which has one row for each day the chart plots. */
+	row: number | null;
+}
+
+/** The chart that reported a mouse event, as `GoogleChart` passes it. */
+interface ChartMouseEventContext {
+	chartWrapper: {
+		getChart: () => {
+			getChartLayoutInterface: () => {
+				getXLocation: ( value: Date ) => number;
+				getYLocation: ( value: number, axisIndex?: number ) => number;
+			};
+		};
+	};
+}
 
 export interface TrafficChartProps {
 	/** The visits on each day of the selected range, oldest first. The bounds on each day's row are its typical range, which the chart draws as a band behind the line, and leaves empty on a day with null bounds. */
@@ -180,6 +201,36 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 		[]
 	);
 
+	// The tooltip keeps the hovered day in its own state: a render of the
+	// chart here would make Google Charts draw it again.
+	const postTooltipRef = useRef< PublishedPostTooltipHandle >( null );
+
+	function handleChartMouseOver(
+		{ row }: ChartMouseEvent,
+		{ chartWrapper }: ChartMouseEventContext
+	) {
+		const day = row === null ? undefined : days[ row ];
+
+		if ( ! day?.posts.length ) {
+			postTooltipRef.current?.hide();
+			return;
+		}
+
+		const chartLayout = chartWrapper.getChart().getChartLayoutInterface();
+
+		postTooltipRef.current?.show( {
+			date: day.date,
+			posts: day.posts,
+			x: chartLayout.getXLocation( day.date ),
+			// The line plots against the second value axis.
+			y: chartLayout.getYLocation( day.visits, 1 ),
+		} );
+	}
+
+	function handleChartMouseOut() {
+		postTooltipRef.current?.hide();
+	}
+
 	return (
 		<div className="googlesitekit-traffic-overview__chart">
 			<GoogleChart
@@ -190,9 +241,19 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 				height="256px"
 				loaded={ loaded }
 				loadingHeight="276px"
+				onMouseOver={
+					hasPublishedPosts ? handleChartMouseOver : undefined
+				}
+				onMouseOut={
+					hasPublishedPosts ? handleChartMouseOut : undefined
+				}
 				options={ options }
 				width="100%"
-			/>
+			>
+				{ hasPublishedPosts && (
+					<PublishedPostTooltip ref={ postTooltipRef } />
+				) }
+			</GoogleChart>
 			{ loaded && <ChartLegend items={ legendItems } /> }
 			{ loaded &&
 				! gatheringData &&

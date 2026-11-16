@@ -1395,6 +1395,73 @@ describe( 'TrafficOverviewPanel', () => {
 			] );
 		} );
 
+		it( 'should mark the posts of the content markers of the benchmarking response on the chart', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			provideBenchmarkingResponse( registry, {
+				...createBenchmarkingResponse( startDate, endDate ),
+				contentMarkers: [
+					{
+						date: startDate,
+						posts: [
+							{
+								title: 'How to plant garlic',
+								url: '/how-to-plant-garlic/',
+							},
+							{
+								title: 'Storing garlic',
+								url: '/storing-garlic/',
+							},
+						],
+					},
+				],
+			} );
+
+			const { container, getAllByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			// Google Charts draws nothing under Jest, so this test reads the
+			// chart's screen-reader lines instead.
+			expect(
+				getAllByText( /^Post published on / ).map(
+					( line ) => line.textContent
+				)
+			).toEqual( [
+				expect.stringMatching( /: How to plant garlic$/ ),
+				expect.stringMatching( /: Storing garlic$/ ),
+			] );
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+				'Typical traffic range',
+				'Published post',
+			] );
+		} );
+
+		it( 'should leave the published posts out of the legend when the benchmarking response has no content markers', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			provideBenchmarkingResponse( registry, {
+				...createBenchmarkingResponse( startDate, endDate ),
+				contentMarkers: [],
+			} );
+
+			const { container, queryAllByText, waitForRegistry } =
+				renderPanel();
+
+			await waitForRegistry();
+
+			expect( queryAllByText( /^Post published on / ) ).toHaveLength( 0 );
+			expect( getLegendLabels( container ) ).toEqual( [
+				'Last 28 days traffic',
+				'Typical traffic range',
+			] );
+		} );
+
 		it( 'should leave the typical range out of the legend when no day of the benchmarking response has bounds', async () => {
 			provideDailyTraffic( ( day ) => ( {
 				...day,

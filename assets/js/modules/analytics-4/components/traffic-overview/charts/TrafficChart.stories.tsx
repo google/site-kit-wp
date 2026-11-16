@@ -38,8 +38,17 @@ import {
 	getPlaceholderPublishedPosts,
 } from './placeholderTrafficChartData';
 import TrafficChart from './TrafficChart';
+import { PUBLISHED_POST_COLOR } from './trafficChartOptions';
 
 const dailyTraffic = getPlaceholderDailyTraffic( '2025-01-09', '2025-02-05' );
+
+// Each post has a URL, so its tooltip links to the Site Kit dashboard for it.
+const postsWithURLs = getPlaceholderPublishedPosts( dailyTraffic ).map(
+	( post, index ) => ( {
+		...post,
+		url: `http://example.com/post-${ index + 1 }/`,
+	} )
+);
 
 /**
  * Connects Analytics and sets one date range, so every story shows the same
@@ -123,8 +132,30 @@ TypicalTrafficRangeAndPublishedPosts.storyName =
 	'Typical Traffic Range And Published Posts';
 TypicalTrafficRangeAndPublishedPosts.args = {
 	dailyTraffic: addTypicalTrafficRange( dailyTraffic ),
-	publishedPosts: getPlaceholderPublishedPosts( dailyTraffic ),
+	publishedPosts: postsWithURLs,
 	setupRegistry: commonSetup,
+};
+
+/**
+ * The pointer is on the day of a published post, so a tooltip over the post's
+ * dot shows its title, the day it was published, and a link to the Site Kit
+ * dashboard for it.
+ */
+export const PublishedPostTooltip = Template.bind(
+	{}
+) as Story< TrafficChartStoryProps >;
+PublishedPostTooltip.storyName = 'Published Post Tooltip';
+PublishedPostTooltip.args = {
+	dailyTraffic: addTypicalTrafficRange( dailyTraffic ),
+	publishedPosts: postsWithURLs,
+	setupRegistry: commonSetup,
+};
+PublishedPostTooltip.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	// The first post's dot.
+	hoverSelector: `[id^="googlesitekit-chart-"] svg circle[fill="${ PUBLISHED_POST_COLOR }"]`,
+	postInteractionWait: 500,
+	viewport: 'large',
 };
 
 /**

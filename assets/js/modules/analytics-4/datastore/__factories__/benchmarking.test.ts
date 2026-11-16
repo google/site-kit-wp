@@ -71,6 +71,7 @@ describe( 'provideBenchmarkingData', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				contentMarkers: [],
 			}
 		);
 
@@ -90,6 +91,7 @@ describe( 'provideBenchmarkingData', () => {
 			],
 			firstTrafficDate: null,
 			keyFactors: [],
+			contentMarkers: [],
 		} );
 	} );
 

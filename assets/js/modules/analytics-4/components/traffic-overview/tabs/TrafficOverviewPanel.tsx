@@ -36,10 +36,8 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { useFeature } from '@/js/hooks/useFeature';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
-import {
-	getPlaceholderDailyTraffic,
-	getPlaceholderPublishedPosts,
-} from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
+import { getPublishedPosts } from '@/js/modules/analytics-4/components/traffic-overview/charts/getPublishedPosts';
+import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
 import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
@@ -154,11 +152,14 @@ const TrafficOverviewPanel: FC = () => {
 						dailyTraffic={ dailyTraffic }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
-						// TODO: Replace the placeholder published posts with
-						// the site's own.
+						// The posts published in the range that brought it the
+						// most visits, as the benchmarking response ranks them.
 						publishedPosts={
 							showKeyFactors
-								? getPlaceholderPublishedPosts( dailyTraffic )
+								? getPublishedPosts(
+										benchmarkingResponse?.contentMarkers,
+										referenceSiteURL
+								  )
 								: undefined
 						}
 					/>

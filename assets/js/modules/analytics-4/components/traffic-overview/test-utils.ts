@@ -33,7 +33,10 @@ import { getQueryArg } from '@wordpress/url';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
-import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
+import {
+	getPlaceholderDailyTraffic,
+	getPlaceholderPublishedPosts,
+} from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
@@ -979,7 +982,7 @@ export function addTypicalTrafficRange(
 /**
  * Builds a decoded benchmarking response with the figures of the design: its
  * total visits, its visits and typical range on each day of the date range,
- * and its key factor cards.
+ * its key factor cards, and its published posts.
  *
  * @since n.e.x.t
  *
@@ -991,15 +994,28 @@ export function createBenchmarkingResponse(
 	startDate: string,
 	endDate: string
 ): DecodedBenchmarkingResponse {
+	const dailyTraffic = getPlaceholderDailyTraffic( startDate, endDate );
+
 	return {
 		visits: PLACEHOLDER_TOTAL_VISITS,
-		dailyTraffic: addTypicalTrafficRange(
-			getPlaceholderDailyTraffic( startDate, endDate )
-		),
+		dailyTraffic: addTypicalTrafficRange( dailyTraffic ),
 		// The site recorded traffic on every day of the year of history the
 		// response reads, so every day of the range has a typical range.
 		firstTrafficDate: addDays( startDate, -364 ),
 		keyFactors: KEY_FACTORS,
+		// The design's posts, each on a day of its own, at a path made from
+		// its title.
+		contentMarkers: getPlaceholderPublishedPosts( dailyTraffic ).map(
+			( { date, title } ) => ( {
+				date,
+				posts: [
+					{
+						title,
+						url: `/${ title.toLowerCase().replace( / /g, '-' ) }/`,
+					},
+				],
+			} )
+		),
 	};
 }
 

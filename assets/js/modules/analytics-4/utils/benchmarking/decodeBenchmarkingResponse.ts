@@ -29,6 +29,7 @@ import {
 	BENCHMARKING_FORMAT_VERSION,
 	BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
 	BENCHMARKING_KEY_FACTOR_KINDS,
+	MEMBER_CONTENT_MARKERS,
 	MEMBER_DAILY_EXPECTED_RANGES,
 	MEMBER_DAILY_VISITS,
 	MEMBER_FIRST_DATE,
@@ -42,6 +43,8 @@ import {
 	MEMBER_VISIT_TOTALS,
 } from './constants';
 import {
+	BenchmarkingContentMarker,
+	BenchmarkingContentMarkerPost,
 	BenchmarkingDailyTrafficRow,
 	BenchmarkingKeyFactor,
 	BenchmarkingKeyFactorAttribute,
@@ -49,10 +52,10 @@ import {
 } from './types';
 
 /** The members of a response built without the `trafficInsights` feature. */
-const MEMBER_COUNT = 9;
+const MEMBER_COUNT = 10;
 
 /** The members of a response built with the `trafficInsights` feature, which adds the insight's locale and request. */
-const MEMBER_COUNT_WITH_INSIGHT = 11;
+const MEMBER_COUNT_WITH_INSIGHT = 12;
 
 /** A day's expected range, as `[ expectedMin, expectedMax ]`, or null on a day without one. */
 type EncodedExpectedRange = [ number, number ] | null;
@@ -238,6 +241,75 @@ function decodeKeyFactors(
 }
 
 /**
+ * Decodes a post of a content marker, which travels as the positions of its
+ * title and its path in the string table.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*}     post    The encoded post.
+ * @param {Array} strings The response's string table.
+ * @return {Object|null} The decoded post, or null when it is not a list of two positions in the string table.
+ */
+function decodeContentMarkerPost(
+	post: unknown,
+	strings: string[]
+): BenchmarkingContentMarkerPost | null {
+	if ( ! Array.isArray( post ) || post.length !== 2 ) {
+		return null;
+	}
+
+	const title = readString( strings, post[ 0 ] );
+	const url = readString( strings, post[ 1 ] );
+
+	return title !== null && url !== null ? { title, url } : null;
+}
+
+/**
+ * Decodes the content markers, each of which travels as its day's offset from
+ * the first plotted day, followed by its posts.
+ *
+ * The markers only label the chart, so a marker or a post that cannot be read
+ * is left out rather than making the whole response unusable. So is a marker
+ * whose posts are all left out, since a dot with nothing to name has nothing to
+ * show.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} firstDate The first plotted day, as `YYYY-MM-DD`.
+ * @param {Array}  markers   The encoded markers, oldest first, each as `[ dayOffset, [ title, url ], … ]`.
+ * @param {Array}  strings   The response's string table.
+ * @return {Array} The decoded markers.
+ */
+function decodeContentMarkers(
+	firstDate: string,
+	markers: unknown[],
+	strings: string[]
+): BenchmarkingContentMarker[] {
+	if ( ! isValidDateString( firstDate ) ) {
+		return [];
+	}
+
+	return markers.flatMap( ( marker ) => {
+		if ( ! Array.isArray( marker ) || ! Number.isInteger( marker[ 0 ] ) ) {
+			return [];
+		}
+
+		const [ dayOffset, ...encodedPosts ] = marker;
+		const posts = encodedPosts.flatMap(
+			( post ) => decodeContentMarkerPost( post, strings ) ?? []
+		);
+
+		if ( ! posts.length ) {
+			return [];
+		}
+
+		// The day is counted on the calendar, so a clock change between the
+		// two days moves neither of them.
+		return { date: addDays( firstDate, dayOffset ), posts };
+	} );
+}
+
+/**
  * Checks whether the members that describe each day hold their shapes: the
  * daily counts, the expected range of each day, and the first day with
  * recorded traffic, which travels as its offset from the first plotted day.
@@ -297,6 +369,7 @@ function readOptionalString( value: unknown ): string | null {
  * @since 1.191.0 Decodes the key factor cards in place of the dimension rows, and returns `visits` in place of `visitors`.
  * @since n.e.x.t Decodes the expected range of each day and the first day with recorded traffic.
  * @since n.e.x.t Decodes the locale and the request of the generated insight of a response that has them.
+ * @since n.e.x.t Decodes the content markers.
  *
  * @param {*} encoded The encoded response.
  * @return {Object|null} The decoded response, or null when it cannot be read.
@@ -320,9 +393,11 @@ export function decodeBenchmarkingResponse(
 	const encodedKeyFactorAttributes = encoded[ MEMBER_KEY_FACTOR_ATTRIBUTES ];
 	const expectedRanges = encoded[ MEMBER_DAILY_EXPECTED_RANGES ];
 	const firstTrafficDayOffset = encoded[ MEMBER_FIRST_TRAFFIC_DAY_OFFSET ];
+	const encodedContentMarkers = encoded[ MEMBER_CONTENT_MARKERS ];
 
 	const membersHoldTheirShapes =
 		Array.isArray( encoded[ MEMBER_STRINGS ] ) &&
+		Array.isArray( encodedContentMarkers ) &&
 		// Each card reads its attributes from the same position, so a list of
 		// a different length pairs a card with another card's attributes.
 		Array.isArray( encodedKeyFactors ) &&
@@ -355,6 +430,11 @@ export function decodeBenchmarkingResponse(
 		keyFactors: decodeKeyFactors(
 			encodedKeyFactors,
 			encodedKeyFactorAttributes,
+			strings
+		),
+		contentMarkers: decodeContentMarkers(
+			firstDate,
+			encodedContentMarkers,
 			strings
 		),
 	};

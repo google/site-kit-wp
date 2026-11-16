@@ -300,7 +300,7 @@ class Insight_Request_Builder {
 	private function get_referrer_rows( array $contextual_data ) {
 		$rows = array_filter(
 			$this->get_rows( $contextual_data, 'referrers' ),
-			fn( $row ) => ! $this->is_placeholder( $row['label'] ) && max( $row['current'], $row['previous'] ) > 1
+			fn( $row ) => ! self::is_placeholder( $row['label'] ) && max( $row['current'], $row['previous'] ) > 1
 		);
 
 		return array_slice( $this->sort_by_change( $rows ), 0, self::MAX_REFERRERS );
@@ -343,7 +343,7 @@ class Insight_Request_Builder {
 			$this->get_rows( $contextual_data, 'content' ),
 			fn( $row ) => $row['current'] > 0
 				&& $row['publishedDaysAgo'] <= $days_in_period
-				&& ! $this->is_home_page( $row['url'] )
+				&& ! self::is_home_page( $row['url'] )
 		);
 
 		usort(
@@ -395,7 +395,7 @@ class Insight_Request_Builder {
 	 * @param string $value The value.
 	 * @return bool True when the value is a placeholder, false otherwise.
 	 */
-	private function is_placeholder( $value ) {
+	public static function is_placeholder( $value ) {
 		$value = trim( $value );
 
 		return '' === $value || ( '(' === substr( $value, 0, 1 ) && ')' === substr( $value, -1 ) );
@@ -409,7 +409,7 @@ class Insight_Request_Builder {
 	 * @param string $url The page's path or URL.
 	 * @return bool True when the page is the home page, false otherwise.
 	 */
-	private function is_home_page( $url ) {
+	public static function is_home_page( $url ) {
 		$path = wp_parse_url( $url, PHP_URL_PATH );
 		$path = is_string( $path ) ? strtolower( untrailingslashit( $path ) ) : '';
 

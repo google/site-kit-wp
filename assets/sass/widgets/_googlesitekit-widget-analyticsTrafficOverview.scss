@@ -168,6 +168,70 @@ $traffic-overview-column-gap: 42px;
 			pointer-events: none;
 		}
 
+		// The tooltip of a day with a published post shows the post in place
+		// of the day's own tooltip.
+		.googlesitekit-traffic-overview__chart .googlesitekit-chart:has(.googlesitekit-traffic-overview__post-tooltip) div.google-visualization-tooltip {
+			display: none;
+		}
+
+		// The tooltip sits centered over the post's dot, with the tip of its
+		// caret on the dot's edge. The drop shadow follows the card and the
+		// caret as one shape. Its z-index matches the other chart tooltips,
+		// which keeps it under the sticky header.
+		.googlesitekit-traffic-overview__post-tooltip {
+			filter: drop-shadow(0 0.5px 0.875px rgba(0, 0, 0, 0.04)) drop-shadow(0 1.85px 3.125px rgba(0, 0, 0, 0.19));
+			position: absolute;
+			transform: translate(-50%, -100%);
+			width: 216px;
+			z-index: 8;
+		}
+
+		.googlesitekit-traffic-overview__post-tooltip-card {
+			background-color: $c-surfaces-surface;
+			border-radius: 8px;
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			padding: 12px;
+		}
+
+		.googlesitekit-traffic-overview__post-tooltip-post {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		// A title is cut after two lines, since an Analytics page title often
+		// ends with the site's name.
+		.googlesitekit-traffic-overview__post-tooltip-title.googlesitekit-typography {
+			-webkit-box-orient: vertical;
+			color: $c-surfaces-on-background;
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			margin: 0;
+			overflow: hidden;
+			overflow-wrap: break-word;
+		}
+
+		.googlesitekit-traffic-overview__post-tooltip-date.googlesitekit-typography {
+			color: $c-surfaces-on-background-variant;
+			margin: 0;
+		}
+
+		// The link sits 8px under the date, which the post's 2px gap leaves
+		// 6px short of. It takes the width of its text, so the space beside it
+		// isn't a link.
+		.googlesitekit-traffic-overview__post-tooltip-link {
+			@include googlesitekit-typography(body, small);
+			align-self: flex-start;
+			margin-top: 6px;
+		}
+
+		.googlesitekit-traffic-overview__post-tooltip-caret {
+			display: flex;
+			justify-content: center;
+		}
+
 		.googlesitekit-traffic-overview__chart div[dir]::after {
 			background-color: $c-neutral-n-200;
 			content: "";

@@ -122,6 +122,17 @@ class Response_EncoderTest extends TestCase {
 					),
 				),
 			),
+			'contentMarkers'   => array(
+				array(
+					'date'  => '2025-08-20',
+					'posts' => array(
+						array(
+							'title' => 'How to plant garlic',
+							'url'   => '/how-to-plant-garlic/',
+						),
+					),
+				),
+			),
 		);
 	}
 
@@ -509,7 +520,7 @@ class Response_EncoderTest extends TestCase {
 			)
 		);
 
-		$this->assertCount( 9, $encoded, 'The encoded response should have nine members.' );
+		$this->assertCount( 10, $encoded, 'The encoded response should have ten members.' );
 		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'An empty `dailyTraffic` should give an empty list of expected ranges.' );
 		$this->assertNull( $encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ], 'With no first plotted day to count from, the first traffic day should be encoded as null.' );
 	}
@@ -534,36 +545,36 @@ class Response_EncoderTest extends TestCase {
 		);
 	}
 
-	public function test_encode__writes_nine_members_for_a_response_without_an_insight_payload() {
+	public function test_encode__writes_ten_members_for_a_response_without_an_insight_payload() {
 		$response                  = $this->get_fixture_response();
 		$response['insightLocale'] = 'de_DE';
 
 		$encoded = $this->encode_as_sent( $response );
 
-		$this->assertCount( 9, $encoded, 'A response without `insightPayload` should keep its nine members, even with a locale.' );
+		$this->assertCount( 10, $encoded, 'A response without `insightPayload` should keep its ten members, even with a locale.' );
 		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_LOCALE, $encoded, 'A response without `insightPayload` should have no insight locale member.' );
 		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_PAYLOAD, $encoded, 'A response without `insightPayload` should have no insight payload member.' );
 	}
 
-	public function test_encode__writes_the_insight_locale_and_the_insight_payload_as_members_9_and_10() {
+	public function test_encode__writes_the_insight_locale_and_the_insight_payload_as_members_10_and_11() {
 		$response                   = $this->get_fixture_response();
 		$response['insightLocale']  = 'de_DE_formal';
 		$response['insightPayload'] = 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl';
 
 		$encoded = $this->encode_as_sent( $response );
 
-		$this->assertCount( 11, $encoded, 'A response with `insightPayload` should have eleven members.' );
+		$this->assertCount( 12, $encoded, 'A response with `insightPayload` should have twelve members.' );
 		// The browser reads the members by their positions, so the positions
 		// are named here rather than read from `Wire_Format`.
-		$this->assertSame( range( 0, 10 ), array_keys( $encoded ), 'The response should stay a list, so it is sent as a JSON array.' );
-		$this->assertSame( 'de_DE_formal', $encoded[9], 'The locale of the insight should be at position 9.' );
-		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[10], 'The payload should be at position 10.' );
-		$this->assertSame( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 9 should be the locale of the insight, as it is.' );
-		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 10 should be the payload, as it is.' );
+		$this->assertSame( range( 0, 11 ), array_keys( $encoded ), 'The response should stay a list, so it is sent as a JSON array.' );
+		$this->assertSame( 'de_DE_formal', $encoded[10], 'The locale of the insight should be at position 10.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[11], 'The payload should be at position 11.' );
+		$this->assertSame( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 10 should be the locale of the insight, as it is.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 11 should be the payload, as it is.' );
 		$this->assertSame(
 			$this->encode_as_sent( $this->get_fixture_response() ),
-			array_slice( $encoded, 0, 9 ),
-			'The first nine members should be the same as those of the response without the insight members.'
+			array_slice( $encoded, 0, 10 ),
+			'The first ten members should be the same as those of the response without the insight members.'
 		);
 		$this->assertNotContains( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_STRINGS ], 'The locale should not be added to the string table.' );
 	}
@@ -575,9 +586,9 @@ class Response_EncoderTest extends TestCase {
 
 		$encoded = $this->encode_as_sent( $response );
 
-		$this->assertCount( 11, $encoded, 'A response with a null `insightPayload` should still have eleven members.' );
-		$this->assertSame( 'de_DE', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 9 should be the locale of the insight.' );
-		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 10 should be null when there is no insight to request.' );
+		$this->assertCount( 12, $encoded, 'A response with a null `insightPayload` should still have twelve members.' );
+		$this->assertSame( 'de_DE', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 10 should be the locale of the insight.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 11 should be null when there is no insight to request.' );
 	}
 
 	public function test_encode__writes_null_as_the_insight_locale_when_the_response_has_none() {
@@ -586,8 +597,116 @@ class Response_EncoderTest extends TestCase {
 
 		$encoded = $this->encode_as_sent( $response );
 
-		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 9 should be null for a response without `insightLocale`.' );
-		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 10 should be the payload.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 10 should be null for a response without `insightLocale`.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 11 should be the payload.' );
+	}
+
+	public function test_encode__writes_each_content_marker_as_its_day_offset_followed_by_its_posts() {
+		$response                   = $this->get_fixture_response();
+		$response['contentMarkers'] = array(
+			array(
+				'date'  => '2025-08-18',
+				'posts' => array(
+					array(
+						'title' => 'Mulching in autumn',
+						'url'   => '/mulching-in-autumn/',
+					),
+				),
+			),
+			array(
+				'date'  => '2025-08-21',
+				'posts' => array(
+					array(
+						'title' => 'How to plant garlic',
+						'url'   => '/how-to-plant-garlic/',
+					),
+					array(
+						'title' => 'Storing garlic',
+						'url'   => '/storing-garlic/',
+					),
+				),
+			),
+		);
+
+		$encoded = $this->encode_as_sent( $response );
+		$strings = $encoded[ Wire_Format::MEMBER_STRINGS ];
+
+		$this->assertSame(
+			array(
+				array( 0, array( 'Mulching in autumn', '/mulching-in-autumn/' ) ),
+				array( 3, array( 'How to plant garlic', '/how-to-plant-garlic/' ), array( 'Storing garlic', '/storing-garlic/' ) ),
+			),
+			array_map(
+				fn( $marker ) => array_merge(
+					array( $marker[0] ),
+					array_map(
+						fn( $post ) => array( $strings[ $post[0] ], $strings[ $post[1] ] ),
+						array_slice( $marker, 1 )
+					)
+				),
+				$encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ]
+			),
+			'Each marker should be its day as an offset from `2025-08-18`, then each of its posts in order, with its title and its path from the string table.'
+		);
+		$this->assertSame(
+			array( 1, 1 ),
+			array( $encoded[ Wire_Format::MEMBER_KEY_FACTORS ][2][1], $encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ][1][1][1] ),
+			'The `CONTENT` card and the post with the same path should carry the same string index, which the cards kept before the markers added their strings.'
+		);
+	}
+
+	public function test_encode__leaves_out_a_content_marker_without_posts_or_without_a_day_to_count_from() {
+		$response                   = $this->get_fixture_response();
+		$response['contentMarkers'] = array(
+			array(
+				'date'  => '2025-08-19',
+				'posts' => array(),
+			),
+			array(
+				'posts' => array(
+					array(
+						'title' => 'Undated',
+						'url'   => '/undated/',
+					),
+				),
+			),
+		);
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ], 'A marker with no posts, and a marker with no date, should be left out.' );
+		$this->assertNotContains( 'Undated', $encoded[ Wire_Format::MEMBER_STRINGS ], 'The post of a marker that is left out should not be added to the string table.' );
+	}
+
+	public function test_encode__writes_no_content_markers_without_a_first_plotted_day() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'dailyTraffic'   => array(),
+				'contentMarkers' => array(
+					array(
+						'date'  => '2025-08-20',
+						'posts' => array(
+							array(
+								'title' => 'How to plant garlic',
+								'url'   => '/how-to-plant-garlic/',
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ], 'With no first plotted day to count from, no marker should be written.' );
+	}
+
+	public function test_encode__writes_an_empty_content_markers_member_for_a_response_without_them() {
+		$response = $this->get_fixture_response();
+		unset( $response['contentMarkers'] );
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 10, $encoded, 'A response without `contentMarkers` should still have ten members.' );
+		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ], 'Member 9 should be an empty list.' );
 	}
 
 	/**

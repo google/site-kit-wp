@@ -45,6 +45,8 @@ export interface PublishedPost {
 	date: string;
 	/** The post's title. */
 	title: string;
+	/** The post's URL. The post's tooltip on the chart links to the Site Kit dashboard for it. */
+	url?: string;
 }
 
 export interface TrafficChartColumn {

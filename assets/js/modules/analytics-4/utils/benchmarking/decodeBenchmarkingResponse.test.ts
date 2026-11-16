@@ -24,7 +24,7 @@ import { provideTimezone } from '@tests/js/test-utils';
 import { decodeBenchmarkingResponse } from './decodeBenchmarkingResponse';
 
 describe( 'decodeBenchmarkingResponse', () => {
-	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, `firstTrafficDate`, and `keyFactors`', () => {
+	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, `firstTrafficDate`, `keyFactors`, and `contentMarkers`', () => {
 		expect( decodeBenchmarkingResponse( benchmarkingData ) ).toEqual( {
 			visits: { current: 412, previous: 388 },
 			dailyTraffic: [
@@ -104,6 +104,19 @@ describe( 'decodeBenchmarkingResponse', () => {
 					],
 				},
 			],
+			// 2 days after the first plotted day, with the path the `CONTENT`
+			// card carries too.
+			contentMarkers: [
+				{
+					date: '2025-08-20',
+					posts: [
+						{
+							title: 'How to plant garlic',
+							url: '/how-to-plant-garlic/',
+						},
+					],
+				},
+			],
 		} );
 	} );
 
@@ -136,6 +149,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[],
 				new Array( 90 ).fill( null ),
 				null,
+				[],
 			] );
 			const dates =
 				decoded?.dailyTraffic.map( ( { date } ) => date ) ?? [];
@@ -171,10 +185,28 @@ describe( 'decodeBenchmarkingResponse', () => {
 						[],
 						[ null ],
 						dayOffset,
+						[],
 					] )?.firstTrafficDate
 				).toBe( firstTrafficDate );
 			}
 		);
+
+		it( 'should date a content marker after the clock change from the first plotted day, to its own date', () => {
+			expect(
+				decodeBenchmarkingResponse( [
+					1,
+					[ 'How to plant garlic', '/how-to-plant-garlic/' ],
+					'2026-04-01',
+					new Array( 14 ).fill( 1 ),
+					[ 14, 14 ],
+					[],
+					[],
+					new Array( 14 ).fill( null ),
+					null,
+					[ [ 10, [ 0, 1 ] ] ],
+				] )?.contentMarkers[ 0 ].date
+			).toBe( '2026-04-11' );
+		} );
 	} );
 
 	it.each( [
@@ -191,6 +223,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ [] ],
 			[ null ],
 			null,
+			[],
 		] );
 
 		expect( decoded?.keyFactors[ 0 ].label ).toBeNull();
@@ -204,24 +237,24 @@ describe( 'decodeBenchmarkingResponse', () => {
 
 	it.each( [
 		[ 'a response that is not an array', { version: 1 } ],
-		[ 'a response of fewer than nine members', [ 1, [], '2025-08-18' ] ],
+		[ 'a response of fewer than ten members', [ 1, [], '2025-08-18' ] ],
 		[
-			'a response of eight members',
-			( benchmarkingData as unknown[] ).slice( 0, 8 ),
+			'a response of nine members, without the content markers',
+			( benchmarkingData as unknown[] ).slice( 0, 9 ),
 		],
 		[
-			'a response of ten members',
+			'a response of eleven members',
 			[ ...( benchmarkingData as unknown[] ), [] ],
 		],
 		[
-			'a response of twelve members',
+			'a response of thirteen members',
 			[ ...( benchmarkingData as unknown[] ), 'en_US', 'payload', null ],
 		],
 	] )( 'decodes %s to null', ( _label, encoded ) => {
 		expect( decodeBenchmarkingResponse( encoded ) ).toBeNull();
 	} );
 
-	it( 'should decode the locale and the request of the generated insight from a response of eleven members', () => {
+	it( 'should decode the locale and the request of the generated insight from a response of twelve members', () => {
 		const decoded = decodeBenchmarkingResponse( [
 			...( benchmarkingData as unknown[] ),
 			'de_DE_formal',
@@ -235,7 +268,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 		} );
 	} );
 
-	it( 'should leave out the locale and the request of the generated insight from a response of nine members', () => {
+	it( 'should leave out the locale and the request of the generated insight from a response of ten members', () => {
 		const decoded = decodeBenchmarkingResponse( benchmarkingData );
 
 		expect( decoded ).not.toHaveProperty( 'insightLocale' );
@@ -266,7 +299,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 	it( "should decode the encoder's output for an empty series without throwing", () => {
 		// What Response_Encoder writes when `dailyTraffic` is empty: no first
 		// date, because there is no day to write.
-		const encoded = [ 1, [], null, [], [ 0, 0 ], [], [], [], null ];
+		const encoded = [ 1, [], null, [], [ 0, 0 ], [], [], [], null, [] ];
 
 		expect( () => decodeBenchmarkingResponse( encoded ) ).not.toThrow();
 		expect( decodeBenchmarkingResponse( encoded ) ).toEqual( {
@@ -274,6 +307,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			dailyTraffic: [],
 			firstTrafficDate: null,
 			keyFactors: [],
+			contentMarkers: [],
 		} );
 	} );
 
@@ -306,6 +340,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[],
 				[],
 				5,
+				[],
 			] )
 		).toBeNull();
 	} );
@@ -328,6 +363,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					[ null, null ],
 					null,
+					[],
 				] )
 			).toBeNull();
 		}
@@ -342,6 +378,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 		[ 'key factor cards', 5 ],
 		[ 'key factor attributes', 6 ],
 		[ 'expected ranges', 7 ],
+		[ 'content markers', 9 ],
 	] )(
 		'should decode a response whose %s is not a list to null',
 		( _label, member ) => {
@@ -355,6 +392,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ [] ],
 				[ [ 118.4, 183.1 ] ],
 				-26,
+				[],
 			];
 
 			// The response as written decodes, so only the hostile member
@@ -390,6 +428,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					attributes,
 					[ null ],
 					null,
+					[],
 				] )
 			).toBeNull();
 		}
@@ -412,6 +451,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					[ null ],
 					null,
+					[],
 				] )
 			).toBeNull();
 		}
@@ -434,6 +474,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					expectedRanges,
 					null,
+					[],
 				] )
 			).toBeNull();
 		}
@@ -460,6 +501,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					[ null, expectedRange ],
 					null,
+					[],
 				] )
 			).toBeNull();
 		}
@@ -502,6 +544,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ [], [] ],
 				[ null ],
 				null,
+				[],
 			] );
 
 			expect( decoded?.keyFactors ).toEqual( [
@@ -528,6 +571,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ [ [ 6, 0, 1, 2 ], null, [ 6, 0, 3, 4, 5.5 ] ] ],
 			[ null ],
 			null,
+			[],
 		] );
 
 		expect( decoded?.keyFactors[ 0 ].attributes ).toEqual( [
@@ -552,6 +596,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ 'not a list' ],
 			[ null ],
 			null,
+			[],
 		] );
 
 		expect( decoded?.keyFactors ).toEqual( [
@@ -589,6 +634,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			],
 			[ null ],
 			null,
+			[],
 		] );
 
 		expect( decoded?.keyFactors.map( ( { kind } ) => kind ) ).toEqual( [
@@ -634,6 +680,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			],
 			[ null ],
 			null,
+			[],
 		] );
 
 		// Both cards with an unknown kind are left out with their own
@@ -657,5 +704,139 @@ describe( 'decodeBenchmarkingResponse', () => {
 				],
 			},
 		] );
+	} );
+
+	describe( 'content markers', () => {
+		/**
+		 * Decodes a response whose first plotted day is `2025-08-18`, with the
+		 * given content markers.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Array} contentMarkers The encoded content markers.
+		 * @return {Array|undefined} The decoded content markers.
+		 */
+		function decodeContentMarkers( contentMarkers: unknown ) {
+			return decodeBenchmarkingResponse( [
+				1,
+				[
+					'How to plant garlic',
+					'/how-to-plant-garlic/',
+					'Storing garlic',
+					'/storing-garlic/',
+				],
+				'2025-08-18',
+				[ 132, 0, 147, 96 ],
+				[ 412, 388 ],
+				[],
+				[],
+				[ null, null, null, null ],
+				null,
+				contentMarkers,
+			] )?.contentMarkers;
+		}
+
+		it( 'should date each marker from the first plotted day, and list its posts in order', () => {
+			expect(
+				decodeContentMarkers( [
+					[ 0, [ 0, 1 ] ],
+					[ 3, [ 2, 3 ], [ 0, 1 ] ],
+				] )
+			).toEqual( [
+				{
+					date: '2025-08-18',
+					posts: [
+						{
+							title: 'How to plant garlic',
+							url: '/how-to-plant-garlic/',
+						},
+					],
+				},
+				{
+					date: '2025-08-21',
+					posts: [
+						{ title: 'Storing garlic', url: '/storing-garlic/' },
+						{
+							title: 'How to plant garlic',
+							url: '/how-to-plant-garlic/',
+						},
+					],
+				},
+			] );
+		} );
+
+		it.each( [
+			[ 'null', null ],
+			[ 'a number', 5 ],
+			[ 'an empty list', [] ],
+			[ 'a list whose day is a fraction', [ 1.5, [ 0, 1 ] ] ],
+			[ 'a list whose day is a string', [ '1', [ 0, 1 ] ] ],
+			[ 'a day with no posts', [ 1 ] ],
+		] )(
+			'should leave out a marker that is %s, and keep the markers beside it',
+			( _label, marker ) => {
+				expect(
+					decodeContentMarkers( [ marker, [ 2, [ 0, 1 ] ] ] )
+				).toEqual( [
+					{
+						date: '2025-08-20',
+						posts: [
+							{
+								title: 'How to plant garlic',
+								url: '/how-to-plant-garlic/',
+							},
+						],
+					},
+				] );
+			}
+		);
+
+		it.each( [
+			[ 'null', null ],
+			[ 'a single position', [ 0 ] ],
+			[ 'three positions', [ 0, 1, 2 ] ],
+			[ 'a title the string table does not hold', [ 9, 1 ] ],
+			[ 'a null path', [ 0, null ] ],
+		] )(
+			'should leave out a post that is %s, and keep the posts beside it',
+			( _label, post ) => {
+				expect(
+					decodeContentMarkers( [ [ 1, post, [ 2, 3 ] ] ] )
+				).toEqual( [
+					{
+						date: '2025-08-19',
+						posts: [
+							{
+								title: 'Storing garlic',
+								url: '/storing-garlic/',
+							},
+						],
+					},
+				] );
+			}
+		);
+
+		it( 'should leave out a marker none of whose posts can be read', () => {
+			expect( decodeContentMarkers( [ [ 1, null, [ 9, 9 ] ] ] ) ).toEqual(
+				[]
+			);
+		} );
+
+		it( 'should decode no markers for an empty series, since it has no first plotted day to count from', () => {
+			expect(
+				decodeBenchmarkingResponse( [
+					1,
+					[ 'How to plant garlic', '/how-to-plant-garlic/' ],
+					null,
+					[],
+					[ 0, 0 ],
+					[],
+					[],
+					[],
+					null,
+					[ [ 0, [ 0, 1 ] ] ],
+				] )?.contentMarkers
+			).toEqual( [] );
+		} );
 	} );
 } );

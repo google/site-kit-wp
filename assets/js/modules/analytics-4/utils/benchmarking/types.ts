@@ -76,6 +76,20 @@ export interface BenchmarkingKeyFactor {
 	attributes: BenchmarkingKeyFactorAttribute[];
 }
 
+export interface BenchmarkingContentMarkerPost {
+	/** The post's title. */
+	title: string;
+	/** The post's path, such as `/how-to-plant-garlic/`. */
+	url: string;
+}
+
+export interface BenchmarkingContentMarker {
+	/** The day the posts were published, as `YYYY-MM-DD`. */
+	date: string;
+	/** The posts published on that day, the post with the most visits in the date range first. */
+	posts: BenchmarkingContentMarkerPost[];
+}
+
 export interface DecodedBenchmarkingResponse {
 	/** The two period totals. */
 	visits: BenchmarkingVisits;
@@ -85,6 +99,11 @@ export interface DecodedBenchmarkingResponse {
 	firstTrafficDate: string | null;
 	/** The key factor cards, in the order the response ranked them. */
 	keyFactors: BenchmarkingKeyFactor[];
+	/**
+	 * The days in the date range with the posts that brought it the most visits,
+	 * oldest first. Empty while the post date custom dimension has no data.
+	 */
+	contentMarkers: BenchmarkingContentMarker[];
 	/**
 	 * The locale the generated insight is written in, such as `de_DE`, or null.
 	 * Only a response of the `trafficInsights` feature has it.

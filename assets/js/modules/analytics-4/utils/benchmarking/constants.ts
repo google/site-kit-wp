@@ -38,14 +38,15 @@ export const MEMBER_KEY_FACTORS = 5;
 export const MEMBER_KEY_FACTOR_ATTRIBUTES = 6;
 export const MEMBER_DAILY_EXPECTED_RANGES = 7;
 export const MEMBER_FIRST_TRAFFIC_DAY_OFFSET = 8;
+export const MEMBER_CONTENT_MARKERS = 9;
 
 /**
  * The members only a response of the `trafficInsights` feature carries: the
  * locale the generated insight is written in, and the signed request it is
  * written from, which the browser sends back unread.
  */
-export const MEMBER_INSIGHT_LOCALE = 9;
-export const MEMBER_INSIGHT_PAYLOAD = 10;
+export const MEMBER_INSIGHT_LOCALE = 10;
+export const MEMBER_INSIGHT_PAYLOAD = 11;
 
 /**
  * The driver kinds of a key factor card, in the order they travel as. A kind's

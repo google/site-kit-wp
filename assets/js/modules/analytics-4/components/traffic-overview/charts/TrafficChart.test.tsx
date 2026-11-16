@@ -32,12 +32,13 @@ import { BREAKPOINT_DESKTOP } from '@/js/hooks/useBreakpoint';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
-import { render, waitFor, within } from '@tests/js/test-utils';
+import { act, render, waitFor, within } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 } from '@tests/js/utils';
+import { PUBLISHED_POST_TOOLTIP_HIDE_DELAY } from './PublishedPostTooltip';
 import TrafficChart from './TrafficChart';
 import { PUBLISHED_POST_POINT_STYLE } from './trafficChartOptions';
 
@@ -772,6 +773,149 @@ describe( 'TrafficChart', () => {
 			expect( data[ 0 ] ).toHaveLength( 2 );
 			expect( getAllByRole( 'listitem' ) ).toHaveLength( 1 );
 			expect( getScreenReaderLines( container ) ).toEqual( [] );
+		} );
+	} );
+
+	describe( 'published post tooltip', () => {
+		const publishedPosts = [
+			{
+				date: '2025-01-15',
+				title: 'Ice cream is good for your health',
+				url: 'http://example.com/ice-cream/',
+			},
+		];
+
+		// A chart that puts each day 10px further right for each day of the
+		// month, and each visit 1px higher on the line's value axis.
+		const chartWrapper = {
+			getChart: () => ( {
+				getChartLayoutInterface: () => ( {
+					getXLocation: ( date: Date ) => date.getDate() * 10,
+					getYLocation: ( value: number, axisIndex?: number ) =>
+						axisIndex === 1 ? 200 - value : NaN,
+				} ),
+			} ),
+		};
+
+		afterEach( () => {
+			jest.useRealTimers();
+		} );
+
+		/**
+		 * Finds the open tooltip.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Element} container The element the chart rendered into.
+		 * @return {Element|null} The tooltip, or `null` when it's closed.
+		 */
+		function getTooltip( container: Element ): Element | null {
+			return container.querySelector(
+				'.googlesitekit-traffic-overview__post-tooltip'
+			);
+		}
+
+		it( 'should not listen to the pointer when no day the chart plots has a published post', async () => {
+			render( <TrafficChart dailyTraffic={ dailyTraffic } />, {
+				registry,
+			} );
+
+			const { onMouseOver, onMouseOut } = await getLastChartProps();
+
+			expect( onMouseOver ).toBeUndefined();
+			expect( onMouseOut ).toBeUndefined();
+		} );
+
+		it( 'should open the tooltip over the dot of a day with a published post when the pointer moves onto the day', async () => {
+			const { container, getByRole, getByText } = render(
+				<TrafficChart
+					dailyTraffic={ dailyTraffic }
+					publishedPosts={ publishedPosts }
+				/>,
+				{ registry }
+			);
+
+			const { onMouseOver } = await getLastChartProps();
+
+			expect( getTooltip( container ) ).toBeNull();
+
+			// The second row of the chart table is `2025-01-15`, with 14 visits.
+			act( () =>
+				onMouseOver( { row: 1, column: null }, { chartWrapper } )
+			);
+
+			expect(
+				getByText( 'Ice cream is good for your health' )
+			).toBeInTheDocument();
+			expect( getByText( 'posted Jan 15' ) ).toBeInTheDocument();
+			expect( getByRole( 'link', { name: 'See more' } ) ).toHaveAttribute(
+				'href',
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fice-cream%2F'
+			);
+			// The dot is at 150px by 186px, and the caret's tip 11px above
+			// its middle.
+			expect( getTooltip( container ) ).toHaveStyle( {
+				left: '150px',
+				top: '175px',
+			} );
+		} );
+
+		it( 'should close the tooltip after a moment when the pointer moves onto a day without a published post', async () => {
+			const { container } = render(
+				<TrafficChart
+					dailyTraffic={ dailyTraffic }
+					publishedPosts={ publishedPosts }
+				/>,
+				{ registry }
+			);
+
+			const { onMouseOver } = await getLastChartProps();
+
+			jest.useFakeTimers();
+
+			act( () =>
+				onMouseOver( { row: 1, column: null }, { chartWrapper } )
+			);
+			act( () =>
+				onMouseOver( { row: 2, column: null }, { chartWrapper } )
+			);
+
+			expect( getTooltip( container ) ).toBeInTheDocument();
+
+			act( () => {
+				jest.advanceTimersByTime( PUBLISHED_POST_TOOLTIP_HIDE_DELAY );
+			} );
+
+			expect( getTooltip( container ) ).toBeNull();
+		} );
+
+		it( 'should close the tooltip after a moment when the pointer leaves the chart', async () => {
+			const { container } = render(
+				<TrafficChart
+					dailyTraffic={ dailyTraffic }
+					publishedPosts={ publishedPosts }
+				/>,
+				{ registry }
+			);
+
+			const { onMouseOver, onMouseOut } = await getLastChartProps();
+
+			jest.useFakeTimers();
+
+			act( () =>
+				onMouseOver( { row: 1, column: null }, { chartWrapper } )
+			);
+			act( () =>
+				onMouseOut( { row: 1, column: null }, { chartWrapper } )
+			);
+
+			expect( getTooltip( container ) ).toBeInTheDocument();
+
+			act( () => {
+				jest.advanceTimersByTime( PUBLISHED_POST_TOOLTIP_HIDE_DELAY );
+			} );
+
+			expect( getTooltip( container ) ).toBeNull();
 		} );
 	} );
 } );
