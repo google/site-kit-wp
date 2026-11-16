@@ -38,7 +38,6 @@ import {
 	getPlaceholderPublishedPosts,
 } from './placeholderTrafficChartData';
 import TrafficChart from './TrafficChart';
-import { PUBLISHED_POST_COLOR } from './trafficChartOptions';
 
 const dailyTraffic = getPlaceholderDailyTraffic( '2025-01-09', '2025-02-05' );
 
@@ -152,8 +151,10 @@ PublishedPostTooltip.args = {
 };
 PublishedPostTooltip.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	// The first post's dot.
-	hoverSelector: `[id^="googlesitekit-chart-"] svg circle[fill="${ PUBLISHED_POST_COLOR }"]`,
+	// The first post's dot. The visual regression tests read the scenario from
+	// the source, so the selector must be a literal: the fill is
+	// `PUBLISHED_POST_COLOR`.
+	hoverSelector: '[id^="googlesitekit-chart-"] svg circle[fill="#a983e6"]',
 	postInteractionWait: 500,
 	viewport: 'large',
 };
