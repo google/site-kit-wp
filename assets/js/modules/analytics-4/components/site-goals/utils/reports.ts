@@ -94,25 +94,59 @@ function getSinglePrimaryCounts( eventsReport: Report ) {
 }
 
 /**
+ * Returns the current and previous values of a metric from a report's totals.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Report} report      Report whose totals hold one entry per dateRange.
+ * @param {number} metricIndex Index of the metric value to read.
+ * @return {{current: number, previous: number}} Values for each date range.
+ */
+function getTotalsMetric( report: Report, metricIndex: number ) {
+	const { totals = [] } = report || {};
+	function getValue( dateRangeSlug: string ) {
+		return (
+			parseFloat(
+				( totals as ReportRow[] )?.find?.(
+					makeFind( dateRangeSlug, 0 )
+				)?.metricValues?.[ metricIndex ]?.value ?? ''
+			) || 0
+		);
+	}
+
+	return {
+		current: getValue( 'date_range_0' ),
+		previous: getValue( 'date_range_1' ),
+	};
+}
+
+/**
  * Processes events and engagement reports into a set of derived metrics.
  *
- * @since 1.179.0
+ * When a Key action sessions report is given, the rate is the share of the
+ * site's sessions that hold at least one Key action event, so it never goes
+ * above 100%, however many events a session holds. Otherwise it is the event
+ * count over the sessions.
  *
- * @param {Report}  eventsReport        Report containing event rows (rows keyed by eventName + dateRange).
- * @param {Report}  engagementReport    Report containing engagement totals (engagementRate + sessions).
- * @param {Object}  [options]           Optional processing options.
- * @param {boolean} [options.aggregate] When true, sums eventCount across all matching rows (for
- *                                      multi-event lead generation). When false (default), reads
- *                                      a single matching row (for a single primary ecommerce event).
+ * @since 1.179.0
+ * @since n.e.x.t Added the `keyActionSessionsReport` option.
+ *
+ * @param {Report}  eventsReport                      Report containing event rows (rows keyed by eventName + dateRange).
+ * @param {Report}  engagementReport                  Report containing engagement totals (engagementRate + sessions).
+ * @param {Object}  [options]                         Optional processing options.
+ * @param {boolean} [options.aggregate]               When true, sums eventCount across all matching rows (for
+ *                                                    multi-event lead generation). When false (default), reads
+ *                                                    a single matching row (for a single primary ecommerce event).
+ * @param {Report}  [options.keyActionSessionsReport] Report containing the `sessions` that hold a Key action
+ *                                                    event. When set, the rate is computed from it.
  * @return {Object} Derived metrics including rates, counts, and engagement values.
  */
 export function processReports(
 	eventsReport: Report,
 	engagementReport: Report,
-	options: { aggregate?: boolean } = {}
+	options: { aggregate?: boolean; keyActionSessionsReport?: Report } = {}
 ) {
-	const { aggregate = false } = options;
-	const { totals: engagementRows = [] } = engagementReport || {};
+	const { aggregate = false, keyActionSessionsReport } = options;
 
 	const { current: currentPrimaryCount, previous: previousPrimaryCount } =
 		aggregate
@@ -120,36 +154,22 @@ export function processReports(
 			: getSinglePrimaryCounts( eventsReport );
 
 	// engagementRate is metricValues[0], sessions is metricValues[1].
-	const currentEngagementRate =
-		parseFloat(
-			engagementRows?.find?.( makeFind( 'date_range_0', 0 ) )
-				?.metricValues?.[ 0 ]?.value ?? ''
-		) || 0;
+	const { current: currentEngagementRate, previous: previousEngagementRate } =
+		getTotalsMetric( engagementReport, 0 );
+	const { current: currentSessions, previous: previousSessions } =
+		getTotalsMetric( engagementReport, 1 );
 
-	const previousEngagementRate =
-		parseFloat(
-			engagementRows?.find?.( makeFind( 'date_range_1', 0 ) )
-				?.metricValues?.[ 0 ]?.value ?? ''
-		) || 0;
-
-	const currentSessions =
-		parseInt(
-			engagementRows?.find?.( makeFind( 'date_range_0', 0 ) )
-				?.metricValues?.[ 1 ]?.value ?? '',
-			10
-		) || 0;
-
-	const previousSessions =
-		parseInt(
-			engagementRows?.find?.( makeFind( 'date_range_1', 0 ) )
-				?.metricValues?.[ 1 ]?.value ?? '',
-			10
-		) || 0;
+	// A session counts once in the Key action sessions report, however many
+	// Key action events it holds.
+	const { current: currentRateCount, previous: previousRateCount } =
+		keyActionSessionsReport
+			? getTotalsMetric( keyActionSessionsReport, 0 )
+			: { current: currentPrimaryCount, previous: previousPrimaryCount };
 
 	const currentRate =
-		currentSessions === 0 ? 0 : currentPrimaryCount / currentSessions;
+		currentSessions === 0 ? 0 : currentRateCount / currentSessions;
 	const previousRate =
-		previousSessions === 0 ? 0 : previousPrimaryCount / previousSessions;
+		previousSessions === 0 ? 0 : previousRateCount / previousSessions;
 
 	return {
 		currentRate,
