@@ -92,6 +92,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 *
 	 * @since 1.30.0
 	 * @since 1.192.0 Always includes `freshDataIncludesWooCommerceProducts`.
+	 * @since n.e.x.t Added `measurementProtocolSecretID`.
 	 *
 	 * @return array
 	 */
@@ -128,6 +129,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'newConversionEventsLastUpdateAt'              => 0,
 			'lostConversionEventsLastUpdateAt'             => 0,
 			self::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS => true,
+			'measurementProtocolSecretID'                  => '',
 		);
 	}
 
