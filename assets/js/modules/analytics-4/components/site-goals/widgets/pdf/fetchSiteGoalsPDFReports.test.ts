@@ -48,13 +48,13 @@ const AGGREGATED_REPORT_OPTIONS = getStoreAggregatedReportOptions(
 ) as SiteGoalsPDFReportOptions;
 
 /**
- * Makes the four Online store performance report requests.
+ * Makes the six Online store performance report requests.
  *
  * @since 1.188.0
  *
  * @param {Object}      registry The WordPress data registry the request runs against.
  * @param {AbortSignal} signal   Signal that cancels the PDF export. Defaults to a signal that never aborts.
- * @return {Promise<Object>} The four Online store performance reports.
+ * @return {Promise<Object>} The six Online store performance reports.
  */
 function fetchOnlineStorePDFReports(
 	registry: Registry,
@@ -75,18 +75,21 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 		registry = createTestRegistry() as Registry;
 	} );
 
-	it( 'requests four reports, the grouped pair and the aggregated pair', async () => {
+	it( 'requests six reports, the three grouped and the three aggregated reports', async () => {
 		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
 
 		await fetchOnlineStorePDFReports( registry );
 
-		expect( fetchMock.calls( analyticsReportEndpoint ) ).toHaveLength( 4 );
+		expect( fetchMock.calls( analyticsReportEndpoint ) ).toHaveLength( 6 );
 	} );
 
-	it( 'requests the aggregated pair alone when the grouped report options are null', async () => {
+	it( 'requests the aggregated reports alone when the grouped report options are null', async () => {
 		provideSiteGoalsPDFReports( {
 			aggregatedEventsReport: {
 				totals: buildAggregatedTotalsRows( [ '121' ], [ '111' ] ),
+			},
+			aggregatedKeyActionSessionsReport: {
+				totals: buildAggregatedTotalsRows( [ '112' ], [ '105' ] ),
 			},
 			aggregatedEngagementReport: {
 				totals: buildAggregatedTotalsRows(
@@ -103,12 +106,16 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 			aggregatedReportOptions: AGGREGATED_REPORT_OPTIONS,
 		} );
 
-		expect( fetchMock.calls( analyticsReportEndpoint ) ).toHaveLength( 2 );
+		expect( fetchMock.calls( analyticsReportEndpoint ) ).toHaveLength( 3 );
 		expect( reports ).toEqual( {
 			eventsReport: undefined,
+			keyActionSessionsReport: undefined,
 			engagementReport: undefined,
 			aggregatedEventsReport: {
 				totals: buildAggregatedTotalsRows( [ '121' ], [ '111' ] ),
+			},
+			aggregatedKeyActionSessionsReport: {
+				totals: buildAggregatedTotalsRows( [ '112' ], [ '105' ] ),
 			},
 			aggregatedEngagementReport: {
 				totals: buildAggregatedTotalsRows(
@@ -126,10 +133,14 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 
 		expect( reports ).toEqual( {
 			eventsReport: ONLINE_STORE_PDF_REPORT_FIXTURES.groupedEventsReport,
+			keyActionSessionsReport:
+				ONLINE_STORE_PDF_REPORT_FIXTURES.groupedKeyActionSessionsReport,
 			engagementReport:
 				ONLINE_STORE_PDF_REPORT_FIXTURES.groupedEngagementReport,
 			aggregatedEventsReport:
 				ONLINE_STORE_PDF_REPORT_FIXTURES.aggregatedEventsReport,
+			aggregatedKeyActionSessionsReport:
+				ONLINE_STORE_PDF_REPORT_FIXTURES.aggregatedKeyActionSessionsReport,
 			aggregatedEngagementReport:
 				ONLINE_STORE_PDF_REPORT_FIXTURES.aggregatedEngagementReport,
 		} );
@@ -185,8 +196,8 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 			controller.signal
 		);
 
-		// Wait for all four report requests to dispatch before canceling.
-		while ( deferredResolvers.length < 4 ) {
+		// Wait for all six report requests to dispatch before canceling.
+		while ( deferredResolvers.length < 6 ) {
 			await new Promise( ( advance ) => setTimeout( advance, 0 ) );
 		}
 

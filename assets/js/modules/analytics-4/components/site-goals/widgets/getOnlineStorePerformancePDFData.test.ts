@@ -60,16 +60,16 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 				id: 'woocommerce',
 				label: 'WooCommerce',
 				total: { current: 85, previous: 76 },
-				sessions: { current: 3400, previous: 3800 },
-				rate: { current: 0.025, previous: 0.02 },
+				sessions: { current: 5600, previous: 5250 },
+				rate: { current: 70 / 5600, previous: 63 / 5250 },
 				engagementRate: { current: 0.36, previous: 0.39 },
 			},
 			{
 				id: 'easy-digital-downloads',
 				label: 'Easy Digital Downloads',
 				total: { current: 20, previous: 25 },
-				sessions: { current: 500, previous: 500 },
-				rate: { current: 0.04, previous: 0.05 },
+				sessions: { current: 5600, previous: 5250 },
+				rate: { current: 14 / 5600, previous: 21 / 5250 },
 				engagementRate: { current: 0.5, previous: 0.25 },
 			},
 		] );
@@ -111,7 +111,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 				label: 'Online store performance',
 				total: { current: 121, previous: 111 },
 				sessions: { current: 5600, previous: 5250 },
-				rate: { current: 121 / 5600, previous: 111 / 5250 },
+				rate: { current: 112 / 5600, previous: 105 / 5250 },
 				engagementRate: { current: 0.42, previous: 0.4 },
 			},
 		] );
@@ -132,7 +132,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 				label: 'Online store performance',
 				total: { current: 121, previous: 111 },
 				sessions: { current: 5600, previous: 5250 },
-				rate: { current: 121 / 5600, previous: 111 / 5250 },
+				rate: { current: 112 / 5600, previous: 105 / 5250 },
 				engagementRate: { current: 0.42, previous: 0.4 },
 			},
 		] );
@@ -153,7 +153,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 				decodeURIComponent( String( requestURL ) )
 			);
 
-		expect( requestedURLs ).toHaveLength( 2 );
+		expect( requestedURLs ).toHaveLength( 3 );
 
 		requestedURLs.forEach( ( requestURL ) => {
 			expect( requestURL ).not.toContain(

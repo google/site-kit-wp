@@ -48,11 +48,17 @@ export interface SiteGoalsPDFGroup {
 	label: string;
 	/** Event count for the group. */
 	total: SiteGoalsPDFMetric;
-	/** Event count over sessions. Omitted for the "Other sources" group. */
+	/**
+	 * Share of the site's sessions with at least one of the group's Key action
+	 * events. Omitted for the "Other sources" group.
+	 */
 	rate?: SiteGoalsPDFMetric;
 	/** Engagement rate for the group. Omitted for the "Other sources" group. */
 	engagementRate?: SiteGoalsPDFMetric;
-	/** Sessions the rate is calculated over, used for the tile subtitle. */
+	/**
+	 * The site's sessions the rate is a share of, used for the tile subtitle.
+	 * The same for every group.
+	 */
 	sessions?: SiteGoalsPDFMetric;
 }
 
@@ -61,6 +67,8 @@ export const AGGREGATED_GROUP_ID = 'aggregated';
 
 /** Metric index in the events report. */
 const EVENT_COUNT_INDEX = 0;
+/** Metric index in the Key action sessions report. */
+const KEY_ACTION_SESSIONS_INDEX = 0;
 /** Metric indexes in the engagement report. */
 const ENGAGEMENT_RATE_INDEX = 0;
 const SESSIONS_INDEX = 1;
@@ -101,25 +109,32 @@ function toMetric( rows: RowPair, index: number ): SiteGoalsPDFMetric {
 }
 
 /**
- * Divides an event count by sessions, guarding against a zero denominator.
+ * Divides the sessions with a Key action by the site's sessions, guarding
+ * against a zero denominator.
  *
  * Mirrors the dashboard's `processReports`, which reports a zero rate rather
- * than a gap when a group has no sessions.
+ * than a gap when there are no sessions.
  *
  * @since 1.187.0
+ * @since n.e.x.t Divided the sessions with a Key action, not the event count.
  *
- * @param total    Event count metric.
- * @param sessions Sessions metric.
+ * @param keyActionSessions Sessions with a Key action metric.
+ * @param sessions          The site's sessions metric.
  * @return Rate for both date ranges.
  */
 function toRate(
-	total: SiteGoalsPDFMetric,
+	keyActionSessions: SiteGoalsPDFMetric,
 	sessions: SiteGoalsPDFMetric
 ): SiteGoalsPDFMetric {
 	return {
-		current: sessions.current === 0 ? 0 : total.current / sessions.current,
+		current:
+			sessions.current === 0
+				? 0
+				: keyActionSessions.current / sessions.current,
 		previous:
-			sessions.previous === 0 ? 0 : total.previous / sessions.previous,
+			sessions.previous === 0
+				? 0
+				: keyActionSessions.previous / sessions.previous,
 	};
 }
 
@@ -204,31 +219,36 @@ function sumTotals( entries: RowPair[] ): SiteGoalsPDFMetric {
 }
 
 /**
- * Builds one full group from its event and engagement rows.
+ * Builds one full group from its report rows and the site's sessions.
  *
  * @since 1.187.0
+ * @since n.e.x.t Computed the rate from the group's sessions with a Key action over the site's sessions.
  *
- * @param id             Group ID.
- * @param label          Group heading.
- * @param eventRows      Event report rows for the group.
- * @param engagementRows Engagement report rows for the group.
+ * @param id                    Group ID.
+ * @param label                 Group heading.
+ * @param eventRows             Event report rows for the group.
+ * @param keyActionSessionsRows Key action sessions report rows for the group.
+ * @param engagementRows        Engagement report rows for the group.
+ * @param siteSessions          The site's sessions, the same for every group.
  * @return The shaped group.
  */
 function toGroup(
 	id: string,
 	label: string,
 	eventRows: RowPair,
-	engagementRows: RowPair
+	keyActionSessionsRows: RowPair,
+	engagementRows: RowPair,
+	siteSessions: SiteGoalsPDFMetric
 ): SiteGoalsPDFGroup {
-	const total = toMetric( eventRows, EVENT_COUNT_INDEX );
-	const sessions = toMetric( engagementRows, SESSIONS_INDEX );
-
 	return {
 		id,
 		label,
-		total,
-		sessions,
-		rate: toRate( total, sessions ),
+		total: toMetric( eventRows, EVENT_COUNT_INDEX ),
+		sessions: siteSessions,
+		rate: toRate(
+			toMetric( keyActionSessionsRows, KEY_ACTION_SESSIONS_INDEX ),
+			siteSessions
+		),
 		engagementRate: toMetric( engagementRows, ENGAGEMENT_RATE_INDEX ),
 	};
 }
@@ -236,15 +256,19 @@ function toGroup(
 export interface ShapeSiteGoalsPDFDataArgs {
 	/** Grouped event report, one row per breakdown value per date range. */
 	eventsReport?: Report;
-	/**
-	 * Grouped engagement report. Deliberately not scoped to the goal's events,
-	 * so `sessions` is the group's full session count and the rate matches the
-	 * dashboard.
-	 */
+	/** Grouped report of the sessions with a Key action event, one row per breakdown value per date range. */
+	keyActionSessionsReport?: Report;
+	/** Grouped engagement report, for each group's engagement rate. */
 	engagementReport?: Report;
 	/** Aggregated event report, used when there is no breakdown, and for the "Other sources" count. */
 	aggregatedEventsReport?: Report;
-	/** Aggregated engagement report, used when there is no breakdown. */
+	/** Aggregated report of the sessions with a Key action event, used when there is no breakdown. */
+	aggregatedKeyActionSessionsReport?: Report;
+	/**
+	 * Aggregated engagement report. Deliberately not scoped to the goal's
+	 * events or to a group, so `sessions` is the site's session count that
+	 * every group's rate is a share of, as on the dashboard.
+	 */
 	aggregatedEngagementReport?: Report;
 	/**
 	 * Breakdown values that render as their own group, in the order they should
@@ -267,21 +291,26 @@ export interface ShapeSiteGoalsPDFDataArgs {
  *
  * @since 1.187.0
  * @since 1.188.0 Counted "Other sources" from the site-wide total, so it matches the dashboard.
+ * @since n.e.x.t Computed each rate from the sessions with a Key action over the site's sessions.
  *
- * @param args                            Reports, breakdown values and labels.
- * @param args.eventsReport               Grouped event report.
- * @param args.engagementReport           Grouped engagement report.
- * @param args.aggregatedEventsReport     Aggregated event report.
- * @param args.aggregatedEngagementReport Aggregated engagement report.
- * @param args.breakdownValues            Breakdown values that render as their own group, in order.
- * @param args.labels                     Maps a breakdown value to its group heading.
- * @param args.aggregatedLabel            Label for the single group in the aggregated fallback.
+ * @param args                                   Reports, breakdown values and labels.
+ * @param args.eventsReport                      Grouped event report.
+ * @param args.keyActionSessionsReport           Grouped Key action sessions report.
+ * @param args.engagementReport                  Grouped engagement report.
+ * @param args.aggregatedEventsReport            Aggregated event report.
+ * @param args.aggregatedKeyActionSessionsReport Aggregated Key action sessions report.
+ * @param args.aggregatedEngagementReport        Aggregated engagement report.
+ * @param args.breakdownValues                   Breakdown values that render as their own group, in order.
+ * @param args.labels                            Maps a breakdown value to its group heading.
+ * @param args.aggregatedLabel                   Label for the single group in the aggregated fallback.
  * @return Ordered groups. Empty when the reports have no data.
  */
 export function shapeSiteGoalsPDFData( {
 	eventsReport,
+	keyActionSessionsReport,
 	engagementReport,
 	aggregatedEventsReport,
+	aggregatedKeyActionSessionsReport,
 	aggregatedEngagementReport,
 	breakdownValues,
 	labels,
@@ -301,16 +330,30 @@ export function shapeSiteGoalsPDFData( {
 			return [];
 		}
 
+		const aggregatedEngagement = getTotalsPair(
+			aggregatedEngagementReport
+		);
+
 		return [
 			toGroup(
 				AGGREGATED_GROUP_ID,
 				aggregatedLabel,
 				aggregatedEvents,
-				getTotalsPair( aggregatedEngagementReport )
+				getTotalsPair( aggregatedKeyActionSessionsReport ),
+				aggregatedEngagement,
+				toMetric( aggregatedEngagement, SESSIONS_INDEX )
 			),
 		];
 	}
 
+	// Every rate is out of all the site's sessions, as on the dashboard.
+	const siteSessions = toMetric(
+		getTotalsPair( aggregatedEngagementReport ),
+		SESSIONS_INDEX
+	);
+	const keyActionSessionsRowsByValue = groupRowsByValue(
+		keyActionSessionsReport
+	);
 	const engagementRowsByValue = groupRowsByValue( engagementReport );
 
 	const groups: SiteGoalsPDFGroup[] = supportedValues.map( ( value ) =>
@@ -318,7 +361,9 @@ export function shapeSiteGoalsPDFData( {
 			value,
 			labels?.[ value ] ?? value,
 			eventRowsByValue.get( value ) ?? {},
-			engagementRowsByValue.get( value ) ?? {}
+			keyActionSessionsRowsByValue.get( value ) ?? {},
+			engagementRowsByValue.get( value ) ?? {},
+			siteSessions
 		)
 	);
 

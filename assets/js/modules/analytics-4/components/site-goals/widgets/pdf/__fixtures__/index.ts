@@ -54,6 +54,19 @@ export const ONLINE_STORE_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {
 			...buildBreakdownReportRows( '(not set)', [ '7' ], [ '4' ] ),
 		],
 	},
+	// Fewer sessions than events, as a session can hold several sales.
+	groupedKeyActionSessionsReport: {
+		rows: [
+			...buildBreakdownReportRows( 'woocommerce', [ '70' ], [ '63' ] ),
+			...buildBreakdownReportRows(
+				'easy-digital-downloads',
+				[ '14' ],
+				[ '21' ]
+			),
+			...buildBreakdownReportRows( 'shopify', [ '8' ], [ '6' ] ),
+			...buildBreakdownReportRows( '(not set)', [ '7' ], [ '4' ] ),
+		],
+	},
 	groupedEngagementReport: {
 		rows: [
 			...buildBreakdownReportRows(
@@ -72,6 +85,9 @@ export const ONLINE_STORE_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {
 	// one row changes these numbers too.
 	aggregatedEventsReport: {
 		totals: buildAggregatedTotalsRows( [ '121' ], [ '111' ] ),
+	},
+	aggregatedKeyActionSessionsReport: {
+		totals: buildAggregatedTotalsRows( [ '112' ], [ '105' ] ),
 	},
 	aggregatedEngagementReport: {
 		totals: buildAggregatedTotalsRows(
@@ -101,6 +117,14 @@ export const LEAD_GENERATION_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {
 			...buildBreakdownReportRows( '(not set)', [ '5' ], [ '2' ] ),
 		],
 	},
+	// Fewer sessions than events, as a session can hold several form submissions.
+	groupedKeyActionSessionsReport: {
+		rows: [
+			...buildBreakdownReportRows( '12', [ '36' ], [ '17' ] ),
+			...buildBreakdownReportRows( '34', [ '18' ], [ '17' ] ),
+			...buildBreakdownReportRows( '(not set)', [ '5' ], [ '2' ] ),
+		],
+	},
 	groupedEngagementReport: {
 		rows: [
 			...buildBreakdownReportRows(
@@ -118,6 +142,9 @@ export const LEAD_GENERATION_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {
 	aggregatedEventsReport: {
 		totals: buildAggregatedTotalsRows( [ '57' ], [ '41' ] ),
 	},
+	aggregatedKeyActionSessionsReport: {
+		totals: buildAggregatedTotalsRows( [ '54' ], [ '34' ] ),
+	},
 	aggregatedEngagementReport: {
 		totals: buildAggregatedTotalsRows(
 			[ '0.45', '900' ],
@@ -132,9 +159,9 @@ export const ONLINE_STORE_PDF_GROUPS: SiteGoalsPDFGroup[] = [
 		id: 'woocommerce',
 		label: 'WooCommerce',
 		total: { current: 85, previous: 76 },
-		rate: { current: 0.025, previous: 0.02 },
+		rate: { current: 0.0125, previous: 0.012 },
 		engagementRate: { current: 0.36, previous: 0.39 },
-		sessions: { current: 3400, previous: 3800 },
+		sessions: { current: 5600, previous: 5250 },
 	},
 ];
 
@@ -144,8 +171,8 @@ export const LEAD_GENERATION_PDF_GROUPS: SiteGoalsPDFGroup[] = [
 		id: '12',
 		label: '“Contact” form',
 		total: { current: 40, previous: 30 },
-		rate: { current: 0.2, previous: 0.2 },
+		rate: { current: 0.04, previous: 0.02 },
 		engagementRate: { current: 0.4, previous: 0.3 },
-		sessions: { current: 200, previous: 150 },
+		sessions: { current: 900, previous: 850 },
 	},
 ];
