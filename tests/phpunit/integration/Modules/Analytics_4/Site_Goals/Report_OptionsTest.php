@@ -156,6 +156,77 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
+	public function test_get_key_action_sessions_options__asks_for_the_sessions_with_a_lead_event_in_both_periods_for_lead() {
+		$this->assertSame(
+			array(
+				'metrics'          => array(
+					array( 'name' => 'sessions' ),
+				),
+				'dimensionFilters' => array(
+					'eventName' => array(
+						'filterType' => 'inListFilter',
+						'value'      => array( 'contact', 'submit_lead_form' ),
+					),
+				),
+				'startDate'        => '2026-08-19',
+				'endDate'          => '2026-09-15',
+				'compareStartDate' => '2026-07-22',
+				'compareEndDate'   => '2026-08-18',
+			),
+			$this->create_report_options( array( 'submit_lead_form', 'purchase', 'contact' ) )->get_key_action_sessions_options( 'lead' ),
+			'The `get_key_action_sessions_options()` method should ask for the `sessions` that hold a detected lead event, with no dimension, in the current and the compare period, for `lead`.'
+		);
+	}
+
+	public function test_get_key_action_sessions_options__asks_for_the_sessions_with_the_primary_store_event_in_both_periods_for_ecommerce() {
+		$this->assertSame(
+			array(
+				'metrics'          => array(
+					array( 'name' => 'sessions' ),
+				),
+				'dimensionFilters' => array(
+					'eventName' => 'add_to_cart',
+				),
+				'startDate'        => '2026-08-19',
+				'endDate'          => '2026-09-15',
+				'compareStartDate' => '2026-07-22',
+				'compareEndDate'   => '2026-08-18',
+			),
+			$this->create_report_options( array( 'add_to_cart' ) )->get_key_action_sessions_options( 'ecommerce' ),
+			'The `get_key_action_sessions_options()` method should ask for the `sessions` that hold the primary store event, with no dimension, in the current and the compare period, for `ecommerce`.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_breakdown_dimensions
+	 *
+	 * @param string       $goal_type        The goal type of the widget.
+	 * @param string       $custom_dimension The custom dimension slug of the widget's tabs.
+	 * @param string|array $event_filter     The `eventName` filter the report should send.
+	 */
+	public function test_get_key_action_sessions_options__splits_the_sessions_by_the_breakdown_dimension( $goal_type, $custom_dimension, $event_filter ) {
+		$this->assertSame(
+			array(
+				'metrics'          => array(
+					array( 'name' => 'sessions' ),
+				),
+				'dimensionFilters' => array(
+					'eventName' => $event_filter,
+				),
+				'dimensions'       => array(
+					array( 'name' => "customEvent:$custom_dimension" ),
+				),
+				'keepEmptyRows'    => true,
+				'startDate'        => '2026-08-19',
+				'endDate'          => '2026-09-15',
+				'compareStartDate' => '2026-07-22',
+				'compareEndDate'   => '2026-08-18',
+			),
+			$this->create_report_options( array( 'purchase', 'contact' ) )->get_key_action_sessions_options( $goal_type, $custom_dimension ),
+			"The `get_key_action_sessions_options()` method should split the sessions with a key action of `{$goal_type}` by `customEvent:{$custom_dimension}`, and keep the groups with no session."
+		);
+	}
+
 	public function test_get_engagement_options__asks_for_the_engagement_rate_and_the_sessions_of_the_whole_site_in_both_periods() {
 		$this->assertSame(
 			array(

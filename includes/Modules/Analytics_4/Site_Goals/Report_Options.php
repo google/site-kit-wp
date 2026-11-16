@@ -121,11 +121,36 @@ class Report_Options {
 	 * @return array Report request options array for the current and the compare period.
 	 */
 	public function get_key_action_options( $goal_type, $custom_dimension = '' ) {
-		$event_filter = Conversion_Events_Provider::CATEGORY_LEAD === $goal_type
-			? $this->get_lead_event_filter()
-			: $this->get_primary_store_event();
+		return $this->with_date_ranges(
+			$this->get_event_count_options( $this->get_key_action_event_filter( $goal_type ), $custom_dimension )
+		);
+	}
 
-		return $this->with_date_ranges( $this->get_event_count_options( $event_filter, $custom_dimension ) );
+	/**
+	 * Gets the options of the report that counts the sessions with a Site Goals widget's key action.
+	 *
+	 * A session counts once, however many key action events it holds, so the share of the
+	 * site's sessions it gives never goes above 100%.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $goal_type        Goal type, `lead` or `ecommerce`.
+	 * @param string $custom_dimension Optional. Custom dimension slug to split the sessions by, such as
+	 *                                 `googlesitekit_form_id`. Default empty, which returns one row for
+	 *                                 the whole site.
+	 * @return array Report request options array for the current and the compare period.
+	 */
+	public function get_key_action_sessions_options( $goal_type, $custom_dimension = '' ) {
+		$options = array(
+			'metrics'          => array(
+				array( 'name' => 'sessions' ),
+			),
+			'dimensionFilters' => array(
+				'eventName' => $this->get_key_action_event_filter( $goal_type ),
+			),
+		);
+
+		return $this->with_date_ranges( $this->with_breakdown_dimension( $options, $custom_dimension ) );
 	}
 
 	/**
@@ -179,6 +204,21 @@ class Report_Options {
 		);
 
 		return $this->with_breakdown_dimension( $options, $custom_dimension );
+	}
+
+	/**
+	 * Gets the `eventName` filter that selects a Site Goals widget's key actions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $goal_type Goal type, `lead` or `ecommerce`.
+	 * @return string|array Every lead event Analytics has found on the site for `lead`, and the
+	 *                      primary store event for `ecommerce`.
+	 */
+	private function get_key_action_event_filter( $goal_type ) {
+		return Conversion_Events_Provider::CATEGORY_LEAD === $goal_type
+			? $this->get_lead_event_filter()
+			: $this->get_primary_store_event();
 	}
 
 	/**

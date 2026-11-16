@@ -560,9 +560,26 @@ class Report_Options extends Base_Report_Options {
 	}
 
 	/**
+	 * Gets report options for the sessions with a key action.
+	 *
+	 * The key action rate divides these sessions by the site's session count.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $goal_type        Goal type, `lead` or `ecommerce`.
+	 * @param string $custom_dimension Optional. Custom dimension slug to split the sessions by, such as
+	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
+	 *                                 row for the whole site.
+	 * @return array Report request options array.
+	 */
+	public function get_key_action_sessions_options( $goal_type, $custom_dimension = '' ) {
+		return $this->get_site_goals_report_options()->get_key_action_sessions_options( $goal_type, $custom_dimension );
+	}
+
+	/**
 	 * Gets report options for the engagement rate and the session count.
 	 *
-	 * The key action rate divides the key action count by the session count.
+	 * The key action rate divides the sessions with a key action by the site's session count.
 	 *
 	 * @since 1.187.0
 	 * @since 1.192.0 Builds the options with `Site_Goals\Report_Options::get_engagement_options()`.
