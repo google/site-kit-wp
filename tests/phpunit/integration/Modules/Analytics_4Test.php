@@ -24,7 +24,9 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -48,6 +50,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
+use Google\Site_Kit\Tests\Dashboard_Sharing_Trait;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
@@ -73,12 +76,14 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Query;
+use WP_REST_Request;
 use WP_User;
 
 /**
  * @group Modules
  */
 class Analytics_4Test extends TestCase {
+	use Dashboard_Sharing_Trait;
 	use Module_With_Data_Available_State_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Scopes_ContractTests;
@@ -166,6 +171,12 @@ class Analytics_4Test extends TestCase {
 		wp_set_current_user( $this->user->ID );
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( $this->options ) )->register();
+	}
+
+	public function tear_down() {
+		parent::tear_down();
+		// Leave no server behind for the next test class.
+		unset( $GLOBALS['wp_rest_server'] );
 	}
 
 	public function test_register() {
@@ -2029,10 +2040,15 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_measurement_protocol_secret()->get_api_secret(),
 			'The Measurement Protocol secret should be stored for this test.'
 		);
+
+		$this->register_modules_rest_routes( new Modules( $this->context, $this->options, $this->user_options, $this->authentication ) );
+		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/settings' ) );
+
+		$this->assertSame( 200, $response->get_status(), 'The `GET:settings` request should succeed.' );
 		$this->assertStringNotContainsString(
 			'test-secret-value',
-			wp_json_encode( $this->analytics->get_settings()->get() ),
-			'The module settings, which the `GET:settings` endpoint returns, should not contain the secret value.'
+			wp_json_encode( $response->get_data() ),
+			'The `GET:settings` endpoint should not return the secret value.'
 		);
 		$this->assertStringNotContainsString(
 			'test-secret-value',
