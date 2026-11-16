@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -36,6 +37,7 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
@@ -59,6 +61,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaKeyEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListCustomDimensionsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListKeyEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaMeasurementProtocolSecret;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaAdSenseLink;
@@ -1115,6 +1118,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be initialized with account ID and default values before property provisioning.'
@@ -1148,6 +1152,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be updated with property, web data stream, and measurement IDs after successful provisioning.'
@@ -1281,6 +1286,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be initialized with account ID and default values before property provisioning with failing container lookup.'
@@ -1415,6 +1421,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be initialized with account ID and default values before property provisioning.'
@@ -1451,6 +1458,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be updated with property, web data stream, and measurement IDs after successful provisioning.'
@@ -1914,6 +1922,130 @@ class Analytics_4Test extends TestCase {
 		$this->assertNull( $settings['availableCustomDimensions'], 'Available custom dimensions should be reset to null when property ID changes' );
 	}
 
+	public function test_get_web_data_stream_name() {
+		$this->assertSame(
+			'properties/123456789/dataStreams/987654321',
+			Analytics_4::get_web_data_stream_name( '123456789', '987654321' ),
+			'The web data stream name should contain the property ID and the web data stream ID.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_web_data_stream_settings_changes
+	 *
+	 * @param array $settings_change Change to the property, web data stream or measurement ID.
+	 */
+	public function test_register__clears_measurement_protocol_secret_on_web_data_stream_change( $settings_change ) {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-A1B2C3D4E5',
+			)
+		);
+		$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+		$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/test-secret-id' );
+		$secret->setSecretValue( 'test-secret-value' );
+		$this->assertTrue(
+			$this->analytics->get_measurement_protocol_secret()->store( $secret ),
+			'The secret should be stored before the web data stream changes.'
+		);
+
+		$this->analytics->get_settings()->merge( $settings_change );
+
+		$this->assertOptionNotExists(
+			Measurement_Protocol_Settings::OPTION,
+			'The stored Measurement Protocol secret should be deleted when the connected web data stream changes.'
+		);
+		$this->assertSame(
+			'',
+			$this->analytics->get_settings()->get()['measurementProtocolSecretID'],
+			'The `measurementProtocolSecretID` setting should be emptied when the connected web data stream changes.'
+		);
+		$this->assertSame(
+			$settings_change,
+			array_intersect_key( $this->analytics->get_settings()->get(), $settings_change ),
+			'The changed property, web data stream or measurement ID should be saved after the secret is cleared.'
+		);
+	}
+
+	public function data_web_data_stream_settings_changes() {
+		return array(
+			'property ID'        => array( array( 'propertyID' => '111111111' ) ),
+			'web data stream ID' => array( array( 'webDataStreamID' => '222222222' ) ),
+			'measurement ID'     => array( array( 'measurementID' => 'G-F6G7H8I9J0' ) ),
+		);
+	}
+
+	public function test_register__keeps_measurement_protocol_secret_on_other_settings_change() {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-A1B2C3D4E5',
+			)
+		);
+		$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+		$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/test-secret-id' );
+		$secret->setSecretValue( 'test-secret-value' );
+		$this->assertTrue(
+			$this->analytics->get_measurement_protocol_secret()->store( $secret ),
+			'The secret should be stored before other settings change.'
+		);
+
+		$this->analytics->get_settings()->merge( array( 'useSnippet' => false ) );
+
+		$this->assertSame(
+			'test-secret-value',
+			$this->analytics->get_measurement_protocol_secret()->get_api_secret(),
+			'The stored Measurement Protocol secret should be kept when other settings change.'
+		);
+		$this->assertSame(
+			'test-secret-id',
+			$this->analytics->get_settings()->get()['measurementProtocolSecretID'],
+			'The `measurementProtocolSecretID` setting should be kept when other settings change.'
+		);
+	}
+
+	public function test_measurement_protocol_secret_value_not_exposed() {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-A1B2C3D4E5',
+			)
+		);
+		$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+		$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/test-secret-id' );
+		$secret->setSecretValue( 'test-secret-value' );
+		$this->analytics->get_measurement_protocol_secret()->store( $secret );
+
+		$this->assertSame(
+			'test-secret-value',
+			$this->analytics->get_measurement_protocol_secret()->get_api_secret(),
+			'The Measurement Protocol secret should be stored for this test.'
+		);
+		$this->assertStringNotContainsString(
+			'test-secret-value',
+			wp_json_encode( $this->analytics->get_settings()->get() ),
+			'The module settings, which the `GET:settings` endpoint returns, should not contain the secret value.'
+		);
+		$this->assertStringNotContainsString(
+			'test-secret-value',
+			wp_json_encode( $this->analytics->get_inline_data() ),
+			'The inline module data should not contain the secret value.'
+		);
+		$this->assertStringNotContainsString(
+			'test-secret-value',
+			wp_json_encode( $this->analytics->get_debug_fields() ),
+			'The Site Health debug fields should not contain the secret value.'
+		);
+	}
+
 	public function test_only_googlesitekit_prefixed_dimensions_are_retained() {
 		// Given: Analytics 4 is registered with a mixture of valid and invalid custom dimensions.
 		$this->analytics->register();
@@ -1966,12 +2098,23 @@ class Analytics_4Test extends TestCase {
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
+		$is_stored = ( new Measurement_Protocol_Settings( new Encrypted_Options( $options ) ) )->set(
+			array(
+				'secretValue'     => 'test-secret-value',
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'secretID'        => 'test-secret-id',
+			)
+		);
+
+		$this->assertTrue( $is_stored, 'The Measurement Protocol secret should be stored before deactivation.' );
 
 		$analytics = new Analytics_4( $this->context, $options );
 		$analytics->set_data_available();
 		$analytics->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION, 'Analytics 4 settings option should be removed on deactivation' );
+		$this->assertOptionNotExists( Measurement_Protocol_Settings::OPTION, 'The stored Measurement Protocol secret should be removed on deactivation.' );
 		$this->assertFalse( $analytics->is_data_available(), 'Data availability should be reset on deactivation' );
 	}
 
