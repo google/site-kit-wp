@@ -39,6 +39,7 @@ import {
 	freezeFetch,
 	provideModules,
 	provideUserCapabilities,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import { useBenchmarkingData } from './useBenchmarkingData';
 
@@ -90,12 +91,14 @@ describe( 'useBenchmarkingData', () => {
 	} );
 
 	it( 'should send no request and return no response when `isEnabled` is `false`', async () => {
-		const { result, waitForRegistry } = renderHook(
+		const { result } = renderHook(
 			() => useBenchmarkingData( { isEnabled: false } ),
 			{ registry }
 		);
 
-		await waitForRegistry();
+		// The hook resolves nothing, so the store's state does not change,
+		// and `waitForRegistry` would observe no update.
+		await waitForDefaultTimeouts();
 
 		// `fetchMock` answers no request in this test, so a request would
 		// fail it.

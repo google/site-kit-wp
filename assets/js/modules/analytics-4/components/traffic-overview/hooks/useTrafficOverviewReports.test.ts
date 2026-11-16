@@ -264,6 +264,9 @@ describe( 'useTrafficOverviewReports', () => {
 	} );
 
 	it( 'should leave `loaded` set to `false` while the totals report is still loading', async () => {
+		// The store holds the breakdown reports, so the hook sends one
+		// request, for the totals report, and `freezeFetch` holds it.
+		provideTrafficBreakdownReports( registry );
 		freezeFetch( reportEndpoint );
 
 		const { result, waitForRegistry } = renderHook(
@@ -277,7 +280,13 @@ describe( 'useTrafficOverviewReports', () => {
 	} );
 
 	it( 'should leave `loaded` set to `false` while a breakdown report is still loading', async () => {
+		// The store holds every report but the devices report, so the hook
+		// sends one request, and `freezeFetch` holds it.
 		provideAnalytics4MockReport( registry, getExpectedArgs() );
+		provideTrafficBreakdownReports( registry, {
+			channels: TRAFFIC_BREAKDOWN_PAIRS.channels,
+			locations: TRAFFIC_BREAKDOWN_PAIRS.locations,
+		} );
 		freezeFetch( reportEndpoint );
 
 		const { result, waitForRegistry } = renderHook(

@@ -219,7 +219,10 @@ describe( 'useEntityTrafficReports', () => {
 	} );
 
 	it( 'should leave `loaded` set to `false` while a report is still loading', async () => {
+		// The store holds every report but the daily visits report, so the
+		// hook sends one request, and `freezeFetch` holds it.
 		provideAnalytics4MockReport( registry, totalsArgs );
+		provideTrafficBreakdownReports( registry );
 		freezeFetch( reportEndpoint );
 
 		const { result, waitForRegistry } = renderHook(
