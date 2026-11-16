@@ -73,7 +73,7 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 	onDismiss,
 	isRetrying = false,
 } ) => {
-	const trackEvents = useNotificationEvents(
+	const { confirm, dismiss, view } = useNotificationEvents(
 		FEATURE_SETUP_ERROR_NOTIFICATION_EVENT_ID,
 		undefined,
 		{
@@ -84,18 +84,18 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 	);
 
 	const onClickDismiss = useCallback( () => {
-		trackEvents.dismiss( slug );
+		dismiss( slug );
 		onDismiss();
-	}, [ trackEvents, slug, onDismiss ] );
+	}, [ dismiss, slug, onDismiss ] );
 
 	const onClickRetry = useCallback( () => {
-		trackEvents.confirm( slug );
+		confirm( slug );
 		onRetry();
-	}, [ trackEvents, slug, onRetry ] );
+	}, [ confirm, slug, onRetry ] );
 
 	const onInView = useCallback( () => {
-		trackEvents.view( slug );
-	}, [ trackEvents, slug ] );
+		view( slug );
+	}, [ slug, view ] );
 
 	const featureTitle = useSelect(
 		( select: Select ) => {

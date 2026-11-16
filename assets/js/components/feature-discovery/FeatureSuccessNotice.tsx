@@ -52,7 +52,7 @@ const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 	onDismiss,
 	trackViewEvent = true,
 } ) => {
-	const trackEvents = useNotificationEvents(
+	const { confirm, dismiss, view } = useNotificationEvents(
 		FEATURE_SETUP_SUCCESS_NOTIFICATION_EVENT_ID
 	);
 
@@ -70,20 +70,20 @@ const FeatureSuccessNotice: FC< FeatureSuccessNoticeProps > = ( {
 	);
 
 	const onClickCTA = useCallback( () => {
-		trackEvents.confirm( slug );
+		confirm( slug );
 		cta?.onClick?.();
-	}, [ trackEvents, slug, cta ] );
+	}, [ confirm, cta, slug ] );
 
 	const onClickDismiss = useCallback( () => {
-		trackEvents.dismiss( slug );
+		dismiss( slug );
 		onDismiss();
-	}, [ trackEvents, slug, onDismiss ] );
+	}, [ dismiss, onDismiss, slug ] );
 
 	const onInView = useCallback( () => {
 		if ( trackViewEvent ) {
-			trackEvents.view( slug );
+			view( slug );
 		}
-	}, [ trackEvents, trackViewEvent, slug ] );
+	}, [ slug, trackViewEvent, view ] );
 
 	if ( ! successNotice ) {
 		return null;
