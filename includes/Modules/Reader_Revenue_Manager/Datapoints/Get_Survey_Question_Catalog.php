@@ -25,9 +25,18 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\SurveyQuesti
 class Get_Survey_Question_Catalog extends Connected_Publication_Datapoint {
 
 	/**
+	 * Publication the request was created for.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $request_publication_id = '';
+
+	/**
 	 * Creates a request object.
 	 *
 	 * No language code is sent, so the API uses the publication's own language.
+	 * The publication is recorded for the response.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -36,6 +45,8 @@ class Get_Survey_Question_Catalog extends Connected_Publication_Datapoint {
 	 */
 	public function create_request( Data_Request $data_request ) {
 		$publication = $this->get_connected_publication();
+
+		$this->request_publication_id = $publication['publicationID'];
 
 		$name = sprintf(
 			'organizations/%s/publications/%s/surveyQuestionCatalog',
@@ -56,13 +67,11 @@ class Get_Survey_Question_Catalog extends Connected_Publication_Datapoint {
 	 * @return array {
 	 *     Connected publication survey question catalog.
 	 *
-	 *     @type string $publicationID Publication the catalog belongs to.
+	 *     @type string $publicationID Publication the request was created for.
 	 *     @type array  $questions     Catalog questions, in API order.
 	 * }
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		$publication = $this->get_connected_publication();
-
 		$questions = array_map(
 			array( $this, 'parse_question' ),
 			array_values(
@@ -76,7 +85,7 @@ class Get_Survey_Question_Catalog extends Connected_Publication_Datapoint {
 		);
 
 		return array(
-			'publicationID' => $publication['publicationID'],
+			'publicationID' => $this->request_publication_id,
 			'questions'     => $questions,
 		);
 	}

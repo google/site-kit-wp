@@ -157,6 +157,8 @@ class Get_Survey_Question_CatalogTest extends TestCase {
 			)
 		);
 
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
 		$this->assertSame(
 			array(
 				'publicationID' => 'saved-publication',
@@ -210,6 +212,8 @@ class Get_Survey_Question_CatalogTest extends TestCase {
 	}
 
 	public function test_parse_response__names_the_publication_when_there_are_no_questions() {
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
 		$this->assertSame(
 			array(
 				'publicationID' => 'saved-publication',
@@ -217,6 +221,21 @@ class Get_Survey_Question_CatalogTest extends TestCase {
 			),
 			$this->datapoint->parse_response( new SurveyQuestionCatalog(), $this->get_data_request( array() ) ),
 			'An empty catalog should still name the publication it is for.'
+		);
+	}
+
+	public function test_parse_response__keeps_the_publication_the_request_was_created_for() {
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
+		// Another request connects a different publication while this one runs.
+		$this->module->get_settings()->merge( array( 'publicationID' => 'other-publication' ) );
+
+		$parsed = $this->datapoint->parse_response( new SurveyQuestionCatalog(), $this->get_data_request( array() ) );
+
+		$this->assertSame(
+			'saved-publication',
+			$parsed['publicationID'],
+			'The response should name the publication the request was created for.'
 		);
 	}
 
