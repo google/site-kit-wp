@@ -44,6 +44,18 @@ describe( 'Widget', () => {
 		expect( getByText( 'Widget Body' ) ).toBeInTheDocument();
 	} );
 
+	it( "should set the `id` of the widget's root element", () => {
+		const { container } = render(
+			<Widget id="test-widget-id" widgetSlug="test-widget">
+				<div>Widget Body</div>
+			</Widget>
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-widget' )
+		).toHaveAttribute( 'id', 'test-widget-id' );
+	} );
+
 	it( 'should render the collapsible widget header and body', () => {
 		const { getByText, getByRole } = render(
 			<Widget
