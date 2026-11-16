@@ -111,6 +111,14 @@ class Measurement_Protocol_SettingsTest extends TestCase {
 	public function data_invalid_values() {
 		return array(
 			'not an array'        => array( 'test-secret-value' ),
+			'an object'           => array(
+				(object) array(
+					'secretValue'     => 'test-secret-value',
+					'propertyID'      => '123456789',
+					'webDataStreamID' => '987654321',
+					'secretID'        => 'test-secret-id',
+				),
+			),
 			'missing secretID'    => array(
 				array(
 					'secretValue'     => 'test-secret-value',

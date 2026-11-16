@@ -95,6 +95,10 @@ class Measurement_Protocol_Settings extends Setting {
 	 * @return bool True if the value is valid, otherwise false.
 	 */
 	private function is_valid_value( $value ) {
+		if ( ! is_array( $value ) ) {
+			return false;
+		}
+
 		foreach ( array_keys( $this->get_default() ) as $key ) {
 			if ( ! is_string( $value[ $key ] ?? null ) ) {
 				return false;
