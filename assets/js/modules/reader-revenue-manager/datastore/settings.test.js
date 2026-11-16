@@ -480,7 +480,7 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			await untilResolved(
 				registry,
 				MODULES_READER_REVENUE_MANAGER
-			).getCTAs();
+			).getPublicationCTAs( 'publication-b' );
 
 			expect( select.getCTAs() ).toEqual( [ ctaB ] );
 		} );

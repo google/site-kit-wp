@@ -525,6 +525,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'selectPublication', () => {
+			const ctasEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+			);
+
 			const cta = {
 				name: 'organizations/organization-1/publications/publication-1/ctas/cta-1',
 				type: 'NEWSLETTER_SIGNUP',
@@ -874,15 +878,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( settings ).not.toHaveProperty( 'policyInfoLink' );
 			} );
 
-			it( 'should clear the CTAs when a different publication is selected', async () => {
-				// Reading the cleared CTAs starts their resolver, which
-				// requests the saved publication's CTAs.
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
-					)
-				);
-
+			it( 'should not return the CTAs while a different publication is selected', async () => {
 				connectPublicationWithCTAs();
 
 				await registry
@@ -896,10 +892,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
 				).toBeUndefined();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getCTAs();
+				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
 			} );
 
 			it( 'should keep the CTAs when the connected publication is selected again', async () => {
@@ -915,6 +908,34 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect(
 					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
 				).toEqual( [ cta ] );
+			} );
+
+			it( 'should return the CTAs again when the connected publication is selected back', async () => {
+				connectPublicationWithCTAs();
+
+				const dispatch = registry.dispatch(
+					MODULES_READER_REVENUE_MANAGER
+				);
+
+				await dispatch.selectPublication( {
+					publicationId: 'publication-2',
+					onboardingState: 'ONBOARDING_COMPLETE',
+				} );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toBeUndefined();
+
+				await dispatch.selectPublication( {
+					publicationId: 'publication-1',
+					onboardingState: 'ONBOARDING_COMPLETE',
+				} );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
+
+				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
 			} );
 		} );
 	} );

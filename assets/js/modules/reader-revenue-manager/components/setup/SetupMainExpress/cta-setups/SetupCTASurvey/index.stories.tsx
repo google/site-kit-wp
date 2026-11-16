@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { withQuery } from '@storybook/addon-queryparams';
+import fetchMock from 'fetch-mock';
 import { ElementType } from 'react';
 
 /**
@@ -30,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	publicationPoliciesStep,
 	publicationSetupStep,
@@ -42,6 +44,7 @@ import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fi
 import {
 	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
+	SURVEY_CUSTOM_DIMENSIONS,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
@@ -59,6 +62,11 @@ import { surveyCTAStep } from './StepSurveyCTA';
 import { surveyQuestionsStep } from './StepSurveyQuestions';
 
 const ORGANIZATION_ID = 'ABCD1234';
+const PROPERTY_ID = '123456';
+
+const createCustomDimensionEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+);
 const PUBLICATION_ID = 'ABCD_123-4';
 
 /* eslint-disable sitekit/acronym-case -- `Id` and `Url` are the identifiers used by the API. */
@@ -107,6 +115,22 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 		snippetMode: 'sitewide',
 		postTypes: [],
 	} );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		propertyID: PROPERTY_ID,
+		availableCustomDimensions: [],
+	} );
+
+	providePropertyDimensions( registry, SURVEY_CUSTOM_DIMENSIONS );
+}
+
+function providePropertyDimensions(
+	registry: WPDataRegistry,
+	dimensions: string[]
+) {
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetCustomDimensions( dimensions, { propertyID: PROPERTY_ID } );
 }
 
 function connectPublication(
@@ -206,6 +230,67 @@ SetupComplete.args = {
 		connectPublication( registry, COMPLETE_PUBLICATION ),
 };
 SetupComplete.scenario = {};
+
+export const CreatingDimensions = Template.bind( {} ) as Story;
+CreatingDimensions.storyName = 'Creating Dimensions';
+CreatingDimensions.parameters = {
+	query: {
+		...BASE_QUERY,
+		step: publicationSetupStep.slug,
+	},
+};
+CreatingDimensions.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		providePropertyDimensions( registry, [] );
+
+		// Holds the creation open, so the progress bar stays.
+		fetchMock.post(
+			createCustomDimensionEndpoint,
+			new Promise( () => {} ),
+			{
+				overwriteRoutes: true,
+			}
+		);
+	},
+};
+CreatingDimensions.decorators = [
+	( StoryComponent: ElementType ) => (
+		// Pauses the progress bar animation, so VRT captures a stable frame.
+		<div className="googlesitekit-vrt-animation-paused">
+			<StoryComponent />
+		</div>
+	),
+];
+CreatingDimensions.scenario = {};
+
+export const InsufficientPermissionsError = Template.bind( {} ) as Story;
+InsufficientPermissionsError.storyName = 'Insufficient Permissions Error';
+InsufficientPermissionsError.parameters = {
+	query: {
+		...BASE_QUERY,
+		step: publicationSetupStep.slug,
+	},
+};
+InsufficientPermissionsError.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		providePropertyDimensions( registry, [] );
+		fetchMock.post(
+			createCustomDimensionEndpoint,
+			{
+				body: {
+					code: 403,
+					message: 'The caller does not have permission',
+					data: { status: 403, reason: 'insufficientPermissions' },
+				},
+				status: 403,
+			},
+			{ overwriteRoutes: true }
+		);
+	},
+};
+InsufficientPermissionsError.scenario = {
+	readySelector: '.googlesitekit-rrm-express-setup__error',
+};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/SetupCTASurvey',

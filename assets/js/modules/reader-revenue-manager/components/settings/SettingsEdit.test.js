@@ -357,6 +357,99 @@ describe( 'SettingsEdit', () => {
 			).toHaveLength( 2 );
 		} );
 
+		it( 'should render survey CTAs by name, or as "Survey" without one, with links to their edit screens when the `rrmSurveyCTA` feature flag is enabled', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...settings,
+					configuredCTAs: {
+						'cta-1': {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+						'cta-2': {
+							type: 'survey',
+							state: 'ACTIVE',
+							displayName: 'Reader survey',
+						},
+						'cta-3': {
+							type: 'survey',
+							state: 'DRAFT',
+							displayName: '',
+						},
+					},
+				} );
+
+			const { getByText, getAllByRole, waitForRegistry } = render(
+				<SettingsEdit />,
+				{
+					registry,
+					features: [ 'rrmExpressSetup', 'rrmSurveyCTA' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( 'Weekly newsletter' ) ).toBeInTheDocument();
+			expect( getByText( 'Reader survey' ) ).toBeInTheDocument();
+			expect( getByText( 'Survey' ) ).toBeInTheDocument();
+
+			const { getCTAEditLinkURL } = registry.select(
+				MODULES_READER_REVENUE_MANAGER
+			);
+
+			expect(
+				getAllByRole( 'link', { name: /Manage settings/i } ).map(
+					( link ) => link.getAttribute( 'href' )
+				)
+			).toEqual( [
+				getCTAEditLinkURL( 'cta-1' ),
+				getCTAEditLinkURL( 'cta-2' ),
+				getCTAEditLinkURL( 'cta-3' ),
+			] );
+		} );
+
+		it( 'should not render saved survey CTAs when the `rrmSurveyCTA` feature flag is disabled', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...settings,
+					configuredCTAs: {
+						'cta-1': {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+						'cta-2': {
+							type: 'survey',
+							state: 'ACTIVE',
+							displayName: 'Reader survey',
+						},
+						'cta-3': {
+							type: 'survey',
+							state: 'DRAFT',
+							displayName: '',
+						},
+					},
+				} );
+
+			const { getByText, queryByText, getAllByRole, waitForRegistry } =
+				render( <SettingsEdit />, {
+					registry,
+					features: [ 'rrmExpressSetup' ],
+				} );
+
+			await waitForRegistry();
+
+			expect( getByText( 'Weekly newsletter' ) ).toBeInTheDocument();
+			expect( queryByText( 'Reader survey' ) ).not.toBeInTheDocument();
+			expect( queryByText( 'Survey' ) ).not.toBeInTheDocument();
+			expect(
+				getAllByRole( 'link', { name: /Manage settings/i } )
+			).toHaveLength( 1 );
+		} );
+
 		it( 'should not render the CTAs section when there are no configured CTAs', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )

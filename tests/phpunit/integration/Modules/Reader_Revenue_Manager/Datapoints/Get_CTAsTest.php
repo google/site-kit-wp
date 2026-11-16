@@ -19,6 +19,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\ListCtasResponse;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\SurveyConfig;
 
 /**
  * @group Modules
@@ -129,6 +130,8 @@ class Get_CTAsTest extends TestCase {
 		$response = new ListCtasResponse();
 		$response->setCtas( array( $cta ) );
 
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
 		$parsed = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
 
 		$this->assertSame(
@@ -158,6 +161,55 @@ class Get_CTAsTest extends TestCase {
 		);
 	}
 
+	public function test_parse_response__returns_survey_config() {
+		$survey_config = array(
+			'customMessage' => 'Help us learn more about you',
+			'questions'     => array(
+				array(
+					'customQuestion' => array(
+						'id'            => 'custom-question-1',
+						'displayText'   => 'Which section do you read most?',
+						'answerChoices' => array(
+							array( 'displayText' => 'News' ),
+							array( 'displayText' => 'Sport' ),
+						),
+					),
+				),
+				array( 'presetQuestion' => array( 'questionId' => 3 ) ),
+			),
+			'reportUrl'     => 'https://lookerstudio.google.com/reporting/1',
+		);
+
+		$cta = $this->create_cta( 'survey-cta', Cta::STATE_DRAFT );
+		$cta->setType( Cta::TYPE_SURVEY );
+		$cta->setDisplayName( 'Reader survey' );
+		$cta->setSurveyConfig( new SurveyConfig( $survey_config ) );
+
+		$response = new ListCtasResponse();
+		$response->setCtas( array( $cta ) );
+
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
+		$parsed = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+
+		$this->assertEquals(
+			$survey_config,
+			json_decode( wp_json_encode( $parsed['ctas'][0]->toSimpleObject() ), true )['surveyConfig'],
+			'The survey CTA should be returned with its configuration, including the response-only fields.'
+		);
+		$this->assertSame(
+			array(
+				'survey-cta' => array(
+					'type'        => 'survey',
+					'state'       => 'DRAFT',
+					'displayName' => 'Reader survey',
+				),
+			),
+			$this->module->get_settings()->get()['configuredCTAs'],
+			'The survey CTA should be synchronized with module settings using the survey slug.'
+		);
+	}
+
 	public function test_parse_response__excludes_deleted_ctas() {
 		$response = new ListCtasResponse();
 		$response->setCtas(
@@ -167,6 +219,8 @@ class Get_CTAsTest extends TestCase {
 				$this->create_cta( 'draft-cta', Cta::STATE_DRAFT ),
 			)
 		);
+
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
 
 		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) )['ctas'];
 
@@ -191,6 +245,8 @@ class Get_CTAsTest extends TestCase {
 	}
 
 	public function test_parse_response__names_the_publication_when_there_are_no_ctas() {
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
 		$parsed = $this->datapoint->parse_response( new ListCtasResponse(), $this->get_data_request( array() ) );
 
 		$this->assertSame(
@@ -200,6 +256,32 @@ class Get_CTAsTest extends TestCase {
 			),
 			$parsed,
 			'An empty list should still name the publication it is for.'
+		);
+	}
+
+	public function test_parse_response__keeps_the_publication_the_request_was_created_for() {
+		$cta = $this->create_cta( '9d2418415-ab3a', Cta::STATE_ACTIVE );
+
+		$response = new ListCtasResponse();
+		$response->setCtas( array( $cta ) );
+
+		$this->datapoint->create_request( $this->get_data_request( array() ) );
+
+		// Another request connects a different publication while this one runs.
+		$this->module->get_settings()->merge( array( 'publicationID' => 'other-publication' ) );
+
+		$parsed = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+
+		$this->assertSame(
+			'saved-publication',
+			$parsed['publicationID'],
+			'The response should name the publication the request was created for.'
+		);
+
+		$this->assertSame(
+			array(),
+			(array) $this->module->get_settings()->get()['configuredCTAs'],
+			'The CTAs should not be synchronized into another publication’s settings.'
 		);
 	}
 

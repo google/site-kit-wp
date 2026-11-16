@@ -37,6 +37,7 @@ export const CTA_TYPE_LABELS = {
 		'Newsletter sign-up form',
 		'google-site-kit'
 	),
+	[ EXPRESS_SETUP_CTAS.SURVEY ]: __( 'Survey', 'google-site-kit' ),
 };
 
 export const RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG =

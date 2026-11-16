@@ -162,6 +162,29 @@ WithInPlaceSetupSuccessNotice.args = {
 	},
 };
 
+export const WithInPlaceSetupErrorNotice = Template.bind(
+	{}
+) as Story< StoryArgs >;
+WithInPlaceSetupErrorNotice.storyName = 'With In-Place Setup Error Notice';
+WithInPlaceSetupErrorNotice.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+		provideSiteInfo( registry );
+		provideNotifications( registry, [] );
+
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
+			{
+				code: 'internal_server_error',
+				message: 'The settings could not be saved.',
+				data: { status: 500 },
+			},
+			'setupFeature',
+			[ 'dashboard-sharing' ]
+		);
+	},
+};
+
 export default {
 	title: 'Components/Feature Discovery/WhatsNewTab',
 	component: WhatsNewTab,
