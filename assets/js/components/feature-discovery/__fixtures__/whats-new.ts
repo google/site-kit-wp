@@ -69,6 +69,7 @@ export const WHATS_NEW_FEATURES: Partial< Feature >[] = [
 	},
 	{
 		slug: 'dashboard-sharing',
+		name: 'Dashboard sharing',
 		title: 'Collaborate with other team members by sharing dashboard access',
 		shortDescription:
 			'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials.',

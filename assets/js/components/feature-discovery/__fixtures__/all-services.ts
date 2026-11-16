@@ -55,6 +55,7 @@ export const sampleFeatures: Partial< Feature >[] = [
 	},
 	{
 		slug: 'key-metrics',
+		name: 'Key metrics',
 		title: 'Get personalized suggestions for user interaction metrics based on your goals',
 		shortDescription:
 			'Tell us your site’s main goal, and we’ll suggest a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals.',
