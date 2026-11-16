@@ -86,10 +86,13 @@ class Get_Custom_DimensionsTest extends TestCase {
 				$custom_dimension_1->setParameterName( 'googlesitekit_post_author' );
 
 				$custom_dimension_2 = new GoogleAnalyticsAdminV1betaCustomDimension();
-				$custom_dimension_2->setParameterName( 'sessionDefaultChannelGroup' );
+				$custom_dimension_2->setParameterName( 'survey_question' );
+
+				$custom_dimension_3 = new GoogleAnalyticsAdminV1betaCustomDimension();
+				$custom_dimension_3->setParameterName( 'sessionDefaultChannelGroup' );
 
 				$response = new GoogleAnalyticsAdminV1betaListCustomDimensionsResponse();
-				$response->setCustomDimensions( array( $custom_dimension_1, $custom_dimension_2 ) );
+				$response->setCustomDimensions( array( $custom_dimension_1, $custom_dimension_2, $custom_dimension_3 ) );
 
 				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
@@ -130,7 +133,7 @@ class Get_Custom_DimensionsTest extends TestCase {
 		);
 	}
 
-	public function test_parse_response__keeps_only_site_kit_custom_dimensions() {
+	public function test_parse_response__returns_every_custom_dimension_on_the_property() {
 		$data_request = new Data_Request(
 			'GET',
 			'modules',
@@ -147,7 +150,11 @@ class Get_Custom_DimensionsTest extends TestCase {
 			$data_request
 		);
 
-		$this->assertEquals( array( 'googlesitekit_post_author' ), $response, 'Only Site Kit custom dimensions should be returned for the property.' );
+		$this->assertEquals(
+			array( 'googlesitekit_post_author', 'survey_question', 'sessionDefaultChannelGroup' ),
+			$response,
+			'Every custom dimension on the property should be returned, not only the Site Kit ones.'
+		);
 	}
 
 	public function test_parse_response__returns_the_wp_error_unchanged() {

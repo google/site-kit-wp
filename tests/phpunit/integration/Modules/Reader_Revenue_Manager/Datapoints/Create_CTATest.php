@@ -179,6 +179,67 @@ class Create_CTATest extends TestCase {
 		);
 	}
 
+	public function test_create_request__serializes_survey_config() {
+		$this->enable_feature( 'rrmSurveyCTA' );
+
+		$survey_config = array(
+			'customMessage' => 'Help us learn more about you',
+			'questions'     => array(
+				array(
+					'customQuestion' => array(
+						'displayText'   => 'Which section do you read most?',
+						'categoryLabel' => 'Favorite section',
+						'answerChoices' => array(
+							array( 'displayText' => 'News' ),
+							array( 'displayText' => 'Sport' ),
+						),
+					),
+				),
+				array(
+					'presetQuestion' => array(
+						'questionId' => 3,
+						'answerIds'  => array( 12, 10 ),
+					),
+				),
+			),
+		);
+
+		$data         = $this->get_valid_data();
+		$data['data'] = array(
+			'type'   => 'SURVEY',
+			'state'  => 'DRAFT',
+			'config' => $survey_config,
+		);
+
+		$request = $this->datapoint->create_request( $this->get_data_request( $data ) );
+
+		$this->assertJsonStringEqualsJsonString(
+			wp_json_encode(
+				array(
+					'state'        => 'DRAFT',
+					'surveyConfig' => $survey_config,
+					'type'         => 'SURVEY',
+				)
+			),
+			(string) $request->getBody(),
+			'The request body should hold the survey text and the questions in the order they were given.'
+		);
+	}
+
+	public function test_create_request__rejects_survey_when_feature_flag_disabled() {
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( 'Invalid parameter: data.type.' );
+
+		$data         = $this->get_valid_data();
+		$data['data'] = array(
+			'type'   => 'SURVEY',
+			'state'  => 'DRAFT',
+			'config' => array( 'questions' => array() ),
+		);
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
 	/**
 	 * @dataProvider data_missing_settings
 	 *

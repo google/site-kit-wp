@@ -37,13 +37,7 @@ class Ads_Conversion_Tracking_IntentTest extends TestCase {
 		$this->assertEquals( 'ads-conversion-tracking', $this->intent->get_id(), 'The intent ID should be ads-conversion-tracking.' );
 	}
 
-	public function test_is_available__with_the_feature_flag_enabled() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
-
-		$this->assertTrue( $this->intent->is_available(), 'The intent should be available while adsConversionTrackingIntent is enabled.' );
-	}
-
-	public function test_is_available__with_the_feature_flag_disabled() {
-		$this->assertFalse( $this->intent->is_available(), 'The intent should not be available while adsConversionTrackingIntent is disabled.' );
+	public function test_is_available() {
+		$this->assertTrue( $this->intent->is_available(), 'The Ads intent should always be available.' );
 	}
 }

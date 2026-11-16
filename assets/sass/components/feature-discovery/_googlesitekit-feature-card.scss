@@ -16,21 +16,31 @@
  * limitations under the License.
  */
 
+$bp-feature-card: 600px;
+
 .googlesitekit-plugin {
 
 	.googlesitekit-feature-card {
 		--googlesitekit-feature-card-gap-s: 6px;
 		--googlesitekit-feature-card-gap-m: 10px;
+		--googlesitekit-feature-card-gap-l: 16px;
 		--googlesitekit-feature-card-dot-size: 12px;
 
+		container: feature-card / inline-size;
+	}
+
+	.googlesitekit-feature-card__layout {
 		display: grid;
-		grid-template-columns: max-content auto;
-		padding-inline-end: $grid-gap-phone;
-		row-gap: var(--googlesitekit-feature-card-gap-m);
+		grid-template: '. meta' 'status heading' 'status content' / min-content auto;
+
+		@container feature-card ( inline-size > #{$bp-feature-card} ) {
+			grid-template: 'status heading meta' 'status content content' / min-content auto 1fr;
+			padding-inline-end: $grid-gap-phone;
+		}
 	}
 
 	.googlesitekit-feature-card__status {
-		grid-row: span 2;
+		grid-area: status;
 		padding-block: var(--googlesitekit-feature-card-gap-s);
 		padding-inline: var(--googlesitekit-feature-card-dot-size);
 	}
@@ -50,34 +60,28 @@
 		transition: none;
 	}
 
-	.googlesitekit-feature-card__content {
-		display: grid;
-		gap: var(--googlesitekit-feature-card-gap-s);
-	}
-
-	.googlesitekit-feature-card__header {
-		align-items: start;
+	.googlesitekit-feature-card__meta {
+		align-items: center;
 		display: flex;
 		flex-wrap: nowrap;
 		gap: var(--googlesitekit-feature-card-gap-m);
-		justify-content: space-between;
-	}
+		grid-area: meta;
+		padding-block-end: var(--googlesitekit-feature-card-gap-m);
 
-	.googlesitekit-feature-card__title {
-		align-items: center;
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--googlesitekit-feature-card-gap-s) var(--googlesitekit-feature-card-gap-m);
-		justify-content: start;
-	}
-
-	.googlesitekit-feature-card__heading {
-		margin: 0;
+		@container feature-card ( inline-size > #{$bp-feature-card} ) {
+			padding-block-end: 0;
+			padding-inline-start: var(--googlesitekit-feature-card-gap-m);
+		}
 	}
 
 	.googlesitekit-feature-card__dismiss-menu {
 		display: flex;
 		flex-shrink: 0;
+		margin-inline-start: auto;
+
+		@container feature-card ( inline-size > #{$bp-feature-card} ) {
+			align-self: start;
+		}
 	}
 
 	.googlesitekit-feature-card__dismiss {
@@ -87,6 +91,18 @@
 		svg {
 			display: block;
 		}
+	}
+
+	.googlesitekit-feature-card__heading {
+		grid-area: heading;
+		margin: 0;
+	}
+
+	.googlesitekit-feature-card__content {
+		display: grid;
+		gap: var(--googlesitekit-feature-card-gap-m);
+		grid-area: content;
+		padding-block-start: var(--googlesitekit-feature-card-gap-s);
 	}
 
 	.googlesitekit-feature-card__details {
@@ -99,13 +115,13 @@
 	}
 
 	.googlesitekit-feature-card__footer {
+		align-items: center;
 		display: grid;
-		gap: var(--googlesitekit-feature-card-gap-m);
+		gap: var(--googlesitekit-feature-card-gap-l);
 
-		@media ( min-width: $bp-tablet ) {
-			align-items: center;
+		@container feature-card ( inline-size > #{$bp-feature-card} ) {
 			display: flex;
-			justify-content: space-between;
+			flex-wrap: wrap;
 		}
 	}
 
@@ -113,7 +129,8 @@
 		align-items: center;
 		display: flex;
 		flex-grow: 1;
-		gap: var(--googlesitekit-feature-card-gap-m);
+		flex-wrap: wrap;
+		gap: var(--googlesitekit-feature-card-gap-s) var(--googlesitekit-feature-card-gap-m);
 		justify-content: end;
 
 		.MuiCircularProgress-colorPrimary {
@@ -121,6 +138,14 @@
 
 			svg circle {
 				stroke: currentColor;
+			}
+		}
+
+		@container feature-card ( inline-size <= #{$bp-feature-card} ) {
+
+			.mdc-button {
+				min-block-size: 32px;
+				padding-block: 6px;
 			}
 		}
 	}

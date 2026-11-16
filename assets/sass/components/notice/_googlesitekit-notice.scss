@@ -46,7 +46,7 @@
 }
 
 .googlesitekit-notice-container {
-	container-type: inline-size;
+	container: notice / inline-size;
 	width: 100%; // Prevents shrinkage when the parent / wrapping container uses flexbox.
 }
 
@@ -57,7 +57,7 @@
 	color: $c-content-on-primary-container;
 	display: flex;
 
-	@container (width > #{$container-width-desktop}) {
+	@container notice (width > #{$container-width-desktop}) {
 		@include wide-notice-layout;
 	}
 
@@ -67,7 +67,7 @@
 
 	.googlesitekit-notice__content {
 
-		@container (width > #{$container-width-desktop}) {
+		@container notice (width > #{$container-width-desktop}) {
 			flex: 1;
 		}
 
@@ -119,7 +119,7 @@
 			color: $c-content-on-primary-container;
 		}
 
-		@container (width > #{$container-width-desktop}) {
+		@container notice (width > #{$container-width-desktop}) {
 			margin: 0;
 		}
 
@@ -136,7 +136,7 @@
 		justify-content: end;
 		width: 100%;
 
-		@container (width > #{$container-width-desktop}) {
+		@container notice (width > #{$container-width-desktop}) {
 			justify-content: initial;
 			width: initial;
 		}
