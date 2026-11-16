@@ -87,6 +87,7 @@ class SettingsTest extends SettingsTestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			get_option( Settings::OPTION ),
 			'Analytics 4 default settings should match expected values.'
