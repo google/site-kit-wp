@@ -209,14 +209,21 @@ function getWidgetReportOptions(
 	breakdownFilter?: Record< string, unknown >
 ): {
 	leadEventsReportOptions: ReportOptions | null;
+	keyActionSessionsReportOptions: ReportOptions | null;
 	engagementReportOptions: ReportOptions | null;
 } {
 	if ( ! detectedLeadEvents.length ) {
 		return {
 			leadEventsReportOptions: null,
+			keyActionSessionsReportOptions: null,
 			engagementReportOptions: null,
 		};
 	}
+
+	const leadEventsFilter = {
+		filterType: 'inListFilter',
+		value: detectedLeadEvents,
+	};
 
 	return {
 		leadEventsReportOptions: {
@@ -224,20 +231,30 @@ function getWidgetReportOptions(
 			metrics: [ { name: 'eventCount' } ],
 			dimensions: [ { name: 'eventName' } ],
 			dimensionFilters: {
-				eventName: {
-					filterType: 'inListFilter',
-					value: detectedLeadEvents,
-				},
+				eventName: leadEventsFilter,
 				// Scopes the Key action to the selected breakdown tab.
 				...breakdownFilter,
 			},
 			reportID:
 				'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
 		} as ReportOptions,
+		// Each session counts once, however many lead events it holds, so the
+		// rate never goes above 100%.
+		keyActionSessionsReportOptions: {
+			...dates,
+			metrics: [ { name: 'sessions' } ],
+			dimensionFilters: {
+				eventName: leadEventsFilter,
+				...breakdownFilter,
+			},
+			reportID:
+				'analytics-4_lead-generation-performance-widget_widget_keyActionSessionsReportOptions',
+		} as ReportOptions,
+		// The rate is out of all site sessions on every breakdown tab, so this
+		// report never takes the breakdown filter.
 		engagementReportOptions: {
 			...dates,
 			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-			...( breakdownFilter ? { dimensionFilters: breakdownFilter } : {} ),
 			reportID: 'analytics-4_site-goals_engagementReportOptions',
 		} as ReportOptions,
 	};
@@ -481,12 +498,15 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			pluginConversionTrackingDocumentationURL
 		);
 
-		const { leadEventsReportOptions, engagementReportOptions } =
-			getWidgetReportOptions(
-				dates,
-				keyActionEventNames,
-				breakdownFilter
-			);
+		const {
+			leadEventsReportOptions,
+			keyActionSessionsReportOptions,
+			engagementReportOptions,
+		} = getWidgetReportOptions(
+			dates,
+			keyActionEventNames,
+			breakdownFilter
+		);
 
 		const leadEventsReport =
 			useInViewSelect(
@@ -497,6 +517,17 @@ const LeadGenerationPerformanceWidget = forwardRef<
 						  )
 						: null,
 				[ leadEventsReportOptions ]
+			) || [];
+
+		const keyActionSessionsReport =
+			useInViewSelect(
+				( select: Select ) =>
+					keyActionSessionsReportOptions
+						? select( MODULES_ANALYTICS_4 ).getReport(
+								keyActionSessionsReportOptions
+						  )
+						: null,
+				[ keyActionSessionsReportOptions ]
 			) || [];
 
 		const engagementReport =
@@ -512,13 +543,13 @@ const LeadGenerationPerformanceWidget = forwardRef<
 
 		const [ loading, error ] = useSelect(
 			( select: Select ) => {
-				const reportsToCheck: ReportOptions[] = [];
-				if ( leadEventsReportOptions ) {
-					reportsToCheck.push( leadEventsReportOptions );
-				}
-				if ( engagementReportOptions ) {
-					reportsToCheck.push( engagementReportOptions );
-				}
+				const reportsToCheck = [
+					leadEventsReportOptions,
+					keyActionSessionsReportOptions,
+					engagementReportOptions,
+				].filter( ( options ): options is ReportOptions =>
+					Boolean( options )
+				);
 
 				return [
 					select( MODULES_ANALYTICS_4 ).areReportsLoading(
@@ -529,7 +560,11 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					),
 				];
 			},
-			[ leadEventsReportOptions, engagementReportOptions ]
+			[
+				leadEventsReportOptions,
+				keyActionSessionsReportOptions,
+				engagementReportOptions,
+			]
 		);
 
 		useEffect( () => {
@@ -591,6 +626,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			previousRate,
 		} = processReports( leadEventsReport, engagementReport, {
 			aggregate: true,
+			keyActionSessionsReport,
 		} );
 
 		return (
