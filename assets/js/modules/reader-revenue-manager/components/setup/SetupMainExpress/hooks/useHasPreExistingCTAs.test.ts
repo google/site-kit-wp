@@ -25,8 +25,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import {
+	provideCTAs,
+	providePublication,
+} from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -72,10 +74,7 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns false when there are no configured CTAs', () => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [],
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		provideCTAs( registry, PUBLICATION_ID, [] );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,
@@ -85,10 +84,7 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns false when there is only the CTA just created in this setup flow', () => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [ cta ],
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		provideCTAs( registry, PUBLICATION_ID, [ cta ] );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,
@@ -98,10 +94,7 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns true when there is more than one configured CTA', () => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [ cta, otherCTA ],
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		provideCTAs( registry, PUBLICATION_ID, [ cta, otherCTA ] );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,

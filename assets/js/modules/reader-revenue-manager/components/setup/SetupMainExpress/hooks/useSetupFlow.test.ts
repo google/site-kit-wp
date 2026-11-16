@@ -438,7 +438,10 @@ describe( 'useSetupFlow', () => {
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( { publicationID: PUBLICATION_ID } );
+				.receiveGetSettings( {
+					organizationID: 'ABCD1234',
+					publicationID: PUBLICATION_ID,
+				} );
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -446,15 +449,18 @@ describe( 'useSetupFlow', () => {
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetCTAs( {
-					ctas: [
+				.receiveGetPublicationCTAs(
+					[
 						{
 							name: `organizations/ABCD1234/publications/${ PUBLICATION_ID }/ctas/1`,
 							type: CTA_TYPES.NEWSLETTER_SIGNUP,
 						},
 					],
-					params: { publicationID: PUBLICATION_ID },
-				} );
+					{
+						organizationID: 'ABCD1234',
+						publicationID: PUBLICATION_ID,
+					}
+				);
 
 			const { result } = renderHook(
 				() =>
@@ -666,9 +672,9 @@ describe( 'useSetupFlow', () => {
 		function provideCTAs( ctas: { name: string; type: string }[] ) {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetCTAs( {
-					ctas,
-					params: { publicationID: PUBLICATION_ID },
+				.receiveGetPublicationCTAs( ctas, {
+					organizationID: 'ABCD1234',
+					publicationID: PUBLICATION_ID,
 				} );
 		}
 

@@ -74,3 +74,29 @@ export function providePublication(
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
 		.finishResolution( 'getPublication', [] );
 }
+
+/**
+ * Provides the CTAs of a publication.
+ *
+ * CTAs are stored by publication ID, so only the publication ID decides which
+ * publication's CTAs these are.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Object} registry       Data registry.
+ * @param {string} publicationID  Publication ID.
+ * @param {Array}  ctas           CTAs of the publication.
+ * @param {string} organizationID Optional. Organization ID. Defaults to a placeholder.
+ * @return {void}
+ */
+export function provideCTAs(
+	registry: Registry | WPDataRegistry,
+	publicationID: string,
+	ctas: unknown[],
+	organizationID = 'organization-1'
+) {
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetPublicationCTAs( ctas, { organizationID, publicationID } );
+}

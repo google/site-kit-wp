@@ -46,7 +46,10 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
-import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import {
+	provideCTAs,
+	providePublications,
+} from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { Story } from '@/js/types/Story';
 import {
 	freezeFetch,
@@ -124,9 +127,7 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 		postTypes: [],
 	} );
 
-	registry
-		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [ NEWSLETTER_CTA ], params: {} } );
+	provideCTAs( registry, PUBLICATION_ID, [ NEWSLETTER_CTA ] );
 }
 
 function connectPublication(
@@ -139,9 +140,7 @@ function connectPublication(
 // The steps before the CTA exists, so there is none for the existing CTA check
 // to find.
 function provideNoCTAs( registry: WPDataRegistry ) {
-	registry
-		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [], params: {} } );
+	provideCTAs( registry, PUBLICATION_ID, [] );
 }
 
 function Template() {
@@ -240,10 +239,10 @@ SetupCompleteWithPreExistingCTAs.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		connectPublication( registry, COMPLETE_PUBLICATION );
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ],
-			params: {},
-		} );
+		provideCTAs( registry, PUBLICATION_ID, [
+			PRE_EXISTING_CTA,
+			NEWSLETTER_CTA,
+		] );
 	},
 };
 SetupCompleteWithPreExistingCTAs.scenario = {};

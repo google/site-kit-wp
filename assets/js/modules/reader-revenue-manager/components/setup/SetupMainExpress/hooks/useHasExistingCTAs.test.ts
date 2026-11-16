@@ -25,15 +25,15 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import {
-	EXPRESS_SETUP_CTAS,
-	MODULES_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	CTA_STATES,
 	CTA_TYPES,
 } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
-import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import {
+	provideCTAs,
+	providePublication,
+} from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import {
 	actHook as act,
 	createTestRegistry,
@@ -54,10 +54,7 @@ describe( 'useHasExistingCTAs', () => {
 	};
 
 	function receiveCTAs( ctas: unknown[] ) {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas,
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		provideCTAs( registry, PUBLICATION_ID, ctas );
 	}
 
 	beforeEach( () => {

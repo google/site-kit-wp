@@ -29,7 +29,10 @@ import {
 	SURVEY_CUSTOM_DIMENSIONS,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
-import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import {
+	provideCTAs,
+	providePublications,
+} from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -125,9 +128,8 @@ function connectPublication( registry: Registry, publication: Publication ) {
 	providePublications( registry, [ publication ] );
 
 	// CTAs are keyed by the publication ID, so receive them after setting it.
-	registry
-		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [], params: {} } );
+	// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+	provideCTAs( registry, publication.publicationId, [] );
 }
 
 describe( 'SetupCTASurvey', () => {

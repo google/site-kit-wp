@@ -27,7 +27,10 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	SURVEY_CUSTOM_DIMENSIONS,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import {
+	provideCTAs,
+	providePublications,
+} from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
@@ -115,9 +118,8 @@ describe( 'SetupMainExpress', () => {
 
 		providePublications( registry, [ publication ] );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas: [], params: {} } );
+		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		provideCTAs( registry, publication.publicationId, [] );
 
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,
@@ -143,9 +145,8 @@ describe( 'SetupMainExpress', () => {
 
 		providePublications( registry, [ publication ] );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas: [], params: {} } );
+		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		provideCTAs( registry, publication.publicationId, [] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

@@ -36,6 +36,7 @@ import {
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import {
+	provideCTAs,
 	providePublication,
 	providePublications,
 } from '@/js/modules/reader-revenue-manager/utils/test-utils';
@@ -153,9 +154,8 @@ function connectPublication( registry: Registry, publication: Publication ) {
 	providePublications( registry, [ publication ] );
 
 	// CTAs are keyed by the publication ID, so receive them after setting it.
-	registry
-		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [], params: {} } );
+	// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+	provideCTAs( registry, publication.publicationId, [] );
 }
 
 /**
@@ -237,9 +237,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		providePublication( registry, readyPublication );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas, params: {} } );
+		provideCTAs( registry, readyPublicationID, ctas );
 
 		return settings;
 	}

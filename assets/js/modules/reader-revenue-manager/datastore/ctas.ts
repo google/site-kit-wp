@@ -31,7 +31,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
-import { commonActions, createReducer } from 'googlesitekit-data';
+import {
+	Select,
+	commonActions,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
@@ -53,14 +58,13 @@ import {
 	isCTAType,
 } from './cta-types';
 import {
+	type Publication,
 	type PublicationParams,
 	getSelectedPublicationID,
 	maybeResolveSettings,
 	validateOptionalPublicationParams,
 } from './publications';
 import { type ConfiguredCTA, type ReaderRevenueManagerSettings } from './types';
-
-type GetCTAsParams = Partial< PublicationParams >;
 
 export type CreateCTAParams = Partial< PublicationParams > & {
 	data: CreateCTAData;
@@ -80,12 +84,18 @@ type Registry = WPDataRegistry & {
  *
  * @since 1.188.0
  * @since 1.192.0 Stores the type, state and display name of each CTA.
+ * @since n.e.x.t Only updates the settings that hold the CTAs' publication.
  *
- * @param {Object} state Module state.
- * @param {Array}  ctas  CTAs to sync from.
+ * @param {Object} state         Module state.
+ * @param {string} publicationID Publication the CTAs belong to.
+ * @param {Array}  ctas          CTAs to sync from.
  * @return {void}
  */
-function syncConfiguredCTAs( state: CTAsState, ctas: CTA[] ): void {
+function syncConfiguredCTAs(
+	state: CTAsState,
+	publicationID: string,
+	ctas: CTA[]
+): void {
 	const configuredCTAs = ctas.reduce< Record< string, ConfiguredCTA > >(
 		( accumulator, cta ) => {
 			const ctaID = getCTAID( cta.name );
@@ -109,13 +119,120 @@ function syncConfiguredCTAs( state: CTAsState, ctas: CTA[] ): void {
 		{}
 	);
 
-	if ( state.settings ) {
+	if ( state.settings?.publicationID === publicationID ) {
 		state.settings.configuredCTAs = configuredCTAs;
 	}
 
-	if ( state.savedSettings ) {
+	if ( state.savedSettings?.publicationID === publicationID ) {
 		state.savedSettings.configuredCTAs = configuredCTAs;
 	}
+}
+
+/**
+ * Validates the identifiers of the publication to list the CTAs of.
+ *
+ * @since n.e.x.t
+ *
+ * @param  params Publication parameters to validate.
+ * @return {void}
+ */
+function validatePublicationParams(
+	params: Partial< PublicationParams > = {}
+): void {
+	const { organizationID, publicationID } = params;
+
+	invariant(
+		typeof organizationID === 'string' && organizationID.length > 0,
+		'organizationID is required and must be a non-empty string.'
+	);
+	invariant(
+		typeof publicationID === 'string' && publicationID.length > 0,
+		'publicationID is required and must be a non-empty string.'
+	);
+}
+
+/**
+ * Finds the selected publication's identifiers.
+ *
+ * Settings saved before express setup have a publication ID but no
+ * organization ID. Its organization ID is then read from the publications
+ * list, which has to be loaded for it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Registry `select` function.
+ * @return {(Object|null|undefined)} Publication identifiers; `null` if no publication is selected; `undefined` while loading.
+ */
+function findPublicationParams(
+	select: Select
+): PublicationParams | null | undefined {
+	const settings: ReaderRevenueManagerSettings | undefined = select(
+		MODULES_READER_REVENUE_MANAGER
+	).getSettings();
+
+	if ( settings === undefined ) {
+		return undefined;
+	}
+
+	const { publicationID, organizationID } = settings;
+
+	if ( ! publicationID ) {
+		return null;
+	}
+
+	if ( organizationID ) {
+		return { organizationID, publicationID };
+	}
+
+	const publications: Publication[] | undefined = select(
+		MODULES_READER_REVENUE_MANAGER
+	).getPublications();
+
+	if ( publications === undefined ) {
+		return undefined;
+	}
+
+	const publication = publications.find(
+		// eslint-disable-next-line sitekit/acronym-case
+		( { publicationId: id } ) => id === publicationID
+	);
+
+	// eslint-disable-next-line sitekit/acronym-case
+	if ( ! publication?.organizationId ) {
+		return null;
+	}
+
+	// eslint-disable-next-line sitekit/acronym-case
+	return { organizationID: publication.organizationId, publicationID };
+}
+
+/**
+ * Resolves the selected publication's identifiers.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Data registry.
+ * @return {Promise<(Object|null)>} Publication identifiers; `null` if no publication is selected.
+ */
+async function resolvePublicationParams(
+	registry: Registry
+): Promise< PublicationParams | null > {
+	await registry
+		.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+		.getSettings();
+
+	const params = findPublicationParams( registry.select as Select );
+
+	if ( params !== undefined ) {
+		return params;
+	}
+
+	// Legacy settings: load the publications list for the organization ID.
+	await registry
+		.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+		.getPublications();
+
+	return findPublicationParams( registry.select as Select ) ?? null;
 }
 
 /**
@@ -161,48 +278,36 @@ function validateCreateCTAParams( params: unknown ): void {
 }
 
 const fetchGetCTAsStore = createFetchStore( {
-	baseName: 'getCTAs',
-	controlCallback: async ( params: GetCTAsParams ) => {
-		const ctas = await get(
+	baseName: 'getPublicationCTAs',
+	controlCallback: ( { organizationID, publicationID }: PublicationParams ) =>
+		get(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'ctas',
-			params,
+			{ organizationID, publicationID },
 			{ useCache: false }
-		);
-
-		// Optional params wipes `params` in `receiveGetCTAs` before the
-		// reducer runs. Stamp the params onto the response so the list can
-		// still be keyed.
-		return {
-			ctas,
-			params,
-		};
-	},
+		),
 	reducerCallback: createReducer(
 		(
 			state: CTAsState,
-			{ ctas, params }: { ctas: CTA[]; params: GetCTAsParams }
+			ctas: CTA[],
+			{ publicationID }: PublicationParams
 		) => {
-			const selectedPublicationID = getSelectedPublicationID(
-				state,
-				params
-			);
-
-			if ( ! selectedPublicationID ) {
-				return;
-			}
-
-			state.ctas[ selectedPublicationID ] = ctas;
+			state.ctas[ publicationID ] = ctas;
 
 			// Update settings states with configured CTAs.
 			if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
-				syncConfiguredCTAs( state, ctas );
+				syncConfiguredCTAs( state, publicationID, ctas );
 			}
 		}
 	),
-	argsToParams: ( params: GetCTAsParams = {} ) => params,
-	validateParams: validateOptionalPublicationParams,
+	// Positional, like the selector's resolver, so that a fetch error is
+	// recorded under the resolution that a retry invalidates.
+	argsToParams: ( organizationID?: string, publicationID?: string ) => ( {
+		organizationID,
+		publicationID,
+	} ),
+	validateParams: validatePublicationParams,
 } );
 
 const fetchCreateCTAStore = createFetchStore( {
@@ -284,66 +389,122 @@ const baseActions = {
 			} );
 		}
 	),
+
+	/**
+	 * Requests the selected publication's CTAs again, replacing the stored ones.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*refreshCTAs(): Generator< unknown, unknown, unknown > {
+		const registry = ( yield commonActions.getRegistry() ) as Registry;
+
+		const publicationParams = ( yield commonActions.await(
+			resolvePublicationParams( registry )
+		) ) as PublicationParams | null;
+
+		if ( ! publicationParams ) {
+			return { response: undefined, error: undefined };
+		}
+
+		// @ts-expect-error createFetchStore is not properly typed yet.
+		return yield fetchGetCTAsStore.actions.fetchGetPublicationCTAs(
+			publicationParams.organizationID,
+			publicationParams.publicationID
+		);
+	},
 };
 
 const baseResolvers = {
-	*getCTAs(
-		params: GetCTAsParams = {}
-	): Generator< unknown, void, unknown > {
-		const registryResult = yield commonActions.getRegistry();
-		const registry = registryResult as Registry;
+	*getCTAs(): Generator< unknown, void, unknown > {
+		const registry = ( yield commonActions.getRegistry() ) as Registry;
 
-		// Conditionally resolve settings so that the fetch reducer has
-		// the publication ID to key the list by.
-		const settingsResolution = maybeResolveSettings( registry, params );
+		// Lets `resolveSelect` wait for the selected publication's CTAs.
+		// Selecting them requests them through `getPublicationCTAs()`.
+		const publicationParams = ( yield commonActions.await(
+			resolvePublicationParams( registry )
+		) ) as PublicationParams | null;
 
-		if ( settingsResolution ) {
-			yield commonActions.await( settingsResolution );
+		if ( publicationParams ) {
+			yield commonActions.await(
+				registry
+					.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+					.getPublicationCTAs(
+						publicationParams.organizationID,
+						publicationParams.publicationID
+					)
+			);
 		}
+	},
+
+	*getPublicationCTAs(
+		organizationID: string,
+		publicationID: string
+	): Generator< unknown, void, unknown > {
+		if ( ! organizationID || ! publicationID ) {
+			return;
+		}
+
+		const registry = ( yield commonActions.getRegistry() ) as Registry;
 
 		const ctas = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getCTAs( params );
+			.getPublicationCTAs( organizationID, publicationID );
 
 		if ( ctas !== undefined ) {
 			return;
 		}
 
-		const publicationID =
-			params.publicationID ||
-			registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getPublicationID();
-
-		// No publication to key the list by; skip the fetch rather than
-		// looping on `undefined`.
-		if ( ! publicationID ) {
-			return;
-		}
-
 		// @ts-expect-error createFetchStore is not properly typed yet.
-		yield fetchGetCTAsStore.actions.fetchGetCTAs( params );
+		yield fetchGetCTAsStore.actions.fetchGetPublicationCTAs(
+			organizationID,
+			publicationID
+		);
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets the CTAs for the publication.
+	 * Gets the CTAs of the selected publication.
 	 *
 	 * @since 1.187.0
+	 * @since n.e.x.t Returns the selected publication's CTAs; no longer accepts publication identifiers.
 	 *
-	 * @param  state  Data store's state.
-	 * @param  params Optional parameters.
+	 * @return {(Array.<Object>|undefined)} The CTAs; `undefined` if not loaded yet or no publication is selected.
+	 */
+	getCTAs: createRegistrySelector(
+		( select: Select ) => (): CTA[] | undefined => {
+			const params = findPublicationParams( select );
+
+			if ( ! params ) {
+				return undefined;
+			}
+
+			return select( MODULES_READER_REVENUE_MANAGER ).getPublicationCTAs(
+				params.organizationID,
+				params.publicationID
+			);
+		}
+	),
+
+	/**
+	 * Gets the CTAs of a publication.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param  state          Data store's state.
+	 * @param  organizationID Organization ID. Requests are made for it; CTAs are stored by publication ID.
+	 * @param  publicationID  Publication ID.
 	 * @return {(Array.<Object>|undefined)} The CTAs; `undefined` if not loaded yet.
 	 */
-	getCTAs( state: CTAsState, params: GetCTAsParams = {} ): CTA[] | undefined {
-		const selectedPublicationID = getSelectedPublicationID( state, params );
-
-		if ( ! selectedPublicationID ) {
-			return undefined;
-		}
-
-		return state.ctas[ selectedPublicationID ];
+	getPublicationCTAs(
+		state: CTAsState,
+		organizationID: string,
+		publicationID: string
+	): CTA[] | undefined {
+		return state.ctas[ publicationID ];
 	},
 };
 

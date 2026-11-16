@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_CTAs;
 use Google\Site_Kit\Tests\TestCase;
@@ -27,6 +27,14 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\SurveyConfig
  * @group Datapoints
  */
 class Get_CTAsTest extends TestCase {
+
+	/**
+	 * Identifiers of the saved publication, which the CTA fixtures belong to.
+	 */
+	const SAVED_PUBLICATION = array(
+		'organizationID' => 'organization-1',
+		'publicationID'  => 'publication-1',
+	);
 
 	/**
 	 * Get CTAs datapoint.
@@ -49,6 +57,7 @@ class Get_CTAsTest extends TestCase {
 
 		$this->module = new Reader_Revenue_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$this->module->get_settings()->register();
+		$this->module->get_settings()->merge( self::SAVED_PUBLICATION );
 		$this->module->get_client()->withDefer( true );
 
 		$service         = new WebContentPublisher( $this->module->get_client() );
@@ -79,42 +88,38 @@ class Get_CTAsTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__falls_back_to_saved_settings() {
-		$this->module->get_settings()->merge(
-			array(
-				'organizationID' => 'saved-organization',
-				'publicationID'  => 'saved-publication',
-			)
-		);
-
-		$request = $this->datapoint->create_request( $this->get_data_request( array() ) );
-
-		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/saved-organization/publications/saved-publication/ctas',
-			(string) $request->getUri(),
-			'The request should fall back to the saved organization and publication IDs.'
-		);
-	}
-
 	/**
-	 * @dataProvider data_missing_settings
+	 * @dataProvider data_missing_params
 	 *
-	 * @param array  $settings Settings to save before the request.
-	 * @param string $missing  Name of the setting expected to be reported as missing.
+	 * @param array  $data    Request data.
+	 * @param string $missing Name of the parameter expected to be reported as missing.
 	 */
-	public function test_create_request__requires_settings( $settings, $missing ) {
-		$this->module->get_settings()->merge( $settings );
+	public function test_create_request__requires_publication_params( $data, $missing ) {
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( "Request parameter is empty: {$missing}." );
 
-		$this->expectException( Missing_Required_Setting_Exception::class );
-		$this->expectExceptionMessage( "Required setting is missing: {$missing}." );
-
-		$this->datapoint->create_request( $this->get_data_request( array() ) );
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
 	}
 
-	public function data_missing_settings() {
+	public function data_missing_params() {
 		return array(
-			'no settings saved'    => array( array(), 'organizationID' ),
-			'only organization ID' => array( array( 'organizationID' => 'organization-1' ), 'publicationID' ),
+			'no identifiers'          => array( array(), 'organizationID' ),
+			'only organization ID'    => array( array( 'organizationID' => 'organization-1' ), 'publicationID' ),
+			'only publication ID'     => array( array( 'publicationID' => 'publication-1' ), 'organizationID' ),
+			'empty publication ID'    => array(
+				array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => '',
+				),
+				'publicationID',
+			),
+			'non-string organization' => array(
+				array(
+					'organizationID' => array( 'organization-1' ),
+					'publicationID'  => 'publication-1',
+				),
+				'organizationID',
+			),
 		);
 	}
 
@@ -124,7 +129,7 @@ class Get_CTAsTest extends TestCase {
 		$response = new ListCtasResponse();
 		$response->setCtas( array( $cta ) );
 
-		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request() );
 
 		$this->assertCount( 1, $ctas, 'The response should contain the publication CTAs.' );
 		$this->assertSame(
@@ -172,7 +177,7 @@ class Get_CTAsTest extends TestCase {
 		$response = new ListCtasResponse();
 		$response->setCtas( array( $cta ) );
 
-		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request() );
 
 		$this->assertEquals(
 			$survey_config,
@@ -202,7 +207,7 @@ class Get_CTAsTest extends TestCase {
 			)
 		);
 
-		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request() );
 
 		$this->assertSame(
 			array(
@@ -227,8 +232,44 @@ class Get_CTAsTest extends TestCase {
 	public function test_parse_response__returns_empty_array_when_no_ctas() {
 		$this->assertSame(
 			array(),
-			$this->datapoint->parse_response( new ListCtasResponse(), $this->get_data_request( array() ) ),
+			$this->datapoint->parse_response( new ListCtasResponse(), $this->get_data_request() ),
 			'The datapoint should return an empty array when the publication has no CTAs.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_other_publications
+	 *
+	 * @param array $data Request data naming a publication other than the saved one.
+	 */
+	public function test_parse_response__does_not_synchronize_another_publication( $data ) {
+		$response = new ListCtasResponse();
+		$response->setCtas( array( $this->create_cta( '9d2418415-ab3a', Cta::STATE_ACTIVE ) ) );
+
+		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( $data ) );
+
+		$this->assertCount( 1, $ctas, 'The response should still contain the requested publication CTAs.' );
+		$this->assertSame(
+			array(),
+			(array) $this->module->get_settings()->get()['configuredCTAs'],
+			'The CTAs of a publication other than the saved one should not be synchronized into the settings.'
+		);
+	}
+
+	public function data_other_publications() {
+		return array(
+			'other publication'  => array(
+				array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-2',
+				),
+			),
+			'other organization' => array(
+				array(
+					'organizationID' => 'organization-2',
+					'publicationID'  => 'publication-1',
+				),
+			),
 		);
 	}
 
@@ -242,7 +283,7 @@ class Get_CTAsTest extends TestCase {
 		return $cta;
 	}
 
-	private function get_data_request( array $data ) {
+	private function get_data_request( array $data = self::SAVED_PUBLICATION ) {
 		return new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'ctas', $data );
 	}
 }
