@@ -132,11 +132,48 @@ function buildKeyActionSessionsReportOptions(
 	};
 }
 
+// The site's sessions in the current and the previous period. Mocked reports
+// hold too few sessions for a realistic Key action rate.
+const SITE_SESSIONS = { current: 1250, previous: 1100 };
+
+function buildTotalsRows( current: string[], previous: string[] ) {
+	return [
+		{
+			dimensionValues: [ { value: 'date_range_0' } ],
+			metricValues: current.map( ( value ) => ( { value } ) ),
+		},
+		{
+			dimensionValues: [ { value: 'date_range_1' } ],
+			metricValues: previous.map( ( value ) => ( { value } ) ),
+		},
+	];
+}
+
 /**
- * Adds the Key action sessions report as a share of the mocked site sessions.
+ * Adds the site's engagement report, with the fixed site sessions.
  *
- * A mocked sessions report could hold more sessions than the site total, which
- * would push the rate tile above 100%.
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Registry to add the report to.
+ * @return {void}
+ */
+function provideSiteEngagementReport( registry: WPDataRegistry ) {
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			totals: buildTotalsRows(
+				[ '0.549', String( SITE_SESSIONS.current ) ],
+				[ '0.52', String( SITE_SESSIONS.previous ) ]
+			),
+		},
+		{ options: engagementReportOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ engagementReportOptions ] );
+}
+
+/**
+ * Adds the Key action sessions report as a share of the site sessions.
  *
  * @since n.e.x.t
  *
@@ -156,30 +193,12 @@ function provideKeyActionSessionsReport(
 		primaryEvent,
 		breakdownFilter
 	);
-	const { totals = [] } = getAnalytics4MockResponse(
-		engagementReportOptions
-	) as {
-		totals?: {
-			dimensionValues: { value: string }[];
-			metricValues: { value: string }[];
-		}[];
-	};
-
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
-			totals: totals.map( ( { dimensionValues, metricValues } ) => ( {
-				dimensionValues,
-				metricValues: [
-					{
-						// The site sessions are the second metric.
-						value: String(
-							Math.round(
-								Number( metricValues[ 1 ].value ) * share
-							)
-						),
-					},
-				],
-			} ) ),
+			totals: buildTotalsRows(
+				[ String( Math.round( SITE_SESSIONS.current * share ) ) ],
+				[ String( Math.round( SITE_SESSIONS.previous * share ) ) ]
+			),
 		},
 		{ options }
 	);
@@ -930,7 +949,7 @@ function seedTabbedBreakdown(
 		buildPrimaryEventReportOptions( ENUM_CONVERSION_EVENTS.PURCHASE )
 	);
 	provideKeyActionSessionsReport( registry, ENUM_CONVERSION_EVENTS.PURCHASE );
-	provideAnalytics4MockReport( registry, engagementReportOptions );
+	provideSiteEngagementReport( registry );
 }
 
 function Template( {
@@ -960,7 +979,7 @@ Ready.args = {
 			registry,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
-		provideAnalytics4MockReport( registry, engagementReportOptions );
+		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	},
 };
@@ -980,7 +999,7 @@ GatheringBreakdownData.args = {
 			registry,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
-		provideAnalytics4MockReport( registry, engagementReportOptions );
+		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		provideUserCapabilities( registry );
@@ -1074,7 +1093,7 @@ ReadyAddToCart.args = {
 			{},
 			0.087
 		);
-		provideAnalytics4MockReport( registry, engagementReportOptions );
+		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 		] );
