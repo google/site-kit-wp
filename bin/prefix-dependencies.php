@@ -3,8 +3,9 @@
  * Script to prefix production dependencies into the `third-party` directory using PHP-Scoper.
  *
  * Prefixing every dependency takes a while, so after each run a fingerprint of every
- * package's files is stored, and subsequent runs only prefix packages which were added
- * or changed since, and delete the output of packages which were removed.
+ * package's files and of its prefixed output is stored. Subsequent runs only prefix
+ * packages which were added or changed since, or whose prefixed output no longer
+ * matches, and delete the output of packages which were removed.
  *
  * Everything is prefixed again when there is no previous state (e.g. after deleting
  * `vendor` or `third-party`), when the PHP-Scoper configuration, PHP-Scoper itself or
@@ -29,17 +30,24 @@ use FilesystemIterator;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use RuntimeException;
 use SplFileInfo;
+use Throwable;
 
 /**
- * Computes a fingerprint of all files in a package directory which PHP-Scoper could process.
+ * Computes a fingerprint of all files in a directory.
  *
  * Dot files and directories are skipped since PHP-Scoper ignores them too.
  *
- * @param string $dir Absolute path to the package directory.
- * @return string Fingerprint of the files in the directory.
+ * @param string $dir Absolute path to the directory.
+ * @return string|null Fingerprint of the files in the directory, or null if it does not exist.
+ * @throws RuntimeException If a file cannot be read.
  */
-function fingerprint_package( $dir ) {
+function fingerprint_dir( $dir ) {
+	if ( ! is_dir( $dir ) ) {
+		return null;
+	}
+
 	$iterator = new RecursiveIteratorIterator(
 		new RecursiveCallbackFilterIterator(
 			new RecursiveDirectoryIterator( $dir, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS ),
@@ -55,20 +63,26 @@ function fingerprint_package( $dir ) {
 
 	$context = hash_init( 'md5' );
 	foreach ( $files as $relative_path => $path ) {
-		hash_update( $context, $relative_path . "\0" . md5_file( $path ) . "\n" );
+		$file_hash = md5_file( $path );
+		if ( false === $file_hash ) {
+			throw new RuntimeException( "Could not read $path." );
+		}
+		hash_update( $context, $relative_path . "\0" . $file_hash . "\n" );
 	}
 
 	return hash_final( $context );
 }
 
 /**
- * Gets the non-dev packages installed by Composer, with a fingerprint of each.
+ * Gets the production packages installed by Composer, with a fingerprint of each.
+ *
+ * This is the only place which decides which packages are prefixed.
  *
  * @param string $vendor_dir Absolute path to the vendor directory.
- * @return array Map of package names to fingerprints, sorted by name.
+ * @return array Map of package names to fingerprints of their files, sorted by name.
  */
 function get_packages( $vendor_dir ) {
-	$installed = include "$vendor_dir/composer/installed.php";
+	$installed = require "$vendor_dir/composer/installed.php";
 	$packages  = array();
 
 	foreach ( $installed['versions'] as $name => $package ) {
@@ -79,7 +93,7 @@ function get_packages( $vendor_dir ) {
 
 		$install_path = realpath( $package['install_path'] );
 		if ( $install_path ) {
-			$packages[ $name ] = fingerprint_package( $install_path );
+			$packages[ $name ] = fingerprint_dir( $install_path );
 		}
 	}
 
@@ -89,9 +103,22 @@ function get_packages( $vendor_dir ) {
 }
 
 /**
- * Recursively deletes a directory if it exists, then its parent if left empty (e.g. `third-party/firebase`).
+ * Creates a directory (and its parents) if it does not exist.
+ *
+ * @param string $dir Absolute path to the directory.
+ * @throws RuntimeException If the directory cannot be created.
+ */
+function ensure_dir( $dir ) {
+	if ( ! is_dir( $dir ) && ! mkdir( $dir, 0777, true ) ) {
+		throw new RuntimeException( "Could not create $dir." );
+	}
+}
+
+/**
+ * Recursively deletes a directory if it exists.
  *
  * @param string $dir Absolute path to the directory to delete.
+ * @throws RuntimeException If a file or directory cannot be deleted.
  */
 function remove_dir( $dir ) {
 	if ( ! is_dir( $dir ) ) {
@@ -103,29 +130,44 @@ function remove_dir( $dir ) {
 		RecursiveIteratorIterator::CHILD_FIRST
 	);
 	foreach ( $iterator as $file ) {
-		if ( $file->isDir() && ! $file->isLink() ) {
-			rmdir( $file->getPathname() );
-		} else {
-			unlink( $file->getPathname() );
+		$deleted = $file->isDir() && ! $file->isLink() ? rmdir( $file->getPathname() ) : unlink( $file->getPathname() );
+		if ( ! $deleted ) {
+			throw new RuntimeException( "Could not delete {$file->getPathname()}." );
 		}
 	}
-	rmdir( $dir );
 
-	$parent = dirname( $dir );
-	if ( ! ( new FilesystemIterator( $parent ) )->valid() ) {
-		rmdir( $parent );
+	if ( ! rmdir( $dir ) ) {
+		throw new RuntimeException( "Could not delete $dir." );
 	}
 }
 
 /**
- * Runs PHP-Scoper, exiting if it fails.
+ * Deletes the prefixed output of a package, and its vendor directory if left empty (e.g. `third-party/firebase`).
  *
- * @param string     $root       Absolute path to the plugin root directory.
- * @param string     $output_dir Absolute path to the directory to write prefixed files to. It is deleted first.
- * @param array|null $packages   Optional. Names of the packages to prefix, or null to prefix all non-dev packages.
+ * @param string $output_dir Absolute path to the output directory.
+ * @param string $name       Package name.
+ * @throws RuntimeException If a file or directory cannot be deleted.
  */
-function run_scoper( $root, $output_dir, $packages = null ) {
-	putenv( 'GOOGLESITEKIT_PREFIX_PACKAGES=' . ( $packages ? implode( ',', $packages ) : '' ) );
+function remove_package_output( $output_dir, $name ) {
+	remove_dir( "$output_dir/$name" );
+
+	$vendor_name_dir = dirname( "$output_dir/$name" );
+	if ( is_dir( $vendor_name_dir ) && ! ( new FilesystemIterator( $vendor_name_dir ) )->valid() && ! rmdir( $vendor_name_dir ) ) {
+		throw new RuntimeException( "Could not delete $vendor_name_dir." );
+	}
+}
+
+/**
+ * Runs PHP-Scoper for the given packages.
+ *
+ * @param string $root       Absolute path to the plugin root directory.
+ * @param string $output_dir Absolute path to the directory to write prefixed files to. It is deleted first.
+ * @param array  $packages   Names of the packages to prefix.
+ * @throws RuntimeException If PHP-Scoper fails.
+ */
+function run_scoper( $root, $output_dir, array $packages ) {
+	// Read by scoper.inc.php.
+	putenv( 'GOOGLESITEKIT_PREFIX_PACKAGES=' . implode( ',', $packages ) );
 
 	$command = sprintf(
 		'%s -dxdebug.mode=off %s add --output-dir=%s --force --quiet',
@@ -136,8 +178,7 @@ function run_scoper( $root, $output_dir, $packages = null ) {
 	passthru( $command, $exit_code );
 
 	if ( 0 !== $exit_code ) {
-		fwrite( STDERR, "PHP-Scoper failed with exit code $exit_code.\n" );
-		exit( $exit_code );
+		throw new RuntimeException( "PHP-Scoper failed with exit code $exit_code." );
 	}
 }
 
@@ -147,86 +188,114 @@ $output_dir = "$root/third-party";
 // Composer never installs the root package into its own vendor directory, so this location is ours to use.
 $state_dir  = "$vendor_dir/google/google-site-kit";
 $state_file = "$state_dir/prefix-dependencies-state.json";
-$temp_dir   = "$state_dir/prefix-dependencies-tmp";
+// Next to the output directory so that prefixed packages can be moved into it without copying.
+$temp_dir = "$root/.tmp-prefix-dependencies";
 
-// PHP-Scoper reads `scoper.inc.php` from the working directory.
-chdir( $root );
+try {
+	// PHP-Scoper reads `scoper.inc.php` from the working directory.
+	chdir( $root );
 
-$config_fingerprint = md5(
-	implode(
-		"\n",
-		array_map(
-			'md5_file',
-			array( "$root/scoper.inc.php", "$root/php-scoper/composer.lock", __FILE__ )
-		)
-	)
-);
-$packages           = get_packages( $vendor_dir );
-$previous_state     = is_readable( $state_file ) ? json_decode( file_get_contents( $state_file ), true ) : null;
-$prefix_all         = in_array( '--all', array_slice( $argv, 1 ), true )
-	|| ! is_dir( $output_dir )
-	|| empty( $previous_state['config'] )
-	|| $previous_state['config'] !== $config_fingerprint
-	|| ! isset( $previous_state['packages'] );
+	// Delete anything left behind by an interrupted run.
+	remove_dir( $temp_dir );
 
-// Delete the state before changing any output, so an interrupted run prefixes everything next time.
-if ( file_exists( $state_file ) ) {
-	unlink( $state_file );
-}
-
-if ( $prefix_all ) {
-	echo 'Prefixing all ' . count( $packages ) . " dependencies...\n";
-	run_scoper( $root, $output_dir );
-} else {
-	$previous_packages = $previous_state['packages'];
-	$changed_packages  = array_keys(
-		array_filter(
-			$packages,
-			fn ( $fingerprint, $name ) => ! isset( $previous_packages[ $name ] ) || $previous_packages[ $name ] !== $fingerprint,
-			ARRAY_FILTER_USE_BOTH
+	$config_fingerprint = md5(
+		implode(
+			"\n",
+			array_map(
+				'md5_file',
+				array( "$root/scoper.inc.php", "$root/php-scoper/composer.lock", __FILE__ )
+			)
 		)
 	);
-	$removed_packages  = array_keys( array_diff_key( $previous_packages, $packages ) );
+	$packages           = get_packages( $vendor_dir );
+	$previous_state     = is_readable( $state_file ) ? json_decode( file_get_contents( $state_file ), true ) : null;
+	$prefix_all         = in_array( '--all', array_slice( $argv, 1 ), true )
+		|| ! is_dir( $output_dir )
+		|| ! is_array( $previous_state )
+		|| ! isset( $previous_state['config'] )
+		|| $previous_state['config'] !== $config_fingerprint
+		|| ! isset( $previous_state['packages'] )
+		|| ! is_array( $previous_state['packages'] );
 
-	foreach ( $removed_packages as $name ) {
-		echo "Removing prefixed $name...\n";
-		remove_dir( "$output_dir/$name" );
+	// Delete the state before changing any output, so a failed or interrupted run prefixes everything next time.
+	if ( file_exists( $state_file ) && ! unlink( $state_file ) ) {
+		throw new RuntimeException( "Could not delete $state_file." );
 	}
 
-	if ( $changed_packages ) {
-		echo 'Prefixing ' . count( $changed_packages ) . ' new or changed dependencies: ' . implode( ', ', $changed_packages ) . "...\n";
+	$output_fingerprints = array();
+	$removed_packages    = array();
 
-		// Prefix into a temporary directory first because PHP-Scoper deletes the output directory.
-		run_scoper( $root, $temp_dir, $changed_packages );
+	if ( $prefix_all ) {
+		$packages_to_prefix = array_keys( $packages );
 
-		foreach ( $changed_packages as $name ) {
-			remove_dir( "$output_dir/$name" );
+		echo 'Prefixing all ' . count( $packages_to_prefix ) . " dependencies...\n";
+		remove_dir( $output_dir );
+	} else {
+		$previous_packages  = $previous_state['packages'];
+		$packages_to_prefix = array();
 
-			if ( is_dir( "$temp_dir/$name" ) ) {
-				if ( ! is_dir( dirname( "$output_dir/$name" ) ) ) {
-					mkdir( dirname( "$output_dir/$name" ), 0777, true );
-				}
-				rename( "$temp_dir/$name", "$output_dir/$name" );
+		foreach ( $packages as $name => $fingerprint ) {
+			$output_fingerprints[ $name ] = fingerprint_dir( "$output_dir/$name" );
+
+			// Prefix packages which are new or changed, or whose output was changed or deleted since the last run.
+			if (
+				! isset( $previous_packages[ $name ]['input'] )
+				|| $previous_packages[ $name ]['input'] !== $fingerprint
+				|| ! array_key_exists( 'output', $previous_packages[ $name ] )
+				|| $previous_packages[ $name ]['output'] !== $output_fingerprints[ $name ]
+			) {
+				$packages_to_prefix[] = $name;
 			}
 		}
 
-		remove_dir( $temp_dir );
-	} elseif ( ! $removed_packages ) {
-		echo "All prefixed dependencies are up to date.\n";
+		$removed_packages = array_keys( array_diff_key( $previous_packages, $packages ) );
+
+		if ( $packages_to_prefix ) {
+			echo 'Prefixing ' . count( $packages_to_prefix ) . ' new or changed dependencies: ' . implode( ', ', $packages_to_prefix ) . "...\n";
+		} elseif ( ! $removed_packages ) {
+			echo "All prefixed dependencies are up to date.\n";
+		}
 	}
-}
 
-if ( ! is_dir( $state_dir ) ) {
-	mkdir( $state_dir, 0777, true );
-}
+	foreach ( $removed_packages as $name ) {
+		echo "Removing prefixed $name...\n";
+		remove_package_output( $output_dir, $name );
+	}
 
-file_put_contents(
-	$state_file,
-	json_encode(
-		array(
-			'config'   => $config_fingerprint,
-			'packages' => $packages,
-		),
-		JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-	)
-);
+	if ( $packages_to_prefix ) {
+		// Prefix into a temporary directory first because PHP-Scoper deletes the output directory.
+		run_scoper( $root, $temp_dir, $packages_to_prefix );
+
+		foreach ( $packages_to_prefix as $name ) {
+			remove_package_output( $output_dir, $name );
+
+			if ( is_dir( "$temp_dir/$name" ) ) {
+				ensure_dir( dirname( "$output_dir/$name" ) );
+				if ( ! rename( "$temp_dir/$name", "$output_dir/$name" ) ) {
+					throw new RuntimeException( "Could not move $temp_dir/$name to $output_dir/$name." );
+				}
+			}
+
+			$output_fingerprints[ $name ] = fingerprint_dir( "$output_dir/$name" );
+		}
+
+		remove_dir( $temp_dir );
+	}
+
+	$state = array(
+		'config'   => $config_fingerprint,
+		'packages' => array(),
+	);
+	foreach ( $packages as $name => $fingerprint ) {
+		$state['packages'][ $name ] = array(
+			'input'  => $fingerprint,
+			'output' => $output_fingerprints[ $name ],
+		);
+	}
+
+	ensure_dir( $state_dir );
+	file_put_contents( $state_file, json_encode( $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+} catch ( Throwable $e ) {
+	fwrite( STDERR, $e->getMessage() . "\n" );
+	exit( 1 );
+}
