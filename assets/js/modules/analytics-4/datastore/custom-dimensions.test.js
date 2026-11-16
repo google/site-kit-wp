@@ -32,6 +32,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { SURVEY_CUSTOM_DIMENSIONS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	createTestRegistry,
 	provideModules,
@@ -344,6 +345,40 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetCustomDimensions( customDimensionNames, {
+						propertyID,
+					} );
+
+				mockCreateCustomDimension();
+				fetchMock.postOnce( syncEndpoint, {
+					body: ALL_CUSTOM_DIMENSIONS,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions();
+
+				expect( getCreatedDimensionNames() ).toEqual(
+					ALL_CUSTOM_DIMENSIONS.filter(
+						( dimension ) =>
+							! customDimensionNames.includes( dimension )
+					)
+				);
+			} );
+
+			it( 'should create only the missing Site Kit dimensions on a property that has the survey dimensions', async () => {
+				const propertyDimensions = [
+					...customDimensionNames,
+					...SURVEY_CUSTOM_DIMENSIONS,
+				];
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: customDimensionNames,
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetCustomDimensions( propertyDimensions, {
 						propertyID,
 					} );
 

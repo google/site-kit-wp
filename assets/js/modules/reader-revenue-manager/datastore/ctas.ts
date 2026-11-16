@@ -58,7 +58,7 @@ import {
 	maybeResolveSettings,
 	validateOptionalPublicationParams,
 } from './publications';
-import { type ReaderRevenueManagerSettings } from './types';
+import { type ConfiguredCTA, type ReaderRevenueManagerSettings } from './types';
 
 type GetCTAsParams = Partial< PublicationParams >;
 
@@ -79,13 +79,14 @@ type Registry = WPDataRegistry & {
  * Syncs configured CTAs into settings and savedSettings.
  *
  * @since 1.188.0
+ * @since 1.192.0 Stores the type, state and display name of each CTA.
  *
  * @param {Object} state Module state.
  * @param {Array}  ctas  CTAs to sync from.
  * @return {void}
  */
 function syncConfiguredCTAs( state: CTAsState, ctas: CTA[] ): void {
-	const configuredCTAs = ctas.reduce< Record< string, string > >(
+	const configuredCTAs = ctas.reduce< Record< string, ConfiguredCTA > >(
 		( accumulator, cta ) => {
 			const ctaID = getCTAID( cta.name );
 			const ctaTypeSlug =
@@ -95,8 +96,12 @@ function syncConfiguredCTAs( state: CTAsState, ctas: CTA[] ): void {
 					  ]
 					: undefined;
 
-			if ( ctaID && ctaTypeSlug ) {
-				accumulator[ ctaID ] = ctaTypeSlug;
+			if ( ctaID && ctaTypeSlug && isCTAState( cta.state ) ) {
+				accumulator[ ctaID ] = {
+					type: ctaTypeSlug,
+					state: cta.state,
+					displayName: cta.displayName || '',
+				};
 			}
 
 			return accumulator;

@@ -528,12 +528,38 @@ export function listFormat(
 }
 
 /**
+ * Checks whether a language tag can be used with browser APIs.
+ *
+ * Memoized since `getLocale()` runs every time a number or date is formatted.
+ *
+ * @since 1.192.0
+ * @private
+ *
+ * @param {string} tag Language tag to check, e.g. `de-DE`.
+ * @return {boolean} `true` if the browser accepts the tag, otherwise `false`.
+ */
+const isValidLanguageTag = memize( ( tag: string ): boolean => {
+	try {
+		// Throws a `RangeError` for an invalid language tag.
+		new Intl.NumberFormat( tag );
+		return true;
+	} catch {
+		return false;
+	}
+} );
+
+/**
  * Gets the current locale for use with browser APIs.
  *
+ * The WordPress locale is converted to a language tag, e.g. `haw_US` becomes
+ * `haw-US`. Trailing parts the browser does not accept are removed, e.g.
+ * `pt_PT_ao90` becomes `pt-PT`.
+ *
  * @since 1.8.0
+ * @since 1.192.0 Always returns a language tag the browser accepts.
  *
  * @param {Object} _global The global window object.
- * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
+ * @return {string} Current Site Kit locale if set and valid, otherwise the current language set by the browser.
  *                  E.g. `en-US` or `de-DE`
  */
 export function getLocale( _global: typeof globalThis = global ): string {
@@ -541,11 +567,27 @@ export function getLocale( _global: typeof globalThis = global ): string {
 		'_googlesitekitLegacyData',
 		'locale',
 	] );
+
 	if ( siteKitLocale ) {
-		const matches = siteKitLocale.match( /^(\w{2})?(_)?(\w{2})/ );
-		if ( matches && matches[ 0 ] ) {
-			return matches[ 0 ].replace( /_/g, '-' );
+		const subtags = String( siteKitLocale )
+			.replace( /_/g, '-' )
+			.split( '-' );
+
+		while ( subtags.length ) {
+			const tag = subtags.join( '-' );
+
+			if ( isValidLanguageTag( tag ) ) {
+				return tag;
+			}
+
+			subtags.pop();
 		}
+
+		warnOnce(
+			`Site Kit getLocale: invalid locale ${ JSON.stringify(
+				siteKitLocale
+			) }, falling back to the browser language.`
+		);
 	}
 
 	return _global.navigator.language;

@@ -67,7 +67,6 @@ describe( 'SettingsIncludeWooCommerceProductsSwitch', () => {
 			<SettingsIncludeWooCommerceProductsSwitch />,
 			{
 				registry,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -81,15 +80,6 @@ describe( 'SettingsIncludeWooCommerceProductsSwitch', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render nothing when the freshData flag is off', () => {
-		const { container } = render(
-			<SettingsIncludeWooCommerceProductsSwitch />,
-			{ registry }
-		);
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should render nothing when WooCommerce is not installed', () => {
 		provideSiteInfo( registry, {
 			wooCommerceInstalled: false,
@@ -100,7 +90,6 @@ describe( 'SettingsIncludeWooCommerceProductsSwitch', () => {
 			<SettingsIncludeWooCommerceProductsSwitch />,
 			{
 				registry,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -120,7 +109,6 @@ describe( 'SettingsIncludeWooCommerceProductsSwitch', () => {
 			<SettingsIncludeWooCommerceProductsSwitch />,
 			{
 				registry,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -137,7 +125,6 @@ describe( 'SettingsIncludeWooCommerceProductsSwitch', () => {
 			<SettingsIncludeWooCommerceProductsSwitch />,
 			{
 				registry,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -151,7 +138,6 @@ describe( 'SettingsIncludeWooCommerceProductsSwitch', () => {
 			<SettingsIncludeWooCommerceProductsSwitch />,
 			{
 				registry,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -180,7 +166,6 @@ describe( 'SettingsIncludeWooCommerceProductsSwitch', () => {
 			/>,
 			{
 				registry,
-				features: [ 'freshData' ],
 			}
 		);
 

@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import FeatureCTA from '@/js/components/feature-discovery/FeatureCTA';
-import FeatureThumbsSurveyTrigger from '@/js/components/feature-discovery/FeatureThumbsSurveyTrigger';
+import FeatureRelevancyFeedback from '@/js/components/feature-discovery/FeatureRelevancyFeedback';
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
@@ -44,7 +44,7 @@ interface PanelFooterProps {
 const PanelFooter: FC< PanelFooterProps > = ( { feature, onClose } ) => (
 	<footer className="googlesitekit-feature-details-panel__footer">
 		<div className="googlesitekit-feature-details-panel__relevancy">
-			<FeatureThumbsSurveyTrigger slug={ feature.slug } />
+			<FeatureRelevancyFeedback slug={ feature.slug } />
 
 			<Typography size={ SIZE_SMALL } type={ TYPE_BODY }>
 				{ __(

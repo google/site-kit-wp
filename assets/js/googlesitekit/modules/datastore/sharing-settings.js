@@ -726,6 +726,7 @@ const baseSelectors = {
 	 * Indicates whether the sharing settings have updated from default.
 	 *
 	 * @since 1.85.0
+	 * @since 1.192.0 Also checks the settings when there are no shared ownership modules.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the sharing settings have updated, false otherwise.
@@ -733,9 +734,11 @@ const baseSelectors = {
 	haveSharingSettingsUpdated( state ) {
 		const { savedSharingSettings, sharedOwnershipModules } = state;
 
+		// The list of shared ownership modules is empty when PageSpeed Insights
+		// is not connected, so only stop here while it has not loaded yet.
 		if (
 			isEmpty( savedSharingSettings ) ||
-			isEmpty( sharedOwnershipModules )
+			sharedOwnershipModules === undefined
 		) {
 			return false;
 		}

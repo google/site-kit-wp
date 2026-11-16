@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
-import type { ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -33,17 +32,21 @@ import { __ } from '@wordpress/i18n';
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import Typography from '@/js/components/Typography';
-import InlineBackgroundSVG from '@/svg/graphics/inline-background.svg';
-import PopupBackgroundSVG from '@/svg/graphics/popup-background.svg';
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_LABEL,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import InlineEndSVG from '@/svg/graphics/cta-preview-inline-end.svg';
+import InlineStartSVG from '@/svg/graphics/cta-preview-inline-start.svg';
+import PopupSVG from '@/svg/graphics/cta-preview-popup.svg';
 
 interface Props {
+	children?: ReactNode;
 	title?: string;
 	description?: string;
 	footer?: string;
-	popupContent?: ReactNode;
-	inlineContent?: ReactNode;
-	onTabChange?: ( tabIndex: number ) => void;
-	className?: string;
 }
 
 export const CTA_PREVIEW_TAB_POPUP = 0;
@@ -51,7 +54,8 @@ export const CTA_PREVIEW_TAB_INLINE = 1;
 const POPUP_TAB_ID = 'googlesitekit-rrm-cta-preview-tab-popup';
 const INLINE_TAB_ID = 'googlesitekit-rrm-cta-preview-tab-inline';
 
-export default function CTAPreview( {
+const CTAPreview: FC< Props > = ( {
+	children,
 	title = __( 'See how it looks', 'google-site-kit' ),
 	description = __(
 		'The CTA will be implemented automatically as a pop-up. To display it inline, you will need to add a code snippet to the relevant page.',
@@ -61,42 +65,32 @@ export default function CTAPreview( {
 		'Preview intended for visualization purpose only. Verify final appearance on your website.',
 		'google-site-kit'
 	),
-	popupContent,
-	inlineContent,
-	onTabChange,
-	className = '',
-}: Props ) {
-	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
+} ) => {
+	const [ activeTab, setActiveTab ] = useState< number >(
+		CTA_PREVIEW_TAB_POPUP
+	);
 
 	function handleTabChange( tabIndex: number ) {
 		setActiveTab( tabIndex );
-		onTabChange?.( tabIndex );
 	}
 
 	return (
-		<div
-			className={ classnames(
-				'googlesitekit-rrm-cta-preview',
-				className
-			) }
-		>
+		<div className="googlesitekit-rrm-cta-preview">
 			<div className="googlesitekit-rrm-cta-preview__header">
 				<Typography
 					as="h3"
-					type="label"
-					size="medium"
 					className="googlesitekit-rrm-cta-preview__title"
+					type={ TYPE_LABEL }
+					size={ SIZE_MEDIUM }
 				>
 					{ title }
 				</Typography>
-				<Typography
-					as="p"
-					type="body"
-					size="small"
+				<P
 					className="googlesitekit-rrm-cta-preview__description"
+					size={ SIZE_SMALL }
 				>
 					{ description }
-				</Typography>
+				</P>
 			</div>
 			<div className="googlesitekit-rrm-cta-preview__tabs">
 				<TabBar
@@ -123,54 +117,49 @@ export default function CTAPreview( {
 					</Tab>
 				</TabBar>
 			</div>
-			<div className="googlesitekit-rrm-cta-preview__stage">
-				{ activeTab === CTA_PREVIEW_TAB_POPUP && (
-					<div
-						className="googlesitekit-rrm-cta-preview__panel googlesitekit-rrm-cta-preview__panel--popup"
-						role="tabpanel"
-						aria-labelledby={ POPUP_TAB_ID }
-					>
-						<PopupBackgroundSVG
-							width="288"
-							height="350"
-							preserveAspectRatio="none"
-							className="googlesitekit-rrm-cta-preview__background-image"
-							aria-hidden="true"
-						/>
-						<div className="googlesitekit-rrm-cta-preview__panel-content">
-							{ popupContent }
-						</div>
+			{ activeTab === CTA_PREVIEW_TAB_POPUP && (
+				<div
+					aria-labelledby={ POPUP_TAB_ID }
+					className="googlesitekit-rrm-cta-preview__panel googlesitekit-rrm-cta-preview__panel--popup"
+					role="tabpanel"
+				>
+					<div className="googlesitekit-rrm-cta-preview__panel-content">
+						<PopupSVG aria-hidden="true" />
+						{ children && (
+							<div className="googlesitekit-rrm-cta-preview__panel-card">
+								{ children }
+							</div>
+						) }
 					</div>
-				) }
-				{ activeTab === CTA_PREVIEW_TAB_INLINE && (
-					<div
-						className="googlesitekit-rrm-cta-preview__panel googlesitekit-rrm-cta-preview__panel--inline"
-						role="tabpanel"
-						aria-labelledby={ INLINE_TAB_ID }
-					>
-						<InlineBackgroundSVG
-							width="288"
-							height="350"
-							preserveAspectRatio="none"
-							className="googlesitekit-rrm-cta-preview__background-image"
-							aria-hidden="true"
-						/>
-						<div className="googlesitekit-rrm-cta-preview__panel-content">
-							{ inlineContent }
-						</div>
+				</div>
+			) }
+			{ activeTab === CTA_PREVIEW_TAB_INLINE && (
+				<div
+					aria-labelledby={ INLINE_TAB_ID }
+					className="googlesitekit-rrm-cta-preview__panel googlesitekit-rrm-cta-preview__panel--inline"
+					role="tabpanel"
+				>
+					<div className="googlesitekit-rrm-cta-preview__panel-content">
+						<InlineStartSVG aria-hidden="true" />
+						{ children && (
+							<div className="googlesitekit-rrm-cta-preview__panel-card">
+								{ children }
+							</div>
+						) }
+						<InlineEndSVG aria-hidden="true" />
 					</div>
-				) }
-			</div>
+				</div>
+			) }
 			{ footer && (
-				<Typography
-					as="p"
-					type="body"
-					size="small"
+				<P
 					className="googlesitekit-rrm-cta-preview__footer"
+					size={ SIZE_SMALL }
 				>
 					{ footer }
-				</Typography>
+				</P>
 			) }
 		</div>
 	);
-}
+};
+
+export default CTAPreview;

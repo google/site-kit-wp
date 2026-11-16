@@ -26,10 +26,14 @@ import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fi
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
+	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
@@ -150,6 +154,121 @@ describe( 'StepPublicationSetup', () => {
 		expect(
 			getByRole( 'heading', { name: 'Connect your publication' } )
 		).toBeInTheDocument();
+	} );
+
+	describe( 'completing the step', () => {
+		mockLocation();
+		mockBrowserScrolling();
+
+		const settingsEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+		);
+
+		const ctasEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+		);
+
+		beforeEach( () => {
+			// Seed the settings required to enable the submit button.
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					postTypes: [ 'post' ],
+					snippetMode: 'post_types',
+				} );
+
+			providePublications( registry, [ publications[ 3 ] ] );
+
+			fetchMock.postOnce( settingsEndpoint, {} );
+		} );
+
+		async function connectPublication( onComplete: () => void ) {
+			const { getByRole } = render(
+				<StepPublicationSetup onComplete={ onComplete } />,
+				{ registry }
+			);
+
+			const submitButton = getByRole( 'button', {
+				name: 'Connect existing publication',
+			} );
+
+			await waitFor( () => expect( submitButton ).toBeEnabled() );
+
+			fireEvent.click( submitButton );
+		}
+
+		it( 'should wait for the CTAs to load in a CTA setup', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+			freezeFetch( ctasEndpoint );
+
+			const onComplete = jest.fn();
+
+			await connectPublication( onComplete );
+
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetched( ctasEndpoint );
+			} );
+
+			expect( onComplete ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should complete the step once the CTAs load in a CTA setup', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+			fetchMock.getOnce( ctasEndpoint, { body: [], status: 200 } );
+
+			const onComplete = jest.fn();
+
+			await connectPublication( onComplete );
+
+			await waitFor( () => {
+				expect( onComplete ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, ctasEndpoint );
+		} );
+
+		it( 'should complete the step when the CTA request fails, so the next step can show the error', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+			fetchMock.getOnce( ctasEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			const onComplete = jest.fn();
+
+			await connectPublication( onComplete );
+
+			await waitFor( () => {
+				expect( onComplete ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			expect( console ).toHaveErrored();
+		} );
+
+		it( 'should not request the CTAs outside a CTA setup', async () => {
+			global.location.href =
+				'http://example.com/?step=connect-publication';
+
+			const onComplete = jest.fn();
+
+			await connectPublication( onComplete );
+
+			await waitFor( () => {
+				expect( onComplete ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+		} );
 	} );
 
 	describe( 'event tracking', () => {

@@ -238,6 +238,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Sanitizes the express setup settings.
 	 *
 	 * @since 1.185.0
+	 * @since 1.192.0 Keeps only `configuredCTAs` entries that are arrays with string `type`, `state` and `displayName` values.
 	 *
 	 * @param array $option Settings array.
 	 * @return array Sanitized settings array.
@@ -254,7 +255,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				$option['configuredCTAs'] = array_filter(
 					$option['configuredCTAs'],
 					function ( $value, $key ) {
-						return is_string( $key ) && is_string( $value );
+						return is_string( $key )
+							&& is_array( $value )
+							&& isset( $value['type'], $value['state'], $value['displayName'] )
+							&& is_string( $value['type'] )
+							&& is_string( $value['state'] )
+							&& is_string( $value['displayName'] );
 					},
 					ARRAY_FILTER_USE_BOTH
 				);

@@ -29,15 +29,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import WidgetTabBar from '@/js/components/WidgetTabBar';
-import { useFeature } from '@/js/hooks/useFeature';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import whenActive from '@/js/util/when-active';
 import { LATEST_CONTENT_TAB_ID, TOP_CONTENT_TAB_ID } from './constants';
 import Footer from './Footer';
 import Header from './Header';
+import { useChangeContentTab } from './hooks/useChangeContentTab';
 import LatestContentHeader from './LatestContentHeader';
 import LatestContentTable from './LatestContentTable';
 import TopContentTable from './TopContentTable';
@@ -58,23 +58,13 @@ const ModulePopularPagesWidgetGA4: FC< ModulePopularPagesWidgetGA4Props > = ( {
 	Widget,
 	WidgetReportError,
 } ) => {
-	const freshDataEnabled = useFeature( 'freshData' );
-
 	const activeTabID = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getActiveContentTab(),
 		[]
 	);
 
-	const { setActiveContentTab } = useDispatch( MODULES_ANALYTICS_4 );
-
-	if ( ! freshDataEnabled ) {
-		return (
-			<Widget Header={ Header } Footer={ Footer } noPadding>
-				<TopContentTable WidgetReportError={ WidgetReportError } />
-			</Widget>
-		);
-	}
+	const changeContentTab = useChangeContentTab();
 
 	const isLatestContentActive = activeTabID === LATEST_CONTENT_TAB_ID;
 
@@ -103,7 +93,7 @@ const ModulePopularPagesWidgetGA4: FC< ModulePopularPagesWidgetGA4Props > = ( {
 			<WidgetTabBar
 				tabs={ tabs }
 				activeTabID={ activeTabID }
-				onTabChange={ setActiveContentTab }
+				onTabChange={ changeContentTab }
 			/>
 			<div role="tabpanel" aria-labelledby={ activeTabID }>
 				<ActiveTable WidgetReportError={ WidgetReportError } />

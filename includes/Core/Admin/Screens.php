@@ -225,11 +225,17 @@ final class Screens {
 	 * Gets the Screen instance for a given hook suffix.
 	 *
 	 * @since 1.11.0
+	 * @since n.e.x.t Returns null for an empty hook suffix.
 	 *
-	 * @param string $hook_suffix The hook suffix associated with the screen to retrieve.
+	 * @param string|null $hook_suffix The hook suffix associated with the screen to retrieve.
 	 * @return Screen|null Screen instance if available, otherwise null;
 	 */
 	public function get_screen( $hook_suffix ) {
+		// `$hook_suffix` is null outside admin screens, and PHP 8.5 deprecates null as an array key.
+		if ( empty( $hook_suffix ) ) {
+			return null;
+		}
+
 		return isset( $this->screens[ $hook_suffix ] ) ? $this->screens[ $hook_suffix ] : null;
 	}
 

@@ -145,15 +145,6 @@ Dismissing.scenario = {
 	postInteractionWait: 300,
 };
 
-export const MultipleCards = Template.bind( {} ) as Story< StoryArgs >;
-MultipleCards.storyName = 'Multiple Cards';
-MultipleCards.args = {
-	cards: [ { slug: 'dashboard-sharing' }, { slug: 'ads' } ],
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		provideFeatures( registry, [ TEST_FEATURE, TEST_MODULE_FEATURE ] );
-	},
-};
-
 export default {
 	title: 'Components/Feature Discovery/FeatureCard',
 	component: FeatureCard,

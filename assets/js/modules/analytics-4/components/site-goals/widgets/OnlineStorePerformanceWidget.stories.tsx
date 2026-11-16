@@ -180,6 +180,12 @@ function commonSetup( registry: WPDataRegistry ) {
 		.dispatch( CORE_USER )
 		.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
 
+	// Plugin conversion tracking is on: the breakdown notice waits for the
+	// setting, and the gathering badge needs it on.
+	registry
+		.dispatch( CORE_SITE )
+		.receiveGetConversionTrackingSettings( { enabled: true } );
+
 	provideKeyMetrics( registry );
 
 	const discoveryDimension = 'customEvent:googlesitekit_event_provider';
@@ -724,12 +730,7 @@ function seedTabbedBreakdown(
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
 
-	// The breakdown also needs plugin conversion tracking to be on for a user
-	// who can manage options.
 	provideUserCapabilities( registry );
-	registry
-		.dispatch( CORE_SITE )
-		.receiveGetConversionTrackingSettings( { enabled: true } );
 
 	// The breakdown custom dimensions exist and are done gathering, so neither
 	// the "enable breakdown" notice nor the gathering badge renders.
@@ -893,12 +894,7 @@ GatheringBreakdownData.args = {
 		provideAnalytics4MockReport( registry, engagementReportOptions );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		// The badge needs plugin conversion tracking to be on for a user who
-		// can manage options.
 		provideUserCapabilities( registry );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetConversionTrackingSettings( { enabled: true } );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,

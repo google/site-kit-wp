@@ -12,14 +12,20 @@ namespace Google\Site_Kit\Tests\Core\Admin;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Dashboard;
+use Google\Site_Kit\Core\Admin\Dashboard_Widget_Enabled;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
+use WP_REST_Request;
 
 /**
  * @group Admin
  */
 class DashboardTest extends TestCase {
+
+	use RestTestTrait;
 
 	/**
 	 * Admin user ID.
@@ -42,6 +48,11 @@ class DashboardTest extends TestCase {
 		parent::set_up();
 		$this->admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+	}
+
+	public function tear_down() {
+		parent::tear_down();
+		unset( $GLOBALS['wp_rest_server'] );
 	}
 
 	public function test_register() {
@@ -182,7 +193,130 @@ class DashboardTest extends TestCase {
 		$this->assertEquals( 0, $elements->length, 'Preview block CTA should not exist when both Analytics 4 and Search Console are connected.' );
 	}
 
+	public function test_register__widget_disabled_by_setting() {
+		update_option( Dashboard_Widget_Enabled::OPTION, false );
+
+		$this->assert_widget_not_registered();
+	}
+
+	public function test_register__widget_disabled_by_filter() {
+		add_filter( 'googlesitekit_show_wp_dashboard_widget', '__return_false' );
+
+		$this->assert_widget_not_registered();
+	}
+
+	public function test_register__rest_routes_and_preload_path() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$dashboard = new Dashboard( $this->context );
+		$dashboard->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'Dashboard REST routes should be registered.' );
+		$this->assertContains(
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/wp-dashboard-widget-settings',
+			apply_filters( 'googlesitekit_apifetch_preload_paths', array() ),
+			'The WordPress dashboard widget settings path should be preloaded.'
+		);
+	}
+
+	public function test_get_wp_dashboard_widget_settings() {
+		$this->register_dashboard_rest_routes();
+		wp_set_current_user( $this->admin_id );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/wp-dashboard-widget-settings' );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( array( 'enabled' => true ), $response->get_data(), 'The WordPress dashboard widget should be enabled by default.' );
+
+		update_option( Dashboard_Widget_Enabled::OPTION, false );
+
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( array( 'enabled' => false ), $response->get_data(), 'The response should reflect the stored setting.' );
+	}
+
+	public function test_get_wp_dashboard_widget_settings__requires_manage_options() {
+		$this->register_dashboard_rest_routes();
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/wp-dashboard-widget-settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Reading the setting should be forbidden for a user who cannot manage options.' );
+	}
+
+	public function test_set_wp_dashboard_widget_settings() {
+		$this->register_dashboard_rest_routes();
+		wp_set_current_user( $this->admin_id );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/wp-dashboard-widget-settings' );
+		$request->set_body_params( array( 'data' => array( 'enabled' => false ) ) );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( array( 'enabled' => false ), $response->get_data(), 'The response should contain the updated setting.' );
+		$this->assertFalse( get_option( Dashboard_Widget_Enabled::OPTION ), 'The setting should be saved as disabled.' );
+
+		$request->set_body_params( array( 'data' => array( 'enabled' => true ) ) );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( array( 'enabled' => true ), $response->get_data(), 'The response should contain the re-enabled setting.' );
+		$this->assertTrue( get_option( Dashboard_Widget_Enabled::OPTION ), 'The setting should be saved as enabled.' );
+	}
+
+	public function test_set_wp_dashboard_widget_settings__requires_manage_options() {
+		$this->register_dashboard_rest_routes();
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/wp-dashboard-widget-settings' );
+		$request->set_body_params( array( 'data' => array( 'enabled' => false ) ) );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Updating the setting should be forbidden for a user who cannot manage options.' );
+		$this->assertSame( 'not-set', get_option( Dashboard_Widget_Enabled::OPTION, 'not-set' ), 'The setting should not be saved.' );
+	}
+
+	public function test_set_wp_dashboard_widget_settings__invalid_data() {
+		$this->register_dashboard_rest_routes();
+		wp_set_current_user( $this->admin_id );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/wp-dashboard-widget-settings' );
+		$request->set_body_params( array( 'data' => array( 'enabled' => 123 ) ) );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status(), 'A non-boolean value should be rejected.' );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'A non-boolean value should return the invalid param code.' );
+	}
+
+	private function assert_widget_not_registered() {
+		global $wp_meta_boxes;
+
+		$this->setup_wp_dashboard();
+
+		$this->assertArrayNotHasKey( 'google_dashboard_widget', $wp_meta_boxes['dashboard']['normal']['core'] ?? array(), 'Dashboard widget should not be registered.' );
+		$this->assertFalse( wp_script_is( 'googlesitekit-wp-dashboard', 'enqueued' ), 'The dashboard widget script should not be enqueued.' );
+		$this->assertFalse( wp_style_is( 'googlesitekit-wp-dashboard-css', 'enqueued' ), 'The dashboard widget style should not be enqueued.' );
+	}
+
+	private function register_dashboard_rest_routes() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$dashboard = new Dashboard( $this->context );
+		$dashboard->register();
+		$this->register_rest_routes();
+	}
+
 	public function get_widget_markup( $modules = null ) {
+		global $wp_meta_boxes, $current_screen;
+
+		$this->setup_wp_dashboard( $modules );
+
+		ob_start();
+		$widget_callback = $wp_meta_boxes[ $current_screen->id ]['normal']['core']['google_dashboard_widget']['callback'];
+		$widget_callback();
+		$output = ob_get_clean();
+
+		return $output;
+	}
+
+	private function setup_wp_dashboard( $modules = null ) {
 		global $wp_meta_boxes, $current_screen;
 		// Clear out any registered meta boxes.
 		$wp_meta_boxes = array();
@@ -219,12 +353,5 @@ class DashboardTest extends TestCase {
 
 		require_once ABSPATH . 'wp-admin/includes/dashboard.php';
 		wp_dashboard_setup();
-
-		ob_start();
-		$widget_callback = $wp_meta_boxes[ $current_screen->id ]['normal']['core']['google_dashboard_widget']['callback'];
-		$widget_callback();
-		$output = ob_get_clean();
-
-		return $output;
 	}
 }

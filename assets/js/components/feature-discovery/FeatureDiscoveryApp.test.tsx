@@ -29,8 +29,14 @@ import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardShar
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import {
+	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import * as pendingSetupModule from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
@@ -42,6 +48,11 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import FeatureDiscoveryApp from './FeatureDiscoveryApp';
+
+const consumePendingSetupSpy = jest.spyOn(
+	pendingSetupModule,
+	'consumePendingSetup'
+);
 
 // The `core/ui` key that opens each of the existing panels mounted on the hub.
 const mockPanelUIKeys: Record< string, string > = {
@@ -80,6 +91,13 @@ jest.mock(
 			return <div>PDFExportRoot</div>;
 		}
 );
+jest.mock(
+	'@/js/components/notifications/SetupCTAOverlays',
+	() =>
+		function MockSetupCTAOverlays() {
+			return <div>SetupCTAOverlays</div>;
+		}
+);
 
 function provideHeader( registry: ReturnType< typeof createTestRegistry > ) {
 	provideModules( registry );
@@ -101,12 +119,18 @@ describe( 'FeatureDiscoveryApp', () => {
 		global.history.replaceState( {}, '', '/' );
 	} );
 
-	async function renderApp( pathname = '/whats-new' ) {
+	async function renderApp(
+		pathname = '/whats-new',
+		setupRegistry?: (
+			registry: ReturnType< typeof createTestRegistry >
+		) => void
+	) {
 		const registry = createTestRegistry();
 
 		global.history.replaceState( {}, '', `/#${ pathname }` );
 
 		provideHeader( registry );
+		setupRegistry?.( registry );
 
 		const result = render(
 			<HashRouter>
@@ -211,6 +235,38 @@ describe( 'FeatureDiscoveryApp', () => {
 		expect( getByText( 'PDFExportRoot' ) ).toBeInTheDocument();
 	} );
 
+	it( 'should mount the hub setup-CTA overlays only once pending setup has been consumed', async () => {
+		let resolveConsumePendingSetup: ( value: null ) => void;
+		consumePendingSetupSpy.mockReturnValue(
+			new Promise( ( resolve ) => {
+				resolveConsumePendingSetup = resolve;
+			} )
+		);
+
+		const registry = createTestRegistry();
+		global.history.replaceState( {}, '', '/#/whats-new' );
+		provideHeader( registry );
+
+		const { queryByText } = render(
+			<HashRouter>
+				<FeatureDiscoveryApp />
+			</HashRouter>,
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+		);
+
+		expect( queryByText( 'SetupCTAOverlays' ) ).not.toBeInTheDocument();
+
+		await act( async () => {
+			resolveConsumePendingSetup( null );
+			// Let the resolved promise's `.then()` flush.
+			await null;
+		} );
+
+		expect( queryByText( 'SetupCTAOverlays' ) ).toBeInTheDocument();
+
+		consumePendingSetupSpy.mockRestore();
+	} );
+
 	it.each( [
 		[ 'DashboardSharingDialog', SETTINGS_DIALOG ],
 		[
@@ -244,4 +300,128 @@ describe( 'FeatureDiscoveryApp', () => {
 			expect( queryByText( name ) ).not.toBeInTheDocument();
 		}
 	);
+
+	describe( 'success detection', () => {
+		// The `core/ui` key each test feature reads its connection state from,
+		// so that a test can set the feature up while the hub is mounted.
+		function getConnectedKey( slug: string ) {
+			return `test-connected-${ slug }`;
+		}
+
+		function provideTestFeatures(
+			registry: ReturnType< typeof createTestRegistry >,
+			slugs: string[]
+		) {
+			provideFeatures(
+				registry,
+				slugs.map( ( slug ) => ( {
+					slug,
+					title: `Feature ${ slug }`,
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						ctaLabel: 'Set up now',
+						isEnabled: ( select ) =>
+							select( CORE_UI ).getValue(
+								getConnectedKey( slug )
+							) === true,
+					},
+					successNotice: { title: `Feature ${ slug } is set up` },
+				} ) )
+			);
+		}
+
+		function setConnected(
+			registry: ReturnType< typeof createTestRegistry >,
+			slug: string,
+			isConnected: boolean
+		) {
+			act( () => {
+				registry
+					.dispatch( CORE_UI )
+					.setValue( getConnectedKey( slug ), isConnected );
+			} );
+		}
+
+		function getSucceededFeatures(
+			registry: ReturnType< typeof createTestRegistry >
+		) {
+			return registry
+				.select( CORE_UI )
+				.getValue( SUCCEEDED_FEATURES_UI_KEY );
+		}
+
+		it( 'should flag a feature that becomes connected while the hub is mounted', async () => {
+			const { registry } = await renderApp(
+				'/all-services',
+				( testRegistry ) =>
+					provideTestFeatures( testRegistry, [ 'one', 'two' ] )
+			);
+
+			expect( getSucceededFeatures( registry ) ).toBeUndefined();
+
+			setConnected( registry, 'one', true );
+
+			expect( getSucceededFeatures( registry ) ).toEqual( [ 'one' ] );
+
+			setConnected( registry, 'two', true );
+
+			expect( getSucceededFeatures( registry ) ).toEqual( [
+				'one',
+				'two',
+			] );
+		} );
+
+		it( 'should not flag a feature that is already connected when the hub loads', async () => {
+			const { registry } = await renderApp(
+				'/all-services',
+				( testRegistry ) => {
+					provideTestFeatures( testRegistry, [ 'one' ] );
+					testRegistry
+						.dispatch( CORE_UI )
+						.setValue( getConnectedKey( 'one' ), true );
+				}
+			);
+
+			expect( getSucceededFeatures( registry ) ).toBeUndefined();
+		} );
+
+		it( 'should not add a feature more than once', async () => {
+			const { registry } = await renderApp(
+				'/all-services',
+				( testRegistry ) =>
+					provideTestFeatures( testRegistry, [ 'one' ] )
+			);
+
+			setConnected( registry, 'one', true );
+			setConnected( registry, 'one', false );
+			setConnected( registry, 'one', true );
+
+			expect( getSucceededFeatures( registry ) ).toEqual( [ 'one' ] );
+		} );
+
+		it( 'should show the success notice in place of the card, and drop the feature once dismissed', async () => {
+			const { registry, getByRole, getByText, queryByText } =
+				await renderApp( '/all-services', ( testRegistry ) =>
+					provideTestFeatures( testRegistry, [ 'one' ] )
+				);
+
+			expect( getByText( 'Feature one' ) ).toBeInTheDocument();
+
+			setConnected( registry, 'one', true );
+
+			await waitFor( () => {
+				expect(
+					getByText( 'Feature one is set up' )
+				).toBeInTheDocument();
+			} );
+			expect( queryByText( 'Feature one' ) ).not.toBeInTheDocument();
+
+			fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+			expect(
+				queryByText( 'Feature one is set up' )
+			).not.toBeInTheDocument();
+			expect( getSucceededFeatures( registry ) ).toEqual( [] );
+		} );
+	} );
 } );

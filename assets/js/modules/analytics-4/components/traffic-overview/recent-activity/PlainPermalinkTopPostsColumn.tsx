@@ -31,9 +31,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { usePlainPermalinkTopPostsColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePlainPermalinkTopPostsColumn';
+import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
 import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 
 const PlainPermalinkTopPostsColumn: FC = () => {
+	const trackPostLinkClick = useTrackPostLinkClick( 'top-posts' );
+
 	const { rows, loading, error, retry, zeroState } =
 		usePlainPermalinkTopPostsColumn();
 
@@ -46,6 +49,7 @@ const PlainPermalinkTopPostsColumn: FC = () => {
 			error={ error }
 			onRetry={ retry }
 			zeroState={ zeroState }
+			onLinkClick={ trackPostLinkClick }
 			ErrorComponent={ RecentActivityErrorNotice }
 		/>
 	);

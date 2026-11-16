@@ -19,57 +19,37 @@
 /**
  * External dependencies
  */
-import { ElementType, ReactNode } from 'react';
+import { ComponentProps } from 'react';
 
 /**
  * Internal dependencies
  */
-import { Registry } from '@/js/googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
-import { EXPRESS_SETUP_CTA_FORMS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Story } from '@/js/types/Story';
-import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import Preview from './index';
 
-type Decorator = {
-	( StoryComponent: ElementType, { args }: Story ): ReactNode;
-};
+type Props = ComponentProps< typeof Preview >;
 
-function Template() {
-	return <Preview />;
+function Template( args: Props ) {
+	return <Preview { ...args } />;
 }
 
-export const Default = Template.bind( {} ) as Story;
+export const Default = Template.bind( {} ) as Story< Props >;
 Default.storyName = 'Default';
-Default.scenario = {};
+
+export const WithConsent = Template.bind( {} ) as Story< Props >;
+WithConsent.storyName = 'With Consent Enabled';
+WithConsent.args = {
+	consentEnabled: true,
+	consentText: 'I agree to receive newsletter updates.',
+};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/SetupCTANewsletterSignup/Preview',
 	component: Preview,
-	decorators: [
-		( ( StoryComponent, { args } ) => {
-			function setupRegistry( registry: Registry ) {
-				registry
-					.dispatch( CORE_FORMS )
-					.setValues( EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP, {
-						[ NEWSLETTER_SIGNUP_FORM.CTA_TITLE ]:
-							'Your form header',
-						[ NEWSLETTER_SIGNUP_FORM.CTA_BODY ]:
-							'Your newsletter sign-up form text',
-						[ NEWSLETTER_SIGNUP_FORM.CONSENT_ENABLED ]: true,
-						[ NEWSLETTER_SIGNUP_FORM.CONSENT_TEXT ]:
-							'Your consent text will show here',
-					} );
-
-				args?.setupRegistry?.( registry );
-			}
-
-			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<StoryComponent />
-				</WithRegistrySetup>
-			);
-		} ) as Decorator,
-	],
+	args: {
+		publicationName: 'Example Publication',
+		ctaTitle: 'Your form header',
+		ctaBody: 'Your newsletter sign-up form text',
+		consentEnabled: false,
+	},
 };

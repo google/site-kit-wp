@@ -24,16 +24,14 @@ import { Fragment, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { TextField } from 'googlesitekit-components';
 import { Story } from '@/js/types/Story';
 import DraggableList from './DraggableList';
 
 interface TemplateProps {
 	showHandle?: boolean;
-	withFields?: boolean;
 }
 
-function Template( { showHandle, withFields }: TemplateProps ) {
+function Template( { showHandle }: TemplateProps ) {
 	const [ items, setItems ] = useState( [
 		{ id: 'first', label: 'First answer' },
 		{ id: 'second', label: 'Second answer' },
@@ -53,30 +51,7 @@ function Template( { showHandle, withFields }: TemplateProps ) {
 
 				return (
 					<Fragment>
-						{ withFields ? (
-							<TextField
-								label="Answer"
-								maxLength={ 100 }
-								onChange={ ( event ) =>
-									setItems(
-										items.map( ( entry ) =>
-											entry.id === item.id
-												? {
-														...entry,
-														label: event.target
-															.value,
-												  }
-												: entry
-										)
-									)
-								}
-								value={ item.label }
-								outlined
-								showCharacterCounter
-							/>
-						) : (
-							item.label
-						) }
+						{ item.label }
 						{ ! showHandle && handle }
 					</Fragment>
 				);
@@ -91,9 +66,6 @@ Default.args = { showHandle: true };
 export const HandleInItem = Template.bind( {} ) as Story< TemplateProps >;
 HandleInItem.storyName = 'Handle in Item';
 HandleInItem.args = { showHandle: false };
-
-export const TextFields = Template.bind( {} ) as Story< TemplateProps >;
-TextFields.args = { showHandle: true, withFields: true };
 
 export default {
 	title: 'Components/DraggableList',

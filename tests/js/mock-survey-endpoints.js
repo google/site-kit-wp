@@ -18,6 +18,22 @@ export const surveyTriggerEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/survey-trigger'
 );
 
+/**
+ * Gets the trigger IDs of the requests to the survey trigger endpoint, in the
+ * order they were sent.
+ *
+ * @since 1.192.0
+ *
+ * @return {Array<string>} The trigger IDs.
+ */
+export function triggeredIDs() {
+	return fetchMock
+		.calls( surveyTriggerEndpoint )
+		.map(
+			( call ) => JSON.parse( String( call[ 1 ]?.body ) ).data.triggerID
+		);
+}
+
 export const surveyEventEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/survey-event'
 );

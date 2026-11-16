@@ -43,6 +43,9 @@ function Template() {
 			.receiveGetAdminBarSettings( { enabled: true } );
 		registry
 			.dispatch( CORE_SITE )
+			.receiveGetWPDashboardWidgetSettings( { enabled: true } );
+		registry
+			.dispatch( CORE_SITE )
 			.receiveGetConsentModeSettings( { enabled: false } );
 		registry.dispatch( CORE_SITE ).receiveGetConsentAPIInfo( {
 			hasConsentAPI: false,

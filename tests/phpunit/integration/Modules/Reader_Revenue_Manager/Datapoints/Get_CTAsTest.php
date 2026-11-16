@@ -19,6 +19,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\ListCtasResponse;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\SurveyConfig;
 
 /**
  * @group Modules
@@ -118,9 +119,7 @@ class Get_CTAsTest extends TestCase {
 	}
 
 	public function test_parse_response() {
-		$cta = new Cta();
-		$cta->setName( 'organizations/organization-1/publications/publication-1/ctas/9d2418415-ab3a' );
-		$cta->setType( 'NEWSLETTER_SIGNUP' );
+		$cta = $this->create_cta( '9d2418415-ab3a', Cta::STATE_ACTIVE );
 
 		$response = new ListCtasResponse();
 		$response->setCtas( array( $cta ) );
@@ -135,10 +134,93 @@ class Get_CTAsTest extends TestCase {
 		);
 		$this->assertSame(
 			array(
-				'9d2418415-ab3a' => 'newsletter-signup',
+				'9d2418415-ab3a' => array(
+					'type'        => 'newsletter-signup',
+					'state'       => 'ACTIVE',
+					'displayName' => 'Newsletter 9d2418415-ab3a',
+				),
 			),
 			$this->module->get_settings()->get()['configuredCTAs'],
 			'The CTA response should be synchronized with module settings using CTA IDs and express-setup slugs.'
+		);
+	}
+
+	public function test_parse_response__returns_survey_config() {
+		$survey_config = array(
+			'customMessage' => 'Help us learn more about you',
+			'questions'     => array(
+				array(
+					'customQuestion' => array(
+						'id'            => 'custom-question-1',
+						'displayText'   => 'Which section do you read most?',
+						'answerChoices' => array(
+							array( 'displayText' => 'News' ),
+							array( 'displayText' => 'Sport' ),
+						),
+					),
+				),
+				array( 'presetQuestion' => array( 'questionId' => 3 ) ),
+			),
+			'reportUrl'     => 'https://lookerstudio.google.com/reporting/1',
+		);
+
+		$cta = $this->create_cta( 'survey-cta', Cta::STATE_DRAFT );
+		$cta->setType( Cta::TYPE_SURVEY );
+		$cta->setDisplayName( 'Reader survey' );
+		$cta->setSurveyConfig( new SurveyConfig( $survey_config ) );
+
+		$response = new ListCtasResponse();
+		$response->setCtas( array( $cta ) );
+
+		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+
+		$this->assertEquals(
+			$survey_config,
+			json_decode( wp_json_encode( $ctas[0]->toSimpleObject() ), true )['surveyConfig'],
+			'The survey CTA should be returned with its configuration, including the response-only fields.'
+		);
+		$this->assertSame(
+			array(
+				'survey-cta' => array(
+					'type'        => 'survey',
+					'state'       => 'DRAFT',
+					'displayName' => 'Reader survey',
+				),
+			),
+			$this->module->get_settings()->get()['configuredCTAs'],
+			'The survey CTA should be synchronized with module settings using the survey slug.'
+		);
+	}
+
+	public function test_parse_response__excludes_deleted_ctas() {
+		$response = new ListCtasResponse();
+		$response->setCtas(
+			array(
+				$this->create_cta( 'active-cta', Cta::STATE_ACTIVE ),
+				$this->create_cta( 'deleted-cta', Cta::STATE_STATE_UNSPECIFIED ),
+				$this->create_cta( 'draft-cta', Cta::STATE_DRAFT ),
+			)
+		);
+
+		$ctas = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+
+		$this->assertSame(
+			array(
+				'organizations/organization-1/publications/publication-1/ctas/active-cta',
+				'organizations/organization-1/publications/publication-1/ctas/draft-cta',
+			),
+			array_map(
+				function ( Cta $cta ) {
+					return $cta->getName();
+				},
+				$ctas
+			),
+			'The response should contain only the active and draft CTAs.'
+		);
+		$this->assertSame(
+			array( 'active-cta', 'draft-cta' ),
+			array_keys( $this->module->get_settings()->get()['configuredCTAs'] ),
+			'The configured CTAs should contain only the active and draft CTAs.'
 		);
 	}
 
@@ -148,6 +230,16 @@ class Get_CTAsTest extends TestCase {
 			$this->datapoint->parse_response( new ListCtasResponse(), $this->get_data_request( array() ) ),
 			'The datapoint should return an empty array when the publication has no CTAs.'
 		);
+	}
+
+	private function create_cta( $cta_id, $state ) {
+		$cta = new Cta();
+		$cta->setName( "organizations/organization-1/publications/publication-1/ctas/{$cta_id}" );
+		$cta->setType( Cta::TYPE_NEWSLETTER_SIGNUP );
+		$cta->setState( $state );
+		$cta->setDisplayName( "Newsletter {$cta_id}" );
+
+		return $cta;
 	}
 
 	private function get_data_request( array $data ) {

@@ -51,7 +51,7 @@ abstract class User_Settings_Datapoint extends Datapoint implements Executable_D
 	 * Gets the user settings formatted for a REST response.
 	 *
 	 * @since 1.185.0
-	 * @since n.e.x.t Returns `completedExpressSetups` as an object.
+	 * @since 1.192.0 Returns `completedExpressSetups` as an object.
 	 *
 	 * @return array Reader Revenue Manager user settings.
 	 */

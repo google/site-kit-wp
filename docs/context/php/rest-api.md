@@ -68,13 +68,9 @@ final class REST_Routes {
 
 **Location**: `includes/Core/REST_API/REST_Route.php`
 
-The `REST_Route` class wraps WordPress REST route registration. A single endpoint
-may be passed as a flat array — `REST_Route` wraps it in a list automatically — and
-route-wide options (`args`, `schema`) are passed as the optional third argument.
-Note there is no `permission_callback` default in the endpoint defaults; each
-endpoint should define its own. Per-parameter defaults are filled in by
-`parse_param_arg()` (including WordPress's `rest_validate_request_arg` /
-`rest_sanitize_request_arg` callbacks).
+The `REST_Route` class wraps WordPress REST route registration. A single endpoint may be passed as a flat array, and `REST_Route` wraps it in a list. Route-wide options (`args`, `schema`) are passed as the optional third argument. The endpoint defaults have no `permission_callback`, so each endpoint should define its own.
+
+`parse_param_arg()` fills in the defaults of each argument. It gives each argument `REST_Route::validate_request_arg()` as its validate callback, and WordPress's `rest_sanitize_request_arg()` as its sanitize callback. `validate_request_arg()` runs WordPress's own `rest_validate_request_arg()` first. It then checks five keywords that WordPress before 5.5 or 5.6 skips: `required` inside an object, `minLength`, `minItems`, `maxItems` and `minProperties`. So a request that breaks one gets a 400 `rest_invalid_param` before the permission check and the callback, on every WordPress version Site Kit supports. An argument with a `validate_callback` of its own replaces that check. `REST_RoutesTest` fails where an argument schema uses another keyword that an older WordPress skips, such as `maxLength`.
 
 ```php
 final class REST_Route {
@@ -157,7 +153,7 @@ final class REST_Route {
             array(
                 'type'              => 'string',
                 'description'       => '',
-                'validate_callback' => 'rest_validate_request_arg',
+                'validate_callback' => array( self::class, 'validate_request_arg' ),
                 'sanitize_callback' => 'rest_sanitize_request_arg',
                 'required'          => false,
                 'default'           => null,
@@ -166,6 +162,12 @@ final class REST_Route {
     }
 }
 ```
+
+### Resource Schemas
+
+**Location**: `includes/Core/REST_API/Schema/`
+
+A route passes the schema of its response as the `schema` route option, a callable that returns the schema array. WordPress lists it in the REST index, at `/wp-json/google-site-kit/v1?context=help`. A shape that more than one route returns gets a class of its own in `Schema/`, with a static `get()`. Each of those routes passes that method, such as `array( String_List_Schema::class, 'get' )`. `REST_Modules_Controller` is older than `Schema/`. Its four routes that pass a schema, `list`, `activation`, `info` and `recover-modules`, each pass its private `get_module_schema()` through a closure.
 
 ## REST Controller Pattern
 
@@ -600,16 +602,9 @@ return new WP_Error(
 
 ### Common Error Patterns
 
-```php
-// Missing required parameter
-if ( empty( $required_param ) ) {
-    return new WP_Error(
-        'missing_required_param',
-        'Required parameter is missing.',
-        array( 'status' => 400 )
-    );
-}
+A required parameter goes in the route's `args` schema, not in a check of the callback. WordPress answers a missing top-level argument with a 400 `rest_missing_callback_param` before the callback runs. `REST_Route::validate_request_arg()` answers each value that breaks its schema with a 400 `rest_invalid_param`, before the callback too. A datapoint keeps its `Missing_Required_Param_Exception`, because `Module::get_data()` also runs it from PHP. There, a datapoint that is not a `Schema_Aware_Datapoint` gets no check of its parameters. A `Schema_Aware_Datapoint` gets WordPress's own check alone, which before 5.5 skips keywords such as `minLength`.
 
+```php
 // Invalid resource
 $item = $this->get_item( $id );
 if ( ! $item ) {

@@ -1,0 +1,172 @@
+# Keeps one pull request open that moves each pinned action to the newest
+# commit of the version its ratchet comment follows, and lists new major
+# versions, which stay a manual change.
+#
+# Ratchet fails when a version is younger than the bake delay, so each ratchet
+# constraint is resolved on its own, and one that is too young keeps its pin.
+
+name: Update Pinned Actions
+
+on:
+  schedule:
+    # Run workflow every Monday at 00:00
+    - cron: '0 0 * * 1'
+
+  workflow_dispatch:
+
+concurrency:
+  group: update-pinned-actions
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  BAKE_DELAY: 168h
+  BRANCH: update/pinned-actions
+  FILES: .github/workflows/*.yml .github/actions/*/action.yml
+  TITLE: Update Pinned GitHub Actions
+
+jobs:
+  update-pinned-actions:
+    name: Update pinned actions
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
+        with:
+          ref: develop
+          persist-credentials: false
+
+      # Lints the files and installs ratchet at $RUNNER_TEMP/ratchet. Excluded
+      # so the commit and `version` (v0.12.0) are only updated together, here
+      # and in workflow-validation.yml.
+      - uses: sethvargo/ratchet@9ca118155b0f79464185703a50da367e111107cd # ratchet:exclude
+        with:
+          version: v0.12.0
+          files: ${{ env.FILES }}
+
+      - name: Update pins and find new major versions
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          shopt -s nullglob
+          # shellcheck disable=SC2206 # FILES holds globs to expand.
+          files=( $FILES )
+          probe="$RUNNER_TEMP/probe.yml"
+          updates="$RUNNER_TEMP/updates.md"
+          majors="$RUNNER_TEMP/majors.md"
+          : > "$updates"
+          : > "$majors"
+
+          major() {
+            local version="${1#v}"
+            echo "${version%%.*}"
+          }
+
+          # Ratchet only reads relative paths.
+          ratchet() {
+            (cd "$RUNNER_TEMP" && ./ratchet "$1" -bake-delay "$BAKE_DELAY" probe.yml 2>&1)
+          }
+
+          while read -r constraint; do
+            action="${constraint%@*}"
+            ref="${constraint##*@}"
+            repo="$(cut -d/ -f1-2 <<< "$action")"
+            pattern="@[0-9a-f]{40} # ratchet:${constraint//./\\.}\$"
+
+            printf 'jobs:\n  probe:\n    steps:\n      - uses: %s\n' "$constraint" > "$probe"
+            if output="$(ratchet update)"; then
+              sha="$(grep -oE '[0-9a-f]{40}' "$probe")"
+              while read -r old; do
+                if [ "$old" != "$sha" ]; then
+                  echo "- \`$constraint\`: [\`${old:0:7}...${sha:0:7}\`](https://github.com/$repo/compare/$old...$sha)" >> "$updates"
+                fi
+              done < <(grep -hoE "$pattern" "${files[@]}" | cut -c2-41 | sort -u)
+              sed -i -E "s|$pattern|@$sha # ratchet:$constraint|" "${files[@]}"
+            elif [[ "$output" == *"younger than bake delay"* ]]; then
+              echo "::notice::Keeping the pin for $constraint: $output"
+            else
+              echo "::error::Could not update $constraint: $output"
+              exit 1
+            fi
+
+            printf 'jobs:\n  probe:\n    steps:\n      - uses: %s\n' "$constraint" > "$probe"
+            if output="$(ratchet upgrade)"; then
+              latest="$(grep -oE '# ratchet:[^ ]+' "$probe")"
+              latest="${latest##*@}"
+              if [[ "$(major "$ref")" =~ ^[0-9]+$ && "$(major "$latest")" =~ ^[0-9]+$ ]] && (( $(major "$latest") > $(major "$ref") )); then
+                tag="$(gh api "repos/$repo/releases/latest" --jq .tag_name)"
+                # Ratchet falls back to the highest tag when the latest release is not a version.
+                if [ "$(major "$tag")" = "$(major "$latest")" ]; then
+                  release="[$tag](https://github.com/$repo/releases/tag/$tag)"
+                else
+                  release="[$latest](https://github.com/$repo/releases/tag/$latest)"
+                fi
+                echo "| \`$repo\` | \`$ref\` | \`$latest\` | $release |" >> "$majors"
+              fi
+            else
+              echo "::notice::Skipping major versions of $constraint: $output"
+            fi
+          done < <(grep -hoE '@[0-9a-f]{40} # ratchet:[^ ]+$' "${files[@]}" | cut -d: -f2- | grep -vx exclude | sort -u)
+
+          {
+            echo "Moves each pinned action to the newest commit of the version its ratchet comment follows. Versions younger than the $BAKE_DELAY bake delay are left for a later run."
+            echo
+            echo "Review the commits before merging: for actions that follow a major tag, ratchet dates a version by its commit date, which can be forged."
+            echo
+            echo "### Pin updates"
+            echo
+            if [ -s "$updates" ]; then cat "$updates"; else echo "None."; fi
+            echo
+            echo "### Major versions available"
+            echo
+            if [ -s "$majors" ]; then
+              echo "Moving to a new major version is a manual change, so this pull request does not include them."
+              echo
+              echo "| Action | Follows | Latest | Release notes |"
+              echo "| --- | --- | --- | --- |"
+              sort -u "$majors"
+            else
+              echo "None."
+            fi
+            echo
+            echo "Generated by $RUN_URL."
+          } > "$RUNNER_TEMP/body.md"
+
+          git diff --stat
+
+      - name: Create, update or close the pull request
+        env:
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+        run: |
+          pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --base develop --head "$BRANCH" --author google-site-kit-bot --state open \
+            --json number,title --jq '.[] | select(.title == env.TITLE) | .number')"
+
+          if [ ! -s "$RUNNER_TEMP/updates.md" ] && [ ! -s "$RUNNER_TEMP/majors.md" ]; then
+            if [ -n "$pr" ]; then
+              gh pr close "$pr" --repo "$GITHUB_REPOSITORY" --delete-branch --comment "All pinned actions are up to date."
+            fi
+            exit 0
+          fi
+
+          # The commit is empty when only new major versions are found, so the
+          # pull request can still list them.
+          git add -- .github
+          git -c user.name=google-site-kit-bot -c user.email=google-site-kit-bot@google.com \
+            commit --quiet --allow-empty --message "Update pinned GitHub Actions."
+          git push --force "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git" "HEAD:refs/heads/$BRANCH"
+
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/body.md"
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" --base develop --head "$BRANCH" --title "$TITLE" --body-file "$RUNNER_TEMP/body.md"
+          fi

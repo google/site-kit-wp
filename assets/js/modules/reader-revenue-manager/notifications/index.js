@@ -19,7 +19,14 @@
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	ALL_SERVICES_TAB_PATH,
+	WHATS_NEW_TAB_PATH,
+} from '@/js/components/feature-discovery/constants';
+import {
+	VIEW_CONTEXT_FEATURE_DISCOVERY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '@/js/googlesitekit/constants';
 import {
 	requireCanActivateModule,
 	requireItemDismissed,
@@ -29,6 +36,7 @@ import {
 	requirePromptDismissed,
 	requireQueryArg,
 } from '@/js/googlesitekit/data-requirements';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -50,6 +58,9 @@ import RRMIntroductoryOverlayNotification, {
 } from '@/js/modules/reader-revenue-manager/components/dashboard/RRMIntroductoryOverlayNotification';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_FEATURE_DISCOVERY_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION_ID,
+	RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION_ID,
+	RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
@@ -147,6 +158,62 @@ function requireProductIDNotification( paymentOption ) {
 	);
 }
 
+/**
+ * Requires the hub visit to be a return from completed Reader Revenue
+ * Manager (full setup) feature setup, started on the Feature Discovery Hub.
+ *
+ * The Reader Revenue Manager feature confirms itself through its own setup
+ * surfaces here rather than the hub's generic success notice (see
+ * `assets/js/googlesitekit/notifications/register-defaults.js`).
+ *
+ * @since 1.192.0
+ *
+ * @return {function(): boolean} Whether the user has returned to the hub from Reader Revenue Manager's own setup or not.
+ */
+function requireFeatureDiscoveryReturnFromRRMSetup() {
+	return ( { select } ) =>
+		select( CORE_FEATURE_DISCOVERY ).getPendingSetup()?.featureSlug ===
+		MODULE_SLUG_READER_REVENUE_MANAGER;
+}
+
+/**
+ * Requires the pending setup's return tab to match the given hub tab.
+ *
+ * Both hub tabs' notification areas share a single queue, which only shows
+ * its first notification in the area it belongs to, so each top-of-list
+ * placement is limited to the tab the user is returned to.
+ *
+ * @since 1.192.0
+ *
+ * @param {string} returnTab Path of the hub tab the notification is shown on.
+ * @return {function(): boolean} Whether the pending setup's return tab matches the given tab or not.
+ */
+function requireFeatureDiscoveryReturnTab( returnTab ) {
+	return ( { select } ) =>
+		select( CORE_FEATURE_DISCOVERY ).getPendingSetup()?.returnTab ===
+		returnTab;
+}
+
+/**
+ * Requires the publication to be approved with no payment option chosen yet.
+ *
+ * This is the state in which, on the dashboard and on the hub alike, the
+ * "Publication approved" overlay takes over from the setup success
+ * notification.
+ *
+ * @since 1.192.0
+ *
+ * @return {function(): Promise<boolean>} Whether the publication is approved with no payment option chosen or not.
+ */
+function requirePublicationApprovedNoPaymentOption() {
+	return asyncRequireAll(
+		requirePublicationOnboardingState(
+			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+		),
+		requirePaymentOption( '' )
+	);
+}
+
 export const NOTIFICATIONS = {
 	[ RRM_SETUP_NOTIFICATION_ID ]: {
 		Component: ReaderRevenueManagerSetupCTABanner,
@@ -223,6 +290,57 @@ export const NOTIFICATIONS = {
 					requirePaymentOption( '' )
 				)
 			)
+		),
+	},
+	[ RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION_ID ]: {
+		Component: RRMSetupSuccessSubtleNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		isDismissible: false,
+		checkRequirements: asyncRequireAll(
+			requireFeatureDiscoveryReturnFromRRMSetup(),
+			requireFeatureDiscoveryReturnTab( WHATS_NEW_TAB_PATH ),
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			// The publication onboarding state must have been synced.
+			asyncRequire(
+				false,
+				requirePublicationOnboardingState( undefined )
+			),
+			asyncRequire( false, requirePublicationApprovedNoPaymentOption() )
+		),
+	},
+	[ RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION_ID ]: {
+		Component: RRMSetupSuccessSubtleNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_ALL_SERVICES_TOP,
+		groupID: NOTIFICATION_GROUPS.DEFAULT,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		isDismissible: false,
+		checkRequirements: asyncRequireAll(
+			requireFeatureDiscoveryReturnFromRRMSetup(),
+			requireFeatureDiscoveryReturnTab( ALL_SERVICES_TAB_PATH ),
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			// The publication onboarding state must have been synced.
+			asyncRequire(
+				false,
+				requirePublicationOnboardingState( undefined )
+			),
+			asyncRequire( false, requirePublicationApprovedNoPaymentOption() )
+		),
+	},
+	[ RRM_FEATURE_DISCOVERY_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION_ID ]: {
+		Component: PublicationApprovedOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		isDismissible: false,
+		checkRequirements: asyncRequireAll(
+			requireFeatureDiscoveryReturnFromRRMSetup(),
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			requirePublicationApprovedNoPaymentOption()
 		),
 	},
 	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {

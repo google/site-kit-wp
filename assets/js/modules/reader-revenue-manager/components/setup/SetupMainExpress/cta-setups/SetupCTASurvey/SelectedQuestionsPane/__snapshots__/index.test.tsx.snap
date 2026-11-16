@@ -1,0 +1,232 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SelectedQuestionsPane should render the questions in the order given, each with a drag handle and a remove action and no expand control 1`] = `
+<div>
+  <section
+    aria-labelledby="googlesitekit-rrm-selected-questions-pane-title-0"
+    class="googlesitekit-rrm-selected-questions-pane"
+  >
+    <div
+      class="googlesitekit-rrm-selected-questions-pane__header"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-rrm-selected-questions-pane__title googlesitekit-typography--label googlesitekit-typography--large"
+        id="googlesitekit-rrm-selected-questions-pane-title-0"
+        tabindex="-1"
+      >
+        Selected questions
+      </h3>
+      <p
+        class="googlesitekit-typography googlesitekit-rrm-selected-questions-pane__description googlesitekit-typography--body googlesitekit-typography--small"
+      >
+        You can remove or reorder your questions here
+      </p>
+    </div>
+    <ol
+      class="googlesitekit-draggable-list googlesitekit-rrm-selected-questions-pane__list"
+      data-drop-target-for-element="true"
+    >
+      <li
+        class="googlesitekit-draggable-list__item"
+        data-drop-target-for-element="true"
+        draggable="true"
+      >
+        <div
+          class="googlesitekit-rrm-survey-question-row"
+        >
+          <div
+            class="googlesitekit-rrm-survey-question-row__inner"
+          >
+            <div
+              class="googlesitekit-rrm-survey-question-row__actions"
+            >
+              <div
+                class="googlesitekit-action-button googlesitekit-draggable-list__handle"
+              >
+                <button
+                  aria-describedby="googlesitekit-draggable-list-instructions-0"
+                  aria-label="Move question 1"
+                  class="googlesitekit-action-button__button"
+                  type="button"
+                >
+                  <svg />
+                </button>
+              </div>
+              <div
+                class="googlesitekit-action-button googlesitekit-rrm-survey-question-row__action"
+              >
+                <button
+                  aria-describedby="googlesitekit-rrm-survey-question-row-action-0 googlesitekit-rrm-survey-question-row-question-2"
+                  aria-label="Remove question"
+                  class="googlesitekit-action-button__button"
+                  type="button"
+                >
+                  <svg />
+                </button>
+              </div>
+              <span
+                hidden=""
+                id="googlesitekit-rrm-survey-question-row-action-0"
+              />
+            </div>
+            <span
+              class="googlesitekit-typography googlesitekit-rrm-survey-question-row__question googlesitekit-typography--body googlesitekit-typography--small"
+              id="googlesitekit-rrm-survey-question-row-question-2"
+            >
+              What is your highest education level?
+            </span>
+          </div>
+        </div>
+      </li>
+      <li
+        class="googlesitekit-draggable-list__item"
+        data-drop-target-for-element="true"
+        draggable="true"
+      >
+        <div
+          class="googlesitekit-rrm-survey-question-row"
+        >
+          <div
+            class="googlesitekit-rrm-survey-question-row__inner"
+          >
+            <div
+              class="googlesitekit-rrm-survey-question-row__actions"
+            >
+              <div
+                class="googlesitekit-action-button googlesitekit-draggable-list__handle"
+              >
+                <button
+                  aria-describedby="googlesitekit-draggable-list-instructions-0"
+                  aria-label="Move question 2"
+                  class="googlesitekit-action-button__button"
+                  type="button"
+                >
+                  <svg />
+                </button>
+              </div>
+              <div
+                class="googlesitekit-action-button googlesitekit-rrm-survey-question-row__action"
+              >
+                <button
+                  aria-describedby="googlesitekit-rrm-survey-question-row-action-1 googlesitekit-rrm-survey-question-row-question-5"
+                  aria-label="Remove question"
+                  class="googlesitekit-action-button__button"
+                  type="button"
+                >
+                  <svg />
+                </button>
+              </div>
+              <span
+                hidden=""
+                id="googlesitekit-rrm-survey-question-row-action-1"
+              />
+            </div>
+            <span
+              class="googlesitekit-typography googlesitekit-rrm-survey-question-row__question googlesitekit-typography--body googlesitekit-typography--small"
+              id="googlesitekit-rrm-survey-question-row-question-5"
+            >
+              Which age group do you belong to?
+            </span>
+          </div>
+        </div>
+      </li>
+      <li
+        class="googlesitekit-draggable-list__item"
+        data-drop-target-for-element="true"
+        draggable="true"
+      >
+        <div
+          class="googlesitekit-rrm-survey-question-row"
+        >
+          <div
+            class="googlesitekit-rrm-survey-question-row__inner"
+          >
+            <div
+              class="googlesitekit-rrm-survey-question-row__actions"
+            >
+              <div
+                class="googlesitekit-action-button googlesitekit-draggable-list__handle"
+              >
+                <button
+                  aria-describedby="googlesitekit-draggable-list-instructions-0"
+                  aria-label="Move question 3"
+                  class="googlesitekit-action-button__button"
+                  type="button"
+                >
+                  <svg />
+                </button>
+              </div>
+              <div
+                class="googlesitekit-action-button googlesitekit-rrm-survey-question-row__action"
+              >
+                <button
+                  aria-describedby="googlesitekit-rrm-survey-question-row-action-2 googlesitekit-rrm-survey-question-row-question-8"
+                  aria-label="Remove question"
+                  class="googlesitekit-action-button__button"
+                  type="button"
+                >
+                  <svg />
+                </button>
+              </div>
+              <span
+                hidden=""
+                id="googlesitekit-rrm-survey-question-row-action-2"
+              />
+            </div>
+            <span
+              class="googlesitekit-typography googlesitekit-rrm-survey-question-row__question googlesitekit-typography--body googlesitekit-typography--small"
+              id="googlesitekit-rrm-survey-question-row-question-8"
+            >
+              How likely are you to recommend us?
+            </span>
+          </div>
+        </div>
+      </li>
+    </ol>
+    <span
+      class="screen-reader-text"
+      id="googlesitekit-draggable-list-instructions-0"
+    >
+      Use the Up and Down arrow keys to move this item.
+    </span>
+    <span
+      aria-atomic="true"
+      aria-live="polite"
+      class="screen-reader-text"
+    >
+      <span />
+    </span>
+  </section>
+</div>
+`;
+
+exports[`SelectedQuestionsPane should render the title, description and illustration with no list when there are no questions 1`] = `
+<div>
+  <section
+    aria-labelledby="googlesitekit-rrm-selected-questions-pane-title-0"
+    class="googlesitekit-rrm-selected-questions-pane"
+  >
+    <div
+      class="googlesitekit-rrm-selected-questions-pane__header"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-rrm-selected-questions-pane__title googlesitekit-typography--label googlesitekit-typography--large"
+        id="googlesitekit-rrm-selected-questions-pane-title-0"
+        tabindex="-1"
+      >
+        Selected questions
+      </h3>
+      <p
+        class="googlesitekit-typography googlesitekit-rrm-selected-questions-pane__description googlesitekit-typography--body googlesitekit-typography--small"
+      >
+        You can remove or reorder your questions here
+      </p>
+    </div>
+    <div
+      class="googlesitekit-rrm-selected-questions-pane__empty"
+    >
+      <svg />
+    </div>
+  </section>
+</div>
+`;

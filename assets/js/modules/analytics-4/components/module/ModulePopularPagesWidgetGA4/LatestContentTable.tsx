@@ -100,11 +100,6 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 
 	const viewOnlyDashboard = useViewOnly();
 
-	const isGatheringData: boolean | undefined = useInViewSelect(
-		( select: Select ) => select( MODULES_ANALYTICS_4 ).isGatheringData(),
-		[]
-	);
-
 	const dates = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
@@ -174,11 +169,7 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 		);
 	}
 
-	if (
-		recentContent === undefined ||
-		isGatheringData === undefined ||
-		! reportLoaded
-	) {
+	if ( recentContent === undefined || ! reportLoaded ) {
 		return <PreviewTable padding />;
 	}
 
@@ -315,6 +306,8 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 				...( reportError ? [] : metricColumns ),
 		  ];
 
+	// The posts come from WordPress, so the table lists them even while
+	// Analytics is gathering data, unlike the "Top content" table.
 	const reportTable = (
 		<ReportTable
 			className={ classnames(
@@ -327,7 +320,6 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 			rows={ rows }
 			columns={ columns }
 			zeroState={ NoPublishedContentMessage }
-			gatheringData={ isGatheringData }
 			tabbedLayout={ tabbedLayout }
 		/>
 	);

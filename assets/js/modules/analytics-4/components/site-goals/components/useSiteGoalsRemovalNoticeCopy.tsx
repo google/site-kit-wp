@@ -39,7 +39,7 @@ import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-dr
 export interface SiteGoalsRemovalNoticeCopy {
 	/** The notice heading, which names the removed widget. */
 	title: string;
-	/** The notice body, which ends with a `Learn more` link to the conversion tracking support page. */
+	/** The notice body, which ends with a `Learn more` link to the Site Goals supported plugins page. */
 	description: ReactNode;
 }
 
@@ -48,6 +48,7 @@ export interface SiteGoalsRemovalNoticeCopy {
  * lead generation widget.
  *
  * @since 1.190.0
+ * @since 1.192.0 Pointed the `Learn more` link to the Site Goals supported plugins page.
  *
  * @param {GoalType} goalType The goal type of the widget that shows the notice.
  * @return {SiteGoalsRemovalNoticeCopy} The `title` and `description`.
@@ -58,7 +59,7 @@ export function useSiteGoalsRemovalNoticeCopy(
 	const learnMoreURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getDocumentationLinkURL(
-				'plugin-conversion-tracking'
+				'site-goals-supported-plugins'
 			),
 		[]
 	) as string;

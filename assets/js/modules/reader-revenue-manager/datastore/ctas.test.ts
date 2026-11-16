@@ -70,6 +70,61 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 	const cta = {
 		name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/9d2418415-ab3a',
 		type: 'NEWSLETTER_SIGNUP',
+		state: 'ACTIVE',
+		displayName: 'Weekly newsletter',
+	};
+
+	const configuredCTA = {
+		type: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+		state: 'ACTIVE',
+		displayName: 'Weekly newsletter',
+	};
+
+	const surveyConfig = {
+		customMessage: 'Help us learn more about you',
+		questions: [
+			{
+				customQuestion: {
+					displayText: 'Which section do you read most?',
+					answerChoices: [
+						{ displayText: 'News' },
+						{ displayText: 'Sport' },
+					],
+				},
+			},
+			// eslint-disable-next-line sitekit/acronym-case -- An API field name.
+			{ presetQuestion: { questionId: 3, answerIds: [ 12, 10 ] } },
+		],
+	};
+
+	const createSurveyArgs = {
+		...params,
+		data: {
+			type: 'SURVEY',
+			state: 'DRAFT',
+			config: surveyConfig,
+		},
+	} as const;
+
+	const surveyCTA = {
+		name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/5c3027196-gh6d',
+		type: 'SURVEY',
+		state: 'DRAFT',
+		displayName: 'Survey',
+		surveyConfig: {
+			customMessage: surveyConfig.customMessage,
+			questions: [
+				{
+					customQuestion: {
+						...surveyConfig.questions[ 0 ].customQuestion,
+						id: 'custom-question-1',
+					},
+				},
+				surveyConfig.questions[ 1 ],
+			],
+			// eslint-disable-next-line sitekit/acronym-case -- An API field name.
+			reportUrl: 'https://lookerstudio.google.com/reporting/1',
+		},
 	};
 
 	const otherCTA = {
@@ -308,6 +363,68 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				).toThrow( 'config.title must be a string.' );
 			} );
 
+			it( 'should create a survey CTA when the rrmSurveyCTA feature flag is enabled', async () => {
+				enabledFeatures.add( 'rrmSurveyCTA' );
+
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: surveyCTA,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( { ctas: [ cta ], params } );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( createSurveyArgs );
+
+				expect( response ).toEqual( surveyCTA );
+				expect( error ).toBeUndefined();
+				expect( fetchMock ).toHaveFetched( createCTAEndpoint, {
+					body: {
+						data: createSurveyArgs,
+					},
+				} );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTAs( params )
+				).toEqual( [ cta, surveyCTA ] );
+			} );
+
+			it( 'should reject a survey CTA without a request when the rrmSurveyCTA feature flag is disabled', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.createCTA( createSurveyArgs )
+				).toThrow( 'data.type is not supported.' );
+
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'should set an action error when creating a survey CTA fails', async () => {
+				enabledFeatures.add( 'rrmSurveyCTA' );
+
+				const errorResponse = {
+					code: 'invalid_argument',
+					message: 'An active survey needs at least one question.',
+					data: { status: 400 },
+				};
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: errorResponse,
+					status: 400,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( createSurveyArgs );
+
+				expect( console ).toHaveErrored();
+				expect( response ).toBeUndefined();
+				expect( error ).toEqual( errorResponse );
+			} );
+
 			it( 'should validate the display name', () => {
 				expect( () =>
 					registry
@@ -410,13 +527,49 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSettings().configuredCTAs
 				).toEqual( {
-					'9d2418415-ab3a': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+					'9d2418415-ab3a': configuredCTA,
 				} );
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.haveSettingsChanged()
 				).toBe( false );
+			} );
+
+			it( 'should return survey CTAs with their configuration and synchronize them into settings', async () => {
+				enabledFeatures.add( 'rrmSurveyCTA' );
+
+				fetchMock.getOnce( ctasEndpoint, {
+					body: [ cta, surveyCTA ],
+					status: 200,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCTAs( params );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getCTAs( params );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTAs( params )
+				).toEqual( [ cta, surveyCTA ] );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings().configuredCTAs
+				).toEqual( {
+					'9d2418415-ab3a': configuredCTA,
+					'5c3027196-gh6d': {
+						type: EXPRESS_SETUP_CTAS.SURVEY,
+						state: 'DRAFT',
+						displayName: 'Survey',
+					},
+				} );
 			} );
 
 			it( 'should not synchronize configured CTAs when the feature is disabled', () => {
@@ -426,7 +579,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					.receiveGetSettings( {
 						...params,
 						configuredCTAs: {
-							existing: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+							existing: configuredCTA,
 						},
 					} );
 
@@ -439,7 +592,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSettings().configuredCTAs
 				).toEqual( {
-					existing: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+					existing: configuredCTA,
 				} );
 			} );
 
@@ -452,6 +605,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 							{
 								name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/unknown-type',
 								type: 'UNKNOWN_TYPE',
+								state: 'ACTIVE',
 							},
 						],
 						params,
@@ -462,7 +616,48 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSettings().configuredCTAs
 				).toEqual( {
-					'9d2418415-ab3a': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+					'9d2418415-ab3a': configuredCTA,
+				} );
+			} );
+
+			it( 'should skip CTAs without a supported state when synchronizing configured CTAs', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( {
+						ctas: [
+							cta,
+							{
+								name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/deleted',
+								type: 'NEWSLETTER_SIGNUP',
+								state: 'STATE_UNSPECIFIED',
+							},
+						],
+						params,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings().configuredCTAs
+				).toEqual( {
+					'9d2418415-ab3a': configuredCTA,
+				} );
+			} );
+
+			it( 'should store an empty display name for a CTA without one when synchronizing configured CTAs', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( {
+						ctas: [ { ...cta, displayName: undefined } ],
+						params,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings().configuredCTAs
+				).toEqual( {
+					'9d2418415-ab3a': { ...configuredCTA, displayName: '' },
 				} );
 			} );
 

@@ -115,13 +115,57 @@ export const WithConfiguredCTAs = Template.bind( {} );
 WithConfiguredCTAs.storyName = 'With Configured CTAs';
 WithConfiguredCTAs.args = {
 	configuredCTAs: {
-		'cta-1': 'newsletter-signup',
+		'cta-1': {
+			type: 'newsletter-signup',
+			state: 'ACTIVE',
+			displayName: 'Weekly newsletter',
+		},
+		'cta-2': {
+			type: 'newsletter-signup',
+			state: 'DRAFT',
+			displayName: '',
+		},
 	},
 };
 WithConfiguredCTAs.parameters = {
 	features: [ 'rrmExpressSetup' ],
 };
 WithConfiguredCTAs.scenario = {};
+
+export const WithSurveyCTAs = Template.bind( {} );
+WithSurveyCTAs.storyName = 'With Survey CTAs';
+WithSurveyCTAs.args = {
+	configuredCTAs: {
+		'cta-1': {
+			type: 'newsletter-signup',
+			state: 'ACTIVE',
+			displayName: 'Weekly newsletter',
+		},
+		'cta-2': {
+			type: 'survey',
+			state: 'ACTIVE',
+			displayName: 'Reader survey',
+		},
+		'cta-3': {
+			type: 'survey',
+			state: 'DRAFT',
+			displayName: '',
+		},
+	},
+};
+WithSurveyCTAs.parameters = {
+	features: [ 'rrmExpressSetup', 'rrmSurveyCTA' ],
+};
+WithSurveyCTAs.scenario = {};
+
+export const WithSurveyCTAsFeatureFlagDisabled = Template.bind( {} );
+WithSurveyCTAsFeatureFlagDisabled.storyName =
+	'With Survey CTAs (Feature Flag Disabled)';
+WithSurveyCTAsFeatureFlagDisabled.args = WithSurveyCTAs.args;
+WithSurveyCTAsFeatureFlagDisabled.parameters = {
+	features: [ 'rrmExpressSetup' ],
+};
+WithSurveyCTAsFeatureFlagDisabled.scenario = {};
 
 export const WithPolicyViolationPending = Template.bind( {} );
 WithPolicyViolationPending.storyName = 'With Policy Violation (Pending)';

@@ -94,7 +94,7 @@ export function getInsightReportArgs(
  *
  * The tab reads its total to tell whether Analytics has data for that range.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {Object} dateRange           The date range of the Recent activity tab.
  * @param {string} dateRange.startDate The first day of the date range.

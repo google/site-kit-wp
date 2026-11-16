@@ -10,7 +10,7 @@ jest.mock( '../../features/index', () => {
 /**
  * Internal dependencies
  */
-import { DATA_LAYER } from './constants';
+import { DATA_LAYER, SCRIPT_IDENTIFIER } from './constants';
 import createTracking from './createTracking';
 import { disableTracking, enableTracking, isTrackingEnabled } from './index';
 
@@ -78,6 +78,35 @@ describe( 'enableTracking and isTrackingEnabled', () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- used here as an arbitrary sentinel value, not its real declared shape.
 			( global as any )._googlesitekitBaseData.trackingEnabled
 		).toStrictEqual( false );
+	} );
+} );
+
+describe( 'trackEventOnce', () => {
+	afterEach( () => {
+		resetGlobals();
+		// The tracker adds the gtag script to the page, and a later tracker
+		// adds its own only where no gtag script is there yet.
+		document.querySelector( `script[${ SCRIPT_IDENTIFIER }]` )?.remove();
+	} );
+
+	it( 'should push one event for two calls with the same arguments', () => {
+		const push = jest.fn();
+		const { trackEventOnce } = createTracking(
+			{ trackingEnabled: true },
+			{ [ DATA_LAYER ]: { push } }
+		);
+
+		jest.useFakeTimers();
+		trackEventOnce( 'test-category', 'test-name', 'test-label' );
+		trackEventOnce( 'test-category', 'test-name', 'test-label' );
+		jest.runAllTimers();
+
+		// This data layer never calls `event_callback`, so the event warns that
+		// it took too long.
+		expect( console ).toHaveWarned();
+		expect(
+			push.mock.calls.filter( ( [ args ] ) => args[ 0 ] === 'event' )
+		).toHaveLength( 1 );
 	} );
 } );
 

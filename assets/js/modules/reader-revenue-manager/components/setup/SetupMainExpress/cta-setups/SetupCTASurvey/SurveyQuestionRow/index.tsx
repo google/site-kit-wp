@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, Ref } from 'react';
 
 /**
  * WordPress dependencies
@@ -48,6 +48,7 @@ import SurveyQuestionRowAction from './SurveyQuestionRowAction';
 import { SurveyQuestionAnswer } from './types';
 
 export interface SurveyQuestionRowProps {
+	actionRef?: Ref< HTMLButtonElement >;
 	answers?: SurveyQuestionAnswer[];
 	disabled?: boolean;
 	disabledMessage?: string;
@@ -65,6 +66,7 @@ export interface SurveyQuestionRowProps {
 }
 
 const SurveyQuestionRow: FC< SurveyQuestionRowProps > = ( {
+	actionRef,
 	answers,
 	disabled,
 	disabledMessage,
@@ -121,6 +123,7 @@ const SurveyQuestionRow: FC< SurveyQuestionRowProps > = ( {
 						isExpandable={ isExpandable }
 						onAdd={ onAdd }
 						onRemove={ onRemove }
+						ref={ actionRef }
 					/>
 				</div>
 

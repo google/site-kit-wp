@@ -109,18 +109,22 @@ export const SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN =
 export const SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED =
 	'view_site_goals_breakdown_enabled';
 
-export const SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE =
+// The namespace used when sending Site Goals feedback to the `core/user`
+// `sendFeedback()` feedback endpoint.
+export const SITE_GOALS_FEEDBACK_NAMESPACE = 'analytics';
+
+export const SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE =
 	'site_goals_widget_online_store';
-export const SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION =
+export const SITE_GOALS_FEEDBACK_GROUP_WIDGET_LEAD_GENERATION =
 	'site_goals_widget_lead_generation';
-export const SITE_GOALS_VOTE_ID_PANEL_ONLINE_STORE =
+export const SITE_GOALS_FEEDBACK_GROUP_PANEL_ONLINE_STORE =
 	'site_goals_primary_action_panel_online_store';
-export const SITE_GOALS_VOTE_ID_PANEL_LEAD_GENERATION =
+export const SITE_GOALS_FEEDBACK_GROUP_PANEL_LEAD_GENERATION =
 	'site_goals_primary_action_panel_lead_generation';
 
-export const SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE = {
-	[ GOAL_TYPES.ECOMMERCE ]: SITE_GOALS_VOTE_ID_PANEL_ONLINE_STORE,
-	[ GOAL_TYPES.LEAD ]: SITE_GOALS_VOTE_ID_PANEL_LEAD_GENERATION,
+export const SITE_GOALS_PANEL_FEEDBACK_GROUPS_BY_GOAL_TYPE = {
+	[ GOAL_TYPES.ECOMMERCE ]: SITE_GOALS_FEEDBACK_GROUP_PANEL_ONLINE_STORE,
+	[ GOAL_TYPES.LEAD ]: SITE_GOALS_FEEDBACK_GROUP_PANEL_LEAD_GENERATION,
 };
 
 // Placeholder for the downvote "Tell us more" Google Form URL. Replace it once

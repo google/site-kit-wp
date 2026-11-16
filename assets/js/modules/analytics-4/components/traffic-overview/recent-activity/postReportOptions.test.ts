@@ -30,19 +30,22 @@ import {
 } from './postReportOptions';
 
 describe( 'getPostReportArgs', () => {
-	it( 'should combine the permalink of the post with the date range from the day before its publish day to the reference date', () => {
+	it( 'should combine the permalink of the post and its URL on the reference site with the date range from the day before its publish day to the reference date', () => {
 		expect(
 			getPostReportArgs(
 				{
-					permalink: 'https://example.com/hello-world/',
+					permalink: 'https://staging.example.com/hello-world/',
 					// 12:30 on September 18 in the browser's time zone, so the test
 					// passes in any time zone.
 					publishedAt: new Date( 2026, 8, 18, 12, 30 ).toISOString(),
 				},
-				'2026-10-08'
+				'2026-10-08',
+				'https://staging.example.com/',
+				'https://example.com/'
 			)
 		).toEqual( {
-			permalink: 'https://example.com/hello-world/',
+			permalink: 'https://staging.example.com/hello-world/',
+			referencePermalink: 'https://example.com/hello-world/',
 			startDate: '2026-09-17',
 			endDate: '2026-10-08',
 		} );
@@ -54,6 +57,7 @@ describe( 'getVisitorsReportOptions', () => {
 		expect(
 			getVisitorsReportOptions( {
 				permalink: 'https://example.com/hello-world/',
+				referencePermalink: 'https://example.com/hello-world/',
 				startDate: '2026-09-17',
 				endDate: '2026-10-08',
 			} )
@@ -71,6 +75,7 @@ describe( 'getVisitorsReportOptions', () => {
 		expect(
 			getVisitorsReportOptions( {
 				permalink: 'https://example.com/?p=42',
+				referencePermalink: 'https://example.com/?p=42',
 				startDate: '2026-09-17',
 				endDate: '2026-10-08',
 			} ).dimensionFilters
@@ -83,6 +88,7 @@ describe( 'getTopChannelReportOptions', () => {
 		expect(
 			getTopChannelReportOptions( {
 				permalink: 'https://example.com/hello-world/',
+				referencePermalink: 'https://example.com/hello-world/',
 				startDate: '2026-09-17',
 				endDate: '2026-10-08',
 			} )
@@ -104,6 +110,7 @@ describe( 'getTopReferrerReportOptions', () => {
 		expect(
 			getTopReferrerReportOptions( {
 				permalink: 'https://example.com/hello-world/',
+				referencePermalink: 'https://example.com/hello-world/',
 				startDate: '2026-09-17',
 				endDate: '2026-10-08',
 			} )
@@ -128,6 +135,7 @@ describe( 'getEngagementReportOptions', () => {
 		expect(
 			getEngagementReportOptions( {
 				permalink: 'https://example.com/hello-world/',
+				referencePermalink: 'https://example.com/hello-world/',
 				startDate: '2026-09-17',
 				endDate: '2026-10-08',
 			} )
@@ -149,6 +157,7 @@ describe( 'getPurchasesReportOptions', () => {
 		expect(
 			getPurchasesReportOptions( {
 				permalink: 'https://example.com/hello-world/',
+				referencePermalink: 'https://example.com/hello-world/',
 				startDate: '2026-09-17',
 				endDate: '2026-10-08',
 			} )
@@ -169,6 +178,7 @@ describe( 'getPurchasesReportOptions', () => {
 		expect(
 			getPurchasesReportOptions( {
 				permalink: 'https://example.com/?p=42',
+				referencePermalink: 'https://example.com/?p=42',
 				startDate: '2026-09-17',
 				endDate: '2026-10-08',
 			} ).dimensionFilters
@@ -180,10 +190,11 @@ describe( 'getPurchasesReportOptions', () => {
 } );
 
 describe( 'getTopKeywordReportOptions', () => {
-	it( 'should request the top search query for the post URL', () => {
+	it( 'should request the top search query for the post URL on the reference site', () => {
 		expect(
 			getTopKeywordReportOptions( {
-				permalink: 'https://example.com/hello-world/',
+				permalink: 'https://staging.example.com/hello-world/',
+				referencePermalink: 'https://example.com/hello-world/',
 				startDate: '2026-09-17',
 				endDate: '2026-10-08',
 			} )

@@ -799,6 +799,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.30.0
 	 * @since 1.191.0 Registers `GET:plain-permalink-top-posts` with the `freshData` feature flag on.
+	 * @since 1.192.0 Always registers `GET:plain-permalink-top-posts`.
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -1106,22 +1107,19 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			);
 		}
 
-		// TODO: #13568 -- Remove the `freshData` check when the flag is removed.
-		if ( Feature_Flags::enabled( 'freshData' ) ) {
-			$this->datapoints['GET:plain-permalink-top-posts'] = new Get_Plain_Permalink_Top_Posts(
-				array(
-					'service'           => function () {
-						return $this->get_service( 'analyticsdata' );
-					},
-					'settings'          => $this->get_settings(),
-					'context'           => $this->context,
-					'is_shared_request' => function ( Datapoint $datapoint ) {
-						return $this->is_shared_datapoint_request( $datapoint );
-					},
-					'top_posts'         => new Plain_Permalink_Top_Posts( $this->context ),
-				)
-			);
-		}
+		$this->datapoints['GET:plain-permalink-top-posts'] = new Get_Plain_Permalink_Top_Posts(
+			array(
+				'service'           => function () {
+					return $this->get_service( 'analyticsdata' );
+				},
+				'settings'          => $this->get_settings(),
+				'context'           => $this->context,
+				'is_shared_request' => function ( Datapoint $datapoint ) {
+					return $this->is_shared_datapoint_request( $datapoint );
+				},
+				'top_posts'         => new Plain_Permalink_Top_Posts( $this->context ),
+			)
+		);
 
 		return $this->datapoints;
 	}

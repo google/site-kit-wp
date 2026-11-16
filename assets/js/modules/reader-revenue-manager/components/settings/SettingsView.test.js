@@ -193,7 +193,11 @@ describe( 'SettingsView', () => {
 			snippetMode: 'post_types',
 			postTypes: [ 'post' ],
 			configuredCTAs: {
-				'cta-1': 'newsletter-signup',
+				'cta-1': {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: 'Weekly newsletter',
+				},
 			},
 		};
 
@@ -215,19 +219,25 @@ describe( 'SettingsView', () => {
 			await waitForRegistry();
 
 			expect( getByText( 'CTAs' ) ).toBeInTheDocument();
-			expect(
-				getByText( 'Newsletter sign-up form' )
-			).toBeInTheDocument();
+			expect( getByText( 'Weekly newsletter' ) ).toBeInTheDocument();
 		} );
 
-		it( 'should display the configured CTAs as a comma-separated list', async () => {
+		it( 'should display the configured CTAs as a comma-separated list, using the type label for a CTA without a display name', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
 					...settings,
 					configuredCTAs: {
-						'cta-1': 'newsletter-signup',
-						'cta-2': 'newsletter-signup',
+						'cta-1': {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+						'cta-2': {
+							type: 'newsletter-signup',
+							state: 'DRAFT',
+							displayName: '',
+						},
 					},
 				} );
 
@@ -239,8 +249,82 @@ describe( 'SettingsView', () => {
 			await waitForRegistry();
 
 			expect(
-				getByText( 'Newsletter sign-up form, Newsletter sign-up form' )
+				getByText( 'Weekly newsletter, Newsletter sign-up form' )
 			).toBeInTheDocument();
+		} );
+
+		it( 'should display survey CTAs by name, or as "Survey" without one, alongside newsletter CTAs when the `rrmSurveyCTA` feature flag is enabled', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...settings,
+					configuredCTAs: {
+						'cta-1': {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+						'cta-2': {
+							type: 'survey',
+							state: 'ACTIVE',
+							displayName: 'Reader survey',
+						},
+						'cta-3': {
+							type: 'survey',
+							state: 'DRAFT',
+							displayName: '',
+						},
+					},
+				} );
+
+			const { getByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmExpressSetup', 'rrmSurveyCTA' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'Weekly newsletter, Reader survey, Survey' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not display saved survey CTAs when the `rrmSurveyCTA` feature flag is disabled', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...settings,
+					configuredCTAs: {
+						'cta-1': {
+							type: 'newsletter-signup',
+							state: 'ACTIVE',
+							displayName: 'Weekly newsletter',
+						},
+						'cta-2': {
+							type: 'survey',
+							state: 'ACTIVE',
+							displayName: 'Reader survey',
+						},
+						'cta-3': {
+							type: 'survey',
+							state: 'DRAFT',
+							displayName: '',
+						},
+					},
+				} );
+
+			const { getByText, queryByText, waitForRegistry } = render(
+				<SettingsView />,
+				{
+					registry,
+					features: [ 'rrmExpressSetup' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( 'Weekly newsletter' ) ).toBeInTheDocument();
+			expect( queryByText( /survey/i ) ).not.toBeInTheDocument();
 		} );
 
 		it( 'should not display the CTAs item when there are no configured CTAs', async () => {

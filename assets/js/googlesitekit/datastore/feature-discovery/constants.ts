@@ -33,6 +33,11 @@ import {
 
 export const CORE_FEATURE_DISCOVERY = 'core/feature-discovery';
 
+// The `core/ui` key holding the slugs of features that were set up without
+// leaving the hub and are showing their success notice in place of their card.
+// Session-only, as `core/ui` values are never persisted.
+export const SUCCEEDED_FEATURES_UI_KEY = 'feature-discovery-succeeded-features';
+
 export const FEATURE_CATEGORIES = {
 	AUDIENCE: 'audience',
 	ENGAGEMENT: 'engagement',
@@ -100,4 +105,13 @@ export const FEATURE_RELEVANCY_REASONS = {
 	ALREADY_USING: 'already_using',
 	TOO_COMPLICATED: 'too_complicated',
 	SOMETHING_ELSE: 'something_else',
+} as const;
+
+// The namespace and keys used when sending Feature Discovery Hub relevancy
+// feedback to the `core/user` `sendFeedback()` feedback endpoint.
+export const FEATURE_HUB_FEEDBACK_NAMESPACE = 'feature_hub';
+
+export const FEATURE_RELEVANCY_FEEDBACK_KEYS = {
+	VOTE_REASON: 'vote_reason',
+	DISMISS_REASON: 'dismiss_reason',
 } as const;

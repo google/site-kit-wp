@@ -21,7 +21,7 @@
  */
 import { PropTypes } from 'prop-types';
 import Joyride, { EVENTS } from 'react-joyride';
-import { useInterval } from 'react-use';
+import { useInterval, useUnmount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -126,6 +126,14 @@ export default function JoyrideTooltip( props ) {
 			}
 		};
 	}, [ isMobileTablet ] );
+
+	// Joyride doesn't report the end of the tour when it unmounts, which happens
+	// when the tooltip is hidden from outside, for example by opening the help menu.
+	useUnmount( () => {
+		global.document.body.classList.remove(
+			'googlesitekit-showing-tooltip'
+		);
+	} );
 
 	// Joyride expects the step's target to be in the DOM immediately
 	// so we need to wait for it in some cases, e.g. loading data.

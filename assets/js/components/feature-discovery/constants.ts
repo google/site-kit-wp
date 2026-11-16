@@ -37,6 +37,11 @@ export const HUB_LAUNCH_VERSION = '1.188.0'; // Will be updated in issue #13422
 export const FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY =
 	'feature-detail-panel-feature-slug';
 
+// Holds the slug of a feature whose setup was requested from the detail panel,
+// for the feature's own setup component in the list to pick up.
+export const FEATURE_DISCOVERY_SETUP_REQUEST_KEY =
+	'feature-discovery-setup-request';
+
 // Maps each module to the one feature whose setup is a plain activation of it,
 // so that a module's setup completion can tell whether it was started from the
 // hub for that feature. This fixed one-to-one lookup is a deliberate choice: a

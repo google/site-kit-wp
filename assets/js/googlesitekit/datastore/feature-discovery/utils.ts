@@ -19,8 +19,7 @@
 /**
  * Internal dependencies
  */
-import { VoteDirection } from '@/js/components/surveys/constants';
-import { FEATURE_RELEVANCY_REASONS } from './constants';
+import { VoteDirection } from '@/js/components/feedback/constants';
 
 /**
  * Gets the feature dismissal key for a feature.
@@ -44,6 +43,20 @@ export function getFeatureDismissalKey( slug: string ) {
  */
 export function getFeatureIncompleteSetupReminderKey( slug: string ) {
 	return `feature-discovery-incomplete-setup-${ slug }`;
+}
+
+/**
+ * Returns whether the provided key is a feature incomplete setup reminder key.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} key Key to check.
+ * @return {boolean} Whether the provided key is a feature incomplete setup reminder key.
+ */
+export function isFeatureIncompleteSetupReminderKey( key: string ) {
+	const prefix = getFeatureIncompleteSetupReminderKey( '' );
+
+	return key.startsWith( prefix );
 }
 
 /**
@@ -71,19 +84,16 @@ export function getFeatureSetupSurveyTriggerID( slug: string ) {
 }
 
 /**
- * Gets the survey trigger ID for a feature relevancy reason.
+ * Gets the feedback group for a feature's relevancy feedback.
  *
  * @since 1.189.0
+ * @since 1.192.0 Renamed from `getFeatureRelevancyTriggerID()`, dropped the `reason` segment (now sent as the feedback `value`), and returns a feedback group instead of a survey trigger ID.
  *
- * @param {string} slug   Feature slug.
- * @param {string} reason Feature relevancy reason.
- * @return {string} Survey trigger ID.
+ * @param {string} slug Feature slug.
+ * @return {string} Feedback group.
  */
-export function getFeatureRelevancyTriggerID(
-	slug: string,
-	reason: typeof FEATURE_RELEVANCY_REASONS[ keyof typeof FEATURE_RELEVANCY_REASONS ]
-) {
-	return `feedback:feature_relevancy_${ slug }:${ reason }`;
+export function getFeatureRelevancyFeedbackGroup( slug: string ) {
+	return `feature_relevancy_${ slug }`;
 }
 
 /**

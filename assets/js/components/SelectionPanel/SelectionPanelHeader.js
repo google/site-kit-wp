@@ -48,6 +48,7 @@ export default function SelectionPanelHeader( {
 					aria-label={ __( 'Close', 'google-site-kit' ) }
 					className="googlesitekit-selection-panel-header__close"
 					onClick={ onCloseClick }
+					type="button"
 					linkButton
 				>
 					<CloseIcon width="15" height="15" />

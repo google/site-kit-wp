@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * A day that `GoogleChart` marks with a dashed line, and the tooltip on the
  * line's icon.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  */
 export interface DateMarker {
 	/** The day the marker sits on, as `YYYY-MM-DD`. */
@@ -37,7 +37,7 @@ export interface DateMarker {
 /**
  * Gets the date marker for the day the Analytics property was created.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {string} [markerDate] Optional. The day the property was created, as `YYYY-MM-DD`, when the chart plots that day.
  * @return {Array.<Object>|undefined} The marker `GoogleChart` draws, or `undefined` when there is no day to mark.

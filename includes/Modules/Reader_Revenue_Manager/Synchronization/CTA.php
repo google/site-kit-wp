@@ -33,10 +33,12 @@ class CTA {
 	 * Values must match `EXPRESS_SETUP_CTAS` in the JS datastore.
 	 *
 	 * @since 1.188.0
+	 * @since n.e.x.t Added the survey CTA type.
 	 * @var array<string, string>
 	 */
 	const CTA_TYPE_SLUGS = array(
 		WCP_CTA::TYPE_NEWSLETTER_SIGNUP => 'newsletter-signup',
+		WCP_CTA::TYPE_SURVEY            => 'survey',
 	);
 
 	/**
@@ -62,6 +64,7 @@ class CTA {
 	 * Synchronizes CTAs with the module settings.
 	 *
 	 * @since 1.188.0
+	 * @since 1.192.0 Stores the type, state and display name of each CTA.
 	 *
 	 * @param WCP_CTA[] $ctas WCP CTA objects.
 	 * @return void No return value.
@@ -80,7 +83,11 @@ class CTA {
 				continue;
 			}
 
-			$configured_ctas[ $cta_id ] = self::CTA_TYPE_SLUGS[ $cta->getType() ];
+			$configured_ctas[ $cta_id ] = array(
+				'type'        => self::CTA_TYPE_SLUGS[ $cta->getType() ],
+				'state'       => (string) $cta->getState(),
+				'displayName' => (string) $cta->getDisplayName(),
+			);
 		}
 
 		$this->settings->merge( array( 'configuredCTAs' => $configured_ctas ) );

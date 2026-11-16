@@ -209,7 +209,7 @@ function requireModuleDataAvailable( slug ) {
  * first notification in the area it belongs to, so each placement is limited
  * to the tab the user is returned to.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {string} returnTab Path of the hub tab the notification is shown on.
  * @return {function(): Promise<boolean>} Whether the user has returned to the tab from a completed feature setup or not.
@@ -223,6 +223,7 @@ function requireFeatureDiscoverySetupSuccess( returnTab ) {
 		}
 
 		const { featureSlug } = pendingSetup;
+
 		const feature = select( CORE_FEATURE_DISCOVERY ).getFeature(
 			featureSlug
 		);

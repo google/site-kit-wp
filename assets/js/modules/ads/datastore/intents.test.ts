@@ -160,7 +160,7 @@ describe( 'modules/ads intents', () => {
 				} );
 			} );
 
-			it( 'should report success with an empty list of conversion events when the site tracks none', async () => {
+			it( 'should leave out the tracked conversion events when the site tracks none', async () => {
 				provideActiveAdsModule();
 				provideEnabledConversionTracking();
 				registry.dispatch( MODULES_ADS ).receiveModuleData( {
@@ -180,7 +180,7 @@ describe( 'modules/ads intents', () => {
 
 				expect( result ).toEqual( {
 					returnURL:
-						'https://ads.google.com/aw/conversions/sitekit?intent_code=abc123&sitekit_status=success&tracked_conversion_ids=',
+						'https://ads.google.com/aw/conversions/sitekit?intent_code=abc123&sitekit_status=success',
 				} );
 			} );
 

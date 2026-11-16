@@ -1,0 +1,199 @@
+/**
+ * Actions component for SetupUsingProxyWithSignIn.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { FC, MouseEvent, ReactNode } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+} from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
+
+/**
+ * Internal dependencies
+ */
+import { Button, SpinnerButton } from 'googlesitekit-components';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import OptIn from '@/js/components/OptIn';
+import ResetButton from '@/js/components/ResetButton';
+import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constants';
+import StepHint from '@/js/components/setup/StepHint';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ForwardableParams } from '@/js/hooks/useForwardableParams';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+
+interface ActionsProps {
+	proxySetupURL?: string;
+	onButtonClick: (
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) => void;
+	forwardableParams?: ForwardableParams;
+	complete: boolean;
+	inProgressFeedback?: ReactNode;
+	ctaFeedback?: ReactNode;
+	isSettingUp?: boolean;
+}
+
+const Actions: FC< ActionsProps > = ( {
+	proxySetupURL,
+	onButtonClick,
+	forwardableParams = {},
+	complete,
+	inProgressFeedback,
+	ctaFeedback,
+	isSettingUp = false,
+} ) => {
+	const viewContext = useViewContext();
+	const { dismissItem } = useDispatch( CORE_USER );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const isSecondAdmin = useSelect(
+		( select: Select ) => select( CORE_SITE ).hasConnectedAdmins(),
+		[]
+	);
+	const hasMultipleAdmins = useSelect(
+		( select: Select ) => select( CORE_SITE ).hasMultipleAdmins(),
+		[]
+	);
+	const hasViewableModules = useSelect(
+		( select: Select ) =>
+			!! select( CORE_USER ).getViewableModules()?.length,
+		[]
+	);
+	const isResettable = useSelect(
+		( select: Select ) => select( CORE_SITE ).isResettable(),
+		[]
+	);
+	const dashboardURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getAdminURL(
+				'googlesitekit-dashboard',
+				forwardableParams
+			),
+		[ forwardableParams ]
+	);
+
+	const goToSharedDashboard = useCallback( () => {
+		Promise.all( [
+			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
+			trackEvent( viewContext, 'setup_flow_v3_skip_to_viewonly' ),
+		] ).finally( () => {
+			const redirectURL = addQueryArgs( dashboardURL, {
+				notification:
+					forwardableParams.notification || 'initial_setup_success',
+			} );
+
+			navigateTo( redirectURL );
+		} );
+	}, [
+		dashboardURL,
+		forwardableParams.notification,
+		dismissItem,
+		navigateTo,
+		viewContext,
+	] );
+
+	const learnMoreLink = useSelect( ( select: Select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'why-connect-google-account'
+		);
+	}, [] );
+
+	const optInProps = { trackEventAction: 'setup_flow_v3_tracking_optin' };
+
+	return (
+		<Fragment>
+			{ ctaFeedback }
+
+			<OptIn { ...optInProps } />
+
+			<div className="googlesitekit-start-setup-wrap">
+				{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
+				<SpinnerButton
+					className="googlesitekit-start-setup"
+					href={ proxySetupURL }
+					onClick={ onButtonClick }
+					disabled={ ! complete || isSettingUp }
+					isSaving={ isSettingUp }
+				>
+					{ _x(
+						'Sign in with Google',
+						'Prompt to authenticate Site Kit with Google Account',
+						'google-site-kit'
+					) }
+				</SpinnerButton>
+				{ inProgressFeedback }
+				{ hasMultipleAdmins &&
+					isSecondAdmin &&
+					hasViewableModules &&
+					complete && (
+						// @ts-expect-error - The `Button` component is not typed yet.
+						<Button onClick={ goToSharedDashboard } tertiary>
+							{ __(
+								'Skip sign-in and view limited dashboard',
+								'google-site-kit'
+							) }
+						</Button>
+					) }
+				{ ! isSecondAdmin && isResettable && complete && (
+					// @ts-expect-error - The `ResetButton` component is not typed yet.
+					<ResetButton />
+				) }
+			</div>
+			<StepHint
+				leadingText={ __( 'Why is this required?', 'google-site-kit' ) }
+				tooltipText={ createInterpolateElement(
+					__(
+						'Site Kit needs to connect to your Google account to access data from Google products like Search Console or Analytics and display it on your dashboard. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								href={ learnMoreLink }
+								onClick={ () => {
+									trackEvent(
+										viewContext,
+										'click_learn_more_link',
+										'cta_tooltip'
+									);
+								} }
+								external
+								hideExternalIndicator
+							/>
+						),
+					}
+				) }
+			/>
+		</Fragment>
+	);
+};
+
+export default Actions;

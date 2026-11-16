@@ -30,6 +30,7 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -59,7 +60,12 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
+
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2026-10-08' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
@@ -85,29 +91,12 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
-	it( 'should render the Top content card without tabs when freshData is disabled', async () => {
-		const { container, queryAllByRole, getByText, waitForRegistry } =
-			render(
-				<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
-				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-			);
-
-		await waitForRegistry();
-
-		expect( queryAllByRole( 'tab' ) ).toHaveLength( 0 );
-		expect(
-			getByText( 'Top content over the last 28 days' )
-		).toBeInTheDocument();
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should render the tabs with the Top content header title when freshData is enabled', async () => {
+	it( 'should render the tabs with the Top content header title', async () => {
 		const { getAllByRole, getByRole, getByText, waitForRegistry } = render(
 			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -141,7 +130,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -175,7 +163,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -203,7 +190,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -225,7 +211,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -262,7 +247,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
 			}
 		);
 
@@ -285,5 +269,28 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		expect(
 			registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
 		).toBe( 'googlesitekit-top-content-tab' );
+	} );
+
+	it( 'should track `change_tab` labeled `googlesitekit-latest-content-tab` when the user selects the Latest content tab', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			fireEvent.click( getByRole( 'tab', { name: 'Latest content' } ) );
+			await waitForRegistry();
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_content-tabs',
+			'change_tab',
+			'googlesitekit-latest-content-tab'
+		);
 	} );
 } );

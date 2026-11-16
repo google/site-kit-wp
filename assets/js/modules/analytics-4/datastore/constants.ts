@@ -266,6 +266,8 @@ export const SITE_KIT_AUDIENCE_DEFINITIONS = {
 
 export const AUDIENCE_SEGMENTATION_SETUP_FORM = 'audiencePermissionsSetup';
 
+export const VISITOR_GROUPS_SETUP_FAILURE_KEY = 'visitorGroupsSetupFailure';
+
 export const AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE =
 	'audienceTileCustomDimensionCreate';
 

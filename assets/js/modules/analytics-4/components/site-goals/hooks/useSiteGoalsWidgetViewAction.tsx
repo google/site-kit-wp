@@ -40,13 +40,14 @@ interface UseSiteGoalsWidgetViewActionOptions {
  *
  * The widget's header/tabs area is always in exactly one of four mutually
  * exclusive states, matching what is actually rendered: the "aggregated"
- * default (breakdown not enabled, or no discovered breakdown values yet),
+ * default (no breakdown tabs),
  * the "Gathering breakdown data" badge, the tabbed breakdown with a "Partial
  * data" badge, or the tabbed breakdown with the full selected date range
  * covered.
  *
  * @since 1.183.0
  * @since 1.190.0 Treated a breakdown without plugin conversion tracking as not enabled.
+ * @since 1.192.0 Reported the tabbed breakdown while plugin conversion tracking is off and the tabs stay.
  *
  * @param {Object}  options                    Hook options.
  * @param {string}  options.breakdownDimension The breakdown custom dimension slug for this goal type.
@@ -94,13 +95,14 @@ export function useSiteGoalsWidgetViewAction( {
 		return undefined;
 	}
 
-	// No breakdown dimension or no plugin conversion tracking (feature not
-	// enabled yet) — the original aggregated default.
-	if ( ! isBreakdownEnabled ) {
+	// Without tabs the widget shows the aggregated default, whether or not
+	// plugin conversion tracking is on. A widget keeps its tabs when tracking is
+	// switched off later, so it reports the tabbed view below.
+	if ( ! isBreakdownEnabled && ! hasBreakdownTabs ) {
 		return 'view_widget';
 	}
 
-	if ( isGatheringData === undefined ) {
+	if ( isBreakdownEnabled && isGatheringData === undefined ) {
 		return undefined;
 	}
 

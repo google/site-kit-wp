@@ -33,6 +33,7 @@ import {
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { Story } from '@/js/types/Story';
 import {
@@ -42,6 +43,15 @@ import {
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import StepPublicationSetup from '.';
+
+/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+const PUBLICATION_WITH_LONG_NAME = {
+	...publications[ 0 ],
+	publicationId: 'LONGNAME',
+	displayName:
+		'The Extraordinarily Long Weekly Gazette of Local Community News, Culture, Sports and Weather Reports',
+} as Publication;
+/* eslint-enable sitekit/acronym-case */
 
 type Decorator = {
 	( StoryComponent: ElementType, { args, parameters }: Story ): ReactNode;
@@ -89,6 +99,22 @@ WithPublications.args = {
 	},
 };
 WithPublications.scenario = {};
+
+export const WithLongPublicationName = Template.bind( {} ) as Story;
+WithLongPublicationName.storyName = 'With Long Publication Name';
+WithLongPublicationName.args = {
+	setupRegistry: ( registry ) => {
+		providePublications( registry, [
+			...publications,
+			PUBLICATION_WITH_LONG_NAME,
+		] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationID( PUBLICATION_WITH_LONG_NAME.publicationId ); // eslint-disable-line sitekit/acronym-case
+	},
+};
+WithLongPublicationName.scenario = {};
 
 export const WithPublicationsWithError = Template.bind( {} ) as Story;
 WithPublicationsWithError.storyName = 'With Publications with Error';

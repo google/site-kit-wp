@@ -31,7 +31,7 @@ import { TRAFFIC_CHART_LINE_COLOR } from './trafficChartOptions';
  * Gets the legend item for the chart's line of daily counts, with a label
  * such as "Last 28 days traffic".
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @param {number} daysInSelectedRange The number of days in the selected date range, which the label names and which picks between its singular and plural forms.
  * @return {Object} The legend item's label, and the color of the line.

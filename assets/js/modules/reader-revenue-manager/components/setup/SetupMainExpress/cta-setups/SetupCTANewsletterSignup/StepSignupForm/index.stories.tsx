@@ -32,6 +32,7 @@ import {
 	EXPRESS_SETUP_CTA_FORMS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
@@ -66,6 +67,13 @@ const validSettings = {
 	productID: 'valid-id',
 	productIDs: [ 'valid' ],
 	paymentOption: 'valid-option',
+};
+
+const publicationWithDisplayName = {
+	// eslint-disable-next-line sitekit/acronym-case
+	publicationId: validSettings.publicationID,
+	displayName: 'Example Publication',
+	onboardingState: validSettings.publicationOnboardingState,
 };
 
 const defaultFormValues = {
@@ -135,6 +143,7 @@ export default {
 				provideSiteInfo( registry );
 				provideModules( registry, moduleData );
 				provideModuleRegistrations( registry, moduleData );
+				providePublication( registry, publicationWithDisplayName );
 
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )

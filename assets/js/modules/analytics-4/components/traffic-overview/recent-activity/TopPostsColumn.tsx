@@ -35,11 +35,14 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
 import { useReportPageTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportPageTitles';
+import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
 import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 import { getTopPostsReportOptions } from './reportOptions';
 import { getPageURL } from './utils/getPageURL';
 
 const TopPostsColumn: FC = () => {
+	const trackPostLinkClick = useTrackPostLinkClick( 'top-posts' );
+
 	const siteURL = useSelect(
 		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
 		[]
@@ -79,6 +82,7 @@ const TopPostsColumn: FC = () => {
 			loading={ loading || titlesLoading }
 			error={ error }
 			onRetry={ retry }
+			onLinkClick={ trackPostLinkClick }
 			ErrorComponent={ RecentActivityErrorNotice }
 		/>
 	);

@@ -75,6 +75,7 @@ class REST_Conversion_Reporting_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.144.0
+	 * @since n.e.x.t Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -106,20 +107,24 @@ class REST_Conversion_Reporting_Controller {
 						'permission_callback' => $can_view_dashboard,
 						'args'                => array(
 							'data' => array(
-								'type'       => 'object',
-								'required'   => true,
-								'properties' => array(
+								'type'        => 'object',
+								'description' => __( 'Conversion reporting settings to save.', 'google-site-kit' ),
+								'required'    => true,
+								'properties'  => array(
 									'settings' => array(
 										'type'          => 'object',
+										'description'   => __( 'Conversion reporting settings of the current user. Each one left out keeps its saved value.', 'google-site-kit' ),
 										'required'      => true,
 										'minProperties' => 1,
 										'additionalProperties' => false,
 										'properties'    => array(
 											'newEventsCalloutDismissedAt'  => array(
 												'type' => 'integer',
+												'description' => __( 'Unix time at which the current user dismissed the callout about new conversion events.', 'google-site-kit' ),
 											),
 											'lostEventsCalloutDismissedAt' => array(
 												'type' => 'integer',
+												'description' => __( 'Unix time at which the current user dismissed the callout about lost conversion events.', 'google-site-kit' ),
 											),
 										),
 									),
@@ -127,7 +132,38 @@ class REST_Conversion_Reporting_Controller {
 							),
 						),
 					),
+				),
+				array(
+					'schema' => function () {
+						return $this->get_conversion_reporting_settings_schema();
+					},
 				)
+			),
+		);
+	}
+
+	/**
+	 * Gets the REST schema of the conversion reporting settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array REST schema.
+	 */
+	private function get_conversion_reporting_settings_schema() {
+		return array(
+			'$schema'     => 'http://json-schema.org/draft-04/schema#',
+			'title'       => 'conversion-reporting-settings',
+			'description' => __( 'Conversion reporting settings of the current user.', 'google-site-kit' ),
+			'type'        => 'object',
+			'properties'  => array(
+				'newEventsCalloutDismissedAt'  => array(
+					'type'        => 'integer',
+					'description' => __( 'Unix time at which the current user dismissed the callout about new conversion events, or 0 where the user has not.', 'google-site-kit' ),
+				),
+				'lostEventsCalloutDismissedAt' => array(
+					'type'        => 'integer',
+					'description' => __( 'Unix time at which the current user dismissed the callout about lost conversion events, or 0 where the user has not.', 'google-site-kit' ),
+				),
 			),
 		);
 	}

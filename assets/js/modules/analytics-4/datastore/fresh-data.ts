@@ -40,7 +40,6 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { isFeatureEnabled } from '@/js/features';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { ReportFetchOptions } from '@/js/googlesitekit/data/create-get-report-resolver';
@@ -399,10 +398,6 @@ const baseSelectors = {
 	 */
 	shouldIncludeWooCommerceProducts: createRegistrySelector(
 		( select: Select ) => (): boolean | undefined => {
-			if ( ! isFeatureEnabled( 'freshData' ) ) {
-				return false;
-			}
-
 			const wooCommerceActive =
 				select( CORE_SITE ).isWooCommerceActivated();
 			const setting =

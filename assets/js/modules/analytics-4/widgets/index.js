@@ -94,6 +94,7 @@ import getAudienceTilesPDFData from '@/js/modules/analytics-4/components/audienc
 import { DashboardOverallPageMetricsWidgetGA4 } from '@/js/modules/analytics-4/components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import getModulePopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
+import ConversionTrackingDisabledNotice from '@/js/modules/analytics-4/components/site-goals/components/ConversionTrackingDisabledNotice';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	LeadGenerationPerformanceWidget,
@@ -996,6 +997,24 @@ export function registerWidgets( widgets ) {
 	);
 
 	// Site Goals widgets.
+
+	// Warns, above both Site Goals widgets, that the breakdown has stopped
+	// updating once plugin conversion tracking is switched off.
+	widgets.registerWidget(
+		'analyticsSiteGoalsConversionTrackingDisabledNotice',
+		{
+			Component: ConversionTrackingDisabledNotice,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 0,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) =>
+				isSiteGoalsWidgetActive( GOAL_TYPES.ECOMMERCE )( select ) ||
+				isSiteGoalsWidgetActive( GOAL_TYPES.LEAD )( select ),
+		},
+		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
+	);
+
 	widgets.registerWidget(
 		'analyticsOnlineStorePerformance',
 		{

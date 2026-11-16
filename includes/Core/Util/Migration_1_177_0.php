@@ -77,7 +77,7 @@ class Migration_1_177_0 {
 	 * Registers hooks.
 	 *
 	 * @since 1.177.0
-	 * @since n.e.x.t Changed the `admin_init` priority to 0.
+	 * @since 1.192.0 Changed the `admin_init` priority to 0.
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
@@ -103,7 +103,7 @@ class Migration_1_177_0 {
 	 *
 	 * This neither checks nor updates `googlesitekit_db_version`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.192.0
 	 */
 	public function apply_changes() {
 		$this->migrate_rrm_content_policy_status();

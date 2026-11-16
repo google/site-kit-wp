@@ -34,7 +34,6 @@ import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import LoadingWrapper from '@/js/components/LoadingWrapper';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
@@ -45,10 +44,10 @@ interface SettingsIncludeWooCommerceProductsSwitchProps {
 /**
  * Renders the switch for including WooCommerce products in "Recent activity".
  *
- * Only rendered when the `freshData` feature flag is enabled, WooCommerce is
- * installed and Analytics is connected.
+ * Only rendered when WooCommerce is installed and Analytics is connected.
  *
  * @since 1.190.0
+ * @since 1.192.0 Renders without the `freshData` feature flag.
  *
  * @param props                   Component props.
  * @param [props.hasModuleAccess] Whether the current user has access to the Analytics module, defaults to `true`.
@@ -57,39 +56,26 @@ interface SettingsIncludeWooCommerceProductsSwitchProps {
 const SettingsIncludeWooCommerceProductsSwitch: FC<
 	SettingsIncludeWooCommerceProductsSwitchProps
 > = ( { hasModuleAccess = true } ) => {
-	const freshDataEnabled = useFeature( 'freshData' );
-
 	const {
 		isWooCommerceInstalled,
 		isAnalyticsConnected,
 		hasResolvedSettings,
 		includesWooCommerceProducts,
 	} = useSelect(
-		( select: Select ) => {
-			if ( ! freshDataEnabled ) {
-				return {
-					isWooCommerceInstalled: false,
-					isAnalyticsConnected: false,
-					hasResolvedSettings: false,
-					includesWooCommerceProducts: undefined,
-				};
-			}
-
-			return {
-				isWooCommerceInstalled:
-					select( CORE_SITE ).isWooCommerceInstalled(),
-				isAnalyticsConnected: select( CORE_MODULES ).isModuleConnected(
-					MODULE_SLUG_ANALYTICS_4
-				),
-				hasResolvedSettings:
-					select( MODULES_ANALYTICS_4 ).getSettings() !== undefined,
-				includesWooCommerceProducts:
-					select(
-						MODULES_ANALYTICS_4
-					).getFreshDataIncludesWooCommerceProducts(),
-			};
-		},
-		[ freshDataEnabled ]
+		( select: Select ) => ( {
+			isWooCommerceInstalled:
+				select( CORE_SITE ).isWooCommerceInstalled(),
+			isAnalyticsConnected: select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			),
+			hasResolvedSettings:
+				select( MODULES_ANALYTICS_4 ).getSettings() !== undefined,
+			includesWooCommerceProducts:
+				select(
+					MODULES_ANALYTICS_4
+				).getFreshDataIncludesWooCommerceProducts(),
+		} ),
+		[]
 	);
 
 	const { setFreshDataIncludesWooCommerceProducts } =

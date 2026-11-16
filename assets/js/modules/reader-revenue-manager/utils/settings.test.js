@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { enabledFeatures } from '@/js/features';
 import {
 	getConfiguredCTAList,
 	getPaymentOption,
@@ -28,20 +29,46 @@ import {
 } from './settings';
 
 describe( 'getConfiguredCTAList', () => {
-	it( 'should return the CTA ID, type, and display label for each configured CTA', () => {
+	it( 'should return the CTA ID, type, and display name for each configured CTA', () => {
 		expect(
 			getConfiguredCTAList( {
-				'cta-1': 'newsletter-signup',
-				'cta-2': 'newsletter-signup',
+				'cta-1': {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: 'Weekly newsletter',
+				},
+				'cta-2': {
+					type: 'newsletter-signup',
+					state: 'DRAFT',
+					displayName: 'Daily newsletter',
+				},
 			} )
 		).toEqual( [
 			{
 				ctaID: 'cta-1',
 				ctaType: 'newsletter-signup',
-				label: 'Newsletter sign-up form',
+				label: 'Weekly newsletter',
 			},
 			{
 				ctaID: 'cta-2',
+				ctaType: 'newsletter-signup',
+				label: 'Daily newsletter',
+			},
+		] );
+	} );
+
+	it( 'should use the type label for a CTA with an empty display name', () => {
+		expect(
+			getConfiguredCTAList( {
+				'cta-1': {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: '',
+				},
+			} )
+		).toEqual( [
+			{
+				ctaID: 'cta-1',
 				ctaType: 'newsletter-signup',
 				label: 'Newsletter sign-up form',
 			},
@@ -51,16 +78,76 @@ describe( 'getConfiguredCTAList', () => {
 	it( 'omits CTAs with an unrecognised type', () => {
 		expect(
 			getConfiguredCTAList( {
-				'cta-1': 'newsletter-signup',
-				'cta-2': 'not-a-cta-type',
+				'cta-1': {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: 'Weekly newsletter',
+				},
+				'cta-2': {
+					type: 'not-a-cta-type',
+					state: 'ACTIVE',
+					displayName: 'Unknown',
+				},
 			} )
 		).toEqual( [
 			{
 				ctaID: 'cta-1',
 				ctaType: 'newsletter-signup',
-				label: 'Newsletter sign-up form',
+				label: 'Weekly newsletter',
 			},
 		] );
+	} );
+
+	describe( 'with survey CTAs', () => {
+		const configuredCTAs = {
+			'cta-1': {
+				type: 'newsletter-signup',
+				state: 'ACTIVE',
+				displayName: 'Weekly newsletter',
+			},
+			'cta-2': {
+				type: 'survey',
+				state: 'ACTIVE',
+				displayName: 'Reader survey',
+			},
+			'cta-3': {
+				type: 'survey',
+				state: 'DRAFT',
+				displayName: '',
+			},
+		};
+
+		it( 'should list survey CTAs by name, or as "Survey" without one, alongside newsletter CTAs when the rrmSurveyCTA feature flag is enabled', () => {
+			enabledFeatures.add( 'rrmSurveyCTA' );
+
+			expect( getConfiguredCTAList( configuredCTAs ) ).toEqual( [
+				{
+					ctaID: 'cta-1',
+					ctaType: 'newsletter-signup',
+					label: 'Weekly newsletter',
+				},
+				{
+					ctaID: 'cta-2',
+					ctaType: 'survey',
+					label: 'Reader survey',
+				},
+				{
+					ctaID: 'cta-3',
+					ctaType: 'survey',
+					label: 'Survey',
+				},
+			] );
+		} );
+
+		it( 'should omit saved survey CTAs when the rrmSurveyCTA feature flag is disabled', () => {
+			expect( getConfiguredCTAList( configuredCTAs ) ).toEqual( [
+				{
+					ctaID: 'cta-1',
+					ctaType: 'newsletter-signup',
+					label: 'Weekly newsletter',
+				},
+			] );
+		} );
 	} );
 
 	it.each( [

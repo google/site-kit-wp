@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { enabledFeatures } from '@/js/features';
 import {
 	CTA_STATES,
 	CTA_TYPES,
@@ -69,6 +70,21 @@ describe( 'modules/reader-revenue-manager CTA types', () => {
 			expect( typeof handler.validateConfig ).toBe( 'function' );
 		} );
 
+		it( 'should return the survey handler when the rrmSurveyCTA feature flag is enabled', () => {
+			enabledFeatures.add( 'rrmSurveyCTA' );
+
+			const handler = getCTATypeHandler( CTA_TYPES.SURVEY );
+
+			expect( handler.type ).toBe( CTA_TYPES.SURVEY );
+			expect( typeof handler.validateConfig ).toBe( 'function' );
+		} );
+
+		it( 'should throw for the survey type when the rrmSurveyCTA feature flag is disabled', () => {
+			expect( () => getCTATypeHandler( CTA_TYPES.SURVEY ) ).toThrow(
+				'type is not supported.'
+			);
+		} );
+
 		it( 'should throw for an unsupported type', () => {
 			expect( () => getCTATypeHandler( 'SUBSCRIPTION' ) ).toThrow(
 				'type is not supported.'
@@ -93,6 +109,7 @@ describe( 'modules/reader-revenue-manager CTA types', () => {
 					title: 'Subscribe',
 					customMessage: 'Join our mailing list.',
 					nameRequired: true,
+					optInRequired: true,
 					customConsentText: 'I agree.',
 				} )
 			).not.toThrow();
@@ -138,10 +155,13 @@ describe( 'modules/reader-revenue-manager CTA types', () => {
 			}
 		);
 
-		it( 'should throw when nameRequired is not a boolean', () => {
-			expect( () => validateConfig( { nameRequired: 'yes' } ) ).toThrow(
-				'config.nameRequired must be a boolean.'
-			);
-		} );
+		it.each( [ 'nameRequired', 'optInRequired' ] )(
+			'should throw when %s is not a boolean',
+			( field ) => {
+				expect( () => validateConfig( { [ field ]: 'yes' } ) ).toThrow(
+					`config.${ field } must be a boolean.`
+				);
+			}
+		);
 	} );
 } );

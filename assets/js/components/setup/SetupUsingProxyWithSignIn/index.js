@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
@@ -57,6 +57,7 @@ import ResetNotice, { RESET_SUCCESS_NOTIFICATION } from './ResetNotice';
 import Splash from './Splash';
 
 export default function SetupUsingProxyWithSignIn() {
+	const [ isSettingUp, setIsSettingUp ] = useState( false );
 	const forwardableParams = useForwardableParams();
 	const isIntentSetupFlow = useIsIntentSetupFlow();
 
@@ -101,6 +102,22 @@ export default function SetupUsingProxyWithSignIn() {
 			} );
 		}
 	}, [ registerNotification, showResetNotice, viewContext ] );
+
+	// A page restored from the back/forward cache keeps its React state, so
+	// without this the button stays disabled after the user presses Back.
+	useEffect( () => {
+		function onPageShow( event ) {
+			if ( event.persisted ) {
+				setIsSettingUp( false );
+			}
+		}
+
+		global.addEventListener( 'pageshow', onPageShow );
+
+		return () => {
+			global.removeEventListener( 'pageshow', onPageShow );
+		};
+	}, [] );
 
 	const setup = useCallback( async () => {
 		let moduleReauthURL;
@@ -158,6 +175,10 @@ export default function SetupUsingProxyWithSignIn() {
 		async ( event ) => {
 			event.preventDefault();
 
+			// The button stays disabled through the redirect, so a second click
+			// can't start another setup before the browser leaves the page.
+			setIsSettingUp( true );
+
 			let moduleReauthURL;
 
 			try {
@@ -174,6 +195,8 @@ export default function SetupUsingProxyWithSignIn() {
 					viewContexts: [ viewContext ],
 					isDismissible: false,
 				} );
+
+				setIsSettingUp( false );
 
 				return;
 			}
@@ -248,6 +271,7 @@ export default function SetupUsingProxyWithSignIn() {
 						complete={ complete }
 						inProgressFeedback={ inProgressFeedback }
 						ctaFeedback={ ctaFeedback }
+						isSettingUp={ isSettingUp }
 					/>
 				) }
 			</Splash>

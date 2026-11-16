@@ -24,18 +24,56 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { LATEST_POST } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import { preventNavigation } from '@/js/event-providers/content-events/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { RECENT_ACTIVITY_INTERACTION_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	LATEST_POST,
+	provideRecentActivitySurveyState,
+	setExpirableItemTimersEndpoint,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
 import { provideSiteInfo, provideTimezone } from '@tests/js/utils';
 import LatestPostHeader from './LatestPostHeader';
+
+const ENTITY_DASHBOARD_URL =
+	'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=https%3A%2F%2Fexample.com%2Fice-cream%2F';
 
 describe( 'LatestPostHeader', () => {
 	let registry: WPDataRegistry;
 
+	mockLocation();
+
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideRecentActivitySurveyState( registry );
 	} );
+
+	const interactionTimerRequest = {
+		body: {
+			data: [
+				{
+					slug: RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+					expiration:
+						RECENT_ACTIVITY_INTERACTION_TIMER.expiresInSeconds,
+				},
+			],
+		},
+	};
 
 	it( 'should link the post title to the entity dashboard of the post', () => {
 		const { getByRole } = render(
@@ -45,11 +83,152 @@ describe( 'LatestPostHeader', () => {
 
 		expect(
 			getByRole( 'link', { name: 'Ice cream is good for your health' } )
-		).toHaveAttribute(
-			'href',
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=https%3A%2F%2Fexample.com%2Fice-cream%2F'
+		).toHaveAttribute( 'href', ENTITY_DASHBOARD_URL );
+	} );
+
+	it( 'should track `click_post_link` labeled `latest-post-header` and record an interaction, then open the entity dashboard, when the post title is clicked', async () => {
+		let resolveTrackEvent: ( () => void ) | undefined;
+		mockTrackEvent.mockImplementationOnce(
+			() =>
+				new Promise( ( resolve ) => {
+					resolveTrackEvent = resolve;
+				} )
+		);
+		fetchMock.postOnce( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
+
+		const { getByRole } = render(
+			<LatestPostHeader post={ LATEST_POST } />,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+
+		const notPrevented = fireEvent.click(
+			getByRole( 'link', { name: 'Ice cream is good for your health' } )
+		);
+
+		expect( notPrevented ).toBe( false );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_recent-activity',
+			'click_post_link',
+			'latest-post-header'
+		);
+		// The page stays open until the event is sent.
+		expect( global.location.assign ).not.toHaveBeenCalled();
+
+		await act( async () => {
+			resolveTrackEvent?.();
+			await Promise.resolve();
+		} );
+
+		await waitFor( () =>
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				ENTITY_DASHBOARD_URL
+			)
+		);
+		expect( fetchMock ).toHaveFetched(
+			setExpirableItemTimersEndpoint,
+			interactionTimerRequest
 		);
 	} );
+
+	it( 'should open the entity dashboard only once the interaction is saved', async () => {
+		let resolveTimerRequest: ( () => void ) | undefined;
+		fetchMock.postOnce(
+			setExpirableItemTimersEndpoint,
+			new Promise( ( resolve ) => {
+				resolveTimerRequest = () =>
+					resolve( { body: {}, status: 200 } );
+			} )
+		);
+
+		const { getByRole } = render(
+			<LatestPostHeader post={ LATEST_POST } />,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+
+		fireEvent.click(
+			getByRole( 'link', { name: 'Ice cream is good for your health' } )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint )
+		);
+		expect( global.location.assign ).not.toHaveBeenCalled();
+
+		await act( async () => {
+			resolveTimerRequest?.();
+			await new Promise( ( resolve ) => setTimeout( resolve ) );
+		} );
+
+		expect( global.location.assign ).toHaveBeenCalledWith(
+			ENTITY_DASHBOARD_URL
+		);
+	} );
+
+	it.each( [
+		[ 'Command', { metaKey: true } ],
+		[ 'Control', { ctrlKey: true } ],
+	] )(
+		'should track `click_post_link`, record an interaction and leave the click to the browser when the post title is clicked with %s held',
+		async ( _key, modifiers ) => {
+			fetchMock.postOnce( setExpirableItemTimersEndpoint, {
+				body: {},
+				status: 200,
+			} );
+
+			const { getByRole } = render(
+				<LatestPostHeader post={ LATEST_POST } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			let wasPreventedByComponent: boolean | undefined;
+			function recordAndPreventNavigation( event: Event ) {
+				wasPreventedByComponent = event.defaultPrevented;
+				// jsdom can't open the link in a new tab, so it would log
+				// "Not implemented: navigation".
+				preventNavigation( event );
+			}
+
+			global.document.addEventListener(
+				'click',
+				recordAndPreventNavigation
+			);
+
+			try {
+				fireEvent.click(
+					getByRole( 'link', {
+						name: 'Ice cream is good for your health',
+					} ),
+					modifiers
+				);
+			} finally {
+				global.document.removeEventListener(
+					'click',
+					recordAndPreventNavigation
+				);
+			}
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					setExpirableItemTimersEndpoint,
+					interactionTimerRequest
+				)
+			);
+			await act(
+				() => new Promise( ( resolve ) => setTimeout( resolve ) )
+			);
+
+			expect( wasPreventedByComponent ).toBe( false );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_recent-activity',
+				'click_post_link',
+				'latest-post-header'
+			);
+			expect( global.location.assign ).not.toHaveBeenCalled();
+		}
+	);
 
 	it( 'should show the publish date and time in the site time zone, without the year', () => {
 		const { getByText } = render(

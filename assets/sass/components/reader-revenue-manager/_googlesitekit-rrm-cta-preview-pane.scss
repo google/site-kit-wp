@@ -1,0 +1,153 @@
+/**
+ * Reader Revenue Manager CTA preview pane styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-rrm-cta-preview-pane {
+		color: $c-surfaces-on-surface;
+		display: grid;
+		gap: 11px;
+
+		* {
+			margin: 0;
+		}
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__header {
+		display: grid;
+		gap: 3px;
+		text-align: center;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__publication {
+		color: $c-surfaces-on-background-variant;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__radio,
+	.googlesitekit-rrm-cta-preview-pane__checkbox {
+		all: unset;
+		appearance: none;
+		aspect-ratio: 1;
+		border: 1px solid currentColor;
+		box-sizing: border-box;
+		display: block;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__radio {
+		border-radius: 50%;
+		inline-size: 12px;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__checkbox {
+		border-radius: 2px;
+		inline-size: 11px;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__actions {
+		align-items: center;
+		display: grid;
+		font-size: 8px;
+		grid-auto-rows: 1fr;
+		grid-template-columns: max-content;
+		justify-content: center;
+		letter-spacing: $ls-xs;
+		line-height: 1;
+		text-align: center;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__button {
+		align-items: center;
+		appearance: none;
+		background: $c-interactive-disable-container;
+		block-size: 20px;
+		color: $c-interactive-on-disable-container;
+		font-size: 9px;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-xs;
+		line-height: 1;
+		padding: 0 15px;
+		text-align: center;
+
+		&:hover {
+			text-decoration: none;
+		}
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__legal {
+		font-size: 8px;
+		letter-spacing: $ls-xs;
+		line-height: 1.25;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__link {
+		color: $c-content-secondary;
+		font-weight: $fw-medium;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__newsletter {
+		display: grid;
+		gap: 6px;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__newsletter-consent {
+		align-items: center;
+		display: flex;
+		font-size: 10px;
+		gap: 8px;
+		letter-spacing: $ls-xs;
+		line-height: 1.6;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__survey {
+		background: $c-surfaces-background;
+		border-radius: $br-xs;
+		display: grid;
+		gap: 4px;
+		padding: 10px;
+
+		.googlesitekit-rrm-cta-preview-pane__button {
+			background-color: $c-site-kit-sk-200;
+			block-size: 22.5px;
+			color: $c-site-kit-sk-0;
+			justify-self: end;
+			padding: 0 11px;
+		}
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__survey-question {
+		display: grid;
+		gap: 6px;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__survey-count {
+		font-size: 10px;
+		letter-spacing: $ls-xs;
+		line-height: 1.6;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__survey-answers {
+		display: grid;
+		gap: 4px;
+	}
+
+	.googlesitekit-rrm-cta-preview-pane__survey-answer {
+		align-items: center;
+		display: flex;
+		gap: 10px;
+	}
+}

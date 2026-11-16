@@ -1157,6 +1157,23 @@ describe( 'core/modules sharing-settings', () => {
 						.haveSharingSettingsChanged( [] )
 				).toBe( false );
 			} );
+
+			it( 'should return `true` after `setSharingManagement()` on empty sharing settings', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( {} );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement(
+						MODULE_SLUG_SEARCH_CONSOLE,
+						'all_admins'
+					);
+
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsChanged()
+				).toBe( true );
+			} );
 		} );
 
 		describe( 'canSubmitSharingChanges', () => {
@@ -1184,6 +1201,20 @@ describe( 'core/modules sharing-settings', () => {
 				expect(
 					registry.select( CORE_MODULES ).canSubmitSharingChanges()
 				).toBe( false );
+			} );
+
+			it( 'should return `true` after `setSharedRoles()` on empty sharing settings', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( {} );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( MODULE_SLUG_SEARCH_CONSOLE, [ 'editor' ] );
+
+				expect(
+					registry.select( CORE_MODULES ).canSubmitSharingChanges()
+				).toBe( true );
 			} );
 		} );
 
@@ -1700,9 +1731,9 @@ describe( 'core/modules sharing-settings', () => {
 
 				registry
 					.dispatch( CORE_MODULES )
-					.receiveSharedOwnershipModules( {} );
+					.receiveSharedOwnershipModules( [] );
 
-				// False if sharedOwnershipModules is an empty object
+				// Still false while savedSharingSettings is an empty object.
 				expect(
 					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
 				).toBe( false );
@@ -1735,6 +1766,53 @@ describe( 'core/modules sharing-settings', () => {
 				expect(
 					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
 				).toBe( true );
+			} );
+
+			it( 'should return `true` when a module is shared and there are no shared ownership modules', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( [] );
+
+				registry.dispatch( CORE_MODULES ).receiveGetSharingSettings( {
+					[ MODULE_SLUG_SEARCH_CONSOLE ]: {
+						sharedRoles: [ 'editor' ],
+						management: 'owner',
+					},
+				} );
+
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( true );
+			} );
+
+			it( 'should return `false` while the shared ownership modules are not loaded', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetSharingSettings( {
+					[ MODULE_SLUG_SEARCH_CONSOLE ]: {
+						sharedRoles: [ 'editor' ],
+						management: 'owner',
+					},
+				} );
+
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+			} );
+
+			it( 'should return `false` when the settings are the defaults and there are no shared ownership modules', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( [] );
+
+				registry.dispatch( CORE_MODULES ).receiveGetSharingSettings( {
+					[ MODULE_SLUG_SEARCH_CONSOLE ]: {
+						sharedRoles: [],
+						management: 'owner',
+					},
+				} );
+
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
 			} );
 		} );
 	} );

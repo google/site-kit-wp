@@ -37,6 +37,7 @@ export const CTA_TYPE_LABELS = {
 		'Newsletter sign-up form',
 		'google-site-kit'
 	),
+	[ EXPRESS_SETUP_CTAS.SURVEY ]: __( 'Survey', 'google-site-kit' ),
 };
 
 export const RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG =
@@ -61,3 +62,15 @@ export const MODULE_SLUG_READER_REVENUE_MANAGER = 'reader-revenue-manager';
 
 export const RRM_POLICY_VIOLATION_NOTIFICATION_ID =
 	'rrm-policy-violation-notification';
+
+// Hub-specific registrations for the Reader Revenue Manager (full setup)
+// feature's own setup success surfaces, shown in place of the Feature
+// Discovery Hub's generic success notice. These use their own IDs rather
+// than the dashboard ones above, since re-registering an existing ID is
+// skipped.
+export const RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION_ID =
+	'feature-discovery-setup-success-whats-new-rrm';
+export const RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION_ID =
+	'feature-discovery-setup-success-all-services-rrm';
+export const RRM_FEATURE_DISCOVERY_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION_ID =
+	'feature-discovery-rrm-publication-approved-overlay';

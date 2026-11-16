@@ -208,6 +208,33 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 		expect( onDismiss ).toHaveBeenCalledTimes( 1 );
 	} );
 
+	it( 'labels the dismiss button "Got it" when dismissLabel is given', () => {
+		const onDismiss = jest.fn();
+
+		const { getByRole, queryByRole } = render(
+			<AudienceSegmentationSetupErrorWidget
+				Widget={ MockWidget }
+				errors={ {
+					code: 'test_error',
+					message: 'Error message.',
+					data: { status: 500 },
+				} }
+				onRetry={ () => {} }
+				onDismiss={ onDismiss }
+				dismissLabel="Got it"
+			/>,
+			{ registry }
+		);
+
+		expect(
+			queryByRole( 'button', { name: 'No thanks' } )
+		).not.toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		expect( onDismiss ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it.each( [
 		{
 			testName:

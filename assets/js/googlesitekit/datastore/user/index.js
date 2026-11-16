@@ -32,6 +32,7 @@ import dismissedItems from './dismissed-items';
 import emailReportingSettings from './email-reporting-settings';
 import expirableItems from './expirable-items';
 import featureTours from './feature-tours';
+import feedback from './feedback';
 import initialSetupSettings from './initial-setup-settings';
 import keyMetrics from './key-metrics';
 import nonces from './nonces';
@@ -55,6 +56,7 @@ const store = combineStores(
 	dismissedItems,
 	expirableItems,
 	featureTours,
+	feedback,
 	keyMetrics,
 	notifications,
 	permissions,

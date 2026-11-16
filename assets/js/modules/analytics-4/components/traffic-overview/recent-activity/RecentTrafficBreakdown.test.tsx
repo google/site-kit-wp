@@ -30,22 +30,31 @@ import { getQueryArg, getQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { RECENT_ACTIVITY_INTERACTION_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	createBreakdownReport,
 	createTitlesReport,
 	forDimensions,
+	provideRecentActivitySurveyState,
+	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { plainPermalinkTopPosts } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideIncludeProductsState } from '@/js/modules/analytics-4/datastore/test-utils';
+import * as tracking from '@/js/util/tracking';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
 	screen,
+	waitFor,
 	within,
 } from '@tests/js/test-utils';
 import {
@@ -196,14 +205,43 @@ describe( 'RecentTrafficBreakdown', () => {
 		] );
 	}
 
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		provideRecentActivitySurveyState( registry );
+		fetchMock.post( setExpirableItemTimersEndpoint, {
+			body: {},
+			status: 200,
+		} );
 	} );
+
+	// A post link click records an interaction, so the tests wait for its
+	// request rather than let it finish during the next test.
+	async function waitForInteraction() {
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint, {
+				body: {
+					data: [
+						{
+							slug: RECENT_ACTIVITY_INTERACTION_TIMER.slug,
+							expiration:
+								RECENT_ACTIVITY_INTERACTION_TIMER.expiresInSeconds,
+						},
+					],
+				},
+			} )
+		);
+		await act( () => new Promise( ( resolve ) => setTimeout( resolve ) ) );
+	}
 
 	it( 'should render the "What’s affecting recent traffic?" heading, then the posts, channels, and referrals columns', async () => {
 		mockReportRequests();
@@ -316,6 +354,31 @@ describe( 'RecentTrafficBreakdown', () => {
 		expect(
 			postsColumn.queryByText( '/ice-cream/' )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'should track `click_post_link` labeled `top-posts` and record an interaction when a post title is clicked', async () => {
+		mockReportRequests();
+
+		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			within( getColumn( 'Top posts by visitors' ) ).getByRole( 'link', {
+				name: /Ice cream is good for your health/,
+			} )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_recent-activity',
+			'click_post_link',
+			'top-posts'
+		);
+
+		await waitForInteraction();
 	} );
 
 	it( 'should not request a title for a page that had no visitors', async () => {
@@ -647,6 +710,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render the loading state in each column while its report loads', async () => {
+		provideIncludeProductsState( registry, { wooCommerceActive: false } );
 		freezeFetch( reportEndpoint, { repeat: 3 } );
 
 		const { container } = render( <RecentTrafficBreakdown />, {
@@ -778,7 +842,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
-			features: [ 'freshData' ],
 		} );
 
 		await waitForRegistry();
@@ -850,7 +913,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
-			features: [ 'freshData' ],
 		} );
 
 		await waitForRegistry();
@@ -936,6 +998,36 @@ describe( 'RecentTrafficBreakdown', () => {
 				'http://example.com/?page_id=2',
 				'http://example.com/?p=3',
 			] );
+		} );
+
+		it( 'should track `click_post_link` labeled `top-posts` and record an interaction when a post title is clicked', async () => {
+			fetchMock.get( topPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
+			mockReportRequests();
+
+			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				within( getColumn( 'Top posts by visitors' ) ).getByRole(
+					'link',
+					{ name: /Travel tips/ }
+				)
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_recent-activity',
+				'click_post_link',
+				'top-posts'
+			);
+
+			await waitForInteraction();
 		} );
 
 		it( 'should not request the report of visitors by `pagePath` or the report of page titles', async () => {

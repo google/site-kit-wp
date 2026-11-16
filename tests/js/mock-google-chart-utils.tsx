@@ -24,7 +24,7 @@
  * renders an empty chart container and keeps the props of each render, so a
  * test reads what the chart received.
  *
- * @since n.e.x.t
+ * @since 1.192.0
  *
  * @return {Object} The `GoogleChart` module, with a `jest.fn()` as its default export.
  */

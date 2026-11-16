@@ -63,7 +63,11 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		...validSettings,
 		organizationID: 'ABCD1234',
 		configuredCTAs: {
-			'cta-id': 'newsletter-signup',
+			'cta-id': {
+				type: 'newsletter-signup',
+				state: 'ACTIVE',
+				displayName: 'Weekly newsletter',
+			},
 		},
 	};
 
@@ -308,7 +312,36 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		it.each( [
 			[ 'not-an-object', 'not-an-object' ],
 			[ 'an array', [] ],
-			[ 'a non-string CTA type', { 'cta-id': 123 } ],
+			[ 'in the old format', { 'cta-id': 'newsletter-signup' } ],
+			[
+				'a non-string CTA type',
+				{
+					'cta-id': {
+						type: 123,
+						state: 'ACTIVE',
+						displayName: 'Weekly newsletter',
+					},
+				},
+			],
+			[
+				'a non-string CTA state',
+				{
+					'cta-id': {
+						type: 'newsletter-signup',
+						state: 123,
+						displayName: 'Weekly newsletter',
+					},
+				},
+			],
+			[
+				'missing the CTA display name',
+				{
+					'cta-id': {
+						type: 'newsletter-signup',
+						state: 'ACTIVE',
+					},
+				},
+			],
 		] )(
 			'should throw invariant error when configured CTAs is %s',
 			( _, configuredCTAs ) => {

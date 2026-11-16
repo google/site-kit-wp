@@ -20,9 +20,14 @@
  * Internal dependencies
  */
 import {
+	EXPRESS_SETUP_CTAS,
 	MANAGE_SCOPE,
 	READONLY_SCOPE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	CTA_TYPES,
+	CallToActionType,
+} from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 
 export const EXPRESS_SETUP_SCOPES = [ READONLY_SCOPE, MANAGE_SCOPE ];
 
@@ -32,3 +37,10 @@ export const EXPRESS_SETUP_CTA_ID_UI_KEY = 'express-setup-cta-id';
 
 // Used by the publication setup step while its create form is shown.
 export const CREATE_PUBLICATION_EVENT_LABEL = 'create-publication';
+
+// The CTA type each express setup creates.
+export const EXPRESS_SETUP_CTA_TO_CTA_TYPE: Partial<
+	Record< string, CallToActionType >
+> = {
+	[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: CTA_TYPES.NEWSLETTER_SIGNUP,
+};

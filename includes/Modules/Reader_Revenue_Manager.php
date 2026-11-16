@@ -853,6 +853,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.132.0
+	 * @since 1.192.0 Lists the type and state of each configured CTA.
 	 *
 	 * @return array An array of all debug fields.
 	 */
@@ -926,7 +927,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'debug' => Debug_Data::redact_debug_value( $settings['organizationID'] ),
 			);
 
-			$configured_ctas = implode( ', ', array_keys( (array) $settings['configuredCTAs'] ) );
+			$configured_ctas = array();
+
+			foreach ( (array) $settings['configuredCTAs'] as $cta_id => $cta ) {
+				$configured_ctas[] = sprintf( '%s (%s, %s)', $cta_id, $cta['type'], $cta['state'] );
+			}
+
+			$configured_ctas = implode( ', ', $configured_ctas );
 
 			$debug_fields['reader_revenue_manager_configured_ctas'] = array(
 				'label' => __( 'Reader Revenue Manager: Configured CTAs', 'google-site-kit' ),
@@ -951,6 +958,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * Gets an array of internal feature metrics.
 	 *
 	 * @since 1.163.0
+	 * @since 1.192.0 Lists the type and state of each configured CTA.
 	 *
 	 * @return array
 	 */
@@ -962,8 +970,14 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		);
 
 		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
-			$configured_ctas                            = (array) $settings['configuredCTAs'];
-			$metrics['rrm_publication_configured_ctas'] = array_values( array_unique( $configured_ctas ) );
+			$metrics['rrm_publication_configured_ctas'] = array_values(
+				array_map(
+					function ( $cta ) {
+						return $cta['type'] . ':' . $cta['state'];
+					},
+					(array) $settings['configuredCTAs']
+				)
+			);
 		}
 
 		return $metrics;

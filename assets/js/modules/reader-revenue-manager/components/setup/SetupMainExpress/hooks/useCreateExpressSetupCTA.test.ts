@@ -50,6 +50,8 @@ const createCTAEndpoint = new RegExp(
 const createdCTA = {
 	name: 'organizations/ABCD1234/publications/ABCDEFGH/ctas/1',
 	type: CTA_TYPES.NEWSLETTER_SIGNUP,
+	state: 'ACTIVE',
+	displayName: 'Newsletter signup',
 };
 
 const params = {
@@ -160,7 +162,13 @@ describe( 'useCreateExpressSetupCTA', () => {
 			publicationOnboardingState:
 				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 			publicationOnboardingStateChanged: false,
-			configuredCTAs: { 1: 'newsletter-signup' },
+			configuredCTAs: {
+				1: {
+					type: 'newsletter-signup',
+					state: 'ACTIVE',
+					displayName: 'Newsletter signup',
+				},
+			},
 		} );
 	} );
 

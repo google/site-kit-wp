@@ -36,12 +36,13 @@ import useCTAID from './useCTAID';
  * `lastActionedExpressSetups` user setting.
  *
  * Saves the current time against the setup's entry each time a step begins,
- * and removes the entry once the setup complete step begins. When the setup
+ * and removes the entry once the setup complete or existing CTA step begins.
+ * Only the setup complete step records a completion. When the setup
  * has a `ctaID`, the same save records it in `completedExpressSetups`. The save
  * is not awaited, so the step works the same whether it succeeds or fails.
  *
  * @since 1.191.0
- * @since n.e.x.t Records the completed setup in `completedExpressSetups`.
+ * @since 1.192.0 Records the completed setup in `completedExpressSetups`.
  *
  * @param {string}                          ctaType  The CTA type being set up.
  * @param {EXPRESS_SETUP_STEPS | undefined} stepSlug The current step's slug, or `undefined` while it is resolving.
@@ -73,13 +74,17 @@ export default function useRecordExpressSetupProgress(
 		// actual time the user was last active in the setup.
 		const now = Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 		const isComplete = stepSlug === EXPRESS_SETUP_STEPS.SETUP_COMPLETE;
+		// The existing CTA screen ends the setup without completing it, so
+		// the setup is no longer in progress, but nothing is marked complete.
+		const isEnded =
+			isComplete || stepSlug === EXPRESS_SETUP_STEPS.EXISTING_CTA;
 		const completedKey = ctaIDRef.current
 			? `${ ctaType }:${ ctaIDRef.current }`
 			: undefined;
 
 		async function storeProgress() {
 			const { error } = await saveUserSettings( {
-				lastActionedExpressSetups: { [ key ]: isComplete ? null : now },
+				lastActionedExpressSetups: { [ key ]: isEnded ? null : now },
 				...( isComplete &&
 					completedKey && {
 						completedExpressSetups: { [ completedKey ]: now },

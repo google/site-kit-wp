@@ -34,7 +34,10 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
+import adBlockingRecoveryMessageScreenshotURL from '@/svg/screenshots/adsense-ad-blocking-recovery-message.svg?path';
+import adBlockingRecoverySettingsScreenshotURL from '@/svg/screenshots/adsense-ad-blocking-recovery-settings.svg?path';
+import adBlockingRecoveryScreenshotURL from '@/svg/screenshots/adsense-ad-blocking-recovery-setup.svg?path';
+import adsenseEarningsScreenshotURL from '@/svg/screenshots/adsense-earnings.svg?path';
 
 /**
  * Registers AdSense module features in the Feature Discovery catalog.
@@ -117,13 +120,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: adsenseEarningsScreenshotURL,
 					alt: __(
-						'Top earning pages widget showing top pages and earnings data',
+						'Screenshot of the monetization section of the Site Kit dashboard showing AdSense earnings, page RPM, impressions and page CTR compared with the previous period, and a list of the top earning pages',
 						'google-site-kit'
 					),
-					width: 292,
-					height: 210,
+					width: 620,
+					height: 593,
 				},
 			],
 		},
@@ -229,13 +232,31 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: adBlockingRecoveryMessageScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
+						'Screenshot of an ad blocking recovery message on a website, asking a visitor who uses an ad blocker to allow ads because the site relies on advertising for funding',
 						'google-site-kit'
 					),
-					width: 292,
-					height: 210,
+					width: 620,
+					height: 396,
+				},
+				{
+					src: adBlockingRecoveryScreenshotURL,
+					alt: __(
+						'Screenshot of the ad blocking recovery setup in Site Kit, with a step to place the ad blocking recovery tag and the optional error protection tag, followed by a step to create the recovery message',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 328,
+				},
+				{
+					src: adBlockingRecoverySettingsScreenshotURL,
+					alt: __(
+						'Screenshot of the AdSense settings in Site Kit with switches to enable the ad blocking recovery message and to place error protection code',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 435,
 				},
 			],
 		},
