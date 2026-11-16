@@ -164,33 +164,43 @@ function getWidgetReportOptions(
 		  }
 		: null;
 
+	// Each session counts once, however many Key action events it holds, so
+	// the rate never goes above 100%.
+	const keyActionSessionsReportOptions: ReportOptions | null = primaryEvent
+		? {
+				...dates,
+				metrics: [ { name: 'sessions' } ],
+				dimensionFilters: {
+					eventName: primaryEvent,
+					...breakdownFilter,
+				} as ReportOptions[ 'dimensionFilters' ],
+				reportID:
+					'analytics-4_online-store-performance-widget_keyActionSessionsReportOptions',
+		  }
+		: null;
+
+	// The rate is out of all site sessions on every breakdown tab, so this
+	// report never takes the breakdown filter.
 	const engagementReportOptions: ReportOptions | null = primaryEvent
 		? {
 				...dates,
 				metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-				...( breakdownFilter
-					? {
-							dimensionFilters:
-								breakdownFilter as ReportOptions[ 'dimensionFilters' ],
-					  }
-					: {} ),
 				reportID: 'analytics-4_site-goals_engagementReportOptions',
 		  }
 		: null;
 
 	return {
 		primaryEventReportOptions,
+		keyActionSessionsReportOptions,
 		engagementReportOptions,
 	};
 }
 
 function getReportsToCheck(
-	primaryEventReportOptions: ReportOptions | null,
-	engagementReportOptions: ReportOptions | null
+	...reportOptions: Array< ReportOptions | null >
 ): ReportOptions[] {
-	return [ primaryEventReportOptions, engagementReportOptions ].filter(
-		( reportOptions ): reportOptions is ReportOptions =>
-			Boolean( reportOptions )
+	return reportOptions.filter( ( options ): options is ReportOptions =>
+		Boolean( options )
 	);
 }
 
@@ -410,8 +420,11 @@ const OnlineStorePerformanceWidget = forwardRef<
 			}
 		}, [ hasBeenInView, hasTrackedView, viewAction, widgetEventCategory ] );
 
-		const { primaryEventReportOptions, engagementReportOptions } =
-			getWidgetReportOptions( dates, primaryEvent, breakdownFilter );
+		const {
+			primaryEventReportOptions,
+			keyActionSessionsReportOptions,
+			engagementReportOptions,
+		} = getWidgetReportOptions( dates, primaryEvent, breakdownFilter );
 
 		const primaryEventReport =
 			useInViewSelect(
@@ -422,6 +435,17 @@ const OnlineStorePerformanceWidget = forwardRef<
 						  )
 						: null,
 				[ primaryEventReportOptions ]
+			) || [];
+
+		const keyActionSessionsReport =
+			useInViewSelect(
+				( select: Select ) =>
+					keyActionSessionsReportOptions
+						? select( MODULES_ANALYTICS_4 ).getReport(
+								keyActionSessionsReportOptions
+						  )
+						: null,
+				[ keyActionSessionsReportOptions ]
 			) || [];
 
 		const engagementReport =
@@ -439,6 +463,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			( select: Select ) => {
 				const reportsToCheck = getReportsToCheck(
 					primaryEventReportOptions,
+					keyActionSessionsReportOptions,
 					engagementReportOptions
 				);
 
@@ -451,7 +476,11 @@ const OnlineStorePerformanceWidget = forwardRef<
 					),
 				];
 			},
-			[ primaryEventReportOptions, engagementReportOptions ]
+			[
+				primaryEventReportOptions,
+				keyActionSessionsReportOptions,
+				engagementReportOptions,
+			]
 		);
 
 		useEffect( () => {
@@ -511,7 +540,9 @@ const OnlineStorePerformanceWidget = forwardRef<
 			currentSessions,
 			currentRate,
 			previousRate,
-		} = processReports( primaryEventReport, engagementReport );
+		} = processReports( primaryEventReport, engagementReport, {
+			keyActionSessionsReport,
+		} );
 
 		return (
 			<WidgetComponent
