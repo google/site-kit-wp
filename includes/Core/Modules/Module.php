@@ -437,7 +437,7 @@ abstract class Module {
 	 * @since 1.0.0
 	 * @since 1.190.0 Validates the parameters of a `Schema_Aware_Datapoint` before running it.
 	 * @since 1.191.0 Passes the Google client the request is sent with to a closure request.
-	 * @since n.e.x.t Leaves out the reconnect URL when a shared data request fails.
+	 * @since 1.192.0 Leaves out the reconnect URL when a shared data request fails.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Data on success, or WP_Error on failure.
@@ -775,7 +775,7 @@ abstract class Module {
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 * @since 1.70.0 $datapoint parameter is optional.
 	 * @since 1.191.0 Reconnect URL for proxy code exceptions points at setup start on the site.
-	 * @since n.e.x.t Leaves out the reconnect URL for proxy code exceptions when the user can't set up Site Kit.
+	 * @since 1.192.0 Leaves out the reconnect URL for proxy code exceptions when the user can't set up Site Kit.
 	 *
 	 * @param Exception $e         Exception object.
 	 * @param string    $datapoint Optional. Datapoint originally requested. Default is an empty string.
