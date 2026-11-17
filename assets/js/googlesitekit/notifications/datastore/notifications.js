@@ -308,6 +308,29 @@ export const actions = {
 		return { type: RESET_QUEUE, payload: { groupID } };
 	},
 	/**
+	 * Removes a notification from its group's queue for the current page view.
+	 *
+	 * Unlike `dismissNotification()`, this doesn't persist a dismissal, so the
+	 * notification can be queued again on a later page view.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} id Notification ID to remove from the queue.
+	 * @return {Object} Redux-style action.
+	 */
+	removeNotificationFromQueue: createValidatedAction(
+		( id ) => {
+			invariant(
+				id,
+				'A notification id is required to remove a notification from the queue.'
+			);
+		},
+		( id ) => ( {
+			type: DISMISS_NOTIFICATION,
+			payload: { id },
+		} )
+	),
+	/**
 	 * Populates a queue with qualifying notifications ordered by priority.
 	 *
 	 * @since 1.142.0

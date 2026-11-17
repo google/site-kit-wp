@@ -20,20 +20,29 @@
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
+import { FEATURE_DISCOVERY_CALLOUT_NOTIFICATION } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
+	INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFeatureDiscovery } from '@/js/googlesitekit/feature-discovery';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { getNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
@@ -59,7 +68,8 @@ const feature: FeatureSettings = {
 		title: 'Almost there! Finish your newsletter sign-up form',
 		description:
 			'Complete setup to make it live and start building a list of your most interested visitors',
-		tooltip: '',
+		tooltip:
+			'You can always complete your sign-up form setup from the “Add features” page',
 		resolveRequirements: () => Promise.resolve(),
 	},
 };
@@ -70,6 +80,7 @@ describe( 'IncompleteSetupReminderNotification', () => {
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 		const api = createFeatureDiscovery( registry );
 		api.registerFeature( 'other-feature', {
@@ -195,6 +206,8 @@ describe( 'IncompleteSetupReminderNotification', () => {
 		],
 	] )( 'should render nothing without a %s', ( _, settings ) => {
 		registry = createTestRegistry() as Registry;
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry
 			.dispatch( CORE_FEATURE_DISCOVERY )
 			.registerFeature( slug, { ...feature, ...settings } );
@@ -203,5 +216,157 @@ describe( 'IncompleteSetupReminderNotification', () => {
 			{ registry }
 		);
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	describe( 'post-dismissal tooltip', () => {
+		const dismissItemEndpoint =
+			/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/;
+
+		function getQueuedSetupCTAIDs() {
+			return (
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.SETUP_CTAS
+					) || []
+			).map(
+				( { id: notificationID }: { id: string } ) => notificationID
+			);
+		}
+
+		beforeEach( async () => {
+			fetchMock.postOnce( dismissItemEndpoint, { body: [ id ] } );
+
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification( FEATURE_DISCOVERY_CALLOUT_NOTIFICATION, {
+					Component: () => null,
+					areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+					groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+
+			await registry
+				.resolveSelect( CORE_NOTIFICATIONS )
+				.getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.SETUP_CTAS
+				);
+		} );
+
+		it( 'should show the feature tooltip pointing to "Add features" on "Maybe later"', async () => {
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitFor( () =>
+				expect(
+					registry.select( CORE_USER ).isItemDismissed( id )
+				).toBe( true )
+			);
+
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toEqual(
+				expect.objectContaining( {
+					isTooltipVisible: true,
+					content: feature.incompleteSetupReminder!.tooltip,
+					tooltipSlug: 'feature-discovery-incomplete-setup',
+					dismissLabel: 'Got it',
+					target: '.googlesitekit-add-features-button, .googlesitekit-features-menu__button',
+				} )
+			);
+		} );
+
+		it( 'should persist the one-time tooltip dismissal when the tooltip is closed', async () => {
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			const { onDismiss } = registry
+				.select( CORE_UI )
+				.getValue( 'admin-screen-tooltip' );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [ id, INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG ],
+			} );
+
+			await act( () => onDismiss() );
+
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed(
+						INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG
+					)
+			).toBe( true );
+		} );
+
+		it( 'should remove the "Add features" callout from the queue when the tooltip is shown', async () => {
+			expect( getQueuedSetupCTAIDs() ).toContain(
+				FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+			);
+
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitFor( () =>
+				expect(
+					registry.select( CORE_USER ).isItemDismissed( id )
+				).toBe( true )
+			);
+
+			expect( getQueuedSetupCTAIDs() ).not.toContain(
+				FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+			);
+			// The callout's own dismissal is not persisted.
+			expect(
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.isNotificationDismissed(
+						FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+					)
+			).toBe( false );
+		} );
+
+		it( 'should not show the tooltip or remove the callout from the queue once the tooltip has been dismissed', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG,
+				] );
+
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitFor( () =>
+				expect(
+					registry.select( CORE_USER ).isItemDismissed( id )
+				).toBe( true )
+			);
+
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toBeUndefined();
+			expect( getQueuedSetupCTAIDs() ).toContain(
+				FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+			);
+		} );
 	} );
 } );

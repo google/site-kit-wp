@@ -1,5 +1,5 @@
 /**
- * AdminMenuTooltip component.
+ * AdminScreenTooltip component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -24,9 +24,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import JoyrideTooltip from '@/js/components/JoyrideTooltip';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -34,11 +32,14 @@ import {
 } from '@/js/hooks/useBreakpoint';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import { useHideTooltip, useTooltipSettings } from './hooks';
 
 export function AdminScreenTooltip() {
 	const viewContext = useViewContext();
-	const { setValue } = useDispatch( CORE_UI );
 	const breakpoint = useBreakpoint();
+
+	const hideTooltip = useHideTooltip();
+	const tooltipSettings = useTooltipSettings();
 
 	const {
 		isTooltipVisible = false,
@@ -52,12 +53,8 @@ export function AdminScreenTooltip() {
 		gaTrackingEventLabel,
 		floaterProps,
 		isCenteredOnMobile = true,
-	} = useSelect(
-		( select ) =>
-			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
-				isTooltipVisible: false,
-			}
-	);
+		onDismiss,
+	} = tooltipSettings;
 
 	function handleViewTooltip() {
 		trackEvent(
@@ -77,8 +74,15 @@ export function AdminScreenTooltip() {
 			);
 		}
 
-		setValue( 'admin-screen-tooltip', undefined );
-	}, [ setValue, tooltipSlug, viewContext, gaTrackingEventLabel ] );
+		hideTooltip();
+		onDismiss?.();
+	}, [
+		hideTooltip,
+		tooltipSlug,
+		viewContext,
+		gaTrackingEventLabel,
+		onDismiss,
+	] );
 
 	if ( ! isTooltipVisible ) {
 		return null;
