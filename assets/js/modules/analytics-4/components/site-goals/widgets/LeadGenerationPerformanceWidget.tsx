@@ -225,18 +225,16 @@ function getWidgetReportOptions(
 		};
 	}
 
-	const leadEventsFilter = {
-		filterType: 'inListFilter',
-		value: detectedLeadEvents,
-	};
-
 	return {
 		leadEventsReportOptions: {
 			...dates,
 			metrics: [ { name: 'eventCount' } ],
 			dimensions: [ { name: 'eventName' } ],
 			dimensionFilters: {
-				eventName: leadEventsFilter,
+				eventName: {
+					filterType: 'inListFilter',
+					value: detectedLeadEvents,
+				},
 				// Scopes the Key action to the selected breakdown tab.
 				...breakdownFilter,
 			},
