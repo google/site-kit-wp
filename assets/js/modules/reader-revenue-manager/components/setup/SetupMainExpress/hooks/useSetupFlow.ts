@@ -28,7 +28,7 @@ import { Registry, Select, useRegistry, useSelect } from 'googlesitekit-data';
 import { existingCTAStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepExistingCTA';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import {
-	EXPRESS_SETUP_CTAS,
+	ExpressSetupCTAType,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
@@ -104,7 +104,7 @@ export function findBlockingStep(
  */
 export default function useSetupFlow(
 	steps: SetupStep[],
-	ctaType?: typeof EXPRESS_SETUP_CTAS[ keyof typeof EXPRESS_SETUP_CTAS ]
+	ctaType?: ExpressSetupCTAType
 ): {
 	currentStep: SetupStep | undefined;
 	advance: () => void;

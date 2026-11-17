@@ -27,13 +27,10 @@ import { useEffect, useState } from 'react';
 import { Select, useSelect } from 'googlesitekit-data';
 import { EXPRESS_SETUP_CTA_TO_CTA_TYPE } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import {
-	EXPRESS_SETUP_CTAS,
+	ExpressSetupCTAType,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
-
-type ExpressSetupCTAType =
-	typeof EXPRESS_SETUP_CTAS[ keyof typeof EXPRESS_SETUP_CTAS ];
 
 /**
  * Determines whether a publication already has a CTA of the type an express

@@ -192,6 +192,26 @@ describe( 'Banner', () => {
 			expect( link ).toBeInTheDocument();
 			expect( link ).toHaveTextContent( 'Learn more' );
 		} );
+
+		it( 'renders an external LearnMoreLink without the external icon when hideExternalIndicator is true', () => {
+			const { container } = render(
+				<Banner
+					title="Test Banner"
+					description="Test description"
+					learnMoreLink={ {
+						href: 'https://example.com/learn-more',
+						hideExternalIndicator: true,
+					} }
+				/>
+			);
+
+			const link = container.querySelector(
+				'a[href="https://example.com/learn-more"]'
+			);
+
+			expect( link ).toHaveAttribute( 'target', '_blank' );
+			expect( link.querySelector( 'svg' ) ).not.toBeInTheDocument();
+		} );
 	} );
 
 	describe( 'basic rendering', () => {

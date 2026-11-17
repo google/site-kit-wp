@@ -30,9 +30,17 @@ import {
 } from '@/js/googlesitekit/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import { shouldNotificationBeAddedToQueue } from '@/js/googlesitekit/notifications/util/shouldNotificationBeAddedToQueue';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION } from '@/js/modules/reader-revenue-manager/components/dashboard/PublicationApprovedOverlayNotification';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_EXPRESS_SETUP_NOTIFICATION_IDS,
 	RRM_FEATURE_DISCOVERY_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION_ID,
 	RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION_ID,
 	RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION_ID,
@@ -42,6 +50,8 @@ import {
 } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	CONTENT_POLICY_STATES,
+	ERROR_CODE_NON_HTTPS_SITE,
+	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -525,6 +535,133 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 				NOTIFICATIONS[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ]
 					.viewContexts
 			).toEqual( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+		} );
+	} );
+
+	describe( 'rrm-express-setup-notification_survey', () => {
+		const notificationID =
+			RRM_EXPRESS_SETUP_NOTIFICATION_IDS[ EXPRESS_SETUP_CTAS.SURVEY ];
+
+		const notification = NOTIFICATIONS[ notificationID ];
+
+		function provideSurveyModules( {
+			rrm = {},
+			analytics = { active: true, connected: true },
+		} = {} ) {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: false,
+					connected: false,
+					...rrm,
+				},
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					...analytics,
+				},
+			] );
+		}
+
+		function provideAnalyticsAccess( access ) {
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access },
+					{ slug: MODULE_SLUG_ANALYTICS_4 }
+				);
+		}
+
+		function isQueued( { isDismissed = false, features = [] } = {} ) {
+			return shouldNotificationBeAddedToQueue( notification, {
+				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				isDismissed,
+				_enabledFeatureFlags: features,
+			} );
+		}
+
+		beforeEach( () => {
+			provideSurveyModules();
+			provideAnalyticsAccess( true );
+		} );
+
+		it( 'should be registered at the top of the main dashboard behind the `rrmSurveyCTA` feature flag, permanently dismissible', () => {
+			expect( notificationID ).toBe(
+				'rrm-express-setup-notification_survey'
+			);
+
+			expect( notification ).toMatchObject( {
+				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+				featureFlag: 'rrmSurveyCTA',
+				isDismissible: true,
+			} );
+
+			expect( notification.dismissRetries ).toBeUndefined();
+		} );
+
+		it( 'should be active when all requirements are met', async () => {
+			expect( isQueued( { features: [ 'rrmSurveyCTA' ] } ) ).toBe( true );
+
+			expect( await notification.checkRequirements( registry ) ).toBe(
+				true
+			);
+		} );
+
+		it( 'should not be queued when the `rrmSurveyCTA` feature flag is disabled', () => {
+			expect( isQueued( { features: [] } ) ).toBe( false );
+		} );
+
+		it( 'should not be queued when it has been dismissed', () => {
+			expect(
+				isQueued( { isDismissed: true, features: [ 'rrmSurveyCTA' ] } )
+			).toBe( false );
+		} );
+
+		it( 'should not be active when Reader Revenue Manager is connected', async () => {
+			provideSurveyModules( { rrm: { active: true, connected: true } } );
+
+			expect( await notification.checkRequirements( registry ) ).toBe(
+				false
+			);
+		} );
+
+		it( 'should not be active when the user cannot activate Reader Revenue Manager', async () => {
+			provideSurveyModules( {
+				rrm: {
+					checkRequirements: () => {
+						throw {
+							code: ERROR_CODE_NON_HTTPS_SITE,
+							message:
+								'The site should use HTTPS to set up Reader Revenue Manager',
+							data: null,
+						};
+					},
+				},
+			} );
+
+			expect( await notification.checkRequirements( registry ) ).toBe(
+				false
+			);
+		} );
+
+		it( 'should not be active when Analytics is not connected', async () => {
+			provideSurveyModules( {
+				analytics: { active: true, connected: false },
+			} );
+
+			expect( await notification.checkRequirements( registry ) ).toBe(
+				false
+			);
+		} );
+
+		it( 'should not be active when the user does not have access to the Analytics property', async () => {
+			provideAnalyticsAccess( false );
+
+			expect( await notification.checkRequirements( registry ) ).toBe(
+				false
+			);
 		} );
 	} );
 
