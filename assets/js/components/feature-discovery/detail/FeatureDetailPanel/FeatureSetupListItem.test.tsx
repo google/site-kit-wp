@@ -19,18 +19,18 @@
 /**
  * Internal dependencies
  */
-import { render, screen, within } from '@tests/js/test-utils';
+import { render, screen } from '@tests/js/test-utils';
 import FeatureSetupListItem from './FeatureSetupListItem';
 
 describe( 'FeatureSetupListItem', () => {
 	it( 'should render a plain entry unchanged', () => {
-		const { container } = render(
+		render(
 			<ul>
 				<FeatureSetupListItem step="Choose your Google Ads account" />
 			</ul>
 		);
 
-		const item = container.querySelector( 'li' ) as HTMLElement; // eslint-disable-line sitekit/acronym-case
+		const item = screen.getByRole( 'listitem' );
 
 		expect( item ).toHaveTextContent( 'Choose your Google Ads account' );
 		expect( item.querySelector( 'ul' ) ).not.toBeInTheDocument();
@@ -55,17 +55,17 @@ describe( 'FeatureSetupListItem', () => {
 			screen.getByText( 'Connect your account' )
 		).toBeInTheDocument();
 
-		const subStepsList = container.querySelector( 'ul ul' ) as HTMLElement; // eslint-disable-line sitekit/acronym-case
+		const subStepsList = container.querySelector( 'ul ul' );
 
 		expect( subStepsList ).toBeInTheDocument();
-		expect( subStepsList.children ).toHaveLength( 2 );
+		expect( subStepsList?.children ).toHaveLength( 2 );
 		expect(
-			within( subStepsList ).getByText(
+			screen.getByText(
 				'New account: Set up your account, campaign and payment details.'
 			)
 		).toBeInTheDocument();
 		expect(
-			within( subStepsList ).getByText(
+			screen.getByText(
 				'Existing account: Enter your Ads conversion ID.'
 			)
 		).toBeInTheDocument();

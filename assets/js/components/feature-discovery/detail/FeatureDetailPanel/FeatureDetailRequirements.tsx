@@ -30,7 +30,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import FeatureSetupListItem from '@/js/components/feature-discovery/detail/FeatureDetailPanel/FeatureSetupListItem';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
@@ -41,6 +40,7 @@ import {
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import FeatureSetupListItem from './FeatureSetupListItem';
 
 interface FeatureDetailRequirementsProps {
 	feature: Feature;
