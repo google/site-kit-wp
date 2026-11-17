@@ -94,6 +94,31 @@ function getSinglePrimaryCounts( eventsReport: Report ) {
 }
 
 /**
+ * Reads a report's totals as a current and previous row pair.
+ *
+ * The date range is the only dimension of the totals. A totals row without
+ * one counts as the current period.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Report} report Report whose totals hold one entry per dateRange.
+ * @return {{current: (ReportRow|undefined), previous: (ReportRow|undefined)}} Current and previous totals rows.
+ */
+export function getTotalsRows( report: Report | undefined ): {
+	current?: ReportRow;
+	previous?: ReportRow;
+} {
+	const totals = report?.totals ?? [];
+
+	return {
+		current: totals.find(
+			( row ) => row?.dimensionValues?.[ 0 ]?.value !== 'date_range_1'
+		),
+		previous: totals.find( makeFind( 'date_range_1', 0 ) ),
+	};
+}
+
+/**
  * Returns the current and previous values of a metric from a report's totals.
  *
  * @since n.e.x.t
@@ -103,20 +128,16 @@ function getSinglePrimaryCounts( eventsReport: Report ) {
  * @return {{current: number, previous: number}} Values for each date range.
  */
 function getTotalsMetric( report: Report, metricIndex: number ) {
-	const { totals = [] } = report || {};
-	function getValue( dateRangeSlug: string ) {
-		return (
-			parseFloat(
-				totals.find( makeFind( dateRangeSlug, 0 ) )?.metricValues?.[
-					metricIndex
-				]?.value ?? ''
-			) || 0
-		);
-	}
+	const { current, previous } = getTotalsRows( report );
 
 	return {
-		current: getValue( 'date_range_0' ),
-		previous: getValue( 'date_range_1' ),
+		current:
+			parseFloat( current?.metricValues?.[ metricIndex ]?.value ?? '' ) ||
+			0,
+		previous:
+			parseFloat(
+				previous?.metricValues?.[ metricIndex ]?.value ?? ''
+			) || 0,
 	};
 }
 

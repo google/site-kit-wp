@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { getTotalsRows } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 
 /**
@@ -176,30 +177,6 @@ function groupRowsByValue(
 }
 
 /**
- * Reads a report's totals as a current and previous row pair.
- *
- * The aggregated reports carry no breakdown dimension, so their values come
- * from the totals, where the date range is the only dimension.
- *
- * @since 1.187.0
- *
- * @param report Aggregated report.
- * @return Current and previous totals rows.
- */
-function getTotalsPair( report: Report | undefined ): RowPair {
-	const totals = ( report?.totals ?? [] ) as ReportRow[];
-
-	return {
-		current: totals.find(
-			( row ) => row?.dimensionValues?.[ 0 ]?.value !== 'date_range_1'
-		),
-		previous: totals.find(
-			( row ) => row?.dimensionValues?.[ 0 ]?.value === 'date_range_1'
-		),
-	};
-}
-
-/**
  * Sums the event counts of the given row pairs.
  *
  * @since 1.187.0
@@ -324,13 +301,13 @@ export function shapeSiteGoalsPDFData( {
 
 	// No breakdown to show: fall back to the single aggregated group.
 	if ( ! supportedValues.length ) {
-		const aggregatedEvents = getTotalsPair( aggregatedEventsReport );
+		const aggregatedEvents = getTotalsRows( aggregatedEventsReport );
 
 		if ( ! aggregatedEvents.current && ! aggregatedEvents.previous ) {
 			return [];
 		}
 
-		const aggregatedEngagement = getTotalsPair(
+		const aggregatedEngagement = getTotalsRows(
 			aggregatedEngagementReport
 		);
 
@@ -339,7 +316,7 @@ export function shapeSiteGoalsPDFData( {
 				AGGREGATED_GROUP_ID,
 				aggregatedLabel,
 				aggregatedEvents,
-				getTotalsPair( aggregatedKeyActionSessionsReport ),
+				getTotalsRows( aggregatedKeyActionSessionsReport ),
 				aggregatedEngagement,
 				toMetric( aggregatedEngagement, SESSIONS_INDEX )
 			),
@@ -348,7 +325,7 @@ export function shapeSiteGoalsPDFData( {
 
 	// Every rate is out of all the site's sessions, as on the dashboard.
 	const siteSessions = toMetric(
-		getTotalsPair( aggregatedEngagementReport ),
+		getTotalsRows( aggregatedEngagementReport ),
 		SESSIONS_INDEX
 	);
 	const keyActionSessionsRowsByValue = groupRowsByValue(
@@ -371,7 +348,7 @@ export function shapeSiteGoalsPDFData( {
 	// we subtract the groups from the site-wide total, as
 	// `getUnattributedEventCounts` does for the dashboard.
 	const siteTotal = toMetric(
-		getTotalsPair( aggregatedEventsReport ),
+		getTotalsRows( aggregatedEventsReport ),
 		EVENT_COUNT_INDEX
 	);
 	const groupsTotal = sumTotals(
