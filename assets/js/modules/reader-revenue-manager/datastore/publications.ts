@@ -1000,7 +1000,12 @@ const baseSelectors = {
 				return [];
 			}
 
-			const selectedPublication = state.publicationsByID[ publicationID ];
+			// The products on offer are those of a publication the site can
+			// still select, so this reads the list rather than the index.
+			const selectedPublication = state.publications!.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId: id } ) => id === publicationID
+			);
 
 			if ( ! selectedPublication || ! selectedPublication.products ) {
 				return [];
