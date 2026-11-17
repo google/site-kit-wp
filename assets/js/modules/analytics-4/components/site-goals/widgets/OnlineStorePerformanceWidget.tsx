@@ -71,13 +71,17 @@ import {
 	resolveGoalDriverIDs,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { buildKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { useShouldShowSiteGoalsRemovalNotice } from '@/js/modules/analytics-4/components/site-goals/hooks/useShouldShowSiteGoalsRemovalNotice';
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
-import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+import {
+	getKeyActionRates,
+	processReports,
+} from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	VisitorEngagementTiles,
 	resolveVisitorEngagementSelectionState,
@@ -166,18 +170,12 @@ function getWidgetReportOptions(
 
 	// Each session counts once, however many Key action events it holds, so
 	// the rate never goes above 100%.
-	const keyActionSessionsReportOptions: ReportOptions | null = primaryEvent
-		? {
-				...dates,
-				metrics: [ { name: 'sessions' } ],
-				dimensionFilters: {
-					eventName: primaryEvent,
-					...breakdownFilter,
-				} as ReportOptions[ 'dimensionFilters' ],
-				reportID:
-					'analytics-4_online-store-performance-widget_keyActionSessionsReportOptions',
-		  }
-		: null;
+	const keyActionSessionsReportOptions: ReportOptions | null =
+		buildKeyActionSessionsReportOptions(
+			dates,
+			primaryEvent,
+			breakdownFilter
+		) ?? null;
 
 	// The rate is out of all site sessions on every breakdown tab, so this
 	// report never takes the breakdown filter.
@@ -534,15 +532,12 @@ const OnlineStorePerformanceWidget = forwardRef<
 			);
 		}
 
-		const {
-			currentPrimaryCount,
-			previousPrimaryCount,
-			currentSessions,
-			currentRate,
-			previousRate,
-		} = processReports( primaryEventReport, engagementReport, {
-			keyActionSessionsReport,
-		} );
+		const { currentPrimaryCount, previousPrimaryCount } = processReports(
+			primaryEventReport,
+			engagementReport
+		);
+		const { currentRate, previousRate, currentSessions } =
+			getKeyActionRates( keyActionSessionsReport, engagementReport );
 
 		return (
 			<WidgetComponent

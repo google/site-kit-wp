@@ -32,6 +32,7 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { buildKeyActionSessionsReportOptions as buildSharedKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { buildTopTrafficChannelsSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
@@ -40,6 +41,7 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -102,19 +104,11 @@ function buildKeyActionSessionsReportOptions(
 	leadEvents: string[],
 	breakdownFilter: Record< string, unknown > = {}
 ) {
-	return {
-		...dates,
-		metrics: [ { name: 'sessions' } ],
-		dimensionFilters: {
-			eventName: {
-				filterType: 'inListFilter',
-				value: leadEvents,
-			},
-			...breakdownFilter,
-		},
-		reportID:
-			'analytics-4_lead-generation-performance-widget_widget_keyActionSessionsReportOptions',
-	};
+	return buildSharedKeyActionSessionsReportOptions(
+		dates,
+		leadEvents,
+		breakdownFilter
+	) as ReportOptions;
 }
 
 // The site's sessions in the current and the previous period. Mocked reports

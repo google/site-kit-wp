@@ -18,7 +18,7 @@
  * Internal dependencies
  */
 import { Report } from '@/js/modules/analytics-4/datastore/types';
-import { processReports } from './reports';
+import { getKeyActionRates, processReports } from './reports';
 
 function eventRow( eventName: string, dateRange: string, count: number ) {
 	return {
@@ -34,6 +34,15 @@ function totalsRow( dateRange: string, values: number[] ) {
 	};
 }
 
+function keyActionSessionsReport( current: number, previous: number ) {
+	return {
+		totals: [
+			totalsRow( 'date_range_0', [ current ] ),
+			totalsRow( 'date_range_1', [ previous ] ),
+		],
+	} as unknown as Report;
+}
+
 // 1,000 site sessions in the current period, 800 in the previous one.
 const engagementReport = {
 	totals: [
@@ -42,61 +51,59 @@ const engagementReport = {
 	],
 } as unknown as Report;
 
-describe( 'processReports', () => {
-	it( 'returns the share of sessions with a Key action, not the event count over sessions', () => {
-		// 50 sessions each add 6 products to the cart.
-		const eventsReport = {
-			rows: [
-				eventRow( 'add_to_cart', 'date_range_0', 300 ),
-				eventRow( 'add_to_cart', 'date_range_1', 120 ),
-			],
-		} as unknown as Report;
-		const keyActionSessionsReport = {
-			totals: [
-				totalsRow( 'date_range_0', [ 50 ] ),
-				totalsRow( 'date_range_1', [ 40 ] ),
-			],
-		} as unknown as Report;
-
-		const result = processReports( eventsReport, engagementReport, {
-			keyActionSessionsReport,
-		} );
-
-		expect( result ).toMatchObject( {
+describe( 'getKeyActionRates', () => {
+	it( 'returns the share of site sessions with a Key action', () => {
+		// 50 sessions each add 6 products to the cart: 300 events.
+		expect(
+			getKeyActionRates(
+				keyActionSessionsReport( 50, 40 ),
+				engagementReport
+			)
+		).toEqual( {
 			currentRate: 0.05,
 			previousRate: 0.05,
-			currentPrimaryCount: 300,
-			previousPrimaryCount: 120,
 			currentSessions: 1000,
 		} );
 	} );
 
-	it( 'never returns a rate above 1 when there are more events than sessions', () => {
-		const eventsReport = {
-			rows: [
-				eventRow( 'purchase', 'date_range_0', 6000 ),
-				eventRow( 'purchase', 'date_range_1', 4800 ),
-			],
-		} as unknown as Report;
-		const keyActionSessionsReport = {
-			totals: [
-				totalsRow( 'date_range_0', [ 1000 ] ),
-				totalsRow( 'date_range_1', [ 800 ] ),
-			],
-		} as unknown as Report;
-
-		const { currentRate, previousRate } = processReports(
-			eventsReport,
-			engagementReport,
-			{ keyActionSessionsReport }
+	it( 'never returns a rate above 1', () => {
+		const { currentRate, previousRate } = getKeyActionRates(
+			keyActionSessionsReport( 1000, 800 ),
+			engagementReport
 		);
 
 		expect( currentRate ).toBe( 1 );
 		expect( previousRate ).toBe( 1 );
 	} );
 
-	it( 'counts a session with several lead events once', () => {
-		// 100 sessions each hold a `submit_lead_form` and a `contact` event.
+	it( 'returns a zero rate when there are no sessions', () => {
+		expect( getKeyActionRates( {} as Report, {} as Report ) ).toEqual( {
+			currentRate: 0,
+			previousRate: 0,
+			currentSessions: 0,
+		} );
+	} );
+} );
+
+describe( 'processReports', () => {
+	it( 'returns the event counts and engagement values', () => {
+		const eventsReport = {
+			rows: [
+				eventRow( 'add_to_cart', 'date_range_0', 300 ),
+				eventRow( 'add_to_cart', 'date_range_1', 120 ),
+			],
+		} as unknown as Report;
+
+		expect( processReports( eventsReport, engagementReport ) ).toEqual( {
+			currentPrimaryCount: 300,
+			previousPrimaryCount: 120,
+			currentSessions: 1000,
+			currentEngagementRate: 0.6,
+			previousEngagementRate: 0.5,
+		} );
+	} );
+
+	it( 'sums the counts of several lead events', () => {
 		const eventsReport = {
 			rows: [
 				eventRow( 'submit_lead_form', 'date_range_0', 100 ),
@@ -105,51 +112,14 @@ describe( 'processReports', () => {
 				eventRow( 'contact', 'date_range_1', 40 ),
 			],
 		} as unknown as Report;
-		const keyActionSessionsReport = {
-			totals: [
-				totalsRow( 'date_range_0', [ 100 ] ),
-				totalsRow( 'date_range_1', [ 40 ] ),
-			],
-		} as unknown as Report;
 
-		const result = processReports( eventsReport, engagementReport, {
-			aggregate: true,
-			keyActionSessionsReport,
-		} );
-
-		expect( result ).toMatchObject( {
-			currentRate: 0.1,
-			previousRate: 0.05,
+		expect(
+			processReports( eventsReport, engagementReport, {
+				aggregate: true,
+			} )
+		).toMatchObject( {
 			currentPrimaryCount: 200,
 			previousPrimaryCount: 80,
 		} );
-	} );
-
-	it( 'returns a zero rate when there are no sessions', () => {
-		const { currentRate, previousRate } = processReports(
-			{} as Report,
-			{} as Report,
-			{ keyActionSessionsReport: {} as Report }
-		);
-
-		expect( currentRate ).toBe( 0 );
-		expect( previousRate ).toBe( 0 );
-	} );
-
-	it( 'falls back to the event count over sessions without a Key action sessions report', () => {
-		const eventsReport = {
-			rows: [
-				eventRow( 'purchase', 'date_range_0', 100 ),
-				eventRow( 'purchase', 'date_range_1', 40 ),
-			],
-		} as unknown as Report;
-
-		const { currentRate, previousRate } = processReports(
-			eventsReport,
-			engagementReport
-		);
-
-		expect( currentRate ).toBe( 0.1 );
-		expect( previousRate ).toBe( 0.05 );
 	} );
 } );

@@ -134,8 +134,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			compareEndDate,
 			metrics: [ { name: 'sessions' } ],
 			dimensionFilters,
-			reportID:
-				'analytics-4_lead-generation-performance-widget_widget_keyActionSessionsReportOptions',
+			reportID: 'analytics-4_goal-driver-reports_key-action-sessions',
 		};
 	}
 

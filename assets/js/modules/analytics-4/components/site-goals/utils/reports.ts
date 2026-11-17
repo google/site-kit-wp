@@ -107,9 +107,9 @@ function getTotalsMetric( report: Report, metricIndex: number ) {
 	function getValue( dateRangeSlug: string ) {
 		return (
 			parseFloat(
-				( totals as ReportRow[] )?.find?.(
-					makeFind( dateRangeSlug, 0 )
-				)?.metricValues?.[ metricIndex ]?.value ?? ''
+				totals.find( makeFind( dateRangeSlug, 0 ) )?.metricValues?.[
+					metricIndex
+				]?.value ?? ''
 			) || 0
 		);
 	}
@@ -123,30 +123,26 @@ function getTotalsMetric( report: Report, metricIndex: number ) {
 /**
  * Processes events and engagement reports into a set of derived metrics.
  *
- * When a Key action sessions report is given, the rate is the share of the
- * site's sessions that hold at least one Key action event, so it never goes
- * above 100%, however many events a session holds. Otherwise it is the event
- * count over the sessions.
+ * The Key action rate is not one of them: use `getKeyActionRates()`, which
+ * needs the sessions that hold a Key action event.
  *
  * @since 1.179.0
- * @since n.e.x.t Added the `keyActionSessionsReport` option.
+ * @since n.e.x.t Removed the rates, now returned by `getKeyActionRates()`.
  *
- * @param {Report}  eventsReport                      Report containing event rows (rows keyed by eventName + dateRange).
- * @param {Report}  engagementReport                  Report containing engagement totals (engagementRate + sessions).
- * @param {Object}  [options]                         Optional processing options.
- * @param {boolean} [options.aggregate]               When true, sums eventCount across all matching rows (for
- *                                                    multi-event lead generation). When false (default), reads
- *                                                    a single matching row (for a single primary ecommerce event).
- * @param {Report}  [options.keyActionSessionsReport] Report containing the `sessions` that hold a Key action
- *                                                    event. When set, the rate is computed from it.
- * @return {Object} Derived metrics including rates, counts, and engagement values.
+ * @param {Report}  eventsReport        Report containing event rows (rows keyed by eventName + dateRange).
+ * @param {Report}  engagementReport    Report containing engagement totals (engagementRate + sessions).
+ * @param {Object}  [options]           Optional processing options.
+ * @param {boolean} [options.aggregate] When true, sums eventCount across all matching rows (for
+ *                                      multi-event lead generation). When false (default), reads
+ *                                      a single matching row (for a single primary ecommerce event).
+ * @return {Object} Derived metrics including counts and engagement values.
  */
 export function processReports(
 	eventsReport: Report,
 	engagementReport: Report,
-	options: { aggregate?: boolean; keyActionSessionsReport?: Report } = {}
+	options: { aggregate?: boolean } = {}
 ) {
-	const { aggregate = false, keyActionSessionsReport } = options;
+	const { aggregate = false } = options;
 
 	const { current: currentPrimaryCount, previous: previousPrimaryCount } =
 		aggregate
@@ -156,28 +152,50 @@ export function processReports(
 	// engagementRate is metricValues[0], sessions is metricValues[1].
 	const { current: currentEngagementRate, previous: previousEngagementRate } =
 		getTotalsMetric( engagementReport, 0 );
-	const { current: currentSessions, previous: previousSessions } =
-		getTotalsMetric( engagementReport, 1 );
-
-	// A session counts once in the Key action sessions report, however many
-	// Key action events it holds.
-	const { current: currentRateCount, previous: previousRateCount } =
-		keyActionSessionsReport
-			? getTotalsMetric( keyActionSessionsReport, 0 )
-			: { current: currentPrimaryCount, previous: previousPrimaryCount };
-
-	const currentRate =
-		currentSessions === 0 ? 0 : currentRateCount / currentSessions;
-	const previousRate =
-		previousSessions === 0 ? 0 : previousRateCount / previousSessions;
+	const { current: currentSessions } = getTotalsMetric( engagementReport, 1 );
 
 	return {
-		currentRate,
-		previousRate,
 		currentPrimaryCount,
 		previousPrimaryCount,
 		currentSessions,
 		currentEngagementRate,
 		previousEngagementRate,
+	};
+}
+
+/**
+ * Returns the Key action rate: the share of the site's sessions that hold at least one Key action event.
+ *
+ * A session counts once in the Key action sessions report, however many Key
+ * action events it holds, so the rate never goes above 100%.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Report} keyActionSessionsReport Report containing the `sessions` that hold a Key action event.
+ * @param {Report} engagementReport        Unfiltered report containing engagement totals (engagementRate + sessions).
+ * @return {{currentRate: number, previousRate: number, currentSessions: number}} The current and previous rates, and the site's current sessions.
+ */
+export function getKeyActionRates(
+	keyActionSessionsReport: Report,
+	engagementReport: Report
+) {
+	const {
+		current: currentKeyActionSessions,
+		previous: previousKeyActionSessions,
+	} = getTotalsMetric( keyActionSessionsReport, 0 );
+	// sessions is metricValues[1] of the engagement report.
+	const { current: currentSessions, previous: previousSessions } =
+		getTotalsMetric( engagementReport, 1 );
+
+	return {
+		currentRate:
+			currentSessions === 0
+				? 0
+				: currentKeyActionSessions / currentSessions,
+		previousRate:
+			previousSessions === 0
+				? 0
+				: previousKeyActionSessions / previousSessions,
+		currentSessions,
 	};
 }

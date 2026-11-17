@@ -37,9 +37,9 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	buildEngagementReportOptions,
-	buildPrimaryEventReportOptions,
+	buildKeyActionSessionsReportOptions,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
-import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+import { getKeyActionRates } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
@@ -74,7 +74,7 @@ const FormCompletionRateWidget: FC< FormCompletionRateWidgetProps > = ( {
 		hasNoLeadEvents
 			? { primaryOptions: engagementReportOptions }
 			: {
-					primaryOptions: buildPrimaryEventReportOptions(
+					primaryOptions: buildKeyActionSessionsReportOptions(
 						dates,
 						detectedLeadEvents
 					),
@@ -82,10 +82,9 @@ const FormCompletionRateWidget: FC< FormCompletionRateWidgetProps > = ( {
 			  }
 	);
 
-	const { currentRate, previousRate, currentSessions } = processReports(
+	const { currentRate, previousRate, currentSessions } = getKeyActionRates(
 		hasNoLeadEvents ? {} : report,
-		hasNoLeadEvents ? report : secondaryReport,
-		{ aggregate: true }
+		hasNoLeadEvents ? report : secondaryReport
 	);
 
 	return (

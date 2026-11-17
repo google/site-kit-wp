@@ -45,6 +45,7 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { buildKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
@@ -57,6 +58,7 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
@@ -118,23 +120,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		};
 	}
 
-	function buildKeyActionSessionsReportOptions(
-		dates: Record< string, unknown >,
-		primaryEvent: string,
-		breakdownFilter: Record< string, unknown > = {}
-	) {
-		return {
-			...dates,
-			metrics: [ { name: 'sessions' } ],
-			dimensionFilters: {
-				eventName: primaryEvent,
-				...breakdownFilter,
-			},
-			reportID:
-				'analytics-4_online-store-performance-widget_keyActionSessionsReportOptions',
-		};
-	}
-
 	/**
 	 * Adds the Key action sessions report for every ecommerce event with no
 	 * breakdown filter, so no test leaves the Key action in its loading state.
@@ -154,7 +139,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		].forEach( ( eventName ) => {
 			provideAnalytics4MockReport(
 				registry,
-				buildKeyActionSessionsReportOptions( dates, eventName )
+				buildKeyActionSessionsReportOptions(
+					dates,
+					eventName
+				) as ReportOptions
 			);
 		} );
 	}
@@ -1943,7 +1931,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				dates,
 				ENUM_CONVERSION_EVENTS.PURCHASE,
 				breakdownFilter
-			)
+			) as ReportOptions
 		);
 		// The Key action rate is out of all site sessions on every tab.
 		provideAnalytics4MockReport(
