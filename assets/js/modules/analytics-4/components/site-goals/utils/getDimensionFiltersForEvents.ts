@@ -16,6 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Gets the dimension filters that limit a report to the given events.
+ *
+ * The events are matched with an `inListFilter` on `eventName`. A breakdown
+ * filter, when given, further limits the report to one breakdown tab.
+ *
+ * @since 1.180.0
+ * @since n.e.x.t Moved from the goal drivers utils to the Site Goals utils.
+ *
+ * @param {string[]} eventNames        Names of the events to match any of.
+ * @param {Object}   [breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.
+ * @return {Object|undefined} The dimension filters, or `undefined` when there are no event names.
+ */
 export function getDimensionFiltersForEvents(
 	eventNames: string[],
 	breakdownFilter?: Record< string, unknown >
