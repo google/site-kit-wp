@@ -86,6 +86,7 @@ export interface Publication {
 
 interface ReaderRevenueManagerState {
 	publications: Publication[] | undefined;
+	publicationsByID: Record< string, Publication >;
 	settings: ReaderRevenueManagerSettings;
 	savedSettings: ReaderRevenueManagerSettings;
 }
@@ -182,6 +183,39 @@ function syncConnectedPublicationSettings(
 	}
 }
 
+/**
+ * Stores a publication under its ID, and in the publications list when that
+ * already holds it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} state       Module state.
+ * @param {Object} publication Publication to store.
+ * @return {void}
+ */
+function storePublication(
+	state: ReaderRevenueManagerState,
+	publication: Publication
+): void {
+	// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+	const publicationID = publication.publicationId;
+
+	state.publicationsByID[ publicationID ] = publication;
+
+	if ( state.publications ) {
+		const publicationIndex = state.publications.findIndex(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId: id } ) => id === publicationID
+		);
+
+		// The list request is filtered to the publications matching this site,
+		// so a publication it didn't return is left out of it.
+		if ( publicationIndex !== -1 ) {
+			state.publications[ publicationIndex ] = publication;
+		}
+	}
+}
+
 type ReaderRevenueManagerRegistry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
@@ -200,6 +234,12 @@ const fetchGetPublicationsStore = createFetchStore( {
 		( state: ReaderRevenueManagerState, publications: Publication[] ) => {
 			state.publications = publications;
 
+			for ( const publication of publications ) {
+				// eslint-disable-next-line sitekit/acronym-case
+				state.publicationsByID[ publication.publicationId ] =
+					publication;
+			}
+
 			const publication = publications?.find(
 				// eslint-disable-next-line sitekit/acronym-case
 				( { publicationId: id } ) =>
@@ -213,30 +253,18 @@ const fetchGetPublicationsStore = createFetchStore( {
 	),
 } );
 
-const fetchPublicationStoreReducerCallback = createReducer(
-	( state: ReaderRevenueManagerState, publication: Publication ) => {
-		state.publications = state.publications || [];
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		const publicationID = publication.publicationId;
-
-		const publicationIndex = state.publications.findIndex(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId: id } ) => id === publicationID
-		);
-
-		if ( publicationIndex === -1 ) {
-			state.publications.push( publication );
-		} else {
-			state.publications[ publicationIndex ] = publication;
-		}
-
-		syncConnectedPublicationSettings( state, publication );
-	}
-);
-
 const fetchCreatePublicationStore = createFetchStore( {
 	baseName: 'createPublication',
-	reducerCallback: fetchPublicationStoreReducerCallback,
+	reducerCallback: createReducer(
+		( state: ReaderRevenueManagerState, publication: Publication ) => {
+			storePublication( state, publication );
+
+			// A created publication is new to a list that has already loaded.
+			state.publications?.push( publication );
+
+			syncConnectedPublicationSettings( state, publication );
+		}
+	),
 	controlCallback: ( {
 		displayName,
 		languageCode,
@@ -281,6 +309,13 @@ const fetchCreatePublicationStore = createFetchStore( {
 	},
 	isAction: true,
 } );
+
+const fetchPublicationStoreReducerCallback = createReducer(
+	( state: ReaderRevenueManagerState, publication: Publication ) => {
+		storePublication( state, publication );
+		syncConnectedPublicationSettings( state, publication );
+	}
+);
 
 const fetchGetPublicationByIDStore = createFetchStore( {
 	baseName: 'getPublicationByID',
@@ -392,21 +427,25 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 					publicationOnboardingStateLastSyncedAtMs;
 			}
 
-			const publication = state.publications?.find(
-				// eslint-disable-next-line sitekit/acronym-case
-				( { publicationId: id } ) => id === publicationID
-			);
+			const publication = state.publicationsByID[ publicationID ];
 
 			if ( publication ) {
-				publication.onboardingState = publicationOnboardingState;
+				storePublication( state, {
+					...publication,
+					onboardingState: publicationOnboardingState,
+				} );
 			}
 		}
 	),
 	isAction: true,
 } );
 
-const baseInitialState: Pick< ReaderRevenueManagerState, 'publications' > = {
+const baseInitialState: Pick<
+	ReaderRevenueManagerState,
+	'publications' | 'publicationsByID'
+> = {
 	publications: undefined,
+	publicationsByID: {},
 };
 
 const baseActions = {
@@ -704,6 +743,7 @@ const baseReducer = createReducer(
 		switch ( type ) {
 			case 'RESET_PUBLICATIONS':
 				state.publications = baseInitialState.publications;
+				state.publicationsByID = baseInitialState.publicationsByID;
 				break;
 
 			default:
@@ -915,6 +955,9 @@ const baseSelectors = {
 	 * resolution is keyed the same way, so a request failure can be retried
 	 * against the identifiers it was made with.
 	 *
+	 * The organization only addresses the request, so the publications are not
+	 * stored under it.
+	 *
 	 * @since n.e.x.t
 	 * @private
 	 *
@@ -928,10 +971,7 @@ const baseSelectors = {
 		_organizationID: string,
 		publicationID: string
 	) {
-		return state.publications?.find(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId: id } ) => id === publicationID
-		);
+		return state.publicationsByID[ publicationID ];
 	},
 
 	/**
@@ -960,10 +1000,7 @@ const baseSelectors = {
 				return [];
 			}
 
-			const selectedPublication = state.publications!.find(
-				// eslint-disable-next-line sitekit/acronym-case
-				( { publicationId: id } ) => id === publicationID
-			);
+			const selectedPublication = state.publicationsByID[ publicationID ];
 
 			if ( ! selectedPublication || ! selectedPublication.products ) {
 				return [];
