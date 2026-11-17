@@ -111,7 +111,7 @@ describe( 'RecentActivityAccessError', () => {
 		expect( link.querySelector( 'svg' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should render "Request access" as plain text when the Analytics settings give no access URL', () => {
+	it( 'should render "Request access" as plain text when the Analytics settings have no account, property or web data stream ID', () => {
 		render( <RecentActivityAccessError />, { registry } );
 
 		expect( screen.getByText( 'Request access' ) ).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe( 'RecentActivityAccessError', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should render "Request access" as plain text on a view-only dashboard, even when the Analytics settings give an access URL', () => {
+	it( 'should render "Request access" as plain text on a view-only dashboard, even when the Analytics settings have an account, property and web data stream ID', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			accountID: '12345',
 			propertyID: '34567',

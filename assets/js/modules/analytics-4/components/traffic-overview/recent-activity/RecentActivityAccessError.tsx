@@ -43,8 +43,7 @@ const RecentActivityAccessError: FC = () => {
 	const isViewOnly = useViewOnly();
 
 	// As with the "Request access" button of a report error, a view-only
-	// dashboard shows no link. Its Analytics settings don't include the
-	// account, property or web data stream IDs the URL is built from.
+	// dashboard shows no link.
 	const requestAccessURL = useSelect(
 		( select: Select ) =>
 			isViewOnly
