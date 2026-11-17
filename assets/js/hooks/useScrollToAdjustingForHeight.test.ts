@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import * as scrollUtils from '@/js/util/scroll';
+import { mockResizeObserver } from '@tests/js/mock-browser-utils';
 import { actHook as act, fireEvent, renderHook } from '@tests/js/test-utils';
 import useScrollToAdjustingForHeight from './useScrollToAdjustingForHeight';
 
@@ -29,56 +30,10 @@ describe( 'useScrollToAdjustingForHeight', () => {
 		'getNavigationalScrollTop'
 	);
 	const scrollToSpy = jest.spyOn( global, 'scrollTo' );
+	const { getObservedElements, simulateResize } = mockResizeObserver();
 
-	// Keeps each observer's callback and the element it watches from its
-	// `observe()` until its `disconnect()`, because a browser calls no
-	// callback after a `disconnect()`.
-	let connectedObservers: Map<
-		ResizeObserver,
-		{ callback: ResizeObserverCallback; target: Element }
-	>;
 	let page: Element;
 	let element: Element;
-
-	/**
-	 * Stands in for ResizeObserver, which JSDOM lacks.
-	 *
-	 * @since n.e.x.t
-	 */
-	class ResizeObserverMock implements ResizeObserver {
-		callback: ResizeObserverCallback;
-
-		constructor( callback: ResizeObserverCallback ) {
-			this.callback = callback;
-		}
-
-		observe( target: Element ) {
-			connectedObservers.set( this, { callback: this.callback, target } );
-		}
-
-		unobserve = jest.fn();
-
-		disconnect() {
-			connectedObservers.delete( this );
-		}
-	}
-
-	/**
-	 * Calls the callback of each connected observer of the
-	 * `.googlesitekit-page` element, as a browser does when the page changes
-	 * height.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {void}
-	 */
-	function changePageHeight() {
-		connectedObservers.forEach( ( { callback, target }, observer ) => {
-			if ( target === page ) {
-				callback( [], observer );
-			}
-		} );
-	}
 
 	/**
 	 * Renders the hook, and calls the function it returns with the selector of
@@ -100,9 +55,6 @@ describe( 'useScrollToAdjustingForHeight', () => {
 
 	beforeEach( () => {
 		jest.useFakeTimers();
-
-		global.ResizeObserver = ResizeObserverMock;
-		connectedObservers = new Map();
 
 		page = document.createElement( 'div' );
 		page.className = 'googlesitekit-page';
@@ -147,7 +99,7 @@ describe( 'useScrollToAdjustingForHeight', () => {
 			renderAndScroll();
 
 			getNavigationalScrollTopSpy.mockReturnValue( newTop );
-			changePageHeight();
+			simulateResize( page );
 
 			expect( getNavigationalScrollTopSpy ).toHaveBeenLastCalledWith(
 				'#googlesitekit-test-element',
@@ -168,9 +120,9 @@ describe( 'useScrollToAdjustingForHeight', () => {
 			result.current( '#googlesitekit-test-element' );
 		} );
 		getNavigationalScrollTopSpy.mockReturnValue( 250 );
-		changePageHeight();
+		simulateResize( page );
 
-		expect( connectedObservers.size ).toBe( 1 );
+		expect( getObservedElements() ).toEqual( [ page ] );
 		expect( scrollToSpy ).toHaveBeenCalledTimes( 3 );
 	} );
 
@@ -183,7 +135,7 @@ describe( 'useScrollToAdjustingForHeight', () => {
 			renderAndScroll();
 
 			getNavigationalScrollTopSpy.mockReturnValue( newTop );
-			changePageHeight();
+			simulateResize( page );
 
 			expect( scrollToSpy ).toHaveBeenCalledTimes( 1 );
 		}
@@ -193,9 +145,9 @@ describe( 'useScrollToAdjustingForHeight', () => {
 		renderAndScroll();
 
 		getNavigationalScrollTopSpy.mockReturnValue( 150 );
-		changePageHeight();
+		simulateResize( page );
 		// The element stays at its new position.
-		changePageHeight();
+		simulateResize( page );
 
 		expect( scrollToSpy ).toHaveBeenCalledTimes( 2 );
 		expect( scrollToSpy ).toHaveBeenLastCalledWith( {
@@ -214,13 +166,17 @@ describe( 'useScrollToAdjustingForHeight', () => {
 		} );
 		fireEvent.wheel( window, { deltaY: -40 } );
 		getNavigationalScrollTopSpy.mockReturnValue( 250 );
-		changePageHeight();
+		simulateResize( page );
 
 		expect( scrollToSpy ).toHaveBeenCalledTimes( 2 );
 		expect( scrollToSpy ).toHaveBeenLastCalledWith( {
 			top: 20,
 			behavior: 'instant',
 		} );
+
+		fireEvent.wheel( window, { deltaY: -40 } );
+
+		expect( scrollToSpy ).toHaveBeenCalledTimes( 2 );
 	} );
 
 	it.each( [
@@ -245,13 +201,17 @@ describe( 'useScrollToAdjustingForHeight', () => {
 			} );
 			fireUserEvent();
 			getNavigationalScrollTopSpy.mockReturnValue( 250 );
-			changePageHeight();
+			simulateResize( page );
 
 			expect( scrollToSpy ).toHaveBeenCalledTimes( 2 );
 			expect( scrollToSpy ).toHaveBeenLastCalledWith( {
 				top: 60,
 				behavior: 'instant',
 			} );
+
+			fireUserEvent();
+
+			expect( scrollToSpy ).toHaveBeenCalledTimes( 2 );
 		}
 	);
 
@@ -273,7 +233,7 @@ describe( 'useScrollToAdjustingForHeight', () => {
 				result.current( '#googlesitekit-test-element' );
 			} );
 			getNavigationalScrollTopSpy.mockReturnValue( 250 );
-			changePageHeight();
+			simulateResize( page );
 
 			expect( scrollToSpy ).toHaveBeenCalledTimes( 2 );
 			expect( scrollToSpy ).toHaveBeenLastCalledWith( {
@@ -296,7 +256,7 @@ describe( 'useScrollToAdjustingForHeight', () => {
 			jest.advanceTimersByTime( 29999 );
 		} );
 		getNavigationalScrollTopSpy.mockReturnValue( 150 );
-		changePageHeight();
+		simulateResize( page );
 
 		expect( scrollToSpy ).toHaveBeenCalledTimes( 2 );
 
@@ -304,7 +264,7 @@ describe( 'useScrollToAdjustingForHeight', () => {
 			jest.advanceTimersByTime( 1 );
 		} );
 		getNavigationalScrollTopSpy.mockReturnValue( 200 );
-		changePageHeight();
+		simulateResize( page );
 
 		expect( scrollToSpy ).toHaveBeenCalledTimes( 2 );
 	} );
@@ -314,7 +274,7 @@ describe( 'useScrollToAdjustingForHeight', () => {
 
 		unmount();
 		getNavigationalScrollTopSpy.mockReturnValue( 250 );
-		changePageHeight();
+		simulateResize( page );
 
 		expect( scrollToSpy ).toHaveBeenCalledTimes( 1 );
 	} );
@@ -325,7 +285,7 @@ describe( 'useScrollToAdjustingForHeight', () => {
 		renderAndScroll();
 
 		expect( scrollToSpy ).not.toHaveBeenCalled();
-		expect( connectedObservers.size ).toBe( 0 );
+		expect( getObservedElements() ).toEqual( [] );
 	} );
 
 	it( 'should not scroll the page to its top after the element leaves the page', () => {
@@ -334,10 +294,10 @@ describe( 'useScrollToAdjustingForHeight', () => {
 		element.remove();
 		// `getNavigationalScrollTop()` gives 0 for an element that is gone.
 		getNavigationalScrollTopSpy.mockReturnValue( 0 );
-		changePageHeight();
+		simulateResize( page );
 
 		expect( scrollToSpy ).toHaveBeenCalledTimes( 1 );
-		expect( connectedObservers.size ).toBe( 0 );
+		expect( getObservedElements() ).toEqual( [] );
 	} );
 
 	it( 'should scroll to the element once, and not keep it in place, when the screen has no `.googlesitekit-page` element', () => {
@@ -347,6 +307,6 @@ describe( 'useScrollToAdjustingForHeight', () => {
 		renderAndScroll();
 
 		expect( scrollToSpy ).toHaveBeenCalledTimes( 1 );
-		expect( connectedObservers.size ).toBe( 0 );
+		expect( getObservedElements() ).toEqual( [] );
 	} );
 } );
