@@ -797,6 +797,57 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						)
 				).toEqual( [ otherCTA ] );
 			} );
+
+			it( 'should not return the CTAs while a different publication is selected', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs( [ cta ], params );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setSettings( otherParams );
+
+				// Selecting a publication whose CTAs are not loaded requests them.
+				muteFetch( ctasEndpoint );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTAs(
+					otherParams.organizationID,
+					otherParams.publicationID
+				);
+			} );
+
+			it( 'should return the CTAs again when the publication is selected back', async () => {
+				const dispatch = registry.dispatch(
+					MODULES_READER_REVENUE_MANAGER
+				);
+
+				dispatch.receiveGetPublicationCTAs( [ cta ], params );
+				dispatch.receiveGetPublicationCTAs( [ otherCTA ], otherParams );
+
+				dispatch.setSettings( otherParams );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ otherCTA ] );
+
+				dispatch.setSettings( params );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
+
+				await waitForDefaultTimeouts();
+
+				// Both publications' CTAs are already loaded.
+				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+			} );
 		} );
 	} );
 } );
