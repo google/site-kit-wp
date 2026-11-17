@@ -47,10 +47,12 @@ export function buildPrimaryEventReportOptions(
 	primaryEvent?: string | string[],
 	breakdownFilter?: Record< string, unknown >
 ): ReportOptions | undefined {
-	if (
-		! primaryEvent ||
-		( Array.isArray( primaryEvent ) && ! primaryEvent.length )
-	) {
+	const dimensionFilters = getPrimaryEventDimensionFilters(
+		primaryEvent,
+		breakdownFilter
+	);
+
+	if ( ! dimensionFilters ) {
 		return undefined;
 	}
 
@@ -58,14 +60,77 @@ export function buildPrimaryEventReportOptions(
 		...dates,
 		metrics: [ { name: 'eventCount' } ],
 		dimensions: [ { name: 'eventName' } ],
-		dimensionFilters: ( Array.isArray( primaryEvent )
+		dimensionFilters,
+		reportID: 'analytics-4_goal-driver-reports_primary-event',
+	};
+}
+
+/**
+ * Builds the Analytics 4 report options for the sessions with at least one primary event.
+ *
+ * A session counts once in this report, however many matching events it
+ * holds, so a Key action rate built from it never goes above 100%.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}          dates             The date range, including the compare dates.
+ * @param {string|string[]} [primaryEvent]    The primary conversion event name, or names to match any of.
+ * @param {Object}          [breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.
+ * @return {Object|undefined} The Analytics 4 `getReport` options, or `undefined` when there is no primary event.
+ */
+export function buildKeyActionSessionsReportOptions(
+	dates: HeadlineMetricReportDates,
+	primaryEvent?: string | string[],
+	breakdownFilter?: Record< string, unknown >
+): ReportOptions | undefined {
+	const dimensionFilters = getPrimaryEventDimensionFilters(
+		primaryEvent,
+		breakdownFilter
+	);
+
+	if ( ! dimensionFilters ) {
+		return undefined;
+	}
+
+	return {
+		...dates,
+		metrics: [ { name: 'sessions' } ],
+		dimensionFilters,
+		reportID: 'analytics-4_goal-driver-reports_key-action-sessions',
+	};
+}
+
+/**
+ * Returns the dimension filters that limit a report to the primary events.
+ *
+ * A single event name filters by equality; several event names are matched
+ * with an `inListFilter`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string|string[]} [primaryEvent]    The primary conversion event name, or names to match any of.
+ * @param {Object}          [breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.
+ * @return {Object|undefined} The dimension filters, or `undefined` when there is no primary event.
+ */
+function getPrimaryEventDimensionFilters(
+	primaryEvent?: string | string[],
+	breakdownFilter?: Record< string, unknown >
+): ReportOptions[ 'dimensionFilters' ] | undefined {
+	if (
+		! primaryEvent ||
+		( Array.isArray( primaryEvent ) && ! primaryEvent.length )
+	) {
+		return undefined;
+	}
+
+	return (
+		Array.isArray( primaryEvent )
 			? getDimensionFiltersForEvents( primaryEvent, breakdownFilter )
 			: {
 					eventName: primaryEvent,
 					...breakdownFilter,
-			  } ) as ReportOptions[ 'dimensionFilters' ],
-		reportID: 'analytics-4_goal-driver-reports_primary-event',
-	};
+			  }
+	 ) as ReportOptions[ 'dimensionFilters' ];
 }
 
 /**

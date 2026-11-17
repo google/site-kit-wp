@@ -20,6 +20,7 @@
 import { REPORT_UTILS_TEST_DATES as dates } from './__fixtures__';
 import {
 	buildEngagementReportOptions,
+	buildKeyActionSessionsReportOptions,
 	buildPrimaryEventReportOptions,
 } from './headlineMetrics';
 
@@ -63,6 +64,48 @@ describe( 'buildPrimaryEventReportOptions', () => {
 			eventName: {
 				filterType: 'inListFilter',
 				value: [ 'submit_lead_form', 'contact', 'generate_lead' ],
+			},
+		} );
+	} );
+} );
+
+describe( 'buildKeyActionSessionsReportOptions', () => {
+	it( 'should return undefined without a primary event', () => {
+		expect(
+			buildKeyActionSessionsReportOptions( dates, undefined )
+		).toBeUndefined();
+		expect(
+			buildKeyActionSessionsReportOptions( dates, [] )
+		).toBeUndefined();
+	} );
+
+	it( 'should request the sessions with the primary event', () => {
+		const options = buildKeyActionSessionsReportOptions(
+			dates,
+			'purchase',
+			{
+				someDimension: 'someValue',
+			}
+		);
+
+		expect( options?.metrics ).toEqual( [ { name: 'sessions' } ] );
+		expect( options ).not.toHaveProperty( 'dimensions' );
+		expect( options?.dimensionFilters ).toEqual( {
+			eventName: 'purchase',
+			someDimension: 'someValue',
+		} );
+	} );
+
+	it( 'should request the sessions with any of several primary events', () => {
+		const options = buildKeyActionSessionsReportOptions( dates, [
+			'submit_lead_form',
+			'contact',
+		] );
+
+		expect( options?.dimensionFilters ).toEqual( {
+			eventName: {
+				filterType: 'inListFilter',
+				value: [ 'submit_lead_form', 'contact' ],
 			},
 		} );
 	} );
