@@ -37,13 +37,19 @@ import {
 	TYPE_LABEL,
 	TYPE_TITLE,
 } from '@/js/components/Typography/constants';
-import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPageURL';
-import { BenchmarkingKeyFactorAttribute } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils/getPageURL';
+import {
+	BenchmarkingKeyFactorAttribute,
+	BenchmarkingKeyFactorKind,
+} from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { KEY_FACTOR_ATTRIBUTE_TITLES } from './attributeTitles';
+import { getLandingPageLabel } from './getLandingPageLabel';
 import KeyFactorAttribute from './KeyFactorAttribute';
 import KeyFactorChangeBadge from './KeyFactorChangeBadge';
 
 export interface KeyFactorCardProps {
+	/** The driver's kind, such as `CONTENT` for a landing page. */
+	kind: BenchmarkingKeyFactorKind;
 	/** The driver's name, such as `Referral`. */
 	label: string;
 	/** The change in visits, negative for a drop. */
@@ -76,7 +82,28 @@ function getAttributeHref(
 	return getPageURL( referenceSiteURL, label );
 }
 
+/**
+ * Gets the name an attribute shows for its value.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} attribute          The attribute.
+ * @param {string} attribute.kind     The attribute's kind, such as `LANDING_PAGE`.
+ * @param {string} attribute.label    The attribute's value, such as a page path.
+ * @param {string} [referenceSiteURL] Optional. The site's URL.
+ * @return {string} "Homepage" when the attribute is the site's homepage, or its value otherwise.
+ */
+function getAttributeLabel(
+	{ kind, label }: BenchmarkingKeyFactorAttribute & { label: string },
+	referenceSiteURL?: string
+): string {
+	return kind === 'LANDING_PAGE'
+		? getLandingPageLabel( label, referenceSiteURL )
+		: label;
+}
+
 const KeyFactorCard: FC< KeyFactorCardProps > = ( {
+	kind,
 	label,
 	change,
 	attributes,
@@ -99,6 +126,13 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 		} => !! attribute.label
 	);
 
+	// A landing page's card names the site's homepage "Homepage", as its
+	// landing page attributes do.
+	const name =
+		kind === 'CONTENT'
+			? getLandingPageLabel( label, referenceSiteURL )
+			: label;
+
 	return (
 		<section
 			className="googlesitekit-traffic-overview__key-factor"
@@ -112,7 +146,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 					id={ titleID }
 					className="googlesitekit-traffic-overview__key-factor-title"
 				>
-					{ label }
+					{ name }
 				</Typography>
 				<KeyFactorChangeBadge change={ change } />
 			</div>
@@ -127,7 +161,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 						{ sprintf(
 							/* translators: %s: the name of the driver behind the change, such as "Referral" */
 							__( 'Top changes within %s', 'google-site-kit' ),
-							label
+							name
 						) }
 					</Typography>
 					<dl className="googlesitekit-traffic-overview__key-factor-attribute-list">
@@ -141,7 +175,10 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 										attribute.kind
 									]
 								}
-								label={ attribute.label }
+								label={ getAttributeLabel(
+									attribute,
+									referenceSiteURL
+								) }
 								change={
 									attribute.current - attribute.previous
 								}

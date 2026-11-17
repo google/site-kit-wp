@@ -170,11 +170,15 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 			{ loaded && cards.length > 0 && (
 				<div className="googlesitekit-traffic-overview__key-factors-cards">
 					{ cards.map(
-						( { label, current, previous, attributes }, index ) => (
+						(
+							{ kind, label, current, previous, attributes },
+							index
+						) => (
 							<KeyFactorCard
 								// Keyed by position: nothing here reorders, and
 								// two kinds of driver can share a name.
 								key={ index }
+								kind={ kind }
 								label={ label }
 								change={ current - previous }
 								attributes={ attributes }

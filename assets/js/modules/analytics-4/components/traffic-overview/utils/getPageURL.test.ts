@@ -1,5 +1,5 @@
 /**
- * Recent activity page URL helper tests.
+ * Traffic Overview `getPageURL` utility tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *

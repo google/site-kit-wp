@@ -72,6 +72,23 @@ const ORGANIC_SEARCH: BenchmarkingKeyFactor = {
 	],
 };
 
+const HOMEPAGE: BenchmarkingKeyFactor = {
+	kind: 'CONTENT',
+	label: '/',
+	current: 310,
+	previous: 220,
+	sharePct: 41.3,
+	attributes: [
+		{
+			kind: 'TRAFFIC_CHANNEL',
+			label: 'Direct',
+			current: 180,
+			previous: 110,
+			sharePct: 32.1,
+		},
+	],
+};
+
 const INSIGHT =
 	'Referral traffic from **substack.com** is up most, mainly to **“Ice cream is good for your health”**';
 
@@ -158,6 +175,57 @@ describe( 'KeyFactors', () => {
 		);
 	} );
 
+	it( 'should name the card of the site’s homepage "Homepage" in place of its path, `/`', () => {
+		const { getByRole, queryByText } = renderKeyFactors( {
+			keyFactors: [ HOMEPAGE ],
+		} );
+
+		const homepage = getByRole( 'region', { name: 'Homepage' } );
+
+		expect(
+			within( homepage ).getByRole( 'heading', {
+				level: 4,
+				name: 'Homepage',
+			} )
+		).toBeInTheDocument();
+		expect(
+			within( homepage ).getByText( 'Top changes within Homepage' )
+		).toBeInTheDocument();
+		expect( queryByText( '/' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should name the card of any other landing page by its path', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{ ...HOMEPAGE, label: '/ice-cream-is-good-for-your-health/' },
+			],
+		} );
+
+		expect(
+			getByRole( 'heading', {
+				level: 4,
+				name: '/ice-cream-is-good-for-your-health/',
+			} )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should name the card of a driver that is not a landing page as the response does, even when that name is `/`', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					...ORGANIC_SEARCH,
+					kind: 'SEARCH_KEYWORD',
+					label: '/',
+					attributes: [],
+				},
+			],
+		} );
+
+		expect(
+			getByRole( 'heading', { level: 4, name: '/' } )
+		).toBeInTheDocument();
+	} );
+
 	it( 'should render the cards in the order the key factors are given', () => {
 		const { getAllByRole } = renderKeyFactors( {
 			keyFactors: [ ORGANIC_SEARCH, REFERRAL ],
@@ -218,6 +286,44 @@ describe( 'KeyFactors', () => {
 			'https://example.com/ice-cream-is-good-for-your-health/'
 		);
 		expect( link ).toHaveAttribute( 'target', '_blank' );
+	} );
+
+	it( 'should name a landing page that is the site’s homepage "Homepage", and link it to the homepage', () => {
+		const { getByRole, queryByText } = renderKeyFactors( {
+			keyFactors: [
+				{
+					...REFERRAL,
+					attributes: [ { ...REFERRAL.attributes[ 0 ], label: '/' } ],
+				},
+			],
+		} );
+
+		expect(
+			getByRole( 'link', { name: 'Homepage (opens in a new tab)' } )
+		).toHaveAttribute( 'href', 'https://example.com/' );
+		expect( queryByText( '/' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should name the homepage of a site that lives under a folder "Homepage", as a card and as a landing page', () => {
+		const { getByRole } = renderKeyFactors( {
+			referenceSiteURL: 'https://example.com/blog',
+			keyFactors: [
+				{ ...HOMEPAGE, label: '/blog/' },
+				{
+					...REFERRAL,
+					attributes: [
+						{ ...REFERRAL.attributes[ 0 ], label: '/blog/' },
+					],
+				},
+			],
+		} );
+
+		expect(
+			getByRole( 'heading', { level: 4, name: 'Homepage' } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'link', { name: 'Homepage (opens in a new tab)' } )
+		).toHaveAttribute( 'href', 'https://example.com/blog/' );
 	} );
 
 	it( 'should not link a value that is not a landing page', () => {
