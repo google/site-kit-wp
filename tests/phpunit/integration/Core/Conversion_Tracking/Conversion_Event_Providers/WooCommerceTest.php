@@ -12,6 +12,9 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\WC_Countries_Fake;
+use Google\Site_Kit\Tests\WC_Order_Fake;
+use Google\Site_Kit\Tests\WC_Order_Item_Product_Fake;
+use Google\Site_Kit\Tests\WC_Product_Fake;
 
 require_once TESTS_PLUGIN_DIR . '/tests/phpunit/includes/wc-function-fakes.php';
 
@@ -212,6 +215,115 @@ class WooCommerceTest extends TestCase {
 			'zero decimal places'                         => array( 0, 1234, 1234 ),
 			'two decimal places, the WooCommerce default' => array( 2, 12.34, 1234 ),
 			'four decimal places'                         => array( 4, 12.3456, 123456 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_orders
+	 * @runInSeparateProcess
+	 */
+	public function test_get_formatted_order__items_and_coupon( $order, $expected_coupon, $expected_item ) {
+		// `get_formatted_order()` formats only WooCommerce product lines, and these
+		// aliases make the fakes pass its `instanceof` checks.
+		class_alias( WC_Product_Fake::class, 'WC_Product' );
+		class_alias( WC_Order_Item_Product_Fake::class, 'WC_Order_Item_Product' );
+
+		$formatted_order = $this->woocommerce->get_formatted_order( $order );
+
+		$this->assertSame(
+			$expected_coupon,
+			$formatted_order['coupon'] ?? null,
+			'get_formatted_order() should send the coupon codes only when the order used a coupon.'
+		);
+		$this->assertSame(
+			array( $expected_item ),
+			$formatted_order['items'],
+			'get_formatted_order() should send the unit price after coupons, and the discount on one unit only when there is one.'
+		);
+	}
+
+	public function data_orders() {
+		return array(
+			'two coupons, prices without tax' => array(
+				new WC_Order_Fake(
+					array(
+						new WC_Order_Item_Product_Fake(
+							new WC_Product_Fake( 42, 'Site Kit T-Shirt', '50.00' ),
+							2,
+							array(
+								'subtotal'     => '100.00',
+								'subtotal_tax' => '10.00',
+								'total'        => '80.00',
+								'total_tax'    => '8.00',
+							)
+						),
+					),
+					array( 'summer20', 'vip' ),
+					false
+				),
+				'summer20,vip',
+				array(
+					'id'         => 42,
+					'name'       => 'Site Kit T-Shirt',
+					'categories' => array(),
+					'price'      => 4000,
+					'quantity'   => 2,
+					'discount'   => 1000,
+				),
+			),
+			'one coupon, prices with tax'     => array(
+				new WC_Order_Fake(
+					array(
+						new WC_Order_Item_Product_Fake(
+							new WC_Product_Fake( 42, 'Site Kit T-Shirt', '55.00' ),
+							1,
+							array(
+								'subtotal'     => '50.00',
+								'subtotal_tax' => '5.00',
+								'total'        => '40.00',
+								'total_tax'    => '4.00',
+							)
+						),
+					),
+					array( 'summer20' ),
+					true
+				),
+				'summer20',
+				array(
+					'id'         => 42,
+					'name'       => 'Site Kit T-Shirt',
+					'categories' => array(),
+					'price'      => 4400,
+					'quantity'   => 1,
+					'discount'   => 1100,
+				),
+			),
+			'no coupon, prices with tax'      => array(
+				new WC_Order_Fake(
+					array(
+						new WC_Order_Item_Product_Fake(
+							new WC_Product_Fake( 42, 'Site Kit T-Shirt', '55.00' ),
+							1,
+							array(
+								'subtotal'     => '50.00',
+								'subtotal_tax' => '5.00',
+								'total'        => '50.00',
+								'total_tax'    => '5.00',
+							)
+						),
+					),
+					array(),
+					true
+				),
+				null,
+				array(
+					'id'         => 42,
+					'name'       => 'Site Kit T-Shirt',
+					'categories' => array(),
+					'price'      => 5500,
+					'quantity'   => 1,
+				),
+			),
 		);
 	}
 
