@@ -30,13 +30,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import FeatureSetupListItem from '@/js/components/feature-discovery/detail/FeatureDetailPanel/FeatureSetupListItem';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
 	SIZE_MEDIUM,
-	TYPE_BODY,
 	TYPE_LABEL,
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
@@ -80,14 +80,7 @@ const FeatureDetailRequirements: FC< FeatureDetailRequirementsProps > = ( {
 
 					<ol className="googlesitekit-feature-details-panel__setup-list">
 						{ setupList.map( ( step, index ) => (
-							<Typography
-								as="li"
-								key={ index }
-								size={ SIZE_MEDIUM }
-								type={ TYPE_BODY }
-							>
-								{ step }
-							</Typography>
+							<FeatureSetupListItem key={ index } step={ step } />
 						) ) }
 					</ol>
 				</section>

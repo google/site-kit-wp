@@ -22,7 +22,12 @@
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	render,
+	screen,
+	within,
+} from '@tests/js/test-utils';
 import FeatureDetailRequirements from './FeatureDetailRequirements';
 
 describe( 'FeatureDetailRequirements', () => {
@@ -57,6 +62,54 @@ describe( 'FeatureDetailRequirements', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render a nested list for a setup list step with sub-steps, alongside a plain entry', () => {
+		feature.detail = {
+			requirements: {
+				setupList: [
+					'Choose your Google Ads account',
+					{
+						label: 'Connect your account',
+						subSteps: [
+							'New account: Set up your account, campaign and payment details.',
+							'Existing account: Enter your Ads conversion ID.',
+						],
+					},
+				],
+			},
+		};
+
+		render( <FeatureDetailRequirements feature={ feature } /> );
+
+		expect(
+			screen.getByText( 'Choose your Google Ads account' )
+		).toBeInTheDocument();
+
+		const connectAccountStep = screen
+			.getByText( 'Connect your account' )
+			.closest( 'li' ) as HTMLElement; // eslint-disable-line sitekit/acronym-case
+
+		expect( connectAccountStep ).toBeInTheDocument();
+
+		const subStepsList = connectAccountStep.querySelector(
+			'.googlesitekit-feature-details-panel__setup-list-sub-steps'
+		) as HTMLElement; // eslint-disable-line sitekit/acronym-case
+
+		expect( subStepsList ).toBeInTheDocument();
+		expect( subStepsList.tagName ).toBe( 'UL' );
+		expect( subStepsList.children ).toHaveLength( 2 );
+
+		expect(
+			within( subStepsList ).getByText(
+				'New account: Set up your account, campaign and payment details.'
+			)
+		).toBeInTheDocument();
+		expect(
+			within( subStepsList ).getByText(
+				'Existing account: Enter your Ads conversion ID.'
+			)
+		).toBeInTheDocument();
 	} );
 
 	it.each( [
