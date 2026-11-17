@@ -32,6 +32,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { enabledFeatures } from '@/js/features';
 import {
 	createTestRegistry,
+	muteFetch,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
@@ -145,6 +146,44 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'refreshCTAs', () => {
+			it( 'should request the CTAs of the connected publication again', async () => {
+				fetchMock.getOnce( ctasEndpoint, {
+					body: [ cta ],
+					status: 200,
+				} );
+
+				const { error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.refreshCTAs();
+
+				expect( error ).toBeUndefined();
+				expect( fetchMock ).toHaveFetched( ctasEndpoint, {
+					query: {
+						...params,
+						_locale: 'user',
+					},
+				} );
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
+			} );
+
+			it( 'should send no request when no publication is connected', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setPublicationID( '' );
+
+				expect(
+					await registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.refreshCTAs()
+				).toEqual( {} );
+
+				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+			} );
+		} );
+
 		describe( 'createCTA', () => {
 			it( 'should create the CTA and return the response', async () => {
 				fetchMock.postOnce( createCTAEndpoint, {
@@ -451,6 +490,49 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getPublicationCTAs', () => {
+			it( 'should return the CTAs stored under the given publication', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs( [ cta ], params );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationCTAs(
+							params.organizationID,
+							params.publicationID
+						)
+				).toEqual( [ cta ] );
+			} );
+
+			it( 'should return `undefined` for a publication that is not loaded', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs( [ cta ], params );
+
+				// Reading an unloaded publication requests its CTAs.
+				muteFetch( ctasEndpoint );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationCTAs(
+							otherParams.organizationID,
+							otherParams.publicationID
+						)
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTAs(
+					otherParams.organizationID,
+					otherParams.publicationID
+				);
+			} );
+		} );
+
 		describe( 'getCTAs', () => {
 			it( 'should fetch the CTAs when they are not loaded', async () => {
 				fetchMock.getOnce( ctasEndpoint, {
