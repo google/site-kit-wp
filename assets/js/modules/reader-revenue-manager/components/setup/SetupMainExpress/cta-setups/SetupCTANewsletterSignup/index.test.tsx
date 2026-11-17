@@ -598,18 +598,23 @@ describe( 'SetupCTANewsletterSignup', () => {
 		}
 
 		/**
-		 * Resolves the settings with the given publication ID.
+		 * Resolves the settings with the given publication connected.
 		 *
 		 * @since 1.191.0
 		 * @private
 		 *
-		 * @param {string} publicationID Publication ID.
+		 * @param {Object} [publication] Optional. Publication to connect; omit to leave the settings empty.
 		 * @return {void}
 		 */
-		function provideSettings( publicationID: string ) {
+		function provideSettings( publication?: Publication ) {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( { publicationID } );
+				.receiveGetSettings( {
+					/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+					publicationID: publication?.publicationId ?? '',
+					organizationID: publication?.organizationId ?? '',
+					/* eslint-enable sitekit/acronym-case */
+				} );
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -656,8 +661,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show only a progress bar while the connected publication is loading', () => {
 			setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			provideSettings( publicationWithoutTerms.publicationId );
+			provideSettings( publicationWithoutTerms );
 			freezeFetch( publicationEndpoint );
 			// Don't let the CTAs resolve after the test has finished.
 			fetchMock.get( ctasEndpoint, () => new Promise( () => {} ), {
@@ -673,7 +677,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show only a progress bar while the granted scopes are loading', () => {
 			setupRegistry();
-			provideSettings( '' );
+			provideSettings();
 
 			const { container } = render( <SetupCTANewsletterSignup />, {
 				registry,
@@ -684,7 +688,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show only a progress bar while a required scope is missing, when no publication is connected', () => {
 			setupRegistry( { grantedScopes: [] } );
-			provideSettings( '' );
+			provideSettings();
 
 			const { container } = render( <SetupCTANewsletterSignup />, {
 				registry,
@@ -695,8 +699,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show only a progress bar while a required scope is missing, when the publication request has failed', async () => {
 			setupRegistry( { grantedScopes: [] } );
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			provideSettings( publicationWithoutTerms.publicationId );
+			provideSettings( publicationWithoutTerms );
 
 			fetchMock.getOnce( publicationEndpoint, {
 				body: {
@@ -735,9 +738,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 			[
 				'connected publication',
 				publicationEndpoint,
-				() =>
-					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-					provideSettings( publicationWithoutTerms.publicationId ),
+				() => provideSettings( publicationWithoutTerms ),
 				publicationWithoutTerms,
 				'.googlesitekit-stepper__step--active',
 			],
@@ -819,7 +820,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show the stepper and the step once the scopes are granted and the step has resolved', async () => {
 			setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
-			provideSettings( '' );
+			provideSettings();
 
 			const { container, waitForRegistry } = render(
 				<SetupCTANewsletterSignup />,

@@ -76,9 +76,19 @@ describe( 'StepPublicationPolicies', () => {
 	} );
 
 	it( 'should render as a progress bar if the publication is loading', () => {
+		/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+			organizationID: TEST_PUBLICATION.organizationId,
+			publicationID: TEST_PUBLICATION.publicationId,
+		} );
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.startResolution( 'getPublication', [] );
+			.startResolution( 'getPublicationByID', [
+				TEST_PUBLICATION.organizationId,
+				TEST_PUBLICATION.publicationId,
+			] );
+		/* eslint-enable sitekit/acronym-case */
 
 		const { getByRole } = render(
 			<StepPublicationPolicies onComplete={ () => {} } />,

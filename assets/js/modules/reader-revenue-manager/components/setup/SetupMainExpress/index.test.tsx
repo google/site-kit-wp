@@ -108,16 +108,22 @@ describe( 'SetupMainExpress', () => {
 		// Has accepted the terms of service and set both policy URLs.
 		const publication = publications[ 3 ];
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			.setPublicationID( publication.publicationId );
-
 		providePublications( registry, [ publication ] );
 
+		const params = {
+			/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+			organizationID: publication.organizationId,
+			publicationID: publication.publicationId,
+			/* eslint-enable sitekit/acronym-case */
+		};
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetPublicationCTAs( [], {} );
+			.setSettings( params );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationCTAs( [], params );
 
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,
@@ -136,16 +142,22 @@ describe( 'SetupMainExpress', () => {
 		// Has accepted the terms of service and set both policy URLs.
 		const publication = publications[ 3 ];
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			.setPublicationID( publication.publicationId );
-
 		providePublications( registry, [ publication ] );
 
+		const params = {
+			/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+			organizationID: publication.organizationId,
+			publicationID: publication.publicationId,
+			/* eslint-enable sitekit/acronym-case */
+		};
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetPublicationCTAs( [], {} );
+			.setSettings( params );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationCTAs( [], params );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
