@@ -43,6 +43,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import {
@@ -193,14 +194,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				select.getPublication();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
-
-				expect(
-					select.hasFinishedResolution( 'getPublication', [] )
-				).toBe( true );
+				await waitForDefaultTimeouts();
 
 				expect( select.getPublication() ).toBeUndefined();
 
@@ -225,7 +219,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				).getPublicationByID(
+					// eslint-disable-next-line sitekit/acronym-case
+					publication.organizationId,
+					// eslint-disable-next-line sitekit/acronym-case
+					publication.publicationId
+				);
 
 				expect( select.getPublication() ).toEqual( publication );
 				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
@@ -266,7 +265,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				).getPublicationByID(
+					// eslint-disable-next-line sitekit/acronym-case
+					publication.organizationId,
+					// eslint-disable-next-line sitekit/acronym-case
+					publication.publicationId
+				);
 
 				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
 			} );
@@ -1032,7 +1036,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			await untilResolved(
 				registry,
 				MODULES_READER_REVENUE_MANAGER
-			).getPublication();
+			).getPublicationByID( params.organizationID, params.publicationID );
 
 			const settings = registry
 				.select( MODULES_READER_REVENUE_MANAGER )
@@ -1168,7 +1172,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				).getPublicationByID(
+					params.organizationID,
+					params.publicationID
+				);
 
 				expect(
 					registry
@@ -1204,14 +1211,17 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				).getPublicationByID(
+					params.organizationID,
+					params.publicationID
+				);
 
 				const select = registry.select(
 					MODULES_READER_REVENUE_MANAGER
 				);
 
 				expect(
-					select.getErrorForSelector( 'getPublication', [
+					select.getErrorForSelector( 'getPublicationByID', [
 						params.organizationID,
 						params.publicationID,
 					] )
@@ -1240,14 +1250,30 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.getPublication()
 				).toBeUndefined();
 
+				// Reading the publication requests the settings, which name the
+				// publication to request. A component re-reads once they
+				// arrive; here that has to be done by hand.
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				).getSettings();
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublication();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationByID(
+					params.organizationID,
+					params.publicationID
+				);
 
 				expect( fetchMock ).toHaveFetched( settingsEndpoint );
 				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 					query: {
+						...params,
 						_locale: 'user',
 					},
 				} );
@@ -1267,10 +1293,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.getPublication()
 				).toBeUndefined();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
 				expect(
@@ -1310,10 +1333,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 							.select( MODULES_READER_REVENUE_MANAGER )
 							.getPublication();
 
-						await untilResolved(
-							registry,
-							MODULES_READER_REVENUE_MANAGER
-						).getPublication();
+						await waitForDefaultTimeouts();
 
 						expect( fetchMock ).toHaveFetchedTimes(
 							1,
@@ -1341,10 +1361,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 							.select( MODULES_READER_REVENUE_MANAGER )
 							.getPublication();
 
-						await untilResolved(
-							registry,
-							MODULES_READER_REVENUE_MANAGER
-						).getPublication();
+						await waitForDefaultTimeouts();
 
 						expect( fetchMock ).toHaveFetched(
 							publicationsEndpoint
@@ -1373,7 +1390,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					await untilResolved(
 						registry,
 						MODULES_READER_REVENUE_MANAGER
-					).getPublication();
+					).getPublicationByID(
+						params.organizationID,
+						params.publicationID
+					);
 
 					expect( fetchMock ).not.toHaveFetched(
 						publicationsEndpoint
@@ -1399,7 +1419,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				).getPublicationByID(
+					params.organizationID,
+					params.publicationID
+				);
 
 				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
 			} );

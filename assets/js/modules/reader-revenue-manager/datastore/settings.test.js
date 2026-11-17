@@ -374,7 +374,7 @@ describe( 'modules/reader-revenue-manager settings', () => {
 	} );
 
 	describe( 'submitChanges', () => {
-		it( 'should invalidate getPublication when changing publication settings', async () => {
+		it( 'should request the new publication when the connected one changes', async () => {
 			const dispatch = registry.dispatch(
 				MODULES_READER_REVENUE_MANAGER
 			);
@@ -408,7 +408,12 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			await untilResolved(
 				registry,
 				MODULES_READER_REVENUE_MANAGER
-			).getPublication();
+			).getPublicationByID(
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationA.organizationId,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationA.publicationId
+			);
 
 			expect( select.getPublication() ).toEqual( publicationA );
 
@@ -432,7 +437,12 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			await untilResolved(
 				registry,
 				MODULES_READER_REVENUE_MANAGER
-			).getPublication();
+			).getPublicationByID(
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationB.organizationId,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationB.publicationId
+			);
 
 			expect( select.getPublication() ).toEqual( publicationB );
 			expect( fetchMock ).toHaveFetchedTimes( 1, publicationEndpoint );
