@@ -391,10 +391,17 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			dispatch.receiveGetSettings( {
 				...validSettings,
 				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				organizationID: publicationA.organizationId,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
 				publicationID: publicationA.publicationId,
 			} );
 
-			dispatch.receiveGetPublication( publicationA );
+			dispatch.receiveGetPublication( publicationA, {
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				organizationID: publicationA.organizationId,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationID: publicationA.publicationId,
+			} );
 
 			select.getPublication();
 
@@ -407,6 +414,8 @@ describe( 'modules/reader-revenue-manager settings', () => {
 
 			const newSettings = {
 				...validSettings,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				organizationID: publicationB.organizationId,
 				// eslint-disable-next-line sitekit/acronym-case -- API field name.
 				publicationID: publicationB.publicationId,
 			};
