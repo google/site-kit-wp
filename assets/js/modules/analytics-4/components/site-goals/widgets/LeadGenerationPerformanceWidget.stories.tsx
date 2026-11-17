@@ -32,7 +32,6 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { buildKeyActionSessionsReportOptions as buildSharedKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { buildTopTrafficChannelsSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
@@ -41,13 +40,11 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '@/js/modules/analytics-4/utils/data-mock';
 import { Story } from '@/js/types/Story';
-import { getPreviousDate } from '@/js/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
@@ -59,20 +56,14 @@ import {
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
-
-// Reference date: 2020-09-07, 28-day range with comparison.
-const dates = {
-	startDate: '2020-08-11',
-	endDate: '2020-09-07',
-	compareStartDate: '2020-07-14',
-	compareEndDate: '2020-08-10',
-};
-
-// The fixed 90-day window the breakdown tab structure is evaluated over.
-const discoveryDates = {
-	startDate: getPreviousDate( '2020-09-07', 90 ),
-	endDate: '2020-09-07',
-};
+import {
+	buildKeyActionSessionsReportOptions,
+	dates,
+	discoveryDates,
+	engagementReportOptions,
+	provideKeyActionSessionsReport,
+	provideSiteEngagementReport,
+} from './siteGoalsWidgetStoryReports';
 
 function buildLeadEventsReportOptions(
 	leadEvents: string[],
@@ -94,97 +85,8 @@ function buildLeadEventsReportOptions(
 	};
 }
 
-const engagementReportOptions = {
-	...dates,
-	metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-	reportID: 'analytics-4_site-goals_engagementReportOptions',
-};
-
-function buildKeyActionSessionsReportOptions(
-	leadEvents: string[],
-	breakdownFilter: Record< string, unknown > = {}
-) {
-	return buildSharedKeyActionSessionsReportOptions(
-		dates,
-		leadEvents,
-		breakdownFilter
-	) as ReportOptions;
-}
-
-// The site's sessions in the current and the previous period. Mocked reports
-// hold too few sessions for a realistic Key action rate.
-const SITE_SESSIONS = { current: 1250, previous: 1100 };
-
-function buildTotalsRows( current: string[], previous: string[] ) {
-	return [
-		{
-			dimensionValues: [ { value: 'date_range_0' } ],
-			metricValues: current.map( ( value ) => ( { value } ) ),
-		},
-		{
-			dimensionValues: [ { value: 'date_range_1' } ],
-			metricValues: previous.map( ( value ) => ( { value } ) ),
-		},
-	];
-}
-
-/**
- * Adds the site's engagement report, with the fixed site sessions.
- *
- * @since n.e.x.t
- *
- * @param {Object} registry Registry to add the report to.
- * @return {void}
- */
-function provideSiteEngagementReport( registry: WPDataRegistry ) {
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		{
-			totals: buildTotalsRows(
-				[ '0.549', String( SITE_SESSIONS.current ) ],
-				[ '0.52', String( SITE_SESSIONS.previous ) ]
-			),
-		},
-		{ options: engagementReportOptions }
-	);
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getReport', [ engagementReportOptions ] );
-}
-
-/**
- * Adds the Key action sessions report as a share of the site sessions.
- *
- * @since n.e.x.t
- *
- * @param {Object} registry          Registry to add the report to.
- * @param {Array}  leadEvents        The lead events the story detects.
- * @param {Object} [breakdownFilter] The form tab's filter, empty for no tab.
- * @param {number} [share]           Share of the site sessions with a Key action.
- * @return {void}
- */
-function provideKeyActionSessionsReport(
-	registry: WPDataRegistry,
-	leadEvents: string[],
-	breakdownFilter: Record< string, unknown > = {},
-	share = 0.045
-) {
-	const options = buildKeyActionSessionsReportOptions(
-		leadEvents,
-		breakdownFilter
-	);
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		{
-			totals: buildTotalsRows(
-				[ String( Math.round( SITE_SESSIONS.current * share ) ) ],
-				[ String( Math.round( SITE_SESSIONS.previous * share ) ) ]
-			),
-		},
-		{ options }
-	);
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getReport', [ options ] );
-}
+// Share of the site sessions with a lead Key action, unless a story sets its own.
+const LEAD_KEY_ACTION_SHARE = 0.045;
 
 const singleEventReportOptions = buildLeadEventsReportOptions( [
 	ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
@@ -967,8 +869,8 @@ function seedTabbedBreakdown(
 		provideKeyActionSessionsReport(
 			registry,
 			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
-			breakdownFilter,
-			0.021
+			0.021,
+			breakdownFilter
 		);
 		// The Engagement rate tile is scoped to the tab.
 		provideAnalytics4MockReport( registry, {
@@ -985,9 +887,11 @@ function seedTabbedBreakdown(
 	// Unfiltered reports back the "Other sources" tab's view. The site
 	// sessions also back the Key action rate on every tab.
 	provideAnalytics4MockReport( registry, singleEventReportOptions );
-	provideKeyActionSessionsReport( registry, [
-		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
-	] );
+	provideKeyActionSessionsReport(
+		registry,
+		[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+		LEAD_KEY_ACTION_SHARE
+	);
 	provideSiteEngagementReport( registry );
 }
 
@@ -1014,9 +918,11 @@ Ready.args = {
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
-		provideKeyActionSessionsReport( registry, [
-			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
-		] );
+		provideKeyActionSessionsReport(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			LEAD_KEY_ACTION_SHARE
+		);
 		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
@@ -1035,9 +941,11 @@ GatheringBreakdownData.args = {
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
-		provideKeyActionSessionsReport( registry, [
-			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
-		] );
+		provideKeyActionSessionsReport(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			LEAD_KEY_ACTION_SHARE
+		);
 		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
@@ -1133,7 +1041,6 @@ ReadyMultipleEvents.args = {
 				ENUM_CONVERSION_EVENTS.CONTACT,
 				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 			],
-			{},
 			0.062
 		);
 		provideSiteEngagementReport( registry );
@@ -1220,7 +1127,6 @@ ZeroData.args = {
 		provideKeyActionSessionsReport(
 			registry,
 			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
-			{},
 			0
 		);
 
