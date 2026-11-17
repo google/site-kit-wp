@@ -24,9 +24,9 @@
  *
  * @since 1.180.0
  *
- * @param {string[]} eventNames        Names of the events to match any of.
- * @param {Object}   [breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.
- * @return {Object|undefined} The dimension filters, or `undefined` when there are no event names.
+ * @param eventNames      Names of the events to match any of.
+ * @param breakdownFilter Optional dimension filter scoping the report to a breakdown tab.
+ * @return The dimension filters, or `undefined` when there are no event names.
  */
 export function getDimensionFiltersForEvents(
 	eventNames: string[],
