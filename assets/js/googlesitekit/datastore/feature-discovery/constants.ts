@@ -111,6 +111,13 @@ export const FEATURE_RELEVANCY_REASONS = {
 // feedback to the `core/user` `sendFeedback()` feedback endpoint.
 export const FEATURE_HUB_FEEDBACK_NAMESPACE = 'feature_hub';
 
+// The survey triggers sent when the user opens the Feature Discovery Hub, and
+// the first time they interact with it.
+export const FEATURE_HUB_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID =
+	'fdh_opened_no_interaction';
+export const FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID =
+	'fdh_opened_with_interaction';
+
 export const FEATURE_RELEVANCY_FEEDBACK_KEYS = {
 	VOTE_REASON: 'vote_reason',
 	DISMISS_REASON: 'dismiss_reason',

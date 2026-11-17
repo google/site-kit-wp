@@ -24,14 +24,21 @@ import { FC, useState } from 'react';
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Notifications from '@/js/components/notifications/Notifications';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type {
 	Feature,
 	FeatureCategory,
 	FeatureCategorySlug,
 } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -68,10 +75,21 @@ const AllServicesTab: FC = () => {
 		[ selectedCategories ]
 	);
 
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
 	function onToggleCategory( categorySlug: FeatureCategorySlug | null ) {
 		if ( categorySlug === null ) {
 			setSelectedCategories( [] );
 			return;
+		}
+
+		// Only selecting a category counts as an interaction, so deselecting
+		// one does not.
+		if ( ! selectedCategories.includes( categorySlug ) ) {
+			triggerSurvey(
+				FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+				{ ttl: SURVEY_TRIGGER_MAX_TTL }
+			);
 		}
 
 		setSelectedCategories( ( currentSelection ) => {

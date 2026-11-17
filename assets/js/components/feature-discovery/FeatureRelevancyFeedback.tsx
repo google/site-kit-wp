@@ -40,11 +40,15 @@ import ThumbsFeedback from '@/js/components/feedback/ThumbsFeedback';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_HUB_FEEDBACK_NAMESPACE,
+	FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
 	FEATURE_RELEVANCY_FEEDBACK_KEYS,
 	FEATURE_RELEVANCY_REASONS,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { getFeatureRelevancyFeedbackGroup } from '@/js/googlesitekit/datastore/feature-discovery/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 
 interface FeatureRelevancyFeedbackProps {
 	slug: string;
@@ -53,7 +57,7 @@ interface FeatureRelevancyFeedbackProps {
 const FeatureRelevancyFeedback: FC< FeatureRelevancyFeedbackProps > = ( {
 	slug,
 } ) => {
-	const { sendFeedback } = useDispatch( CORE_USER );
+	const { sendFeedback, triggerSurvey } = useDispatch( CORE_USER );
 	const { setFeatureRelevancyVote } = useDispatch( CORE_FEATURE_DISCOVERY );
 
 	const [ voteDirection, setVoteDirection ] =
@@ -113,10 +117,15 @@ const FeatureRelevancyFeedback: FC< FeatureRelevancyFeedbackProps > = ( {
 
 	const onVote = useCallback(
 		( direction: VoteDirection ) => {
+			triggerSurvey(
+				FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+				{ ttl: SURVEY_TRIGGER_MAX_TTL }
+			);
+
 			setFeatureRelevancyVote( slug, direction );
 			setVoteDirection( direction );
 		},
-		[ setFeatureRelevancyVote, slug ]
+		[ setFeatureRelevancyVote, slug, triggerSurvey ]
 	);
 
 	return (

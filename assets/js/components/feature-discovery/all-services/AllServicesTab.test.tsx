@@ -33,11 +33,17 @@ import {
 import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
@@ -69,6 +75,7 @@ const ALL_HEADINGS = [
 
 describe( 'AllServicesTab', () => {
 	let registry: Registry;
+	let triggerSurvey: jest.SpyInstance;
 
 	function provideAnalytics( connected: boolean ) {
 		provideModules( registry, [
@@ -90,6 +97,10 @@ describe( 'AllServicesTab', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+
+		triggerSurvey = jest
+			.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+			.mockResolvedValue( {} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
@@ -311,6 +322,67 @@ describe( 'AllServicesTab', () => {
 
 		fireEvent.click( getByText( 'All services' ) );
 		expect( getHeadings( container ) ).toEqual( ALL_HEADINGS );
+	} );
+
+	describe( 'hub interaction survey trigger', () => {
+		it( 'should send the survey trigger when a category is selected', async () => {
+			provideFeatures( registry, oneFeaturePerCategory );
+
+			const { getByText, waitForRegistry } = render( <AllServicesTab />, {
+				registry,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			} );
+
+			await waitForRegistry();
+
+			expect( triggerSurvey ).not.toHaveBeenCalled();
+
+			fireEvent.click( getByText( 'Know your audience' ) );
+
+			expect( triggerSurvey ).toHaveBeenCalledTimes( 1 );
+			expect( triggerSurvey ).toHaveBeenCalledWith(
+				FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+				{ ttl: SURVEY_TRIGGER_MAX_TTL }
+			);
+		} );
+
+		it( 'should not send the survey trigger when a category is deselected', async () => {
+			provideFeatures( registry, oneFeaturePerCategory );
+
+			const { getByText, waitForRegistry } = render( <AllServicesTab />, {
+				registry,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( 'Know your audience' ) );
+
+			triggerSurvey.mockClear();
+
+			fireEvent.click( getByText( 'Know your audience' ) );
+
+			expect( triggerSurvey ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should not send the survey trigger when All services is clicked', async () => {
+			provideFeatures( registry, oneFeaturePerCategory );
+
+			const { getByText, waitForRegistry } = render( <AllServicesTab />, {
+				registry,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( 'Know your audience' ) );
+
+			triggerSurvey.mockClear();
+
+			fireEvent.click( getByText( 'All services' ) );
+
+			expect( triggerSurvey ).not.toHaveBeenCalled();
+		} );
 	} );
 
 	it( 'should keep catalog registration order within a group', async () => {

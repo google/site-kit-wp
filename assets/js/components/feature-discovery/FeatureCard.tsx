@@ -54,13 +54,17 @@ import {
 	FEATURE_BADGES,
 	FEATURE_BADGE_PROPS,
 	FEATURE_HUB_FEEDBACK_NAMESPACE,
+	FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
 	FEATURE_RELEVANCY_FEEDBACK_KEYS,
 	FEATURE_RELEVANCY_REASONS,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureRelevancyFeedbackGroup } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import CloseIcon from '@/svg/icons/close.svg';
 import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from './constants';
 
@@ -91,7 +95,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	) as string;
 	const { dismissFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 	const { setValue } = useDispatch( CORE_UI );
-	const { sendFeedback } = useDispatch( CORE_USER );
+	const { sendFeedback, triggerSurvey } = useDispatch( CORE_USER );
 
 	const feedbackOptions = useMemo< FeedbackMenuOption[] >(
 		() => [
@@ -140,9 +144,16 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 					key: FEATURE_RELEVANCY_FEEDBACK_KEYS.DISMISS_REASON,
 					value,
 				} );
+
+				// Only a dismissal with a reason counts as an interaction, so
+				// "Just hide this suggestion", which has no value, does not.
+				triggerSurvey(
+					FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+					{ ttl: SURVEY_TRIGGER_MAX_TTL }
+				);
 			}
 		},
-		[ dismissFeature, sendFeedback, slug ]
+		[ dismissFeature, sendFeedback, slug, triggerSurvey ]
 	);
 
 	const isFeatureNew = useSelect(
@@ -168,8 +179,12 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	}, [] );
 
 	const onClickReadMore = useCallback( () => {
+		triggerSurvey( FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID, {
+			ttl: SURVEY_TRIGGER_MAX_TTL,
+		} );
+
 		setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, slug );
-	}, [ setValue, slug ] );
+	}, [ setValue, slug, triggerSurvey ] );
 
 	useEffect( () => {
 		if ( isFeatureUnread ) {
