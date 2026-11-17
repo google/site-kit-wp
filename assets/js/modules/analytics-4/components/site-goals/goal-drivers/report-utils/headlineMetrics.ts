@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/components/site-goals/utils/getDimensionFiltersForEvents';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { HeadlineMetricReportDates } from './types';
 
