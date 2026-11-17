@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA as CTA_Synchronization;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
 
@@ -25,6 +24,8 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
  * @ignore
  */
 class Get_CTAs extends Datapoint implements Executable_Datapoint {
+
+	use Publication_Params_Trait;
 
 	/**
 	 * Reader Revenue Manager settings.
@@ -56,34 +57,18 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 		$this->synchronization = new CTA_Synchronization( $this->settings );
 	}
 
+
 	/**
 	 * Creates a request object.
 	 *
 	 * @since 1.187.0
+	 * @since n.e.x.t Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
-	 * @throws Missing_Required_Setting_Exception Thrown if a fallback setting is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$settings = $this->settings->get();
-
-		$organization_id = $data_request['organizationID'] ?? $settings['organizationID'];
-		$publication_id  = $data_request['publicationID'] ?? $settings['publicationID'];
-
-		if ( empty( $organization_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'organizationID' );
-		}
-
-		if ( empty( $publication_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'publicationID' );
-		}
-
-		$parent = sprintf(
-			'organizations/%s/publications/%s',
-			$organization_id,
-			$publication_id
-		);
+		$parent = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications_ctas->listOrganizationsPublicationsCtas( $parent );
 	}
@@ -93,6 +78,7 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @since 1.187.0
 	 * @since 1.192.0 Excludes CTAs that are neither active nor draft, such as deleted CTAs.
+	 * @since n.e.x.t Only synchronizes the CTAs of the saved publication.
 	 *
 	 * @param mixed        $response List CTAs response.
 	 * @param Data_Request $data     Data request object.
@@ -112,8 +98,26 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 			)
 		);
 
-		$this->synchronization->synchronize( $ctas );
+		// A response for another publication must not overwrite the saved
+		// publication's configured CTAs.
+		if ( $this->is_saved_publication( $data ) ) {
+			$this->synchronization->synchronize( $ctas );
+		}
 
 		return $ctas;
+	}
+
+	/**
+	 * Checks whether the request is for the publication in the settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data_request Data request object.
+	 * @return bool TRUE if the request is for the saved publication, FALSE otherwise.
+	 */
+	private function is_saved_publication( Data_Request $data_request ) {
+		$publication_id = $this->settings->get()['publicationID'];
+
+		return ! empty( $publication_id ) && $publication_id === $data_request['publicationID'];
 	}
 }
