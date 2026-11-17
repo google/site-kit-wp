@@ -47,8 +47,15 @@ import {
 } from '@tests/js/test-utils';
 import useSetupFlow, { findBlockingStep, resolveStep } from './useSetupFlow';
 
-// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+const ORGANIZATION_ID = publications[ 0 ].organizationId;
 const PUBLICATION_ID = publications[ 0 ].publicationId;
+/* eslint-enable sitekit/acronym-case */
+
+const PUBLICATION_PARAMS = {
+	organizationID: ORGANIZATION_ID,
+	publicationID: PUBLICATION_ID,
+};
 
 const settingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
@@ -446,15 +453,15 @@ describe( 'useSetupFlow', () => {
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetCTAs( {
-					ctas: [
+				.receiveGetPublicationCTAs(
+					[
 						{
 							name: `organizations/ABCD1234/publications/${ PUBLICATION_ID }/ctas/1`,
 							type: CTA_TYPES.NEWSLETTER_SIGNUP,
 						},
 					],
-					params: { publicationID: PUBLICATION_ID },
-				} );
+					PUBLICATION_PARAMS
+				);
 
 			const { result } = renderHook(
 				() =>
@@ -666,10 +673,7 @@ describe( 'useSetupFlow', () => {
 		function provideCTAs( ctas: { name: string; type: string }[] ) {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetCTAs( {
-					ctas,
-					params: { publicationID: PUBLICATION_ID },
-				} );
+				.receiveGetPublicationCTAs( ctas, PUBLICATION_PARAMS );
 		}
 
 		const newsletterCTA = {

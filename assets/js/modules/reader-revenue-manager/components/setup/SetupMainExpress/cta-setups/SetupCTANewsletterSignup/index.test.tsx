@@ -152,10 +152,14 @@ function connectPublication( registry: Registry, publication: Publication ) {
 
 	providePublications( registry, [ publication ] );
 
-	// CTAs are keyed by the publication ID, so receive them after setting it.
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [], params: {} } );
+		.receiveGetPublicationCTAs( [], {
+			/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+			organizationID: publication.organizationId,
+			publicationID: publication.publicationId,
+			/* eslint-enable sitekit/acronym-case */
+		} );
 }
 
 /**
@@ -188,6 +192,11 @@ describe( 'SetupCTANewsletterSignup', () => {
 	/* eslint-disable sitekit/acronym-case */
 	const readyOrganizationID = readyPublication.organizationId;
 	const readyPublicationID = readyPublication.publicationId;
+
+	const PUBLICATION_PARAMS = {
+		organizationID: readyOrganizationID,
+		publicationID: readyPublicationID,
+	};
 	/* eslint-enable sitekit/acronym-case */
 
 	const preExistingCTA = {
@@ -225,8 +234,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 		provideUserInfo( registry );
 
 		const settings = {
-			organizationID: readyOrganizationID,
-			publicationID: readyPublicationID,
+			...PUBLICATION_PARAMS,
 			snippetMode,
 			postTypes,
 		};
@@ -239,7 +247,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas, params: {} } );
+			.receiveGetPublicationCTAs( ctas, PUBLICATION_PARAMS );
 
 		return settings;
 	}

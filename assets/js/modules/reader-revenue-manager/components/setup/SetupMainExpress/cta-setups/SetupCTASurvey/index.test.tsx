@@ -127,7 +127,7 @@ function connectPublication( registry: Registry, publication: Publication ) {
 	// CTAs are keyed by the publication ID, so receive them after setting it.
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [], params: {} } );
+		.receiveGetPublicationCTAs( [], {} );
 }
 
 describe( 'SetupCTASurvey', () => {

@@ -117,7 +117,7 @@ describe( 'SetupMainExpress', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas: [], params: {} } );
+			.receiveGetPublicationCTAs( [], {} );
 
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,
@@ -145,7 +145,7 @@ describe( 'SetupMainExpress', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas: [], params: {} } );
+			.receiveGetPublicationCTAs( [], {} );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
