@@ -266,6 +266,37 @@ const baseActions = {
 			} );
 		}
 	),
+
+	/**
+	 * Requests the CTAs of the publication in the module settings again.
+	 *
+	 * The resolver does nothing once the store holds the CTAs, so this is how
+	 * a caller refreshes them after creating one.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*refreshCTAs(): Generator< unknown, unknown, unknown > {
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as Registry;
+
+		const params = ( yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationParams()
+		) ) as PublicationParams | null;
+
+		if ( ! params ) {
+			return {};
+		}
+
+		// @ts-expect-error createFetchStore is not properly typed yet.
+		return yield fetchGetPublicationCTAsStore.actions.fetchGetPublicationCTAs(
+			params.organizationID,
+			params.publicationID
+		);
+	},
 };
 
 const baseResolvers = {
