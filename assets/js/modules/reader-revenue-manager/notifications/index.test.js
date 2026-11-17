@@ -571,6 +571,8 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 				);
 		}
 
+		const surveyFeatureFlags = [ 'rrmExpressSetup', 'rrmSurveyCTA' ];
+
 		function isQueued( { isDismissed = false, features = [] } = {} ) {
 			return shouldNotificationBeAddedToQueue( notification, {
 				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
@@ -585,7 +587,7 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 			provideAnalyticsAccess( true );
 		} );
 
-		it( 'should be registered at the top of the main dashboard behind the `rrmSurveyCTA` feature flag, permanently dismissible', () => {
+		it( 'should be registered at the top of the main dashboard behind the `rrmExpressSetup` and `rrmSurveyCTA` feature flags, permanently dismissible', () => {
 			expect( notificationID ).toBe(
 				'rrm-express-setup-notification_survey'
 			);
@@ -594,7 +596,7 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-				featureFlag: 'rrmSurveyCTA',
+				featureFlag: [ 'rrmExpressSetup', 'rrmSurveyCTA' ],
 				isDismissible: true,
 			} );
 
@@ -602,20 +604,27 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 		} );
 
 		it( 'should be active when all requirements are met', async () => {
-			expect( isQueued( { features: [ 'rrmSurveyCTA' ] } ) ).toBe( true );
+			expect( isQueued( { features: surveyFeatureFlags } ) ).toBe( true );
 
 			expect( await notification.checkRequirements( registry ) ).toBe(
 				true
 			);
 		} );
 
-		it( 'should not be queued when the `rrmSurveyCTA` feature flag is disabled', () => {
-			expect( isQueued( { features: [] } ) ).toBe( false );
+		it.each( [
+			[ 'neither feature flag is', [] ],
+			[
+				'only the `rrmExpressSetup` feature flag is',
+				[ 'rrmExpressSetup' ],
+			],
+			[ 'only the `rrmSurveyCTA` feature flag is', [ 'rrmSurveyCTA' ] ],
+		] )( 'should not be queued when %s enabled', ( _, features ) => {
+			expect( isQueued( { features } ) ).toBe( false );
 		} );
 
 		it( 'should not be queued when it has been dismissed', () => {
 			expect(
-				isQueued( { isDismissed: true, features: [ 'rrmSurveyCTA' ] } )
+				isQueued( { isDismissed: true, features: surveyFeatureFlags } )
 			).toBe( false );
 		} );
 

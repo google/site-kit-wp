@@ -246,7 +246,7 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		featureFlag: 'rrmSurveyCTA',
+		featureFlag: [ 'rrmExpressSetup', 'rrmSurveyCTA' ],
 		checkRequirements: asyncRequireAll(
 			requireModuleNotConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
 			requireCanActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER ),
