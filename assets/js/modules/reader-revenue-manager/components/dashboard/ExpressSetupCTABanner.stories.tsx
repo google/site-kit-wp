@@ -33,8 +33,9 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Story } from '@/js/types/Story';
+import svgDesktopBanner from '@/svg/graphics/banner-rrm-survey-setup-cta-desktop.svg?url';
 import svgMobileBanner from '@/svg/graphics/banner-rrm-survey-setup-cta-mobile.svg?url';
-import svgDesktopBanner from '@/svg/graphics/banner-rrm-survey-setup-cta.svg?url';
+import svgTabletBanner from '@/svg/graphics/banner-rrm-survey-setup-cta-tablet.svg?url';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -61,6 +62,7 @@ Survey.args = {
 	svg: {
 		desktop: svgDesktopBanner,
 		mobile: svgMobileBanner,
+		tablet: svgTabletBanner,
 	},
 	title: 'Learn more about your readers',
 };

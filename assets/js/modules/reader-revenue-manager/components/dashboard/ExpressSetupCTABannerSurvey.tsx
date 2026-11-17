@@ -34,8 +34,9 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
 import ExpressSetupCTABanner from '@/js/modules/reader-revenue-manager/components/dashboard/ExpressSetupCTABanner';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import svgDesktopBanner from '@/svg/graphics/banner-rrm-survey-setup-cta-desktop.svg?url';
 import svgMobileBanner from '@/svg/graphics/banner-rrm-survey-setup-cta-mobile.svg?url';
-import svgDesktopBanner from '@/svg/graphics/banner-rrm-survey-setup-cta.svg?url';
+import svgTabletBanner from '@/svg/graphics/banner-rrm-survey-setup-cta-tablet.svg?url';
 
 interface ExpressSetupCTABannerSurveyProps {
 	id: string;
@@ -69,6 +70,7 @@ export default function ExpressSetupCTABannerSurvey( {
 				svg={ {
 					desktop: svgDesktopBanner,
 					mobile: svgMobileBanner,
+					tablet: svgTabletBanner,
 				} }
 				title={ __(
 					'Learn more about your readers',
