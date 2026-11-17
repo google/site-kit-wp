@@ -56,7 +56,7 @@ type CreateExpressSetupCTACallback = (
 export default function useCreateExpressSetupCTA(): CreateExpressSetupCTACallback {
 	const {
 		createCTA,
-		fetchGetPublication,
+		refreshPublication,
 		refreshCTAs,
 		setPublicationOnboardingStateChanged,
 		saveSettings,
@@ -83,7 +83,7 @@ export default function useCreateExpressSetupCTA(): CreateExpressSetupCTACallbac
 			// Request the publication and its CTAs again rather than reading
 			// the selectors: their resolvers do nothing when the store already
 			// has data, so selecting would not refresh it.
-			await Promise.all( [ fetchGetPublication(), refreshCTAs() ] );
+			await Promise.all( [ refreshPublication(), refreshCTAs() ] );
 
 			// Save only after both fetches finish, as `saveSettings()` sends
 			// the whole settings object from the store.
@@ -94,7 +94,7 @@ export default function useCreateExpressSetupCTA(): CreateExpressSetupCTACallbac
 		},
 		[
 			createCTA,
-			fetchGetPublication,
+			refreshPublication,
 			refreshCTAs,
 			saveSettings,
 			setCTAID,

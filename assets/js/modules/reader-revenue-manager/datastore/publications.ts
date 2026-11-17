@@ -282,8 +282,8 @@ const fetchCreatePublicationStore = createFetchStore( {
 	isAction: true,
 } );
 
-const fetchGetPublicationStore = createFetchStore( {
-	baseName: 'getPublication',
+const fetchGetPublicationByIDStore = createFetchStore( {
+	baseName: 'getPublicationByID',
 	controlCallback: ( { organizationID, publicationID }: PublicationParams ) =>
 		get(
 			'modules',
@@ -448,6 +448,37 @@ const baseActions = {
 			);
 		}
 	),
+
+	/**
+	 * Requests the publication in the module settings again.
+	 *
+	 * The resolver does nothing once the store holds the publication, so this
+	 * is how a caller refreshes it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*refreshPublication(): Generator< unknown, unknown, unknown > {
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as ReaderRevenueManagerRegistry;
+
+		const params = ( yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationParams()
+		) ) as PublicationParams | null;
+
+		if ( ! params ) {
+			return {};
+		}
+
+		// @ts-expect-error createFetchStore is not properly typed yet.
+		return yield fetchGetPublicationByIDStore.actions.fetchGetPublicationByID(
+			params.organizationID,
+			params.publicationID
+		);
+	},
 
 	/**
 	 * Updates the publication in the module settings.
@@ -722,34 +753,29 @@ const baseResolvers = {
 		);
 	},
 
-	*getPublication(): Generator< unknown, void, unknown > {
-		const registryResult = yield commonActions.getRegistry();
-		const registry = registryResult as ReaderRevenueManagerRegistry;
-
-		const params = ( yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-				.getPublicationParams()
-		) ) as PublicationParams | null;
-
-		// No publication to look up; skip the fetch rather than looping on
-		// `undefined`.
-		if ( ! params ) {
+	*getPublicationByID(
+		organizationID: string,
+		publicationID: string
+	): Generator< unknown, void, unknown > {
+		if ( ! organizationID || ! publicationID ) {
 			return;
 		}
 
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as ReaderRevenueManagerRegistry;
+
 		const publication = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublication();
+			.getPublicationByID( organizationID, publicationID );
 
 		if ( publication !== undefined ) {
 			return;
 		}
 
 		// @ts-expect-error createFetchStore is not properly typed yet.
-		yield fetchGetPublicationStore.actions.fetchGetPublication(
-			params.organizationID,
-			params.publicationID
+		yield fetchGetPublicationByIDStore.actions.fetchGetPublicationByID(
+			organizationID,
+			publicationID
 		);
 	},
 };
@@ -833,22 +859,80 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
 	 */
-	getPublication: createRegistrySelector(
-		( select: Select ) => ( state: ReaderRevenueManagerState ) => {
-			const publicationID = select(
-				MODULES_READER_REVENUE_MANAGER
-			).getPublicationID();
+	getPublication: createRegistrySelector( ( select: Select ) => () => {
+		const params = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getPublicationParams();
 
-			if ( ! publicationID ) {
-				return undefined;
+		if ( ! params ) {
+			return undefined;
+		}
+
+		return select( MODULES_READER_REVENUE_MANAGER ).getPublicationByID(
+			params.organizationID,
+			params.publicationID
+		);
+	} ),
+
+	/**
+	 * Checks whether the publication in the module settings has resolved.
+	 *
+	 * The resolution is keyed by the publication's identifiers, so a caller
+	 * would otherwise have to assemble that key itself.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} TRUE once the publication has resolved, or when there is none to resolve.
+	 */
+	hasResolvedPublication: createRegistrySelector(
+		( select: Select ) => () => {
+			const params = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationParams();
+
+			if ( params === undefined ) {
+				return false;
 			}
 
-			return state.publications?.find(
-				// eslint-disable-next-line sitekit/acronym-case
-				( { publicationId: id } ) => id === publicationID
-			);
+			// There is nothing to resolve when no publication is connected.
+			if ( ! params ) {
+				return true;
+			}
+
+			return select(
+				MODULES_READER_REVENUE_MANAGER
+			).hasFinishedResolution( 'getPublicationByID', [
+				params.organizationID,
+				params.publicationID,
+			] );
 		}
 	),
+
+	/**
+	 * Gets a publication by its identifiers.
+	 *
+	 * The publications are stored under their publication ID, and the
+	 * resolution is keyed the same way, so a request failure can be retried
+	 * against the identifiers it was made with.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} _organizationID Organization ID.
+	 * @param {string} publicationID   Publication ID.
+	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
+	 */
+	getPublicationByID(
+		state: ReaderRevenueManagerState,
+		_organizationID: string,
+		publicationID: string
+	) {
+		return state.publications?.find(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId: id } ) => id === publicationID
+		);
+	},
 
 	/**
 	 * Gets the current publication IDs.
@@ -936,7 +1020,7 @@ interface Store {
 const store = combineStores(
 	fetchGetPublicationsStore,
 	fetchCreatePublicationStore,
-	fetchGetPublicationStore,
+	fetchGetPublicationByIDStore,
 	fetchUpdatePublicationStore,
 	fetchGetSyncPublicationOnboardingStateStore,
 	{
