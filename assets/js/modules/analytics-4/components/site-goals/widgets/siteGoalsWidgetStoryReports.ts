@@ -26,7 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { buildKeyActionSessionsReportOptions as buildSharedKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+import { buildKeyActionSessionsReportOptions as buildSharedKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { getPreviousDate } from '@/js/util';

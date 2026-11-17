@@ -38,7 +38,7 @@ import {
 import {
 	buildEngagementReportOptions,
 	buildKeyActionSessionsReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+} from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { getKeyActionRates } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';

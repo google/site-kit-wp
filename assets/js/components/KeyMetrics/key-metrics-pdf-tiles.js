@@ -93,11 +93,6 @@ import {
 	buildDeviceTypeReportOptions,
 	mapDeviceTypeRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/deviceType';
-import {
-	buildEngagementReportOptions,
-	buildKeyActionSessionsReportOptions,
-	buildPrimaryEventReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { buildGoalDriverTotalReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/reportOptionsHelpers';
 import {
 	getGoalDriverTotalCount,
@@ -116,6 +111,11 @@ import {
 	buildVisitorTypeReportOptions,
 	mapVisitorTypeRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/visitorType';
+import {
+	buildEngagementReportOptions,
+	buildKeyActionSessionsReportOptions,
+	buildPrimaryEventReportOptions,
+} from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import {
 	getKeyActionRates,

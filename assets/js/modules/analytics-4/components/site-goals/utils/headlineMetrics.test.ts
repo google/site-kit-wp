@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { REPORT_UTILS_TEST_DATES as dates } from './__fixtures__';
+import { REPORT_UTILS_TEST_DATES as dates } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/__fixtures__';
 import {
 	buildEngagementReportOptions,
 	buildKeyActionSessionsReportOptions,

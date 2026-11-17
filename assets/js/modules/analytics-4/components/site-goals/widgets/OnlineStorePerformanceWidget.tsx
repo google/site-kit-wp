@@ -71,12 +71,12 @@ import {
 	resolveGoalDriverIDs,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
-import { buildKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { useShouldShowSiteGoalsRemovalNotice } from '@/js/modules/analytics-4/components/site-goals/hooks/useShouldShowSiteGoalsRemovalNotice';
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { buildKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import {
 	getKeyActionRates,

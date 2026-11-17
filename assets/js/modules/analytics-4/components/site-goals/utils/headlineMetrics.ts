@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
+import { HeadlineMetricReportDates } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/types';
 import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/components/site-goals/utils/getDimensionFiltersForEvents';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import { HeadlineMetricReportDates } from './types';
 
 /**
  * Builds the Analytics 4 report options for a headline metric's primary event count.

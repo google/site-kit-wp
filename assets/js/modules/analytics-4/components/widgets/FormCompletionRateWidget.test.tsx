@@ -32,7 +32,7 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	buildEngagementReportOptions,
 	buildKeyActionSessionsReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+} from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { fireEvent, render, waitFor, within } from '@tests/js/test-utils';
 import {

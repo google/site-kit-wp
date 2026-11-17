@@ -32,7 +32,7 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	buildEngagementReportOptions,
 	buildKeyActionSessionsReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+} from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
