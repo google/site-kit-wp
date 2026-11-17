@@ -113,7 +113,7 @@ function toMetric( rows: RowPair, index: number ): SiteGoalsPDFMetric {
  * Divides the sessions with a Key action by the site's sessions, guarding
  * against a zero denominator.
  *
- * Mirrors the dashboard's `processReports`, which reports a zero rate rather
+ * Mirrors the dashboard's `getKeyActionRates`, which reports a zero rate rather
  * than a gap when there are no sessions.
  *
  * @since 1.187.0
