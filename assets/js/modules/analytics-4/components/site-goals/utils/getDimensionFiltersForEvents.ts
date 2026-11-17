@@ -23,7 +23,6 @@
  * filter, when given, further limits the report to one breakdown tab.
  *
  * @since 1.180.0
- * @since n.e.x.t Moved from the goal drivers utils to the Site Goals utils.
  *
  * @param {string[]} eventNames        Names of the events to match any of.
  * @param {Object}   [breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.
