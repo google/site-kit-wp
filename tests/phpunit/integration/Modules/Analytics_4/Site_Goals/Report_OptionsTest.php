@@ -244,27 +244,6 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_engagement_options__splits_the_sessions_by_the_breakdown_dimension() {
-		$this->assertSame(
-			array(
-				'metrics'          => array(
-					array( 'name' => 'engagementRate' ),
-					array( 'name' => 'sessions' ),
-				),
-				'dimensions'       => array(
-					array( 'name' => 'customEvent:googlesitekit_form_id' ),
-				),
-				'keepEmptyRows'    => true,
-				'startDate'        => '2026-08-19',
-				'endDate'          => '2026-09-15',
-				'compareStartDate' => '2026-07-22',
-				'compareEndDate'   => '2026-08-18',
-			),
-			$this->create_report_options( array( 'contact' ) )->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID ),
-			'The `get_engagement_options()` method should split the sessions by `customEvent:googlesitekit_form_id`, and keep the forms with no sessions.'
-		);
-	}
-
 	public function test_get_event_count_options__counts_the_events_of_the_filter_with_no_date_range() {
 		$event_filter = array(
 			'filterType' => 'inListFilter',

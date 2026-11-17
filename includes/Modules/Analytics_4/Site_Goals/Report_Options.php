@@ -156,14 +156,14 @@ class Report_Options {
 	/**
 	 * Gets the options of the report that gives the engagement rate and the session count.
 	 *
-	 * @since 1.192.0
+	 * The report covers the whole site, because every key action rate is a share of the site's sessions.
 	 *
-	 * @param string $custom_dimension Optional. Custom dimension slug to split the rows by, such as
-	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
-	 *                                 row for the whole site.
+	 * @since 1.192.0
+	 * @since n.e.x.t Removed the `$custom_dimension` parameter.
+	 *
 	 * @return array Report request options array for the current and the compare period.
 	 */
-	public function get_engagement_options( $custom_dimension = '' ) {
+	public function get_engagement_options() {
 		$options = array(
 			'metrics' => array(
 				array( 'name' => 'engagementRate' ),
@@ -171,7 +171,7 @@ class Report_Options {
 			),
 		);
 
-		return $this->with_date_ranges( $this->with_breakdown_dimension( $options, $custom_dimension ) );
+		return $this->with_date_ranges( $options );
 	}
 
 	/**

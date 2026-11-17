@@ -617,22 +617,6 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		$this->assert_report_covers_both_periods( $options, 'get_engagement_options()' );
 	}
 
-	public function test_get_engagement_options__splits_the_sessions_by_event_provider() {
-		$builder = $this->create_builder();
-		$options = $builder->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
-
-		$this->assertEquals(
-			array( array( 'name' => 'customEvent:googlesitekit_event_provider' ) ),
-			$options['dimensions'],
-			'get_engagement_options() should group the sessions by event provider when given the event provider dimension.'
-		);
-		$this->assertTrue(
-			$options['keepEmptyRows'],
-			'get_engagement_options() should keep an event provider with no sessions in the report.'
-		);
-		$this->assert_report_covers_both_periods( $options, 'get_engagement_options()' );
-	}
-
 	public function test_has_ecommerce_events__is_true_when_the_site_sends_a_store_event() {
 		$builder = $this->create_builder_with_events( array( 'add_to_cart', 'contact' ) );
 

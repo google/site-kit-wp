@@ -583,14 +583,12 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since 1.187.0
 	 * @since 1.192.0 Builds the options with `Site_Goals\Report_Options::get_engagement_options()`.
+	 * @since n.e.x.t Removed the `$custom_dimension` parameter.
 	 *
-	 * @param string $custom_dimension Optional. Custom dimension slug to split the rows by, such as
-	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
-	 *                                 row for the whole site.
 	 * @return array Report request options array.
 	 */
-	public function get_engagement_options( $custom_dimension = '' ) {
-		return $this->get_site_goals_report_options()->get_engagement_options( $custom_dimension );
+	public function get_engagement_options() {
+		return $this->get_site_goals_report_options()->get_engagement_options();
 	}
 
 	/**
