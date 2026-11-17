@@ -35,7 +35,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Checkbox, SpinnerButton } from 'googlesitekit-components';
+import { Checkbox } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
@@ -52,6 +52,7 @@ import {
 	ExpressSetupStepHeadline,
 	ExpressSetupStepPublicationTypeRadio,
 } from '@/js/modules/reader-revenue-manager/components/common';
+import ExpressSetupStepActions from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupStepActions';
 import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
 	SetupStep,
@@ -75,12 +76,12 @@ interface StepTermsOfServiceProps extends SetupStepProps {
 const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 	description,
 	onComplete,
+	onGoBack,
 } ) => {
 	const trackEvent = useExpressSetupTrackEvent();
 
 	const [ isLoading, setIsLoading ] = useState( true );
-	const [ isSaving, setIsSaving ] = useState( false );
-
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
 	const defaultDescription = __(
 		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
 		'google-site-kit'
@@ -142,6 +143,8 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 		[ tosURL ]
 	);
 
+	const hasTermsOfService = !! termsOfService;
+
 	const hasResolvedPublication: boolean = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
@@ -169,7 +172,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 				return;
 			}
 
-			setIsSaving( true );
+			setIsSubmitting( true );
 
 			const { error } = await updatePublication( {
 				data: {
@@ -184,7 +187,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 			} );
 
 			if ( error ) {
-				setIsSaving( false );
+				setIsSubmitting( false );
 				return;
 			}
 
@@ -293,14 +296,12 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 					</div>
 				</div>
 
-				{ /* @ts-expect-error `SpinnerButton` component is not yet typed. */ }
-				<SpinnerButton
-					disabled={ ! termsOfService || isSaving }
-					isSaving={ isSaving }
-					type="submit"
-				>
-					{ __( 'I agree', 'google-site-kit' ) }
-				</SpinnerButton>
+				<ExpressSetupStepActions
+					canGoForward={ hasTermsOfService }
+					isBusy={ isSubmitting }
+					label={ __( 'I agree', 'google-site-kit' ) }
+					onGoBack={ onGoBack }
+				/>
 			</form>
 		</div>
 	);

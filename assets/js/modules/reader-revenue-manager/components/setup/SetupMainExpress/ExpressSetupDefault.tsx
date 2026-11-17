@@ -54,7 +54,7 @@ const STEPS: SetupStep[] = [
 const ExpressSetupDefault: FC = () => {
 	const hasRequiredScopes = useExpressSetupScopes();
 
-	const { currentStep, advance } = useSetupFlow( STEPS );
+	const { currentStep, goForward } = useSetupFlow( STEPS );
 
 	if ( hasRequiredScopes !== true || ! currentStep ) {
 		return (
@@ -79,7 +79,7 @@ const ExpressSetupDefault: FC = () => {
 				/>
 			}
 		>
-			<StepComponent onComplete={ advance } />
+			<StepComponent onComplete={ goForward } />
 		</ExpressSetupLayout>
 	);
 };

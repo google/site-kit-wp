@@ -21,12 +21,17 @@
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import StepPublicationPolicies, {
 	publicationPoliciesStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationPolicies';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_POLICIES_FORM,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import * as tracking from '@/js/util/tracking';
 import {
@@ -46,6 +51,14 @@ import {
 
 const TEST_PUBLICATION = publications[ 0 ];
 const TEST_PUBLICATION_WITH_EXISTING_VALUES = publications[ 3 ];
+
+function changeTermsOfServiceURL(
+	getByLabelText: ReturnType< typeof render >[ 'getByLabelText' ]
+) {
+	fireEvent.change( getByLabelText( 'Terms of service' ), {
+		target: { value: 'https://example.com/changed-terms' },
+	} );
+}
 
 describe( 'StepPublicationPolicies', () => {
 	mockBrowserScrolling();
@@ -284,12 +297,14 @@ describe( 'StepPublicationPolicies', () => {
 
 		freezeFetch( publicationEndpoint );
 
-		const { getByRole } = render(
+		const { getByLabelText, getByRole } = render(
 			<StepPublicationPolicies onComplete={ () => {} } />,
 			{
 				registry,
 			}
 		);
+
+		changeTermsOfServiceURL( getByLabelText );
 
 		const submitButton = getByRole( 'button', {
 			name: 'Submit policies',
@@ -302,13 +317,8 @@ describe( 'StepPublicationPolicies', () => {
 		expect( submitButton ).toBeDisabled();
 	} );
 
-	it( 'should call the complete handler if submission is successful', async () => {
+	it( 'should complete without updating the publication when neither URL has changed', async () => {
 		providePublication( registry, TEST_PUBLICATION_WITH_EXISTING_VALUES );
-
-		fetchMock.postOnce( publicationEndpoint, {
-			body: {},
-			status: 200,
-		} );
 
 		const onComplete = jest.fn();
 
@@ -322,10 +332,98 @@ describe( 'StepPublicationPolicies', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Submit policies' } ) );
 
 		await waitFor( () => {
-			expect( onComplete ).toHaveBeenCalled();
+			expect( onComplete ).toHaveBeenCalledTimes( 1 );
 		} );
 
-		expect( fetchMock ).toHaveFetched( publicationEndpoint );
+		expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
+	} );
+
+	it.each( [
+		[ 'terms of service', 'Terms of service', 'publicationTosUrl' ],
+		[ 'privacy policy', 'Privacy policy', 'publicationPrivacyPolicyUrl' ],
+	] )(
+		'should update the publication and then complete when the %s URL has changed',
+		async ( _name, label, field ) => {
+			providePublication(
+				registry,
+				TEST_PUBLICATION_WITH_EXISTING_VALUES
+			);
+
+			fetchMock.postOnce( publicationEndpoint, {
+				body: {},
+				status: 200,
+			} );
+
+			const onComplete = jest.fn( () => {
+				// The publication has been updated by the time the step completes.
+				expect( fetchMock ).toHaveFetched( publicationEndpoint );
+			} );
+
+			const { getByLabelText, getByRole } = render(
+				<StepPublicationPolicies onComplete={ onComplete } />,
+				{
+					registry,
+				}
+			);
+
+			fireEvent.change( getByLabelText( label ), {
+				target: { value: 'https://example.com/changed' },
+			} );
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Submit policies' } )
+			);
+
+			await waitFor( () => {
+				expect( onComplete ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			/* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
+			const { publicationTosUrl, publicationPrivacyPolicyUrl } =
+				TEST_PUBLICATION_WITH_EXISTING_VALUES;
+
+			expect( fetchMock ).toHaveFetched( publicationEndpoint, {
+				body: {
+					data: {
+						data: {
+							publicationTosUrl,
+							publicationPrivacyPolicyUrl,
+							[ field ]: 'https://example.com/changed',
+						},
+					},
+				},
+			} );
+			/* eslint-enable sitekit/acronym-case */
+		}
+	);
+
+	it( 'should show the publication URLs when revisiting the step, over unsaved changes', () => {
+		providePublication( registry, TEST_PUBLICATION_WITH_EXISTING_VALUES );
+
+		// Values left in the form by an earlier visit that was not submitted.
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ PUBLICATION_POLICIES_FORM.TERMS_OF_SERVICE_URL ]:
+					'https://example.com/unsaved-terms',
+				[ PUBLICATION_POLICIES_FORM.PRIVACY_POLICY_URL ]:
+					'https://example.com/unsaved-privacy',
+			} );
+
+		const { getByLabelText } = render(
+			<StepPublicationPolicies onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		expect( getByLabelText( 'Terms of service' ) ).toHaveValue(
+			TEST_PUBLICATION_WITH_EXISTING_VALUES.publicationTosUrl // eslint-disable-line sitekit/acronym-case
+		);
+
+		expect( getByLabelText( 'Privacy policy' ) ).toHaveValue(
+			TEST_PUBLICATION_WITH_EXISTING_VALUES.publicationPrivacyPolicyUrl // eslint-disable-line sitekit/acronym-case
+		);
 	} );
 
 	it( 'should display an error notice if updating the publication fails', async () => {
@@ -342,12 +440,14 @@ describe( 'StepPublicationPolicies', () => {
 
 		const onComplete = jest.fn();
 
-		const { getByRole } = render(
+		const { getByLabelText, getByRole } = render(
 			<StepPublicationPolicies onComplete={ onComplete } />,
 			{
 				registry,
 			}
 		);
+
+		changeTermsOfServiceURL( getByLabelText );
 
 		fireEvent.click( getByRole( 'button', { name: 'Submit policies' } ) );
 

@@ -461,6 +461,123 @@ describe( 'SetupCTASurvey', () => {
 		} );
 	} );
 
+	describe( 'back navigation', () => {
+		const publicationEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication'
+		);
+
+		it.each( [
+			[ 'connect-publication', false ],
+			[ 'terms-of-service', false ],
+			[ 'publication-policies', false ],
+			[ 'survey-questions', true ],
+			[ 'survey-cta', true ],
+			[ 'setup-complete', false ],
+		] )(
+			'on the %s step, shows a back action: %s',
+			async ( step, hasBack ) => {
+				global.location.href = `http://example.com/?cta=survey&step=${ step }`;
+
+				if ( step === 'terms-of-service' ) {
+					connectPublication( registry, publicationWithoutTerms );
+				} else if ( step !== 'connect-publication' ) {
+					connectPublication( registry, completePublication );
+				}
+
+				const { getByText, queryByRole } = render( <SetupCTASurvey />, {
+					registry,
+				} );
+
+				await waitFor( () => {
+					expect(
+						getByText(
+							STEP_CONTENT[ step as keyof typeof STEP_CONTENT ]
+						)
+					).toBeInTheDocument();
+				} );
+
+				if ( hasBack ) {
+					expect(
+						queryByRole( 'button', { name: 'Back' } )
+					).toBeInTheDocument();
+				} else {
+					expect(
+						queryByRole( 'button', { name: 'Back' } )
+					).not.toBeInTheDocument();
+				}
+			}
+		);
+
+		it( 'opens the survey questions step from the survey CTA step', async () => {
+			global.location.href =
+				'http://example.com/?cta=survey&step=survey-cta';
+
+			connectPublication( registry, completePublication );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupCTASurvey />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: 'Back' } ) );
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'survey-questions' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( global.location.href ).toContain( 'step=survey-questions' );
+		} );
+
+		it( 'opens the publication policies step with the saved URLs from the survey questions step, and moves on without updating the unchanged publication', async () => {
+			global.location.href =
+				'http://example.com/?cta=survey&step=survey-questions';
+
+			connectPublication( registry, completePublication );
+
+			const { getByLabelText, getByRole, getByText, waitForRegistry } =
+				render( <SetupCTASurvey />, { registry } );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: 'Back' } ) );
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'publication-policies' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( global.location.href ).toContain(
+				'step=publication-policies'
+			);
+
+			expect( getByLabelText( 'Terms of service' ) ).toHaveValue(
+				completePublication.publicationTosUrl // eslint-disable-line sitekit/acronym-case
+			);
+			expect( getByLabelText( 'Privacy policy' ) ).toHaveValue(
+				completePublication.publicationPrivacyPolicyUrl // eslint-disable-line sitekit/acronym-case
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Submit policies' } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'survey-questions' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( fetchMock ).not.toHaveFetched( publicationEndpoint, {
+				method: 'POST',
+			} );
+		} );
+	} );
+
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
 		async ( step, content ) => {

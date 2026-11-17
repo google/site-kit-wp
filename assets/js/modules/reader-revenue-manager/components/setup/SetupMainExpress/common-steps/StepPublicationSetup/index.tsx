@@ -64,6 +64,7 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	connectDescription,
 	createDescription,
 	onComplete,
+	onGoBack,
 } ) => {
 	const trackEvent = useExpressSetupTrackEvent();
 
@@ -157,11 +158,13 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 				<CreatePublication
 					description={ createDescription }
 					onComplete={ onPublicationConnected }
+					onGoBack={ onGoBack }
 				/>
 			) : (
 				<ConnectPublication
 					description={ connectDescription }
 					onComplete={ onPublicationConnected }
+					onGoBack={ onGoBack }
 				/>
 			) }
 

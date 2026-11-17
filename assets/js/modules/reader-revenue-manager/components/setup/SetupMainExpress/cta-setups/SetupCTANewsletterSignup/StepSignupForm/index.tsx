@@ -30,7 +30,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
@@ -42,6 +41,7 @@ import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/comp
 import Preview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/Preview';
 import CTAPreview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAPreview';
 import CTAsPlacementFormSection from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAsPlacementFormSection';
+import ExpressSetupStepActions from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupStepActions';
 import useCreateExpressSetupCTA from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useCreateExpressSetupCTA';
 import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
@@ -60,10 +60,10 @@ import CTASettings from './CTASettings';
 import FormText from './FormText';
 import GeneralDetails from './GeneralDetails';
 
-const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
+const StepSignupForm: FC< SetupStepProps > = ( { onComplete, onGoBack } ) => {
 	const trackEvent = useExpressSetupTrackEvent();
 
-	const [ isPublishing, setIsPublishing ] = useState( false );
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
 
 	const { submitChanges } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 	const createExpressSetupCTA = useCreateExpressSetupCTA();
@@ -125,13 +125,13 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 		nameRequired,
 	] );
 
-	const isDoingSubmitChanges = useSelect(
+	const isDoingSubmitChanges: boolean = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges(),
 		[]
 	);
 
-	const isFetchingCreateCTA = useSelect(
+	const isFetchingCreateCTA: boolean = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).isFetchingCreateCTA(
 				createCTAParams
@@ -146,12 +146,12 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 	);
 
 	const publishChanges = useCallback( async () => {
-		setIsPublishing( true );
+		setIsSubmitting( true );
 
 		const { error: submitError } = await submitChanges();
 
 		if ( submitError ) {
-			setIsPublishing( false );
+			setIsSubmitting( false );
 			return;
 		}
 
@@ -160,11 +160,11 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 		);
 
 		if ( createError ) {
-			setIsPublishing( false );
+			setIsSubmitting( false );
 			return;
 		}
 
-		setIsPublishing( false );
+		setIsSubmitting( false );
 		onComplete();
 	}, [ createCTAParams, createExpressSetupCTA, onComplete, submitChanges ] );
 
@@ -196,13 +196,11 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 		}
 	);
 
-	const isSaving =
-		isPublishing || isDoingSubmitChanges || isFetchingCreateCTA;
+	const canGoForward =
+		!! ( displayName || '' ).trim() &&
+		( ! consentEnabled || !! ( consentText || '' ).trim() );
 
-	const isPublishDisabled =
-		! ( displayName || '' ).trim() ||
-		( !! consentEnabled && ! ( consentText || '' ).trim() ) ||
-		isSaving;
+	const isBusy = isSubmitting || isDoingSubmitChanges || isFetchingCreateCTA;
 
 	return (
 		<div className="googlesitekit-rrm-express-setup-step googlesitekit-rrm-express-setup-step--cta-setup googlesitekit-rrm-newsletter-signup-setup">
@@ -252,14 +250,13 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 						</CTAPreview>
 					</div>
 				</div>
-				{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
-				<SpinnerButton
-					disabled={ isPublishDisabled }
-					isSaving={ isSaving }
-					type="submit"
-				>
-					{ __( 'Publish to your site', 'google-site-kit' ) }
-				</SpinnerButton>
+
+				<ExpressSetupStepActions
+					canGoForward={ canGoForward }
+					isBusy={ isBusy }
+					label={ __( 'Publish to your site', 'google-site-kit' ) }
+					onGoBack={ onGoBack }
+				/>
 			</form>
 		</div>
 	);

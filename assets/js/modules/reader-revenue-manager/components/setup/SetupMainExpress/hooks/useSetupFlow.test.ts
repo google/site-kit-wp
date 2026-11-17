@@ -28,6 +28,8 @@ import {
 	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import { signupFormStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/StepSignupForm';
+import { surveyCTAStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/StepSurveyCTA';
+import { surveyQuestionsStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/StepSurveyQuestions';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
@@ -553,7 +555,7 @@ describe( 'useSetupFlow', () => {
 
 			const { result } = renderUseSetupFlow();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe(
 				publicationPoliciesStep
@@ -567,7 +569,7 @@ describe( 'useSetupFlow', () => {
 
 			const { result } = renderUseSetupFlow();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( termsOfServiceStep );
 		} );
@@ -581,7 +583,7 @@ describe( 'useSetupFlow', () => {
 
 			// Captured before the terms are accepted, as a step's `onComplete`
 			// handler would be.
-			const { advance } = result.current;
+			const { goForward } = result.current;
 
 			actHook( () => {
 				providePublications( registry, [
@@ -590,7 +592,7 @@ describe( 'useSetupFlow', () => {
 						rrmProduct: publicationWithTerms.rrmProduct,
 					},
 				] );
-				advance();
+				goForward();
 			} );
 
 			expect( result.current.currentStep ).toBe(
@@ -605,7 +607,7 @@ describe( 'useSetupFlow', () => {
 
 			const { result } = renderUseSetupFlow();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( setupCompleteStep );
 		} );
@@ -617,7 +619,7 @@ describe( 'useSetupFlow', () => {
 
 			const { result } = renderUseSetupFlow( NEWSLETTER_FLOW );
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( signupFormStep );
 		} );
@@ -641,13 +643,126 @@ describe( 'useSetupFlow', () => {
 
 			expect( result.current.currentStep ).toBe( firstCTAStep );
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( secondCTAStep );
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( setupCompleteStep );
+		} );
+	} );
+
+	describe( 'going back', () => {
+		const SURVEY_FLOW: SetupStep[] = [
+			publicationSetupStep,
+			termsOfServiceStep,
+			publicationPoliciesStep,
+			surveyQuestionsStep,
+			surveyCTAStep,
+			setupCompleteStep,
+		];
+
+		it( 'should open the survey questions step from the survey CTA step', () => {
+			global.location.href = 'http://example.com/?step=survey-cta';
+
+			provideConnectedPublication( registry, publicationWithPolicies );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			actHook( () => result.current.goBack() );
+
+			expect( result.current.currentStep ).toBe( surveyQuestionsStep );
+			expect( global.location.href ).toBe(
+				'http://example.com/?step=survey-questions'
+			);
+		} );
+
+		it( 'should open the publication policies step from the survey questions step, although it is complete', () => {
+			global.location.href = 'http://example.com/?step=survey-questions';
+
+			provideConnectedPublication( registry, publicationWithPolicies );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			actHook( () => result.current.goBack() );
+
+			expect( result.current.currentStep ).toBe(
+				publicationPoliciesStep
+			);
+
+			expect( global.location.href ).toBe(
+				'http://example.com/?step=publication-policies'
+			);
+		} );
+
+		it( 'should move forward again from the step it went back to', () => {
+			global.location.href = 'http://example.com/?step=survey-questions';
+
+			provideConnectedPublication( registry, publicationWithPolicies );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			actHook( () => result.current.goBack() );
+			actHook( () => result.current.goForward() );
+
+			expect( result.current.currentStep ).toBe( surveyQuestionsStep );
+		} );
+
+		it( 'should not change the step on the first step of the flow', () => {
+			global.location.href =
+				'http://example.com/?step=connect-publication';
+
+			provideConnectedPublication( registry );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			actHook( () => result.current.goBack() );
+
+			expect( result.current.currentStep ).toBe( publicationSetupStep );
+		} );
+
+		it.each( [
+			[ 'default', DEFAULT_FLOW, setupCompleteStep ],
+			[ 'newsletter sign-up', NEWSLETTER_FLOW, signupFormStep ],
+		] )(
+			'should leave the %s flow advancing as before',
+			( _name, steps, expectedStep ) => {
+				global.location.href =
+					'http://example.com/?step=publication-policies';
+
+				provideConnectedPublication(
+					registry,
+					publicationWithPolicies
+				);
+
+				const { result } = renderUseSetupFlow( steps );
+
+				actHook( () => result.current.goForward() );
+
+				expect( result.current.currentStep ).toBe( expectedStep );
+			}
+		);
+
+		it( 'should clear errors on going back', () => {
+			global.location.href = 'http://example.com/?step=survey-cta';
+
+			provideConnectedPublication( registry, publicationWithPolicies );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setErrorForSelector(
+					{ code: 'test_error', message: 'Error.', data: {} },
+					'getPublications'
+				);
+
+			actHook( () => result.current.goBack() );
+
+			expect(
+				registry.select( MODULES_READER_REVENUE_MANAGER ).getErrors()
+			).toEqual( [] );
 		} );
 	} );
 
@@ -758,7 +873,7 @@ describe( 'useSetupFlow', () => {
 				{ registry }
 			);
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( existingCTAStep );
 
@@ -825,7 +940,7 @@ describe( 'useSetupFlow', () => {
 
 			provideErrors();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe(
 				publicationPoliciesStep
@@ -852,7 +967,7 @@ describe( 'useSetupFlow', () => {
 
 			rerender();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( setupCompleteStep );
 			expect( getErrors() ).toEqual( [ selectorError, actionError ] );
