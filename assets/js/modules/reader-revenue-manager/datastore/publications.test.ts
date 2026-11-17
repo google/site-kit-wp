@@ -400,11 +400,44 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublication()
 				).toEqual( publication );
+			} );
+
+			it( 'should refresh the publication in the publications list', async () => {
+				// The listed publication has yet to accept the terms.
+				const publication = {
+					...fixtures.publications[ 0 ],
+					publicationId: params.publicationID,
+					rrmProduct: { tosAcceptance: { userAccepted: false } },
+				};
+
+				const updatedPublication = {
+					...publication,
+					rrmProduct: params.data.rrmProduct,
+				};
+
+				fetchMock.postOnce( publicationEndpoint, {
+					body: updatedPublication,
+					status: 200,
+				} );
+
+				connectPublication( {
+					organizationID: params.organizationID,
+					publicationID: params.publicationID,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [ publication ] );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updatePublication( { data: params.data } );
+
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublications()
-				).toContainEqual( publication );
+				).toEqual( [ updatedPublication ] );
 			} );
 		} );
 
@@ -469,6 +502,47 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingState()
 				).toEqual( PUBLICATION_ONBOARDING_STATES.UNSPECIFIED );
+			} );
+
+			it( 'should update the stored publication when it is not in the publications list', async () => {
+				const publication = {
+					...fixtures.publications[ 0 ],
+					onboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+				};
+
+				fetchMock.postOnce( syncOnboardingStateEndpoint, {
+					body: {
+						publicationID: publication.publicationId,
+						publicationOnboardingState:
+							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+					},
+					status: 200,
+				} );
+
+				const params = {
+					organizationID: publication.organizationId,
+					publicationID: publication.publicationId,
+				};
+
+				connectPublication( params );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationByID( publication, params );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.syncPublicationOnboardingState();
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationByID(
+							params.organizationID,
+							params.publicationID
+						)?.onboardingState
+				).toEqual( PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE );
 			} );
 		} );
 
@@ -1192,6 +1266,54 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					'other-organization',
 					'other-publication'
 				);
+			} );
+
+			it( 'should keep a fetched publication out of the publications list', async () => {
+				const otherPublication = {
+					...publication,
+					organizationId: 'other-organization',
+					publicationId: 'other-publication',
+				};
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				fetchMock.getOnce( publicationEndpoint, {
+					body: otherPublication,
+					status: 200,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublicationByID(
+						otherPublication.organizationId,
+						otherPublication.publicationId
+					);
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationByID(
+					otherPublication.organizationId,
+					otherPublication.publicationId
+				);
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationByID(
+							otherPublication.organizationId,
+							otherPublication.publicationId
+						)
+				).toEqual( otherPublication );
+
+				// The list only holds the publications it returned.
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublications()
+				).toEqual( fixtures.publications );
 			} );
 		} );
 
