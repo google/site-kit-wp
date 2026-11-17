@@ -18,7 +18,11 @@
  * Internal dependencies
  */
 import { Report } from '@/js/modules/analytics-4/datastore/types';
-import { getKeyActionRates, processReports } from './reports';
+import {
+	getKeyActionRates,
+	getReportsToCheck,
+	processReports,
+} from './reports';
 
 function eventRow( eventName: string, dateRange: string, count: number ) {
 	return {
@@ -121,5 +125,24 @@ describe( 'processReports', () => {
 			currentPrimaryCount: 200,
 			previousPrimaryCount: 80,
 		} );
+	} );
+} );
+
+describe( 'getReportsToCheck', () => {
+	it( 'leaves out the reports the widget does not request', () => {
+		const eventsOptions = {
+			startDate: '2026-01-01',
+			endDate: '2026-01-28',
+			metrics: [ { name: 'eventCount' } ],
+		};
+		const engagementOptions = {
+			startDate: '2026-01-01',
+			endDate: '2026-01-28',
+			metrics: [ { name: 'sessions' } ],
+		};
+
+		expect(
+			getReportsToCheck( eventsOptions, null, engagementOptions )
+		).toEqual( [ eventsOptions, engagementOptions ] );
 	} );
 } );

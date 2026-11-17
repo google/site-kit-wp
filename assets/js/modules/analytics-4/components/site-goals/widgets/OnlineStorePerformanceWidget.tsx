@@ -80,6 +80,7 @@ import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/
 import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import {
 	getKeyActionRates,
+	getReportsToCheck,
 	processReports,
 } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
@@ -192,14 +193,6 @@ function getWidgetReportOptions(
 		keyActionSessionsReportOptions,
 		engagementReportOptions,
 	};
-}
-
-function getReportsToCheck(
-	...reportOptions: Array< ReportOptions | null >
-): ReportOptions[] {
-	return reportOptions.filter( ( options ): options is ReportOptions =>
-		Boolean( options )
-	);
 }
 
 const OnlineStorePerformanceWidget = forwardRef<

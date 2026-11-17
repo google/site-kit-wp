@@ -80,6 +80,7 @@ import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/
 import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import {
 	getKeyActionRates,
+	getReportsToCheck,
 	processReports,
 } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
@@ -543,12 +544,10 @@ const LeadGenerationPerformanceWidget = forwardRef<
 
 		const [ loading, error ] = useSelect(
 			( select: Select ) => {
-				const reportsToCheck = [
+				const reportsToCheck = getReportsToCheck(
 					leadEventsReportOptions,
 					keyActionSessionsReportOptions,
-					engagementReportOptions,
-				].filter( ( options ): options is ReportOptions =>
-					Boolean( options )
+					engagementReportOptions
 				);
 
 				return [

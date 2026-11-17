@@ -17,7 +17,11 @@
 /**
  * Internal dependencies
  */
-import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import {
+	Report,
+	ReportOptions,
+	ReportRow,
+} from '@/js/modules/analytics-4/datastore/types';
 
 /**
  * Creates a find callback for locating rows by date range slug at a specific dimension index.
@@ -219,4 +223,20 @@ export function getKeyActionRates(
 				: previousKeyActionSessions / previousSessions,
 		currentSessions,
 	};
+}
+
+/**
+ * Returns the report options a widget waits on, leaving out the reports it does not request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...(ReportOptions|null)} reportOptions Options of each report, or `null` when the widget does not request it.
+ * @return {ReportOptions[]} Options of the reports the widget requests.
+ */
+export function getReportsToCheck(
+	...reportOptions: Array< ReportOptions | null >
+): ReportOptions[] {
+	return reportOptions.filter( ( options ): options is ReportOptions =>
+		Boolean( options )
+	);
 }
