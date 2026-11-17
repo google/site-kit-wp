@@ -61,6 +61,11 @@ interface ExpressSetupCTABannerOwnProps {
 type ExpressSetupCTABannerProps = ExpressSetupCTABannerOwnProps &
 	ExpressSetupCTABannerSetupCTAProps;
 
+const DOC_SLUGS = {
+	[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 'rrm-newsletter',
+	[ EXPRESS_SETUP_CTAS.SURVEY ]: 'rrm-survey',
+};
+
 export default function ExpressSetupCTABanner( {
 	additionalScopes = [],
 	ctaButtonLabel,
@@ -69,14 +74,9 @@ export default function ExpressSetupCTABanner( {
 }: ExpressSetupCTABannerProps ) {
 	const [ isActivating, setIsActivating ] = useState( false );
 
-	const docSlugs = {
-		[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 'rrm-newsletter',
-		[ EXPRESS_SETUP_CTAS.SURVEY ]: 'rrm-survey',
-	};
-
 	const documentationLinkURL = useSelect(
 		( select: Select ) =>
-			select( CORE_SITE ).getDocumentationLinkURL( docSlugs[ ctaType ] ),
+			select( CORE_SITE ).getDocumentationLinkURL( DOC_SLUGS[ ctaType ] ),
 		[ ctaType ]
 	);
 
