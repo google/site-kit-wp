@@ -114,8 +114,8 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 
 	const { updatePublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
-	const defaultPrivacyPolicyURL = useSelect(
-		( select: Select ) => select( CORE_SITE ).getPrivacyPolicyURL(),
+	const defaultPrivacyPolicyURL: string = useSelect(
+		( select: Select ) => select( CORE_SITE ).getPrivacyPolicyURL() || '',
 		[]
 	);
 
@@ -147,7 +147,6 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 		);
 
 	const isTermsOfServiceURLValid = isValidPolicyURL( termsOfServiceURL );
-
 	const isPrivacyPolicyURLValid = isValidPolicyURL( privacyPolicyURL );
 
 	const canSubmit = isPrivacyPolicyURLValid && isTermsOfServiceURLValid;
