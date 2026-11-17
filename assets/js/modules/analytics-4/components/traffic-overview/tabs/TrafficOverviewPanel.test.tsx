@@ -950,6 +950,51 @@ describe( 'TrafficOverviewPanel', () => {
 			).toBeInTheDocument();
 		} );
 
+		it.each( [
+			// The previous period runs from `2024-12-12` to `2025-01-08`.
+			[
+				'the previous period starts the day before the first day with recorded traffic',
+				'2024-12-13',
+			],
+			[ 'the site has no recorded traffic', null ],
+		] )(
+			'should leave out the key factors when %s',
+			async ( _, firstTrafficDate ) => {
+				// The response has no key factors until every day of the
+				// previous period has recorded traffic.
+				provideBenchmarkingResponse(
+					registry,
+					createResponse( { firstTrafficDate, keyFactors: [] } )
+				);
+
+				const { container, waitForRegistry } = renderPanel();
+
+				await waitForRegistry();
+
+				expect( getSectionClassNames( container ) ).toEqual( [
+					'googlesitekit-traffic-overview__summary',
+					'googlesitekit-traffic-overview__chart',
+					'googlesitekit-traffic-overview__breakdown',
+				] );
+			}
+		);
+
+		it( 'should render the key factors when the previous period starts on the first day with recorded traffic', async () => {
+			// The previous period runs from `2024-12-12` to `2025-01-08`.
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( { firstTrafficDate: '2024-12-12' } )
+			);
+
+			const { getByRole, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'heading', { name: 'Referral' } )
+			).toBeInTheDocument();
+		} );
+
 		it( 'should render the sections as placeholders while the benchmarking response is still loading, and render them together when it arrives', async () => {
 			const { startDate, endDate } = registry
 				.select( CORE_USER )
@@ -1049,14 +1094,17 @@ describe( 'TrafficOverviewPanel', () => {
 			// `ReportError` and the panel's `onRetry` both invalidate the
 			// resolution, and the two send one request.
 			expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint );
+			// The fixture's first day with recorded traffic comes after the
+			// selected range, so its key factors wait for more history, and the
+			// test reads the sections that show without it.
 			expect(
 				container.querySelector(
-					'.googlesitekit-traffic-overview__chart'
+					'.googlesitekit-traffic-overview__total-visitors'
 				)
 			).toBeInTheDocument();
 			expect(
 				container.querySelector(
-					'.googlesitekit-traffic-overview__key-factors'
+					'.googlesitekit-traffic-overview__chart'
 				)
 			).toBeInTheDocument();
 		} );
@@ -1615,6 +1663,41 @@ describe( 'TrafficOverviewPanel', () => {
 					`${ keyFactorsInsightSelector } strong`
 				)
 			).toHaveTextContent( 'Organic Search' );
+		} );
+
+		it( 'should leave out the driver of the insight, but not its analysis, when the previous period starts before the first day with recorded traffic', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+
+			// The previous period runs from `2024-12-12` to `2025-01-08`, so
+			// the response has no key factors.
+			provideBenchmarkingResponse( registry, {
+				...createBenchmarkingResponse( startDate, endDate ),
+				firstTrafficDate: '2024-12-13',
+				keyFactors: [],
+			} );
+			provideBenchmarkingInsight( registry, { startDate, endDate } );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).toHaveTextContent(
+				'Over the last 28 days, your site had 1,740 visits, about 12% above what is usual for it.'
+			);
+			expect(
+				container.querySelector( keyFactorsInsightSelector )
+			).not.toBeInTheDocument();
 		} );
 
 		it( 'should render placeholders in place of the analysis and the driver while the insight loads', async () => {

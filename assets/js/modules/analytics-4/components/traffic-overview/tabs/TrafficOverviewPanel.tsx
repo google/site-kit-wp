@@ -83,8 +83,9 @@ const TrafficOverviewPanel: FC = () => {
 		isEnabled: showInsights,
 	} );
 
-	const { startDate, endDate } = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
+	const { startDate, endDate, compareStartDate } = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).getDateRangeDates( { compare: true } ),
 		[]
 	);
 
@@ -113,6 +114,16 @@ const TrafficOverviewPanel: FC = () => {
 	const totalVisits = hasKeyFactors
 		? benchmarkingResponse?.visits
 		: PLACEHOLDER_TOTAL_VISITS;
+
+	// The key factors compare the selected range with the period before it,
+	// so the benchmarking response has none until every day of that period
+	// has recorded traffic. Until then, the panel leaves out their section:
+	// its notice would say that no channel changed notably, and the insight's
+	// driver would describe a change against days that weren't measured.
+	const firstTrafficDate = benchmarkingResponse?.firstTrafficDate;
+	const keyFactorsWaitForPreviousPeriod =
+		!! benchmarkingResponse &&
+		( ! firstTrafficDate || firstTrafficDate > compareStartDate );
 
 	return (
 		<div
@@ -163,7 +174,7 @@ const TrafficOverviewPanel: FC = () => {
 								: undefined
 						}
 					/>
-					{ showKeyFactors && (
+					{ showKeyFactors && ! keyFactorsWaitForPreviousPeriod && (
 						<KeyFactors
 							keyFactors={
 								benchmarkingResponse?.keyFactors ?? []
