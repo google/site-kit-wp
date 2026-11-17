@@ -33,7 +33,7 @@ export interface HeadlineMetricReportDates {
  * Builds the Analytics 4 report options for a headline metric's primary event count.
  *
  * Lifted from `OnlineStorePerformanceWidget`'s `getWidgetReportOptions`, this
- * report is goal-type agnostic like the goal driver builders above. A single
+ * report is goal-type agnostic. A single
  * event name filters by equality, matching the ecommerce `purchase` event;
  * lead generation has no single triggering event, so the lead-generation Key
  * Metric tiles pass the detected lead events as an array, filtered with an
