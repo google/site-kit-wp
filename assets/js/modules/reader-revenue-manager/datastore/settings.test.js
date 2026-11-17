@@ -396,7 +396,7 @@ describe( 'modules/reader-revenue-manager settings', () => {
 				publicationID: publicationA.publicationId,
 			} );
 
-			dispatch.receiveGetPublication( publicationA, {
+			dispatch.receiveGetPublicationByID( publicationA, {
 				// eslint-disable-next-line sitekit/acronym-case -- API field name.
 				organizationID: publicationA.organizationId,
 				// eslint-disable-next-line sitekit/acronym-case -- API field name.

@@ -231,9 +231,17 @@ describe( 'StepPublicationPolicies', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( {
+				/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+				organizationID:
+					TEST_PUBLICATION_WITH_EXISTING_VALUES.organizationId,
 				publicationID:
-					TEST_PUBLICATION_WITH_EXISTING_VALUES.publicationId, // eslint-disable-line sitekit/acronym-case
+					TEST_PUBLICATION_WITH_EXISTING_VALUES.publicationId,
+				/* eslint-enable sitekit/acronym-case */
 			} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
 
 		fetchMock
 			.getOnce( publicationEndpoint, {

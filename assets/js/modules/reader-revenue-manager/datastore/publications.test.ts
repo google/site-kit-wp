@@ -996,7 +996,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 	} );
 
-	describe( 'fetchGetPublication settings synchronization', () => {
+	describe( 'fetchGetPublicationByID settings synchronization', () => {
 		beforeEach( () => {
 			enabledFeatures.add( 'rrmExpressSetup' );
 		} );
@@ -1390,7 +1390,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetPublication( publication, params );
+					.receiveGetPublicationByID( publication, params );
 
 				registry
 					.select( MODULES_READER_REVENUE_MANAGER )
