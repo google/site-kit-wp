@@ -142,8 +142,10 @@ function provideConnectedPublication(
 	publication?: Publication
 ) {
 	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+		organizationID: publication ? publication.organizationId : '',
 		publicationID: publication ? publication.publicationId : '',
+		/* eslint-enable sitekit/acronym-case */
 	} );
 
 	registry
@@ -432,11 +434,6 @@ describe( 'useSetupFlow', () => {
 
 			expect( result.current.currentStep ).toBeUndefined();
 			expect( global.location.href ).toContain( 'step=setup-complete' );
-
-			// Prevent another request from being made to the publication endpoint.
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.finishResolution( 'getPublication', [ {} ] );
 		} );
 
 		it( 'should not return the existing CTA step while the connected publication is loading', () => {
@@ -473,11 +470,6 @@ describe( 'useSetupFlow', () => {
 			);
 
 			expect( result.current.currentStep ).toBeUndefined();
-
-			// Prevent another request from being made to the publication endpoint.
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.finishResolution( 'getPublication', [ {} ] );
 		} );
 
 		it( 'should not open a step before the settings have loaded', () => {
@@ -537,10 +529,6 @@ describe( 'useSetupFlow', () => {
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
 					.setPublicationID( publications[ 1 ].publicationId );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.invalidateResolutionForStoreSelector( 'getPublication' );
 			} );
 
 			expect(
@@ -841,7 +829,12 @@ describe( 'useSetupFlow', () => {
 			actHook( () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setErrorForSelector( selectorError, 'getPublication' );
+					.setErrorForSelector( selectorError, 'getPublicationByID', [
+						/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+						publicationWithTerms.organizationId,
+						publicationWithTerms.publicationId,
+						/* eslint-enable sitekit/acronym-case */
+					] );
 			} );
 
 			expect( getErrors() ).toEqual( [ selectorError ] );
