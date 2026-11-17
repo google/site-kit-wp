@@ -73,7 +73,7 @@ interface ChartMouseEventContext {
 }
 
 export interface TrafficChartProps {
-	/** The visits on each day of the selected range, oldest first. The bounds on each day's row are its typical range, which the chart draws as a band behind the line, and leaves empty on a day with null bounds. */
+	/** The visits on each day of the selected range, oldest first. The bounds on each day's row are its typical range, which the chart draws as a band behind the line. The band covers the whole range or none of it, so the chart leaves it out when a day has null bounds. */
 	dailyTraffic?: BenchmarkingDailyTrafficRow[];
 	/** Whether the daily traffic has arrived. */
 	loaded?: boolean;

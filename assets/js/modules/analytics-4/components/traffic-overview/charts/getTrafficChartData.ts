@@ -70,7 +70,7 @@ export interface TrafficChartDay {
 	date: Date;
 	/** The visits on the day. */
 	visits: number;
-	/** The typical range of visits for the day, when the day has one. */
+	/** The typical range of visits for the day, when every day the chart plots has one. */
 	typicalRange?: TypicalTrafficRange;
 	/** The posts published on the day. */
 	posts: PublishedPost[];
@@ -98,7 +98,7 @@ export interface TrafficChartData {
 	ticks: Date[];
 	/** Whether a day the chart plots is above zero. */
 	hasVisits: boolean;
-	/** Whether a day the chart plots has a typical range. */
+	/** Whether every day the chart plots has a typical range, so the chart draws the band. */
 	hasTypicalTrafficRange: boolean;
 	/** Whether a post was published on a day the chart plots. */
 	hasPublishedPosts: boolean;
@@ -182,9 +182,11 @@ function getDailyTicks( startDate: string, endDate: string ): Date[] {
  *
  * The typical range of each day comes from the bounds on its row of the daily
  * traffic. The chart draws them as they are, and calculates no bound itself.
+ * The band covers the whole range or none of it, so the chart draws it only
+ * when every day has bounds.
  *
  * @since 1.189.0
- * @since n.e.x.t Added the `publishedPosts` option, changed the `report` option to `dailyTraffic`, draws the typical range of each day of `dailyTraffic` that has one, names the line's column `Visits` in place of `Users`, and returns each day's `visits` and `hasVisits` in place of `visitors` and `hasVisitors`.
+ * @since n.e.x.t Added the `publishedPosts` option, changed the `report` option to `dailyTraffic`, draws the typical range when every day of `dailyTraffic` has one, names the line's column `Visits` in place of `Users`, and returns each day's `visits` and `hasVisits` in place of `visitors` and `hasVisitors`.
  *
  * @param {Object}         options                  Options.
  * @param {Array.<Object>} [options.dailyTraffic]   Optional. The visits on each day of the range, oldest first, each with the bounds of the day's typical range, or null bounds on a day without one.
@@ -206,35 +208,44 @@ export function getTrafficChartData( {
 	// A property still gathering data shows no visits, so the chart draws a
 	// flat line at zero whatever the daily traffic holds, with no typical range
 	// to compare it with and no posts to mark on it.
-	const days =
-		! gatheringData && dailyTraffic.length
-			? dailyTraffic.map(
-					( {
-						date,
-						visits,
-						expectedMin,
-						expectedMax,
-					} ): TrafficChartDay => ( {
-						date: stringToDate( date ),
-						visits,
-						typicalRange:
-							expectedMin !== null && expectedMax !== null
-								? { min: expectedMin, max: expectedMax }
-								: undefined,
-						posts: postsByDate[ date ] ?? [],
-					} )
-			  )
-			: getZeroVisitPoints( startDate, endDate ).map(
-					( [ date, visits ] ): TrafficChartDay => ( {
-						date,
-						visits,
-						posts: [],
-					} )
-			  );
+	const plotsDailyTraffic = ! gatheringData && dailyTraffic.length > 0;
 
-	const hasTypicalTrafficRange = days.some(
-		( { typicalRange } ) => !! typicalRange
-	);
+	// The band covers the whole range or none of it, so the chart draws it only
+	// when every day has a typical range.
+	const hasTypicalTrafficRange =
+		plotsDailyTraffic &&
+		dailyTraffic.every(
+			( { expectedMin, expectedMax } ) =>
+				expectedMin !== null && expectedMax !== null
+		);
+
+	const days = plotsDailyTraffic
+		? dailyTraffic.map(
+				( {
+					date,
+					visits,
+					expectedMin,
+					expectedMax,
+				} ): TrafficChartDay => ( {
+					date: stringToDate( date ),
+					visits,
+					typicalRange:
+						hasTypicalTrafficRange &&
+						expectedMin !== null &&
+						expectedMax !== null
+							? { min: expectedMin, max: expectedMax }
+							: undefined,
+					posts: postsByDate[ date ] ?? [],
+				} )
+		  )
+		: getZeroVisitPoints( startDate, endDate ).map(
+				( [ date, visits ] ): TrafficChartDay => ( {
+					date,
+					visits,
+					posts: [],
+				} )
+		  );
+
 	const hasPublishedPosts = days.some( ( { posts } ) => posts.length > 0 );
 
 	// The format Google Charts gives a day's visits in its tooltip.
@@ -254,7 +265,6 @@ export function getTrafficChartData( {
 				( { date, visits, typicalRange, posts } ): TrafficChartRow => [
 					date,
 					visits,
-					// A day without a typical range leaves a gap in the band.
 					...( hasTypicalTrafficRange
 						? [
 								typicalRange?.min ?? null,

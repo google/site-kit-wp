@@ -533,12 +533,13 @@ describe( 'TrafficChart', () => {
 	} );
 
 	describe( 'typical traffic range and published posts', () => {
-		// Only `2025-01-15` has a typical range.
-		const dailyTrafficWithRange = dailyTraffic.map( ( day ) =>
-			day.date === '2025-01-15'
-				? { ...day, expectedMin: 10, expectedMax: 30 }
-				: day
-		);
+		// Every day has a typical range, as the band covers the whole range or
+		// none of it.
+		const dailyTrafficWithRange = dailyTraffic.map( ( day ) => ( {
+			...day,
+			expectedMin: 10,
+			expectedMax: 30,
+		} ) );
 
 		const publishedPosts = [
 			{ date: '2025-01-15', title: 'Ice cream is good for your health' },
@@ -619,11 +620,11 @@ describe( 'TrafficChart', () => {
 		it( 'should end the value axis above the typical range for a range with no visits', async () => {
 			render(
 				<TrafficChart
-					dailyTraffic={ noVisits.map( ( day, index ) =>
-						index === 0
-							? { ...day, expectedMin: 100, expectedMax: 300 }
-							: day
-					) }
+					dailyTraffic={ noVisits.map( ( day ) => ( {
+						...day,
+						expectedMin: 100,
+						expectedMax: 300,
+					} ) ) }
 				/>,
 				{ registry }
 			);
@@ -709,21 +710,51 @@ describe( 'TrafficChart', () => {
 			await waitForRegistry();
 
 			expect( getScreenReaderLines( container ) ).toEqual( [
-				'January 14, 2025: 55 visits',
+				'January 14, 2025: 55 visits, typical range 10 to 30',
 				'January 15, 2025: 14 visits, typical range 10 to 30',
 				'Post published on January 15, 2025: Ice cream is good for your health',
 				'Post published on January 15, 2025: Eat ice cream every day',
-				'January 16, 2025: 3 visits',
+				'January 16, 2025: 3 visits, typical range 10 to 30',
 			] );
 		} );
 
 		it( 'should draw the bounds of each day as they are, and read them to a screen reader with their decimals', async () => {
 			const { container, waitForRegistry } = render(
 				<TrafficChart
-					dailyTraffic={ dailyTraffic.map( ( day, index ) =>
+					dailyTraffic={ dailyTraffic.map( ( day ) => ( {
+						...day,
+						expectedMin: 10.4,
+						expectedMax: 31.6,
+					} ) ) }
+				/>,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			const { data } = await getLastChartProps();
+
+			expect( data.slice( 1 ) ).toEqual( [
+				[ new Date( 2025, 0, 14 ), 55, 10.4, 31.6, '55' ],
+				[ new Date( 2025, 0, 15 ), 14, 10.4, 31.6, '14' ],
+				[ new Date( 2025, 0, 16 ), 3, 10.4, 31.6, '3' ],
+			] );
+			expect( getScreenReaderLines( container ) ).toEqual( [
+				'January 14, 2025: 55 visits, typical range 10.4 to 31.6',
+				'January 15, 2025: 14 visits, typical range 10.4 to 31.6',
+				'January 16, 2025: 3 visits, typical range 10.4 to 31.6',
+			] );
+		} );
+
+		it( 'should neither draw the typical range nor list it in the legend or read it to a screen reader when a day has none', async () => {
+			const { container, getAllByRole, waitForRegistry } = render(
+				<TrafficChart
+					// The band covers the whole range or none of it, so the
+					// first day without a typical range leaves it out.
+					dailyTraffic={ dailyTrafficWithRange.map( ( day, index ) =>
 						index === 0
-							? day
-							: { ...day, expectedMin: 10.4, expectedMax: 31.6 }
+							? { ...day, expectedMin: null, expectedMax: null }
+							: day
 					) }
 				/>,
 				{ registry }
@@ -733,17 +764,12 @@ describe( 'TrafficChart', () => {
 
 			const { data } = await getLastChartProps();
 
-			// The first day has no typical range, so the band starts on the
-			// second day.
-			expect( data.slice( 1 ) ).toEqual( [
-				[ new Date( 2025, 0, 14 ), 55, null, null, '55' ],
-				[ new Date( 2025, 0, 15 ), 14, 10.4, 31.6, '14' ],
-				[ new Date( 2025, 0, 16 ), 3, 10.4, 31.6, '3' ],
-			] );
+			expect( data[ 0 ] ).toHaveLength( 2 );
+			expect( getAllByRole( 'listitem' ) ).toHaveLength( 1 );
 			expect( getScreenReaderLines( container ) ).toEqual( [
 				'January 14, 2025: 55 visits',
-				'January 15, 2025: 14 visits, typical range 10.4 to 31.6',
-				'January 16, 2025: 3 visits, typical range 10.4 to 31.6',
+				'January 15, 2025: 14 visits',
+				'January 16, 2025: 3 visits',
 			] );
 		} );
 

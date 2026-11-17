@@ -42,9 +42,9 @@ export interface BenchmarkingDailyTrafficRow {
 	date: string;
 	/** Visits on that day. */
 	visits: number;
-	/** The fewest visits that are normal for that day, or null on a day without a band. */
+	/** The fewest visits that are normal for that day, or null on every day of a date range without a band. */
 	expectedMin: number | null;
-	/** The most visits that are normal for that day, or null on a day without a band. */
+	/** The most visits that are normal for that day, or null on every day of a date range without a band. */
 	expectedMax: number | null;
 }
 

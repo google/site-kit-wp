@@ -1370,15 +1370,17 @@ describe( 'TrafficOverviewPanel', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should draw no typical range on a day of the benchmarking response without bounds', async () => {
-			// The first ten days have fewer than 28 days of recorded traffic.
+		it( 'should draw no typical range when a day of the benchmarking response has no bounds', async () => {
+			// The band covers the whole range or none of it, so the first ten
+			// days without bounds leave it out on every day.
 			provideDailyTraffic( ( day, index ) =>
 				index < 10
 					? { ...day, expectedMin: null, expectedMax: null }
 					: day
 			);
 
-			const { container, getByText, waitForRegistry } = renderPanel();
+			const { container, getByText, queryAllByText, waitForRegistry } =
+				renderPanel();
 
 			await waitForRegistry();
 
@@ -1386,11 +1388,11 @@ describe( 'TrafficOverviewPanel', () => {
 				getByText( 'January 9, 2025: 39 visits' )
 			).toBeInTheDocument();
 			expect(
-				getByText( /^January 19, 2025: \d+ visits, typical range / )
+				getByText( /^January 19, 2025: \d+ visits$/ )
 			).toBeInTheDocument();
+			expect( queryAllByText( /typical range/ ) ).toHaveLength( 0 );
 			expect( getLegendLabels( container ) ).toEqual( [
 				'Last 28 days traffic',
-				'Typical traffic range',
 				'Published post',
 			] );
 		} );

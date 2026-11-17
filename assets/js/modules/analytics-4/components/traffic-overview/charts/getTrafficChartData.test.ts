@@ -243,10 +243,10 @@ describe( 'getTrafficChartData', () => {
 		expect( hasPublishedPosts ).toBe( false );
 	} );
 
-	it( 'should draw the bounds of each day as two interval columns, and leave them empty on a day with null bounds', () => {
+	it( 'should draw the bounds of each day as two interval columns', () => {
 		const { chartData, hasTypicalTrafficRange } = getTrafficChartData( {
 			dailyTraffic: withBounds( [
-				null,
+				[ 40, 70 ],
 				[ 10, 30 ],
 				[ 5, 20 ],
 				[ 8, 25 ],
@@ -263,7 +263,7 @@ describe( 'getTrafficChartData', () => {
 			{ type: 'string', role: 'tooltip' },
 		] );
 		expect( chartData.slice( 1 ) ).toEqual( [
-			[ new Date( 2025, 0, 13 ), 55, null, null, '55' ],
+			[ new Date( 2025, 0, 13 ), 55, 40, 70, '55' ],
 			[ new Date( 2025, 0, 14 ), 14, 10, 30, '14' ],
 			[ new Date( 2025, 0, 15 ), 3, 5, 20, '3' ],
 			[ new Date( 2025, 0, 16 ), 13, 8, 25, '13' ],
@@ -273,34 +273,53 @@ describe( 'getTrafficChartData', () => {
 
 	it( 'should draw the bounds as they are, with their decimals', () => {
 		const { chartData } = getTrafficChartData( {
-			dailyTraffic: withBounds( [ [ 39.6, 71.3 ] ] ),
+			dailyTraffic: withBounds( [
+				[ 39.6, 71.3 ],
+				[ 10.4, 31.6 ],
+				[ 1.5, 6 ],
+				[ 7, 19.5 ],
+			] ),
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
 
-		expect( chartData[ 1 ] ).toEqual( [
-			new Date( 2025, 0, 13 ),
-			55,
-			39.6,
-			71.3,
-			'55',
-		] );
-	} );
-
-	it( 'should leave the band empty on every day with null bounds, so it starts on the first day with bounds', () => {
-		const { chartData } = getTrafficChartData( {
-			dailyTraffic: withBounds( [ null, null, [ 1.5, 6 ], [ 7, 19.5 ] ] ),
-			startDate: '2025-01-13',
-			endDate: '2025-01-16',
-		} );
-
-		// The line plots every day, and the band only the last two.
 		expect( chartData.slice( 1 ) ).toEqual( [
-			[ new Date( 2025, 0, 13 ), 55, null, null, '55' ],
-			[ new Date( 2025, 0, 14 ), 14, null, null, '14' ],
+			[ new Date( 2025, 0, 13 ), 55, 39.6, 71.3, '55' ],
+			[ new Date( 2025, 0, 14 ), 14, 10.4, 31.6, '14' ],
 			[ new Date( 2025, 0, 15 ), 3, 1.5, 6, '3' ],
 			[ new Date( 2025, 0, 16 ), 13, 7, 19.5, '13' ],
 		] );
+	} );
+
+	it( 'should draw no typical range when a day has null bounds, as the band covers the whole range or none of it', () => {
+		const { chartData, days, hasTypicalTrafficRange } = getTrafficChartData(
+			{
+				dailyTraffic: withBounds( [
+					null,
+					null,
+					[ 1.5, 6 ],
+					[ 7, 19.5 ],
+				] ),
+				startDate: '2025-01-13',
+				endDate: '2025-01-16',
+			}
+		);
+
+		// The line plots every day, and no day gets a typical range.
+		expect( chartData[ 0 ] ).toHaveLength( 2 );
+		expect( chartData.slice( 1 ) ).toEqual( [
+			[ new Date( 2025, 0, 13 ), 55 ],
+			[ new Date( 2025, 0, 14 ), 14 ],
+			[ new Date( 2025, 0, 15 ), 3 ],
+			[ new Date( 2025, 0, 16 ), 13 ],
+		] );
+		expect( days ).toEqual( [
+			{ date: new Date( 2025, 0, 13 ), visits: 55, posts: [] },
+			{ date: new Date( 2025, 0, 14 ), visits: 14, posts: [] },
+			{ date: new Date( 2025, 0, 15 ), visits: 3, posts: [] },
+			{ date: new Date( 2025, 0, 16 ), visits: 13, posts: [] },
+		] );
+		expect( hasTypicalTrafficRange ).toBe( false );
 	} );
 
 	it( "should give each day's tooltip the day's visits in the format Google Charts gives them", () => {
@@ -357,7 +376,12 @@ describe( 'getTrafficChartData', () => {
 
 	it( 'should put the style column after the typical range columns when the range has both', () => {
 		const { chartData } = getTrafficChartData( {
-			dailyTraffic: withBounds( [ null, [ 10, 30 ] ] ),
+			dailyTraffic: withBounds( [
+				[ 40, 70 ],
+				[ 10, 30 ],
+				[ 5, 20 ],
+				[ 8, 25 ],
+			] ),
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 			publishedPosts: [
@@ -393,22 +417,42 @@ describe( 'getTrafficChartData', () => {
 		};
 
 		const { days } = getTrafficChartData( {
-			dailyTraffic: withBounds( [ null, [ 10, 30 ] ] ),
+			dailyTraffic: withBounds( [
+				[ 40, 70 ],
+				[ 10, 30 ],
+				[ 5, 20 ],
+				[ 8, 25 ],
+			] ),
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 			publishedPosts: [ post ],
 		} );
 
 		expect( days ).toEqual( [
-			{ date: new Date( 2025, 0, 13 ), visits: 55, posts: [] },
+			{
+				date: new Date( 2025, 0, 13 ),
+				visits: 55,
+				typicalRange: { min: 40, max: 70 },
+				posts: [],
+			},
 			{
 				date: new Date( 2025, 0, 14 ),
 				visits: 14,
 				typicalRange: { min: 10, max: 30 },
 				posts: [ post ],
 			},
-			{ date: new Date( 2025, 0, 15 ), visits: 3, posts: [] },
-			{ date: new Date( 2025, 0, 16 ), visits: 13, posts: [] },
+			{
+				date: new Date( 2025, 0, 15 ),
+				visits: 3,
+				typicalRange: { min: 5, max: 20 },
+				posts: [],
+			},
+			{
+				date: new Date( 2025, 0, 16 ),
+				visits: 13,
+				typicalRange: { min: 8, max: 25 },
+				posts: [],
+			},
 		] );
 	} );
 
@@ -432,9 +476,14 @@ describe( 'getTrafficChartData', () => {
 	it( 'should draw neither the typical range nor the published posts while the property is gathering data', () => {
 		const { chartData, days, hasTypicalTrafficRange, hasPublishedPosts } =
 			getTrafficChartData( {
-				// The flat line at zero plots `2025-01-13`, so the range and the
-				// post would land on it.
-				dailyTraffic: withBounds( [ [ 10, 30 ] ] ),
+				// Every day has a typical range, and the flat line at zero plots
+				// `2025-01-13`, so the band and the post would land on it.
+				dailyTraffic: withBounds( [
+					[ 10, 30 ],
+					[ 10, 30 ],
+					[ 10, 30 ],
+					[ 10, 30 ],
+				] ),
 				startDate: '2025-01-13',
 				endDate: '2025-01-16',
 				gatheringData: true,

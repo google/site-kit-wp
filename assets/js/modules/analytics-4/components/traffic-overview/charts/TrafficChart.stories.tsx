@@ -160,30 +160,6 @@ PublishedPostTooltip.scenario = {
 };
 
 /**
- * The site recorded its first traffic partway into the range, so the days
- * before its 28th day of traffic have no typical range. The band starts on
- * that day, and the line on the first day of the range.
- */
-export const TypicalTrafficRangeFromPartwayIntoTheRange = Template.bind(
-	{}
-) as Story< TrafficChartStoryProps >;
-TypicalTrafficRangeFromPartwayIntoTheRange.storyName =
-	'Typical Traffic Range From Partway Into The Range';
-TypicalTrafficRangeFromPartwayIntoTheRange.args = {
-	dailyTraffic: addTypicalTrafficRange( dailyTraffic ).map(
-		( day, dayIndex ) =>
-			dayIndex < 10
-				? { ...day, expectedMin: null, expectedMax: null }
-				: day
-	),
-	setupRegistry: commonSetup,
-};
-TypicalTrafficRangeFromPartwayIntoTheRange.scenario = {
-	readySelector: '[id^="googlesitekit-chart-"] svg',
-	viewport: 'large',
-};
-
-/**
  * A range with no daily traffic. The value axis ends at `100`, and the line
  * runs flat along the bottom.
  */
