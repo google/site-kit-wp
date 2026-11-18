@@ -57,7 +57,6 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 		$this->synchronization = new CTA_Synchronization( $this->settings );
 	}
 
-
 	/**
 	 * Creates a request object.
 	 *
