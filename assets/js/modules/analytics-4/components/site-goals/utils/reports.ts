@@ -103,7 +103,8 @@ function getSinglePrimaryCounts( eventsReport: Report ) {
  * The date range is the only dimension of the totals. A totals row without
  * one counts as the current period.
  *
- * @since n.e.x.t
+ * @since 1.187.0
+ * @since n.e.x.t Renamed from `getTotalsPair` and moved from `shapeSiteGoalsPDFData`.
  *
  * @param {Report} report Report whose totals hold one entry per dateRange.
  * @return {{current: (ReportRow|undefined), previous: (ReportRow|undefined)}} Current and previous totals rows.
