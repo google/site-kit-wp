@@ -39,8 +39,8 @@ export interface SiteGoalsPDFMetric {
 /**
  * One breakdown group, as the PDF renders it.
  *
- * The "Other sources" group carries the total only, so `rate`, `engagementRate`
- * and `sessions` are omitted for it.
+ * The "Other sources" group carries the total only, so `rate`, `engagementRate`,
+ * `sessions` and `engagementSessions` are omitted for it.
  */
 export interface SiteGoalsPDFGroup {
 	/** Dimension value the group came from, or `OTHER_SOURCES_GROUP_ID`. */
@@ -61,6 +61,11 @@ export interface SiteGoalsPDFGroup {
 	 * The same for every group.
 	 */
 	sessions?: SiteGoalsPDFMetric;
+	/**
+	 * The group's own sessions the engagement rate is a share of, used for the
+	 * engagement tile subtitle, as on the dashboard.
+	 */
+	engagementSessions?: SiteGoalsPDFMetric;
 }
 
 export const OTHER_SOURCES_GROUP_ID = SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID;
@@ -205,7 +210,7 @@ function sumTotals( entries: RowPair[] ): SiteGoalsPDFMetric {
  * @param label                 Group heading.
  * @param eventRows             Event report rows for the group.
  * @param keyActionSessionsRows Key action sessions report rows for the group.
- * @param engagementRows        Engagement report rows for the group.
+ * @param engagementRows        Engagement report rows for the group, for its engagement rate and own sessions.
  * @param siteSessions          The site's sessions, the same for every group.
  * @return The shaped group.
  */
@@ -227,6 +232,7 @@ function toGroup(
 			siteSessions
 		),
 		engagementRate: toMetric( engagementRows, ENGAGEMENT_RATE_INDEX ),
+		engagementSessions: toMetric( engagementRows, SESSIONS_INDEX ),
 	};
 }
 

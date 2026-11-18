@@ -143,6 +143,8 @@ describe( 'shapeSiteGoalsPDFData', () => {
 			// 30/2000 and 24/1600.
 			rate: { current: 0.015, previous: 0.015 },
 			engagementRate: { current: 0.4, previous: 0.3 },
+			// The engagement rate is a share of the group's own sessions.
+			engagementSessions: { current: 1000, previous: 800 },
 		} );
 
 		expect( groups[ 1 ].label ).toBe( 'Easy Digital Downloads' );
@@ -154,6 +156,10 @@ describe( 'shapeSiteGoalsPDFData', () => {
 		expect( groups[ 1 ].rate ).toEqual( {
 			current: 10 / 2000,
 			previous: 15 / 1600,
+		} );
+		expect( groups[ 1 ].engagementSessions ).toEqual( {
+			current: 500,
+			previous: 500,
 		} );
 	} );
 
@@ -369,6 +375,7 @@ describe( 'shapeSiteGoalsPDFData', () => {
 				// 70 sessions with a sale, not the 85 events.
 				rate: { current: 70 / 3579, previous: 60 / 3000 },
 				engagementRate: { current: 0.36, previous: 0.3 },
+				engagementSessions: { current: 3579, previous: 3000 },
 			} );
 		} );
 
