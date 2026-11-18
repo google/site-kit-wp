@@ -120,7 +120,10 @@ class Key_Metrics implements Provides_Feature_Metrics {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
-		$data['keyMetricsSetupCompletedBy']        = (int) $this->key_metrics_setup_completed_by->get();
+		$data['keyMetricsSetupCompletedBy'] = (int) $this->key_metrics_setup_completed_by->get();
+
+		// Earlier versions set this flag on every sign-in, even with Analytics
+		// connected, so ignore a value they left behind once it is connected.
 		$data['keyMetricsSetupIsWidgetAreaHidden'] = (bool) $this->key_metrics_setup_is_widget_area_hidden->get()
 			&& ! apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
 
