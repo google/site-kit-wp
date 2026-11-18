@@ -43,7 +43,6 @@ every stage reads. If it is missing, write it first (or ask for what it needs). 
   (fetched if missing; see [Fetching the examples](reference.md#fetching-the-examples)).
 - **Scope** — the phase being designed, what is in scope, and what is deferred to a later
   phase.
-- **Conventions** — a pointer to the `write-design-doc` skill.
 
 ## Stages
 
@@ -66,18 +65,16 @@ Working notes that feed the doc, in the feature's `preparation/` directory.
 
 All authoring stages work on `design-doc.md`.
 
-1. **Overview and detailed design.** Write every template section up to and including the
-   detailed design. Follow the P4 outline, if there is one.
-2. **Refine the overview and detailed design.** Revise those sections in place.
-3. **Remaining sections, barring work estimates.** Add every other template section except the
-   work estimates.
-4. **Work estimates.** Add the [work estimates](SKILL.md#work-estimates) section, once the rest
-   of the design is settled.
-5. **Refine the whole doc.** Revise all sections together for consistency, accuracy and the
-   [style guide](SKILL.md#style-guide).
+| Stage | Content |
+| --- | --- |
+| A1. Overview and detailed design | Write every template section up to and including the detailed design. Follow the P4 outline, if there is one. |
+| A2. Refine the overview and detailed design | Revise those sections in place. |
+| A3. Remaining sections, barring work estimates | Add every other template section except the work estimates. |
+| A4. Work estimates | Add the [work estimates](SKILL.md#work-estimates) section, once the rest of the design is settled. |
+| A5. Refine the whole doc | Revise all sections together for consistency, accuracy and the [style guide](SKILL.md#style-guide). |
 
-Ground stages 2–5 in the requirements and preparation notes, not only the existing draft —
-the draft may have drifted from them.
+Ground A2–A5 in the requirements and preparation notes, not only the existing draft — the
+draft may have drifted from them.
 
 **Redoing a stage from scratch** (when the request asks for a fresh version rather than an
 edit): write it from the introduction, sources and preparation notes without reading the

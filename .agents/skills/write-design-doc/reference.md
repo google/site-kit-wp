@@ -142,7 +142,7 @@ they report:
 
   Skip the second for a preparation note, which doesn't follow the template.
 - **Style**: reread against the [style guide](SKILL.md#style-guide) — concise, diagrams
-  sparing, nothing obvious over-explained, no editing artefacts, US English.
+  sparing, nothing obvious over-explained, no editing artifacts, US English.
 
 ## Preparing the doc for Google Docs {#preparing-the-doc-for-google-docs}
 

@@ -46,17 +46,21 @@ documents (PRD, review docs) are [copied](reference.md#fetching-feature-document
 
 ## Procedure
 
-1. **Read the context** before writing:
-   - the feature introduction (`design-doc/workspace/<feature>/introduction.md`), and every
-     resource it and the request point to;
+1. **Identify the feature** and its `<feature>` slug from the request or an existing
+   `design-doc/workspace/<feature>/` directory; if neither makes it clear, ask.
+2. **Read the context** before writing:
+   - the feature introduction (`design-doc/workspace/<feature>/introduction.md`; if it is
+     missing, [write it first](workflow.md#feature-introduction)), and every resource it and
+     the request point to, [fetching a local copy](reference.md#fetching-feature-documents) of
+     any document that has none;
    - the template (`design-doc/sources/design-doc-template.md`;
      [fetch it](reference.md#fetching-the-template) first if it doesn't exist) and, for
      structure and depth, the example design docs in `design-doc/sources/examples/`
      ([fetch them](reference.md#fetching-the-examples) first if there are none);
    - the target document, if one already exists and you are editing it (not when [redoing a
      stage from scratch](workflow.md#authoring)).
-2. **Author or edit** the requested stage or section(s), applying every convention below.
-3. **Self-check** with the [checklist](reference.md#self-check) before finishing.
+3. **Author or edit** the requested stage or section(s), applying every convention below.
+4. **Self-check** with the [checklist](reference.md#self-check) before finishing.
 
 ## Template
 
@@ -70,8 +74,9 @@ documents (PRD, review docs) are [copied](reference.md#fetching-feature-document
 - **Answer every Common considerations subsection** (Dashboard sharing, Tester plugin, Site
   Health, Feature Discovery, Internal Measurement). When the feature needs nothing there, say
   so in one sentence — reviewers check each one, so don't delete the subsection.
-- **Keep the revision history current**: newest row on top, the author as a `mailto:` link,
-  dates as `DD Mon YYYY`. Add a row whenever the doc changes significantly.
+- **Keep the revision history current**: newest row on top, the author as a `mailto:` link
+  (the user, from `git config user.name` and `git config user.email`), dates as
+  `DD Mon YYYY`. Add a row whenever the doc changes significantly.
 - **Leave "Changes during engineering" with its empty table**: delete the template's example
   rows, keeping the header row and one empty row. The epic lead maintains it once engineering
   starts; it is not written at design time.
@@ -90,13 +95,16 @@ Screenshots (e.g. exported from Figma) should be:
   subdirectory:
 
   ```markdown
-  ![Screenshot name](screenshots/screenshot-name.png)
+  ![Overall structure](screenshots/01-overall-structure.png)
   ```
 
-Capturing them well:
+Capturing them well (with the Figma connector, `get_screenshot` on a node ID taken from the
+Figma URL, and `get_metadata` for its text):
 
 - **Composite onto an opaque (white) background**, with a little padding. A transparent
-  background makes dark text invisible when the doc is viewed in dark mode.
+  background makes dark text invisible when the doc is viewed in dark mode. With ImageMagick
+  (`magick` in version 7, `convert` in version 6):
+  `magick in.png -background white -flatten -bordercolor white -border 24 out.png`.
 - **Keep text legible.** A tall frame scaled to page width becomes unreadable — capture it
   at full resolution, or split it into readable sections.
 - **Take exact UI copy from Figma's text nodes (metadata), not by transcribing a scaled
@@ -149,9 +157,9 @@ Append the anchor to the target heading as `{#anchor-name}` and link to it as
 `[text](#anchor-name)`.
 
 - **Say it once.** Specify each concept or mechanic in exactly one home section and
-  cross-reference it elsewhere by anchor. Don't re-explain the same behaviour in several
+  cross-reference it elsewhere by anchor. Don't re-explain the same behavior in several
   places — table cells especially should *identify* a thing and link to its owning section,
-  not restate its behaviour.
+  not restate its behavior.
 - **Prefer anchor links over positional references.** "See the section above/below" breaks
   silently when sections are reordered; use a `{#anchor}` link and keep the scheme
   consistent throughout the doc.
@@ -167,7 +175,7 @@ Append the anchor to the target heading as `{#anchor-name}` and link to it as
 - **Define the model before the API.** Describe the conceptual/data/state model first, then
   the selectors/actions that implement it, so nothing forward-references undefined semantics.
 - **Include a traceability table** enumerating every item the doc must cover (e.g. each
-  catalogue entry → type → handling). It's the artifact reviewers check row by row, and it
+  catalog entry → type → handling). It's the artifact reviewers check row by row, and it
   forces you to place every case, not just the tidy ones.
 - **For a dense concept**, separate intent from mechanism: state the rules as a short named
   list, each with a one-line "why"; add a concrete worked example; and define any notation
@@ -178,7 +186,7 @@ Append the anchor to the target heading as `{#anchor-name}` and link to it as
 - Inventory components and surfaces as tables (e.g. `Name | Path | Role`, or
   `Surface | key | predicate`), not prose paragraphs.
 - Keep an identity/"Role" cell to one line that *names* the thing and links to its owning
-  section — don't re-specify behaviour there.
+  section — don't re-specify behavior there.
 - Escape literal pipes as `\|` inside cells (e.g. type unions like `'a' \| 'b'`).
 
 ## Work estimates {#work-estimates}
@@ -189,11 +197,12 @@ Append the anchor to the target heading as `{#anchor-name}` and link to it as
 - When splitting or merging issues, **preserve the total story points**, renumber
   sequentially with no gaps, and update every Dependencies entry and inline `#N` reference so
   each resolves to a valid, earlier issue.
-- Keep the template's `TOTAL: XX STORY POINTS` line as a placeholder.
+- Keep the template's `TOTAL: XX STORY POINTS` line as a placeholder; don't fill in the
+  total.
 
 ## Style guide {#style-guide}
 
-- **Be concise, but use human-friendly language.** Favour clear prose over terse notes.
+- **Be concise, but use human-friendly language.** Favor clear prose over terse notes.
 - **Use diagrams sparingly.** Reach for one only when it carries information that prose
   would carry less well.
 - **Don't explain the obvious.** The audience is technical, experienced Site Kit developers
@@ -211,7 +220,7 @@ Append the anchor to the target heading as `{#anchor-name}` and link to it as
 - **Avoid vague magic constants.** Give a concrete value, or explicitly defer it to UX polish.
 - **Edit cleanly, leaving no trace of the edit.** When editing the document in response to a
   prompt, write the updated content as if the document had always been written that way.
-  Don't leave editing artefacts in the document — no "Previously…", "This has been updated
+  Don't leave editing artifacts in the document — no "Previously…", "This has been updated
   to…", "Note: this replaces…", or wording that justifies or explains the change. Any
   explanation of what changed belongs in your reply to the user, not in the document.
   Likewise, don't pad the edited section with background or context that isn't needed to
