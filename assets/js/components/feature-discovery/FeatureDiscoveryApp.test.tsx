@@ -37,6 +37,7 @@ import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import * as pendingSetupModule from '@/js/googlesitekit/feature-discovery/pending-setup';
+import * as tracking from '@/js/util/tracking';
 import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
@@ -48,6 +49,9 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import FeatureDiscoveryApp from './FeatureDiscoveryApp';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const consumePendingSetupSpy = jest.spyOn(
 	pendingSetupModule,
@@ -117,6 +121,7 @@ function provideHeader( registry: ReturnType< typeof createTestRegistry > ) {
 describe( 'FeatureDiscoveryApp', () => {
 	afterEach( () => {
 		global.history.replaceState( {}, '', '/' );
+		mockTrackEvent.mockClear();
 	} );
 
 	async function renderApp(
@@ -228,6 +233,26 @@ describe( 'FeatureDiscoveryApp', () => {
 		expect( global.history.length ).toBe( historyLength );
 		expect( global.location.hash ).toBe( '#/whats-new' );
 	} );
+
+	it.each( [
+		[ '/whats-new', 'All services and features', 'all-services' ],
+		[ '/all-services', 'What’s new?', 'whats-new' ],
+	] )(
+		'should track the tab_select event when selecting a tab from %s',
+		async ( pathname, tabName, eventLabel ) => {
+			const { getByRole, waitForRegistry } = await renderApp( pathname );
+
+			fireEvent.click( getByRole( 'tab', { name: tabName } ) );
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_FEATURE_DISCOVERY }_navigation`,
+				'tab_select',
+				eventLabel
+			);
+		}
+	);
 
 	it( 'should mount the PDF export root', async () => {
 		const { getByText } = await renderApp();
