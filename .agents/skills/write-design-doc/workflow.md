@@ -92,7 +92,13 @@ manage:
 - **Before overwriting a file wholesale**, run `git -C design-doc/workspace status --short` on
   it. If it has uncommitted changes, stop, tell the user, and offer to commit them first, so a
   draft is never silently lost.
+- **Keep `diagrams/` in step with the doc.** The rendered PNGs are tracked, so when a pass
+  changed a ```` ```mermaid ```` fence, re-render the changed document with
+  `node design-doc/scripts/markdown-mermaid-to-png.ts <doc>.md` (see [Preparing the doc for
+  Google Docs](reference.md#preparing-the-doc-for-google-docs)) before suggesting a commit.
+  The `-rendered.md` and `-embedded.md` copies are regenerated on each export and ignored by
+  the workspace's `.gitignore`.
 - **When a stage or edit pass is done**, end the reply with a suggested commit command for the
-  files it changed, e.g.
+  files it changed, including `diagrams/`, e.g.
   `git -C design-doc/workspace add date-picker && git -C design-doc/workspace commit -m "P2: define architecture."`.
   Don't run it unless asked.
