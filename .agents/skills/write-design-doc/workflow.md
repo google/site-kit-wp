@@ -12,8 +12,10 @@ feature-specific input every stage reads. If it is missing, write it first (or a
 needs). It contains:
 
 - **Feature** — its name, and a sentence on what it is and which product it belongs to.
-- **Resources** — the PRD, Figma file, and any notes or review documents, with links, plus a
-  note on where extra context lives (e.g. comments on a Google Doc).
+- **Resources** — the PRD, Figma file, and any notes or review documents, each with its link
+  and, for documents, the path of its [local copy](reference.md#fetching-feature-documents) in
+  the feature's `sources/` directory. Stages read the local copy, not the original. Also note
+  where extra context lives (e.g. comments on a Google Doc).
 - **Template and examples** — `design-doc/sources/design-doc-template.md` (fetched if missing; see
   [Fetching the template](reference.md#fetching-the-template)) and `design-doc/sources/examples/`
   (fetched if missing; see [Fetching the examples](reference.md#fetching-the-examples)).
