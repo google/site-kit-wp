@@ -20,6 +20,14 @@ export const TOP_CONTENT_TAB_ID = 'googlesitekit-top-content-tab';
 export const LATEST_CONTENT_TAB_ID = 'googlesitekit-latest-content-tab';
 
 /**
+ * The DOM `id` of the card's root element, which the "See all recent posts"
+ * link scrolls to.
+ *
+ * @since n.e.x.t
+ */
+export const CONTENT_CARD_ID = 'googlesitekit-content-card';
+
+/**
  * The `getRecentContent` options for the posts the Latest content tab lists.
  * The "See all recent posts" link uses them too, so both read the same posts.
  */

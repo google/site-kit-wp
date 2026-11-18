@@ -118,6 +118,22 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		);
 	} );
 
+	it( "should give the card's root element the `id` `googlesitekit-content-card`", async () => {
+		const { container, waitForRegistry } = render(
+			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-widget' )
+		).toHaveAttribute( 'id', 'googlesitekit-content-card' );
+	} );
+
 	it( 'should switch the panel and the header title when the Latest content tab is selected', async () => {
 		const {
 			getAllByRole,
