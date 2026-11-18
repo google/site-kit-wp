@@ -209,7 +209,8 @@ class Report_Request_Assembler {
 	 * The dashboard decides which widgets to show in `isSiteGoalsWidgetRenderable()`.
 	 *
 	 * The online store widget and the lead generation widget each need their own key
-	 * action count, and the sessions that hold a key action. The key action rate divides
+	 * action count, and the sessions that hold a key action, split by group when the
+	 * widget splits its results and site-wide otherwise. The key action rate divides
 	 * those sessions by the site's sessions, the same on every group, so both widgets
 	 * write the same `site_goals_engagement` key, and the batch asks for that report once.
 	 *
@@ -235,15 +236,16 @@ class Report_Request_Assembler {
 			$this->report_options->has_ecommerce_events()
 			&& $this->report_options->is_site_goals_widget_active( Conversion_Events_Provider::CATEGORY_ECOMMERCE )
 		) {
-			$requests[ self::SITE_GOALS_ONLINE_STORE_PRIMARY_KEY ]             = $this->report_options->get_online_store_primary_options();
-			$requests[ self::SITE_GOALS_ONLINE_STORE_KEY_ACTION_SESSIONS_KEY ] = $this->report_options->get_key_action_sessions_options( Conversion_Events_Provider::CATEGORY_ECOMMERCE );
-			$requests[ self::SITE_GOALS_ENGAGEMENT_KEY ]                       = $this->report_options->get_engagement_options();
+			$requests[ self::SITE_GOALS_ONLINE_STORE_PRIMARY_KEY ] = $this->report_options->get_online_store_primary_options();
+			$requests[ self::SITE_GOALS_ENGAGEMENT_KEY ]           = $this->report_options->get_engagement_options();
 
 			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ) ) {
 				$requests[ self::SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY ]             = $this->report_options->get_online_store_primary_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
 				$requests[ self::SITE_GOALS_ONLINE_STORE_KEY_ACTION_SESSIONS_BY_PROVIDER_KEY ] = $this->report_options->get_key_action_sessions_options( Conversion_Events_Provider::CATEGORY_ECOMMERCE, Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
 				$requests[ self::SITE_GOALS_ONLINE_STORE_DISCOVERY_KEY ]                       = $this->report_options->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
 				$requests[ self::SITE_GOALS_ONLINE_STORE_DISCOVERY_SITE_WIDE_KEY ]             = $this->report_options->get_online_store_discovery_options();
+			} else {
+				$requests[ self::SITE_GOALS_ONLINE_STORE_KEY_ACTION_SESSIONS_KEY ] = $this->report_options->get_key_action_sessions_options( Conversion_Events_Provider::CATEGORY_ECOMMERCE );
 			}
 		}
 
@@ -251,15 +253,16 @@ class Report_Request_Assembler {
 			$this->report_options->has_lead_events()
 			&& $this->report_options->is_site_goals_widget_active( Conversion_Events_Provider::CATEGORY_LEAD )
 		) {
-			$requests[ self::SITE_GOALS_LEAD_PRIMARY_KEY ]             = $this->report_options->get_lead_primary_options();
-			$requests[ self::SITE_GOALS_LEAD_KEY_ACTION_SESSIONS_KEY ] = $this->report_options->get_key_action_sessions_options( Conversion_Events_Provider::CATEGORY_LEAD );
-			$requests[ self::SITE_GOALS_ENGAGEMENT_KEY ]               = $this->report_options->get_engagement_options();
+			$requests[ self::SITE_GOALS_LEAD_PRIMARY_KEY ] = $this->report_options->get_lead_primary_options();
+			$requests[ self::SITE_GOALS_ENGAGEMENT_KEY ]   = $this->report_options->get_engagement_options();
 
 			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_FORM_ID ) ) {
 				$requests[ self::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY ]             = $this->report_options->get_lead_primary_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
 				$requests[ self::SITE_GOALS_LEAD_KEY_ACTION_SESSIONS_BY_FORM_KEY ] = $this->report_options->get_key_action_sessions_options( Conversion_Events_Provider::CATEGORY_LEAD, Analytics_4::CUSTOM_DIMENSION_FORM_ID );
 				$requests[ self::SITE_GOALS_LEAD_DISCOVERY_KEY ]                   = $this->report_options->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
 				$requests[ self::SITE_GOALS_LEAD_DISCOVERY_SITE_WIDE_KEY ]         = $this->report_options->get_lead_discovery_options();
+			} else {
+				$requests[ self::SITE_GOALS_LEAD_KEY_ACTION_SESSIONS_KEY ] = $this->report_options->get_key_action_sessions_options( Conversion_Events_Provider::CATEGORY_LEAD );
 			}
 		}
 

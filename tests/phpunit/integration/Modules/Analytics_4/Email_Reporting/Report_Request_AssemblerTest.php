@@ -75,6 +75,7 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_engagement'],
 			'build_requests() should register the site-wide sessions under site_goals_engagement when the store count splits by provider, because every provider rate is a share of them.'
 		);
+		$this->assertArrayNotHasKey( 'site_goals_online_store_key_action_sessions', $requests, 'build_requests() should not register the site-wide sessions with a store event when they split by provider, because the section reads only the split report.' );
 	}
 
 	public function test_build_requests__registers_the_site_wide_store_count_and_sessions_when_the_event_provider_dimension_has_no_data() {
@@ -129,6 +130,7 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_engagement'],
 			'build_requests() should register the site-wide sessions under site_goals_engagement when the lead count splits by form, because every form rate is a share of them.'
 		);
+		$this->assertArrayNotHasKey( 'site_goals_lead_key_action_sessions', $requests, 'build_requests() should not register the site-wide sessions with a lead event when they split by form, because the section reads only the split report.' );
 	}
 
 	public function test_build_requests__registers_the_site_wide_lead_count_and_sessions_when_the_form_id_dimension_has_no_data() {
