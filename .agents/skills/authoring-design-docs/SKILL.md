@@ -20,8 +20,9 @@ hold material needed only for some tasks:
 - [workflow.md](workflow.md) — the feature introduction, the optional preparation and
   authoring stages, and output iterations. Read it when starting or advancing a stage, or when
   the feature has no introduction yet.
-- [reference.md](reference.md) — self-check commands and Google Docs export. Read it when
-  finishing a pass or preparing the doc for review.
+- [reference.md](reference.md) — fetching the template and examples, self-check commands, and
+  Google Docs export. Read it when the template or examples are missing, when finishing a pass,
+  or when preparing the doc for review.
 
 ## Procedure
 
@@ -29,30 +30,14 @@ hold material needed only for some tasks:
    - the feature introduction (`design-doc/preparation/00-introduction.md`), and every resource
      it and the request point to;
    - the template (`design-doc/sources/design-doc-template.md`;
-     [fetch it](#fetching-the-template) first if it doesn't exist) and, for structure and
-     depth, the examples in `design-doc/examples/`;
+     [fetch it](reference.md#fetching-the-template) first if it doesn't exist) and, for
+     structure and depth, the example design docs in `design-doc/sources/examples/`
+     ([fetch them](reference.md#fetching-the-examples) first if there are none);
    - the target document or iteration, if one already exists.
 2. **Author or edit** the requested stage or section(s), applying every convention below.
 3. **Self-check** with the [checklist](reference.md#self-check) before finishing.
 
 ## Template
-
-### Fetching the template {#fetching-the-template}
-
-The canonical template is the Google Doc
-<https://docs.google.com/document/d/1ZW8HLsdqepJJBseMeLGTiHcF05ZLsqCiZVzNJxsA7jM/edit>. The
-local copy at `design-doc/sources/design-doc-template.md` is git-ignored (like everything in
-`design-doc/sources/`), so it is missing on a fresh checkout. If it doesn't exist, fetch it
-before reading the context:
-
-1. Export the doc as Markdown with the Google Drive connector (read or download file ID
-   `1ZW8HLsdqepJJBseMeLGTiHcF05ZLsqCiZVzNJxsA7jM` as `text/markdown`). Without a connector, ask
-   the user to download it via **File → Download → Markdown (.md)**.
-2. Save it to `design-doc/sources/design-doc-template.md` unchanged.
-
-If the file already exists, use it as is; don't re-fetch it unless the user asks.
-
-### Using the template
 
 - **Keep the template's formatting**: its bold headings (`# **Context**`), header table and
   italic metadata block paste cleanly into Google Docs. Add `{#anchor}`s to headings as
