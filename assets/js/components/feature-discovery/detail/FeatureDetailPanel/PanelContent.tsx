@@ -25,7 +25,13 @@ import { FC, Fragment } from 'react';
  * WordPress dependencies
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -80,29 +86,32 @@ const PanelContent: FC< PanelContentProps > = ( {
 		'feature-detail-panel-content'
 	);
 
-	const tabs: FeatureDetailPanelTab[] = [
-		{
-			Component: FeatureDetailDescription,
-			tabID: `${ baseID }-tab-description`,
-			tabName: 'description',
-			tabPanelID: `${ baseID }-panel-description`,
-			label: __( 'Description', 'google-site-kit' ),
-		},
-		{
-			Component: FeatureDetailRequirements,
-			tabID: `${ baseID }-tab-requirements`,
-			tabName: 'requirements',
-			tabPanelID: `${ baseID }-panel-requirements`,
-			label: __( 'Requirements', 'google-site-kit' ),
-		},
-		{
-			Component: FeatureDetailScreenshots,
-			tabID: `${ baseID }-tab-screenshots`,
-			tabName: 'screenshots',
-			tabPanelID: `${ baseID }-panel-screenshots`,
-			label: __( 'Screenshots', 'google-site-kit' ),
-		},
-	];
+	const tabs: FeatureDetailPanelTab[] = useMemo(
+		() => [
+			{
+				Component: FeatureDetailDescription,
+				tabID: `${ baseID }-tab-description`,
+				tabName: 'description',
+				tabPanelID: `${ baseID }-panel-description`,
+				label: __( 'Description', 'google-site-kit' ),
+			},
+			{
+				Component: FeatureDetailRequirements,
+				tabID: `${ baseID }-tab-requirements`,
+				tabName: 'requirements',
+				tabPanelID: `${ baseID }-panel-requirements`,
+				label: __( 'Requirements', 'google-site-kit' ),
+			},
+			{
+				Component: FeatureDetailScreenshots,
+				tabID: `${ baseID }-tab-screenshots`,
+				tabName: 'screenshots',
+				tabPanelID: `${ baseID }-panel-screenshots`,
+				label: __( 'Screenshots', 'google-site-kit' ),
+			},
+		],
+		[ baseID ]
+	);
 
 	const handleActiveIndexUpdate = useCallback(
 		( index: number ) => {
@@ -118,9 +127,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 				`${ feature.slug }:${ tabs[ index ].tabName }`
 			);
 		},
-		// `tabs` only varies by instance ID, which is stable.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[ activeIndex, feature.slug, viewContext ]
+		[ activeIndex, feature.slug, tabs, viewContext ]
 	);
 
 	const size = breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM;

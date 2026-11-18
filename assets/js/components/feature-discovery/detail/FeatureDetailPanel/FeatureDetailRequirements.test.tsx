@@ -81,28 +81,30 @@ describe( 'FeatureDetailRequirements', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it.each( [
-		[ 'documentation', 'documentation' ],
-		[ 'support forum', 'support forum' ],
-	] )( 'should track click_learn_more_link for the %s link', ( name ) => {
-		feature.detail = {
-			requirements: {
-				documentationURL: 'https://example.com/docs/',
-			},
-		};
+	it.each( [ 'documentation', 'support forum' ] )(
+		'should track click_learn_more_link for the %s link',
+		( name ) => {
+			feature.detail = {
+				requirements: {
+					documentationURL: 'https://example.com/docs/',
+				},
+			};
 
-		const { getByRole } = render(
-			<FeatureDetailRequirements feature={ feature } />,
-			{ viewContext: 'testViewContext' }
-		);
+			const { getByRole } = render(
+				<FeatureDetailRequirements feature={ feature } />,
+				{ viewContext: 'testViewContext' }
+			);
 
-		fireEvent.click( getByRole( 'link', { name: new RegExp( name ) } ) );
+			fireEvent.click(
+				getByRole( 'link', { name: new RegExp( name ) } )
+			);
 
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'testViewContext_feature-detail-panel',
-			'click_learn_more_link',
-			'test-feature'
-		);
-	} );
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'testViewContext_feature-detail-panel',
+				'click_learn_more_link',
+				'test-feature'
+			);
+		}
+	);
 } );
