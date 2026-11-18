@@ -2,7 +2,7 @@
 name: write-design-doc
 description: >
   Author or edit a Site Kit design doc under `design-doc/`: the optional staged workflow
-  (preparation notes, drafting, work estimates, refinement) with its output iterations, and
+  (preparation notes, drafting, work estimates, refinement) and where its outputs live, and
   the house conventions for screenshots, Mermaid diagrams, anchors, structure, tables, work
   estimates, Google Docs export and style. Use when the user asks to prepare for, write,
   draft, refine, or edit a design doc or one of its sections.
@@ -17,9 +17,9 @@ a specific feature requires lives in that feature's introduction and the sources
 in this skill. Two companion files next to this one (in `.agents/skills/write-design-doc/`)
 hold material needed only for some tasks:
 
-- [workflow.md](workflow.md) — the feature introduction, the optional preparation and
-  authoring stages, and output iterations. Read it when starting or advancing a stage, or when
-  the feature has no introduction yet.
+- [workflow.md](workflow.md) — the feature layout and introduction, the optional preparation
+  and authoring stages, and managing the workspace history. Read it when starting or advancing
+  a stage, or when the feature has no introduction yet.
 - [reference.md](reference.md) — fetching the template and examples, self-check commands, and
   Google Docs export. Read it when the template or examples are missing, when finishing a pass,
   or when preparing the doc for review.
@@ -35,8 +35,9 @@ local-only git repository, with no remote and a `pre-push` hook that refuses eve
   up](reference.md#setting-up-the-workspace) before writing anything.
 - Never write design-doc output anywhere else in the Site Kit repo, and never add a remote to
   the workspace repository.
-- Commit in the workspace repository only when the user asks. Never commit design-doc files to
-  the Site Kit repository.
+- Commit in the workspace repository only when the user asks, but help them keep its history
+  (see [Managing the workspace history](workflow.md#managing-the-workspace-history)). Never
+  commit design-doc files to the Site Kit repository.
 
 Only `design-doc/scripts/` (shared tooling) is tracked by Site Kit; `design-doc/sources/`
 (fetched template and examples) is ignored and shared by every feature. A feature's own
@@ -46,13 +47,14 @@ documents (PRD, review docs) are [copied](reference.md#fetching-feature-document
 ## Procedure
 
 1. **Read the context** before writing:
-   - the feature introduction (`design-doc/workspace/<feature>/preparation/00-introduction.md`),
-     and every resource it and the request point to;
+   - the feature introduction (`design-doc/workspace/<feature>/introduction.md`), and every
+     resource it and the request point to;
    - the template (`design-doc/sources/design-doc-template.md`;
      [fetch it](reference.md#fetching-the-template) first if it doesn't exist) and, for
      structure and depth, the example design docs in `design-doc/sources/examples/`
      ([fetch them](reference.md#fetching-the-examples) first if there are none);
-   - the target document or iteration, if one already exists.
+   - the target document, if one already exists and you are editing it (not when [redoing a
+     stage from scratch](workflow.md#authoring)).
 2. **Author or edit** the requested stage or section(s), applying every convention below.
 3. **Self-check** with the [checklist](reference.md#self-check) before finishing.
 
@@ -74,8 +76,10 @@ documents (PRD, review docs) are [copied](reference.md#fetching-feature-document
 
 Screenshots (e.g. exported from Figma) should be:
 
-- Saved to a `screenshots` subdirectory of the iteration directory (doc draft or preparation
-  note).
+- Saved to the `screenshots/` directory next to the document that uses them: the feature's
+  `screenshots/` for the design doc, `preparation/screenshots/` for preparation notes. When the
+  design doc uses a screenshot taken for a preparation note, copy it into the feature's
+  `screenshots/` rather than linking across directories, so the doc stays self-contained.
 - Named according to the feature or section they represent, with a numeric prefix, e.g.
   `01-overall-structure.png`, `02-entry-points.png`.
 - Referenced in the document with standard Markdown image syntax pointing at that
@@ -111,14 +115,14 @@ document is the **authoritative source** for each diagram.
   ```
   ````
 
-- Use diagrams **sparingly** — only where a diagram communicates something prose cannot.
-- Rendered PNGs live in a `diagrams` subdirectory, generated from the inline fences by
+- Rendered PNGs live in the `diagrams/` directory next to the document, generated from the inline fences by
   `design-doc/scripts/markdown-mermaid-to-png.js` (see [Preparing the doc for Google
   Docs](reference.md#preparing-the-doc-for-google-docs)). They are named by document order
-  (`01-diagram.png`, `02-diagram.png`, …). Regenerate them from the doc rather than editing
-  the PNGs or hand-maintaining separate `.mermaid` source files, which drift out of sync.
-- **Render and validate every diagram before relying on it** — `mmdc` is finicky, state
-  diagrams especially.
+  (`01-diagram.png`, `02-diagram.png`, …) and replaced on every render. Regenerate them from
+  the doc rather than editing the PNGs or hand-maintaining separate `.mermaid` source files,
+  which drift out of sync.
+- **Validate every diagram before relying on it** with the script's `--check` mode (see the
+  [self-check](reference.md#self-check)) — `mmdc` is finicky, state diagrams especially.
 
 Avoid these Mermaid pitfalls, which break the parse or render literally:
 

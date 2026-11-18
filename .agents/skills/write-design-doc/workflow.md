@@ -1,15 +1,37 @@
 # Design-doc workflow
 
-The optional staged workflow for producing a design doc, and how its outputs are kept. Read this
-when starting or advancing a stage, or when a feature has no introduction yet. The conventions
-in [SKILL.md](SKILL.md) apply to every stage.
+The optional staged workflow for producing a design doc, and where its outputs are kept. Read
+this when starting or advancing a stage, or when a feature has no introduction yet. The
+conventions in [SKILL.md](SKILL.md) apply to every stage.
+
+## Feature layout {#feature-layout}
+
+Each output has one fixed location under the feature's [workspace](SKILL.md#workspace)
+directory, `design-doc/workspace/<feature>/`:
+
+```
+introduction.md          # the feature introduction
+sources/                 # local copies of the PRD, review docs, etc.
+preparation/
+  overview.md            # P1
+  architecture.md        # P2
+  components.md          # P3
+  outline.md             # P4
+  screenshots/
+  diagrams/
+design-doc.md            # the design doc
+screenshots/
+diagrams/
+```
+
+Each stage writes to its location, editing the file in place or rewriting it. Earlier versions
+are kept in the workspace repository's git history, which the user manages; see
+[Managing the workspace history](#managing-the-workspace-history).
 
 ## Feature introduction {#feature-introduction}
 
-Each feature has one introduction,
-`design-doc/workspace/<feature>/preparation/00-introduction.md`, which is the only
-feature-specific input every stage reads. If it is missing, write it first (or ask for what it
-needs). It contains:
+Each feature has one introduction, `introduction.md`, which is the only feature-specific input
+every stage reads. If it is missing, write it first (or ask for what it needs). It contains:
 
 - **Feature** — its name, and a sentence on what it is and which product it belongs to.
 - **Resources** — the PRD, Figma file, and any notes or review documents, each with its link
@@ -21,32 +43,31 @@ needs). It contains:
   (fetched if missing; see [Fetching the examples](reference.md#fetching-the-examples)).
 - **Scope** — the phase being designed, what is in scope, and what is deferred to a later
   phase.
-- **Current inputs** — which [preparation](#preparation) iteration of each kind is current,
-  so later stages read the right one.
 - **Conventions** — a pointer to the `write-design-doc` skill.
 
 ## Stages
 
 A full doc can be written in one pass, but for a large feature it is usually better to build
 it in the stages below, one request per stage. Each stage is optional and can be run on its
-own — run only the ones the request asks for, against the iterations it names.
+own — run only the ones the request asks for.
 
 ### Preparation {#preparation}
 
-Working notes that feed the doc. Each goes in its own [iteration](#iterations) under
-`design-doc/workspace/<feature>/preparation/output/<kind>-XX/`.
+Working notes that feed the doc, in the feature's `preparation/` directory.
 
 | Stage | Output | Uses | Content |
 | --- | --- | --- | --- |
-| P1. Understand requirements | `overview-XX/overview.md` | PRD, Figma | An overview of the feature, with Figma screenshots following the [screenshot conventions](SKILL.md#screenshots). |
-| P2. Define architecture | `architecture-XX/architecture.md` | P1 | The core architecture: data flow, datastores, REST and settings changes, grounded in real, [verified](SKILL.md#style-guide) APIs. |
-| P3. List components | `components-XX/components.md` | P1, P2 | The React components the feature needs, as a `Name \| Path \| Role` [table](SKILL.md#tables), marking which are new and which are modified. |
-| P4. Outline the detailed design | `outline-XX/outline.md` | P1–P3 | A skeleton of the detailed design section: sub-section headings, each with a very brief description. |
+| P1. Understand requirements | `overview.md` | PRD, Figma | An overview of the feature, with Figma screenshots following the [screenshot conventions](SKILL.md#screenshots). |
+| P2. Define architecture | `architecture.md` | P1 | The core architecture: data flow, datastores, REST and settings changes, grounded in real, [verified](SKILL.md#style-guide) APIs. |
+| P3. List components | `components.md` | P1, P2 | The React components the feature needs, as a `Name \| Path \| Role` [table](SKILL.md#tables), marking which are new and which are modified. |
+| P4. Outline the detailed design | `outline.md` | P1–P3 | A skeleton of the detailed design section: sub-section headings, each with a very brief description. |
 
-### Authoring
+### Authoring {#authoring}
+
+All authoring stages work on `design-doc.md`.
 
 1. **Overview and detailed design.** Write every template section up to and including the
-   detailed design, in a new iteration. Follow the P4 outline, if there is one.
+   detailed design. Follow the P4 outline, if there is one.
 2. **Refine the overview and detailed design.** Revise those sections in place.
 3. **Remaining sections, barring work estimates.** Add every other template section except the
    work estimates.
@@ -55,20 +76,23 @@ Working notes that feed the doc. Each goes in its own [iteration](#iterations) u
 5. **Refine the whole doc.** Revise all sections together for consistency, accuracy and the
    [style guide](SKILL.md#style-guide).
 
-Ground stages 2–5 in the requirements and preparation outputs, not only the existing draft —
+Ground stages 2–5 in the requirements and preparation notes, not only the existing draft —
 the draft may have drifted from them.
 
-## Iterations {#iterations}
+**Redoing a stage from scratch** (when the request asks for a fresh version rather than an
+edit): write it from the introduction, sources and preparation notes without reading the
+existing output, then overwrite it. Reading a draft you are replacing anchors the new one on
+its mistakes.
 
-- Each new output goes in a new iteration directory, numbered one after the latest (`01`,
-  `02`, …): a preparation note in `preparation/output/<kind>-XX/`, a doc draft in
-  `output/iteration-XX/design-doc.md` (both under the feature's
-  [workspace](SKILL.md#workspace) directory), each with its `screenshots/` and `diagrams/`
-  alongside.
-- Record how the iteration was made: copy the feature introduction into it, and save the
-  request that produced it as `prompt.md`.
-- Later stages edit the iteration named in the request in place, unless asked to start a new
-  one.
-- **Don't read previous iterations' output** other than the ones named in the request or the
-  introduction — earlier iterations may be wrong and would anchor the new content on their
-  mistakes.
+## Managing the workspace history {#managing-the-workspace-history}
+
+The user decides when to commit; never commit unless asked. Keep the history easy for them to
+manage:
+
+- **Before overwriting a file wholesale**, run `git -C design-doc/workspace status --short` on
+  it. If it has uncommitted changes, stop, tell the user, and offer to commit them first, so a
+  draft is never silently lost.
+- **When a stage or edit pass is done**, end the reply with a suggested commit command for the
+  files it changed, e.g.
+  `git -C design-doc/workspace add date-picker && git -C design-doc/workspace commit -m "P2: define architecture."`.
+  Don't run it unless asked.
