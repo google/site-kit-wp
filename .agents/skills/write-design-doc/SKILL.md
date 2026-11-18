@@ -39,7 +39,9 @@ local-only git repository, with no remote and a `pre-push` hook that refuses eve
   the Site Kit repository.
 
 Only `design-doc/scripts/` (shared tooling) is tracked by Site Kit; `design-doc/sources/`
-(fetched template and examples) is ignored and shared by every feature.
+(fetched template and examples) is ignored and shared by every feature. A feature's own
+documents (PRD, review docs) are [copied](reference.md#fetching-feature-documents) into
+`design-doc/workspace/<feature>/sources/`, so they are versioned with its work.
 
 ## Procedure
 

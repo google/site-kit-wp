@@ -1,8 +1,9 @@
 # Design-doc tooling reference
 
-How to set up the workspace, fetch the template and examples, and commands for checking a design doc and exporting it
-to Google Docs. Read this when the workspace, template or examples are missing, when finishing a
-pass over a doc, or when preparing it for review.
+How to set up the workspace, fetch the template, examples and feature documents, and commands
+for checking a design doc and exporting it to Google Docs. Read this when the workspace,
+template, examples or a feature's documents are missing, when finishing a pass over a doc, or
+when preparing it for review.
 
 ## Setting up the workspace {#setting-up-the-workspace}
 
@@ -50,6 +51,29 @@ contains no examples, fetch some before reading the context:
 
 If examples already exist, use them as they are; don't re-fetch them or ask for more unless the
 user asks.
+
+## Fetching feature documents {#fetching-feature-documents}
+
+A feature's PRD, review documents and other written resources are kept as local copies in
+`design-doc/workspace/<feature>/sources/`, so every stage reads the same version without a
+round trip to Drive. When the [feature introduction](workflow.md#feature-introduction) lists a
+document with no local copy:
+
+1. Export it as Markdown with the Google Drive connector (read or download its file ID as
+   `text/markdown`). Without a connector, ask the user to download it via **File → Download →
+   Markdown (.md)**.
+2. Save it unchanged to the feature's `sources/` directory, named after the doc in kebab-case
+   (e.g. `prd.md`, `ux-review.md`), and record the path next to its link in the introduction.
+
+The Markdown export leaves out comments. When the introduction says context lives in a doc's
+comments, read them from the original (or ask the user to paste them) and save them alongside
+as `<doc>-comments.md`.
+
+Figma files stay remote: screenshots taken from them go in each iteration's `screenshots/`
+directory, as in the [screenshot conventions](SKILL.md#screenshots).
+
+If a local copy exists, use it as is; re-fetch it only when the user says the original has
+changed.
 
 ## Self-check {#self-check}
 
