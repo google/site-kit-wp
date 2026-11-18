@@ -91,3 +91,5 @@ tests/playwright/artifacts
 
 # Design doc sources fetched locally (e.g. the template, by the authoring-design-docs skill)
 /design-doc/sources/
+# Design doc work, kept in its own local-only git repository (see the authoring-design-docs skill)
+/design-doc/workspace/

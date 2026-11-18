@@ -6,9 +6,10 @@ in [SKILL.md](SKILL.md) apply to every stage.
 
 ## Feature introduction {#feature-introduction}
 
-Each feature has one introduction, `design-doc/preparation/00-introduction.md`, which is the
-only feature-specific input every stage reads. If it is missing, write it first (or ask for
-what it needs). It contains:
+Each feature has one introduction,
+`design-doc/workspace/<feature>/preparation/00-introduction.md`, which is the only
+feature-specific input every stage reads. If it is missing, write it first (or ask for what it
+needs). It contains:
 
 - **Feature** — its name, and a sentence on what it is and which product it belongs to.
 - **Resources** — the PRD, Figma file, and any notes or review documents, with links, plus a
@@ -31,7 +32,7 @@ own — run only the ones the request asks for, against the iterations it names.
 ### Preparation {#preparation}
 
 Working notes that feed the doc. Each goes in its own [iteration](#iterations) under
-`design-doc/preparation/output/<kind>-XX/`.
+`design-doc/workspace/<feature>/preparation/output/<kind>-XX/`.
 
 | Stage | Output | Uses | Content |
 | --- | --- | --- | --- |
@@ -58,9 +59,10 @@ the draft may have drifted from them.
 ## Iterations {#iterations}
 
 - Each new output goes in a new iteration directory, numbered one after the latest (`01`,
-  `02`, …): a preparation note in `design-doc/preparation/output/<kind>-XX/`, a doc draft in
-  `design-doc/output/iteration-XX/design-doc.md`, each with its `screenshots/` and
-  `diagrams/` alongside.
+  `02`, …): a preparation note in `preparation/output/<kind>-XX/`, a doc draft in
+  `output/iteration-XX/design-doc.md` (both under the feature's
+  [workspace](SKILL.md#workspace) directory), each with its `screenshots/` and `diagrams/`
+  alongside.
 - Record how the iteration was made: copy the feature introduction into it, and save the
   request that produced it as `prompt.md`.
 - Later stages edit the iteration named in the request in place, unless asked to start a new

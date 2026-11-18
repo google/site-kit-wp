@@ -1,8 +1,25 @@
 # Design-doc tooling reference
 
-How to fetch the template and examples, and commands for checking a design doc and exporting it
-to Google Docs. Read this when the template or examples are missing, when finishing a pass over
-a doc, or when preparing it for review.
+How to set up the workspace, fetch the template and examples, and commands for checking a design doc and exporting it
+to Google Docs. Read this when the workspace, template or examples are missing, when finishing a
+pass over a doc, or when preparing it for review.
+
+## Setting up the workspace {#setting-up-the-workspace}
+
+The [workspace](SKILL.md#workspace) is a local-only git repository at `design-doc/workspace/`,
+ignored by the Site Kit repo (`/design-doc/workspace/` in `.gitignore`). Create it from the
+plugin root:
+
+```sh
+git init design-doc/workspace
+printf '#!/bin/sh\necho "design-doc/workspace is local-only: pushing is disabled." >&2\nexit 1\n' \
+  > design-doc/workspace/.git/hooks/pre-push
+chmod +x design-doc/workspace/.git/hooks/pre-push
+```
+
+Then confirm the Site Kit repo ignores it: `git check-ignore design-doc/workspace` must print
+the path. If it prints nothing, stop and tell the user rather than writing into it — the
+workspace would otherwise show up as an embedded repository in Site Kit's `git status`.
 
 ## Fetching the template {#fetching-the-template}
 
