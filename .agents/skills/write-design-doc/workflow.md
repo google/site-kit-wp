@@ -38,9 +38,10 @@ every stage reads. If it is missing, write it first (or ask for what it needs). 
   and, for documents, the path of its [local copy](reference.md#fetching-feature-documents) in
   the feature's `sources/` directory. Stages read the local copy, not the original. Also note
   where extra context lives (e.g. comments on a Google Doc).
-- **Template and examples** — `design-doc/sources/design-doc-template.md` (fetched if missing; see
-  [Fetching the template](reference.md#fetching-the-template)) and `design-doc/sources/examples/`
-  (fetched if missing; see [Fetching the examples](reference.md#fetching-the-examples)).
+- **Template and examples** — `design-doc/workspace/sources/design-doc-template.md` (fetched
+  if missing; see [Fetching the template](reference.md#fetching-the-template)) and
+  `design-doc/workspace/sources/examples/` (fetched if missing; see [Fetching the
+  examples](reference.md#fetching-the-examples)).
 - **Scope** — the phase being designed, what is in scope, and what is deferred to a later
   phase.
 
