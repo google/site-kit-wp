@@ -857,7 +857,7 @@ export function isUsingFakeTimers() {
 					setTimeout,
 					'_timerConfig'
 				);
-		} catch ( error ) {
+		} catch {
 			fakeTimersActive = false;
 		}
 	}

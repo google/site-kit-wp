@@ -586,9 +586,14 @@ class ModuleTest extends TestCase {
 
 	public function test_exception_to_error__with_proxy_code_exception() {
 		$this->fake_proxy_site_connection();
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
 
-		$module    = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$exception = new Google_Proxy_Code_Exception( 'test message', 0, 'access-code' );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+		$this->register_permissions( $context, $authentication );
+
+		$module    = new FakeModule( $context, null, null, $authentication );
+		$exception = new Google_Proxy_Code_Exception( 'missing_verification', 0, 'access-code' );
 		$error     = $module->exception_to_error( $exception );
 
 		$this->assertWPError( $error, 'Exception to error with proxy code exception should return a WP_Error.' );
@@ -602,6 +607,75 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( Google_Proxy::ACTION_SETUP_START, $query_args['action'], 'The reconnect URL should start a new setup from the site.' );
 		$this->assertNotEmpty( $query_args['nonce'], 'The reconnect URL should carry a nonce.' );
 		$this->assertArrayNotHasKey( 'code', $query_args, 'The reconnect URL should not reuse the access code.' );
+	}
+
+	public function test_exception_to_error__with_proxy_code_exception__user_cannot_setup() {
+		$this->fake_proxy_site_connection();
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'subscriber' ) ) );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+		$this->register_permissions( $context, $authentication );
+
+		$module = new FakeModule( $context, null, null, $authentication );
+		$error  = $module->exception_to_error( new Google_Proxy_Code_Exception( 'missing_verification', 0, 'access-code' ) );
+
+		$this->assertArrayNotHasKey( 'reconnectURL', $error->get_error_data(), 'Proxy code exception should not offer to reconnect a user who cannot set up Site Kit.' );
+	}
+
+	public function test_get_data__proxy_code_exception__owner_request_includes_reconnect_url() {
+		$this->fake_proxy_site_connection();
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+		$this->register_permissions( $context, $authentication );
+
+		$module           = new FakeModule( $context, null, null, $authentication );
+		$module->owner_id = $user_id;
+		$module->register();
+		$this->throw_proxy_code_exception_on_data_request();
+
+		$error = $module->get_data( 'test-request' );
+
+		$this->assertWPError( $error, 'Failed owner request should return a WP_Error.' );
+		$this->assertFalse( $module->made_shared_data_request(), 'Owner request should not use the shared-data path.' );
+		wp_parse_str( wp_parse_url( $error->get_error_data()['reconnectURL'], PHP_URL_QUERY ), $query_args );
+		$this->assertEquals( Google_Proxy::ACTION_SETUP_START, $query_args['action'], 'Failed owner request should offer to reconnect through a new setup.' );
+	}
+
+	public function test_get_data__proxy_code_exception__shared_request_omits_reconnect_url() {
+		$this->fake_proxy_site_connection();
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		// Set up sharing capabilities, with the module owned by another user.
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$owner          = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options   = new User_Options( $context, $owner->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$this->register_permissions( $context, $authentication, $user_options );
+
+		$module = new FakeModule( $context, $options, $user_options, $authentication );
+		$module->register();
+		$this->throw_proxy_code_exception_on_data_request();
+
+		add_option(
+			Module_Sharing_Settings::OPTION,
+			array(
+				$module->slug => array(
+					'sharedRoles' => $owner->roles,
+					'management'  => 'owner',
+				),
+			)
+		);
+
+		$error = $module->get_data( 'test-request' );
+
+		$this->assertWPError( $error, 'Failed shared request should return a WP_Error.' );
+		$this->assertTrue( $module->made_shared_data_request(), 'Request should use the shared-data path.' );
+		$this->assertArrayNotHasKey( 'reconnectURL', $error->get_error_data(), 'Failed shared request should not offer to reconnect, as the failing token belongs to the module owner.' );
 	}
 
 	public function test_parse_string_list() {
@@ -686,5 +760,33 @@ class ModuleTest extends TestCase {
 
 		// Return the difference in days.
 		return ( strtotime( $expected_end_date ) - strtotime( $calculated_end_date ) ) / DAY_IN_SECONDS;
+	}
+
+	/**
+	 * Registers permissions, so that Site Kit capabilities resolve for the current user.
+	 *
+	 * @param Context             $context        Plugin context.
+	 * @param Authentication      $authentication Authentication instance.
+	 * @param User_Options|null   $user_options   Optional. User options instance.
+	 */
+	private function register_permissions( Context $context, Authentication $authentication, ?User_Options $user_options = null ) {
+		$user_options = $user_options ?: new User_Options( $context );
+		$modules      = new Modules( $context, null, $user_options, $authentication );
+		$permissions  = new Permissions( $context, $authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+		$permissions->register();
+	}
+
+	/**
+	 * Makes the next FakeModule data request fail with a proxy error.
+	 */
+	private function throw_proxy_code_exception_on_data_request() {
+		add_action(
+			'googlesitekit_fake_module_data_request',
+			function () {
+				throw new Google_Proxy_Code_Exception( 'missing_verification', 0, 'access-code' );
+			},
+			// After FakeModule records whether the request was shared.
+			20
+		);
 	}
 }
