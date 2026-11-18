@@ -1,22 +1,37 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
-'use strict';
+
+/**
+ * Converts between Markdown images linked as files and images embedded as
+ * base64 data URIs.
+ *
+ * Usage: `node markdown-convert-embedded-images.ts <extract|embed> <input.md>`.
+ */
 
 /**
  * External dependencies
  */
-const fs = require( 'fs' );
-const path = require( 'path' );
+import fs from 'fs';
+import path from 'path';
 
-const MIME_TYPES = {
+interface ImageEntry {
+	label: string;
+	dataURI: string | null;
+}
+
+const MIME_TYPES: Record< string, string > = {
 	jpg: 'image/jpeg',
 	jpeg: 'image/jpeg',
 	gif: 'image/gif',
 	svg: 'image/svg+xml',
 };
 
-function ensureDir( dirPath ) {
+function ensureDir( dirPath: string ): void {
 	fs.mkdirSync( dirPath, { recursive: true } );
+}
+
+function errorMessage( err: unknown ): string {
+	return err instanceof Error ? err.message : String( err );
 }
 
 /**
@@ -30,9 +45,10 @@ function ensureDir( dirPath ) {
  *
  * @since n.e.x.t
  *
- * @param {string} inputPath Path of the Markdown file to extract images from.
+ * @param  inputPath Path of the Markdown file to extract images from.
+ * @return {void}
  */
-function extractImages( inputPath ) {
+function extractImages( inputPath: string ): void {
 	const inputDir = path.dirname( inputPath );
 	const inputBase = path.basename( inputPath, '.md' );
 	const imagesDir = path.join( inputDir, inputBase );
@@ -48,9 +64,9 @@ function extractImages( inputPath ) {
 	const REF_USAGE_RE = /!\[([^\]]*)\]\[([^\]]+)\]/g;
 
 	let count = 0;
-	const errors = [];
-	const labelToPath = new Map();
-	const definitionsToRemove = [];
+	const errors: string[] = [];
+	const labelToPath = new Map< string, string >();
+	const definitionsToRemove: string[] = [];
 
 	for ( const match of src.matchAll( DEF_RE ) ) {
 		const [ fullMatch, label, subtype, b64 ] = match;
@@ -69,8 +85,10 @@ function extractImages( inputPath ) {
 			console.log( `  [${ label }] → ${ relativePath }` );
 			count++;
 		} catch ( err ) {
-			errors.push( err.message );
-			console.error( `  Error writing ${ filename }: ${ err.message }` );
+			errors.push( errorMessage( err ) );
+			console.error(
+				`  Error writing ${ filename }: ${ errorMessage( err ) }`
+			);
 		}
 	}
 
@@ -87,10 +105,13 @@ function extractImages( inputPath ) {
 		output = output.replace( definition, '' );
 	}
 
-	output = output.replace( REF_USAGE_RE, ( fullMatch, alt, label ) => {
-		const imgPath = labelToPath.get( label );
-		return imgPath ? `![${ alt }](${ imgPath })` : fullMatch;
-	} );
+	output = output.replace(
+		REF_USAGE_RE,
+		( fullMatch: string, alt: string, label: string ) => {
+			const imgPath = labelToPath.get( label );
+			return imgPath ? `![${ alt }](${ imgPath })` : fullMatch;
+		}
+	);
 
 	output = output.replace( /\n{3,}/g, '\n\n' ).trimEnd() + '\n';
 
@@ -114,9 +135,10 @@ function extractImages( inputPath ) {
  *
  * @since n.e.x.t
  *
- * @param {string} inputPath Path of the Markdown file to embed images in.
+ * @param  inputPath Path of the Markdown file to embed images in.
+ * @return {void}
  */
-function embedImages( inputPath ) {
+function embedImages( inputPath: string ): void {
 	const inputDir = path.dirname( inputPath );
 	const inputBase = path.basename( inputPath, '.md' );
 	const outputPath = path.join( inputDir, `${ inputBase }-embedded.md` );
@@ -128,8 +150,8 @@ function embedImages( inputPath ) {
 
 	// Build a cache of unique file paths to { label, dataURI }, assigning each
 	// a unique label derived from the image filename stem.
-	const imageCache = new Map(); // imgPath → { label, dataURI }
-	const usedLabels = new Set();
+	const imageCache = new Map< string, ImageEntry >();
+	const usedLabels = new Set< string >();
 
 	for ( const match of src.matchAll( REF_RE ) ) {
 		const imgPath = match[ 2 ];
@@ -147,8 +169,8 @@ function embedImages( inputPath ) {
 	}
 
 	let count = 0;
-	const errors = [];
-	const definitions = [];
+	const errors: string[] = [];
+	const definitions: string[] = [];
 
 	for ( const [ imgPath, entry ] of imageCache ) {
 		const absPath = path.resolve( inputDir, imgPath );
@@ -163,8 +185,10 @@ function embedImages( inputPath ) {
 			console.log( `  ${ imgPath } (${ buffer.length } bytes)` );
 			count++;
 		} catch ( err ) {
-			errors.push( err.message );
-			console.error( `  Error reading ${ imgPath }: ${ err.message }` );
+			errors.push( errorMessage( err ) );
+			console.error(
+				`  Error reading ${ imgPath }: ${ errorMessage( err ) }`
+			);
 		}
 	}
 
@@ -174,15 +198,18 @@ function embedImages( inputPath ) {
 	}
 
 	// Replace inline references with reference-style links.
-	let output = src.replace( REF_RE, ( fullMatch, alt, imgPath ) => {
-		if ( imgPath.startsWith( 'data:' ) ) {
-			return fullMatch;
+	let output = src.replace(
+		REF_RE,
+		( fullMatch: string, alt: string, imgPath: string ) => {
+			if ( imgPath.startsWith( 'data:' ) ) {
+				return fullMatch;
+			}
+			const entry = imageCache.get( imgPath );
+			return entry && entry.dataURI
+				? `![${ alt }][${ entry.label }]`
+				: fullMatch;
 		}
-		const entry = imageCache.get( imgPath );
-		return entry && entry.dataURI
-			? `![${ alt }][${ entry.label }]`
-			: fullMatch;
-	} );
+	);
 
 	// Append all image definitions at the end of the file.
 	if ( definitions.length > 0 ) {
@@ -200,11 +227,11 @@ function embedImages( inputPath ) {
 	}
 }
 
-function main() {
+function main(): void {
 	const args = process.argv.slice( 2 );
 	if ( args.length < 2 ) {
 		console.error(
-			'Usage: node markdown-convert-embedded-images.js <extract|embed> <input.md>'
+			'Usage: node markdown-convert-embedded-images.ts <extract|embed> <input.md>'
 		);
 		process.exit( 1 );
 	}

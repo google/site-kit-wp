@@ -1,17 +1,33 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
-'use strict';
+
+/**
+ * Renders the Mermaid diagrams in a Markdown file to PNGs.
+ *
+ * Usage: node markdown-mermaid-to-png.ts [--check] <input.md>
+ *
+ * Replaces each ```mermaid fence with an image linking to the rendered PNG
+ * under `diagrams/`, writing `<input>-rendered.md`. With `--check`, renders to
+ * a temporary directory to validate the diagrams, and writes nothing next to
+ * the input.
+ */
 
 /**
  * External dependencies
  */
-const { spawnSync } = require( 'child_process' );
-const fs = require( 'fs' );
-const os = require( 'os' );
-const path = require( 'path' );
+import { spawnSync } from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
-function ensureDir( dirPath ) {
+type MmdcCommand = [ command: string, args: string[] ];
+
+function ensureDir( dirPath: string ): void {
 	fs.mkdirSync( dirPath, { recursive: true } );
+}
+
+function errorMessage( err: unknown ): string {
+	return err instanceof Error ? err.message : String( err );
 }
 
 /**
@@ -20,9 +36,9 @@ function ensureDir( dirPath ) {
  *
  * @since n.e.x.t
  *
- * @return {Array} The command, and an array of arguments to pass before mmdc's own.
+ * @return The command, and an array of arguments to pass before mmdc's own.
  */
-function resolveMmdc() {
+function resolveMmdc(): MmdcCommand {
 	const probe = spawnSync( 'mmdc', [ '--version' ], { stdio: 'ignore' } );
 	if ( ! probe.error ) {
 		return [ 'mmdc', [] ];
@@ -32,7 +48,11 @@ function resolveMmdc() {
 
 const [ MMDC_COMMAND, MMDC_ARGS ] = resolveMmdc();
 
-function renderDiagram( body, index, diagramDir ) {
+function renderDiagram(
+	body: string,
+	index: number,
+	diagramDir: string
+): string {
 	const paddedIndex = String( index ).padStart( 2, '0' );
 	const outFilename = `${ paddedIndex }-diagram.png`;
 	const outPngPath = path.join( diagramDir, outFilename );
@@ -66,7 +86,7 @@ function renderDiagram( body, index, diagramDir ) {
 
 	try {
 		fs.unlinkSync( tmpPath );
-	} catch ( _ ) {}
+	} catch {}
 
 	if ( result.status !== 0 || result.error ) {
 		const errMsg = result.stderr || result.error?.message || '(no output)';
@@ -79,13 +99,13 @@ function renderDiagram( body, index, diagramDir ) {
 	return outFilename;
 }
 
-function main() {
+function main(): void {
 	const args = process.argv.slice( 2 );
 	const check = args.includes( '--check' );
 	const positional = args.filter( ( arg ) => arg !== '--check' );
 	if ( positional.length !== 1 ) {
 		console.error(
-			'Usage: node markdown-mermaid-to-png.js [--check] <input.md>\n\n' +
+			'Usage: node markdown-mermaid-to-png.ts [--check] <input.md>\n\n' +
 				'  --check  Render every diagram to a temporary directory to validate\n' +
 				'           it, without writing anything next to the input.'
 		);
@@ -124,19 +144,26 @@ function main() {
 	const MERMAID_FENCE = /^```mermaid\n([\s\S]*?)^```$/gm;
 
 	let diagramIndex = 0;
-	const errors = [];
+	const errors: string[] = [];
 
-	const rendered = src.replace( MERMAID_FENCE, ( fullMatch, body ) => {
-		diagramIndex++;
-		try {
-			const outFilename = renderDiagram( body, diagramIndex, diagramDir );
-			return `![Diagram ${ diagramIndex }](diagrams/${ outFilename })`;
-		} catch ( err ) {
-			errors.push( err.message );
-			console.error( `  Error: ${ err.message }` );
-			return fullMatch;
+	const rendered = src.replace(
+		MERMAID_FENCE,
+		( fullMatch: string, body: string ) => {
+			diagramIndex++;
+			try {
+				const outFilename = renderDiagram(
+					body,
+					diagramIndex,
+					diagramDir
+				);
+				return `![Diagram ${ diagramIndex }](diagrams/${ outFilename })`;
+			} catch ( err ) {
+				errors.push( errorMessage( err ) );
+				console.error( `  Error: ${ errorMessage( err ) }` );
+				return fullMatch;
+			}
 		}
-	} );
+	);
 
 	console.log(
 		`\nDone. ${
