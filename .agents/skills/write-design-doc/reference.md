@@ -88,7 +88,7 @@ them (from the plugin root):
 ```sh
 F=path/to/export.md
 grep -q '^\[[^]]*\]: *<data:image/' "$F" \
-  && node design-doc/scripts/markdown-convert-embedded-images.js extract "$F"
+  && node design-doc/scripts/markdown-convert-embedded-images.ts extract "$F"
 ```
 
 This writes `<name>-extracted.md`, with the images saved as files in a `<name>/` directory
@@ -111,7 +111,7 @@ they report:
 
 - **No orphan screenshots**:
   `(cd "$(dirname "$DOC")" && for f in screenshots/*; do grep -qF "$f" "$(basename "$DOC")" || echo "$f"; done)`
-- **Every diagram renders**: `node design-doc/scripts/markdown-mermaid-to-png.js --check "$DOC"`
+- **Every diagram renders**: `node design-doc/scripts/markdown-mermaid-to-png.ts --check "$DOC"`
   exits without errors. `--check` renders to a temporary directory and writes nothing next to
   the doc.
 - **No leftovers**: `grep -nE '\[COMMENT:|^\*[A-Z][^*]*\*\s*$' "$DOC"` finds no review markers
@@ -126,7 +126,7 @@ won't follow relative image paths. Bake a self-contained companion of the source
 
 Run both from the plugin root.
 
-1. **Render diagrams to PNG**: `node design-doc/scripts/markdown-mermaid-to-png.js <doc>.md`
+1. **Render diagrams to PNG**: `node design-doc/scripts/markdown-mermaid-to-png.ts <doc>.md`
    replaces each inline ```mermaid fence with a rendered PNG (on a white background) under
    `diagrams/`, writing `<doc>-rendered.md`. Old PNGs in `diagrams/` are deleted first, so it
    always matches the doc. The script uses `mmdc` if it is installed, and otherwise runs it with
@@ -134,7 +134,7 @@ Run both from the plugin root.
    diagram fails with Chromium's "No usable sandbox" error (common on Ubuntu 23.10+, which
    restricts unprivileged user namespaces), stop and tell the user rather than working around
    it; the fix is a system setting, or an `mmdc` Puppeteer config they choose to use.
-2. **Embed images**: `node design-doc/scripts/markdown-convert-embedded-images.js embed
+2. **Embed images**: `node design-doc/scripts/markdown-convert-embedded-images.ts embed
    <doc>-rendered.md` inlines every `![](…)` image as a base64 data URI, writing
    `<doc>-embedded.md` — a single file that survives a paste into Google Docs. (`extract`
    reverses this.)

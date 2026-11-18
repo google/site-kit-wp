@@ -116,7 +116,7 @@ document is the **authoritative source** for each diagram.
   ````
 
 - Rendered PNGs live in the `diagrams/` directory next to the document, generated from the inline fences by
-  `design-doc/scripts/markdown-mermaid-to-png.js` (see [Preparing the doc for Google
+  `design-doc/scripts/markdown-mermaid-to-png.ts` (see [Preparing the doc for Google
   Docs](reference.md#preparing-the-doc-for-google-docs)). They are named by document order
   (`01-diagram.png`, `02-diagram.png`, …) and replaced on every render. Regenerate them from
   the doc rather than editing the PNGs or hand-maintaining separate `.mermaid` source files,
