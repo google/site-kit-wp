@@ -1241,6 +1241,107 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		unmount();
 	} );
 
+	it( 'should render the loading state while only the Key action sessions report is resolving', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const primaryReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		provideAnalytics4MockReport( registry, primaryReport );
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildKeyActionSessionsReportOptions(
+					dates,
+					ENUM_CONVERSION_EVENTS.PURCHASE
+				) as ReportOptions,
+			] );
+
+		const { container, unmount, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		// Let every other report settle, so only the sessions report is loading.
+		await waitForRegistry();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-tiles-group.googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).not.toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'should render the error state when the Key action sessions report fails', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const primaryReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const keyActionSessionsReport = buildKeyActionSessionsReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		) as ReportOptions;
+		provideAnalytics4MockReport( registry, primaryReport );
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 400,
+				message: 'Key action sessions failed',
+				data: {
+					status: 400,
+					reason: 'badRequest',
+				},
+			},
+			'getReport',
+			[ keyActionSessionsReport ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ keyActionSessionsReport ] );
+
+		const { container, getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Key action sessions failed' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'renders the breakdown notice in the aggregated state and shows the tooltip on dismiss', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

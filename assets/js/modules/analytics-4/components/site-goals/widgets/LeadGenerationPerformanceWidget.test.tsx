@@ -1392,6 +1392,100 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		unmount();
 	} );
 
+	it( 'should render the loading state while only the Key action sessions report is resolving', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const primaryReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		provideAnalytics4MockReport( registry, primaryReport );
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				toKeyActionSessionsReportOptions( primaryReport ),
+			] );
+
+		const { container, unmount, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		// Let every other report settle, so only the sessions report is loading.
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).not.toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'should render the error state when the Key action sessions report fails', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const primaryReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const keyActionSessionsReport =
+			toKeyActionSessionsReportOptions( primaryReport );
+		provideAnalytics4MockReport( registry, primaryReport );
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 400,
+				message: 'Key action sessions failed',
+				data: {
+					status: 400,
+					reason: 'badRequest',
+				},
+			},
+			'getReport',
+			[ keyActionSessionsReport ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ keyActionSessionsReport ] );
+
+		const { container, getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Key action sessions failed' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'renders goal drivers loading state while primary section stays visible', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
