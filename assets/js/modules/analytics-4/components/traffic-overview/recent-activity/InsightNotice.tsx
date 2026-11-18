@@ -48,7 +48,7 @@ import {
 	classifyInsight,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
 import { numFmt } from '@/js/util';
-import MagnifyingGlassIcon from '@/svg/icons/magnifying-glass.svg';
+import MagnifyingGlassChartIcon from '@/svg/icons/magnifying-glass-chart.svg';
 
 /**
  * Gets the notice copy for an insight.
@@ -124,7 +124,7 @@ const InsightNotice: FC = () => {
 			<div className="googlesitekit-traffic-overview__insight-notice-content">
 				<div className="googlesitekit-traffic-overview__insight-notice-message">
 					<span className="googlesitekit-traffic-overview__insight-notice-icon">
-						<MagnifyingGlassIcon
+						<MagnifyingGlassChartIcon
 							width={ 18 }
 							height={ 18 }
 							aria-hidden="true"

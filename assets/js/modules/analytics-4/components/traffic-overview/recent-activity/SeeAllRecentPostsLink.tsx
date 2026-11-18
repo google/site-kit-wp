@@ -32,9 +32,10 @@ import { __ } from '@wordpress/i18n';
 import { Select, useInViewSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { ANCHOR_ID_CONTENT } from '@/js/googlesitekit/constants';
-import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
+import useScrollToAdjustingForHeight from '@/js/hooks/useScrollToAdjustingForHeight';
 import {
+	CONTENT_CARD_ID,
 	LATEST_CONTENT_RECENT_CONTENT_OPTIONS,
 	LATEST_CONTENT_TAB_ID,
 } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
@@ -43,12 +44,9 @@ import { useRecordRecentActivityInteraction } from '@/js/modules/analytics-4/com
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
-import { getNavigationalScrollTop } from '@/js/util/scroll';
 import ArrowDownIcon from '@/svg/icons/arrow-down.svg';
 
 const SeeAllRecentPostsLink: FC = () => {
-	const breakpoint = useBreakpoint();
-
 	const canViewSharedAnalytics4 = useCanViewSharedModule(
 		MODULE_SLUG_ANALYTICS_4
 	);
@@ -67,6 +65,7 @@ const SeeAllRecentPostsLink: FC = () => {
 
 	const changeContentTab = useChangeContentTab();
 	const recordInteraction = useRecordRecentActivityInteraction();
+	const scrollToAdjustingForHeight = useScrollToAdjustingForHeight();
 
 	if ( recentContent === undefined || recentContent.length < 2 ) {
 		return null;
@@ -82,9 +81,15 @@ const SeeAllRecentPostsLink: FC = () => {
 		recordInteraction();
 
 		global.history.replaceState( {}, '', contentIDForLink );
-		global.scrollTo( {
-			top: getNavigationalScrollTop( contentIDForLink, breakpoint ),
-			behavior: 'smooth',
+		scrollToAdjustingForHeight( `#${ CONTENT_CARD_ID }` );
+
+		// Wait for the card to render the tab as selected, so a screen reader
+		// announces it as selected. `preventScroll` keeps the smooth scroll
+		// going.
+		global.setTimeout( () => {
+			document
+				.getElementById( LATEST_CONTENT_TAB_ID )
+				?.focus( { preventScroll: true } );
 		} );
 
 		event.preventDefault();
