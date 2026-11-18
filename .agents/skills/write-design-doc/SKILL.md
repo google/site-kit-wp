@@ -63,14 +63,18 @@ documents (PRD, review docs) are [copied](reference.md#fetching-feature-document
 - **Keep the template's formatting**: its bold headings (`# **Context**`), header table and
   italic metadata block paste cleanly into Google Docs. Add `{#anchor}`s to headings as
   [needed](#intra-document-links).
-- **Replace the italic prompt text** under each heading with content; don't leave it in.
+- **Replace the italic prompt text** under each heading with content; don't leave it in. The
+  exceptions are the prompts under Revision history and Changes during engineering, which
+  stay. Also replace the template's placeholders (`<Feature Name>`, `Person`, `Date`, `File`)
+  and delete its example open questions.
 - **Answer every Common considerations subsection** (Dashboard sharing, Tester plugin, Site
   Health, Feature Discovery, Internal Measurement). When the feature needs nothing there, say
   so in one sentence — reviewers check each one, so don't delete the subsection.
 - **Keep the revision history current**: newest row on top, the author as a `mailto:` link,
   dates as `DD Mon YYYY`. Add a row whenever the doc changes significantly.
-- **Leave "Changes during engineering" with its empty table.** The epic lead maintains it
-  once engineering starts; it is not written at design time.
+- **Leave "Changes during engineering" with its empty table**: delete the template's example
+  rows, keeping the header row and one empty row. The epic lead maintains it once engineering
+  starts; it is not written at design time.
 
 ## Screenshots {#screenshots}
 
@@ -175,12 +179,13 @@ Append the anchor to the target heading as `{#anchor-name}` and link to it as
 
 ## Work estimates {#work-estimates}
 
-- Columns: Issue # / Title / Story points / Description / Dependencies. Lead each Description
-  with `JS.`/`PHP.` and cross-reference sections by anchor.
+- Columns: Issue # / Title / Story Points / Description / Dependencies, replacing the
+  template's `Notes` column with Description and Dependencies. Lead each Description with
+  `JS.`/`PHP.` and cross-reference sections by anchor.
 - When splitting or merging issues, **preserve the total story points**, renumber
   sequentially with no gaps, and update every Dependencies entry and inline `#N` reference so
   each resolves to a valid, earlier issue.
-- Keep the `TOTAL: XXX STORY POINTS` line as a placeholder.
+- Keep the template's `TOTAL: XX STORY POINTS` line as a placeholder.
 
 ## Style guide {#style-guide}
 
