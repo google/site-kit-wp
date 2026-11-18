@@ -1,7 +1,38 @@
 # Design-doc tooling reference
 
-Commands for checking a design doc and exporting it to Google Docs. Read this when finishing a
-pass over a doc, or when preparing it for review.
+How to fetch the template and examples, and commands for checking a design doc and exporting it
+to Google Docs. Read this when the template or examples are missing, when finishing a pass over
+a doc, or when preparing it for review.
+
+## Fetching the template {#fetching-the-template}
+
+The canonical template is the Google Doc
+<https://docs.google.com/document/d/1ZW8HLsdqepJJBseMeLGTiHcF05ZLsqCiZVzNJxsA7jM/edit>. If the
+local copy at `design-doc/sources/design-doc-template.md` doesn't exist, fetch it before reading
+the context:
+
+1. Export the doc as Markdown with the Google Drive connector (read or download file ID
+   `1ZW8HLsdqepJJBseMeLGTiHcF05ZLsqCiZVzNJxsA7jM` as `text/markdown`). Without a connector, ask
+   the user to download it via **File → Download → Markdown (.md)**.
+2. Save it to `design-doc/sources/design-doc-template.md` unchanged.
+
+If the file already exists, use it as is; don't re-fetch it unless the user asks.
+
+## Fetching the examples {#fetching-the-examples}
+
+Example design docs live in `design-doc/sources/examples/`. If the directory is missing or
+contains no examples, fetch some before reading the context:
+
+1. Ask the user for the Google Doc links of one or more existing design docs to use as
+   examples. Don't guess or search Drive for them.
+2. Export each doc as Markdown with the Google Drive connector (read or download its file ID —
+   the part of the URL after `/d/` — as `text/markdown`). Without a connector, ask the user to
+   download each via **File → Download → Markdown (.md)**.
+3. Save each one unchanged to `design-doc/sources/examples/`, named after the doc in kebab-case
+   (e.g. `key-metrics-design-doc.md`).
+
+If examples already exist, use them as they are; don't re-fetch them or ask for more unless the
+user asks.
 
 ## Self-check {#self-check}
 

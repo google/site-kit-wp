@@ -14,7 +14,8 @@ what it needs). It contains:
 - **Resources** — the PRD, Figma file, and any notes or review documents, with links, plus a
   note on where extra context lives (e.g. comments on a Google Doc).
 - **Template and examples** — `design-doc/sources/design-doc-template.md` (fetched if missing; see
-  [Fetching the template](SKILL.md#fetching-the-template)) and `design-doc/examples/`.
+  [Fetching the template](reference.md#fetching-the-template)) and `design-doc/sources/examples/`
+  (fetched if missing; see [Fetching the examples](reference.md#fetching-the-examples)).
 - **Scope** — the phase being designed, what is in scope, and what is deferred to a later
   phase.
 - **Current inputs** — which [preparation](#preparation) iteration of each kind is current,
