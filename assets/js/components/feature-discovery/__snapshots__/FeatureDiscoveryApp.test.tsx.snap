@@ -17,7 +17,7 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
           <a
             aria-label="Go to dashboard"
             class="googlesitekit-cta-link googlesitekit-header__logo-link"
-            href=""
+            href="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
           >
             <span
               class="googlesitekit-cta-link__contents"

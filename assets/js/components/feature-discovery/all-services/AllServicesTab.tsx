@@ -25,6 +25,7 @@ import { FC, useState } from 'react';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
 import Notifications from '@/js/components/notifications/Notifications';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type {
@@ -68,21 +69,29 @@ const AllServicesTab: FC = () => {
 		[ selectedCategories ]
 	);
 
+	const triggerInteractionSurvey =
+		useFeatureDiscoveryInteractionSurveyTrigger();
+
 	function onToggleCategory( categorySlug: FeatureCategorySlug | null ) {
 		if ( categorySlug === null ) {
 			setSelectedCategories( [] );
 			return;
 		}
 
-		setSelectedCategories( ( currentSelection ) => {
-			if ( currentSelection.includes( categorySlug ) ) {
-				return currentSelection.filter(
+		if ( selectedCategories.includes( categorySlug ) ) {
+			setSelectedCategories(
+				selectedCategories.filter(
 					( category ) => category !== categorySlug
-				);
-			}
+				)
+			);
+			return;
+		}
 
-			return [ ...currentSelection, categorySlug ];
-		} );
+		// Only selecting a category counts as an interaction, so deselecting
+		// one does not.
+		triggerInteractionSurvey();
+
+		setSelectedCategories( [ ...selectedCategories, categorySlug ] );
 	}
 
 	return (

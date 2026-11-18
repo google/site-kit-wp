@@ -172,6 +172,13 @@ describe( 'WhatsNewTab', () => {
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 
+		// Dismissing a card with a reason sends a hub survey trigger, which
+		// `FeatureCard` tests cover.
+		jest.spyOn(
+			registry.dispatch( CORE_USER ),
+			'triggerSurvey'
+		).mockResolvedValue( {} );
+
 		fetchMock.get(
 			new RegExp(
 				'^/google-site-kit/v1/core/user/data/dismissed-prompts'

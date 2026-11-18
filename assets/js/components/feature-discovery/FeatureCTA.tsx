@@ -26,6 +26,7 @@ import { FC, useCallback } from 'react';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import FeatureCTAButton from '@/js/components/feature-discovery/FeatureCTAButton';
+import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_SETUP_TYPES,
@@ -83,15 +84,24 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { setupFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
+	const triggerInteractionSurvey =
+		useFeatureDiscoveryInteractionSurveyTrigger();
 
 	const onClick = useCallback( async () => {
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
+		triggerInteractionSurvey();
 
 		await setupFeature( slug );
 
 		onSetupComplete?.();
-	}, [ onSetupComplete, setupFeature, slug, triggerSurvey ] );
+	}, [
+		onSetupComplete,
+		setupFeature,
+		slug,
+		triggerInteractionSurvey,
+		triggerSurvey,
+	] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
 		return null;
