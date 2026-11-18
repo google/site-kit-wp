@@ -119,12 +119,13 @@ document is the **authoritative source** for each diagram.
   ```
   ````
 
-- Rendered PNGs live in the `diagrams/` directory next to the document, generated from the inline fences by
-  `design-doc/scripts/markdown-mermaid-to-png.ts` (see [Preparing the doc for Google
-  Docs](reference.md#preparing-the-doc-for-google-docs)). They are named by document order
-  (`01-diagram.png`, `02-diagram.png`, …) and replaced on every render. Regenerate them from
-  the doc rather than editing the PNGs or hand-maintaining separate `.mermaid` source files,
-  which drift out of sync.
+- Rendered PNGs live in the `diagrams/` directory next to the document, generated from the
+  inline fences by `design-doc/scripts/markdown-mermaid-to-png.ts` (see [Preparing the doc
+  for Google Docs](reference.md#preparing-the-doc-for-google-docs)). They are named after the
+  document and their order in it (`design-doc-01.png`, `design-doc-02.png`, …), so the
+  preparation notes can share `preparation/diagrams/`, and a document's PNGs are replaced on
+  every render. Regenerate them from the doc rather than editing the PNGs or hand-maintaining
+  separate `.mermaid` source files, which drift out of sync.
 - **Validate every diagram before relying on it** with the script's `--check` mode (see the
   [self-check](reference.md#self-check)) — `mmdc` is finicky, state diagrams especially.
 
