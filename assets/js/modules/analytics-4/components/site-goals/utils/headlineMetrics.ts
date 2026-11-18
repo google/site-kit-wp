@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/components/site-goals/utils/getDimensionFiltersForEvents';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { getDimensionFiltersForEvents } from './getDimensionFiltersForEvents';
 
 export interface HeadlineMetricReportDates {
 	startDate: string;
