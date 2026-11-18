@@ -24,11 +24,28 @@ hold material needed only for some tasks:
   Google Docs export. Read it when the template or examples are missing, when finishing a pass,
   or when preparing the doc for review.
 
+## Workspace {#workspace}
+
+Design-doc work is kept out of the Site Kit repository. Everything written for a feature goes in
+`design-doc/workspace/<feature>/`, where `<feature>` is a kebab-case slug of the feature name
+(e.g. `date-picker`). `design-doc/workspace/` is ignored by the Site Kit repo and is its own
+local-only git repository, with no remote and a `pre-push` hook that refuses every push.
+
+- If `design-doc/workspace/` doesn't exist, or isn't a git repository, [set it
+  up](reference.md#setting-up-the-workspace) before writing anything.
+- Never write design-doc output anywhere else in the Site Kit repo, and never add a remote to
+  the workspace repository.
+- Commit in the workspace repository only when the user asks. Never commit design-doc files to
+  the Site Kit repository.
+
+Only `design-doc/scripts/` (shared tooling) is tracked by Site Kit; `design-doc/sources/`
+(fetched template and examples) is ignored and shared by every feature.
+
 ## Procedure
 
 1. **Read the context** before writing:
-   - the feature introduction (`design-doc/preparation/00-introduction.md`), and every resource
-     it and the request point to;
+   - the feature introduction (`design-doc/workspace/<feature>/preparation/00-introduction.md`),
+     and every resource it and the request point to;
    - the template (`design-doc/sources/design-doc-template.md`;
      [fetch it](reference.md#fetching-the-template) first if it doesn't exist) and, for
      structure and depth, the example design docs in `design-doc/sources/examples/`
