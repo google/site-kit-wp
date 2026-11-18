@@ -76,7 +76,8 @@ into `design-doc/workspace/<feature>/sources/`.
   Health, Feature Discovery, Internal Measurement). When the feature needs nothing there, say
   so in one sentence — reviewers check each one, so don't delete the subsection.
 - **Keep the revision history current**: newest row on top, the author as a `mailto:` link
-  (the user, from `git config user.name` and `git config user.email`), dates as
+  (the user's name and Google Workspace email, which may differ from their git identity:
+  reuse them from an earlier row of theirs in the doc, otherwise ask), dates as
   `DD Mon YYYY`. Add a row whenever the doc changes significantly.
 - **Leave "Changes during engineering" with its empty table**: delete the template's example
   rows, keeping the header row and one empty row. The epic lead maintains it once engineering
