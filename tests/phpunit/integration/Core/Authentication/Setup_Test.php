@@ -7,7 +7,10 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Setup;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
@@ -177,6 +180,74 @@ class Setup_Test extends TestCase {
 			$site_bodies[0]['scope'],
 			'Setup should send the required scopes with the site fields.'
 		);
+	}
+
+	public function test_handle_action_setup_start__hides_key_metrics_when_analytics_is_not_connected() {
+		$options = $this->run_setup_start_with_analytics_connected( false );
+
+		$this->assertTrue(
+			$options->get( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION ),
+			'Setup start should hide the Key Metrics widget area when Analytics is not connected.'
+		);
+	}
+
+	public function test_handle_action_setup_start__keeps_key_metrics_when_analytics_is_connected() {
+		$options = $this->run_setup_start_with_analytics_connected( true );
+
+		$this->assertFalse(
+			$options->has( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION ),
+			'Setup start should not hide the Key Metrics widget area when Analytics is connected.'
+		);
+	}
+
+	/**
+	 * Runs the setup start action with Analytics connected or not.
+	 *
+	 * @param bool $is_analytics_connected Whether Analytics is connected.
+	 * @return Options Options instance to read the stored values from.
+	 */
+	protected function run_setup_start_with_analytics_connected( $is_analytics_connected ) {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$options = new Options( $context );
+		$options->delete( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION );
+
+		$setup = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$setup->register();
+
+		$this->fake_proxy_site_connection();
+
+		remove_all_filters( 'googlesitekit_is_module_connected' );
+		add_filter(
+			'googlesitekit_is_module_connected',
+			function ( $connected, $slug ) use ( $is_analytics_connected ) {
+				return Analytics_4::MODULE_SLUG === $slug ? $is_analytics_connected : $connected;
+			},
+			10,
+			2
+		);
+
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_SETUP_START );
+
+		$this->subscribe_to_wp_http_requests(
+			function () {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array( Google_Proxy::HEADER_REDIRECT_TO => 'https://sitekit.withgoogle.com/test-page' ),
+				'body'     => '{}',
+			)
+		);
+
+		try {
+			do_action( 'admin_action_' . Google_Proxy::ACTION_SETUP_START );
+			$this->fail( 'Expected redirection to proxy setup URL!' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/test-page', $redirect->get_location(), 'Setup start should redirect to the proxy setup URL.' );
+		}
+
+		return $options;
 	}
 
 	/**

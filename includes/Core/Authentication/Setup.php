@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Remote_Features;
+use Google\Site_Kit\Modules\Analytics_4;
 
 /**
  * Base class for authentication setup.
@@ -145,6 +146,7 @@ class Setup {
 	 * Handles the setup start action, taking the user to the proxy setup screen.
 	 *
 	 * @since 1.48.0
+	 * @since n.e.x.t Hides the Key Metrics widget area only when Analytics is not connected.
 	 */
 	public function handle_action_setup_start() {
 		$nonce        = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'nonce' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
@@ -213,10 +215,13 @@ class Setup {
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
-		$options = new Options( $this->context );
-
-		$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $options );
-		$key_metrics_setup_is_widget_area_hidden->set( true );
+		// Hide Key Metrics until Analytics is connected. The option is
+		// site-wide, so leave it alone when Analytics is already connected,
+		// or another admin signing in would hide Key Metrics for everyone.
+		if ( ! apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG ) ) {
+			$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( new Options( $this->context ) );
+			$key_metrics_setup_is_widget_area_hidden->set( true );
+		}
 
 		wp_safe_redirect( $oauth_setup_redirect );
 		exit;
