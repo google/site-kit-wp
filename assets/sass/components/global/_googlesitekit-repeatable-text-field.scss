@@ -44,6 +44,14 @@
 			grid-template-columns: subgrid;
 		}
 
+		// Add some side spacing to the list item while keeping the content
+		// aligned with sibling elements to prevent the offset focus outline
+		// on the drag handle being cropped by the drag shapspot.
+		.googlesitekit-draggable-list__item {
+			margin-inline: -12px;
+			padding-inline: 12px;
+		}
+
 		.googlesitekit-repeater__add {
 			grid-column: field;
 			justify-self: start;
