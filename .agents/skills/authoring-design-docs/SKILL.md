@@ -28,13 +28,31 @@ hold material needed only for some tasks:
 1. **Read the context** before writing:
    - the feature introduction (`design-doc/preparation/00-introduction.md`), and every resource
      it and the request point to;
-   - the template (`design-doc/design-doc-template.md`) and, for structure and depth, the
-     examples in `design-doc/examples/`;
+   - the template (`design-doc/sources/design-doc-template.md`;
+     [fetch it](#fetching-the-template) first if it doesn't exist) and, for structure and
+     depth, the examples in `design-doc/examples/`;
    - the target document or iteration, if one already exists.
 2. **Author or edit** the requested stage or section(s), applying every convention below.
 3. **Self-check** with the [checklist](reference.md#self-check) before finishing.
 
 ## Template
+
+### Fetching the template {#fetching-the-template}
+
+The canonical template is the Google Doc
+<https://docs.google.com/document/d/1ZW8HLsdqepJJBseMeLGTiHcF05ZLsqCiZVzNJxsA7jM/edit>. The
+local copy at `design-doc/sources/design-doc-template.md` is git-ignored (like everything in
+`design-doc/sources/`), so it is missing on a fresh checkout. If it doesn't exist, fetch it
+before reading the context:
+
+1. Export the doc as Markdown with the Google Drive connector (read or download file ID
+   `1ZW8HLsdqepJJBseMeLGTiHcF05ZLsqCiZVzNJxsA7jM` as `text/markdown`). Without a connector, ask
+   the user to download it via **File → Download → Markdown (.md)**.
+2. Save it to `design-doc/sources/design-doc-template.md` unchanged.
+
+If the file already exists, use it as is; don't re-fetch it unless the user asks.
+
+### Using the template
 
 - **Keep the template's formatting**: its bold headings (`# **Context**`), header table and
   italic metadata block paste cleanly into Google Docs. Add `{#anchor}`s to headings as

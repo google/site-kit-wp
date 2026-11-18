@@ -13,7 +13,8 @@ what it needs). It contains:
 - **Feature** — its name, and a sentence on what it is and which product it belongs to.
 - **Resources** — the PRD, Figma file, and any notes or review documents, with links, plus a
   note on where extra context lives (e.g. comments on a Google Doc).
-- **Template and examples** — `design-doc/design-doc-template.md` and `design-doc/examples/`.
+- **Template and examples** — `design-doc/sources/design-doc-template.md` (fetched if missing; see
+  [Fetching the template](SKILL.md#fetching-the-template)) and `design-doc/examples/`.
 - **Scope** — the phase being designed, what is in scope, and what is deferred to a later
   phase.
 - **Current inputs** — which [preparation](#preparation) iteration of each kind is current,
