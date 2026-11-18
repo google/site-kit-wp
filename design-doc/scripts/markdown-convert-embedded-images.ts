@@ -30,6 +30,19 @@ function ensureDir( dirPath: string ): void {
 	fs.mkdirSync( dirPath, { recursive: true } );
 }
 
+/**
+ * Checks whether an image path refers to a local file. Data URIs are already embedded,
+ * and remote URLs (any `scheme:`) are left as links.
+ *
+ * @since n.e.x.t
+ *
+ * @param  imgPath Image path or URL from the Markdown.
+ * @return {boolean} True if the path is a local file.
+ */
+function isLocal( imgPath: string ): boolean {
+	return ! /^[a-z][a-z0-9+.-]*:/i.test( imgPath );
+}
+
 function errorMessage( err: unknown ): string {
 	return err instanceof Error ? err.message : String( err );
 }
@@ -117,7 +130,7 @@ function extractImages( inputPath: string ): void {
 
 	fs.writeFileSync( outputPath, output, 'utf8' );
 	console.log(
-		`\nDone. ${ count - errors.length }/${ count } images extracted.`
+		`\nDone. ${ count }/${ count + errors.length } images extracted.`
 	);
 	console.log( `Output: ${ outputPath }` );
 
@@ -129,7 +142,8 @@ function extractImages( inputPath: string ): void {
 /**
  * Embeds external image files as base64 data URIs using reference-style links.
  *
- * Input:  ![alt text](path/to/image.png).
+ * Input:  ![alt text](path/to/image.png). Remote images (http: etc.) are left
+ * as links.
  * Output: ![alt text][label] in the body, plus
  * [label]: <data:image/png;base64,BASE64DATA> appended at the end of the file.
  *
@@ -145,8 +159,8 @@ function embedImages( inputPath: string ): void {
 
 	const src = fs.readFileSync( inputPath, 'utf8' );
 
-	// Matches inline image references; skips already-embedded data URIs.
-	const REF_RE = /!\[([^\]]*)\]\(([^)]+)\)/g;
+	// Matches inline image references, with an optional title: ![alt](path "title").
+	const REF_RE = /!\[([^\]]*)\]\(\s*<?([^)\s>]+)>?(?:\s+"[^"]*")?\s*\)/g;
 
 	// Build a cache of unique file paths to { label, dataURI }, assigning each
 	// a unique label derived from the image filename stem.
@@ -155,7 +169,7 @@ function embedImages( inputPath: string ): void {
 
 	for ( const match of src.matchAll( REF_RE ) ) {
 		const imgPath = match[ 2 ];
-		if ( imgPath.startsWith( 'data:' ) || imageCache.has( imgPath ) ) {
+		if ( ! isLocal( imgPath ) || imageCache.has( imgPath ) ) {
 			continue;
 		}
 		const label = path.basename( imgPath, path.extname( imgPath ) );
@@ -201,7 +215,7 @@ function embedImages( inputPath: string ): void {
 	let output = src.replace(
 		REF_RE,
 		( fullMatch: string, alt: string, imgPath: string ) => {
-			if ( imgPath.startsWith( 'data:' ) ) {
+			if ( ! isLocal( imgPath ) ) {
 				return fullMatch;
 			}
 			const entry = imageCache.get( imgPath );
@@ -218,7 +232,7 @@ function embedImages( inputPath: string ): void {
 
 	fs.writeFileSync( outputPath, output, 'utf8' );
 	console.log(
-		`\nDone. ${ count - errors.length }/${ count } images embedded.`
+		`\nDone. ${ count }/${ count + errors.length } images embedded.`
 	);
 	console.log( `Output: ${ outputPath }` );
 

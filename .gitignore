@@ -93,3 +93,5 @@ tests/playwright/artifacts
 /design-doc/sources/
 # Design doc work, kept in its own local-only git repository (see the write-design-doc skill)
 /design-doc/workspace/
+# Per-machine Puppeteer config for the design doc scripts (see the write-design-doc skill)
+/design-doc/puppeteer-config.json

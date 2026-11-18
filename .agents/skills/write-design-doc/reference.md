@@ -136,13 +136,16 @@ won't follow relative image paths. Bake a self-contained companion of the source
 Run both from the plugin root.
 
 1. **Render diagrams to PNG**: `node design-doc/scripts/markdown-mermaid-to-png.ts <doc>.md`
-   replaces each inline ```mermaid fence with a rendered PNG (on a white background) under
-   `diagrams/`, writing `<doc>-rendered.md`. Old PNGs in `diagrams/` are deleted first, so it
-   always matches the doc. The script uses `mmdc` if it is installed, and otherwise runs it with
-   `npx -y -p @mermaid-js/mermaid-cli mmdc`, which downloads it on first use. If every
-   diagram fails with Chromium's "No usable sandbox" error (common on Ubuntu 23.10+, which
-   restricts unprivileged user namespaces), stop and tell the user rather than working around
-   it; the fix is a system setting, or an `mmdc` Puppeteer config they choose to use.
+   replaces each inline ```mermaid fence with a rendered PNG (on a white background) at
+   `diagrams/<doc>-NN.png`, writing `<doc>-rendered.md`. The doc's old PNGs are deleted first,
+   so they always match it. The script uses `mmdc` if it is installed, and otherwise runs the
+   version pinned in the script with `npx`, which downloads it on first use.
+
+   On Linux, if every diagram fails with Chrome's "No usable sandbox" error, stop and tell
+   the user. The fix is theirs to make: a git-ignored `design-doc/puppeteer-config.json`,
+   which the script uses automatically, containing
+   `{ "executablePath": "/opt/google/chrome/chrome" }` (or `{ "args": [ "--no-sandbox" ] }`
+   without an installed Chrome).
 2. **Embed images**: `node design-doc/scripts/markdown-convert-embedded-images.ts embed
    <doc>-rendered.md` inlines every `![](…)` image as a base64 data URI, writing
    `<doc>-embedded.md` — a single file that survives a paste into Google Docs. (`extract`
