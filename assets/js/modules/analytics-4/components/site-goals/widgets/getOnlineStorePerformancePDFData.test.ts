@@ -63,6 +63,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 				sessions: { current: 5600, previous: 5250 },
 				rate: { current: 70 / 5600, previous: 63 / 5250 },
 				engagementRate: { current: 0.36, previous: 0.39 },
+				engagementSessions: { current: 3400, previous: 3800 },
 			},
 			{
 				id: 'easy-digital-downloads',
@@ -71,6 +72,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 				sessions: { current: 5600, previous: 5250 },
 				rate: { current: 14 / 5600, previous: 21 / 5250 },
 				engagementRate: { current: 0.5, previous: 0.25 },
+				engagementSessions: { current: 500, previous: 500 },
 			},
 		] );
 	} );
@@ -113,6 +115,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 				sessions: { current: 5600, previous: 5250 },
 				rate: { current: 112 / 5600, previous: 105 / 5250 },
 				engagementRate: { current: 0.42, previous: 0.4 },
+				engagementSessions: { current: 5600, previous: 5250 },
 			},
 		] );
 	} );
@@ -134,6 +137,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 				sessions: { current: 5600, previous: 5250 },
 				rate: { current: 112 / 5600, previous: 105 / 5250 },
 				engagementRate: { current: 0.42, previous: 0.4 },
+				engagementSessions: { current: 5600, previous: 5250 },
 			},
 		] );
 	} );

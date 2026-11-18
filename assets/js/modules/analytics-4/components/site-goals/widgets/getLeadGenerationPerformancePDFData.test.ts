@@ -73,6 +73,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 				sessions: { current: 900, previous: 850 },
 				rate: { current: 36 / 900, previous: 17 / 850 },
 				engagementRate: { current: 0.4, previous: 0.3 },
+				engagementSessions: { current: 200, previous: 150 },
 			},
 			{
 				// A form with no title on the site falls back to its ID.
@@ -82,6 +83,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 				sessions: { current: 900, previous: 850 },
 				rate: { current: 18 / 900, previous: 17 / 850 },
 				engagementRate: { current: 0.6, previous: 0.5 },
+				engagementSessions: { current: 100, previous: 90 },
 			},
 		] );
 	} );
@@ -122,6 +124,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 				sessions: { current: 900, previous: 850 },
 				rate: { current: 54 / 900, previous: 34 / 850 },
 				engagementRate: { current: 0.45, previous: 0.42 },
+				engagementSessions: { current: 900, previous: 850 },
 			},
 		] );
 	} );
@@ -143,6 +146,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 				sessions: { current: 900, previous: 850 },
 				rate: { current: 54 / 900, previous: 34 / 850 },
 				engagementRate: { current: 0.45, previous: 0.42 },
+				engagementSessions: { current: 900, previous: 850 },
 			},
 		] );
 	} );
