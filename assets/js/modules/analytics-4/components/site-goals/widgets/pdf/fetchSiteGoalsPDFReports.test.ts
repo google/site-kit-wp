@@ -75,7 +75,7 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 		registry = createTestRegistry() as Registry;
 	} );
 
-	it( 'requests six reports, the three grouped and the three aggregated reports', async () => {
+	it( 'should request six reports, the three grouped and the three aggregated reports', async () => {
 		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
 
 		await fetchOnlineStorePDFReports( registry );
@@ -83,7 +83,7 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 		expect( fetchMock.calls( analyticsReportEndpoint ) ).toHaveLength( 6 );
 	} );
 
-	it( 'requests the aggregated reports alone when the grouped report options are null', async () => {
+	it( 'should request the aggregated reports alone when the grouped report options are null', async () => {
 		provideSiteGoalsPDFReports( {
 			aggregatedEventsReport: {
 				totals: buildAggregatedTotalsRows( [ '121' ], [ '111' ] ),

@@ -540,7 +540,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 	} );
 
 	describe( 'Sales rate getTileData', () => {
-		it( 'counts each session with a purchase once', async () => {
+		it( 'should count each session with a purchase once', async () => {
 			// 50 sessions with a purchase of 1,000 sessions, however many
 			// purchases each session holds.
 			const data = await loadTileWithReports( KM_ANALYTICS_SALES_RATE, [
@@ -667,7 +667,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			expect( data.value ).toBe( '180' );
 		} );
 
-		it( 'counts each session with any detected lead event once in the Form completion rate', async () => {
+		it( 'should count each session with any detected lead event once in the Form completion rate', async () => {
 			// 150 sessions hold the 180 lead events.
 			const keyActionSessionsReport = {
 				rows: [

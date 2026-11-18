@@ -163,7 +163,7 @@ describe( 'shapeSiteGoalsPDFData', () => {
 		} );
 	} );
 
-	it( 'computes the rate from the sessions with a Key action over the site sessions, not the event count or the group sessions', () => {
+	it( 'should compute the rate from the sessions with a Key action over the site sessions, not the event count or the group sessions', () => {
 		const groups = shapeSiteGoalsPDFData( {
 			eventsReport,
 			keyActionSessionsReport,

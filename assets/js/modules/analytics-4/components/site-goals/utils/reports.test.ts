@@ -56,7 +56,7 @@ const engagementReport = {
 } as unknown as Report;
 
 describe( 'getKeyActionRates', () => {
-	it( 'returns the share of site sessions with a Key action', () => {
+	it( 'should return the share of site sessions with a Key action', () => {
 		// 50 sessions each add 6 products to the cart: 300 events.
 		expect(
 			getKeyActionRates(
@@ -71,7 +71,7 @@ describe( 'getKeyActionRates', () => {
 		} );
 	} );
 
-	it( 'never returns a rate above 1', () => {
+	it( 'should never return a rate above 1', () => {
 		const { currentRate, previousRate } = getKeyActionRates(
 			keyActionSessionsReport( 1000, 800 ),
 			engagementReport
@@ -81,7 +81,7 @@ describe( 'getKeyActionRates', () => {
 		expect( previousRate ).toBe( 1 );
 	} );
 
-	it( 'returns a zero rate when there are no sessions', () => {
+	it( 'should return a zero rate when there are no sessions', () => {
 		expect( getKeyActionRates( {} as Report, {} as Report ) ).toEqual( {
 			currentRate: 0,
 			previousRate: 0,
@@ -91,7 +91,7 @@ describe( 'getKeyActionRates', () => {
 } );
 
 describe( 'processReports', () => {
-	it( 'returns the event counts and engagement values', () => {
+	it( 'should return the event counts and engagement values', () => {
 		const eventsReport = {
 			rows: [
 				eventRow( 'add_to_cart', 'date_range_0', 300 ),
@@ -108,7 +108,7 @@ describe( 'processReports', () => {
 		} );
 	} );
 
-	it( 'sums the counts of several lead events', () => {
+	it( 'should sum the counts of several lead events', () => {
 		const eventsReport = {
 			rows: [
 				eventRow( 'submit_lead_form', 'date_range_0', 100 ),
@@ -130,7 +130,7 @@ describe( 'processReports', () => {
 } );
 
 describe( 'getReportsToCheck', () => {
-	it( 'leaves out the reports the widget does not request', () => {
+	it( 'should leave out the reports the widget does not request', () => {
 		const eventsOptions = {
 			startDate: '2026-01-01',
 			endDate: '2026-01-28',

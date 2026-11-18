@@ -2120,7 +2120,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'computes the rate on a store tab from its sessions with a Key action out of all site sessions', async () => {
+	it( 'should compute the rate on a store tab from its sessions with a Key action out of all site sessions', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );

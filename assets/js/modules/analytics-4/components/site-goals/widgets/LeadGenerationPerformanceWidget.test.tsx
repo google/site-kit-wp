@@ -2145,7 +2145,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect( getByRole( 'tab', { name: /Contact/ } ) ).toBeInTheDocument();
 	} );
 
-	it( 'computes the rate on a form tab from its sessions with a Key action out of all site sessions', async () => {
+	it( 'should compute the rate on a form tab from its sessions with a Key action out of all site sessions', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
