@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Analytics_4;
 
 /**
  * Class for handling Key_Metrics.
@@ -113,13 +114,15 @@ class Key_Metrics implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.108.0
 	 * @since 1.113.0 Add keyMetricsSetupCompletedBy (id) instead of keyMetricsSetupCompleted boolean.
+	 * @since n.e.x.t Reports keyMetricsSetupIsWidgetAreaHidden as false when Analytics is connected.
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
 		$data['keyMetricsSetupCompletedBy']        = (int) $this->key_metrics_setup_completed_by->get();
-		$data['keyMetricsSetupIsWidgetAreaHidden'] = (bool) $this->key_metrics_setup_is_widget_area_hidden->get();
+		$data['keyMetricsSetupIsWidgetAreaHidden'] = (bool) $this->key_metrics_setup_is_widget_area_hidden->get()
+			&& ! apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
 
 		return $data;
 	}

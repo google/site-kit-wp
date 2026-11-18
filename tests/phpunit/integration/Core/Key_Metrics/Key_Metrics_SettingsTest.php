@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Tests\TestCase;
 
 class Key_Metrics_SettingsTest extends TestCase {
@@ -220,11 +221,38 @@ class Key_Metrics_SettingsTest extends TestCase {
 	}
 
 	public function test_key_metrics_setup_is_widget_area_hidden() {
+		$this->set_analytics_connected( false );
 		$this->key_metrics_setup_is_widget_area_hidden->set( true );
 
 		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
 
 		$this->assertArrayHasKey( 'keyMetricsSetupIsWidgetAreaHidden', $data, 'Inline base data should expose setup widget area hidden state.' );
 		$this->assertTrue( $data['keyMetricsSetupIsWidgetAreaHidden'], 'Inline base data should include stored setup widget area hidden state.' );
+	}
+
+	public function test_key_metrics_setup_is_widget_area_hidden__ignored_when_analytics_is_connected() {
+		$this->set_analytics_connected( true );
+		$this->key_metrics_setup_is_widget_area_hidden->set( true );
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertFalse( $data['keyMetricsSetupIsWidgetAreaHidden'], 'Inline base data should report the setup widget area as shown when Analytics is connected, whatever the stored value.' );
+	}
+
+	/**
+	 * Sets whether the `googlesitekit_is_module_connected` filter reports Analytics as connected.
+	 *
+	 * @param bool $is_connected Whether Analytics is connected.
+	 */
+	protected function set_analytics_connected( $is_connected ) {
+		remove_all_filters( 'googlesitekit_is_module_connected' );
+		add_filter(
+			'googlesitekit_is_module_connected',
+			function ( $connected, $slug ) use ( $is_connected ) {
+				return Analytics_4::MODULE_SLUG === $slug ? $is_connected : $connected;
+			},
+			10,
+			2
+		);
 	}
 }
