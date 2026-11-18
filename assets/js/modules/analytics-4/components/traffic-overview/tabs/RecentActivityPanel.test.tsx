@@ -462,7 +462,7 @@ describe( 'RecentActivityPanel', () => {
 			'googlesitekit-traffic-overview__recent-traffic-breakdown',
 		] );
 		expect(
-			screen.queryByRole( 'button', { name: 'See all recent posts' } )
+			screen.queryByRole( 'link', { name: 'See all recent posts' } )
 		).not.toBeInTheDocument();
 	} );
 
