@@ -1,7 +1,7 @@
 /**
- * ChipCheckmark component.
+ * WhatsNewEmptyState Component Stories.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,21 @@
 /**
  * Internal dependencies
  */
-import CheckMark from '@/svg/icons/check-2.svg';
+import { Story } from '@/js/types/Story';
+import WhatsNewEmptyState from './WhatsNewEmptyState';
 
-export function ChipCheckmark() {
+function Template() {
 	return (
-		<div className="mdc-chip__checkmark">
-			<CheckMark className="mdc-chip__checkmark-svg" />
+		<div className="googlesitekit-whats-new">
+			<WhatsNewEmptyState onClickEmpty={ () => {} } />
 		</div>
 	);
 }
+
+export const Default = Template.bind( {} ) as Story;
+Default.storyName = 'Default';
+
+export default {
+	title: 'Components/Feature Discovery/WhatsNewEmptyState',
+	component: WhatsNewEmptyState,
+};

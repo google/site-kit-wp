@@ -26,7 +26,7 @@ import { Link, useLocation } from 'react-router-dom';
  * WordPress dependencies
  */
 import { usePrevious } from '@wordpress/compose';
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -63,7 +63,9 @@ import {
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
 import AllServicesTab from './all-services/AllServicesTab';
 import FeatureDetailPanel from './detail/FeatureDetailPanel';
 import FeatureDiscoveryContent, {
@@ -147,6 +149,24 @@ const FeatureDiscoveryApp: FC = () => {
 
 	const breakpoint = useBreakpoint();
 	const location = useLocation();
+	const viewContext = useViewContext();
+
+	const handleTabChange = useCallback(
+		( index: number ) => {
+			const tab = FEATURE_DISCOVERY_TABS[ index ];
+
+			if ( ! tab ) {
+				return;
+			}
+
+			trackEvent(
+				`${ viewContext }_navigation`,
+				'tab_select',
+				tab.path.replace( /^\//, '' )
+			);
+		},
+		[ viewContext ]
+	);
 
 	const activeTabIndex = FEATURE_DISCOVERY_TABS.findIndex(
 		( { path } ) => path === location.pathname
@@ -191,6 +211,7 @@ const FeatureDiscoveryApp: FC = () => {
 								<TabBar
 									activeIndex={ activeIndex }
 									className="googlesitekit-tab-bar--start-aligned-high-contrast googlesitekit-feature-discovery__tab-bar"
+									handleActiveIndexUpdate={ handleTabChange }
 								>
 									{ FEATURE_DISCOVERY_TABS.map(
 										( { path, tabID, panelID, label } ) => (

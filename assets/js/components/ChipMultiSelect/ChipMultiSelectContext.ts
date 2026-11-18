@@ -21,7 +21,22 @@
  */
 import { createContext } from '@wordpress/element';
 
-const ChipMultiSelectContext = createContext( {} );
+/**
+ * Called when a chip is clicked, with the chip's ID and the selected state
+ * the click asks for: `true` to select the chip, `false` to deselect it.
+ */
+export type ChipMultiSelectToggleHandler = (
+	id: string,
+	isSelected: boolean
+) => void;
+
+export interface ChipMultiSelectContextValue {
+	onToggleChip: ChipMultiSelectToggleHandler;
+}
+
+const ChipMultiSelectContext = createContext< ChipMultiSelectContextValue >( {
+	onToggleChip: () => {},
+} );
 
 export const { Consumer, Provider } = ChipMultiSelectContext;
 
