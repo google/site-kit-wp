@@ -183,6 +183,7 @@ import {
 	decodeAmpersand,
 	splitCategories,
 } from '@/js/modules/analytics-4/utils';
+import { isZeroReport } from '@/js/modules/analytics-4/utils/is-zero-report';
 import { getPageReportURL } from '@/js/modules/analytics-4/utils/page-report-url';
 import {
 	getPagePaths,
@@ -2062,8 +2063,9 @@ export const KEY_METRICS_PDF_TILES = {
 						engagementReport || {}
 					);
 
-				// No rows means the report has no data, so don't render the tile.
-				if ( ! keyActionSessionsReport?.rows?.length ) {
+				// The report has no dimension, so GA4 returns a row of `0` for each
+				// period when there is no Key action. Check the values instead.
+				if ( isZeroReport( keyActionSessionsReport ) !== false ) {
 					return null;
 				}
 
@@ -2355,8 +2357,9 @@ export const KEY_METRICS_PDF_TILES = {
 						engagementReport || {}
 					);
 
-				// No rows means the report has no data, so don't render the tile.
-				if ( ! keyActionSessionsReport?.rows?.length ) {
+				// The report has no dimension, so GA4 returns a row of `0` for each
+				// period when there is no Key action. Check the values instead.
+				if ( isZeroReport( keyActionSessionsReport ) !== false ) {
 					return null;
 				}
 

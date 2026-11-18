@@ -583,6 +583,54 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			expect( data.value ).toBe( '5%' );
 			expect( data.subtext ).toBe( 'of 1,000 total sessions' );
 		} );
+
+		it( 'should not render the tile when no session has a purchase', async () => {
+			// With no dimension, GA4 still returns a row of `0` for each period.
+			const data = await loadTileWithReports( KM_ANALYTICS_SALES_RATE, [
+				{
+					rows: [
+						{
+							dimensionValues: [ { value: 'date_range_0' } ],
+							metricValues: [ { value: '0' } ],
+						},
+						{
+							dimensionValues: [ { value: 'date_range_1' } ],
+							metricValues: [ { value: '0' } ],
+						},
+					],
+					totals: [
+						{
+							dimensionValues: [ { value: 'date_range_0' } ],
+							metricValues: [ { value: '0' } ],
+						},
+						{
+							dimensionValues: [ { value: 'date_range_1' } ],
+							metricValues: [ { value: '0' } ],
+						},
+					],
+				},
+				{
+					totals: [
+						{
+							dimensionValues: [ { value: 'date_range_0' } ],
+							metricValues: [
+								{ value: '0.65' },
+								{ value: '1000' },
+							],
+						},
+						{
+							dimensionValues: [ { value: 'date_range_1' } ],
+							metricValues: [
+								{ value: '0.55' },
+								{ value: '800' },
+							],
+						},
+					],
+				},
+			] );
+
+			expect( data ).toBeNull();
+		} );
 	} );
 
 	describe( 'Generating leads headline getTileData', () => {
@@ -657,6 +705,51 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 
 			// 150 sessions with a lead event of 1,000 sessions, not 180 events.
 			expect( data.value ).toBe( '15%' );
+		} );
+
+		it( 'should not render the Form completion rate when no session has a lead event', async () => {
+			// With no dimension, GA4 still returns a row of `0` for each period.
+			const keyActionSessionsReport = {
+				rows: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '0' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '0' } ],
+					},
+				],
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '0' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '0' } ],
+					},
+				],
+			};
+			const engagementReport = {
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '0.65' }, { value: '1000' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '0.55' }, { value: '1000' } ],
+					},
+				],
+			};
+
+			const data = await loadLeadTile(
+				KM_ANALYTICS_FORM_COMPLETION_RATE,
+				[ keyActionSessionsReport, engagementReport ]
+			);
+
+			expect( data ).toBeNull();
 		} );
 
 		it( 'shows the site-wide Form completion engagement rate without needing a lead event', async () => {
