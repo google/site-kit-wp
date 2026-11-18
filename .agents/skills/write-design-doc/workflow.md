@@ -21,7 +21,7 @@ needs). It contains:
   phase.
 - **Current inputs** — which [preparation](#preparation) iteration of each kind is current,
   so later stages read the right one.
-- **Conventions** — a pointer to the `authoring-design-docs` skill.
+- **Conventions** — a pointer to the `write-design-doc` skill.
 
 ## Stages
 
