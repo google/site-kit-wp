@@ -423,12 +423,17 @@ class Insight_Payload_BuilderTest extends TestCase {
 
 	public function test_build__sends_a_conversion_rate_of_0_when_a_period_has_no_sessions() {
 		$this->report_rows = array(
-			'engagement'  => array(
+			'engagement'          => array(
 				array( 'date_range_0', '0.5', '1000' ),
 			),
-			'key_actions' => array(
+			'key_actions'         => array(
 				array( 'contact', 'date_range_0', '10' ),
 				array( 'contact', 'date_range_1', '4' ),
+			),
+			// Sessions with a key action in both periods, so the previous rate can only be `0` because the site has no sessions.
+			'key_action_sessions' => array(
+				array( 'date_range_0', '8' ),
+				array( 'date_range_1', '3' ),
 			),
 		);
 
