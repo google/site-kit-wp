@@ -24,6 +24,7 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
+import { FEATURE_DISCOVERY_VISITED_ITEM_SLUG } from '@/js/components/feature-discovery/constants';
 import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import Notifications from '@/js/components/notifications/Notifications';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -216,6 +217,32 @@ describe( 'FeatureDiscoveryCallout', () => {
 		expect(
 			queryByText( 'Unlock more Site Kit features' )
 		).not.toBeInTheDocument();
+	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active when the user has not visited the hub', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active once the user has visited the hub', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
+				] );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
 	} );
 
 	describe( 'GA event tracking', () => {
