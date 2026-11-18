@@ -117,11 +117,11 @@ export const LEAD_GENERATION_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {
 			...buildBreakdownReportRows( '(not set)', [ '5' ], [ '2' ] ),
 		],
 	},
-	// Fewer sessions than events, as a session can hold several form submissions.
+	// No more sessions than events, as a session can hold several form submissions.
 	groupedKeyActionSessionsReport: {
 		rows: [
 			...buildBreakdownReportRows( '12', [ '36' ], [ '17' ] ),
-			...buildBreakdownReportRows( '34', [ '18' ], [ '17' ] ),
+			...buildBreakdownReportRows( '34', [ '10' ], [ '8' ] ),
 			...buildBreakdownReportRows( '(not set)', [ '5' ], [ '2' ] ),
 		],
 	},
@@ -142,8 +142,10 @@ export const LEAD_GENERATION_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {
 	aggregatedEventsReport: {
 		totals: buildAggregatedTotalsRows( [ '57' ], [ '41' ] ),
 	},
+	// No more than the groups' sessions added up, as a session can hold
+	// submissions of several forms.
 	aggregatedKeyActionSessionsReport: {
-		totals: buildAggregatedTotalsRows( [ '54' ], [ '34' ] ),
+		totals: buildAggregatedTotalsRows( [ '48' ], [ '25' ] ),
 	},
 	aggregatedEngagementReport: {
 		totals: buildAggregatedTotalsRows(
