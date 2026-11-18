@@ -2231,6 +2231,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			within( rateTile ).getByText( 'of 1,000 total sessions' )
 		).toBeInTheDocument();
+		// 3% now against 10 of 800 sessions (1.25%) before.
+		expect( within( rateTile ).getByText( '+140%' ) ).toBeInTheDocument();
 		expect( getByText( '60' ) ).toBeInTheDocument();
 	} );
 

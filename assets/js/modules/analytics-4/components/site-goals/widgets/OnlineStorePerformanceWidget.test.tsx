@@ -2211,6 +2211,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			within( rateTile ).getByText( 'of 1,000 total sessions' )
 		).toBeInTheDocument();
+		// 5% now against 20 of 800 sessions (2.5%) before.
+		expect( within( rateTile ).getByText( '+100%' ) ).toBeInTheDocument();
 		expect( getByText( '300' ) ).toBeInTheDocument();
 	} );
 

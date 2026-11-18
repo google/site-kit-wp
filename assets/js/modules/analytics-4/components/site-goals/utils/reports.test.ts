@@ -60,12 +60,13 @@ describe( 'getKeyActionRates', () => {
 		// 50 sessions each add 6 products to the cart: 300 events.
 		expect(
 			getKeyActionRates(
-				keyActionSessionsReport( 50, 40 ),
+				keyActionSessionsReport( 50, 20 ),
 				engagementReport
 			)
 		).toEqual( {
 			currentRate: 0.05,
-			previousRate: 0.05,
+			// 20 of the previous period's 800 sessions.
+			previousRate: 0.025,
 			currentSessions: 1000,
 		} );
 	} );
