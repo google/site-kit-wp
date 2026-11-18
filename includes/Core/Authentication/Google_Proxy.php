@@ -565,6 +565,7 @@ class Google_Proxy {
 	 * Sends site fields to the proxy.
 	 *
 	 * @since 1.68.0
+	 * @since 1.192.0 Includes the `state` value that the proxy returns on every `oauth2callback` redirect.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
@@ -583,6 +584,8 @@ class Google_Proxy {
 					$this->get_metadata_fields(),
 					array(
 						'scope' => implode( ' ', $this->required_scopes ),
+						// Binds the authorization the proxy starts to the current user, like `OAuth_Client::get_authentication_url()`.
+						'state' => wp_create_nonce( OAuth_Client::STATE_NONCE_ACTION ),
 					)
 				),
 			)
