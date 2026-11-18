@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,8 +29,13 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { PERMISSION_READ_SHARED_MODULE_DATA } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import ModulePopularPagesWidgetGA4 from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import { RECENT_ACTIVITY_INTERACTION_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
@@ -53,9 +59,11 @@ import {
 } from '@tests/js/test-utils';
 import {
 	freezeFetch,
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserCapabilities,
+	provideUserInfo,
 } from '@tests/js/utils';
 import SeeAllRecentPostsLink from './SeeAllRecentPostsLink';
 
@@ -63,6 +71,13 @@ describe( 'SeeAllRecentPostsLink', () => {
 	let registry: WPDataRegistry;
 
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+
+	const widgetComponentProps = getWidgetComponentProps(
+		'analyticsModulePopularPagesGA4'
+	);
 
 	const getNavigationalScrollTopSpy = jest.spyOn(
 		scrollUtils,
@@ -107,6 +122,20 @@ describe( 'SeeAllRecentPostsLink', () => {
 			expect( fetchMock ).toHaveFetched( setExpirableItemTimersEndpoint )
 		);
 		await act( () => new Promise( ( resolve ) => setTimeout( resolve ) ) );
+	}
+
+	// The card's reports stay loading, as right after the dashboard loads.
+	// The card renders only the selected tab's table, and each table requests
+	// its own report, so up to two requests stay pending.
+	function provideContentCardWithLoadingReports() {
+		registry.dispatch( CORE_USER ).setReferenceDate( '2026-10-08' );
+		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
+		provideUserInfo( registry );
+		provideModuleRegistrations( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+		freezeFetch( reportEndpoint, { repeat: 2 } );
 	}
 
 	it( 'should render the link when the site has two or more recent posts', () => {
@@ -197,14 +226,20 @@ describe( 'SeeAllRecentPostsLink', () => {
 		expect( fetchMock ).not.toHaveFetched( postsEndpoint );
 	} );
 
-	it( 'should select the Latest content tab, set the URL hash, and scroll to the content section when clicked', async () => {
+	it( 'should select the Latest content tab, set the URL hash to `#content`, and scroll smoothly to the content card when clicked', async () => {
 		provideRecentContent(
 			registry,
 			[ LATEST_POST, EARLIER_POST ],
 			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
 		);
 
-		render( <SeeAllRecentPostsLink />, { registry } );
+		render(
+			<Fragment>
+				<SeeAllRecentPostsLink />
+				<div id="googlesitekit-content-card" />
+			</Fragment>,
+			{ registry }
+		);
 
 		fireEvent.click(
 			screen.getByRole( 'link', { name: 'See all recent posts' } )
@@ -215,7 +250,7 @@ describe( 'SeeAllRecentPostsLink', () => {
 		).toBe( 'googlesitekit-latest-content-tab' );
 		expect( global.location.hash ).toBe( '#content' );
 		expect( getNavigationalScrollTopSpy ).toHaveBeenCalledWith(
-			'#content',
+			'#googlesitekit-content-card',
 			'desktop'
 		);
 		expect( scrollToSpy ).toHaveBeenCalledWith( {
@@ -224,6 +259,86 @@ describe( 'SeeAllRecentPostsLink', () => {
 		} );
 
 		await waitForInteraction();
+	} );
+
+	it( "should move focus to the Latest content tab, and select it, when clicked while the content card's reports are still loading", async () => {
+		provideContentCardWithLoadingReports();
+		provideRecentContent(
+			registry,
+			[ LATEST_POST, EARLIER_POST ],
+			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+		);
+
+		render(
+			<Fragment>
+				<SeeAllRecentPostsLink />
+				<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />
+			</Fragment>,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+
+		const latestContentTab = screen.getByRole( 'tab', {
+			name: 'Latest content',
+		} );
+		const focusSpy = jest.spyOn( latestContentTab, 'focus' );
+
+		// A screen reader announces whether the tab is selected at the moment
+		// it gets focus, so the test records `aria-selected` then.
+		let ariaSelectedOnFocus: string | null = null;
+		latestContentTab.addEventListener( 'focus', () => {
+			ariaSelectedOnFocus =
+				latestContentTab.getAttribute( 'aria-selected' );
+		} );
+
+		fireEvent.click(
+			screen.getByRole( 'link', { name: 'See all recent posts' } )
+		);
+
+		await waitForInteraction();
+
+		expect( latestContentTab ).toHaveFocus();
+		expect( ariaSelectedOnFocus ).toBe( 'true' );
+		expect( latestContentTab ).toHaveAttribute( 'aria-selected', 'true' );
+		// JSDOM ignores `preventScroll`, so the spy checks the option.
+		expect( focusSpy ).toHaveBeenCalledWith( { preventScroll: true } );
+	} );
+
+	it( 'should scroll to the content card and move focus to the Latest content tab when Latest content is already selected', async () => {
+		provideContentCardWithLoadingReports();
+		provideRecentContent(
+			registry,
+			[ LATEST_POST, EARLIER_POST ],
+			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setActiveContentTab( 'googlesitekit-latest-content-tab' );
+
+		render(
+			<Fragment>
+				<SeeAllRecentPostsLink />
+				<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />
+			</Fragment>,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+
+		fireEvent.click(
+			screen.getByRole( 'link', { name: 'See all recent posts' } )
+		);
+
+		await waitForInteraction();
+
+		expect( getNavigationalScrollTopSpy ).toHaveBeenCalledWith(
+			'#googlesitekit-content-card',
+			'desktop'
+		);
+		expect( scrollToSpy ).toHaveBeenCalledWith( {
+			top: 100,
+			behavior: 'smooth',
+		} );
+		expect(
+			screen.getByRole( 'tab', { name: 'Latest content' } )
+		).toHaveFocus();
 	} );
 
 	it( 'should record an interaction when clicked', async () => {

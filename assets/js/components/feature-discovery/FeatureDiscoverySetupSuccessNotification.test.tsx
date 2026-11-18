@@ -24,12 +24,29 @@ import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	render,
+} from '@tests/js/test-utils';
 import FeatureDiscoverySetupSuccessNotification from './FeatureDiscoverySetupSuccessNotification';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { simulateAllIntersections } = mockIntersectionObserver();
+
+const EVENT_CATEGORY = `${ VIEW_CONTEXT_FEATURE_DISCOVERY }_feature-setup-success-notification`;
 
 const NOTIFICATION_ID = FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION;
 
@@ -59,6 +76,10 @@ describe( 'FeatureDiscoverySetupSuccessNotification', () => {
 				NOTIFICATION_ID,
 				DEFAULT_NOTIFICATIONS[ NOTIFICATION_ID ]
 			);
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render the success notice for the feature the user returned from', () => {
@@ -121,5 +142,59 @@ describe( 'FeatureDiscoverySetupSuccessNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 
 		dismissNotificationSpy.mockRestore();
+	} );
+
+	it( 'should track view_notification once, through the notification wrapper', () => {
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+			featureSlug: 'test-feature',
+			returnTab: WHATS_NEW_TAB_PATH,
+		} );
+
+		render( <NotificationWithComponentProps />, {
+			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+		} );
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+		// Mark the notification as viewed, as the wrapper's own observer does
+		// once it has been in view long enough, and bring the nested notice
+		// into view too.
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( useHasBeenViewed.getKey( NOTIFICATION_ID ), true );
+
+			simulateAllIntersections( true );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			EVENT_CATEGORY,
+			'view_notification',
+			'test-feature',
+			undefined
+		);
+	} );
+
+	it( 'should track dismiss_notification when dismissed', () => {
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+			featureSlug: 'test-feature',
+			returnTab: WHATS_NEW_TAB_PATH,
+		} );
+
+		const { getByRole } = render( <NotificationWithComponentProps />, {
+			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			EVENT_CATEGORY,
+			'dismiss_notification',
+			'test-feature'
+		);
 	} );
 } );

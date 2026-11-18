@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ElementType } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
@@ -24,23 +29,24 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Story } from '@/js/types/Story';
 import ChipMultiSelect from './ChipMultiSelect';
 import ChipMultiSelectItem from './ChipMultiSelectItem';
 
-function Template( { initialSelectedChips = {} } ) {
+interface StoryArgs {
+	initialSelectedChips?: Record< string, boolean >;
+}
+
+function Template( { initialSelectedChips = {} }: StoryArgs ) {
 	const [ selectedChips, setSelectedChips ] =
-		useState( initialSelectedChips );
+		useState< Record< string, boolean > >( initialSelectedChips );
 
 	return (
 		<ChipMultiSelect
 			onToggleChip={ ( id, isSelected ) => {
 				global.console.log( 'onToggleChip', id, isSelected );
 
-				const newSelectedChips = selectedChips[ id ]
-					? { ...selectedChips, [ id ]: ! selectedChips[ id ] }
-					: { ...selectedChips, [ id ]: true };
-
-				setSelectedChips( newSelectedChips );
+				setSelectedChips( { ...selectedChips, [ id ]: isSelected } );
 			} }
 		>
 			<ChipMultiSelectItem id="posts" selected={ selectedChips.posts }>
@@ -59,11 +65,11 @@ function Template( { initialSelectedChips = {} } ) {
 	);
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind( {} ) as Story< StoryArgs >;
 Default.storyName = 'Default';
 Default.scenario = {};
 
-export const WithSelectedChips = Template.bind( {} );
+export const WithSelectedChips = Template.bind( {} ) as Story< StoryArgs >;
 WithSelectedChips.storyName = 'With Selected Chips';
 WithSelectedChips.args = {
 	initialSelectedChips: {
@@ -78,9 +84,9 @@ export default {
 	title: 'Components/ChipMultiSelect',
 	component: ChipMultiSelect,
 	decorators: [
-		( Story ) => (
+		( StoryComponent: ElementType ) => (
 			<div className="googlesitekit-layout" style={ { padding: '24px' } }>
-				<Story />
+				<StoryComponent />
 			</div>
 		),
 	],

@@ -256,3 +256,71 @@ export function mockIntersectionObserver() {
 		},
 	};
 }
+
+/**
+ * Mocks the `ResizeObserver` API in jsdom and provides helpers to inspect
+ * observed elements and simulate size changes.
+ *
+ * Sets up in beforeAll, resets observer state in beforeEach, and restores in
+ * afterAll.
+ *
+ * @since n.e.x.t
+ *
+ * @return {{
+ *   getObservedElements: function(): Element[],
+ *   simulateResize: function(Element): void,
+ * }} Resize observer test helpers.
+ */
+export function mockResizeObserver() {
+	let oldResizeObserver;
+	let observers = [];
+
+	beforeAll( () => {
+		oldResizeObserver = global.ResizeObserver;
+
+		global.ResizeObserver = function MockResizeObserver( callback ) {
+			const instance = this;
+
+			this.observe = function observe( target ) {
+				observers.push( { callback, target, instance } );
+			};
+			this.unobserve = function unobserve( target ) {
+				observers = observers.filter(
+					( observer ) =>
+						observer.instance !== instance ||
+						observer.target !== target
+				);
+			};
+			this.disconnect = function disconnect() {
+				observers = observers.filter(
+					( observer ) => observer.instance !== instance
+				);
+			};
+		};
+	} );
+
+	beforeEach( () => {
+		observers = [];
+	} );
+
+	afterAll( () => {
+		if ( typeof oldResizeObserver === 'undefined' ) {
+			delete global.ResizeObserver;
+			return;
+		}
+
+		global.ResizeObserver = oldResizeObserver;
+	} );
+
+	return {
+		getObservedElements: () =>
+			observers.map( ( observer ) => observer.target ),
+		simulateResize: ( target ) => {
+			observers
+				.filter( ( observer ) => observer.target === target )
+				.forEach( ( { callback, instance } ) => {
+					callback( [ { target } ], instance );
+				} );
+		},
+	};
+}

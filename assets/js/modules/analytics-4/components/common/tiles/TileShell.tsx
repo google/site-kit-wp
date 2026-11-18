@@ -61,7 +61,7 @@ const TileShell: FC< TileShellProps > = ( {
 				<div className={ `${ baseClassName }__header` }>
 					<Typography
 						as={ titleAs }
-						type="title"
+						type="body"
 						size="small"
 						className={ `${ baseClassName }__title` }
 					>
