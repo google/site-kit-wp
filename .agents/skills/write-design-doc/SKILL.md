@@ -1,5 +1,5 @@
 ---
-name: authoring-design-docs
+name: write-design-doc
 description: >
   Author or edit a Site Kit design doc under `design-doc/`: the optional staged workflow
   (preparation notes, drafting, work estimates, refinement) with its output iterations, and
@@ -14,7 +14,7 @@ allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 
 The conventions below apply throughout a design doc, whichever section you are writing. What
 a specific feature requires lives in that feature's introduction and the sources it names, not
-in this skill. Two companion files next to this one (in `.agents/skills/authoring-design-docs/`)
+in this skill. Two companion files next to this one (in `.agents/skills/write-design-doc/`)
 hold material needed only for some tasks:
 
 - [workflow.md](workflow.md) — the feature introduction, the optional preparation and
