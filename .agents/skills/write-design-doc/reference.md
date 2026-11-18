@@ -114,8 +114,17 @@ they report:
 - **Every diagram renders**: `node design-doc/scripts/markdown-mermaid-to-png.ts --check "$DOC"`
   exits without errors. `--check` renders to a temporary directory and writes nothing next to
   the doc.
-- **No leftovers**: `grep -nE '\[COMMENT:|^\*[A-Z][^*]*\*\s*$' "$DOC"` finds no review markers
-  or template prompt text.
+- **No leftovers**: these find no review markers, template placeholders or template prompt
+  text. The second matches the template's own prompt lines exactly, except the Revision
+  history and Changes during engineering prompts, which stay:
+
+  ```sh
+  TPL=design-doc/sources/design-doc-template.md
+  grep -nE '\[COMMENT:|\\<Feature Name\\>|PersonPerson|question \\#[12]\*\*|Do xyz|Added x, y, z' "$DOC"
+  grep -nFxf <(grep -E '^\*[A-Z]' "$TPL" | grep -vE '^\*(While Google Docs|This section is intended)') "$DOC"
+  ```
+
+  Skip the second for a preparation note, which doesn't follow the template.
 - **Style**: reread against the [style guide](SKILL.md#style-guide) — concise, diagrams
   sparing, nothing obvious over-explained, no editing artefacts, US English.
 
