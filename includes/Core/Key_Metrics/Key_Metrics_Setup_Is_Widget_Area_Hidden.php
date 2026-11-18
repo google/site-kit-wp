@@ -15,6 +15,12 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for handling the Key Metrics setup widget area hidden state.
  *
+ * This site-wide flag hides Key Metrics during setup until Analytics is
+ * connected. It only applies while Analytics is not connected: once it is,
+ * `Key_Metrics::inline_js_base_data()` ignores it, so a value left over
+ * from an earlier sign-in never hides Key Metrics. It is not a user's
+ * preference to hide Key Metrics, and should not be reused as one.
+ *
  * @since 1.184.0
  * @access private
  * @ignore
