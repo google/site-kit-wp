@@ -131,8 +131,9 @@ class Insight_Payload_Builder {
 		$should_send_year_ago_counts = $this->should_send_year_ago_counts( $tab, $settings['propertyCreateTime'] ?? 0, $periods['year_ago_previous']['startDate'] );
 
 		$requests = array(
-			'engagement'  => $report_options->get_engagement_options(),
-			'key_actions' => $report_options->get_key_action_options( $goal_type, $custom_dimension ),
+			'engagement'          => $report_options->get_engagement_options(),
+			'key_actions'         => $report_options->get_key_action_options( $goal_type, $custom_dimension ),
+			'key_action_sessions' => $report_options->get_key_action_sessions_options( $goal_type, $custom_dimension ),
 		);
 
 		if ( $should_send_year_ago_counts ) {
@@ -155,12 +156,14 @@ class Insight_Payload_Builder {
 		// The engagement report has one row for each period, so each total is that period's rate.
 		$engagement_rates = $this->get_period_totals( $reports['engagement'], '', '', 'engagementRate' );
 		$sessions         = $this->get_period_totals( $reports['engagement'], '', '', 'sessions' );
+		// A session counts once here, however many key actions it holds.
+		$key_action_sessions = $this->get_period_totals( $reports['key_action_sessions'], $group_dimension, $tab, 'sessions' );
 
 		$entry = array(
 			'event_name'       => Conversion_Events_Provider::CATEGORY_LEAD === $goal_type ? 'generate_lead' : $report_options->get_primary_store_event(),
 			'month_start_date' => $periods['current']['startDate'],
-			'current'          => $this->build_period( $conversions['current'], $sessions['current'], $engagement_rates['current'] ),
-			'previous'         => $this->build_period( $conversions['previous'], $sessions['previous'], $engagement_rates['previous'] ),
+			'current'          => $this->build_period( $conversions['current'], $key_action_sessions['current'], $sessions['current'], $engagement_rates['current'] ),
+			'previous'         => $this->build_period( $conversions['previous'], $key_action_sessions['previous'], $sessions['previous'], $engagement_rates['previous'] ),
 		);
 
 		if ( $should_send_year_ago_counts ) {
@@ -313,20 +316,25 @@ class Insight_Payload_Builder {
 	/**
 	 * Builds the fields of one period.
 	 *
-	 * @since 1.192.0
+	 * The conversion rate is the share of the site's sessions with at least one key action, so it
+	 * never goes above 1.
 	 *
-	 * @param float $conversions     Key actions in the period.
-	 * @param float $sessions        Sessions of the whole site in the period.
-	 * @param float $engagement_rate Engagement rate of the whole site in the period.
+	 * @since 1.192.0
+	 * @since n.e.x.t Added the `$key_action_sessions` parameter.
+	 *
+	 * @param float $conversions         Key actions in the period.
+	 * @param float $key_action_sessions Sessions with at least one key action in the period.
+	 * @param float $sessions            Sessions of the whole site in the period.
+	 * @param float $engagement_rate     Engagement rate of the whole site in the period.
 	 * @return array The period's `conversions`, `conversion_rate`, `sessions` and `engagement_rate`.
 	 */
-	private function build_period( $conversions, $sessions, $engagement_rate ) {
+	private function build_period( $conversions, $key_action_sessions, $sessions, $engagement_rate ) {
 		$conversions = (int) $conversions;
 		$sessions    = (int) $sessions;
 
 		return array(
 			'conversions'     => $conversions,
-			'conversion_rate' => $sessions > 0 ? round( $conversions / $sessions, 4 ) : 0.0,
+			'conversion_rate' => $sessions > 0 ? round( (int) $key_action_sessions / $sessions, 4 ) : 0.0,
 			'sessions'        => $sessions,
 			'engagement_rate' => round( $engagement_rate, 4 ),
 		);

@@ -17,7 +17,11 @@
 /**
  * Internal dependencies
  */
-import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import {
+	Report,
+	ReportOptions,
+	ReportRow,
+} from '@/js/modules/analytics-4/datastore/types';
 
 /**
  * Creates a find callback for locating rows by date range slug at a specific dimension index.
@@ -94,9 +98,61 @@ function getSinglePrimaryCounts( eventsReport: Report ) {
 }
 
 /**
+ * Reads a report's totals as a current and previous row pair.
+ *
+ * The date range is the only dimension of the totals. A totals row without
+ * one counts as the current period.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Report} report Report whose totals hold one entry per dateRange.
+ * @return {{current: (ReportRow|undefined), previous: (ReportRow|undefined)}} Current and previous totals rows.
+ */
+export function getTotalsRows( report: Report | undefined ): {
+	current?: ReportRow;
+	previous?: ReportRow;
+} {
+	const totals = report?.totals ?? [];
+
+	return {
+		current: totals.find(
+			( row ) => row?.dimensionValues?.[ 0 ]?.value !== 'date_range_1'
+		),
+		previous: totals.find( makeFind( 'date_range_1', 0 ) ),
+	};
+}
+
+/**
+ * Returns the current and previous values of a metric from a report's totals.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Report} report      Report whose totals hold one entry per dateRange.
+ * @param {number} metricIndex Index of the metric value to read.
+ * @return {{current: number, previous: number}} Values for each date range.
+ */
+function getTotalsMetric( report: Report, metricIndex: number ) {
+	const { current, previous } = getTotalsRows( report );
+
+	return {
+		current:
+			parseFloat( current?.metricValues?.[ metricIndex ]?.value ?? '' ) ||
+			0,
+		previous:
+			parseFloat(
+				previous?.metricValues?.[ metricIndex ]?.value ?? ''
+			) || 0,
+	};
+}
+
+/**
  * Processes events and engagement reports into a set of derived metrics.
  *
+ * The Key action rate is not one of them: use `getKeyActionRates()`, which
+ * needs the sessions that hold a Key action event.
+ *
  * @since 1.179.0
+ * @since n.e.x.t Removed the rates, now returned by `getKeyActionRates()`.
  *
  * @param {Report}  eventsReport        Report containing event rows (rows keyed by eventName + dateRange).
  * @param {Report}  engagementReport    Report containing engagement totals (engagementRate + sessions).
@@ -104,7 +160,7 @@ function getSinglePrimaryCounts( eventsReport: Report ) {
  * @param {boolean} [options.aggregate] When true, sums eventCount across all matching rows (for
  *                                      multi-event lead generation). When false (default), reads
  *                                      a single matching row (for a single primary ecommerce event).
- * @return {Object} Derived metrics including rates, counts, and engagement values.
+ * @return {Object} Derived metrics including counts and engagement values.
  */
 export function processReports(
 	eventsReport: Report,
@@ -112,7 +168,6 @@ export function processReports(
 	options: { aggregate?: boolean } = {}
 ) {
 	const { aggregate = false } = options;
-	const { totals: engagementRows = [] } = engagementReport || {};
 
 	const { current: currentPrimaryCount, previous: previousPrimaryCount } =
 		aggregate
@@ -120,44 +175,68 @@ export function processReports(
 			: getSinglePrimaryCounts( eventsReport );
 
 	// engagementRate is metricValues[0], sessions is metricValues[1].
-	const currentEngagementRate =
-		parseFloat(
-			engagementRows?.find?.( makeFind( 'date_range_0', 0 ) )
-				?.metricValues?.[ 0 ]?.value ?? ''
-		) || 0;
-
-	const previousEngagementRate =
-		parseFloat(
-			engagementRows?.find?.( makeFind( 'date_range_1', 0 ) )
-				?.metricValues?.[ 0 ]?.value ?? ''
-		) || 0;
-
-	const currentSessions =
-		parseInt(
-			engagementRows?.find?.( makeFind( 'date_range_0', 0 ) )
-				?.metricValues?.[ 1 ]?.value ?? '',
-			10
-		) || 0;
-
-	const previousSessions =
-		parseInt(
-			engagementRows?.find?.( makeFind( 'date_range_1', 0 ) )
-				?.metricValues?.[ 1 ]?.value ?? '',
-			10
-		) || 0;
-
-	const currentRate =
-		currentSessions === 0 ? 0 : currentPrimaryCount / currentSessions;
-	const previousRate =
-		previousSessions === 0 ? 0 : previousPrimaryCount / previousSessions;
+	const { current: currentEngagementRate, previous: previousEngagementRate } =
+		getTotalsMetric( engagementReport, 0 );
+	const { current: currentSessions } = getTotalsMetric( engagementReport, 1 );
 
 	return {
-		currentRate,
-		previousRate,
 		currentPrimaryCount,
 		previousPrimaryCount,
 		currentSessions,
 		currentEngagementRate,
 		previousEngagementRate,
 	};
+}
+
+/**
+ * Returns the Key action rate: the share of the site's sessions that hold at least one Key action event.
+ *
+ * A session counts once in the Key action sessions report, however many Key
+ * action events it holds, so the rate never goes above 100%.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Report} keyActionSessionsReport Report containing the `sessions` that hold a Key action event.
+ * @param {Report} engagementReport        Unfiltered report containing engagement totals (engagementRate + sessions).
+ * @return {{currentRate: number, previousRate: number, currentSessions: number}} The current and previous rates, and the site's current sessions.
+ */
+export function getKeyActionRates(
+	keyActionSessionsReport: Report,
+	engagementReport: Report
+) {
+	const {
+		current: currentKeyActionSessions,
+		previous: previousKeyActionSessions,
+	} = getTotalsMetric( keyActionSessionsReport, 0 );
+	// sessions is metricValues[1] of the engagement report.
+	const { current: currentSessions, previous: previousSessions } =
+		getTotalsMetric( engagementReport, 1 );
+
+	return {
+		currentRate:
+			currentSessions === 0
+				? 0
+				: currentKeyActionSessions / currentSessions,
+		previousRate:
+			previousSessions === 0
+				? 0
+				: previousKeyActionSessions / previousSessions,
+		currentSessions,
+	};
+}
+
+/**
+ * Returns the report options a widget waits on, leaving out the reports it does not request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...(ReportOptions|null)} reportOptions Options of each report, or `null` when the widget does not request it.
+ * @return {ReportOptions[]} Options of the reports the widget requests.
+ */
+export function getReportsToCheck(
+	...reportOptions: Array< ReportOptions | null >
+): ReportOptions[] {
+	return reportOptions.filter( ( options ): options is ReportOptions =>
+		Boolean( options )
+	);
 }

@@ -31,12 +31,9 @@ import {
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	buildEngagementReportOptions,
-	buildPrimaryEventReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
-import {
-	ENUM_CONVERSION_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+	buildKeyActionSessionsReportOptions,
+} from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { fireEvent, render, waitFor, within } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -69,12 +66,15 @@ describe( 'FormCompletionRateWidget', () => {
 			.getDateRangeDates( { compare: true } );
 	}
 
-	function getPrimaryEventReportOptions() {
+	function getKeyActionSessionsReportOptions() {
 		const detectedLeadEvents = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getDetectedLeadEvents();
 
-		return buildPrimaryEventReportOptions( getDates(), detectedLeadEvents );
+		return buildKeyActionSessionsReportOptions(
+			getDates(),
+			detectedLeadEvents
+		);
 	}
 
 	function getEngagementReportOptions() {
@@ -82,7 +82,7 @@ describe( 'FormCompletionRateWidget', () => {
 	}
 
 	it( 'should render the loading state while resolving the reports', async () => {
-		// This widget requests two reports (primary event + engagement), so
+		// This widget requests two reports (Key action sessions + engagement), so
 		// the frozen fetch mock must cover both GET requests.
 		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
@@ -136,14 +136,15 @@ describe( 'FormCompletionRateWidget', () => {
 	it( 'should append a working "Learn more" link to the info tooltip', async () => {
 		provideSiteInfo( registry );
 
-		const primaryEventReportOptions = getPrimaryEventReportOptions();
+		const keyActionSessionsReportOptions =
+			getKeyActionSessionsReportOptions();
 		const engagementReportOptions = getEngagementReportOptions();
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport(
-				{ rows: [] },
-				{ options: primaryEventReportOptions }
+				{ totals: [] },
+				{ options: keyActionSessionsReportOptions }
 			);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -201,14 +202,15 @@ describe( 'FormCompletionRateWidget', () => {
 	);
 
 	it( 'should render zero values when there are no form completions or sessions in either period', async () => {
-		const primaryEventReportOptions = getPrimaryEventReportOptions();
+		const keyActionSessionsReportOptions =
+			getKeyActionSessionsReportOptions();
 		const engagementReportOptions = getEngagementReportOptions();
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport(
-				{ rows: [] },
-				{ options: primaryEventReportOptions }
+				{ totals: [] },
+				{ options: keyActionSessionsReportOptions }
 			);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -241,61 +243,27 @@ describe( 'FormCompletionRateWidget', () => {
 		expect( within( changeBadge ).getByText( '0%' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should sum form completions across every detected lead event into the rate, sessions subtext, and the change vs. the previous period', async () => {
-		const primaryEventReportOptions = getPrimaryEventReportOptions();
+	it( 'should render the share of sessions with any detected lead event, the sessions subtext, and the change vs. the previous period', async () => {
+		const keyActionSessionsReportOptions =
+			getKeyActionSessionsReportOptions();
 		const engagementReportOptions = getEngagementReportOptions();
 
-		// `provideLeadsWidgetTestRegistry()` detects three lead events, so the
-		// report has one row per event per date range; the rendered rate must
-		// be based on the sum across all of them, not just the first row found.
+		// `provideLeadsWidgetTestRegistry()` detects three lead events. The
+		// report counts each session holding any of them once.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
-				rows: [
+				totals: [
 					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.CONTACT },
-							{ value: 'date_range_0' },
-						],
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '180' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
 						metricValues: [ { value: '100' } ],
-					},
-					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.CONTACT },
-							{ value: 'date_range_1' },
-						],
-						metricValues: [ { value: '50' } ],
-					},
-					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM },
-							{ value: 'date_range_0' },
-						],
-						metricValues: [ { value: '50' } ],
-					},
-					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM },
-							{ value: 'date_range_1' },
-						],
-						metricValues: [ { value: '30' } ],
-					},
-					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
-							{ value: 'date_range_0' },
-						],
-						metricValues: [ { value: '30' } ],
-					},
-					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
-							{ value: 'date_range_1' },
-						],
-						metricValues: [ { value: '20' } ],
 					},
 				],
 			},
-			{ options: primaryEventReportOptions }
+			{ options: keyActionSessionsReportOptions }
 		);
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -319,7 +287,7 @@ describe( 'FormCompletionRateWidget', () => {
 		);
 		await waitForRegistry();
 
-		// currentRate = (100 + 50 + 30) form completions / 500 sessions = 36%.
+		// currentRate = 180 sessions with a lead event / 500 sessions = 36%.
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
 		).toHaveTextContent( '36%' );
@@ -328,7 +296,7 @@ describe( 'FormCompletionRateWidget', () => {
 			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
 		).toHaveTextContent( 'of 500 total sessions' );
 
-		// previousRate = (50 + 30 + 20) / 400 = 25%; change = 36% - 25% = +11 percentage points.
+		// previousRate = 100 / 400 = 25%; change = 36% - 25% = +11 percentage points.
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
 		).toHaveTextContent( '+11%' );

@@ -50,7 +50,7 @@ export interface UseAnalyticsReportsDataResult {
  * wiring: a single report (`TotalSalesWidget`, and every `MetricTileTable`
  * tile except `TopAuthorsDrivingSalesWidget` and the traffic channels rate
  * widgets), or a primary report paired with a secondary one compared via
- * `getFirstReportError`/`areReportsLoading` (`SalesRateWidget`'s primary
+ * `getFirstReportError`/`areReportsLoading` (`SalesRateWidget`'s Key action
  * event + engagement reports, `TopAuthorsDrivingSalesWidget`'s ranked +
  * site-wide-total reports, and the traffic channels rate widgets' ranked +
  * total sessions reports).

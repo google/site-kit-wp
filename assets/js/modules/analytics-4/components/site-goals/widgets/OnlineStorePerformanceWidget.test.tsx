@@ -51,12 +51,14 @@ import {
 	buildSiteGoalsEventCountReportOptions,
 	seedSiteGoalsEventCountReport,
 } from '@/js/modules/analytics-4/components/site-goals/test-utils';
+import { buildKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
@@ -116,6 +118,33 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			...( breakdownFilter ? { dimensionFilters: breakdownFilter } : {} ),
 			reportID: 'analytics-4_site-goals_engagementReportOptions',
 		};
+	}
+
+	/**
+	 * Adds the Key action sessions report for every ecommerce event with no
+	 * breakdown filter, so no test leaves the Key action in its loading state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	function receiveKeyActionSessionsReports() {
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+
+		[
+			ENUM_CONVERSION_EVENTS.PURCHASE,
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+		].forEach( ( eventName ) => {
+			provideAnalytics4MockReport(
+				registry,
+				buildKeyActionSessionsReportOptions(
+					dates,
+					eventName
+				) as ReportOptions
+			);
+		} );
 	}
 
 	function buildVisitorEngagementEventReportOptions(
@@ -805,6 +834,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		seedSiteGoalsEventCountReport( registry, 'ecommerce', '5' );
 
 		receiveKeyActionChartReports();
+		receiveKeyActionSessionsReports();
 	} );
 
 	it( 'renders WidgetNull when no ecommerce events are detected', async () => {
@@ -992,6 +1022,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		seedSiteGoalsEventCountReport( registry, 'ecommerce', '5' );
 		receiveKeyActionChartReports();
+		receiveKeyActionSessionsReports();
 
 		const { getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
@@ -1896,6 +1927,20 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		provideAnalytics4MockReport(
 			registry,
+			buildKeyActionSessionsReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				breakdownFilter
+			) as ReportOptions
+		);
+		// The Key action rate is out of all site sessions on every tab.
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		// The Engagement rate tile is scoped to the tab.
+		provideAnalytics4MockReport(
+			registry,
 			buildEngagementReportOptions( dates, breakdownFilter )
 		);
 		provideAnalytics4MockReport(
@@ -1972,6 +2017,100 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByRole( 'tab', { name: 'Other sources' } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'computes the rate on a store tab from its sessions with a Key action out of all site sessions', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( {
+			providerValues: [ 'woocommerce', 'easy-digital-downloads' ],
+		} );
+		const breakdownFilter = { [ PROVIDER_DIMENSION ]: 'woocommerce' };
+		seedTabbedReports( breakdownFilter );
+
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+
+		function totals( current: string[], previous: string[] ) {
+			return {
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: current.map( ( value ) => ( { value } ) ),
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: previous.map( ( value ) => ( {
+							value,
+						} ) ),
+					},
+				],
+			};
+		}
+
+		// 50 of the site's 1,000 sessions add 6 products each on this tab.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.PURCHASE },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: '300' } ],
+					},
+				],
+			},
+			{
+				options: buildPrimaryEventReportOptions(
+					dates,
+					ENUM_CONVERSION_EVENTS.PURCHASE,
+					breakdownFilter
+				),
+			}
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( totals( [ '50' ], [ '20' ] ), {
+				options: buildKeyActionSessionsReportOptions(
+					dates,
+					ENUM_CONVERSION_EVENTS.PURCHASE,
+					breakdownFilter
+				),
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( totals( [ '0.5', '1000' ], [ '0.5', '800' ] ), {
+				options: buildEngagementReportOptions( dates ),
+			} );
+		// The tab's own sessions must not be used for the rate.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( totals( [ '0.5', '200' ], [ '0.5', '100' ] ), {
+				options: buildEngagementReportOptions( dates, breakdownFilter ),
+			} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const rateTile = container.querySelector(
+			'.googlesitekit-site-goals-primary-action .googlesitekit-site-goals-tile'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		expect(
+			within( rateTile ).getByText( 'Sales rate' )
+		).toBeInTheDocument();
+		expect( within( rateTile ).getByText( '5%' ) ).toBeInTheDocument();
+		expect(
+			within( rateTile ).getByText( 'of 1,000 total sessions' )
+		).toBeInTheDocument();
+		expect( getByText( '300' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders the partial data badge on each section in the tabbed view', async () => {

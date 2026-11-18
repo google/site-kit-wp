@@ -111,6 +111,33 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		};
 	}
 
+	// The Key action sessions report shares the lead events report's dates
+	// and filters, and requests the sessions that hold any of those events.
+	function toKeyActionSessionsReportOptions(
+		leadEventsReportOptions: ReturnType<
+			typeof buildLeadEventsReportOptions
+		>
+	) {
+		const {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+			dimensionFilters,
+		} = leadEventsReportOptions as typeof leadEventsReportOptions &
+			Record< string, unknown >;
+
+		return {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+			metrics: [ { name: 'sessions' } ],
+			dimensionFilters,
+			reportID: 'analytics-4_goal-driver-reports_key-action-sessions',
+		};
+	}
+
 	function buildEngagementReportOptions(
 		dates: Record< string, unknown >,
 		breakdownFilter?: Record< string, unknown >
@@ -884,6 +911,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		const engagementReport = buildEngagementReportOptions( dates );
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { getByText, waitForRegistry } = render(
@@ -921,6 +952,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { container, getAllByText, getByText, waitForRegistry } = render(
@@ -992,6 +1027,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { container, waitForRegistry } = render(
@@ -1058,6 +1097,14 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 		provideAnalytics4MockReport(
 			registry,
+			toKeyActionSessionsReportOptions(
+				buildLeadEventsReportOptions( dates, [
+					ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				] )
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
 			buildEngagementReportOptions( dates )
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
@@ -1091,6 +1138,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { getByRole, waitForRegistry } = render(
@@ -1168,9 +1219,31 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ leadEventsReport ] );
 
+		// Some sessions hold both a contact and a generate_lead event, so the
+		// 50 events come from 40 sessions.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '40' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '36' } ],
+					},
+				],
+			},
+			{ options: toKeyActionSessionsReportOptions( leadEventsReport ) }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [
+				toKeyActionSessionsReportOptions( leadEventsReport ),
+			] );
+
 		// Provide engagement report with sessions=200 and engagementRate=0.60.
-		// currentSessions = 200 → rate = 50 / 200 = 25% (form completion).
-		// Using engagementRate=0.60 (60%) to differentiate from form completion rate (25%).
+		// Using engagementRate=0.60 (60%) to differentiate from form completion rate (20%).
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				totals: [
@@ -1190,14 +1263,16 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ engagementReport ] );
 
-		const { getByText, waitForRegistry } = render(
+		const { getByText, queryByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		// currentPrimaryCount = 30 + 20 = 50, currentSessions = 200 → rate = 25%.
-		expect( getByText( '25%' ) ).toBeInTheDocument();
+		// 40 of the 200 sessions hold a lead event → rate = 20%, not the
+		// 50 / 200 = 25% that counting every event would give.
+		expect( getByText( '20%' ) ).toBeInTheDocument();
+		expect( queryByText( '25%' ) ).not.toBeInTheDocument();
 		// Total form completions tile shows currentPrimaryCount = 50.
 		expect( getByText( '50' ) ).toBeInTheDocument();
 		expect(
@@ -1235,6 +1310,18 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ leadEventsReport ] );
+
+		const keyActionSessionsReport =
+			toKeyActionSessionsReportOptions( leadEventsReport );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ totals: [] },
+				{ options: keyActionSessionsReport }
+			);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ keyActionSessionsReport ] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -1275,6 +1362,11 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ leadEventsReport ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				toKeyActionSessionsReportOptions( leadEventsReport ),
+			] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ engagementReport ] );
@@ -1318,6 +1410,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		} );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { container, unmount, waitForRegistry } = render(
@@ -1363,6 +1459,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const goalDriverReportOptions = {
@@ -1439,6 +1539,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { getByText, waitForRegistry } = render(
@@ -1473,6 +1577,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { queryByText, waitForRegistry } = render(
@@ -1512,6 +1620,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { getByRole, waitForRegistry } = render(
@@ -1568,6 +1680,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions( leadEventsReport )
+		);
 		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { getByRole, waitForRegistry } = render(
@@ -1613,6 +1729,14 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			buildLeadEventsReportOptions( dates, [
 				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 			] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions(
+				buildLeadEventsReportOptions( dates, [
+					ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				] )
+			)
 		);
 		provideAnalytics4MockReport(
 			registry,
@@ -1716,6 +1840,22 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				breakdownFilter
 			)
 		);
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions(
+				buildLeadEventsReportOptions(
+					dates,
+					[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+					breakdownFilter
+				)
+			)
+		);
+		// The Key action rate is out of all site sessions on every tab.
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		// The Engagement rate tile is scoped to the tab.
 		provideAnalytics4MockReport(
 			registry,
 			buildEngagementReportOptions( dates, breakdownFilter )
@@ -1911,6 +2051,95 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect( getByRole( 'tab', { name: /Contact/ } ) ).toBeInTheDocument();
 	} );
 
+	it( 'computes the rate on a form tab from its sessions with a Key action out of all site sessions', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( { formIDs: [ '5' ] } );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		const breakdownFilter = { [ FORM_DIMENSION ]: '5' };
+		seedTabbedReports( breakdownFilter );
+
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+
+		function totals( current: string[], previous: string[] ) {
+			return {
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: current.map( ( value ) => ( { value } ) ),
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: previous.map( ( value ) => ( {
+							value,
+						} ) ),
+					},
+				],
+			};
+		}
+
+		const leadEventsReport = buildLeadEventsReportOptions(
+			dates,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			breakdownFilter
+		);
+
+		// 30 of the site's 1,000 sessions submit this form twice each.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: '60' } ],
+					},
+				],
+			},
+			{ options: leadEventsReport }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( totals( [ '30' ], [ '10' ] ), {
+				options: toKeyActionSessionsReportOptions( leadEventsReport ),
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( totals( [ '0.5', '1000' ], [ '0.5', '800' ] ), {
+				options: buildEngagementReportOptions( dates ),
+			} );
+		// The tab's own sessions must not be used for the rate.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( totals( [ '0.5', '200' ], [ '0.5', '100' ] ), {
+				options: buildEngagementReportOptions( dates, breakdownFilter ),
+			} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const rateTile = container.querySelector(
+			'.googlesitekit-site-goals-primary-action .googlesitekit-site-goals-tile'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		expect( within( rateTile ).getByText( '3%' ) ).toBeInTheDocument();
+		expect(
+			within( rateTile ).getByText( 'of 1,000 total sessions' )
+		).toBeInTheDocument();
+		expect( getByText( '60' ) ).toBeInTheDocument();
+	} );
+
 	it( 'renders the partial data badge on each section in the tabbed view', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -1953,6 +2182,14 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			buildLeadEventsReportOptions( otherTabDates, [
 				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 			] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions(
+				buildLeadEventsReportOptions( otherTabDates, [
+					ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				] )
+			)
 		);
 		provideAnalytics4MockReport(
 			registry,
@@ -2160,6 +2397,14 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 		provideAnalytics4MockReport(
 			registry,
+			toKeyActionSessionsReportOptions(
+				buildLeadEventsReportOptions( otherTabDates, [
+					ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				] )
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
 			buildEngagementReportOptions( otherTabDates )
 		);
 
@@ -2199,6 +2444,12 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		provideAnalytics4MockReport(
 			registry,
 			buildLeadEventsReportOptions( dates, [ 'generate_lead' ] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			toKeyActionSessionsReportOptions(
+				buildLeadEventsReportOptions( dates, [ 'generate_lead' ] )
+			)
 		);
 		provideAnalytics4MockReport(
 			registry,

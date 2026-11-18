@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/components/site-goals/utils/getDimensionFiltersForEvents';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 
 export interface KeyActionChartReportArgs {
