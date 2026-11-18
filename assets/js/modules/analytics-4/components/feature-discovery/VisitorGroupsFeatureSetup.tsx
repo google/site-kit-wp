@@ -35,17 +35,12 @@ import FeatureCard, {
 	FeatureCardProps,
 } from '@/js/components/feature-discovery/FeatureCard';
 import FeatureCTAButton from '@/js/components/feature-discovery/FeatureCTAButton';
-import {
-	CORE_FEATURE_DISCOVERY,
-	FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
-} from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import {
-	CORE_USER,
-	SURVEY_TRIGGER_MAX_TTL,
-} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	getCurrentFeatureDiscoveryTabPath,
 	setPendingSetup,
@@ -115,6 +110,8 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		) => void;
 	};
 	const { triggerSurvey } = useDispatch( CORE_USER );
+	const triggerInteractionSurvey =
+		useFeatureDiscoveryInteractionSurveyTrigger();
 
 	// Restores the tab the user set out from once they return from granting
 	// permissions.
@@ -181,12 +178,10 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 	const handleClick = useCallback( () => {
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
-		triggerSurvey( FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID, {
-			ttl: SURVEY_TRIGGER_MAX_TTL,
-		} );
+		triggerInteractionSurvey();
 
 		onEnableGroups();
-	}, [ onEnableGroups, slug, triggerSurvey ] );
+	}, [ onEnableGroups, slug, triggerInteractionSurvey, triggerSurvey ] );
 
 	const handleRetry = useCallback( () => {
 		clearActionError( 'setupFeature', [ slug ] );

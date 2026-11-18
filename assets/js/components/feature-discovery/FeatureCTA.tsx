@@ -26,17 +26,14 @@ import { FC, useCallback } from 'react';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import FeatureCTAButton from '@/js/components/feature-discovery/FeatureCTAButton';
+import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
 import {
 	CORE_FEATURE_DISCOVERY,
-	FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
-import {
-	CORE_USER,
-	SURVEY_TRIGGER_MAX_TTL,
-} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export interface FeatureCTAProps {
@@ -87,18 +84,24 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { setupFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
+	const triggerInteractionSurvey =
+		useFeatureDiscoveryInteractionSurveyTrigger();
 
 	const onClick = useCallback( async () => {
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
-		triggerSurvey( FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID, {
-			ttl: SURVEY_TRIGGER_MAX_TTL,
-		} );
+		triggerInteractionSurvey();
 
 		await setupFeature( slug );
 
 		onSetupComplete?.();
-	}, [ onSetupComplete, setupFeature, slug, triggerSurvey ] );
+	}, [
+		onSetupComplete,
+		setupFeature,
+		slug,
+		triggerInteractionSurvey,
+		triggerSurvey,
+	] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
 		return null;
