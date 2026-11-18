@@ -1,8 +1,19 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 'use strict';
 
+/**
+ * External dependencies
+ */
 const fs = require( 'fs' );
 const path = require( 'path' );
+
+const MIME_TYPES = {
+	jpg: 'image/jpeg',
+	jpeg: 'image/jpeg',
+	gif: 'image/gif',
+	svg: 'image/svg+xml',
+};
 
 function ensureDir( dirPath ) {
 	fs.mkdirSync( dirPath, { recursive: true } );
@@ -12,10 +23,14 @@ function ensureDir( dirPath ) {
  * Extracts embedded base64 images to external PNG files.
  *
  * Input:  ![alt text][label]  (body)
- *         [label]: <data:image/TYPE;base64,DATA>  (definitions)
+ * [label]: <data:image/TYPE;base64,DATA>  (definitions)
  * Output: ![alt text](<inputBase>/label.png)  +  <inputBase>/ folder containing
- *         the PNG files (named after the input file to avoid collisions when
- *         extracting multiple files into the same directory).
+ * the PNG files (named after the input file to avoid collisions when
+ * extracting multiple files into the same directory).
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} inputPath Path of the Markdown file to extract images from.
  */
 function extractImages( inputPath ) {
 	const inputDir = path.dirname( inputPath );
@@ -39,7 +54,8 @@ function extractImages( inputPath ) {
 
 	for ( const match of src.matchAll( DEF_RE ) ) {
 		const [ fullMatch, label, subtype, b64 ] = match;
-		const ext = subtype.toLowerCase() === 'jpeg' ? 'jpg' : subtype.toLowerCase();
+		const ext =
+			subtype.toLowerCase() === 'jpeg' ? 'jpg' : subtype.toLowerCase();
 		const filename = `${ label }.${ ext }`;
 		const outPath = path.join( imagesDir, filename );
 		const relativePath = `${ inputBase }/${ filename }`;
@@ -79,7 +95,9 @@ function extractImages( inputPath ) {
 	output = output.replace( /\n{3,}/g, '\n\n' ).trimEnd() + '\n';
 
 	fs.writeFileSync( outputPath, output, 'utf8' );
-	console.log( `\nDone. ${ count - errors.length }/${ count } images extracted.` );
+	console.log(
+		`\nDone. ${ count - errors.length }/${ count } images extracted.`
+	);
 	console.log( `Output: ${ outputPath }` );
 
 	if ( errors.length > 0 ) {
@@ -90,9 +108,13 @@ function extractImages( inputPath ) {
 /**
  * Embeds external image files as base64 data URIs using reference-style links.
  *
- * Input:  ![alt text](path/to/image.png)
- * Output: ![alt text][label]  (body)
- *         [label]: <data:image/png;base64,BASE64DATA>  (appended at end of file)
+ * Input:  ![alt text](path/to/image.png).
+ * Output: ![alt text][label] in the body, plus
+ * [label]: <data:image/png;base64,BASE64DATA> appended at the end of the file.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} inputPath Path of the Markdown file to embed images in.
  */
 function embedImages( inputPath ) {
 	const inputDir = path.dirname( inputPath );
@@ -104,9 +126,9 @@ function embedImages( inputPath ) {
 	// Matches inline image references; skips already-embedded data URIs.
 	const REF_RE = /!\[([^\]]*)\]\(([^)]+)\)/g;
 
-	// Build a cache of unique file paths to { label, dataUri }, assigning each
+	// Build a cache of unique file paths to { label, dataURI }, assigning each
 	// a unique label derived from the image filename stem.
-	const imageCache = new Map(); // imgPath → { label, dataUri }
+	const imageCache = new Map(); // imgPath → { label, dataURI }
 	const usedLabels = new Set();
 
 	for ( const match of src.matchAll( REF_RE ) ) {
@@ -114,14 +136,14 @@ function embedImages( inputPath ) {
 		if ( imgPath.startsWith( 'data:' ) || imageCache.has( imgPath ) ) {
 			continue;
 		}
-		let label = path.basename( imgPath, path.extname( imgPath ) );
+		const label = path.basename( imgPath, path.extname( imgPath ) );
 		let unique = label;
-		let i = 2;
+		let index = 2;
 		while ( usedLabels.has( unique ) ) {
-			unique = `${ label }-${ i++ }`;
+			unique = `${ label }-${ index++ }`;
 		}
 		usedLabels.add( unique );
-		imageCache.set( imgPath, { label: unique, dataUri: null } );
+		imageCache.set( imgPath, { label: unique, dataURI: null } );
 	}
 
 	let count = 0;
@@ -133,13 +155,11 @@ function embedImages( inputPath ) {
 		try {
 			const buffer = fs.readFileSync( absPath );
 			const ext = path.extname( imgPath ).slice( 1 ).toLowerCase();
-			const mime =
-				ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' :
-				ext === 'gif' ? 'image/gif' :
-				ext === 'svg' ? 'image/svg+xml' :
-				'image/png';
-			entry.dataUri = `data:${ mime };base64,${ buffer.toString( 'base64' ) }`;
-			definitions.push( `[${ entry.label }]: <${ entry.dataUri }>` );
+			const mime = MIME_TYPES[ ext ] || 'image/png';
+			entry.dataURI = `data:${ mime };base64,${ buffer.toString(
+				'base64'
+			) }`;
+			definitions.push( `[${ entry.label }]: <${ entry.dataURI }>` );
 			console.log( `  ${ imgPath } (${ buffer.length } bytes)` );
 			count++;
 		} catch ( err ) {
@@ -159,7 +179,9 @@ function embedImages( inputPath ) {
 			return fullMatch;
 		}
 		const entry = imageCache.get( imgPath );
-		return entry && entry.dataUri ? `![${ alt }][${ entry.label }]` : fullMatch;
+		return entry && entry.dataURI
+			? `![${ alt }][${ entry.label }]`
+			: fullMatch;
 	} );
 
 	// Append all image definitions at the end of the file.
@@ -168,7 +190,9 @@ function embedImages( inputPath ) {
 	}
 
 	fs.writeFileSync( outputPath, output, 'utf8' );
-	console.log( `\nDone. ${ count - errors.length }/${ count } images embedded.` );
+	console.log(
+		`\nDone. ${ count - errors.length }/${ count } images embedded.`
+	);
 	console.log( `Output: ${ outputPath }` );
 
 	if ( errors.length > 0 ) {
@@ -198,7 +222,9 @@ function main() {
 	} else if ( command === 'embed' ) {
 		embedImages( inputPath );
 	} else {
-		console.error( `Unknown command: ${ command }. Use 'extract' or 'embed'.` );
+		console.error(
+			`Unknown command: ${ command }. Use 'extract' or 'embed'.`
+		);
 		process.exit( 1 );
 	}
 }
