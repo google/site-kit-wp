@@ -743,7 +743,6 @@ const baseReducer = createReducer(
 		switch ( type ) {
 			case 'RESET_PUBLICATIONS':
 				state.publications = baseInitialState.publications;
-				state.publicationsByID = baseInitialState.publicationsByID;
 				break;
 
 			default:
