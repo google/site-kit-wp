@@ -40,7 +40,7 @@ export interface KeyFactorAttributeProps {
 	label: string;
 	/** The change in visits, negative for a drop. */
 	change: number;
-	/** The address the value links to, or `undefined` when it is not a link. */
+	/** The Site Kit page the value links to, such as a landing page's entity dashboard, or `undefined` when it is not a link. */
 	href?: string;
 }
 
@@ -69,14 +69,10 @@ const KeyFactorAttribute: FC< KeyFactorAttributeProps > = ( {
 			>
 				{ href ? (
 					// `noFlex` keeps the link inline, so the ellipsis cuts off
-					// its text as it cuts off a value that is not a link.
-					<Link
-						href={ href }
-						external
-						hideExternalIndicator
-						noFlex
-						secondary
-					>
+					// its text as it cuts off a value that is not a link. The
+					// link leads to another Site Kit dashboard, so it opens in
+					// the same tab.
+					<Link href={ href } noFlex secondary>
 						{ label }
 					</Link>
 				) : (

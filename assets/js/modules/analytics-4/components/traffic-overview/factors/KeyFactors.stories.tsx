@@ -27,6 +27,8 @@ import classnames from 'classnames';
 import { KEY_FACTORS } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
+import { provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import KeyFactors from './KeyFactors';
 import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from './placeholderKeyFactors';
 
@@ -104,24 +106,27 @@ function Template( {
 }: KeyFactorsStoryProps ) {
 	// The section's styles are scoped to the widget and the panel, so the
 	// story renders inside both. The placeholders' color comes from their
-	// pulse animation, which the VRT build only keeps when paused.
+	// pulse animation, which the VRT build only keeps when paused. A landing
+	// page links to its entity dashboard at the admin URL of the site info.
 	return (
-		<div
-			className={ classnames(
-				'googlesitekit-widget--analyticsTrafficOverview',
-				{ 'googlesitekit-vrt-animation-paused': pauseAnimation }
-			) }
-		>
-			<div className="googlesitekit-traffic-overview__panel">
-				<KeyFactors
-					keyFactors={ keyFactors }
-					loaded={ loaded }
-					insight={ insight }
-					daysInSelectedRange={ 28 }
-					referenceSiteURL={ REFERENCE_SITE_URL }
-				/>
+		<WithRegistrySetup func={ provideSiteInfo }>
+			<div
+				className={ classnames(
+					'googlesitekit-widget--analyticsTrafficOverview',
+					{ 'googlesitekit-vrt-animation-paused': pauseAnimation }
+				) }
+			>
+				<div className="googlesitekit-traffic-overview__panel">
+					<KeyFactors
+						keyFactors={ keyFactors }
+						loaded={ loaded }
+						insight={ insight }
+						daysInSelectedRange={ 28 }
+						referenceSiteURL={ REFERENCE_SITE_URL }
+					/>
+				</div>
 			</div>
-		</div>
+		</WithRegistrySetup>
 	);
 }
 

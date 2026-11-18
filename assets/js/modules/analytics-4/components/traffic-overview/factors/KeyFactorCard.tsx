@@ -30,6 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
@@ -37,6 +38,7 @@ import {
 	TYPE_LABEL,
 	TYPE_TITLE,
 } from '@/js/components/Typography/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils/getPageURL';
 import {
 	BenchmarkingKeyFactorAttribute,
@@ -56,12 +58,12 @@ export interface KeyFactorCardProps {
 	change: number;
 	/** The values inside the driver that carried its change, in the order to show them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
-	/** The site's URL, which a landing page's path links to. */
+	/** The site's URL, which a landing page's path is resolved against to link to the page's entity dashboard. */
 	referenceSiteURL?: string;
 }
 
 /**
- * Gets the address a landing page's path links to.
+ * Gets the URL of the page that a landing page attribute names.
  *
  * @since n.e.x.t
  *
@@ -71,7 +73,7 @@ export interface KeyFactorCardProps {
  * @param {string}      [referenceSiteURL] Optional. The site's URL.
  * @return {(string|undefined)} The page's URL, or `undefined` when the attribute is not a landing page on the site.
  */
-function getAttributeHref(
+function getAttributePageURL(
 	{ kind, label }: BenchmarkingKeyFactorAttribute,
 	referenceSiteURL?: string
 ): string | undefined {
@@ -124,6 +126,26 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 		): attribute is BenchmarkingKeyFactorAttribute & {
 			label: string;
 		} => !! attribute.label
+	);
+
+	// A landing page links to the page's entity dashboard, the Site Kit
+	// dashboard for that one page.
+	const attributeHrefs = useSelect(
+		( select: Select ) =>
+			namedAttributes.map( ( attribute ) => {
+				const pageURL = getAttributePageURL(
+					attribute,
+					referenceSiteURL
+				);
+
+				return pageURL
+					? select( CORE_SITE ).getAdminURL(
+							'googlesitekit-dashboard',
+							{ permaLink: pageURL }
+					  )
+					: undefined;
+			} ),
+		[ namedAttributes, referenceSiteURL ]
 	);
 
 	// A landing page's card names the site's homepage "Homepage", as its
@@ -182,10 +204,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 								change={
 									attribute.current - attribute.previous
 								}
-								href={ getAttributeHref(
-									attribute,
-									referenceSiteURL
-								) }
+								href={ attributeHrefs[ index ] }
 							/>
 						) ) }
 					</dl>

@@ -55,7 +55,7 @@ export interface KeyFactorsProps {
 	insight?: string | null;
 	/** Whether the generated summary is still on its way, which shows its placeholder. */
 	insightLoading?: boolean;
-	/** The site's URL, which a landing page's path links to. */
+	/** The site's URL, which a landing page's path is resolved against to link to the page's entity dashboard. */
 	referenceSiteURL?: string;
 }
 

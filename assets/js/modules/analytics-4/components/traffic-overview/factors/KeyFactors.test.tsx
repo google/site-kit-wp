@@ -27,6 +27,7 @@ import {
 	waitFor,
 	within,
 } from '@tests/js/test-utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import KeyFactors, { KeyFactorsProps } from './KeyFactors';
 
 const REFERENCE_SITE_URL = 'https://example.com';
@@ -94,7 +95,8 @@ const INSIGHT =
 
 /**
  * Renders the section with the cards of `REFERRAL` and `ORGANIC_SEARCH` and
- * the site's URL, over 28 days, unless the props say otherwise.
+ * the site's URL, over 28 days, unless the props say otherwise. The registry
+ * has the site info, whose admin URL a landing page's link is built on.
  *
  * @since n.e.x.t
  *
@@ -102,13 +104,17 @@ const INSIGHT =
  * @return {Object} The render result.
  */
 function renderKeyFactors( props: Partial< KeyFactorsProps > = {} ) {
+	const registry = createTestRegistry();
+	provideSiteInfo( registry );
+
 	return render(
 		<KeyFactors
 			keyFactors={ [ REFERRAL, ORGANIC_SEARCH ] }
 			daysInSelectedRange={ 28 }
 			referenceSiteURL={ REFERENCE_SITE_URL }
 			{ ...props }
-		/>
+		/>,
+		{ registry }
 	);
 }
 
@@ -274,21 +280,21 @@ describe( 'KeyFactors', () => {
 		] );
 	} );
 
-	it( 'should link a landing page to that page on the site, in a new tab', () => {
+	it( 'should link a landing page to the entity dashboard of that page on the site, in the same tab', () => {
 		const { getByRole } = renderKeyFactors();
 
 		const link = getByRole( 'link', {
-			name: '/ice-cream-is-good-for-your-health/ (opens in a new tab)',
+			name: '/ice-cream-is-good-for-your-health/',
 		} );
 
 		expect( link ).toHaveAttribute(
 			'href',
-			'https://example.com/ice-cream-is-good-for-your-health/'
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=https%3A%2F%2Fexample.com%2Fice-cream-is-good-for-your-health%2F'
 		);
-		expect( link ).toHaveAttribute( 'target', '_blank' );
+		expect( link ).not.toHaveAttribute( 'target' );
 	} );
 
-	it( 'should name a landing page that is the site’s homepage "Homepage", and link it to the homepage', () => {
+	it( 'should name a landing page that is the site’s homepage "Homepage", and link it to the homepage’s entity dashboard', () => {
 		const { getByRole, queryByText } = renderKeyFactors( {
 			keyFactors: [
 				{
@@ -298,9 +304,10 @@ describe( 'KeyFactors', () => {
 			],
 		} );
 
-		expect(
-			getByRole( 'link', { name: 'Homepage (opens in a new tab)' } )
-		).toHaveAttribute( 'href', 'https://example.com/' );
+		expect( getByRole( 'link', { name: 'Homepage' } ) ).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=https%3A%2F%2Fexample.com%2F'
+		);
 		expect( queryByText( '/' ) ).not.toBeInTheDocument();
 	} );
 
@@ -321,9 +328,10 @@ describe( 'KeyFactors', () => {
 		expect(
 			getByRole( 'heading', { level: 4, name: 'Homepage' } )
 		).toBeInTheDocument();
-		expect(
-			getByRole( 'link', { name: 'Homepage (opens in a new tab)' } )
-		).toHaveAttribute( 'href', 'https://example.com/blog/' );
+		expect( getByRole( 'link', { name: 'Homepage' } ) ).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=https%3A%2F%2Fexample.com%2Fblog%2F'
+		);
 	} );
 
 	it( 'should not link a value that is not a landing page', () => {
