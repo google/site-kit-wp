@@ -103,8 +103,9 @@ Capturing them well:
   image** — but confirm it visually, since metadata also includes hidden/overlapping layers.
 - **Render the specific inner node in isolation** to avoid the spotlight/overlay dimming a
   surrounding frame applies.
-- **No orphans.** Every saved screenshot must be referenced in the doc; delete any that end
-  up unreferenced so the folder matches the document.
+- **No orphans.** Every saved screenshot must be referenced by a document in its directory
+  (the design doc, or for `preparation/screenshots/`, one of the preparation notes); delete
+  any that end up unreferenced so the folder matches its documents.
 
 ## Diagrams
 
@@ -124,8 +125,10 @@ document is the **authoritative source** for each diagram.
   for Google Docs](reference.md#preparing-the-doc-for-google-docs)). They are named after the
   document and their order in it (`design-doc-01.png`, `design-doc-02.png`, …), so the
   preparation notes can share `preparation/diagrams/`, and a document's PNGs are replaced on
-  every render. Regenerate them from the doc rather than editing the PNGs or hand-maintaining
-  separate `.mermaid` source files, which drift out of sync.
+  every render. They are tracked in the workspace repository, so [re-render before
+  committing](workflow.md#managing-the-workspace-history) a change to a diagram. Regenerate
+  them from the doc rather than editing the PNGs or hand-maintaining separate `.mermaid`
+  source files, which drift out of sync.
 - **Validate every diagram before relying on it** with the script's `--check` mode (see the
   [self-check](reference.md#self-check)) — `mmdc` is finicky, state diagrams especially.
 

@@ -16,7 +16,11 @@ git init design-doc/workspace
 printf '#!/bin/sh\necho "design-doc/workspace is local-only: pushing is disabled." >&2\nexit 1\n' \
   > design-doc/workspace/.git/hooks/pre-push
 chmod +x design-doc/workspace/.git/hooks/pre-push
+printf '# Regenerated on every Google Docs export.\n*-rendered.md\n*-embedded.md\n' \
+  > design-doc/workspace/.gitignore
 ```
+
+If the workspace already exists without that `.gitignore`, add it.
 
 Then confirm the Site Kit repo ignores it: `git check-ignore design-doc/workspace` must print
 the path. If it prints nothing, stop and tell the user rather than writing into it — the
@@ -109,8 +113,20 @@ they report:
            <(grep -o '{#[^}]*}' "$DOC" | sed 's/{#\(.*\)}/\1/' | sort -u)
   ```
 
-- **No orphan screenshots**:
-  `(cd "$(dirname "$DOC")" && for f in screenshots/*; do grep -qF "$f" "$(basename "$DOC")" || echo "$f"; done)`
+- **No orphan screenshots, and no broken image links** (run in bash, since zsh errors on an
+  empty glob):
+
+  ```sh
+  bash -c 'cd "$(dirname "$1")" && D=$(basename "$1")
+    for f in screenshots/*; do [ -e "$f" ] && ! grep -qF "$f" --exclude="*-rendered.md" --exclude="*-embedded.md" -- *.md && echo "orphan: $f"; done
+    grep -oE "!\[[^]]*\]\([^)\" ]+" "$D" | sed "s/.*(//" | grep -vE "^[a-z]+:" |
+      while read -r f; do [ -e "$f" ] || echo "missing: $f"; done' _ "$DOC"
+  ```
+
+  A screenshot counts as used if any source `.md` file in the doc's directory references it,
+  since the preparation notes share `preparation/screenshots/`; the rendered and embedded
+  copies don't count. `diagrams/` PNGs are referenced
+  only by the rendered copies, so they aren't checked here.
 - **Every diagram renders**: `node design-doc/scripts/markdown-mermaid-to-png.ts --check "$DOC"`
   exits without errors. `--check` renders to a temporary directory and writes nothing next to
   the doc.
