@@ -88,3 +88,6 @@ tests/e2e/screenshots
 # Playwright
 tests/playwright/artifacts
 
+
+# Design doc sources fetched locally (e.g. the template, by the authoring-design-docs skill)
+/design-doc/sources/
