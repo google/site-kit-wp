@@ -215,9 +215,9 @@ class Setup {
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
-		// Hide Key Metrics until Analytics is connected. The option is
-		// site-wide, so leave it alone when Analytics is already connected,
-		// or another admin signing in would hide Key Metrics for everyone.
+		// Hide Key Metrics while Analytics is not connected yet. This flag
+		// applies to the whole site, so an admin signing in after Analytics
+		// is connected must not set it.
 		if ( ! apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG ) ) {
 			$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( new Options( $this->context ) );
 			$key_metrics_setup_is_widget_area_hidden->set( true );
