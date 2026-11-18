@@ -102,18 +102,26 @@ const IncompleteSetupReminderNotification: FC<
 	const { incompleteSetupReminder, slug } = feature || {};
 	const { description, title, tooltip } = incompleteSetupReminder || {};
 
+	const gaTrackingEventArgs = useMemo(
+		() => ( {
+			category: `${ viewContext }_${ INCOMPLETE_SETUP_REMINDER_NOTIFICATION_EVENT_ID }`,
+			label: slug,
+		} ),
+		[ slug, viewContext ]
+	);
+
 	const tooltipSettings = useMemo(
 		() => ( {
 			content: tooltip,
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
-			gaTrackingEventLabel: slug,
+			gaTrackingEventArgs,
+			id,
 			onDismiss: () =>
 				dismissItem( INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG ),
 			placement: 'bottom' as const,
 			target: `.googlesitekit-add-features-button, .${ FEATURES_MENU_BUTTON_CLASS }`,
-			tooltipSlug: INCOMPLETE_SETUP_REMINDER_NOTIFICATION_EVENT_ID,
 		} ),
-		[ dismissItem, slug, tooltip ]
+		[ dismissItem, gaTrackingEventArgs, id, tooltip ]
 	);
 
 	const showTooltip = useShowTooltip( tooltipSettings );
@@ -143,11 +151,6 @@ const IncompleteSetupReminderNotification: FC<
 	if ( ! description || ! resumeURL || ! slug || ! title ) {
 		return null;
 	}
-
-	const gaTrackingEventArgs = {
-		category: `${ viewContext }_${ INCOMPLETE_SETUP_REMINDER_NOTIFICATION_EVENT_ID }`,
-		label: slug,
-	};
 
 	return (
 		<Notification

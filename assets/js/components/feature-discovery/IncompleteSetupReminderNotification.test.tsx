@@ -354,7 +354,7 @@ describe( 'IncompleteSetupReminderNotification', () => {
 		it( 'should show the feature tooltip pointing to "Add features" on "Maybe later"', async () => {
 			const { getByRole } = render(
 				<IncompleteSetupReminderNotification { ...props } />,
-				{ registry }
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);
 
 			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
@@ -371,9 +371,11 @@ describe( 'IncompleteSetupReminderNotification', () => {
 				expect.objectContaining( {
 					isTooltipVisible: true,
 					content: feature.incompleteSetupReminder!.tooltip,
-					tooltipSlug:
-						'feature-discovery-incomplete-setup-notification',
-					gaTrackingEventLabel: slug,
+					id,
+					gaTrackingEventArgs: {
+						category: EVENT_CATEGORY,
+						label: slug,
+					},
 					dismissLabel: 'Got it',
 					target: '.googlesitekit-add-features-button, .googlesitekit-features-menu__button',
 				} )
