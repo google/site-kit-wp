@@ -798,7 +798,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				).toEqual( [ otherCTA ] );
 			} );
 
-			it( 'should not return the CTAs while a different publication is selected', async () => {
+			it( 'should return `undefined` after selecting a publication whose CTAs are not loaded', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublicationCTAs( [ cta ], params );
