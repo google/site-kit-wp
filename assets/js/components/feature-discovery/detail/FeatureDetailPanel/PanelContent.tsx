@@ -25,7 +25,7 @@ import { FC, Fragment } from 'react';
  * WordPress dependencies
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,6 +40,8 @@ import {
 } from '@/js/components/Typography/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import FeatureDetailDescription from './FeatureDetailDescription';
 import FeatureDetailRequirements from './FeatureDetailRequirements';
 import FeatureDetailScreenshots from './FeatureDetailScreenshots';
@@ -50,11 +52,13 @@ interface PanelContentProps {
 	feature: Feature;
 	initialActiveIndex?: number;
 	onClose: () => void;
+	onSetupComplete: () => void;
 }
 
 interface FeatureDetailPanelTab {
 	Component: FC< { feature: Feature } >;
 	tabID: string;
+	tabName: string;
 	tabPanelID: string;
 	label: string;
 }
@@ -63,8 +67,10 @@ const PanelContent: FC< PanelContentProps > = ( {
 	feature,
 	initialActiveIndex = 0,
 	onClose,
+	onSetupComplete,
 } ) => {
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 
 	const [ activeIndex, setActiveIndex ] = useState( initialActiveIndex );
 	const contentRef = useRef< HTMLDivElement >( null );
@@ -78,22 +84,44 @@ const PanelContent: FC< PanelContentProps > = ( {
 		{
 			Component: FeatureDetailDescription,
 			tabID: `${ baseID }-tab-description`,
+			tabName: 'description',
 			tabPanelID: `${ baseID }-panel-description`,
 			label: __( 'Description', 'google-site-kit' ),
 		},
 		{
 			Component: FeatureDetailRequirements,
 			tabID: `${ baseID }-tab-requirements`,
+			tabName: 'requirements',
 			tabPanelID: `${ baseID }-panel-requirements`,
 			label: __( 'Requirements', 'google-site-kit' ),
 		},
 		{
 			Component: FeatureDetailScreenshots,
 			tabID: `${ baseID }-tab-screenshots`,
+			tabName: 'screenshots',
 			tabPanelID: `${ baseID }-panel-screenshots`,
 			label: __( 'Screenshots', 'google-site-kit' ),
 		},
 	];
+
+	const handleActiveIndexUpdate = useCallback(
+		( index: number ) => {
+			if ( index === activeIndex ) {
+				return;
+			}
+
+			setActiveIndex( index );
+
+			trackEvent(
+				`${ viewContext }_feature-detail-panel`,
+				'tab_select',
+				`${ feature.slug }:${ tabs[ index ].tabName }`
+			);
+		},
+		// `tabs` only varies by instance ID, which is stable.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[ activeIndex, feature.slug, viewContext ]
+	);
 
 	const size = breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM;
 
@@ -107,7 +135,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 				<TabBar
 					activeIndex={ activeIndex }
 					className="googlesitekit-tab-bar--start-aligned-high-contrast googlesitekit-feature-details-panel__tab-bar"
-					handleActiveIndexUpdate={ setActiveIndex }
+					handleActiveIndexUpdate={ handleActiveIndexUpdate }
 				>
 					{ tabs.map( ( { label, tabID, tabPanelID } ) => (
 						<Tab
@@ -143,7 +171,11 @@ const PanelContent: FC< PanelContentProps > = ( {
 						</div>
 					)
 			) }
-			<PanelFooter feature={ feature } onClose={ onClose } />
+			<PanelFooter
+				feature={ feature }
+				onClose={ onClose }
+				onSetupComplete={ onSetupComplete }
+			/>
 		</Fragment>
 	);
 };

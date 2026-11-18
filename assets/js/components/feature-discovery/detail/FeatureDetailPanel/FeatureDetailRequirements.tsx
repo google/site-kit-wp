@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,6 +41,8 @@ import {
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 interface FeatureDetailRequirementsProps {
 	feature: Feature;
@@ -49,8 +51,18 @@ interface FeatureDetailRequirementsProps {
 const FeatureDetailRequirements: FC< FeatureDetailRequirementsProps > = ( {
 	feature,
 } ) => {
+	const viewContext = useViewContext();
+
 	const { serviceRequirements, setupList, documentationURL } =
 		feature.detail?.requirements || {};
+
+	const onClickLearnMore = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_feature-detail-panel`,
+			'click_learn_more_link',
+			feature.slug
+		);
+	}, [ feature.slug, viewContext ] );
 
 	return (
 		<div className="googlesitekit-feature-details-panel__text">
@@ -108,6 +120,7 @@ const FeatureDetailRequirements: FC< FeatureDetailRequirementsProps > = ( {
 						documentation: (
 							<Link
 								href={ documentationURL }
+								onClick={ onClickLearnMore }
 								external
 								hideExternalIndicator
 							/>
@@ -115,6 +128,7 @@ const FeatureDetailRequirements: FC< FeatureDetailRequirementsProps > = ( {
 						support: (
 							<Link
 								href="https://wordpress.org/support/plugin/google-site-kit/"
+								onClick={ onClickLearnMore }
 								external
 								hideExternalIndicator
 							/>
