@@ -45,6 +45,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 	within,
@@ -337,6 +338,7 @@ describe( 'FeatureDetailPanel', () => {
 	it( 'should keep the panel open during setup and close after it completes', async () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
@@ -406,6 +408,7 @@ describe( 'FeatureDetailPanel', () => {
 	it( 'should close and open an in-place feature’s panel over the hub, as the card does', async () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
