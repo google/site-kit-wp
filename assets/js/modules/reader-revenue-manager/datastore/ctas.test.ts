@@ -531,6 +531,40 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					otherParams.publicationID
 				);
 			} );
+
+			it( 'should associate a CTAs fetch error with the request identifiers', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( ctasEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTAs(
+					params.organizationID,
+					params.publicationID
+				);
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getErrorForSelector( 'getPublicationCTAs', [
+							params.organizationID,
+							params.publicationID,
+						] )
+				).toMatchObject( response );
+
+				expect( console ).toHaveErrored();
+			} );
 		} );
 
 		describe( 'getCTAs', () => {
