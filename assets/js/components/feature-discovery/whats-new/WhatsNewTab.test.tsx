@@ -49,6 +49,8 @@ import {
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { WEEK_IN_SECONDS } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -60,6 +62,9 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import WhatsNewTab from './WhatsNewTab';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const TEST_INITIAL_VERSION = '1.186.0';
 const TEST_OLDER_VERSION = '1.186.0';
@@ -644,6 +649,66 @@ describe( 'WhatsNewTab', () => {
 			expect( getListedTitles( container ) ).toEqual( [
 				'Unread older feature',
 			] );
+		} );
+	} );
+
+	describe( 'GA event tracking', () => {
+		const { simulateAllIntersections } = mockIntersectionObserver();
+
+		const expectedCategory = `${ VIEW_CONTEXT_FEATURE_DISCOVERY }_whats-new`;
+
+		beforeEach( () => {
+			global.history.replaceState( {}, '', '/' );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockClear();
+		} );
+
+		it( 'should track the view_empty_state event once the empty state is in view', async () => {
+			const { waitForRegistry } = render(
+				<HashRouter>
+					<WhatsNewTab />
+				</HashRouter>,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				expectedCategory,
+				'view_empty_state'
+			);
+
+			act( () => {
+				simulateAllIntersections( true );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expectedCategory,
+				'view_empty_state'
+			);
+		} );
+
+		it( 'should track the click_explore_features event when Explore features is clicked', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<HashRouter>
+					<WhatsNewTab />
+				</HashRouter>,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Explore features' } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expectedCategory,
+				'click_explore_features'
+			);
+			expect( global.location.hash ).toBe( '#/all-services' );
 		} );
 	} );
 } );

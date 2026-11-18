@@ -502,6 +502,7 @@ class Google_ProxyTest extends TestCase {
 				'return_uri',
 				'scope',
 				'service_version',
+				'state',
 				'supports',
 				'url',
 				'user_roles',
@@ -510,6 +511,7 @@ class Google_ProxyTest extends TestCase {
 			array_keys( $this->request_args['body'] ),
 			'Register site request body should contain all required parameters.'
 		);
+		$this->assertNotFalse( wp_verify_nonce( $this->request_args['body']['state'], OAuth_Client::STATE_NONCE_ACTION ), 'Register site request should send a `state` value that verifies for the current user.' );
 	}
 
 	public function test_sync_site_fields() {
@@ -540,6 +542,7 @@ class Google_ProxyTest extends TestCase {
 				'service_version',
 				'site_id',
 				'site_secret',
+				'state',
 				'supports',
 				'url',
 				'user_roles',

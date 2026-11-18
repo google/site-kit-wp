@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
+import useViewContext from '@/js/hooks/useViewContext';
 import FeatureDiscoveryCalloutGraphic from '@/svg/graphics/feature-discovery-callout.svg';
 
 export const FEATURE_DISCOVERY_CALLOUT_NOTIFICATION =
@@ -45,8 +46,14 @@ const FeatureDiscoveryCallout: FC< FeatureDiscoveryCalloutProps > = ( {
 	id,
 	Notification,
 } ) => {
+	const viewContext = useViewContext();
+
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_feature-discovery-callout-notification`,
+	};
+
 	return (
-		<Notification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<OverlayNotification
 				notificationID={ id }
 				className="googlesitekit-feature-discovery-callout"
@@ -65,6 +72,7 @@ const FeatureDiscoveryCallout: FC< FeatureDiscoveryCalloutProps > = ( {
 				dismissButton={ {
 					label: __( 'Got it', 'google-site-kit' ),
 				} }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
 			/>
 		</Notification>
 	);
