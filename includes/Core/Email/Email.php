@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Email;
 
+use Google\Site_Kit\Core\Util\URL;
 use WP_Error;
 
 /**
@@ -33,7 +34,8 @@ class Email {
 	 * Builds email headers with Site Kit branding.
 	 *
 	 * Fetches the filtered From email via wp_mail_from filter, falling back
-	 * to the default From address that wp_mail uses, overrides the From name
+	 * to the default From address that wp_mail uses (or the administration
+	 * email when that default is not a valid address), overrides the From name
 	 * to "Site Kit", adds a Reply-To header with the administration email,
 	 * and merges with caller-supplied headers.
 	 *
@@ -48,7 +50,7 @@ class Email {
 		$from_email         = apply_filters( 'wp_mail_from', $default_from_email );
 
 		if ( empty( $from_email ) || ! is_email( $from_email ) ) {
-			$from_email = $default_from_email;
+			$from_email = is_email( $default_from_email ) ? $default_from_email : get_option( 'admin_email' );
 		}
 
 		$site_kit_headers = array(
@@ -71,11 +73,7 @@ class Email {
 	 * @return string The "wordpress@" address on the network home URL's host, without a leading "www.".
 	 */
 	private function get_default_from_email() {
-		$host = wp_parse_url( network_home_url(), PHP_URL_HOST );
-
-		if ( ! is_string( $host ) ) {
-			$host = '';
-		}
+		$host = (string) URL::parse( network_home_url(), PHP_URL_HOST );
 
 		if ( 0 === strpos( $host, 'www.' ) ) {
 			$host = substr( $host, 4 );

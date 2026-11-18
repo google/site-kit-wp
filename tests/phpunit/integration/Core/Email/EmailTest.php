@@ -74,7 +74,9 @@ class EmailTest extends TestCase {
 	}
 
 	public function test_build_headers__strips_www_from_default_from_domain() {
-		update_option( 'home', 'https://www.example.com' );
+		$www_home_url = fn () => 'https://www.example.com';
+		add_filter( 'home_url', $www_home_url );
+		add_filter( 'network_home_url', $www_home_url );
 
 		$headers = $this->email->build_headers();
 
@@ -108,6 +110,17 @@ class EmailTest extends TestCase {
 		$headers = $this->email->build_headers();
 
 		$this->assertContains( 'From: Site Kit <wordpress@example.org>', $headers, 'Headers should fall back to the default From address when the filtered value is invalid.' );
+	}
+
+	public function test_build_headers__falls_back_to_admin_email_when_default_from_is_invalid() {
+		update_option( 'admin_email', 'owner@gmail.com' );
+		$localhost_url = fn () => 'http://localhost:8888';
+		add_filter( 'home_url', $localhost_url );
+		add_filter( 'network_home_url', $localhost_url );
+
+		$headers = $this->email->build_headers();
+
+		$this->assertContains( 'From: Site Kit <owner@gmail.com>', $headers, 'Headers should fall back to the administration email when the default From address is not a valid email.' );
 	}
 
 	public function test_build_headers__places_reply_to_after_from_and_before_caller_headers() {
