@@ -8,8 +8,7 @@ when preparing it for review.
 ## Setting up the workspace {#setting-up-the-workspace}
 
 The [workspace](SKILL.md#workspace) is a local-only git repository at `design-doc/workspace/`,
-ignored by the Site Kit repo (`/design-doc/workspace/` in `.gitignore`). Create it from the
-plugin root:
+ignored by the Site Kit repo. Create it from the plugin root:
 
 ```sh
 git init design-doc/workspace
@@ -18,9 +17,20 @@ printf '#!/bin/sh\necho "design-doc/workspace is local-only: pushing is disabled
 chmod +x design-doc/workspace/.git/hooks/pre-push
 printf '# Regenerated on every Google Docs export.\n*-rendered.md\n*-embedded.md\n' \
   > design-doc/workspace/.gitignore
+EXCLUDE=$(git rev-parse --git-path info/exclude)
+for p in /design-doc/workspace/ /design-doc/puppeteer-config.json; do
+  grep -qxF "$p" "$EXCLUDE" || { echo "$p" >> "$EXCLUDE" && echo "Added $p to $EXCLUDE"; }
+done
 ```
 
-If the workspace already exists without that `.gitignore`, add it.
+Site Kit's `.gitignore` ignores the same paths, but only on branches that include this skill.
+`.git/info/exclude` applies on every branch, so switching to an older branch doesn't expose the
+workspace to `git add` or `git clean`. If the workspace already exists without the
+`.gitignore` or the exclude entries, add them.
+
+`.git/info/exclude` is outside the workspace, so when the loop adds an entry, tell the user in
+one line which entries were added, why, and that deleting those lines undoes it. Say nothing
+if they were already there.
 
 Then confirm the Site Kit repo ignores it: `git check-ignore design-doc/workspace` must print
 the path. If it prints nothing, stop and tell the user rather than writing into it — the
@@ -30,29 +40,29 @@ workspace would otherwise show up as an embedded repository in Site Kit's `git s
 
 The canonical template is the Google Doc
 <https://docs.google.com/document/d/1ZW8HLsdqepJJBseMeLGTiHcF05ZLsqCiZVzNJxsA7jM/edit>. If the
-local copy at `design-doc/sources/design-doc-template.md` doesn't exist, fetch it before reading
-the context:
+local copy at `design-doc/workspace/sources/design-doc-template.md` doesn't exist, fetch it
+before reading the context:
 
 1. Export the doc as Markdown with the Google Drive connector (read or download file ID
    `1ZW8HLsdqepJJBseMeLGTiHcF05ZLsqCiZVzNJxsA7jM` as `text/markdown`). Without a connector, ask
    the user to download it via **File → Download → Markdown (.md)**.
-2. Save it to `design-doc/sources/design-doc-template.md` unchanged.
+2. Save it to `design-doc/workspace/sources/design-doc-template.md` unchanged.
 3. [Extract its embedded images](#extracting-embedded-images), if it has any.
 
 If the file already exists, use it as is; don't re-fetch it unless the user asks.
 
 ## Fetching the examples {#fetching-the-examples}
 
-Example design docs live in `design-doc/sources/examples/`. If the directory is missing or
-contains no examples, fetch some before reading the context:
+Example design docs live in `design-doc/workspace/sources/examples/`. If the directory is
+missing or contains no examples, fetch some before reading the context:
 
 1. Ask the user for the Google Doc links of one or more existing design docs to use as
    examples. Don't guess or search Drive for them.
 2. Export each doc as Markdown with the Google Drive connector (read or download its file ID —
    the part of the URL after `/d/` — as `text/markdown`). Without a connector, ask the user to
    download each via **File → Download → Markdown (.md)**.
-3. Save each one unchanged to `design-doc/sources/examples/`, named after the doc in kebab-case
-   (e.g. `key-metrics-design-doc.md`).
+3. Save each one unchanged to `design-doc/workspace/sources/examples/`, named after the doc
+   in kebab-case (e.g. `key-metrics-design-doc.md`).
 4. [Extract each one's embedded images](#extracting-embedded-images), if it has any.
 
 If examples already exist, use them as they are; don't re-fetch them or ask for more unless the
@@ -97,8 +107,8 @@ grep -q '^\[[^]]*\]: *<data:image/' "$F" \
 
 This writes `<name>-extracted.md`, with the images saved as files in a `<name>/` directory
 alongside, and leaves the original unchanged. From then on, read the `-extracted.md` copy
-instead of the original, and view an extracted image only when it matters. If the grep finds nothing, the file has no
-embedded images: read it directly.
+instead of the original, and view an extracted image only when it matters. If the grep finds
+nothing, the file has no embedded images: read it directly.
 
 ## Self-check {#self-check}
 
@@ -135,7 +145,7 @@ they report:
   history and Changes during engineering prompts, which stay:
 
   ```sh
-  TPL=design-doc/sources/design-doc-template.md
+  TPL=design-doc/workspace/sources/design-doc-template.md
   grep -nE '\[COMMENT:|\\<Feature Name\\>|PersonPerson|question \\#[12]\*\*|Do xyz|Added x, y, z' "$DOC"
   grep -nFxf <(grep -E '^\*[A-Z]' "$TPL" | grep -vE '^\*(While Google Docs|This section is intended)') "$DOC"
   ```

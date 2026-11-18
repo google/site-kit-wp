@@ -39,10 +39,11 @@ local-only git repository, with no remote and a `pre-push` hook that refuses eve
   (see [Managing the workspace history](workflow.md#managing-the-workspace-history)). Never
   commit design-doc files to the Site Kit repository.
 
-Only `design-doc/scripts/` (shared tooling) is tracked by Site Kit; `design-doc/sources/`
-(fetched template and examples) is ignored and shared by every feature. A feature's own
-documents (PRD, review docs) are [copied](reference.md#fetching-feature-documents) into
-`design-doc/workspace/<feature>/sources/`, so they are versioned with its work.
+Only `design-doc/scripts/` (shared tooling) is tracked by Site Kit. All source material lives
+in the workspace, versioned with the work: the fetched template and examples, shared by every
+feature, in `design-doc/workspace/sources/` (so no feature can be named `sources`), and a
+feature's own documents (PRD, review docs), [copied](reference.md#fetching-feature-documents)
+into `design-doc/workspace/<feature>/sources/`.
 
 ## Procedure
 
@@ -53,9 +54,9 @@ documents (PRD, review docs) are [copied](reference.md#fetching-feature-document
      missing, [write it first](workflow.md#feature-introduction)), and every resource it and
      the request point to, [fetching a local copy](reference.md#fetching-feature-documents) of
      any document that has none;
-   - the template (`design-doc/sources/design-doc-template.md`;
+   - the template (`design-doc/workspace/sources/design-doc-template.md`;
      [fetch it](reference.md#fetching-the-template) first if it doesn't exist) and, for
-     structure and depth, the example design docs in `design-doc/sources/examples/`
+     structure and depth, the example design docs in `design-doc/workspace/sources/examples/`
      ([fetch them](reference.md#fetching-the-examples) first if there are none);
    - the target document, if one already exists and you are editing it (not when [redoing a
      stage from scratch](workflow.md#authoring)).
