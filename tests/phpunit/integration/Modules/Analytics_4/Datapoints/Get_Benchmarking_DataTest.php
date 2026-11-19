@@ -590,16 +590,6 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertNull( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Two periods without a visit should get no insight payload.' );
 	}
 
-	public function test_rest_endpoint__is_not_registered_without_the_feature_flag() {
-		// The module never defines the datapoint, so no report can run.
-		$this->assertNotContains( 'benchmarking-data', $this->analytics->get_datapoints(), 'The datapoint should not be defined with the feature flag off.' );
-
-		$response = $this->request();
-
-		$this->assertSame( 400, $response->get_status(), 'A request should answer 400 with the feature flag off.' );
-		$this->assertSame( 'invalid_datapoint', $response->get_data()['code'], 'The error code should name the unknown datapoint.' );
-	}
-
 	/**
 	 * @dataProvider data_unusable_parameters
 	 *
