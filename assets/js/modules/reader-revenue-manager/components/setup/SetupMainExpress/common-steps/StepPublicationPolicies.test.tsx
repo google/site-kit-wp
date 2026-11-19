@@ -397,12 +397,18 @@ describe( 'StepPublicationPolicies', () => {
 			} );
 
 			/* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
-			const { publicationTosUrl, publicationPrivacyPolicyUrl } =
-				TEST_PUBLICATION_WITH_EXISTING_VALUES;
+			const {
+				organizationId,
+				publicationId,
+				publicationTosUrl,
+				publicationPrivacyPolicyUrl,
+			} = TEST_PUBLICATION_WITH_EXISTING_VALUES;
 
 			expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 				body: {
 					data: {
+						organizationID: organizationId,
+						publicationID: publicationId,
 						data: {
 							publicationTosUrl,
 							publicationPrivacyPolicyUrl,
