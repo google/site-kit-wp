@@ -27,7 +27,6 @@ import audienceSettings from './audience-settings';
 import audiences from './audiences';
 import baseModuleStore from './base';
 import benchmarking from './benchmarking';
-import benchmarkingInsight from './benchmarking-insight';
 import { MODULES_ANALYTICS_4 } from './constants';
 import containers from './containers';
 import conversionInsights from './conversion-insights';
@@ -56,7 +55,6 @@ const store = combineStores(
 	audienceSettings,
 	baseModuleStore,
 	benchmarking,
-	benchmarkingInsight,
 	moduleData,
 	containers,
 	keyEvents,

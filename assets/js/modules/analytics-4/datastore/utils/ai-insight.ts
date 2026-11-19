@@ -43,7 +43,7 @@ import { ErrorObject } from '@/js/util/errors';
  *
  * @since n.e.x.t
  */
-const AI_INSIGHT_DEADLINE = 60 * 1000;
+export const AI_INSIGHT_DEADLINE = 60 * 1000;
 
 /**
  * The time the store waits before it reads the operation that generates an
@@ -52,7 +52,7 @@ const AI_INSIGHT_DEADLINE = 60 * 1000;
  *
  * @since n.e.x.t
  */
-const AI_INSIGHT_POLL_INTERVAL = 2 * 1000;
+export const AI_INSIGHT_POLL_INTERVAL = 2 * 1000;
 
 /**
  * The time before the store asks again for an insight that the service
@@ -62,7 +62,7 @@ const AI_INSIGHT_POLL_INTERVAL = 2 * 1000;
  *
  * @since n.e.x.t
  */
-const AI_INSIGHT_RETRY_INTERVAL = 5 * 1000;
+export const AI_INSIGHT_RETRY_INTERVAL = 5 * 1000;
 
 /**
  * The shortest time the store waits before its next request, in
@@ -81,7 +81,7 @@ const AI_INSIGHT_MIN_WAIT = 1000;
  *
  * @since n.e.x.t
  */
-const AI_INSIGHT_OPERATION_LIFETIME = 2 * 60 * 1000;
+export const AI_INSIGHT_OPERATION_LIFETIME = 2 * 60 * 1000;
 
 /**
  * The statuses of a refused request for an insight that the store sends
