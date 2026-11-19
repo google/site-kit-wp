@@ -58,6 +58,87 @@ class EmailTest extends TestCase {
 		$this->assertContains( 'From: Site Kit <custom@example.com>', $headers, 'Headers should contain filtered From address.' );
 	}
 
+	public function test_build_headers__defaults_from_to_site_domain() {
+		update_option( 'admin_email', 'owner@gmail.com' );
+
+		$headers = $this->email->build_headers();
+
+		$this->assertSame(
+			array(
+				'From: Site Kit <wordpress@example.org>',
+				'Reply-To: owner@gmail.com',
+			),
+			$headers,
+			'Headers should use the site domain for From and the administration email for Reply-To.'
+		);
+	}
+
+	public function test_build_headers__strips_www_from_default_from_domain() {
+		$www_home_url = fn () => 'https://www.example.com';
+		add_filter( 'home_url', $www_home_url );
+		add_filter( 'network_home_url', $www_home_url );
+
+		$headers = $this->email->build_headers();
+
+		$this->assertContains( 'From: Site Kit <wordpress@example.com>', $headers, 'Headers should strip a leading "www." from the default From domain.' );
+	}
+
+	public function test_build_headers__passes_default_from_to_filter() {
+		$filter_default = null;
+		add_filter(
+			'wp_mail_from',
+			function ( $from_email ) use ( &$filter_default ) {
+				$filter_default = $from_email;
+				return $from_email;
+			}
+		);
+
+		$this->email->build_headers();
+
+		$this->assertSame( 'wordpress@example.org', $filter_default, 'The wp_mail_from filter should receive the default From address.' );
+	}
+
+	public function test_build_headers__falls_back_to_default_from_for_invalid_filtered_value() {
+		update_option( 'admin_email', 'owner@gmail.com' );
+		add_filter(
+			'wp_mail_from',
+			function () {
+				return 'not-an-email';
+			}
+		);
+
+		$headers = $this->email->build_headers();
+
+		$this->assertContains( 'From: Site Kit <wordpress@example.org>', $headers, 'Headers should fall back to the default From address when the filtered value is invalid.' );
+	}
+
+	public function test_build_headers__falls_back_to_admin_email_when_default_from_is_invalid() {
+		update_option( 'admin_email', 'owner@gmail.com' );
+		$localhost_url = fn () => 'http://localhost:8888';
+		add_filter( 'home_url', $localhost_url );
+		add_filter( 'network_home_url', $localhost_url );
+
+		$headers = $this->email->build_headers();
+
+		$this->assertContains( 'From: Site Kit <owner@gmail.com>', $headers, 'Headers should fall back to the administration email when the default From address is not a valid email.' );
+	}
+
+	public function test_build_headers__places_reply_to_after_from_and_before_caller_headers() {
+		update_option( 'admin_email', 'owner@gmail.com' );
+
+		$headers = $this->email->build_headers( array( 'Cc: test@example.com' ) );
+
+		$this->assertSame(
+			array(
+				'From: Site Kit <wordpress@example.org>',
+				'Reply-To: owner@gmail.com',
+				'Cc: test@example.com',
+			),
+			$headers,
+			'Headers should be ordered From, Reply-To, then caller headers.'
+		);
+	}
+
 	public function test_send() {
 		$this->skip_if_pre_wp_mail_unsupported();
 

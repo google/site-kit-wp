@@ -30,6 +30,7 @@ import {
 import {
 	requireCanActivateModule,
 	requireItemDismissed,
+	requireModuleAccess,
 	requireModuleActive,
 	requireModuleConnected,
 	requireModuleNotConnected,
@@ -43,7 +44,9 @@ import {
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	ExpressSetupCTABannerSurvey,
 	PolicyViolationNotification,
 	RRMSetupSuccessSubtleNotification,
 	ReaderRevenueManagerSetupCTABanner,
@@ -58,6 +61,7 @@ import RRMIntroductoryOverlayNotification, {
 } from '@/js/modules/reader-revenue-manager/components/dashboard/RRMIntroductoryOverlayNotification';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_EXPRESS_SETUP_NOTIFICATION_IDS,
 	RRM_FEATURE_DISCOVERY_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION_ID,
 	RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION_ID,
 	RRM_FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION_ID,
@@ -76,6 +80,7 @@ import {
 	requirePublicationOnboardingState,
 } from '@/js/modules/reader-revenue-manager/data-requirements';
 import {
+	EXPRESS_SETUP_CTAS,
 	EXTREME_POLICY_VIOLATION_STATES,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	MODULES_READER_REVENUE_MANAGER,
@@ -234,6 +239,23 @@ export const NOTIFICATIONS = {
 		),
 		isDismissible: true,
 		dismissRetries: 1,
+	},
+	[ RRM_EXPRESS_SETUP_NOTIFICATION_IDS[ EXPRESS_SETUP_CTAS.SURVEY ] ]: {
+		Component: ExpressSetupCTABannerSurvey,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		featureFlag: [ 'rrmExpressSetup', 'rrmSurveyCTA' ],
+		checkRequirements: asyncRequireAll(
+			requireModuleNotConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			requireCanActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			// The survey setup records responses in the connected Analytics
+			// property, so the user must be able to access it.
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			requireModuleAccess( MODULE_SLUG_ANALYTICS_4 )
+		),
+		isDismissible: true,
 	},
 	[ RRM_SETUP_SUCCESS_NOTIFICATION_ID ]: {
 		Component: RRMSetupSuccessSubtleNotification,

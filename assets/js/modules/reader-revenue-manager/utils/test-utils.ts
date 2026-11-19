@@ -68,9 +68,17 @@ export function providePublication(
 
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetPublication( publication );
+		.receiveGetPublicationByID( publication, {
+			/* eslint-disable sitekit/acronym-case */
+			organizationID: publication.organizationId,
+			publicationID: publication.publicationId,
+			/* eslint-enable sitekit/acronym-case */
+		} );
 
-	registry
-		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.finishResolution( 'getPublication', [] );
+	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).finishResolution(
+		'getPublicationByID',
+		/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+		[ publication.organizationId, publication.publicationId ]
+		/* eslint-enable sitekit/acronym-case */
+	);
 }

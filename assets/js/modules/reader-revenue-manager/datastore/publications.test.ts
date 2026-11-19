@@ -35,14 +35,17 @@ import { setUsingCache } from 'googlesitekit-api';
 import { enabledFeatures } from '@/js/features';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { createTestRegistryWithFeatures } from '@tests/js/feature-flag-utils';
 import {
 	createTestRegistry,
+	freezeFetch,
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import {
@@ -85,6 +88,21 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		registry = createTestRegistry();
 		provideUserInfo( registry );
 	} );
+
+	/**
+	 * Connects a publication by receiving it as the module settings.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} settings Settings to receive.
+	 * @return {void}
+	 */
+	function connectPublication( settings: Record< string, unknown > ) {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( settings );
+	}
 
 	describe( 'actions', () => {
 		beforeEach( () => {
@@ -178,14 +196,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				select.getPublication();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
-
-				expect(
-					select.hasFinishedResolution( 'getPublication', [] )
-				).toBe( true );
+				await waitForDefaultTimeouts();
 
 				expect( select.getPublication() ).toBeUndefined();
 
@@ -210,7 +221,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				).getPublicationByID(
+					// eslint-disable-next-line sitekit/acronym-case
+					publication.organizationId,
+					// eslint-disable-next-line sitekit/acronym-case
+					publication.publicationId
+				);
 
 				expect( select.getPublication() ).toEqual( publication );
 				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
@@ -237,20 +253,26 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.getPublications()
 				).toEqual( [ existing, publication ] );
 
+				connectPublication( {
+					organizationID: publication.organizationId,
+					publicationID: publication.publicationId,
+				} );
+
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication( {
-							publicationID: publication.publicationId,
-						} )
+						.getPublication()
 				).toEqual( publication );
 
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication( {
-					publicationID: publication.publicationId,
-				} );
+				).getPublicationByID(
+					// eslint-disable-next-line sitekit/acronym-case
+					publication.organizationId,
+					// eslint-disable-next-line sitekit/acronym-case
+					publication.publicationId
+				);
 
 				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
 			} );
@@ -283,6 +305,44 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 		} );
 
+		describe( 'refreshPublication', () => {
+			const publication = fixtures.publications[ 0 ];
+
+			it( 'should request the publication in the settings again', async () => {
+				providePublication( registry, publication );
+
+				fetchMock.getOnce( publicationEndpoint, {
+					body: publication,
+					status: 200,
+				} );
+
+				const { error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.refreshPublication();
+
+				expect( error ).toBeUndefined();
+				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
+					query: {
+						organizationID: publication.organizationId,
+						publicationID: publication.publicationId,
+						_locale: 'user',
+					},
+				} );
+			} );
+
+			it( 'should send no request when no publication is connected', async () => {
+				connectPublication( { publicationID: '' } );
+
+				expect(
+					await registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.refreshPublication()
+				).toEqual( {} );
+
+				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
+			} );
+		} );
+
 		describe( 'updatePublication', () => {
 			const params = {
 				organizationID: 'organization-1',
@@ -305,33 +365,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.updatePublication( {
-							organizationID: params.organizationID,
-							publicationID: params.publicationID,
-						} )
+						.updatePublication( {} )
 				).toThrow( 'data is required and must be a non-empty object.' );
-
-				expect( () =>
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.updatePublication( {
-							organizationID: '',
-							data: params.data,
-						} )
-				).toThrow(
-					'organizationID must be a non-empty string when provided.'
-				);
-
-				expect( () =>
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.updatePublication( {
-							publicationID: '',
-							data: params.data,
-						} )
-				).toThrow(
-					'publicationID must be a non-empty string when provided.'
-				);
 			} );
 
 			it( 'should call the update publication endpoint', async () => {
@@ -344,25 +379,65 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					status: 200,
 				} );
 
+				connectPublication( {
+					organizationID: params.organizationID,
+					publicationID: params.publicationID,
+				} );
+
 				const { response, error } = await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.updatePublication( params );
+					.updatePublication( { data: params.data } );
 
 				expect( error ).toBeUndefined();
 				expect( response ).toEqual( publication );
+
+				// The identifiers come from the settings rather than the caller.
 				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 					body: { data: params },
 				} );
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication( params )
+						.getPublication()
 				).toEqual( publication );
+			} );
+
+			it( 'should refresh the publication in the publications list', async () => {
+				// The listed publication has yet to accept the terms.
+				const publication = {
+					...fixtures.publications[ 0 ],
+					publicationId: params.publicationID,
+					rrmProduct: { tosAcceptance: { userAccepted: false } },
+				};
+
+				const updatedPublication = {
+					...publication,
+					rrmProduct: params.data.rrmProduct,
+				};
+
+				fetchMock.postOnce( publicationEndpoint, {
+					body: updatedPublication,
+					status: 200,
+				} );
+
+				connectPublication( {
+					organizationID: params.organizationID,
+					publicationID: params.publicationID,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [ publication ] );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updatePublication( { data: params.data } );
+
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublications()
-				).toContainEqual( publication );
+				).toEqual( [ updatedPublication ] );
 			} );
 		} );
 
@@ -427,6 +502,47 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingState()
 				).toEqual( PUBLICATION_ONBOARDING_STATES.UNSPECIFIED );
+			} );
+
+			it( 'should update the stored publication when it is not in the publications list', async () => {
+				const publication = {
+					...fixtures.publications[ 0 ],
+					onboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+				};
+
+				fetchMock.postOnce( syncOnboardingStateEndpoint, {
+					body: {
+						publicationID: publication.publicationId,
+						publicationOnboardingState:
+							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+					},
+					status: 200,
+				} );
+
+				const params = {
+					organizationID: publication.organizationId,
+					publicationID: publication.publicationId,
+				};
+
+				connectPublication( params );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationByID( publication, params );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.syncPublicationOnboardingState();
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationByID(
+							params.organizationID,
+							params.publicationID
+						)?.onboardingState
+				).toEqual( PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE );
 			} );
 		} );
 
@@ -998,7 +1114,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 	} );
 
-	describe( 'fetchGetPublication settings synchronization', () => {
+	describe( 'fetchGetPublicationByID settings synchronization', () => {
 		beforeEach( () => {
 			enabledFeatures.add( 'rrmExpressSetup' );
 		} );
@@ -1021,7 +1137,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
 					productIDs: [],
 					paymentOption: '',
-					organizationID: '',
+					organizationID: params.organizationID,
 				} );
 
 			fetchMock.getOnce( publicationEndpoint, {
@@ -1029,14 +1145,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				status: 200,
 			} );
 
-			registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getPublication( params );
+			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublication();
 
 			await untilResolved(
 				registry,
 				MODULES_READER_REVENUE_MANAGER
-			).getPublication( params );
+			).getPublicationByID( params.organizationID, params.publicationID );
 
 			const settings = registry
 				.select( MODULES_READER_REVENUE_MANAGER )
@@ -1058,6 +1172,185 @@ describe( 'modules/reader-revenue-manager publications', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getPublicationParams', () => {
+			const publication = fixtures.publications[ 0 ];
+
+			const organizationID = publication.organizationId;
+			const publicationID = publication.publicationId;
+
+			it( 'should return the identifiers in the settings', () => {
+				connectPublication( { organizationID, publicationID } );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationParams()
+				).toEqual( { organizationID, publicationID } );
+			} );
+
+			it( 'should read the organization from the publications list when the settings have none', async () => {
+				connectPublication( {
+					organizationID: '',
+					publicationID,
+				} );
+
+				fetchMock.getOnce( publicationsEndpoint, {
+					body: [ publication ],
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationParams()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublications();
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationParams()
+				).toEqual( { organizationID, publicationID } );
+			} );
+
+			it( 'should return `null` when no publication is connected', () => {
+				connectPublication( { publicationID: '' } );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationParams()
+				).toBeNull();
+			} );
+		} );
+
+		describe( 'getPublicationByID', () => {
+			const publication = fixtures.publications[ 0 ];
+
+			it( 'should return the publication stored under the given ID', () => {
+				providePublication( registry, publication );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationByID(
+							publication.organizationId,
+							publication.publicationId
+						)
+				).toEqual( publication );
+			} );
+
+			it( 'should return `undefined` for a publication that is not loaded', async () => {
+				providePublication( registry, publication );
+
+				// Reading an unloaded publication requests it.
+				muteFetch( publicationEndpoint );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationByID(
+							'other-organization',
+							'other-publication'
+						)
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationByID(
+					'other-organization',
+					'other-publication'
+				);
+			} );
+
+			it( 'should keep a fetched publication out of the publications list', async () => {
+				const otherPublication = {
+					...publication,
+					organizationId: 'other-organization',
+					publicationId: 'other-publication',
+				};
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( fixtures.publications );
+
+				fetchMock.getOnce( publicationEndpoint, {
+					body: otherPublication,
+					status: 200,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublicationByID(
+						otherPublication.organizationId,
+						otherPublication.publicationId
+					);
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationByID(
+					otherPublication.organizationId,
+					otherPublication.publicationId
+				);
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationByID(
+							otherPublication.organizationId,
+							otherPublication.publicationId
+						)
+				).toEqual( otherPublication );
+
+				// The list only holds the publications it returned.
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublications()
+				).toEqual( fixtures.publications );
+			} );
+		} );
+
+		describe( 'hasResolvedPublication', () => {
+			const publication = fixtures.publications[ 0 ];
+
+			it( 'should return `false` while the settings are loading', () => {
+				freezeFetch( settingsEndpoint );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.hasResolvedPublication()
+				).toBe( false );
+			} );
+
+			it( 'should return `true` when no publication is connected', () => {
+				connectPublication( { publicationID: '' } );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.hasResolvedPublication()
+				).toBe( true );
+			} );
+
+			it( 'should return `true` once the publication has resolved', () => {
+				providePublication( registry, publication );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.hasResolvedPublication()
+				).toBe( true );
+			} );
+		} );
+
 		beforeEach( () => {
 			provideModules( registry );
 			provideModuleRegistrations( registry );
@@ -1161,21 +1454,26 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					status: 200,
 				} );
 
+				connectPublication( params );
+
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication( params )
+						.getPublication()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication( params );
+				).getPublicationByID(
+					params.organizationID,
+					params.publicationID
+				);
 
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication( params )
+						.getPublication()
 				).toEqual( publication );
 				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 					query: {
@@ -1185,44 +1483,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				} );
 			} );
 
-			it( 'should use a resolver to fetch a publication without IDs', async () => {
-				const publication = {
-					displayName: 'Example Publication',
-					publicationId: params.publicationID,
-				};
-				fetchMock.getOnce( publicationEndpoint, {
-					body: publication,
-					status: 200,
-				} );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( params );
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication()
-				).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication()
-				).toEqual( publication );
-				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
-					query: {
-						_locale: 'user',
-					},
-				} );
-			} );
-
-			it( 'should associate a publication fetch error with no resolver arguments when called without IDs', async () => {
+			it( 'should associate a publication fetch error with the request identifiers', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -1234,9 +1495,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					status: 500,
 				} );
 
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( params );
+				connectPublication( params );
 
 				registry
 					.select( MODULES_READER_REVENUE_MANAGER )
@@ -1245,20 +1504,26 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				).getPublicationByID(
+					params.organizationID,
+					params.publicationID
+				);
 
 				const select = registry.select(
 					MODULES_READER_REVENUE_MANAGER
 				);
 
 				expect(
-					select.getErrorForSelector( 'getPublication', [] )
+					select.getErrorForSelector( 'getPublicationByID', [
+						params.organizationID,
+						params.publicationID,
+					] )
 				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'should resolve settings before fetching a publication without IDs', async () => {
+			it( 'should resolve the settings before fetching a publication', async () => {
 				const publication = {
 					displayName: 'Example Publication',
 					publicationId: params.publicationID,
@@ -1278,14 +1543,30 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.getPublication()
 				).toBeUndefined();
 
+				// Reading the publication requests the settings, which name the
+				// publication to request. A component re-reads once they
+				// arrive; here that has to be done by hand.
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				).getSettings();
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublication();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationByID(
+					params.organizationID,
+					params.publicationID
+				);
 
 				expect( fetchMock ).toHaveFetched( settingsEndpoint );
 				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 					query: {
+						...params,
 						_locale: 'user',
 					},
 				} );
@@ -1297,9 +1578,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should not fetch a publication when no publication ID is available', async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( { publicationID: '' } );
+				connectPublication( { publicationID: '' } );
 
 				expect(
 					registry
@@ -1307,10 +1586,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.getPublication()
 				).toBeUndefined();
 
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getPublication();
+				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
 				expect(
@@ -1344,18 +1620,13 @@ describe( 'modules/reader-revenue-manager publications', () => {
 							status: 200,
 						} );
 
-						registry
-							.dispatch( MODULES_READER_REVENUE_MANAGER )
-							.receiveGetSettings( legacySettings );
+						connectPublication( legacySettings );
 
 						registry
 							.select( MODULES_READER_REVENUE_MANAGER )
 							.getPublication();
 
-						await untilResolved(
-							registry,
-							MODULES_READER_REVENUE_MANAGER
-						).getPublication();
+						await waitForDefaultTimeouts();
 
 						expect( fetchMock ).toHaveFetchedTimes(
 							1,
@@ -1371,37 +1642,27 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						).toMatchObject( publication );
 					} );
 
-					it( 'should request the publication when it is still unavailable after publications are fetched', async () => {
-						const publication = {
-							displayName: 'Example Publication',
-							publicationId: params.publicationID,
-						};
+					it( 'should not request the publication when it is missing from the publications list', async () => {
 						fetchMock.getOnce( publicationsEndpoint, {
 							body: [],
 							status: 200,
 						} );
-						fetchMock.getOnce( publicationEndpoint, {
-							body: publication,
-							status: 200,
-						} );
 
-						registry
-							.dispatch( MODULES_READER_REVENUE_MANAGER )
-							.receiveGetSettings( legacySettings );
+						connectPublication( legacySettings );
 
 						registry
 							.select( MODULES_READER_REVENUE_MANAGER )
 							.getPublication();
 
-						await untilResolved(
-							registry,
-							MODULES_READER_REVENUE_MANAGER
-						).getPublication();
+						await waitForDefaultTimeouts();
 
 						expect( fetchMock ).toHaveFetched(
 							publicationsEndpoint
 						);
-						expect( fetchMock ).toHaveFetched(
+
+						// The request is addressed by organization, so there
+						// is nothing to ask for without one.
+						expect( fetchMock ).not.toHaveFetched(
 							publicationEndpoint
 						);
 					} );
@@ -1413,9 +1674,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						status: 200,
 					} );
 
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.receiveGetSettings( params );
+					connectPublication( params );
 
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
@@ -1424,35 +1683,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					await untilResolved(
 						registry,
 						MODULES_READER_REVENUE_MANAGER
-					).getPublication();
-
-					expect( fetchMock ).not.toHaveFetched(
-						publicationsEndpoint
+					).getPublicationByID(
+						params.organizationID,
+						params.publicationID
 					);
-					expect( fetchMock ).toHaveFetched( publicationEndpoint );
-				} );
-
-				it( 'should request the publication without fetching publications when an organization ID is passed', async () => {
-					fetchMock.getOnce( publicationEndpoint, {
-						body: { publicationId: params.publicationID },
-						status: 200,
-					} );
-
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.receiveGetSettings( {
-							publicationID: params.publicationID,
-							organizationID: '',
-						} );
-
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication( params );
-
-					await untilResolved(
-						registry,
-						MODULES_READER_REVENUE_MANAGER
-					).getPublication( params );
 
 					expect( fetchMock ).not.toHaveFetched(
 						publicationsEndpoint
@@ -1465,18 +1699,23 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				const publication = {
 					publicationId: params.publicationID,
 				};
+				connectPublication( params );
+
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetPublication( publication, params );
+					.receiveGetPublicationByID( publication, params );
 
 				registry
 					.select( MODULES_READER_REVENUE_MANAGER )
-					.getPublication( params );
+					.getPublication();
 
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getPublication( params );
+				).getPublicationByID(
+					params.organizationID,
+					params.publicationID
+				);
 
 				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
 			} );

@@ -70,7 +70,7 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 
 	const [ cta ] = useQueryArg( 'cta' );
 
-	const { fetchGetCTAs } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+	const { refreshCTAs } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	// In a CTA setup, load the connected publication's CTAs before completing
 	// the step, so the step stays in place while they load and the next step
@@ -78,11 +78,11 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	// the next step requests the CTAs again and shows the error.
 	const onPublicationConnected = useCallback( async () => {
 		if ( cta ) {
-			await fetchGetCTAs();
+			await refreshCTAs();
 		}
 
 		onComplete();
-	}, [ cta, fetchGetCTAs, onComplete ] );
+	}, [ cta, refreshCTAs, onComplete ] );
 
 	const [ showPublicationCreate, setShowPublicationCreate ] =
 		useFormValue< boolean >(
