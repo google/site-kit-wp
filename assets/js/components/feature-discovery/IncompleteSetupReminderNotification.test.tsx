@@ -46,6 +46,7 @@ import { getNotificationComponentProps } from '@/js/googlesitekit/notifications/
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
