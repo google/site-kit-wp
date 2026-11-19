@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 
+use Google\Site_Kit\Core\Modules\Datapoint;
+use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
@@ -26,14 +28,16 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
  * @access private
  * @ignore
  */
-class Create_CTA extends Connected_Publication_Datapoint {
+class Create_CTA extends Datapoint implements Executable_Datapoint {
+
+	use Publication_Params_Trait;
 
 	/**
 	 * Creates a request object.
 	 *
 	 * @since 1.187.0
 	 * @since 1.189.0 Added support for the CTA `state` property.
-	 * @since n.e.x.t Uses the connected publication from the module settings.
+	 * @since n.e.x.t Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -44,8 +48,6 @@ class Create_CTA extends Connected_Publication_Datapoint {
 		if ( empty( $data_request->data['data'] ) ) {
 			throw new Missing_Required_Param_Exception( 'data' );
 		}
-
-		$publication = $this->get_connected_publication();
 
 		$cta_data = $data_request['data'];
 
@@ -88,11 +90,7 @@ class Create_CTA extends Connected_Publication_Datapoint {
 			$cta->setDisplayName( $cta_data['displayName'] );
 		}
 
-		$parent = sprintf(
-			'organizations/%s/publications/%s',
-			$publication['organizationID'],
-			$publication['publicationID']
-		);
+		$parent = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications_ctas->create( $parent, $cta );
 	}

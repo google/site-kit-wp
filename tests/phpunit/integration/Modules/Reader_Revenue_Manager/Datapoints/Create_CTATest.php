@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_CTA;
 use Google\Site_Kit\Tests\TestCase;
@@ -49,12 +48,6 @@ class Create_CTATest extends TestCase {
 
 		$this->module = new Reader_Revenue_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$this->module->get_settings()->register();
-		$this->module->get_settings()->merge(
-			array(
-				'organizationID' => 'saved-organization',
-				'publicationID'  => 'saved-publication',
-			)
-		);
 		$this->module->get_client()->withDefer( true );
 
 		$service         = new WebContentPublisher( $this->module->get_client() );
@@ -72,7 +65,9 @@ class Create_CTATest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'data' => array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'data'           => array(
 						'type'        => 'NEWSLETTER_SIGNUP',
 						'displayName' => 'Newsletter sign-up',
 						'state'       => 'ACTIVE',
@@ -86,9 +81,9 @@ class Create_CTATest extends TestCase {
 		);
 
 		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/saved-organization/publications/saved-publication/ctas',
+			'https://webcontentpublisher.googleapis.com/v1/organizations/organization-1/publications/publication-1/ctas',
 			(string) $request->getUri(),
-			'The request should create the CTA on the connected publication.'
+			'The request should use the create CTA endpoint for the publication.'
 		);
 
 		$this->assertJsonStringEqualsJsonString(
@@ -108,20 +103,6 @@ class Create_CTATest extends TestCase {
 		);
 	}
 
-	public function test_create_request__ignores_request_identifiers() {
-		$data = $this->get_valid_data();
-
-		$data['organizationID'] = 'organization-1';
-		$data['publicationID']  = 'publication-1';
-
-		$request = $this->datapoint->create_request( $this->get_data_request( $data ) );
-
-		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/saved-organization/publications/saved-publication/ctas',
-			(string) $request->getUri(),
-			'Identifiers sent with the request should not be used.'
-		);
-	}
 
 	public function test_create_request__omits_display_name_when_absent() {
 		$request = $this->datapoint->create_request( $this->get_data_request( $this->get_valid_data() ) );
@@ -240,35 +221,6 @@ class Create_CTATest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_missing_settings
-	 *
-	 * @param array  $settings Settings to save before the request.
-	 * @param string $missing  Name of the setting expected to be reported as missing.
-	 */
-	public function test_create_request__requires_the_connected_publication( $settings, $missing ) {
-		$this->module->get_settings()->merge( $settings );
-
-		$this->expectException( Missing_Required_Setting_Exception::class );
-		$this->expectExceptionMessage( "Required setting is missing: {$missing}." );
-
-		$this->datapoint->create_request( $this->get_data_request( $this->get_valid_data() ) );
-	}
-
-	public function data_missing_settings() {
-		return array(
-			'nothing connected'  => array(
-				array(
-					'organizationID' => '',
-					'publicationID'  => '',
-				),
-				'organizationID',
-			),
-			'no publication ID'  => array( array( 'publicationID' => '' ), 'publicationID' ),
-			'no organization ID' => array( array( 'organizationID' => '' ), 'organizationID' ),
-		);
-	}
-
-	/**
 	 * @dataProvider data_invalid_cta_data
 	 *
 	 * @param mixed  $cta_data Invalid CTA data.
@@ -353,6 +305,45 @@ class Create_CTATest extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider data_missing_publication_params
+	 *
+	 * @param string $missing Name of the identifier left out of the request.
+	 */
+	public function test_create_request__requires_the_publication_params( $missing ) {
+		$data = $this->get_valid_data();
+
+		unset( $data[ $missing ] );
+
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( "Request parameter is empty: {$missing}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	/**
+	 * @dataProvider data_missing_publication_params
+	 *
+	 * @param string $invalid Name of the identifier given a non-string value.
+	 */
+	public function test_create_request__rejects_a_non_string_publication_param( $invalid ) {
+		$data = $this->get_valid_data();
+
+		$data[ $invalid ] = array( 'not-a-string' );
+
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( "Invalid parameter: {$invalid}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function data_missing_publication_params() {
+		return array(
+			'organizationID' => array( 'organizationID' ),
+			'publicationID'  => array( 'publicationID' ),
+		);
+	}
+
 	public function test_parse_response() {
 		$response = new Cta();
 		$response->setName( 'organizations/organization-1/publications/publication-1/ctas/1' );
@@ -368,7 +359,9 @@ class Create_CTATest extends TestCase {
 
 	private function get_valid_data() {
 		return array(
-			'data' => array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+			'data'           => array(
 				'type'   => 'NEWSLETTER_SIGNUP',
 				'state'  => 'ACTIVE',
 				'config' => array( 'title' => 'Subscribe' ),

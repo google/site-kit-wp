@@ -12,7 +12,8 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publication;
 use Google\Site_Kit\Tests\TestCase;
@@ -67,16 +68,6 @@ class Get_PublicationTest extends TestCase {
 	}
 
 	public function test_create_request() {
-		$request = $this->datapoint->create_request( $this->get_data_request( array() ) );
-
-		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/organization-setting/publications/publication-setting',
-			(string) $request->getUri(),
-			'The request should use the connected publication from the module settings.'
-		);
-	}
-
-	public function test_create_request__ignores_request_identifiers() {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
@@ -87,33 +78,51 @@ class Get_PublicationTest extends TestCase {
 		);
 
 		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/organization-setting/publications/publication-setting',
+			'https://webcontentpublisher.googleapis.com/v1/organizations/organization-1/publications/publication-1',
 			(string) $request->getUri(),
-			'Identifiers sent with the request should not be used.'
+			'The request should use the get publication endpoint.'
 		);
 	}
 
 	/**
-	 * @dataProvider data_missing_required_settings
+	 * @dataProvider data_missing_publication_params
 	 *
-	 * @param string $setting The missing setting.
+	 * @param string $missing Name of the identifier left out of the request.
 	 */
-	public function test_create_request__requires_the_connected_publication( $setting ) {
-		$this->module->get_settings()->merge( array( $setting => '' ) );
+	public function test_create_request__requires_the_publication_params( $missing ) {
+		$data = array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+		);
 
-		try {
-			$this->datapoint->create_request( $this->get_data_request( array() ) );
-			$this->fail( 'Expected Missing_Required_Setting_Exception to be thrown.' );
-		} catch ( Missing_Required_Setting_Exception $exception ) {
-			$this->assertSame( "Required setting is missing: {$setting}.", $exception->getMessage(), 'The exception should identify the missing setting.' );
+		unset( $data[ $missing ] );
 
-			$error = $exception->to_wp_error();
-			$this->assertSame( 'missing_required_setting', $error->get_error_code(), 'The exception should use the missing setting error code.' );
-			$this->assertSame( array( 'status' => 500 ), $error->get_error_data(), 'The exception should return an HTTP 500 error.' );
-		}
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( "Request parameter is empty: {$missing}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
 	}
 
-	public function data_missing_required_settings() {
+	/**
+	 * @dataProvider data_missing_publication_params
+	 *
+	 * @param string $invalid Name of the identifier given a non-string value.
+	 */
+	public function test_create_request__rejects_a_non_string_publication_param( $invalid ) {
+		$data = array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+		);
+
+		$data[ $invalid ] = array( 'not-a-string' );
+
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( "Invalid parameter: {$invalid}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function data_missing_publication_params() {
 		return array(
 			'organizationID' => array( 'organizationID' ),
 			'publicationID'  => array( 'publicationID' ),
@@ -124,8 +133,12 @@ class Get_PublicationTest extends TestCase {
 		$response = new Publication();
 		$response->setOrganizationId( 'organization-1' );
 		$response->setPublicationId( 'publication-1' );
+		$data = array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+		);
 
-		$publication = $this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+		$publication = $this->datapoint->parse_response( $response, $this->get_data_request( $data ) );
 
 		$this->assertSame( 'publication-1', $publication['publicationId'], 'The response should contain the requested publication.' );
 		$this->assertSame( 'organization-1', $publication['organizationId'], 'WCP fields should be preserved.' );

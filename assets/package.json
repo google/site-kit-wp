@@ -28,6 +28,7 @@
 		"@material/react-chips": "^0.15.0",
 		"@material/react-dialog": "^0.15.0",
 		"@material/react-select": "^0.15.0",
+		"@material/react-tab": "^0.15.0",
 		"@material/react-tab-bar": "^0.15.0",
 		"@material/react-text-field": "^0.15.0",
 		"@material/ripple": "^2.3.0",
@@ -66,6 +67,7 @@
 		"@svgr/webpack": "^8.1.0",
 		"@testing-library/react": "^10.4.9",
 		"@types/invariant": "^2.2.37",
+		"@types/react-router-dom": "^5.2.0",
 		"@wordpress/babel-preset-default": "^8.23.0",
 		"@wordpress/browserslist-config": "^6.46.0",
 		"autoprefixer": "^10.4.21",
@@ -89,8 +91,7 @@
 		"webpack": "^5.99.7",
 		"webpack-bundle-analyzer": "^5.3.2",
 		"webpack-cli": "^7.0.2",
-		"webpack-manifest-plugin": "^6.0.1",
-		"@types/react-router-dom": "^5.2.0"
+		"webpack-manifest-plugin": "^6.0.1"
 	},
 	"overrides": {
 		"react": {

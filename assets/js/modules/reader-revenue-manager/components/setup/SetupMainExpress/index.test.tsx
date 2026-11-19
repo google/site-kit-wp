@@ -108,24 +108,22 @@ describe( 'SetupMainExpress', () => {
 		// Has accepted the terms of service and set both policy URLs.
 		const publication = publications[ 3 ];
 
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		const publicationID = publication.publicationId;
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationID,
-			} );
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setPublicationID( publicationID );
-
 		providePublications( registry, [ publication ] );
 
+		const params = {
+			/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+			organizationID: publication.organizationId,
+			publicationID: publication.publicationId,
+			/* eslint-enable sitekit/acronym-case */
+		};
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { publicationID, ctas: [] } );
+			.setSettings( params );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationCTAs( [], params );
 
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,
@@ -144,24 +142,22 @@ describe( 'SetupMainExpress', () => {
 		// Has accepted the terms of service and set both policy URLs.
 		const publication = publications[ 3 ];
 
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		const publicationID = publication.publicationId;
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationID,
-			} );
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setPublicationID( publicationID );
-
 		providePublications( registry, [ publication ] );
 
+		const params = {
+			/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+			organizationID: publication.organizationId,
+			publicationID: publication.publicationId,
+			/* eslint-enable sitekit/acronym-case */
+		};
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { publicationID, ctas: [] } );
+			.setSettings( params );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationCTAs( [], params );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

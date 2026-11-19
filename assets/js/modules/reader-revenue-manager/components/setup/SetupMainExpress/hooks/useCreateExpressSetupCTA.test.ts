@@ -110,7 +110,7 @@ describe( 'useCreateExpressSetupCTA', () => {
 			status: 200,
 		} );
 		fetchMock.getOnce( ctasEndpoint, {
-			body: { publicationID: 'ABCDEFGH', ctas: [ createdCTA ] },
+			body: [ createdCTA ],
 			status: 200,
 		} );
 		fetchMock.postOnce( settingsEndpoint, ( url, opts ) => {
@@ -268,10 +268,7 @@ describe( 'useCreateExpressSetupCTA', () => {
 				body: livePublication,
 				status: 200,
 			} );
-			fetchMock.getOnce( ctasEndpoint, {
-				body: { publicationID: 'ABCDEFGH', ctas: [] },
-				status: 200,
-			} );
+			fetchMock.getOnce( ctasEndpoint, { body: [], status: 200 } );
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
 				body: JSON.parse( opts.body as string ).data,
 				status: 200,

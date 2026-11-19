@@ -10,8 +10,11 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 
+use Google\Site_Kit\Core\Modules\Datapoint;
+use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication as Publication_Synchronization;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
 
@@ -22,7 +25,17 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
  * @access private
  * @ignore
  */
-class Get_Publication extends Connected_Publication_Datapoint {
+class Get_Publication extends Datapoint implements Executable_Datapoint {
+
+	use Publication_Params_Trait;
+
+	/**
+	 * Reader Revenue Manager settings.
+	 *
+	 * @since 1.186.0
+	 * @var Settings
+	 */
+	private $settings;
 
 	/**
 	 * Synchronization instance.
@@ -42,6 +55,7 @@ class Get_Publication extends Connected_Publication_Datapoint {
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 
+		$this->settings        = $definition['settings'];
 		$this->synchronization = new Publication_Synchronization( $this->settings );
 	}
 
@@ -49,19 +63,13 @@ class Get_Publication extends Connected_Publication_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t Uses the connected publication from the module settings.
+	 * @since n.e.x.t Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$publication = $this->get_connected_publication();
-
-		$name = sprintf(
-			'organizations/%s/publications/%s',
-			$publication['organizationID'],
-			$publication['publicationID']
-		);
+		$name = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications->get( $name );
 	}

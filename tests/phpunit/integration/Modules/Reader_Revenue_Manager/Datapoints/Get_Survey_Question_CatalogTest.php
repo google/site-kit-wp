@@ -12,7 +12,8 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Survey_Question_Catalog;
 use Google\Site_Kit\Tests\TestCase;
@@ -49,37 +50,19 @@ class Get_Survey_Question_CatalogTest extends TestCase {
 		$this->enable_feature( 'rrmSurveyCTA' );
 
 		$this->module = new Reader_Revenue_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->module->get_settings()->register();
-		$this->module->get_settings()->merge(
-			array(
-				'organizationID' => 'saved-organization',
-				'publicationID'  => 'saved-publication',
-			)
-		);
 		$this->module->get_client()->withDefer( true );
 
 		$service         = new WebContentPublisher( $this->module->get_client() );
 		$this->datapoint = new Get_Survey_Question_Catalog(
 			array(
-				'service'  => function () use ( $service ) {
+				'service' => function () use ( $service ) {
 					return $service;
 				},
-				'settings' => $this->module->get_settings(),
 			)
 		);
 	}
 
 	public function test_create_request() {
-		$request = $this->datapoint->create_request( $this->get_data_request( array() ) );
-
-		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/saved-organization/publications/saved-publication/surveyQuestionCatalog',
-			(string) $request->getUri(),
-			'The request should get the survey question catalog of the connected publication, without a language code.'
-		);
-	}
-
-	public function test_create_request__ignores_request_identifiers() {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
@@ -90,44 +73,60 @@ class Get_Survey_Question_CatalogTest extends TestCase {
 		);
 
 		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/saved-organization/publications/saved-publication/surveyQuestionCatalog',
+			'https://webcontentpublisher.googleapis.com/v1/organizations/organization-1/publications/publication-1/surveyQuestionCatalog',
 			(string) $request->getUri(),
-			'Identifiers sent with the request should not be used.'
+			'The request should get the survey question catalog of the requested publication, without a language code.'
 		);
 	}
 
 	/**
-	 * @dataProvider data_missing_settings
+	 * @dataProvider data_publication_params
 	 *
-	 * @param array  $settings Settings to save before the request.
-	 * @param string $missing  Name of the setting expected to be reported as missing.
+	 * @param string $missing Name of the identifier left out of the request.
 	 */
-	public function test_create_request__requires_the_connected_publication( $settings, $missing ) {
-		$this->module->get_settings()->merge( $settings );
+	public function test_create_request__requires_the_publication_params( $missing ) {
+		$data = array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+		);
 
-		$this->expectException( Missing_Required_Setting_Exception::class );
-		$this->expectExceptionMessage( "Required setting is missing: {$missing}." );
+		unset( $data[ $missing ] );
 
-		$this->datapoint->create_request( $this->get_data_request( array() ) );
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( "Request parameter is empty: {$missing}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
 	}
 
-	public function data_missing_settings() {
+	/**
+	 * @dataProvider data_publication_params
+	 *
+	 * @param string $invalid Name of the identifier given a non-string value.
+	 */
+	public function test_create_request__rejects_a_non_string_publication_param( $invalid ) {
+		$data = array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+		);
+
+		$data[ $invalid ] = array( 'not-a-string' );
+
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( "Invalid parameter: {$invalid}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function data_publication_params() {
 		return array(
-			'nothing connected'  => array(
-				array(
-					'organizationID' => '',
-					'publicationID'  => '',
-				),
-				'organizationID',
-			),
-			'no publication ID'  => array( array( 'publicationID' => '' ), 'publicationID' ),
-			'no organization ID' => array( array( 'organizationID' => '' ), 'organizationID' ),
+			'organizationID' => array( 'organizationID' ),
+			'publicationID'  => array( 'publicationID' ),
 		);
 	}
 
 	public function test_parse_response() {
 		$response = new SurveyQuestionCatalog();
-		$response->setName( 'organizations/saved-organization/publications/saved-publication/surveyQuestionCatalog' );
+		$response->setName( 'organizations/organization-1/publications/publication-1/surveyQuestionCatalog' );
 		$response->setQuestions(
 			array(
 				$this->create_question(
@@ -157,53 +156,48 @@ class Get_Survey_Question_CatalogTest extends TestCase {
 			)
 		);
 
-		$this->datapoint->create_request( $this->get_data_request( array() ) );
-
 		$this->assertSame(
 			array(
-				'publicationID' => 'saved-publication',
-				'questions'     => array(
-					array(
-						'id'                     => 3,
-						'label'                  => 'Which topics interest you?',
-						'answers'                => array(
-							array(
-								'id'    => 12,
-								'label' => 'Sports',
-							),
-							array(
-								'id'    => 4,
-								'label' => 'Technology',
-							),
+				array(
+					'id'                     => 3,
+					'label'                  => 'Which topics interest you?',
+					'answers'                => array(
+						array(
+							'id'    => 12,
+							'label' => 'Sports',
 						),
-						'hasConfigurableAnswers' => true,
-					),
-					array(
-						'id'                     => 1,
-						'label'                  => 'What is your age range?',
-						'answers'                => array(
-							array(
-								'id'    => 2,
-								'label' => '18-24',
-							),
-							array(
-								'id'    => 1,
-								'label' => '25-34',
-							),
+						array(
+							'id'    => 4,
+							'label' => 'Technology',
 						),
-						'hasConfigurableAnswers' => false,
 					),
-					array(
-						'id'                     => 7,
-						'label'                  => 'What is your employment status?',
-						'answers'                => array(
-							array(
-								'id'    => 5,
-								'label' => 'Employed',
-							),
+					'hasConfigurableAnswers' => true,
+				),
+				array(
+					'id'                     => 1,
+					'label'                  => 'What is your age range?',
+					'answers'                => array(
+						array(
+							'id'    => 2,
+							'label' => '18-24',
 						),
-						'hasConfigurableAnswers' => false,
+						array(
+							'id'    => 1,
+							'label' => '25-34',
+						),
 					),
+					'hasConfigurableAnswers' => false,
+				),
+				array(
+					'id'                     => 7,
+					'label'                  => 'What is your employment status?',
+					'answers'                => array(
+						array(
+							'id'    => 5,
+							'label' => 'Employed',
+						),
+					),
+					'hasConfigurableAnswers' => false,
 				),
 			),
 			$this->datapoint->parse_response( $response, $this->get_data_request( array() ) ),
@@ -211,31 +205,11 @@ class Get_Survey_Question_CatalogTest extends TestCase {
 		);
 	}
 
-	public function test_parse_response__names_the_publication_when_there_are_no_questions() {
-		$this->datapoint->create_request( $this->get_data_request( array() ) );
-
+	public function test_parse_response__empty_catalog() {
 		$this->assertSame(
-			array(
-				'publicationID' => 'saved-publication',
-				'questions'     => array(),
-			),
+			array(),
 			$this->datapoint->parse_response( new SurveyQuestionCatalog(), $this->get_data_request( array() ) ),
-			'An empty catalog should still name the publication it is for.'
-		);
-	}
-
-	public function test_parse_response__keeps_the_publication_the_request_was_created_for() {
-		$this->datapoint->create_request( $this->get_data_request( array() ) );
-
-		// Another request connects a different publication while this one runs.
-		$this->module->get_settings()->merge( array( 'publicationID' => 'other-publication' ) );
-
-		$parsed = $this->datapoint->parse_response( new SurveyQuestionCatalog(), $this->get_data_request( array() ) );
-
-		$this->assertSame(
-			'saved-publication',
-			$parsed['publicationID'],
-			'The response should name the publication the request was created for.'
+			'An empty catalog should return an empty list of questions.'
 		);
 	}
 

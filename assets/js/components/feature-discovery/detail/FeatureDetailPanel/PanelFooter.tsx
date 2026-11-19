@@ -35,34 +35,48 @@ import FeatureRelevancyFeedback from '@/js/components/feature-discovery/FeatureR
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import useViewContext from '@/js/hooks/useViewContext';
 
 interface PanelFooterProps {
 	feature: Feature;
 	onClose: () => void;
+	onSetupComplete: () => void;
 }
 
-const PanelFooter: FC< PanelFooterProps > = ( { feature, onClose } ) => (
-	<footer className="googlesitekit-feature-details-panel__footer">
-		<div className="googlesitekit-feature-details-panel__relevancy">
-			<FeatureRelevancyFeedback slug={ feature.slug } />
+const PanelFooter: FC< PanelFooterProps > = ( {
+	feature,
+	onClose,
+	onSetupComplete,
+} ) => {
+	const viewContext = useViewContext();
 
-			<Typography size={ SIZE_SMALL } type={ TYPE_BODY }>
-				{ __(
-					'Is this service relevant to you? Let us know to help us improve our tailored suggestions',
-					'google-site-kit'
-				) }
-			</Typography>
-		</div>
+	return (
+		<footer className="googlesitekit-feature-details-panel__footer">
+			<div className="googlesitekit-feature-details-panel__relevancy">
+				<FeatureRelevancyFeedback slug={ feature.slug } />
 
-		<div className="googlesitekit-feature-details-panel__actions">
-			{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-			<Button onClick={ onClose } tertiary>
-				{ __( 'Cancel', 'google-site-kit' ) }
-			</Button>
+				<Typography size={ SIZE_SMALL } type={ TYPE_BODY }>
+					{ __(
+						'Is this service relevant to you? Let us know to help us improve our tailored suggestions',
+						'google-site-kit'
+					) }
+				</Typography>
+			</div>
 
-			<FeatureCTA slug={ feature.slug } onSetupComplete={ onClose } />
-		</div>
-	</footer>
-);
+			<div className="googlesitekit-feature-details-panel__actions">
+				{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
+				<Button onClick={ onClose } tertiary>
+					{ __( 'Cancel', 'google-site-kit' ) }
+				</Button>
+
+				<FeatureCTA
+					gaEventCategory={ `${ viewContext }_feature-detail-panel` }
+					slug={ feature.slug }
+					onSetupComplete={ onSetupComplete }
+				/>
+			</div>
+		</footer>
+	);
+};
 
 export default PanelFooter;

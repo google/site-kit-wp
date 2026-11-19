@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 
+use Google\Site_Kit\Core\Modules\Datapoint;
+use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
@@ -24,13 +26,15 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\TosAcceptanc
  * @access private
  * @ignore
  */
-class Update_Publication extends Connected_Publication_Datapoint {
+class Update_Publication extends Datapoint implements Executable_Datapoint {
+
+	use Publication_Params_Trait;
 
 	/**
 	 * Creates a request object.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t Uses the connected publication from the module settings.
+	 * @since n.e.x.t Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -40,8 +44,6 @@ class Update_Publication extends Connected_Publication_Datapoint {
 		if ( empty( $data_request->data['data'] ) ) {
 			throw new Missing_Required_Param_Exception( 'data' );
 		}
-
-		$connected_publication = $this->get_connected_publication();
 
 		$publication_data = $data_request['data'];
 		$publication      = new Publication();
@@ -85,11 +87,7 @@ class Update_Publication extends Connected_Publication_Datapoint {
 			$update_mask[] = 'publicationPrivacyPolicyUrl';
 		}
 
-		$name = sprintf(
-			'organizations/%s/publications/%s',
-			$connected_publication['organizationID'],
-			$connected_publication['publicationID']
-		);
+		$name = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications->patch(
 			$name,

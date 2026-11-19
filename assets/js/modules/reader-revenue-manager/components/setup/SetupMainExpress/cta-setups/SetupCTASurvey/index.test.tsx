@@ -117,22 +117,20 @@ const publicationWithoutTerms = publications[ 2 ] as Publication;
  * @return {void}
  */
 function connectPublication( registry: Registry, publication: Publication ) {
-	// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-	const publicationID = publication.publicationId;
-
-	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
-		publicationID,
-	} );
-
-	registry
-		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.setPublicationID( publicationID );
-
 	providePublications( registry, [ publication ] );
 
+	const params = {
+		/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+		organizationID: publication.organizationId,
+		publicationID: publication.publicationId,
+		/* eslint-enable sitekit/acronym-case */
+	};
+
+	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( params );
+
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { publicationID, ctas: [] } );
+		.receiveGetPublicationCTAs( [], params );
 }
 
 describe( 'SetupCTASurvey', () => {

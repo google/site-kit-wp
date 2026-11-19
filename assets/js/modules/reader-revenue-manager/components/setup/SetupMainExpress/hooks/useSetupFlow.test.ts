@@ -47,8 +47,15 @@ import {
 } from '@tests/js/test-utils';
 import useSetupFlow, { findBlockingStep, resolveStep } from './useSetupFlow';
 
-// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+const ORGANIZATION_ID = publications[ 0 ].organizationId;
 const PUBLICATION_ID = publications[ 0 ].publicationId;
+/* eslint-enable sitekit/acronym-case */
+
+const PUBLICATION_PARAMS = {
+	organizationID: ORGANIZATION_ID,
+	publicationID: PUBLICATION_ID,
+};
 
 const settingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
@@ -135,8 +142,10 @@ function provideConnectedPublication(
 	publication?: Publication
 ) {
 	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+		organizationID: publication ? publication.organizationId : '',
 		publicationID: publication ? publication.publicationId : '',
+		/* eslint-enable sitekit/acronym-case */
 	} );
 
 	registry
@@ -425,11 +434,6 @@ describe( 'useSetupFlow', () => {
 
 			expect( result.current.currentStep ).toBeUndefined();
 			expect( global.location.href ).toContain( 'step=setup-complete' );
-
-			// Prevent another request from being made to the publication endpoint.
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.finishResolution( 'getPublication', [ {} ] );
 		} );
 
 		it( 'should not return the existing CTA step while the connected publication is loading', () => {
@@ -446,15 +450,15 @@ describe( 'useSetupFlow', () => {
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetCTAs( {
-					publicationID: PUBLICATION_ID,
-					ctas: [
+				.receiveGetPublicationCTAs(
+					[
 						{
 							name: `organizations/ABCD1234/publications/${ PUBLICATION_ID }/ctas/1`,
 							type: CTA_TYPES.NEWSLETTER_SIGNUP,
 						},
 					],
-				} );
+					PUBLICATION_PARAMS
+				);
 
 			const { result } = renderHook(
 				() =>
@@ -466,11 +470,6 @@ describe( 'useSetupFlow', () => {
 			);
 
 			expect( result.current.currentStep ).toBeUndefined();
-
-			// Prevent another request from being made to the publication endpoint.
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.finishResolution( 'getPublication', [ {} ] );
 		} );
 
 		it( 'should not open a step before the settings have loaded', () => {
@@ -528,14 +527,8 @@ describe( 'useSetupFlow', () => {
 			actHook( () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( {
-						// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-						publicationID: publications[ 1 ].publicationId,
-					} );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.invalidateResolutionForStoreSelector( 'getPublication' );
+					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+					.setPublicationID( publications[ 1 ].publicationId );
 			} );
 
 			expect(
@@ -668,10 +661,7 @@ describe( 'useSetupFlow', () => {
 		function provideCTAs( ctas: { name: string; type: string }[] ) {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetCTAs( {
-					publicationID: PUBLICATION_ID,
-					ctas,
-				} );
+				.receiveGetPublicationCTAs( ctas, PUBLICATION_PARAMS );
 		}
 
 		const newsletterCTA = {
@@ -839,7 +829,12 @@ describe( 'useSetupFlow', () => {
 			actHook( () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setErrorForSelector( selectorError, 'getPublication' );
+					.setErrorForSelector( selectorError, 'getPublicationByID', [
+						/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+						publicationWithTerms.organizationId,
+						publicationWithTerms.publicationId,
+						/* eslint-enable sitekit/acronym-case */
+					] );
 			} );
 
 			expect( getErrors() ).toEqual( [ selectorError ] );

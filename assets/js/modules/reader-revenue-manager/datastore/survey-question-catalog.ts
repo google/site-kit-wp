@@ -35,39 +35,40 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { combineStores } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import {
+	type PublicationParams,
+	validatePublicationParams,
+} from './publications';
 import { type SurveyQuestion } from './types';
 
-/**
- * `GET:survey-question-catalog` response. The publication is named by the
- * response because the questions themselves do not name it.
- */
-type GetSurveyQuestionCatalogResponse = {
-	publicationID: string;
-	questions: SurveyQuestion[];
-};
-
 interface SurveyQuestionCatalogState {
-	surveyQuestionCatalog: Record< string, SurveyQuestion[] >;
+	surveyQuestionCatalog: Record< string, SurveyQuestion[] | undefined >;
 }
 
-const fetchGetSurveyQuestionCatalogStore = createFetchStore( {
-	baseName: 'getSurveyQuestionCatalog',
-	controlCallback: () =>
+const fetchGetPublicationSurveyQuestionCatalogStore = createFetchStore( {
+	baseName: 'getPublicationSurveyQuestionCatalog',
+	controlCallback: ( { organizationID, publicationID }: PublicationParams ) =>
 		get(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'survey-question-catalog',
-			{},
+			{ organizationID, publicationID },
 			{ useCache: false }
 		),
 	reducerCallback: createReducer(
 		(
 			state: SurveyQuestionCatalogState,
-			{ publicationID, questions }: GetSurveyQuestionCatalogResponse
+			questions: SurveyQuestion[],
+			{ publicationID }: PublicationParams
 		) => {
 			state.surveyQuestionCatalog[ publicationID ] = questions;
 		}
 	),
+	argsToParams: (
+		organizationID: string,
+		publicationID: string
+	): PublicationParams => ( { organizationID, publicationID } ),
+	validateParams: validatePublicationParams,
 } );
 
 const baseInitialState: SurveyQuestionCatalogState = {
@@ -76,48 +77,38 @@ const baseInitialState: SurveyQuestionCatalogState = {
 
 const baseResolvers = {
 	*getPublicationSurveyQuestionCatalog(
+		organizationID: string,
 		publicationID: string
 	): Generator< unknown, void, unknown > {
+		if ( ! organizationID || ! publicationID ) {
+			return;
+		}
+
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as WPDataRegistry;
 
-		if (
-			registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getPublicationSurveyQuestionCatalog( publicationID ) !==
-			undefined
-		) {
+		const questions = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublicationSurveyQuestionCatalog(
+				organizationID,
+				publicationID
+			);
+
+		if ( questions !== undefined ) {
 			return;
 		}
 
 		// @ts-expect-error createFetchStore is not properly typed yet.
-		yield fetchGetSurveyQuestionCatalogStore.actions.fetchGetSurveyQuestionCatalog();
+		yield fetchGetPublicationSurveyQuestionCatalogStore.actions.fetchGetPublicationSurveyQuestionCatalog(
+			organizationID,
+			publicationID
+		);
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets the survey question catalog stored for a publication.
-	 *
-	 * The resolution is keyed by the publication ID, so a change of the
-	 * connected publication starts a new request without resetting anything.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param  state         Data store's state.
-	 * @param  publicationID Publication ID.
-	 * @return {(Array.<Object>|undefined)} The catalog questions; `undefined` if not loaded yet.
-	 */
-	getPublicationSurveyQuestionCatalog(
-		state: SurveyQuestionCatalogState,
-		publicationID: string
-	): SurveyQuestion[] | undefined {
-		return state.surveyQuestionCatalog[ publicationID ];
-	},
-
-	/**
-	 * Gets the survey question catalog of the connected publication.
+	 * Gets the survey question catalog of the publication in the module settings.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -125,38 +116,48 @@ const baseSelectors = {
 	 */
 	getSurveyQuestionCatalog: createRegistrySelector(
 		( select: Select ) => (): SurveyQuestion[] | undefined => {
-			// Read the settings so they load, as the saved publication ID
-			// comes from them.
-			if (
-				select( MODULES_READER_REVENUE_MANAGER ).getSettings() ===
-				undefined
-			) {
-				return undefined;
-			}
-
-			const savedPublicationID = select(
+			const params = select(
 				MODULES_READER_REVENUE_MANAGER
-			).getSavedPublicationID();
+			).getPublicationParams();
 
-			if ( ! savedPublicationID ) {
-				return undefined;
-			}
-
-			// A publication that has been picked but not saved yet has no
-			// catalog of its own here; the server still answers for the
-			// saved publication.
-			if (
-				select( MODULES_READER_REVENUE_MANAGER ).getPublicationID() !==
-				savedPublicationID
-			) {
+			if ( ! params ) {
 				return undefined;
 			}
 
 			return select(
 				MODULES_READER_REVENUE_MANAGER
-			).getPublicationSurveyQuestionCatalog( savedPublicationID );
+			).getPublicationSurveyQuestionCatalog(
+				params.organizationID,
+				params.publicationID
+			);
 		}
 	),
+
+	/**
+	 * Gets the survey question catalog of a publication.
+	 *
+	 * The catalogs are stored under their publication ID, and the resolution
+	 * is keyed the same way, so changing the publication requests the new
+	 * one's catalog on its own.
+	 *
+	 * The organization only addresses the request, so the catalogs are not
+	 * stored under it.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param  state           Data store's state.
+	 * @param  _organizationID Organization ID.
+	 * @param  publicationID   Publication ID.
+	 * @return {(Array.<Object>|undefined)} The catalog questions; `undefined` if not loaded yet.
+	 */
+	getPublicationSurveyQuestionCatalog(
+		state: SurveyQuestionCatalogState,
+		_organizationID: string,
+		publicationID: string
+	): SurveyQuestion[] | undefined {
+		return state.surveyQuestionCatalog[ publicationID ];
+	},
 };
 
 interface Store {
@@ -168,7 +169,7 @@ interface Store {
 	selectors: Record< string, unknown >;
 }
 
-const store = combineStores( fetchGetSurveyQuestionCatalogStore, {
+const store = combineStores( fetchGetPublicationSurveyQuestionCatalogStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

@@ -1,5 +1,5 @@
 /**
- * ChipMultiSelect component.
+ * ChipCheckmark component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -19,25 +19,17 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
-import { Provider } from './ChipMultiSelectContext';
+import CheckMark from '@/svg/icons/check-2.svg';
 
-export default function ChipMultiSelect( {
-	children,
-	onToggleChip = () => {},
-} ) {
+export const ChipCheckmark: FC = () => {
 	return (
-		<Provider value={ { onToggleChip } }>
-			<div className="googlesitekit-chip-multi-select">{ children }</div>
-		</Provider>
+		<div className="mdc-chip__checkmark">
+			<CheckMark className="mdc-chip__checkmark-svg" />
+		</div>
 	);
-}
-
-ChipMultiSelect.propTypes = {
-	children: PropTypes.node.isRequired,
-	onToggleChip: PropTypes.func,
 };

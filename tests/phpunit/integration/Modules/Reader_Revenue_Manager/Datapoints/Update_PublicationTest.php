@@ -12,8 +12,8 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Update_Publication;
 use Google\Site_Kit\Tests\TestCase;
@@ -71,7 +71,9 @@ class Update_PublicationTest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'data' => array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'data'           => array(
 						'publicationType' => Publication::PUBLICATION_TYPE_FOR_PROFIT,
 						'rrmProduct'      => array(
 							'tosAcceptance' => array(
@@ -86,9 +88,9 @@ class Update_PublicationTest extends TestCase {
 
 		$this->assertSame( 'PATCH', $request->getMethod(), 'The request should use PATCH.' );
 		$this->assertSame(
-			'/v1/organizations/organization-setting/publications/publication-setting',
+			'/v1/organizations/organization-1/publications/publication-1',
 			$request->getUri()->getPath(),
-			'The request should target the connected publication.'
+			'The request should target the selected publication.'
 		);
 
 		parse_str( $request->getUri()->getQuery(), $query );
@@ -118,7 +120,9 @@ class Update_PublicationTest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'data' => array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'data'           => array(
 						'rrmProduct' => array(
 							'tosAcceptance' => array(
 								'emailOptIn' => false,
@@ -150,31 +154,14 @@ class Update_PublicationTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__ignores_request_identifiers() {
+
+	public function test_create_request__publication_policies() {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
 					'organizationID' => 'organization-1',
 					'publicationID'  => 'publication-1',
 					'data'           => array(
-						'publicationTosUrl' => 'https://example.com/terms',
-					),
-				)
-			)
-		);
-
-		$this->assertSame(
-			'/v1/organizations/organization-setting/publications/publication-setting',
-			$request->getUri()->getPath(),
-			'Identifiers sent with the request should not be used.'
-		);
-	}
-
-	public function test_create_request__publication_policies() {
-		$request = $this->datapoint->create_request(
-			$this->get_data_request(
-				array(
-					'data' => array(
 						'publicationTosUrl'           => 'https://example.com/terms',
 						'publicationPrivacyPolicyUrl' => 'https://example.com/privacy',
 					),
@@ -200,46 +187,69 @@ class Update_PublicationTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider data_missing_required_settings
-	 *
-	 * @param string $setting The missing setting.
-	 */
-	public function test_create_request__requires_the_connected_publication( $setting ) {
-		$this->module->get_settings()->merge( array( $setting => '' ) );
-
-		try {
-			$this->datapoint->create_request(
-				$this->get_data_request(
-					array(
-						'data' => array(
-							'publicationTosUrl' => 'https://example.com/terms',
-						),
-					)
-				)
-			);
-			$this->fail( 'Expected Missing_Required_Setting_Exception to be thrown.' );
-		} catch ( Missing_Required_Setting_Exception $exception ) {
-			$this->assertSame( "Required setting is missing: {$setting}.", $exception->getMessage(), 'The exception should identify the missing setting.' );
-
-			$error = $exception->to_wp_error();
-			$this->assertSame( 'missing_required_setting', $error->get_error_code(), 'The exception should use the missing setting error code.' );
-			$this->assertSame( array( 'status' => 500 ), $error->get_error_data(), 'The exception should return an HTTP 500 error.' );
-		}
-	}
-
-	public function data_missing_required_settings() {
-		return array(
-			'organizationID' => array( 'organizationID' ),
-			'publicationID'  => array( 'publicationID' ),
-		);
-	}
-
 	public function test_create_request__requires_update_fields() {
 		$this->expectException( Missing_Required_Param_Exception::class );
 		$this->expectExceptionMessage( 'Request parameter is empty: data.' );
 
-		$this->datapoint->create_request( $this->get_data_request( array() ) );
+		$this->datapoint->create_request(
+			$this->get_data_request(
+				array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+				)
+			)
+		);
+	}
+
+	/**
+	 * @dataProvider data_missing_publication_params
+	 *
+	 * @param string $missing Name of the identifier left out of the request.
+	 */
+	public function test_create_request__requires_the_publication_params( $missing ) {
+		$data = array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+			'data'           => array(
+				'publicationTosUrl' => 'https://example.com/terms',
+			),
+		);
+
+		unset( $data[ $missing ] );
+
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( "Request parameter is empty: {$missing}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	/**
+	 * @dataProvider data_missing_publication_params
+	 *
+	 * @param string $invalid Name of the identifier given a non-string value.
+	 */
+	public function test_create_request__rejects_a_non_string_publication_param( $invalid ) {
+		$data = array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+			'data'           => array(
+				'publicationTosUrl' => 'https://example.com/terms',
+			),
+		);
+
+		$data[ $invalid ] = array( 'not-a-string' );
+
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( "Invalid parameter: {$invalid}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function data_missing_publication_params() {
+		return array(
+			'organizationID' => array( 'organizationID' ),
+			'publicationID'  => array( 'publicationID' ),
+		);
 	}
 
 	public function test_parse_response() {
@@ -251,7 +261,9 @@ class Update_PublicationTest extends TestCase {
 			$response,
 			$this->get_data_request(
 				array(
-					'data' => array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'data'           => array(
 						'publicationTosUrl' => 'https://example.com/terms',
 					),
 				)

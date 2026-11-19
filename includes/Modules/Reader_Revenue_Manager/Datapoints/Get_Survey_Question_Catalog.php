@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 
+use Google\Site_Kit\Core\Modules\Datapoint;
+use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\AnswerChoiceTemplate;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\QuestionTemplate;
@@ -22,21 +24,14 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\SurveyQuesti
  * @access private
  * @ignore
  */
-class Get_Survey_Question_Catalog extends Connected_Publication_Datapoint {
+class Get_Survey_Question_Catalog extends Datapoint implements Executable_Datapoint {
 
-	/**
-	 * Publication the request was created for.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $request_publication_id = '';
+	use Publication_Params_Trait;
 
 	/**
 	 * Creates a request object.
 	 *
 	 * No language code is sent, so the API uses the publication's own language.
-	 * The publication is recorded for the response.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -44,15 +39,7 @@ class Get_Survey_Question_Catalog extends Connected_Publication_Datapoint {
 	 * @return mixed Request object.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$publication = $this->get_connected_publication();
-
-		$this->request_publication_id = $publication['publicationID'];
-
-		$name = sprintf(
-			'organizations/%s/publications/%s/surveyQuestionCatalog',
-			$publication['organizationID'],
-			$publication['publicationID']
-		);
+		$name = $this->get_publication_name( $data_request ) . '/surveyQuestionCatalog';
 
 		return $this->get_service()->organizations_publications->getSurveyQuestionCatalog( $name );
 	}
@@ -64,15 +51,10 @@ class Get_Survey_Question_Catalog extends Connected_Publication_Datapoint {
 	 *
 	 * @param SurveyQuestionCatalog $response Survey question catalog response.
 	 * @param Data_Request          $data     Data request object.
-	 * @return array {
-	 *     Connected publication survey question catalog.
-	 *
-	 *     @type string $publicationID Publication the request was created for.
-	 *     @type array  $questions     Catalog questions, in API order.
-	 * }
+	 * @return array Catalog questions, in API order.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		$questions = array_map(
+		return array_map(
 			array( $this, 'parse_question' ),
 			array_values(
 				array_filter(
@@ -82,11 +64,6 @@ class Get_Survey_Question_Catalog extends Connected_Publication_Datapoint {
 					}
 				)
 			)
-		);
-
-		return array(
-			'publicationID' => $this->request_publication_id,
-			'questions'     => $questions,
 		);
 	}
 

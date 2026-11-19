@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 
+use Google\Site_Kit\Core\Modules\Datapoint;
+use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA as CTA_Synchronization;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
@@ -21,7 +23,17 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
  * @access private
  * @ignore
  */
-class Get_CTAs extends Connected_Publication_Datapoint {
+class Get_CTAs extends Datapoint implements Executable_Datapoint {
+
+	use Publication_Params_Trait;
+
+	/**
+	 * Reader Revenue Manager settings.
+	 *
+	 * @since 1.187.0
+	 * @var \Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings
+	 */
+	private $settings;
 
 	/**
 	 * CTA synchronization instance.
@@ -30,14 +42,6 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 	 * @var CTA_Synchronization
 	 */
 	private $synchronization;
-
-	/**
-	 * Publication the request was created for.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $request_publication_id = '';
 
 	/**
 	 * Constructor.
@@ -49,6 +53,7 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 
+		$this->settings        = $definition['settings'];
 		$this->synchronization = new CTA_Synchronization( $this->settings );
 	}
 
@@ -56,21 +61,13 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Uses the connected publication from the module settings, and records it for the response.
+	 * @since n.e.x.t Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$publication = $this->get_connected_publication();
-
-		$this->request_publication_id = $publication['publicationID'];
-
-		$parent = sprintf(
-			'organizations/%s/publications/%s',
-			$publication['organizationID'],
-			$publication['publicationID']
-		);
+		$parent = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications_ctas->listOrganizationsPublicationsCtas( $parent );
 	}
@@ -80,20 +77,13 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 	 *
 	 * @since 1.187.0
 	 * @since 1.192.0 Excludes CTAs that are neither active nor draft, such as deleted CTAs.
-	 * @since n.e.x.t Names the publication the request was created for.
+	 * @since n.e.x.t Only synchronizes the CTAs of the saved publication.
 	 *
 	 * @param mixed        $response List CTAs response.
 	 * @param Data_Request $data     Data request object.
-	 * @return array {
-	 *     Connected publication CTAs.
-	 *
-	 *     @type string $publicationID Publication the request was created for.
-	 *     @type array  $ctas          CTA resources.
-	 * }
+	 * @return array CTA resources.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		$publication_id = $this->request_publication_id;
-
 		$ctas = array_values(
 			array_filter(
 				(array) $response->getCtas(),
@@ -107,17 +97,26 @@ class Get_CTAs extends Connected_Publication_Datapoint {
 			)
 		);
 
-		// The connected publication can change while the request runs, so the
-		// settings are only updated when the response is still for it.
-		$settings = $this->settings->get();
-
-		if ( $settings['publicationID'] === $publication_id ) {
+		// A response for another publication must not overwrite the saved
+		// publication's configured CTAs.
+		if ( $this->is_saved_publication( $data ) ) {
 			$this->synchronization->synchronize( $ctas );
 		}
 
-		return array(
-			'publicationID' => $publication_id,
-			'ctas'          => $ctas,
-		);
+		return $ctas;
+	}
+
+	/**
+	 * Checks whether the request is for the publication in the settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data_request Data request object.
+	 * @return bool TRUE if the request is for the saved publication, FALSE otherwise.
+	 */
+	private function is_saved_publication( Data_Request $data_request ) {
+		$publication_id = $this->settings->get()['publicationID'];
+
+		return ! empty( $publication_id ) && $publication_id === $data_request['publicationID'];
 	}
 }
