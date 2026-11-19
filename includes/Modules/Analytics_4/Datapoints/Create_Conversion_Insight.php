@@ -30,7 +30,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements Schema_Aware_Datapoint {
+class Create_Conversion_Insight extends AI_Insight_Datapoint implements Schema_Aware_Datapoint {
 
 	/**
 	 * The longest tab the datapoint accepts. Analytics keeps at most 500
@@ -63,7 +63,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` callbacks that return what reaches the service, and the Analytics `module` that runs the reports.
+	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` callbacks that return what reaches the service, the `insight_reader` of the insight, and the Analytics `module` that runs the reports.
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
@@ -160,12 +160,12 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 			}
 
 			if ( isset( $response['scenario'] ) ) {
-				$insight = $this->get_insight( $response );
+				$insight = $this->get_insight_reader()->read( $response );
 
 				return is_wp_error( $insight ) ? $insight : array( 'insight' => $insight );
 			}
 
-			return $this->get_invalid_response_error();
+			return $this->get_insight_reader()->get_invalid_response_error();
 		};
 	}
 

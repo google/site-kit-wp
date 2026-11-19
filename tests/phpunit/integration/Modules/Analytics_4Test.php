@@ -40,7 +40,7 @@ use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reportin
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Benchmarking_Insight;
-use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Insight;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_AI_Insight_Operation;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
@@ -2201,7 +2201,7 @@ class Analytics_4Test extends TestCase {
 		$get_datapoint    = $this->analytics->get_datapoint_definition( 'GET:benchmarking-insight' );
 
 		$this->assertInstanceOf( Create_Benchmarking_Insight::class, $create_datapoint, 'The POST datapoint should ask the service for a benchmarking insight' );
-		$this->assertInstanceOf( Get_Benchmarking_Insight::class, $get_datapoint, 'The GET datapoint should read the operation that generates the benchmarking insight' );
+		$this->assertInstanceOf( Get_AI_Insight_Operation::class, $get_datapoint, 'The GET datapoint should read the operation that generates the benchmarking insight' );
 		$this->assertTrue( $create_datapoint->is_shareable(), 'The POST datapoint should be shareable, so a view-only user can ask for the insight' );
 		$this->assertTrue( $get_datapoint->is_shareable(), 'The GET datapoint should be shareable, so a view-only user can read the insight' );
 	}

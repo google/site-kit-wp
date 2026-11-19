@@ -29,7 +29,7 @@ use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Insight_Payload;
  * @access private
  * @ignore
  */
-class Create_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
+class Create_Benchmarking_Insight extends AI_Insight_Datapoint {
 
 	/**
 	 * Creates a request object.
@@ -81,13 +81,13 @@ class Create_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 				return $this->with_retry_after( array( 'operationID' => $response['operation_id'] ), $response );
 			}
 
-			$insight = $this->get_insight( $response );
-
-			if ( null === $insight ) {
-				return $this->get_invalid_response_error();
+			if ( ! is_array( $response ) ) {
+				return $this->get_insight_reader()->get_invalid_response_error();
 			}
 
-			return array( 'insight' => $insight );
+			$insight = $this->get_insight_reader()->read( $response );
+
+			return is_wp_error( $insight ) ? $insight : array( 'insight' => $insight );
 		};
 	}
 }

@@ -59,6 +59,8 @@ use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Utilities;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Benchmarking_Insight_Reader;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Conversion_Insight_Reader;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Audience;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Benchmarking_Insight;
@@ -69,15 +71,14 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Account_Summaries;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Accounts;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Advanced_Data_Breakdowns_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_AI_Insight_Operation;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Data;
-use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
-use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Conversion_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
@@ -1168,13 +1169,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		);
 
 		if ( Feature_Flags::enabled( 'trafficInsights' ) ) {
-			$this->datapoints['POST:benchmarking-insight'] = new Create_Benchmarking_Insight( $insight_definition );
-			$this->datapoints['GET:benchmarking-insight']  = new Get_Benchmarking_Insight( $insight_definition );
+			$benchmarking_insight_definition = array_merge( $insight_definition, array( 'insight_reader' => new Benchmarking_Insight_Reader() ) );
+
+			$this->datapoints['POST:benchmarking-insight'] = new Create_Benchmarking_Insight( $benchmarking_insight_definition );
+			$this->datapoints['GET:benchmarking-insight']  = new Get_AI_Insight_Operation( $benchmarking_insight_definition );
 		}
 
 		if ( Feature_Flags::enabled( 'siteGoalsInsights' ) ) {
-			$this->datapoints['POST:conversion-insights'] = new Create_Conversion_Insight( array_merge( $insight_definition, array( 'module' => $this ) ) );
-			$this->datapoints['GET:conversion-insights']  = new Get_Conversion_Insight( $insight_definition );
+			$conversion_insight_definition = array_merge( $insight_definition, array( 'insight_reader' => new Conversion_Insight_Reader() ) );
+
+			$this->datapoints['POST:conversion-insights'] = new Create_Conversion_Insight( array_merge( $conversion_insight_definition, array( 'module' => $this ) ) );
+			$this->datapoints['GET:conversion-insights']  = new Get_AI_Insight_Operation( $conversion_insight_definition );
 		}
 
 		$this->datapoints['GET:plain-permalink-top-posts'] = new Get_Plain_Permalink_Top_Posts(
