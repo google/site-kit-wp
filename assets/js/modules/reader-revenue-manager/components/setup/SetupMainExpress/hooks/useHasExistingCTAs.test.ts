@@ -41,8 +41,15 @@ import {
 } from '@tests/js/test-utils';
 import useHasExistingCTAs from './useHasExistingCTAs';
 
-// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+const ORGANIZATION_ID = publications[ 0 ].organizationId;
 const PUBLICATION_ID = publications[ 0 ].publicationId;
+/* eslint-enable sitekit/acronym-case */
+
+const PUBLICATION_PARAMS = {
+	organizationID: ORGANIZATION_ID,
+	publicationID: PUBLICATION_ID,
+};
 
 describe( 'useHasExistingCTAs', () => {
 	let registry: WPDataRegistry;
@@ -54,10 +61,9 @@ describe( 'useHasExistingCTAs', () => {
 	};
 
 	function receiveCTAs( ctas: unknown[] ) {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas,
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationCTAs( ctas, PUBLICATION_PARAMS );
 	}
 
 	beforeEach( () => {

@@ -27,6 +27,7 @@ import { waitFor } from '@testing-library/react';
 import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import Notifications from '@/js/components/notifications/Notifications';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -37,6 +38,7 @@ import {
 } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import * as tracking from '@/js/util/tracking';
 import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -47,6 +49,9 @@ import {
 	render,
 } from '@tests/js/test-utils';
 import { FEATURE_DISCOVERY_CALLOUT_NOTIFICATION } from './FeatureDiscoveryCallout';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const fetchDismissItem = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -80,6 +85,7 @@ describe( 'FeatureDiscoveryCallout', () => {
 
 	afterEach( () => {
 		fetchMock.reset();
+		mockTrackEvent.mockClear();
 		document
 			.querySelectorAll(
 				`.googlesitekit-add-features-button, .${ FEATURES_MENU_BUTTON_CLASS }`
@@ -210,5 +216,71 @@ describe( 'FeatureDiscoveryCallout', () => {
 		expect(
 			queryByText( 'Unlock more Site Kit features' )
 		).not.toBeInTheDocument();
+	} );
+
+	describe( 'GA event tracking', () => {
+		const expectedCategory = `${ VIEW_CONTEXT_MAIN_DASHBOARD }_feature-discovery-callout-notification`;
+
+		it( 'should track the view_notification event once the callout is in view', async () => {
+			mockSurveyEndpoints();
+
+			const { waitForRegistry } = renderNotifications();
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				expectedCategory,
+				'view_notification',
+				undefined,
+				undefined
+			);
+
+			// Mark the callout as viewed, as its observer does once it has been
+			// in view.
+			act( () => {
+				registry
+					.dispatch( CORE_UI )
+					.setValue(
+						`notification/${ FEATURE_DISCOVERY_CALLOUT_NOTIFICATION }/viewed`,
+						true
+					);
+			} );
+
+			await waitFor( () =>
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					expectedCategory,
+					'view_notification',
+					undefined,
+					undefined
+				)
+			);
+		} );
+
+		it( 'should track the dismiss_notification event when the Got it button is clicked', async () => {
+			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+
+			fetchMock.postOnce( fetchDismissItem, {
+				body: [ FEATURE_DISCOVERY_CALLOUT_NOTIFICATION ],
+			} );
+
+			mockSurveyEndpoints();
+
+			const { getByRole, waitForRegistry } = renderNotifications();
+
+			await waitForRegistry();
+
+			act( () => {
+				fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
+			} );
+
+			await waitFor( () =>
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					expectedCategory,
+					'dismiss_notification',
+					undefined,
+					undefined
+				)
+			);
+		} );
 	} );
 } );

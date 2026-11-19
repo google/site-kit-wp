@@ -184,10 +184,6 @@ export async function submitChanges( { dispatch, select } ) {
 	);
 
 	if ( haveSettingsChanged() ) {
-		const hasConnectedPublicationChanged =
-			hasSettingChanged( 'publicationID' ) ||
-			hasSettingChanged( 'organizationID' );
-
 		if (
 			hasSettingChanged( 'postTypes' ) &&
 			'post_types' !== getSnippetMode()
@@ -203,12 +199,6 @@ export async function submitChanges( { dispatch, select } ) {
 
 		if ( error ) {
 			return { error };
-		}
-
-		if ( hasConnectedPublicationChanged ) {
-			await dispatch(
-				MODULES_READER_REVENUE_MANAGER
-			).invalidateResolutionForStoreSelector( 'getPublication' );
 		}
 	}
 

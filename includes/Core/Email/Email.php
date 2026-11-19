@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Email;
 
+use Google\Site_Kit\Core\Util\URL;
 use WP_Error;
 
 /**
@@ -32,33 +33,53 @@ class Email {
 	/**
 	 * Builds email headers with Site Kit branding.
 	 *
-	 * Fetches the filtered From email via wp_mail_from filter,
-	 * overrides the From name to "Site Kit", and merges with
-	 * caller-supplied headers.
+	 * Fetches the filtered From email via wp_mail_from filter, falling back
+	 * to the default From address that wp_mail uses (or the administration
+	 * email when that default is not a valid address), overrides the From name
+	 * to "Site Kit", adds a Reply-To header with the administration email,
+	 * and merges with caller-supplied headers.
 	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Defaults the From address to the site's domain and adds a Reply-To header.
 	 *
 	 * @param array $headers Optional. Additional headers to merge. Default empty array.
 	 * @return array Final header array with Site Kit branding.
 	 */
 	public function build_headers( $headers = array() ) {
-		$from_email = apply_filters( 'wp_mail_from', '' );
+		$default_from_email = $this->get_default_from_email();
+		$from_email         = apply_filters( 'wp_mail_from', $default_from_email );
 
 		if ( empty( $from_email ) || ! is_email( $from_email ) ) {
-			$from_email = get_option( 'admin_email' );
+			$from_email = is_email( $default_from_email ) ? $default_from_email : get_option( 'admin_email' );
 		}
 
-		$from_header = sprintf( 'From: Site Kit <%s>', $from_email );
+		$site_kit_headers = array(
+			sprintf( 'From: Site Kit <%s>', $from_email ),
+			sprintf( 'Reply-To: %s', get_option( 'admin_email' ) ),
+		);
 
 		if ( ! is_array( $headers ) ) {
 			$headers = array();
 		}
 
-		// Merge the From header with caller-supplied headers.
-		// Place the From header first.
-		$final_headers = array_merge( array( $from_header ), $headers );
+		return array_merge( $site_kit_headers, $headers );
+	}
 
-		return $final_headers;
+	/**
+	 * Gets the default From address that wp_mail uses.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The "wordpress@" address on the network home URL's host, without a leading "www.".
+	 */
+	private function get_default_from_email() {
+		$host = (string) URL::parse( network_home_url(), PHP_URL_HOST );
+
+		if ( 0 === strpos( $host, 'www.' ) ) {
+			$host = substr( $host, 4 );
+		}
+
+		return 'wordpress@' . $host;
 	}
 
 	/**

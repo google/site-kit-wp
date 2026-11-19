@@ -79,7 +79,10 @@ export const SYNC_PUBLICATION = 'syncPublication';
 export const EXPRESS_SETUP_CTAS = {
 	NEWSLETTER_SIGNUP: 'newsletter-signup',
 	SURVEY: 'survey',
-};
+} as const;
+
+export type ExpressSetupCTAType =
+	typeof EXPRESS_SETUP_CTAS[ keyof typeof EXPRESS_SETUP_CTAS ];
 
 export const EXPRESS_SETUP_CTA_FORMS = {
 	NEWSLETTER_SIGNUP: 'expressSetupCtaForm-newsletter-signup',

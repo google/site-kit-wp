@@ -40,6 +40,7 @@ import {
 	provideUserAuthentication,
 	render,
 	waitFor,
+	waitForDefaultTimeouts,
 } from '@tests/js/test-utils';
 import ExpressSetupDefault from './ExpressSetupDefault';
 
@@ -285,18 +286,23 @@ describe( 'ExpressSetupDefault', () => {
 		}
 
 		/**
-		 * Resolves the settings with the given publication ID.
+		 * Resolves the settings with the given publication's identifiers.
 		 *
 		 * @since 1.191.0
 		 * @private
 		 *
-		 * @param {string} publicationID Publication ID.
+		 * @param {Object} [publication] Optional. Publication to connect. Defaults to none.
 		 * @return {void}
 		 */
-		function provideSettings( publicationID: string ) {
+		function provideSettings( publication?: Publication ) {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( { publicationID } );
+				.receiveGetSettings( {
+					/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+					organizationID: publication?.organizationId ?? '',
+					publicationID: publication?.publicationId ?? '',
+					/* eslint-enable sitekit/acronym-case */
+				} );
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -341,22 +347,25 @@ describe( 'ExpressSetupDefault', () => {
 			expectOnlyProgressBar( container );
 		} );
 
-		it( 'should show only a progress bar while the connected publication is loading', () => {
+		it( 'should show only a progress bar while the connected publication is loading', async () => {
 			setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			provideSettings( publicationWithoutTerms.publicationId );
+			provideSettings( publicationWithoutTerms );
 			freezeFetch( publicationEndpoint );
 
 			const { container } = render( <ExpressSetupDefault />, {
 				registry,
 			} );
 
+			// The request never settles, so wait for it to be sent rather
+			// than let it reach the next test.
+			await waitForDefaultTimeouts();
+
 			expectOnlyProgressBar( container );
 		} );
 
 		it( 'should show only a progress bar while the granted scopes are loading', () => {
 			setupRegistry();
-			provideSettings( '' );
+			provideSettings();
 
 			const { container } = render( <ExpressSetupDefault />, {
 				registry,
@@ -367,7 +376,7 @@ describe( 'ExpressSetupDefault', () => {
 
 		it( 'should show only a progress bar while a required scope is missing, when no publication is connected', () => {
 			setupRegistry( { grantedScopes: [] } );
-			provideSettings( '' );
+			provideSettings();
 
 			const { container } = render( <ExpressSetupDefault />, {
 				registry,
@@ -378,8 +387,7 @@ describe( 'ExpressSetupDefault', () => {
 
 		it( 'should show only a progress bar while a required scope is missing, when the publication request has failed', async () => {
 			setupRegistry( { grantedScopes: [] } );
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			provideSettings( publicationWithoutTerms.publicationId );
+			provideSettings( publicationWithoutTerms );
 
 			fetchMock.getOnce( publicationEndpoint, {
 				body: {
@@ -418,9 +426,7 @@ describe( 'ExpressSetupDefault', () => {
 			[
 				'connected publication',
 				publicationEndpoint,
-				() =>
-					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-					provideSettings( publicationWithoutTerms.publicationId ),
+				() => provideSettings( publicationWithoutTerms ),
 				publicationWithoutTerms,
 				'.googlesitekit-stepper__step--active',
 			],
@@ -502,7 +508,7 @@ describe( 'ExpressSetupDefault', () => {
 
 		it( 'should show the stepper and the step once the scopes are granted and the step has resolved', async () => {
 			setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
-			provideSettings( '' );
+			provideSettings();
 
 			const { container, waitForRegistry } = render(
 				<ExpressSetupDefault />,

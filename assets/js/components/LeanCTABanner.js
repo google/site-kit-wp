@@ -43,11 +43,9 @@ const LeanCTABanner = forwardRef(
 							<Icon width="32" height="32" />
 						</div>
 					) }
-					{
-						<div className="googlesitekit-lean-cta-banner__body-content">
-							{ children }
-						</div>
-					}
+					<div className="googlesitekit-lean-cta-banner__body-content">
+						{ children }
+					</div>
 				</div>
 				{ SVGGraphic && (
 					<div className="googlesitekit-lean-cta-banner__graphic">

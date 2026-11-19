@@ -144,10 +144,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 
 	const hasResolvedPublication: boolean = useSelect(
 		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
-				'getPublication',
-				[]
-			),
+			select( MODULES_READER_REVENUE_MANAGER ).hasResolvedPublication(),
 		[]
 	);
 

@@ -87,7 +87,7 @@ export function calculateChange(
 export function validateJSON( stringToValidate: string ): boolean {
 	try {
 		return JSON.parse( stringToValidate ) && !! stringToValidate;
-	} catch ( error ) {
+	} catch {
 		return false;
 	}
 }
