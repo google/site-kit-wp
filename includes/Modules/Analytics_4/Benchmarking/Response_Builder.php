@@ -95,11 +95,11 @@ class Response_Builder {
 	 *     The assembled response, or the error a failed report returned.
 	 *
 	 *     @type array       $visits           Visit totals for the selected period and the one before it.
-	 *     @type array       $dailyTraffic     List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the expected range of the period, as `Period_Baseline::get_daily_ranges()` spreads it over the period's days. The bounds are null on every day when the period has no expected range, with fewer than `Period_Baseline::get_min_range_history_days()` days of recorded traffic up to and including its last day.
+	 *     @type array       $dailyTraffic     List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the band `Period_Baseline::get_daily_ranges()` fits for the period. The bounds are null on every day when the period has no band, with fewer than `Period_Baseline::get_min_band_history_days()` days of recorded traffic up to and including its last day.
 	 *     @type string|null $firstTrafficDate The first day of the daily report with visits, as `YYYY-MM-DD`, or null when no day has any.
-	 *     @type array       $keyFactors       The key factor cards, as `Key_Factors::build()` returns them. Empty when the compare period starts before `firstTrafficDate`, since a day before it wasn't measured yet, or when no candidate stays.
+	 *     @type array       $keyFactors       The key factor cards, as `Key_Factors::build()` returns them. Empty when `Typical_Traffic_Availability` has no key factors for the period: it is shorter than 7 days, or the compare period starts before `firstTrafficDate`, since a day before it wasn't measured yet. Also empty when no candidate stays.
 	 *     @type array       $contentMarkers   The posts published in the selected period that the chart marks, as `Content_Markers::build()` returns them. Empty when the property has no post date custom dimension, since the content report doesn't run then, or when the dimension has no data yet.
-	 *     @type array|null  $insightRequest   Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request.
+	 *     @type array|null  $insightRequest   Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request, which includes a period without key factors.
 	 * }
 	 */
 	public function build( $start_date, $end_date ) {
@@ -114,6 +114,7 @@ class Response_Builder {
 		$period_baseline    = Period_Baseline::from_daily_series( $daily_series );
 		$compare_range      = $report_options->get_compare_range();
 		$first_traffic_date = $this->get_first_traffic_date( $daily_series );
+		$availability       = Typical_Traffic_Availability::get( $period_baseline, $end_date, $report_options->get_period_days() );
 
 		$visits = array(
 			'current'  => $this->sum_visits( $daily_series, $start_date, $end_date ),
@@ -133,8 +134,9 @@ class Response_Builder {
 
 		// Every card compares the selected period with the compare period, so a
 		// compare period with days before the site was measured would make
-		// every driver look like growth.
-		$key_factors = null !== $first_traffic_date && $compare_range['startDate'] >= $first_traffic_date
+		// every driver look like growth, and a period of fewer than 7 days is
+		// too short for a card.
+		$key_factors = $availability['key_factors_available']
 			? $this->build_key_factors( $contextual_data, $report_options )
 			: array();
 
@@ -155,7 +157,13 @@ class Response_Builder {
 		);
 
 		if ( Feature_Flags::enabled( 'trafficInsights' ) ) {
-			$response['insightRequest'] = ( new Insight_Request_Builder() )->build( $start_date, $end_date, $daily_series, $visits, $this->get_insight_rows( $contextual_data ) );
+			// The insight's driver describes the change the key factor cards
+			// show, so the insight is requested only with them, whether the
+			// period has a band or not. The request reads the same fits as the
+			// band of `dailyTraffic`, so the chart and the verdict agree.
+			$response['insightRequest'] = $availability['insight_request_allowed']
+				? ( new Insight_Request_Builder() )->build( $start_date, $end_date, $period_baseline, $visits, $this->get_insight_rows( $contextual_data ) )
+				: null;
 		}
 
 		return $response;
@@ -452,8 +460,8 @@ class Response_Builder {
 			)
 		);
 
-		// The band under the period is the range of the period's verdict, which
-		// the insight request sends as its `baseline`, spread over its days.
+		// The band comes from the same fits as the range the insight request
+		// sends as its `baseline`, and its days add up to that range.
 		$daily_ranges = $period_baseline->get_daily_ranges( $end_date, count( $period_days ) );
 
 		return array_map(

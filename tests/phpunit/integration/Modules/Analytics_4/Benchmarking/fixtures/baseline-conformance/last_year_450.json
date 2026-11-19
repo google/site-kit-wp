@@ -458,8 +458,8 @@
   ],
   "expected": {
     "baseline": {
-      "expected_range_min": 10454,
-      "expected_range_max": 13763
+      "expected_range_min": 10500,
+      "expected_range_max": 13821
     },
     "last_year": {
       "current_period": 7249,
@@ -564,6 +564,208 @@
         1.1446047150706846,
         1.138729939376507,
         0.6676220557475717
+      ]
+    },
+    "range": {
+      "center": 12160.536069035697,
+      "margin": 1660.5826205409903,
+      "days": [
+        {
+          "date": "2025-04-30",
+          "center": 491.01772459937285,
+          "half_width": 69.79818054671372,
+          "expected_min": 421.2,
+          "expected_max": 560.8
+        },
+        {
+          "date": "2025-05-01",
+          "center": 493.6456022232012,
+          "half_width": 69.28727949352024,
+          "expected_min": 424.4,
+          "expected_max": 562.9
+        },
+        {
+          "date": "2025-05-02",
+          "center": 499.560106477077,
+          "half_width": 69.0982451992709,
+          "expected_min": 430.5,
+          "expected_max": 568.7
+        },
+        {
+          "date": "2025-05-03",
+          "center": 291.1787843315635,
+          "half_width": 39.74428982818688,
+          "expected_min": 251.4,
+          "expected_max": 330.9
+        },
+        {
+          "date": "2025-05-04",
+          "center": 289.76630406623934,
+          "half_width": 38.77054556165698,
+          "expected_min": 251,
+          "expected_max": 328.5
+        },
+        {
+          "date": "2025-05-05",
+          "center": 483.7061331713447,
+          "half_width": 64.23420507707638,
+          "expected_min": 419.5,
+          "expected_max": 547.9
+        },
+        {
+          "date": "2025-05-06",
+          "center": 485.8361616393048,
+          "half_width": 68.04069490220911,
+          "expected_min": 417.8,
+          "expected_max": 553.9
+        },
+        {
+          "date": "2025-05-07",
+          "center": 491.95408996135467,
+          "half_width": 68.28826535062194,
+          "expected_min": 423.7,
+          "expected_max": 560.2
+        },
+        {
+          "date": "2025-05-08",
+          "center": 494.026558765717,
+          "half_width": 67.64397409423373,
+          "expected_min": 426.4,
+          "expected_max": 561.7
+        },
+        {
+          "date": "2025-05-09",
+          "center": 499.98471091028216,
+          "half_width": 68.02087091727522,
+          "expected_min": 432,
+          "expected_max": 568
+        },
+        {
+          "date": "2025-05-10",
+          "center": 289.06751495736694,
+          "half_width": 38.93477385769776,
+          "expected_min": 250.1,
+          "expected_max": 328
+        },
+        {
+          "date": "2025-05-11",
+          "center": 290.9501293122977,
+          "half_width": 38.833918435757525,
+          "expected_min": 252.1,
+          "expected_max": 329.8
+        },
+        {
+          "date": "2025-05-12",
+          "center": 483.5635726648497,
+          "half_width": 65.22345540025816,
+          "expected_min": 418.3,
+          "expected_max": 548.8
+        },
+        {
+          "date": "2025-05-13",
+          "center": 489.7651356523073,
+          "half_width": 68.86991715382462,
+          "expected_min": 420.9,
+          "expected_max": 558.6
+        },
+        {
+          "date": "2025-05-14",
+          "center": 492.742451416282,
+          "half_width": 68.27020638436774,
+          "expected_min": 424.5,
+          "expected_max": 561
+        },
+        {
+          "date": "2025-05-15",
+          "center": 495.8232589746694,
+          "half_width": 69.95709277447763,
+          "expected_min": 425.9,
+          "expected_max": 565.8
+        },
+        {
+          "date": "2025-05-16",
+          "center": 498.46007737814637,
+          "half_width": 68.0738080021578,
+          "expected_min": 430.4,
+          "expected_max": 566.5
+        },
+        {
+          "date": "2025-05-17",
+          "center": 289.93192592128895,
+          "half_width": 38.58964865036884,
+          "expected_min": 251.3,
+          "expected_max": 328.5
+        },
+        {
+          "date": "2025-05-18",
+          "center": 291.5819858432276,
+          "half_width": 38.7719683989515,
+          "expected_min": 252.8,
+          "expected_max": 330.4
+        },
+        {
+          "date": "2025-05-19",
+          "center": 484.7180577867866,
+          "half_width": 64.66103931141495,
+          "expected_min": 420.1,
+          "expected_max": 549.4
+        },
+        {
+          "date": "2025-05-20",
+          "center": 489.9078967821095,
+          "half_width": 68.08494004018823,
+          "expected_min": 421.8,
+          "expected_max": 558
+        },
+        {
+          "date": "2025-05-21",
+          "center": 493.20878922057307,
+          "half_width": 66.70248652688504,
+          "expected_min": 426.5,
+          "expected_max": 559.9
+        },
+        {
+          "date": "2025-05-22",
+          "center": 498.75439218205184,
+          "half_width": 69.13522845353117,
+          "expected_min": 429.6,
+          "expected_max": 567.9
+        },
+        {
+          "date": "2025-05-23",
+          "center": 495.0029633375157,
+          "half_width": 66.64537985382185,
+          "expected_min": 428.4,
+          "expected_max": 561.6
+        },
+        {
+          "date": "2025-05-24",
+          "center": 290.93516753828754,
+          "half_width": 38.612426833773455,
+          "expected_min": 252.3,
+          "expected_max": 329.5
+        },
+        {
+          "date": "2025-05-25",
+          "center": 293.6814955277932,
+          "half_width": 38.668715135042795,
+          "expected_min": 255,
+          "expected_max": 332.4
+        },
+        {
+          "date": "2025-05-26",
+          "center": 481.77273474801046,
+          "half_width": 63.86295875741738,
+          "expected_min": 417.9,
+          "expected_max": 545.6
+        },
+        {
+          "date": "2025-05-27",
+          "center": 489.99234364667484,
+          "half_width": 65.75810560028924,
+          "expected_min": 424.2,
+          "expected_max": 555.8
+        }
       ]
     }
   }

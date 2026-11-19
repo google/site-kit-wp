@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Benchmarking;
 use DateTimeImmutable;
 use DateTimeZone;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Insight_Request_Builder;
+use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Period_Baseline;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -32,7 +33,9 @@ class Insight_Request_BuilderTest extends TestCase {
 
 	/**
 	 * The first day of the daily series `Report_Options` asks for with the
-	 * selected period: 364 days before the compare period starts.
+	 * selected period: 364 days before the compare period starts, which for a
+	 * 28-day period is also 392 days before the period starts, where the band
+	 * of its first day reaches.
 	 */
 	const SERIES_START_DATE = '2025-07-23';
 
@@ -50,14 +53,15 @@ class Insight_Request_BuilderTest extends TestCase {
 	}
 
 	/**
-	 * Gets a day for each date from one day to another, with its visits.
+	 * Builds the model of a day for each date from one day to another, with
+	 * its visits, as `Response_Builder` builds it from the daily series.
 	 *
 	 * @param string   $first_date The first day, as `YYYY-MM-DD`.
 	 * @param string   $last_date  The last day, as `YYYY-MM-DD`.
 	 * @param callable $get_visits Gets the visits of a day from its position, `0` for `$first_date`.
-	 * @return array List of days, each with `date` and `visits`.
+	 * @return Period_Baseline The model of the days, from the first day with visits on.
 	 */
-	private function get_daily_series( $first_date, $last_date, callable $get_visits ) {
+	private function get_period_baseline( $first_date, $last_date, callable $get_visits ) {
 		$utc    = new DateTimeZone( 'UTC' );
 		$date   = new DateTimeImmutable( $first_date, $utc );
 		$last   = new DateTimeImmutable( $last_date, $utc );
@@ -72,7 +76,7 @@ class Insight_Request_BuilderTest extends TestCase {
 			$date = $date->modify( '+1 day' );
 		}
 
-		return $series;
+		return Period_Baseline::from_daily_series( $series );
 	}
 
 	/**
@@ -96,7 +100,7 @@ class Insight_Request_BuilderTest extends TestCase {
 		return $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
-			$this->get_daily_series( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
+			$this->get_period_baseline( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
 			array(
 				'current'  => 7730,
 				'previous' => 7714,
@@ -148,8 +152,8 @@ class Insight_Request_BuilderTest extends TestCase {
 		);
 
 		// The series covers last year's two periods, from `2025-07-23` to
-		// `2025-08-19` and from `2025-08-20` to `2025-09-16`, and more than the
-		// 56 days of reference the expected range needs.
+		// `2025-08-19` and from `2025-08-20` to `2025-09-16`, and the 365 days
+		// of reference of each day's fit, which end 28 days before the day.
 		$this->assertSame(
 			array(
 				'end_date'        => '2026-09-15',
@@ -163,8 +167,8 @@ class Insight_Request_BuilderTest extends TestCase {
 					),
 				),
 				'baseline'        => array(
-					'expected_range_min' => 6608,
-					'expected_range_max' => 8845,
+					'expected_range_min' => 6593,
+					'expected_range_max' => 8826,
 				),
 				'contextual_data' => array(
 					'traffic_channel_surges' => array(
@@ -200,7 +204,7 @@ class Insight_Request_BuilderTest extends TestCase {
 			$this->builder->build(
 				$start_date,
 				self::END_DATE,
-				$this->get_daily_series( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
+				$this->get_period_baseline( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
 				array(
 					'current'  => 500,
 					'previous' => 400,
@@ -229,7 +233,7 @@ class Insight_Request_BuilderTest extends TestCase {
 		$request = $this->builder->build(
 			$start_date,
 			self::END_DATE,
-			$this->get_daily_series( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
+			$this->get_period_baseline( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
 			array(
 				'current'  => 500,
 				'previous' => 400,
@@ -259,7 +263,7 @@ class Insight_Request_BuilderTest extends TestCase {
 			$this->builder->build(
 				self::START_DATE,
 				self::END_DATE,
-				$this->get_daily_series( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
+				$this->get_period_baseline( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
 				$visits,
 				array()
 			),
@@ -303,7 +307,7 @@ class Insight_Request_BuilderTest extends TestCase {
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
-			$this->get_daily_series( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
+			$this->get_period_baseline( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
 			$visits,
 			array()
 		);
@@ -358,78 +362,78 @@ class Insight_Request_BuilderTest extends TestCase {
 	}
 
 	public function test_build__sends_the_history_days_in_place_of_a_baseline_below_the_minimum_history() {
-		// 83 days, from `2026-06-25`, are one short of the 84 a 28-day period
-		// needs for a range.
+		// 110 days, from `2026-05-29`, are one short of the 111 a 28-day period
+		// needs for a range: its first day needs the 84 days of its own fit.
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
-			$this->get_daily_series( '2026-06-25', self::END_DATE, array( $this, 'get_varying_visits' ) ),
+			$this->get_period_baseline( '2026-05-29', self::END_DATE, array( $this, 'get_varying_visits' ) ),
 			array(
-				'current'  => 7800,
-				'previous' => 7500,
+				'current'  => 7596,
+				'previous' => 7882,
 			),
 			array()
 		);
 
-		$this->assertArrayNotHasKey( 'baseline', $request, 'A site with 83 days of history should get no expected range for a 28-day period.' );
-		$this->assertSame( 83, $request['history_days'], 'The request should carry the 83 days of history, so the service can say when the site will have a range.' );
-		$this->assertArrayNotHasKey( 'last_year', $request['visits'], 'A site with 83 days of history should have no visits a year ago.' );
+		$this->assertArrayNotHasKey( 'baseline', $request, 'A site with 110 days of history should get no expected range for a 28-day period.' );
+		$this->assertSame( 110, $request['history_days'], 'The request should carry the 110 days of history, so the service can say when the site will have a range.' );
+		$this->assertArrayNotHasKey( 'last_year', $request['visits'], 'A site with 110 days of history should have no visits a year ago.' );
 	}
 
 	public function test_build__sends_a_baseline_from_the_minimum_history_on() {
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
-			$this->get_daily_series( '2026-06-24', self::END_DATE, array( $this, 'get_varying_visits' ) ),
+			$this->get_period_baseline( '2026-05-28', self::END_DATE, array( $this, 'get_varying_visits' ) ),
 			array(
-				'current'  => 7840,
-				'previous' => 7522,
+				'current'  => 7726,
+				'previous' => 7861,
 			),
 			array()
 		);
 
 		$this->assertSame(
 			array(
-				'expected_range_min' => 5828,
-				'expected_range_max' => 9502,
+				'expected_range_min' => 5877,
+				'expected_range_max' => 9579,
 			),
 			$request['baseline'],
-			'A site with 84 days of history should get an expected range for a 28-day period.'
+			'A site with 111 days of history should get an expected range for a 28-day period.'
 		);
 		$this->assertArrayNotHasKey( 'history_days', $request, 'A request with an expected range should carry no history days.' );
 	}
 
 	public function test_build__counts_the_history_from_the_first_day_with_visits() {
-		// The site recorded no visit for the first 336 days of the series, so its
-		// history is the same 84 days as in the test above, and a year ago it
+		// The site recorded no visit for the first 309 days of the series, so its
+		// history is the same 111 days as in the test above, and a year ago it
 		// wasn't measured yet.
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
-			$this->get_daily_series(
+			$this->get_period_baseline(
 				self::SERIES_START_DATE,
 				self::END_DATE,
-				fn( $position ) => $position < 336 ? 0 : $this->get_varying_visits( $position - 336 )
+				fn( $position ) => $position < 309 ? 0 : $this->get_varying_visits( $position - 309 )
 			),
 			array(
-				'current'  => 7840,
-				'previous' => 7522,
+				'current'  => 7726,
+				'previous' => 7861,
 			),
 			array()
 		);
 
 		$this->assertSame(
 			array(
-				'expected_range_min' => 5828,
-				'expected_range_max' => 9502,
+				'expected_range_min' => 5877,
+				'expected_range_max' => 9579,
 			),
 			$request['baseline'],
 			'The days before the first day with visits should not count towards the history the expected range is fitted on.'
 		);
 		$this->assertSame(
 			array(
-				'current_period'  => 7840,
-				'previous_period' => 7522,
+				'current_period'  => 7726,
+				'previous_period' => 7861,
 			),
 			$request['visits'],
 			'Last year\'s periods, before the first day with visits, should be left out rather than sent as periods without visits.'
@@ -440,7 +444,7 @@ class Insight_Request_BuilderTest extends TestCase {
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
-			$this->get_daily_series(
+			$this->get_period_baseline(
 				self::SERIES_START_DATE,
 				self::END_DATE,
 				fn( $position ) => $position < 337 ? 0 : $this->get_varying_visits( $position )
@@ -456,15 +460,16 @@ class Insight_Request_BuilderTest extends TestCase {
 	}
 
 	public function test_build__sends_last_years_visits_and_the_baseline_of_a_7_day_period() {
-		// The series `Report_Options` asks for with a 7-day period starts 364
-		// days before the compare period, on `2025-09-03`.
+		// The series `Report_Options` asks for with a 7-day period starts on
+		// `2025-08-13`, 392 days before the period, where the band of its first
+		// day reaches, before last year's compare period starts on `2025-09-03`.
 		$request = $this->builder->build(
 			'2026-09-09',
 			self::END_DATE,
-			$this->get_daily_series( '2025-09-03', self::END_DATE, array( $this, 'get_varying_visits' ) ),
+			$this->get_period_baseline( '2025-08-13', self::END_DATE, array( $this, 'get_varying_visits' ) ),
 			array(
-				'current'  => 1928,
-				'previous' => 1927,
+				'current'  => 1780,
+				'previous' => 1930,
 			),
 			array()
 		);
@@ -474,16 +479,16 @@ class Insight_Request_BuilderTest extends TestCase {
 				'end_date'       => '2026-09-15',
 				'days_in_period' => 7,
 				'visits'         => array(
-					'current_period'  => 1928,
-					'previous_period' => 1927,
+					'current_period'  => 1780,
+					'previous_period' => 1930,
 					'last_year'       => array(
-						'current_period'  => 2027,
-						'previous_period' => 1875,
+						'current_period'  => 1879,
+						'previous_period' => 1878,
 					),
 				),
 				'baseline'       => array(
-					'expected_range_min' => 1569,
-					'expected_range_max' => 2285,
+					'expected_range_min' => 1566,
+					'expected_range_max' => 2281,
 				),
 			),
 			$request,
@@ -1030,7 +1035,7 @@ class Insight_Request_BuilderTest extends TestCase {
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
-			$this->get_daily_series( self::SERIES_START_DATE, self::END_DATE, fn( $position ) => (string) $this->get_varying_visits( $position ) ),
+			$this->get_period_baseline( self::SERIES_START_DATE, self::END_DATE, fn( $position ) => (string) $this->get_varying_visits( $position ) ),
 			array(
 				'current'  => '7730',
 				'previous' => 7714.0,

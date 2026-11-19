@@ -36,6 +36,7 @@
   "expected": {
     "baseline": null,
     "last_year": null,
-    "model": null
+    "model": null,
+    "range": null
   }
 }

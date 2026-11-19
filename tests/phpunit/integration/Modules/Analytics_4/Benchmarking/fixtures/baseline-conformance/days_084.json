@@ -1,6 +1,6 @@
 {
   "name": "days_084",
-  "description": "84 days, the first day with a range: two reference blocks, one miss (K = 1).",
+  "description": "84 days, the first day with a 28-day fit: two reference blocks, one miss (K = 1); the range's first day has none yet, so no baseline.",
   "start_date": "2024-03-04",
   "target_date": "2024-05-26",
   "days_in_period": 28,
@@ -91,10 +91,7 @@
     57
   ],
   "expected": {
-    "baseline": {
-      "expected_range_min": 1716,
-      "expected_range_max": 3137
-    },
+    "baseline": null,
     "last_year": null,
     "model": {
       "center": 2426.5,
@@ -135,6 +132,7 @@
         1.1190603750257573,
         0.6413352565423449
       ]
-    }
+    },
+    "range": null
   }
 }

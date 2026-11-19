@@ -14,34 +14,41 @@ use DateTimeImmutable;
 use DateTimeZone;
 
 /**
- * Calculates the expected range of a period's visits total, and last year's
- * totals for the same windows, from the site's daily visits.
+ * Calculates the expected range of a period's visits total, the band of each
+ * of its days, and last year's totals for the same windows, from the site's
+ * daily visits.
  *
  * This is a port of the Site Kit Service's reference baseline model,
- * `internal/ai/baseline_model.go`, which §5.4 of the service's
+ * `internal/ai/baseline_model.go` and `fitDailyRange()` in
+ * `internal/ai/expected_range.go`, which §5.4 of the service's
  * `docs/benchmarking_feature_design.md` specifies (§5.5 for last year's
- * totals). The range is the expected range the benchmarking insight request
- * sends as `baseline`, and last year's totals are its `visits.last_year`.
+ * totals, §5.6 for the chart's band). The range is the expected range the
+ * benchmarking insight request sends as `baseline`, and last year's totals
+ * are its `visits.last_year`.
  *
- * The range is a forecast of the judged period's total, fitted only on the
- * days before the period's first day, so nothing inside the period can move
- * it. The chart draws the same range under the period, spread over its days
- * by the site's weekday pattern (§5.6), so the band under the period is the
- * band its verdict used.
+ * Each day of the period is forecast from the history at least 28 days before
+ * it: its fit is the model for the 28 days that end on it, fitted only on the
+ * days before them, and its band is the day's weekday share of that fit. So a
+ * day's band never depends on the period it is viewed in, and nothing inside a
+ * period of up to 28 days can move its bands. The range of the period's total
+ * comes from the same fits: its center is the sum of the days' centers, and
+ * its margin is the margin the fit of the period's last day gives that
+ * center, which keeps the model's calibration for a total of the period's
+ * length. The days' half-widths are scaled to add up to that margin, so the
+ * band the chart draws and the range of the verdict always agree.
  *
- * The model always fits 28-day blocks, whatever the period's length. It
- * removes spikes and outages from the reference, the up to 365 days before
- * the period, fits a level, a damped drift and a margin on the blocks of four
- * alignments 7 days apart, takes the medians over the alignments, and scales
- * the band's daily rate to the period's weekday-weighted days.
+ * Each fit removes spikes and outages from its reference, the up to 365 days
+ * before its period, fits a level, a damped drift and a margin on the 28-day
+ * blocks of four alignments 7 days apart, and takes the medians over the
+ * alignments.
  *
  * Every constant keeps the value, and the name without its `baseline` prefix,
  * of its counterpart in the service, and every guard and rounding rule is the
  * service's, so the service's conformance fixtures hold for this class. Every
  * list is added up in order, oldest first, and the arithmetic follows the
- * order of the Go code, so the range bounds and the filtered days are the
- * service's exactly, and every other value matches it to well within the
- * fixtures' tolerance of `1e-6`.
+ * order of the Go code, so the range bounds, the bounds of each day and the
+ * filtered days are the service's exactly, and every other value matches it
+ * to well within the fixtures' tolerance of `1e-6`.
  *
  * @since n.e.x.t
  * @access private
@@ -72,19 +79,28 @@ class Period_Baseline {
 	const MIN_REFERENCE_BLOCKS = 2;
 
 	/**
-	 * The fewest days of reference a range needs: two blocks.
+	 * The fewest days of reference a fit needs: two blocks.
 	 *
 	 * @since n.e.x.t
 	 */
 	const MIN_REFERENCE_DAYS = self::MIN_REFERENCE_BLOCKS * self::BLOCK_DAYS;
 
 	/**
-	 * The most days of reference, the days before the period, that a range is
-	 * fitted on.
+	 * The most days of reference, the days before the fit's period, that a fit
+	 * is fitted on.
 	 *
 	 * @since n.e.x.t
 	 */
 	const REFERENCE_DAYS = 365;
+
+	/**
+	 * How far back the band of a period's first day reaches, in days: its fit
+	 * is for the 28 days that end on it, on the up to 365 days before them, so
+	 * its reference starts 392 days before it.
+	 *
+	 * @since n.e.x.t
+	 */
+	const BAND_LOOKBACK_DAYS = self::REFERENCE_DAYS + self::STANDARD_DAYS_IN_PERIOD - 1;
 
 	/**
 	 * The z-score that sets the band's width: with the misses' spread, it
@@ -218,6 +234,27 @@ class Period_Baseline {
 	private $first_day = null;
 
 	/**
+	 * The fit of each day a band has needed, by date as `YYYY-MM-DD`: the fit
+	 * for the 28 days that end on the day, as fit_series() returns it.
+	 *
+	 * A day's fit reads only the days up to it, so every period that has the
+	 * day shares its fit.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $day_fits = array();
+
+	/**
+	 * The band of each period it has been fitted for, by the period's last day
+	 * and length, such as `2026-09-15:28`, as get_daily_range() returns it.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $daily_ranges = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -269,8 +306,9 @@ class Period_Baseline {
 	}
 
 	/**
-	 * Gets the fewest days of history, up to and including a period's last day,
-	 * that give the period a range: the period and two 28-day reference blocks.
+	 * Gets the fewest days of history, up to and including the last day of a
+	 * fit's period, that the fit needs: the period and two 28-day reference
+	 * blocks.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -282,8 +320,26 @@ class Period_Baseline {
 	}
 
 	/**
+	 * Gets the fewest days of history, up to and including a period's last day,
+	 * that give the period its band and its range: every day of the period has
+	 * its 28-day fit, so its first day needs the 84 days of that fit up to and
+	 * including itself.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $period_days The period's length in days. A length that is not above `0` is read as 28.
+	 * @return int The fewest days of history, `d + 83`: 111 for a 28-day period.
+	 */
+	public static function get_min_band_history_days( $period_days ) {
+		return self::get_period_days( $period_days ) - 1 + self::get_min_range_history_days( self::STANDARD_DAYS_IN_PERIOD );
+	}
+
+	/**
 	 * Gets the expected range of the visits total of the period that ends on a
 	 * day.
+	 *
+	 * The range comes from the same fits as the band the chart draws under the
+	 * period, so the chart and the verdict always agree.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -291,22 +347,22 @@ class Period_Baseline {
 	 * @param int    $period_days The period's length in days. A length that is not above `0` is read as 28.
 	 * @return array|null {
 	 *     The range, or null when the daily series up to and including the
-	 *     target date has fewer than get_min_range_history_days() days.
+	 *     target date has fewer than get_min_band_history_days() days.
 	 *
 	 *     @type int $expected_range_min The fewest visits in the range, rounded half away from zero and never below `0`.
 	 *     @type int $expected_range_max The most visits in the range, rounded half away from zero.
 	 * }
 	 */
 	public function get_range( $target_date, $period_days ) {
-		$model = $this->get_model( $target_date, $period_days );
+		$daily_range = $this->get_daily_range( $target_date, $period_days );
 
-		if ( null === $model ) {
+		if ( null === $daily_range ) {
 			return null;
 		}
 
 		return array(
-			'expected_range_min' => (int) max( 0, round( $model['center'] - $model['margin'] ) ),
-			'expected_range_max' => (int) round( $model['center'] + $model['margin'] ),
+			'expected_range_min' => (int) max( 0, self::round_half_away_from_zero( $daily_range['center'] - $daily_range['margin'] ) ),
+			'expected_range_max' => (int) self::round_half_away_from_zero( $daily_range['center'] + $daily_range['margin'] ),
 		);
 	}
 
@@ -314,44 +370,77 @@ class Period_Baseline {
 	 * Gets the expected range of each day of the period that ends on a day:
 	 * the band the chart draws under the period.
 	 *
-	 * The period's range is spread over its days by the weekday factors: each
-	 * day gets the range times its weekday's share of the period's weight. So
-	 * the band keeps the range of the period's verdict across the period while
-	 * its weekday shape changes, and the days add up to the range to within
-	 * the rounding. This is the service's `dailyBand()` in
-	 * `internal/ai/expected_range.go` for the block that ends on the target
-	 * date, which §5.6 of its design specifies.
+	 * @since n.e.x.t
+	 *
+	 * @param string $target_date The period's last day, as `YYYY-MM-DD`: the last complete day.
+	 * @param int    $period_days The period's length in days. A length that is not above `0` is read as 28.
+	 * @return array|null The range of each day of the period, oldest first and keyed by its date as `YYYY-MM-DD`, with `expected_min` and `expected_max` rounded half away from zero to one decimal place; or null when the period has no band, as get_daily_range() has none.
+	 */
+	public function get_daily_ranges( $target_date, $period_days ) {
+		$daily_range = $this->get_daily_range( $target_date, $period_days );
+
+		if ( null === $daily_range ) {
+			return null;
+		}
+
+		$ranges = array();
+
+		foreach ( $daily_range['days'] as $day ) {
+			$ranges[ $day['date'] ] = array(
+				'expected_min' => $day['expected_min'],
+				'expected_max' => $day['expected_max'],
+			);
+		}
+
+		return $ranges;
+	}
+
+	/**
+	 * Fits the band of the period that ends on a day, and gets it with the
+	 * range of the period's total that the same fits give.
+	 *
+	 * Day `t` of the period gets the fit for the 28 days that end on it, so it
+	 * is forecast on the up to 365 days up to `t - 28`. Its center is the fit's
+	 * daily rate times the day's weekday factor, `block_center / 28 * dow(t)`,
+	 * and its raw half-width the same share of the fit's margin. The total's
+	 * center is the sum of the days' centers, and its margin is the margin the
+	 * fit of the period's last day gives that center, which keeps the model's
+	 * calibration for a total of the period's length. The days' half-widths
+	 * are then scaled to add up to that margin. This is the service's
+	 * `fitDailyRange()` in `internal/ai/expected_range.go`, which §5.4 of its
+	 * design specifies (*Request range*), and the keys and the values are those
+	 * of the `range` of its conformance fixtures.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string $target_date The period's last day, as `YYYY-MM-DD`: the last complete day.
 	 * @param int    $period_days The period's length in days. A length that is not above `0` is read as 28.
-	 * @return array|null The range of each day of the period, oldest first and keyed by its date as `YYYY-MM-DD`, with `expected_min` and `expected_max` rounded half away from zero to one decimal place; or null when the period has no range, as get_range() has none.
+	 * @return array|null {
+	 *     The band, or null when the daily series up to and including the
+	 *     target date has fewer than get_min_band_history_days() days: the
+	 *     band covers every day of the period or none of them.
+	 *
+	 *     @type float $center         The center of the period's total: the sum of the days' centers.
+	 *     @type float $margin         The margin of the period's total.
+	 *     @type int   $reference_days The number of days the fit of the period's last day is fitted on, at most 365.
+	 *     @type array $days           The days of the period, oldest first, each with its `date` as `YYYY-MM-DD`, its `center`, its scaled `half_width`, and its `expected_min` and `expected_max` rounded half away from zero to one decimal place, the minimum never below `0`.
+	 * }
 	 */
-	public function get_daily_ranges( $target_date, $period_days ) {
-		$model = $this->get_model( $target_date, $period_days );
+	public function get_daily_range( $target_date, $period_days ) {
+		$end = self::parse_date( $target_date );
 
-		if ( null === $model ) {
+		if ( null === $end ) {
 			return null;
 		}
 
-		$end       = self::parse_date( $target_date );
-		$days      = self::get_period_days( $period_days );
-		$range_min = max( 0, $model['center'] - $model['margin'] );
-		$range_max = max( 0, $model['center'] + $model['margin'] );
-		$ranges    = array();
+		$days = self::get_period_days( $period_days );
+		$key  = $end->format( 'Y-m-d' ) . ':' . $days;
 
-		for ( $offset = $days - 1; $offset >= 0; $offset-- ) {
-			$day   = self::shift_day( $end, -$offset );
-			$share = $model['dow_factors_sunday_first'][ (int) $day->format( 'w' ) ] / $model['period_weight'];
-
-			$ranges[ $day->format( 'Y-m-d' ) ] = array(
-				'expected_min' => round( $range_min * $share * 10 ) / 10,
-				'expected_max' => round( $range_max * $share * 10 ) / 10,
-			);
+		if ( ! array_key_exists( $key, $this->daily_ranges ) ) {
+			$this->daily_ranges[ $key ] = $this->fit_daily_range( $end, $days );
 		}
 
-		return $ranges;
+		return $this->daily_ranges[ $key ];
 	}
 
 	/**
@@ -454,26 +543,144 @@ class Period_Baseline {
 			return null;
 		}
 
-		$days = self::get_period_days( $period_days );
+		list( $visits, $dates, $weekdays ) = $this->get_daily_series( $end );
 
+		$model = self::fit_series( $visits, $dates, $weekdays, self::get_period_days( $period_days ) );
+
+		if ( null === $model ) {
+			return null;
+		}
+
+		// The misses and the reference's length only feed the band.
+		return array_diff_key( $model, array_flip( array( 'alignment_misses', 'reference_days' ) ) );
+	}
+
+	/**
+	 * Fits the model for the period of a number of days that ends a daily
+	 * series, on the up to 365 days before the period.
+	 *
+	 * This is the service's `baselineModelOnSeries()`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param float[]  $visits      The visits of each day of the series, oldest first.
+	 * @param string[] $dates       The date of each day, in the same order.
+	 * @param int[]    $weekdays    The weekday of each day, in the same order.
+	 * @param int      $period_days The period's length in days, at least `1`.
+	 * @return array|null The model, as fit_reference() returns it, with the number of days of its reference as `reference_days`; or null when the series has fewer than get_min_range_history_days() days.
+	 */
+	private static function fit_series( array $visits, array $dates, array $weekdays, $period_days ) {
+		$history_days = count( $visits );
+
+		if ( $history_days < self::get_min_range_history_days( $period_days ) ) {
+			return null;
+		}
+
+		$reference_end   = $history_days - $period_days;
+		$reference_start = max( 0, $reference_end - self::REFERENCE_DAYS );
+		$reference_days  = $reference_end - $reference_start;
+
+		$model = self::fit_reference(
+			array_slice( $visits, $reference_start, $reference_days ),
+			array_slice( $dates, $reference_start, $reference_days ),
+			array_slice( $weekdays, $reference_start, $reference_days ),
+			$period_days
+		);
+
+		$model['reference_days'] = $reference_days;
+
+		return $model;
+	}
+
+	/**
+	 * Fits the band of the period that ends on a day, as get_daily_range()
+	 * returns it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param DateTimeImmutable $end  The period's last day.
+	 * @param int               $days The period's length in days, at least `1`.
+	 * @return array|null The band, or null when the daily series up to and including the day has fewer than get_min_band_history_days() days.
+	 */
+	private function fit_daily_range( DateTimeImmutable $end, $days ) {
 		list( $visits, $dates, $weekdays ) = $this->get_daily_series( $end );
 
 		$history_days = count( $visits );
 
-		if ( $history_days < self::get_min_range_history_days( $days ) ) {
+		if ( 0 === $history_days || $history_days < self::get_min_band_history_days( $days ) ) {
 			return null;
 		}
 
-		$reference_end   = $history_days - $days;
-		$reference_start = max( 0, $reference_end - self::REFERENCE_DAYS );
-		$reference_days  = $reference_end - $reference_start;
+		$bands = array();
+		$fit   = null;
 
-		return self::fit_reference(
-			array_slice( $visits, $reference_start, $reference_days ),
-			array_slice( $dates, $reference_start, $reference_days ),
-			array_slice( $weekdays, $reference_start, $reference_days ),
-			$days
+		for ( $position = $history_days - $days; $position < $history_days; $position++ ) {
+			$fit    = $this->get_day_fit( $visits, $dates, $weekdays, $position );
+			$factor = $fit['dow_factors_sunday_first'][ $weekdays[ $position ] ];
+
+			$bands[] = array(
+				'date'       => $dates[ $position ],
+				'center'     => $fit['block_center'] / self::BLOCK_DAYS * $factor,
+				'half_width' => $fit['margin'] * $factor / $fit['period_weight'],
+			);
+		}
+
+		// The loop ends on the period's last day, whose fit calibrates the
+		// margin of the total.
+		$center = array_sum( array_column( $bands, 'center' ) );
+		$margin = self::get_margin_for( $fit, $center );
+		$raw    = array_sum( array_column( $bands, 'half_width' ) );
+
+		return array(
+			'center'         => $center,
+			'margin'         => $margin,
+			'reference_days' => $fit['reference_days'],
+			'days'           => array_map(
+				function ( $band ) use ( $margin, $raw, $days ) {
+					// The days' half-widths are scaled to add up to the margin
+					// of the total, or share it evenly when they are all `0`.
+					$half_width = $raw > 0 ? $band['half_width'] * ( $margin / $raw ) : $margin / $days;
+
+					return array(
+						'date'         => $band['date'],
+						'center'       => $band['center'],
+						'half_width'   => $half_width,
+						'expected_min' => self::round_half_away_from_zero( max( 0.0, $band['center'] - $half_width ) * 10 ) / 10,
+						'expected_max' => self::round_half_away_from_zero( ( $band['center'] + $half_width ) * 10 ) / 10,
+					);
+				},
+				$bands
+			),
 		);
+	}
+
+	/**
+	 * Gets the fit of a day of the daily series: the fit for the 28 days that
+	 * end on it, on the up to 365 days before them.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param float[]  $visits   The visits of each day of the daily series, oldest first.
+	 * @param string[] $dates    The date of each day, in the same order.
+	 * @param int[]    $weekdays The weekday of each day, in the same order.
+	 * @param int      $position The day's position in the series.
+	 * @return array|null The fit, as fit_series() returns it, or null when the series up to the day has fewer than get_min_range_history_days() days for 28 days.
+	 */
+	private function get_day_fit( array $visits, array $dates, array $weekdays, $position ) {
+		$date = $dates[ $position ];
+
+		if ( ! array_key_exists( $date, $this->day_fits ) ) {
+			$through = $position + 1;
+
+			$this->day_fits[ $date ] = self::fit_series(
+				array_slice( $visits, 0, $through ),
+				array_slice( $dates, 0, $through ),
+				array_slice( $weekdays, 0, $through ),
+				self::STANDARD_DAYS_IN_PERIOD
+			);
+		}
+
+		return $this->day_fits[ $date ];
 	}
 
 	/**
@@ -546,7 +753,7 @@ class Period_Baseline {
 	 * @param string[] $dates       The date of each day of the reference, in the same order.
 	 * @param int[]    $weekdays    The weekday of each day of the reference, in the same order.
 	 * @param int      $period_days The period's length in days.
-	 * @return array The model, as get_model() returns it.
+	 * @return array The model, as get_model() returns it, followed by the relative forecast misses of each alignment as `alignment_misses`, which get_margin_for() reads.
 	 */
 	private static function fit_reference( array $reference, array $dates, array $weekdays, $period_days ) {
 		// The spike filter runs once, on the whole reference.
@@ -575,10 +782,14 @@ class Period_Baseline {
 			$fits,
 			$drifts
 		);
+		$misses  = array_map(
+			fn( $fit ) => array_map( fn( $ratio ) => $ratio - 1, $fit['width_ratios'] ),
+			$fits
+		);
 		$margins = array_map(
-			fn( $fit, $center ) => self::get_margin( $center * $scale, array_map( fn( $ratio ) => $ratio - 1, $fit['width_ratios'] ) ),
-			$fits,
-			$centers
+			fn( $center, $alignment_misses ) => self::get_margin( $center * $scale, $alignment_misses ),
+			$centers,
+			$misses
 		);
 
 		$block_center = self::median( $centers );
@@ -604,6 +815,32 @@ class Period_Baseline {
 			'alignment_centers'        => $centers,
 			'alignment_margins'        => $margins,
 			'dow_factors_sunday_first' => $dow_factors,
+			'alignment_misses'         => $misses,
+		);
+	}
+
+	/**
+	 * Gets the margin a fit gives a total with a center, with the fit's
+	 * calibration: the median over the fit's alignments of the margin for the
+	 * center scaled by the alignment's block center, against the alignment's
+	 * own misses.
+	 *
+	 * For the center of the fit's own period, it is the fit's margin. This is
+	 * the service's `marginFor()`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $fit    The fit, as fit_reference() returns it.
+	 * @param float $center The center of the total.
+	 * @return float The margin.
+	 */
+	private static function get_margin_for( array $fit, $center ) {
+		return self::median(
+			array_map(
+				fn( $alignment_center, $alignment_misses ) => self::get_margin( $center * $alignment_center / $fit['block_center'], $alignment_misses ),
+				$fit['alignment_centers'],
+				$fit['alignment_misses']
+			)
 		);
 	}
 
@@ -1071,6 +1308,27 @@ class Period_Baseline {
 	}
 
 	/**
+	 * Rounds a value to a whole number, half away from zero, as the service's
+	 * `math.Round()` does.
+	 *
+	 * PHP's `round()` reads a value within about `1e-11` of a half as the half,
+	 * so it can round such a value the other way.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param float $value The value.
+	 * @return float The rounded value.
+	 */
+	private static function round_half_away_from_zero( $value ) {
+		$magnitude = abs( $value );
+		$whole     = floor( $magnitude );
+		// The fraction of a float is exact, so only a half or more rounds up.
+		$rounded = $magnitude - $whole >= 0.5 ? $whole + 1 : $whole;
+
+		return $value < 0 ? -$rounded : $rounded;
+	}
+
+	/**
 	 * Gets a period's length in days, reading a length that is not above `0` as
 	 * the standard period.
 	 *
@@ -1079,7 +1337,7 @@ class Period_Baseline {
 	 * @param int $period_days The period's length in days.
 	 * @return int The period's length in days, at least `1`.
 	 */
-	private static function get_period_days( $period_days ) {
+	public static function get_period_days( $period_days ) {
 		$period_days = (int) $period_days;
 
 		return $period_days > 0 ? $period_days : self::STANDARD_DAYS_IN_PERIOD;

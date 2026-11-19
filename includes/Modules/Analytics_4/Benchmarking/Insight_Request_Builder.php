@@ -84,21 +84,22 @@ class Insight_Request_Builder {
 	 * Builds the request for the selected period.
 	 *
 	 * The request has no `baseline` while the site has too little recorded
-	 * traffic for an expected range, and the service then says it is still
-	 * learning what's usual for the site. In that case the request has
-	 * `history_days` instead, so the service can say when the site will have a
-	 * range.
+	 * traffic for an expected range, fewer than
+	 * `Period_Baseline::get_min_band_history_days()` days, and the service
+	 * then says it is still learning what's usual for the site. In that case
+	 * the request has `history_days` instead, so the service can say when the
+	 * site will have a range.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $start_date      The first day of the selected period, as `YYYY-MM-DD`.
-	 * @param string $end_date        The last day of the selected period, as `YYYY-MM-DD`.
-	 * @param array  $daily_series    The visits of every day up to and including `$end_date`, oldest first, each as `array( 'date' => 'YYYY-MM-DD', 'visits' => int )`.
-	 * @param array  $visits          The visits of the selected period and of the period before it, as `current` and `previous`.
-	 * @param array  $contextual_data The rows of the benchmarking response, keyed by `contextualData` key, before they are ranked.
+	 * @param string          $start_date      The first day of the selected period, as `YYYY-MM-DD`.
+	 * @param string          $end_date        The last day of the selected period, as `YYYY-MM-DD`.
+	 * @param Period_Baseline $period_baseline The model of the visits of every day up to and including `$end_date`, from the first day with visits on, as `Period_Baseline::from_daily_series()` builds it. The chart's band reads the same model, so its fits are made once.
+	 * @param array           $visits          The visits of the selected period and of the period before it, as `current` and `previous`.
+	 * @param array           $contextual_data The rows of the benchmarking response, keyed by `contextualData` key, before they are ranked.
 	 * @return array|null The request, or null when there is no insight to request: the period is shorter than `MIN_PERIOD_DAYS` days or longer than `MAX_PERIOD_DAYS` days, or neither period has a visit.
 	 */
-	public function build( $start_date, $end_date, array $daily_series, array $visits, array $contextual_data ) {
+	public function build( $start_date, $end_date, Period_Baseline $period_baseline, array $visits, array $contextual_data ) {
 		$days_in_period = $this->get_days_in_period( $start_date, $end_date );
 
 		if ( $days_in_period < self::MIN_PERIOD_DAYS || $days_in_period > self::MAX_PERIOD_DAYS ) {
@@ -113,8 +114,6 @@ class Insight_Request_Builder {
 		if ( 0 === $current_period && 0 === $previous_period ) {
 			return null;
 		}
-
-		$period_baseline = Period_Baseline::from_daily_series( $daily_series );
 
 		$request = array(
 			'end_date'       => $end_date,

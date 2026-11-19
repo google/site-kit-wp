@@ -86,6 +86,17 @@ class Report_Options {
 	}
 
 	/**
+	 * Gets the number of days in the selected period, both ends included.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int The number of days.
+	 */
+	public function get_period_days() {
+		return $this->create_date( $this->start_date )->diff( $this->create_date( $this->end_date ) )->days + 1;
+	}
+
+	/**
 	 * Gets the compare period, which has as many days as the selected period
 	 * and ends the day before the selected period starts.
 	 *
@@ -95,7 +106,7 @@ class Report_Options {
 	 */
 	public function get_compare_range() {
 		$start_date = $this->create_date( $this->start_date );
-		$days       = $start_date->diff( $this->create_date( $this->end_date ) )->days + 1;
+		$days       = $this->get_period_days();
 
 		return array(
 			'startDate' => $start_date->modify( "-{$days} days" )->format( 'Y-m-d' ),
@@ -104,33 +115,41 @@ class Report_Options {
 	}
 
 	/**
-	 * Gets the options of the report that counts visits by day, from
-	 * `LAST_YEAR_OFFSET_DAYS` days before the compare period's first day to the
-	 * selected period's last day.
+	 * Gets the options of the report that counts visits by day, from the first
+	 * day the band or last year's periods read to the selected period's last
+	 * day.
 	 *
 	 * A visit is a session. The traffic line, the period totals and the
 	 * expected range all come from this report, so they all count visits.
 	 *
 	 * The report covers the selected period, the compare period, and the same
 	 * two periods 52 weeks earlier, which the insight request sends as last
-	 * year's visits. That also covers the 365 days before the selected period,
-	 * as many as `Period_Baseline` fits the period's expected range on.
+	 * year's visits, from `LAST_YEAR_OFFSET_DAYS` days before the compare
+	 * period's first day. It also covers the reference of the band's first day,
+	 * which `Period_Baseline` fits on the up to 365 days that end 28 days
+	 * before that day, from `Period_Baseline::BAND_LOOKBACK_DAYS` days before
+	 * the selected period's first day. That makes `max( d + 392, 364 + 2d )`
+	 * days for a `d`-day period: 420 for 28 days, the first reach for a period
+	 * of up to 28 days and the second for a longer one.
 	 * `Response_Builder::build()` adds up the visits of each period from this
 	 * report, and returns the days of the selected period alone as
 	 * `dailyTraffic`.
 	 *
 	 * @since 1.190.0
 	 * @since 1.192.0 The report starts on the first day of the compare period, in place of the first of the 395 days that end on the last day of the selected period.
-	 * @since n.e.x.t The report counts `sessions` in place of `totalUsers`, and starts `LAST_YEAR_OFFSET_DAYS` days before the first day of the compare period.
+	 * @since n.e.x.t The report counts `sessions` in place of `totalUsers`, and starts on the first day of last year's compare period or of the band's reference, whichever is earlier.
 	 *
 	 * @return array Report request options array.
 	 */
 	public function get_daily_series_options() {
-		$compare_range = $this->get_compare_range();
-		$offset_days   = self::LAST_YEAR_OFFSET_DAYS;
+		$compare_range   = $this->get_compare_range();
+		$offset_days     = self::LAST_YEAR_OFFSET_DAYS;
+		$lookback_days   = Period_Baseline::BAND_LOOKBACK_DAYS;
+		$last_year_start = $this->create_date( $compare_range['startDate'] )->modify( "-{$offset_days} days" );
+		$band_start      = $this->create_date( $this->start_date )->modify( "-{$lookback_days} days" );
 
 		return array(
-			'startDate'  => $this->create_date( $compare_range['startDate'] )->modify( "-{$offset_days} days" )->format( 'Y-m-d' ),
+			'startDate'  => min( $last_year_start, $band_start )->format( 'Y-m-d' ),
 			'endDate'    => $this->end_date,
 			'metrics'    => array(
 				array( 'name' => 'sessions' ),

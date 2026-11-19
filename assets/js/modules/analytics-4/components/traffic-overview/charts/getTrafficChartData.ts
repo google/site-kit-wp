@@ -29,6 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { hasTypicalTrafficRange as hasTypicalTrafficRangeOnEveryDay } from '@/js/modules/analytics-4/components/traffic-overview/utils/hasTypicalTrafficRange';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { DAY_IN_SECONDS, getLocale, stringToDate } from '@/js/util';
 import { PUBLISHED_POST_POINT_STYLE } from './trafficChartOptions';
@@ -213,11 +214,7 @@ export function getTrafficChartData( {
 	// The band covers the whole range or none of it, so the chart draws it only
 	// when every day has a typical range.
 	const hasTypicalTrafficRange =
-		plotsDailyTraffic &&
-		dailyTraffic.every(
-			( { expectedMin, expectedMax } ) =>
-				expectedMin !== null && expectedMax !== null
-		);
+		plotsDailyTraffic && hasTypicalTrafficRangeOnEveryDay( dailyTraffic );
 
 	const days = plotsDailyTraffic
 		? dailyTraffic.map(

@@ -276,6 +276,208 @@
         1,
         1
       ]
+    },
+    "range": {
+      "center": 3360,
+      "margin": 726.5084356086766,
+      "days": [
+        {
+          "date": "2024-08-23",
+          "center": 120,
+          "half_width": 27.36705786095662,
+          "expected_min": 92.6,
+          "expected_max": 147.4
+        },
+        {
+          "date": "2024-08-24",
+          "center": 120,
+          "half_width": 27.36705786095662,
+          "expected_min": 92.6,
+          "expected_max": 147.4
+        },
+        {
+          "date": "2024-08-25",
+          "center": 120,
+          "half_width": 26.483298205443088,
+          "expected_min": 93.5,
+          "expected_max": 146.5
+        },
+        {
+          "date": "2024-08-26",
+          "center": 120,
+          "half_width": 26.483298205443088,
+          "expected_min": 93.5,
+          "expected_max": 146.5
+        },
+        {
+          "date": "2024-08-27",
+          "center": 120,
+          "half_width": 26.483298205443088,
+          "expected_min": 93.5,
+          "expected_max": 146.5
+        },
+        {
+          "date": "2024-08-28",
+          "center": 120,
+          "half_width": 26.483298205443088,
+          "expected_min": 93.5,
+          "expected_max": 146.5
+        },
+        {
+          "date": "2024-08-29",
+          "center": 120,
+          "half_width": 26.483298205443088,
+          "expected_min": 93.5,
+          "expected_max": 146.5
+        },
+        {
+          "date": "2024-08-30",
+          "center": 120,
+          "half_width": 26.483298205443088,
+          "expected_min": 93.5,
+          "expected_max": 146.5
+        },
+        {
+          "date": "2024-08-31",
+          "center": 120,
+          "half_width": 26.483298205443088,
+          "expected_min": 93.5,
+          "expected_max": 146.5
+        },
+        {
+          "date": "2024-09-01",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-02",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-03",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-04",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-05",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-06",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-07",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-08",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-09",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-10",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-11",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-12",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-13",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-14",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-15",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-16",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-17",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-18",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        },
+        {
+          "date": "2024-09-19",
+          "center": 120,
+          "half_width": 25.599538549929548,
+          "expected_min": 94.4,
+          "expected_max": 145.6
+        }
+      ]
     }
   }
 }

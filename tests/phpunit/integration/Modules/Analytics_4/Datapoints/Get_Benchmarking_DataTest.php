@@ -242,6 +242,22 @@ class Get_Benchmarking_DataTest extends TestCase {
 	}
 
 	/**
+	 * Makes the site's first recorded visits fall on `2026-07-22`, the first
+	 * day of the compare period, so every day of it has recorded traffic: the
+	 * key factor cards show, and with them the insight is requested.
+	 *
+	 * The visit totals of the two periods stay 200 and 400.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function provide_traffic_from_the_first_day_of_the_compare_period() {
+		$this->report_rows['date'] = array(
+			array( '20260722', 200 ),
+			array( '20260901', 400 ),
+		);
+	}
+
+	/**
 	 * Makes the given user the current one, and builds the Analytics and Search
 	 * Console modules the datapoint reads, for that user. Their Google requests
 	 * go to fake APIs, which refuse a request without a token.
@@ -478,6 +494,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->set_up_shared_dashboard( array() );
 		$this->enable_feature( 'trafficInsights' );
 		$this->switch_to_user( $this->admin_id );
+		$this->provide_traffic_from_the_first_day_of_the_compare_period();
 
 		$response = $this->request();
 		$data     = $response->get_data();
@@ -490,9 +507,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 			'previous' => $previous,
 		);
 
-		// The site recorded its first visits on `2026-08-01`, 46 days up to the
-		// end date, too little history for an expected range or for last year's
-		// visits. Search Console adds the `plant garlic` row.
+		// The 56 days up to the end date are too little history for an
+		// expected range or for last year's visits. Search Console adds the
+		// `plant garlic` row.
 		$this->assertSame(
 			array(
 				'request' => array(
@@ -502,7 +519,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 						'current_period'  => 400,
 						'previous_period' => 200,
 					),
-					'history_days'    => 46,
+					'history_days'    => 56,
 					'contextual_data' => array(
 						'traffic_channel_surges' => array(
 							array(
@@ -859,6 +876,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$reader_id = $this->create_view_only_reader();
 		update_user_meta( $reader_id, 'locale', 'fr_FR' );
 		$this->switch_to_user( $reader_id );
+		$this->provide_traffic_from_the_first_day_of_the_compare_period();
 
 		$response = $this->request();
 		$data     = $response->get_data();

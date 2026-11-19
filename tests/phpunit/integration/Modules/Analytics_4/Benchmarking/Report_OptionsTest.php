@@ -71,6 +71,12 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
+	public function test_get_period_days__counts_both_ends_of_the_period() {
+		$this->assertSame( 28, $this->report_options->get_period_days(), 'The period from `2026-08-19` to `2026-09-15` should have 28 days.' );
+		$this->assertSame( 1, ( new Report_Options( '2026-09-15', '2026-09-15' ) )->get_period_days(), 'A period of a single day should have 1 day.' );
+		$this->assertSame( 90, ( new Report_Options( '2026-06-18', '2026-09-15' ) )->get_period_days(), 'The period from `2026-06-18` to `2026-09-15` should have 90 days.' );
+	}
+
 	public function test_get_daily_series_options__counts_sessions_by_day_from_364_days_before_the_compare_period_to_the_end_date() {
 		$this->assertSame(
 			array(
@@ -97,14 +103,13 @@ class Report_OptionsTest extends TestCase {
 	 * @dataProvider data_period_lengths
 	 *
 	 * @param string $start_date        The first day of a period that ends on `2026-09-15`.
-	 * @param string $series_start_date The day 364 days before the first day of the compare period.
+	 * @param string $series_start_date The first day the band of the period or last year's periods read.
 	 */
-	public function test_get_daily_series_options__starts_364_days_before_the_compare_period( $start_date, $series_start_date ) {
+	public function test_get_daily_series_options__starts_on_the_first_day_the_band_or_last_years_periods_read( $start_date, $series_start_date ) {
 		$report_options = new Report_Options( $start_date, '2026-09-15' );
 		$options        = $report_options->get_daily_series_options();
-		$compare_range  = $report_options->get_compare_range();
 
-		$this->assertSame( $series_start_date, $options['startDate'], "The daily series of the period from `$start_date` to `2026-09-15` should start on `$series_start_date`, 364 days before the compare period starts on `{$compare_range['startDate']}`." );
+		$this->assertSame( $series_start_date, $options['startDate'], "The daily series of the period from `$start_date` to `2026-09-15` should start on `$series_start_date`." );
 		$this->assertSame( '2026-09-15', $options['endDate'], "The daily series of the period from `$start_date` to `2026-09-15` should end on the period's last day." );
 	}
 
@@ -113,31 +118,34 @@ class Report_OptionsTest extends TestCase {
 	 *
 	 * @param string $start_date The first day of a period that ends on `2026-09-15`.
 	 */
-	public function test_get_daily_series_options__covers_last_years_periods_and_the_reference_of_the_expected_range( $start_date ) {
-		$report_options = new Report_Options( $start_date, '2026-09-15' );
-		$utc            = new DateTimeZone( 'UTC' );
-		$series_start   = new DateTimeImmutable( $report_options->get_daily_series_options()['startDate'], $utc );
-		$compare_start  = new DateTimeImmutable( $report_options->get_compare_range()['startDate'], $utc );
-		$period_start   = new DateTimeImmutable( $start_date, $utc );
+	public function test_get_daily_series_options__covers_last_years_periods_and_the_reference_of_the_band( $start_date ) {
+		$report_options  = new Report_Options( $start_date, '2026-09-15' );
+		$utc             = new DateTimeZone( 'UTC' );
+		$series_start    = new DateTimeImmutable( $report_options->get_daily_series_options()['startDate'], $utc );
+		$compare_start   = new DateTimeImmutable( $report_options->get_compare_range()['startDate'], $utc );
+		$period_start    = new DateTimeImmutable( $start_date, $utc );
+		$last_year_start = $compare_start->modify( '-' . Report_Options::LAST_YEAR_OFFSET_DAYS . ' days' );
+		$band_start      = $period_start->modify( '-' . Period_Baseline::BAND_LOOKBACK_DAYS . ' days' );
 
-		// Last year's previous period, the earlier of last year's two
-		// windows, starts 364 days before the compare period does.
+		// Last year's previous period, the earlier of last year's two windows,
+		// starts 364 days before the compare period does. The fit of the
+		// period's first day reads the 365 days that end 28 days before it.
+		$this->assertLessThanOrEqual( $last_year_start->getTimestamp(), $series_start->getTimestamp(), "The daily series of the period from `$start_date` should cover last year's previous period." );
+		$this->assertLessThanOrEqual( $band_start->getTimestamp(), $series_start->getTimestamp(), "The daily series of the period from `$start_date` should cover the reference of the band of the period's first day." );
 		$this->assertSame(
-			$compare_start->modify( '-' . Report_Options::LAST_YEAR_OFFSET_DAYS . ' days' )->format( 'Y-m-d' ),
+			min( $last_year_start, $band_start )->format( 'Y-m-d' ),
 			$series_start->format( 'Y-m-d' ),
-			"The daily series of the period from `$start_date` should start on the first day of last year's previous period."
-		);
-		$this->assertLessThanOrEqual(
-			$period_start->modify( '-' . Period_Baseline::REFERENCE_DAYS . ' days' )->getTimestamp(),
-			$series_start->getTimestamp(),
-			"The daily series of the period from `$start_date` should cover the 365 days before the period, which its expected range is fitted on."
+			"The daily series of the period from `$start_date` should start on the earlier of the two days, and no earlier."
 		);
 	}
 
 	public function data_period_lengths() {
 		return array(
-			'1 day'   => array( '2026-09-15', '2025-09-15' ),
-			'7 days'  => array( '2026-09-09', '2025-09-03' ),
+			// Up to 28 days, the band of the period's first day reaches back
+			// further than last year's periods; from 28 days on, they do.
+			'1 day'   => array( '2026-09-15', '2025-08-19' ),
+			'7 days'  => array( '2026-09-09', '2025-08-13' ),
+			'14 days' => array( '2026-09-02', '2025-08-06' ),
 			'28 days' => array( '2026-08-19', '2025-07-23' ),
 			'90 days' => array( '2026-06-18', '2025-03-21' ),
 		);

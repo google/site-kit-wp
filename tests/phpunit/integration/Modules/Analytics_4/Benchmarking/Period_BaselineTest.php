@@ -29,12 +29,18 @@ class Period_BaselineTest extends TestCase {
 	/**
 	 * The number of conformance fixtures the service has.
 	 */
-	const FIXTURE_COUNT = 31;
+	const FIXTURE_COUNT = 33;
 
 	/**
 	 * The tolerance of a model's intermediate values against a fixture.
 	 */
 	const TOLERANCE = 1e-6;
+
+	/**
+	 * The tolerance of a day's bounds against a fixture, which are rounded to
+	 * one decimal place, so they match exactly.
+	 */
+	const BOUND_TOLERANCE = 1e-9;
 
 	public function test_data_conformance_fixtures__provides_every_fixture() {
 		$this->assertCount(
@@ -82,7 +88,9 @@ class Period_BaselineTest extends TestCase {
 	public function test_get_model__matches_the_conformance_fixture( $fixture_name ) {
 		$fixture  = $this->get_fixture( $fixture_name );
 		$expected = $fixture['expected']['model'];
-		$model    = $this->get_fixture_period_baseline( $fixture )->get_model( $fixture['target_date'], $fixture['days_in_period'] );
+		// The fixture's model is the fit for the 28 days that end on its target
+		// date, the fit each day of a range gets, whatever the range's length.
+		$model = $this->get_fixture_period_baseline( $fixture )->get_model( $fixture['target_date'], 28 );
 
 		if ( null === $expected ) {
 			$this->assertNull( $model, "The $fixture_name fixture should have no model." );
@@ -123,47 +131,82 @@ class Period_BaselineTest extends TestCase {
 	 *
 	 * @param string $fixture_name The fixture's name, the base name of its file.
 	 */
-	public function test_get_daily_ranges__spreads_the_range_of_the_conformance_fixture_over_its_days( $fixture_name ) {
-		$fixture      = $this->get_fixture( $fixture_name );
-		$days         = $fixture['days_in_period'];
-		$daily_ranges = $this->get_fixture_period_baseline( $fixture )->get_daily_ranges( $fixture['target_date'], $days );
-		$model        = $fixture['expected']['model'];
+	public function test_get_daily_range__matches_the_conformance_fixture( $fixture_name ) {
+		$fixture     = $this->get_fixture( $fixture_name );
+		$expected    = $fixture['expected']['range'];
+		$daily_range = $this->get_fixture_period_baseline( $fixture )->get_daily_range( $fixture['target_date'], $fixture['days_in_period'] );
 
-		if ( null === $model ) {
-			$this->assertNull( $daily_ranges, "The $fixture_name fixture has no range, so its days should have none." );
+		if ( null === $expected ) {
+			$this->assertNull( $daily_range, "The $fixture_name fixture should have no band." );
 
 			return;
 		}
 
-		$utc         = new DateTimeZone( 'UTC' );
-		$target_date = new DateTimeImmutable( $fixture['target_date'], $utc );
+		$this->assertNotNull( $daily_range, "The $fixture_name fixture should have a band." );
+		$this->assertEqualsWithDelta( $expected['center'], $daily_range['center'], self::TOLERANCE, "The center of the total of the $fixture_name fixture should match the fixture." );
+		$this->assertEqualsWithDelta( $expected['margin'], $daily_range['margin'], self::TOLERANCE, "The margin of the total of the $fixture_name fixture should match the fixture." );
+		$this->assertSame( array_column( $expected['days'], 'date' ), array_column( $daily_range['days'], 'date' ), "The $fixture_name fixture should have a band for each day of its period, oldest first, ending on its target date." );
 
-		$this->assertSame(
-			array_map(
-				fn( $offset ) => $target_date->modify( "-{$offset} days" )->format( 'Y-m-d' ),
-				range( $days - 1, 0 )
-			),
-			array_keys( $daily_ranges ),
-			"The $fixture_name fixture should have a range for each day of its period, oldest first."
-		);
+		foreach ( $expected['days'] as $index => $day ) {
+			$this->assertEqualsWithDelta( $day['center'], $daily_range['days'][ $index ]['center'], self::TOLERANCE, "The center of `{$day['date']}` of the $fixture_name fixture should match the fixture." );
+			$this->assertEqualsWithDelta( $day['half_width'], $daily_range['days'][ $index ]['half_width'], self::TOLERANCE, "The half-width of `{$day['date']}` of the $fixture_name fixture should match the fixture." );
+			$this->assertEqualsWithDelta( $day['expected_min'], $daily_range['days'][ $index ]['expected_min'], self::BOUND_TOLERANCE, "The fewest visits of `{$day['date']}` of the $fixture_name fixture should be the fixture's exactly." );
+			$this->assertEqualsWithDelta( $day['expected_max'], $daily_range['days'][ $index ]['expected_max'], self::BOUND_TOLERANCE, "The most visits of `{$day['date']}` of the $fixture_name fixture should be the fixture's exactly." );
+		}
+	}
 
-		// Each day has the range of the service's fit times the day's weekday
-		// share of the period's weight, rounded to one decimal place.
-		foreach ( $daily_ranges as $date => $daily_range ) {
-			$weekday = (int) ( new DateTimeImmutable( $date, $utc ) )->format( 'w' );
-			$share   = $model['dow_factors_sunday_first'][ $weekday ] / $model['period_weight'];
+	/**
+	 * @dataProvider data_conformance_fixtures
+	 *
+	 * @param string $fixture_name The fixture's name, the base name of its file.
+	 */
+	public function test_get_daily_range__adds_the_days_up_to_the_range_of_the_conformance_fixture( $fixture_name ) {
+		$fixture     = $this->get_fixture( $fixture_name );
+		$daily_range = $this->get_fixture_period_baseline( $fixture )->get_daily_range( $fixture['target_date'], $fixture['days_in_period'] );
 
-			$this->assertEqualsWithDelta( max( 0, $model['center'] - $model['margin'] ) * $share, $daily_range['expected_min'], 0.05 + self::TOLERANCE, "The fewest visits of `$date` of the $fixture_name fixture should be the day's share of the fewest visits of the range." );
-			$this->assertEqualsWithDelta( max( 0, $model['center'] + $model['margin'] ) * $share, $daily_range['expected_max'], 0.05 + self::TOLERANCE, "The most visits of `$date` of the $fixture_name fixture should be the day's share of the most visits of the range." );
+		if ( null === $fixture['expected']['baseline'] ) {
+			$this->assertNull( $daily_range, "The $fixture_name fixture has no range, so its days should have no band." );
+
+			return;
 		}
 
-		// The shares of the days add up to 1, so the days add up to the range,
-		// to within the rounding of each day to one decimal place and of the
-		// range to whole visits.
-		$tolerance = 0.05 * $days + 0.5 + self::TOLERANCE;
+		// The chart and the verdict agree: the days' centers add up to the
+		// total's center, their half-widths to its margin, and the range is
+		// the total rounded.
+		$this->assertEqualsWithDelta( $daily_range['center'], array_sum( array_column( $daily_range['days'], 'center' ) ), self::TOLERANCE, "The centers of the days of the $fixture_name fixture should add up to the center of its total." );
+		$this->assertEqualsWithDelta( $daily_range['margin'], array_sum( array_column( $daily_range['days'], 'half_width' ) ), self::TOLERANCE, "The half-widths of the days of the $fixture_name fixture should add up to the margin of its total." );
+		$this->assertSame(
+			array(
+				'expected_range_min' => (int) max( 0, round( $daily_range['center'] - $daily_range['margin'] ) ),
+				'expected_range_max' => (int) round( $daily_range['center'] + $daily_range['margin'] ),
+			),
+			$fixture['expected']['baseline'],
+			"The baseline of the $fixture_name fixture should be the total of its band, rounded."
+		);
+	}
 
-		$this->assertEqualsWithDelta( $fixture['expected']['baseline']['expected_range_min'], array_sum( array_column( $daily_ranges, 'expected_min' ) ), $tolerance, "The fewest visits of the days of the $fixture_name fixture should add up to the fewest visits of its range." );
-		$this->assertEqualsWithDelta( $fixture['expected']['baseline']['expected_range_max'], array_sum( array_column( $daily_ranges, 'expected_max' ) ), $tolerance, "The most visits of the days of the $fixture_name fixture should add up to the most visits of its range." );
+	/**
+	 * @dataProvider data_conformance_fixtures
+	 *
+	 * @param string $fixture_name The fixture's name, the base name of its file.
+	 */
+	public function test_get_daily_ranges__gives_each_day_the_bounds_of_the_conformance_fixture( $fixture_name ) {
+		$fixture      = $this->get_fixture( $fixture_name );
+		$expected     = $fixture['expected']['range'];
+		$daily_ranges = $this->get_fixture_period_baseline( $fixture )->get_daily_ranges( $fixture['target_date'], $fixture['days_in_period'] );
+
+		if ( null === $expected ) {
+			$this->assertNull( $daily_ranges, "The $fixture_name fixture has no band, so its days should have none." );
+
+			return;
+		}
+
+		$this->assertSame( array_column( $expected['days'], 'date' ), array_keys( $daily_ranges ), "The $fixture_name fixture should have a range for each day of its period, oldest first and keyed by its date." );
+
+		foreach ( $expected['days'] as $day ) {
+			$this->assertEqualsWithDelta( $day['expected_min'], $daily_ranges[ $day['date'] ]['expected_min'], self::BOUND_TOLERANCE, "The fewest visits of `{$day['date']}` of the $fixture_name fixture should be the fixture's exactly." );
+			$this->assertEqualsWithDelta( $day['expected_max'], $daily_ranges[ $day['date'] ]['expected_max'], self::BOUND_TOLERANCE, "The most visits of `{$day['date']}` of the $fixture_name fixture should be the fixture's exactly." );
+		}
 	}
 
 	public function data_conformance_fixtures() {
@@ -179,24 +222,79 @@ class Period_BaselineTest extends TestCase {
 	}
 
 	public function test_get_min_range_history_days__adds_two_blocks_to_the_period() {
-		$this->assertSame( 63, Period_Baseline::get_min_range_history_days( 7 ), 'A 7-day period should need 63 days of history: the period and two 28-day blocks.' );
-		$this->assertSame( 84, Period_Baseline::get_min_range_history_days( 28 ), 'A 28-day period should need 84 days of history: the period and two 28-day blocks.' );
-		$this->assertSame( 146, Period_Baseline::get_min_range_history_days( 90 ), 'A 90-day period should need 146 days of history: the period and two 28-day blocks.' );
+		$this->assertSame( 63, Period_Baseline::get_min_range_history_days( 7 ), 'A 7-day fit should need 63 days of history: the period and two 28-day blocks.' );
+		$this->assertSame( 84, Period_Baseline::get_min_range_history_days( 28 ), 'A 28-day fit should need 84 days of history: the period and two 28-day blocks.' );
+		$this->assertSame( 146, Period_Baseline::get_min_range_history_days( 90 ), 'A 90-day fit should need 146 days of history: the period and two 28-day blocks.' );
 		$this->assertSame( 84, Period_Baseline::get_min_range_history_days( 0 ), 'A period length that is not above 0 should be read as 28 days.' );
 	}
 
+	public function test_get_min_band_history_days__adds_83_days_to_the_period() {
+		// The period's first day needs the 84 days of its own 28-day fit.
+		$this->assertSame( 90, Period_Baseline::get_min_band_history_days( 7 ), 'A 7-day period should need 90 days of history for its band.' );
+		$this->assertSame( 97, Period_Baseline::get_min_band_history_days( 14 ), 'A 14-day period should need 97 days of history for its band.' );
+		$this->assertSame( 111, Period_Baseline::get_min_band_history_days( 28 ), 'A 28-day period should need 111 days of history for its band.' );
+		$this->assertSame( 173, Period_Baseline::get_min_band_history_days( 90 ), 'A 90-day period should need 173 days of history for its band.' );
+		$this->assertSame( 111, Period_Baseline::get_min_band_history_days( 0 ), 'A period length that is not above 0 should be read as 28 days.' );
+	}
+
+	public function test_get_daily_range__needs_the_band_history_up_to_the_last_day() {
+		$daily_rows = $this->get_daily_rows( '2024-01-01', $this->get_daily_visits( 111 ) );
+
+		// `2024-04-20` is day 111 of the series.
+		$period_baseline = new Period_Baseline( $daily_rows );
+
+		$this->assertNull( $period_baseline->get_daily_range( '2024-04-19', 28 ), 'A 28-day period with 110 days of history should have no band.' );
+		$this->assertNull( $period_baseline->get_range( '2024-04-19', 28 ), 'A 28-day period with 110 days of history should have no range.' );
+		$this->assertCount( 28, $period_baseline->get_daily_range( '2024-04-20', 28 )['days'], 'A 28-day period with 111 days of history should have a band on each of its days.' );
+		$this->assertNotNull( $period_baseline->get_range( '2024-04-20', 28 ), 'A 28-day period with 111 days of history should have a range.' );
+		$this->assertSame( 83, $period_baseline->get_daily_range( '2024-04-20', 28 )['reference_days'], 'The fit of the period\'s last day should be fitted on the 83 days before its own 28 days.' );
+	}
+
+	public function test_get_daily_range__forecasts_each_day_from_the_history_28_days_before_it() {
+		$daily_visits    = $this->get_daily_visits( 420 );
+		$daily_rows      = $this->get_daily_rows( '2025-01-01', $daily_visits );
+		$target_date     = $daily_rows[419]['date'];
+		$period_baseline = new Period_Baseline( $daily_rows );
+
+		// The last 28 days are the period, which none of its days' fits reads.
+		$changed_visits = array_merge( array_slice( $daily_visits, 0, 392 ), array_fill( 0, 28, 9999 ) );
+		$changed        = new Period_Baseline( $this->get_daily_rows( '2025-01-01', $changed_visits ) );
+
+		$this->assertSame(
+			$period_baseline->get_daily_ranges( $target_date, 28 ),
+			$changed->get_daily_ranges( $target_date, 28 ),
+			'The visits of a 28-day period should not move the band of any of its days.'
+		);
+		$this->assertSame(
+			$period_baseline->get_range( $target_date, 28 ),
+			$changed->get_range( $target_date, 28 ),
+			'The visits of a 28-day period should not move its range.'
+		);
+
+		// A day's center comes from its own fit, whatever the period it is in.
+		$week  = $period_baseline->get_daily_range( $target_date, 7 )['days'];
+		$month = $period_baseline->get_daily_range( $target_date, 28 )['days'];
+
+		$this->assertSame(
+			array_column( $week, 'center', 'date' ),
+			array_slice( array_column( $month, 'center', 'date' ), -7, 7, true ),
+			'Each day of the last week should have the same center in a 7-day period as in a 28-day one.'
+		);
+	}
+
 	public function test_from_daily_series__counts_the_history_from_the_first_day_with_visits() {
-		// 84 days with visits, from `2024-01-31` to `2024-04-23`, after 30 days
+		// 111 days with visits, from `2024-01-31` to `2024-05-20`, after 30 days
 		// without visits.
-		$recorded_rows   = $this->get_daily_rows( '2024-01-31', $this->get_daily_visits( 84 ) );
+		$recorded_rows   = $this->get_daily_rows( '2024-01-31', $this->get_daily_visits( 111 ) );
 		$period_baseline = Period_Baseline::from_daily_series(
 			array_merge( $this->get_daily_rows( '2024-01-01', array_fill( 0, 30, 0 ) ), $recorded_rows )
 		);
 
-		$this->assertSame( 84, $period_baseline->get_history_days( '2024-04-23' ), 'The history should count from `2024-01-31`, the first day with visits, rather than from `2024-01-01`, the first day of the series.' );
+		$this->assertSame( 111, $period_baseline->get_history_days( '2024-05-20' ), 'The history should count from `2024-01-31`, the first day with visits, rather than from `2024-01-01`, the first day of the series.' );
+		$this->assertNotNull( $period_baseline->get_range( '2024-05-20', 28 ), 'The 111 days with visits should give a 28-day period a range.' );
 		$this->assertSame(
-			( new Period_Baseline( $recorded_rows ) )->get_range( '2024-04-23', 28 ),
-			$period_baseline->get_range( '2024-04-23', 28 ),
+			( new Period_Baseline( $recorded_rows ) )->get_range( '2024-05-20', 28 ),
+			$period_baseline->get_range( '2024-05-20', 28 ),
 			'The range should be fitted as if the series started on its first day with visits.'
 		);
 	}

@@ -47,6 +47,7 @@ import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/fac
 import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
 import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
+import { getTypicalTrafficAvailability } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalTrafficAvailability';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
@@ -77,12 +78,6 @@ const TrafficOverviewPanel: FC = () => {
 	const trafficInsightsEnabled = useFeature( 'trafficInsights' );
 	const showInsights = showKeyFactors && trafficInsightsEnabled;
 
-	// The insight arrives after the figures, since the service generates it
-	// from them. Without an insight, the panel shows its figures alone.
-	const { insight, loading: insightLoading } = useBenchmarkingInsight( {
-		isEnabled: showInsights,
-	} );
-
 	const { startDate, endDate, compareStartDate } = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( { compare: true } ),
@@ -99,6 +94,32 @@ const TrafficOverviewPanel: FC = () => {
 		[]
 	);
 
+	// Which parts of the typical traffic view the selected range has, by the
+	// rules of the Site Kit service. Until the benchmarking response arrives,
+	// the panel keeps the placeholders of every part.
+	//
+	// The key factors compare the selected range with the period before it,
+	// so the benchmarking response has none until every day of that period
+	// has recorded traffic. Until then, the panel leaves out their section,
+	// whose notice would say that no channel changed notably, and asks for no
+	// insight, whose driver would describe a change against days that weren't
+	// measured.
+	const {
+		keyFactorsAvailable,
+		insightRequestAllowed,
+		performanceInsightAvailable,
+	} = getTypicalTrafficAvailability( {
+		benchmarkingResponse,
+		compareStartDate,
+		daysInRange: daysInSelectedRange,
+	} );
+
+	// The insight arrives after the figures, since the service generates it
+	// from them. Without an insight, the panel shows its figures alone.
+	const { insight, loading: insightLoading } = useBenchmarkingInsight( {
+		isEnabled: showInsights && insightRequestAllowed,
+	} );
+
 	const isLoading = ! loaded || isGatheringData === undefined;
 
 	// The panel reads the benchmarking response wherever it has the key
@@ -114,16 +135,6 @@ const TrafficOverviewPanel: FC = () => {
 	const totalVisits = hasKeyFactors
 		? benchmarkingResponse?.visits
 		: PLACEHOLDER_TOTAL_VISITS;
-
-	// The key factors compare the selected range with the period before it,
-	// so the benchmarking response has none until every day of that period
-	// has recorded traffic. Until then, the panel leaves out their section:
-	// its notice would say that no channel changed notably, and the insight's
-	// driver would describe a change against days that weren't measured.
-	const firstTrafficDate = benchmarkingResponse?.firstTrafficDate;
-	const keyFactorsWaitForPreviousPeriod =
-		!! benchmarkingResponse &&
-		( ! firstTrafficDate || firstTrafficDate > compareStartDate );
 
 	return (
 		<div
@@ -143,10 +154,12 @@ const TrafficOverviewPanel: FC = () => {
 			{ errors.length === 0 && (
 				<Fragment>
 					<div className="googlesitekit-traffic-overview__summary">
-						{ showInsights && (
+						{ showInsights && performanceInsightAvailable && (
 							// The analysis compares the site's traffic with
-							// its typical range, which the chart draws wherever
-							// the panel shows the key factors.
+							// its typical range, so it shows only where the
+							// chart draws the band. Without it, the service
+							// would only say it's still learning what's usual
+							// for the site.
 							<TrafficInsightNotice
 								text={ insight?.analysis }
 								loading={ insightLoading }
@@ -174,7 +187,7 @@ const TrafficOverviewPanel: FC = () => {
 								: undefined
 						}
 					/>
-					{ showKeyFactors && ! keyFactorsWaitForPreviousPeriod && (
+					{ showKeyFactors && keyFactorsAvailable && (
 						<KeyFactors
 							keyFactors={
 								benchmarkingResponse?.keyFactors ?? []

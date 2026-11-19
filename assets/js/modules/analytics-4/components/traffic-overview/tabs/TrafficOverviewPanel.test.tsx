@@ -1665,19 +1665,24 @@ describe( 'TrafficOverviewPanel', () => {
 			).toHaveTextContent( 'Organic Search' );
 		} );
 
-		it( 'should leave out the driver of the insight, but not its analysis, when the previous period starts before the first day with recorded traffic', async () => {
+		it( 'should leave out the traffic insight, and not ask for it, when the previous period starts before the first day with recorded traffic', async () => {
 			const { startDate, endDate } = registry
 				.select( CORE_USER )
 				.getDateRangeDates();
 
 			// The previous period runs from `2024-12-12` to `2025-01-08`, so
-			// the response has no key factors.
+			// the response has no key factors. The insight's driver would
+			// describe a change against days that weren't measured, so the
+			// panel asks for no insight, even though every day has its typical
+			// range, as the days of a 90-day range have it before its key
+			// factors.
 			provideBenchmarkingResponse( registry, {
 				...createBenchmarkingResponse( startDate, endDate ),
 				firstTrafficDate: '2024-12-13',
 				keyFactors: [],
+				insightLocale: 'en_US',
+				insightPayload: 'signed-payload',
 			} );
-			provideBenchmarkingInsight( registry, { startDate, endDate } );
 
 			const { container, waitForRegistry } = render(
 				<TrafficOverviewPanel />,
@@ -1690,14 +1695,66 @@ describe( 'TrafficOverviewPanel', () => {
 
 			await waitForRegistry();
 
+			expect( fetchMock ).not.toHaveFetched( insightEndpoint );
 			expect(
 				container.querySelector( trafficInsightSelector )
-			).toHaveTextContent(
-				'Over the last 28 days, your site had 1,740 visits, about 12% above what is usual for it.'
-			);
+			).not.toBeInTheDocument();
 			expect(
 				container.querySelector( keyFactorsInsightSelector )
 			).not.toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__total-visitors'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should ask for the insight, and render its driver but leave out its analysis, when the days of the selected range have no typical range', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+			const response = createBenchmarkingResponse( startDate, endDate );
+
+			// The site recorded its first visits on `2024-12-12`, the first day
+			// of the previous period: the 56 days of history give the key
+			// factors, and are too few for the typical range, which needs 111.
+			// Without the band, the analysis would only say that the service is
+			// still learning what's usual for the site.
+			provideBenchmarkingResponse( registry, {
+				...response,
+				dailyTraffic: response.dailyTraffic.map( ( day ) => ( {
+					...day,
+					expectedMin: null,
+					expectedMax: null,
+				} ) ),
+				firstTrafficDate: '2024-12-12',
+				insightLocale: 'en_US',
+				insightPayload: 'signed-payload',
+			} );
+			fetchMock.postOnce( insightEndpoint, {
+				body: { insight: benchmarkingInsight },
+			} );
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic', 'trafficInsights' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector( keyFactorsInsightSelector )
+			).toHaveTextContent(
+				'Visits rose 18% (+265 visits) compared to the previous 28 days, led by Organic Search (+190 visits).'
+			);
 		} );
 
 		it( 'should render placeholders in place of the analysis and the driver while the insight loads', async () => {

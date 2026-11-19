@@ -39,30 +39,34 @@ uncommitted on top of it.
 
 ### 2. The chart's band and the insight's verdict come from one model
 
-- [`Period_Baseline::get_daily_ranges()`](../../../includes/Modules/Analytics_4/Benchmarking/Period_Baseline.php#L331)
-  spreads the period's expected range over its days by the weekday factors: each day gets
-  the range times its weekday's share of the period's weight, rounded to one decimal.
-  This is the service's `dailyBand()` for the judged block
-  ([§5.6](../../../../site-kit-service/docs/benchmarking_feature_design.md#L371-L397)),
+- [`Period_Baseline::get_daily_ranges()`](../../../includes/Modules/Analytics_4/Benchmarking/Period_Baseline.php#L379)
+  gives each day of the period its own 28-day fit, on the up to 365 days that end 28
+  days before that day. The day's center is the fit's center for its weekday. The
+  half-widths are scaled so that the days add up to the period's range, whose margin is
+  the end date's fit's margin for a total centered on the sum of the days' centers.
+  Each bound is rounded to one decimal. This is the service's `fitDailyRange()`
+  ([§5.4 *Request range*](../../../../site-kit-service/docs/benchmarking_feature_design.md#L341-L351)
+  and [§5.6](../../../../site-kit-service/docs/benchmarking_feature_design.md#L383-L405)),
   so the band under the period is the band its verdict used.
-- [`Response_Builder::build()`](../../../includes/Modules/Analytics_4/Benchmarking/Response_Builder.php#L93)
-  and `Insight_Request_Builder` each fit the model with
-  [`Period_Baseline::from_daily_series()`](../../../includes/Modules/Analytics_4/Benchmarking/Period_Baseline.php#L259)
-  on the same daily series, as the service fits it separately in
-  `CalculateRobustBaselineForPeriod()` and `BuildExpectedRangeSeries()`.
+- [`Response_Builder::build()`](../../../includes/Modules/Analytics_4/Benchmarking/Response_Builder.php#L105)
+  fits the model once with
+  [`Period_Baseline::from_daily_series()`](../../../includes/Modules/Analytics_4/Benchmarking/Period_Baseline.php#L296)
+  and passes it to `Insight_Request_Builder::build()`. So the band and the request's
+  `baseline` read the same per-day fits, which `Period_Baseline` caches by day.
 - What the chart shows:
-  - A period gets a band once the site has the period and two 28-day blocks of recorded
-    traffic up to its last day: 84 days for a 28-day period, 146 for a 90-day period.
-    Until then no day of the period has one.
-  - Nothing inside the period moves the band. It changes from day to day only by the
-    weekday shape, and its days add up to the range to within the rounding.
-  - The forward band of §5.6, the next `min(d, 28)` days after the period, is not drawn:
-    the chart ends on the period's last day.
+  - A period gets a band once the site has `d + 83` days of recorded traffic up to its
+    last day
+    ([`get_min_band_history_days()`](../../../includes/Modules/Analytics_4/Benchmarking/Period_Baseline.php#L333)),
+    because the fit of its first day needs 84 days up to that day. That is 111 days for
+    a 28-day period and 173 for a 90-day period. Until then no day of the period has one.
+  - A day's band is forecast from the days at least 28 days before it. So nothing
+    inside a period of up to 28 days moves its band, and a day's center is the same in
+    every range that shows the day. The days add up to the range to within the rounding.
+  - The chart ends on the period's last day: there is no forecast past it.
 - A site with 100 visits on every day gets 83.6 to 116.4 on each day, from a range of
-  2,341 to 3,259 visits (center 2,800, margin 458.97). I worked this out by hand, and the
-  one-off script gives the same. The script also checked the band of each of the 31
-  conformance fixtures against the Go model in the fixture: every day is within 0.05 of
-  its share, and the days of every period are within 1.8 visits of its range.
+  2,341 to 3,259 visits (center 2,800, margin 458.97). The 33 conformance fixtures
+  carry the Go model's band for each day of their period, and `Period_BaselineTest`
+  matches every bound.
 
 ### 3. `clearBenchmarkingData()` clears the insight
 
@@ -195,10 +199,10 @@ PHPUnit:
 | File | Test | Decision |
 | :-- | :-- | :-- |
 | `Get_Benchmarking_InsightTest.php` | A 409, 429 or 503 from the read is a 500; a 400 or 403 passes through | 1 |
-| `Period_BaselineTest.php` | The daily ranges of each conformance fixture are the shares of the Go model's range, and add up to the range | 2 |
+| `Period_BaselineTest.php` | The daily ranges of each conformance fixture match the Go model's band on every day, and add up to the range | 2 |
 | `Period_BaselineTest.php` | `from_daily_series()` counts the history from the first day with visits, and has none without visits; `get_history_days()` counts from the earliest row | 2 |
-| [`Response_BuilderTest.php`](../../../tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Response_BuilderTest.php) | A steady year gives 83.6 to 116.4 on each day; each day has the share `Period_Baseline` gives it; the days add up to the insight request's `baseline`; a weekend day gets a lower band | 2 |
-| `Response_BuilderTest.php` | 84 days of history give the period a band, 83 and 46 give none; the period's own visits don't move the band; a period without visits after a year of visits gets that year's band | 2 |
+| [`Response_BuilderTest.php`](../../../tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Response_BuilderTest.php) | A steady year gives 83.6 to 116.4 on each day; each day has the band `Period_Baseline` fits for it; the days add up to the insight request's `baseline`; a weekend day gets a lower band | 2 |
+| `Response_BuilderTest.php` | 111 days of history give a 28-day period a band, 110, 84 and 46 give none; the period's own visits don't move the band; a period without visits after a year of visits gets that year's band | 2 |
 | [`Report_OptionsTest.php`](../../../tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Report_OptionsTest.php), `Response_BuilderTest.php` | Dimension reports ask for 500 rows, and the contextual data filter receives 500 | 6 |
 
 ## Story fix
@@ -218,7 +222,7 @@ story's `insight` arg.
 | A service answer that is not a JSON object | `failed_to_parse_response` appears in no test |
 | Stories for the loading insight and for an insight without cards | New VRT references need a VRT run |
 | Panel tests that pass without their gating | Several "shows no insight" tests have no insight in the store, so they pass with the gate removed |
-| Nothing keeps the 31 copied fixtures in sync with the service | They are byte-identical today (`diff -rq`); only their count is asserted |
+| Nothing keeps the 33 copied fixtures in sync with the service | They are byte-identical today (`diff -rq`); only their count is asserted |
 
 ## Scope compared with the plan
 
@@ -241,9 +245,9 @@ These come from reading the plugin and the service side by side, not from a run.
   service's client contract (poll every 2 s, one resubmit on 404, on `FAILED` with
   503, or after two minutes).
 - **Baseline model:** I found no place where `Period_Baseline` computes a different
-  result from the Go model for the same rows. The 31 conformance fixtures are
-  byte-identical to the service's, and the conformance test is the real check of the
-  arithmetic once you run it.
+  result from the Go model for the same rows. The 33 conformance fixtures are
+  byte-identical to the service's, and the conformance test, which checks every day's
+  band as well as the range, is the real check of the arithmetic.
 - **Security:** the payload is signed per user with HMAC-SHA256 and checked before
   anything is sent; a foreign or changed payload is a 400 with no service request.
 - **Permissions:** both datapoints are shareable, declare `VIEW_DASHBOARD`, and exist
@@ -268,9 +272,19 @@ The implementation follows the service; the docs
 - Error bodies are `{"error", "code"}`, a 429 carries `Retry-After`, and the plugin
   sends a `User-Agent`.
 - The payload is signed, in place of the structural validation the doc describes.
-- The chart's band is the period's range from `Period_Baseline`, spread over the days by
-  weekday (§5.6 of the service doc). Both docs describe `Expected_Baseline`, a per-day fit
-  that gives a day a band from 28 days of history.
+- The chart's band comes from one 28-day fit per day, on the days at least 28 days
+  before it, scaled so that the days add up to the request's range (§5.4 *Request
+  range* and §5.6 of the service doc). A period gets it on every day or on none, from
+  `d + 83` days of history. Both docs describe `Expected_Baseline`, a fit on the history
+  up to and including the day, that gives a day a band from 28 days of history.
+- Each part waits for its own history, as
+  [`Typical_Traffic_Availability`](../../../includes/Modules/Analytics_4/Benchmarking/Typical_Traffic_Availability.php)
+  decides it, a port of the service's `TypicalTrafficAvailabilityFor()` (§8 of the
+  service doc). The insight is requested only with the key factor cards, which need a
+  range of at least 7 days and the previous period inside the recorded traffic: the
+  insights doc's history rule, on any range. But a request from fewer than `d + 83` days
+  has no `baseline`, and the panel then shows the driver without the analysis. The
+  insights doc says that a site that meets the history rule always has a `baseline`.
 - The insight's state and cache entry are cleared by `clearBenchmarkingInsight()`, which
   `clearBenchmarkingData()` calls first.
 
