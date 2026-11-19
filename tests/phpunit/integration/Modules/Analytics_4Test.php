@@ -2175,6 +2175,7 @@ class Analytics_4Test extends TestCase {
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
+				'benchmarking-data',
 				'plain-permalink-top-posts',
 			),
 			$this->analytics->get_datapoints(),
@@ -2182,32 +2183,13 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_datapoints__typicalTraffic() {
-		$this->enable_feature( 'typicalTraffic' );
-
-		$this->assertContains(
-			'benchmarking-data',
-			$this->analytics->get_datapoints(),
-			'Analytics 4 module should expose the benchmarking data datapoint with typical traffic enabled'
-		);
-	}
-
-	public function test_get_datapoints__typicalTraffic_disabled() {
-		$this->assertNotContains(
-			'benchmarking-data',
-			$this->analytics->get_datapoints(),
-			'Analytics 4 module should not expose the benchmarking data datapoint with typical traffic disabled'
-		);
-	}
-
 	public function test_get_datapoints__trafficInsights() {
-		$this->enable_feature( 'typicalTraffic' );
 		$this->enable_feature( 'trafficInsights' );
 
 		$this->assertContains(
 			'benchmarking-insight',
 			$this->analytics->get_datapoints(),
-			'Analytics 4 module should expose the benchmarking insight datapoint with typical traffic and traffic insights enabled'
+			'Analytics 4 module should expose the benchmarking insight datapoint with traffic insights enabled'
 		);
 		$this->assertContains(
 			'benchmarking-data',
@@ -2224,28 +2206,11 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( $get_datapoint->is_shareable(), 'The GET datapoint should be shareable, so a view-only user can read the insight' );
 	}
 
-	/**
-	 * @dataProvider data_traffic_insights_partial_feature_flags
-	 *
-	 * @param string[] $features The feature flags that are enabled.
-	 */
-	public function test_get_datapoints__trafficInsights_requires_both_feature_flags( array $features ) {
-		foreach ( $features as $feature ) {
-			$this->enable_feature( $feature );
-		}
-
+	public function test_get_datapoints__trafficInsights_disabled() {
 		$this->assertNotContains(
 			'benchmarking-insight',
 			$this->analytics->get_datapoints(),
-			'Analytics 4 module should not expose the benchmarking insight datapoint unless both typical traffic and traffic insights are enabled'
-		);
-	}
-
-	public function data_traffic_insights_partial_feature_flags() {
-		return array(
-			'neither flag'         => array( array() ),
-			'only typicalTraffic'  => array( array( 'typicalTraffic' ) ),
-			'only trafficInsights' => array( array( 'trafficInsights' ) ),
+			'Analytics 4 module should not expose the benchmarking insight datapoint with traffic insights disabled'
 		);
 	}
 
@@ -2288,6 +2253,7 @@ class Analytics_4Test extends TestCase {
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
+				'benchmarking-data',
 				'plain-permalink-top-posts',
 			),
 			$this->analytics->get_datapoints(),

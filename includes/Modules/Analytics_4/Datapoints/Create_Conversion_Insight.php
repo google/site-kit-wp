@@ -63,7 +63,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` to reach the service with, and the Analytics `module` that runs the reports.
+	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` callbacks that return what reaches the service, and the Analytics `module` that runs the reports.
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
@@ -141,8 +141,8 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 				return $access_token;
 			}
 
-			$response = $this->google_proxy->send_conversion_insight_request(
-				$this->credentials,
+			$response = $this->get_google_proxy()->send_conversion_insight_request(
+				$this->get_credentials(),
 				$access_token,
 				array( 'events' => array( $entry ) ),
 				get_user_locale()

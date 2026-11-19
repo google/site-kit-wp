@@ -39,7 +39,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	/**
 	 * The feature flags that define the benchmarking insight datapoints.
 	 */
-	const FEATURE_FLAGS = array( 'typicalTraffic', 'trafficInsights' );
+	const FEATURE_FLAGS = array( 'trafficInsights' );
 
 	public function set_up() {
 		parent::set_up();
@@ -669,28 +669,15 @@ class Get_Benchmarking_InsightTest extends TestCase {
 		$this->assertSame( array(), $this->service_requests, 'No request should reach the service for a user who cannot view the dashboard.' );
 	}
 
-	/**
-	 * @dataProvider data_partial_feature_flags
-	 *
-	 * @param string[] $features The feature flags that are on.
-	 */
-	public function test_rest_endpoint__is_not_registered_without_both_feature_flags( array $features ) {
-		$this->enable_insight_datapoints( $features );
+	public function test_rest_endpoint__is_not_registered_without_feature_flag() {
+		$this->enable_insight_datapoints( array() );
 
-		$this->assertNotContains( 'benchmarking-insight', $this->analytics->get_datapoints(), 'The datapoint should not be defined without both feature flags.' );
+		$this->assertNotContains( 'benchmarking-insight', $this->analytics->get_datapoints(), 'The datapoint should not be defined without the feature flag.' );
 
 		$response = $this->request();
 
-		$this->assertSame( 400, $response->get_status(), 'A request should answer 400 without both feature flags.' );
+		$this->assertSame( 400, $response->get_status(), 'A request should answer 400 without the feature flag.' );
 		$this->assertSame( 'invalid_datapoint', $response->get_data()['code'], 'The error code should name the unknown datapoint.' );
-		$this->assertSame( array(), $this->service_requests, 'No request should reach the service without both feature flags.' );
-	}
-
-	public function data_partial_feature_flags() {
-		return array(
-			'neither flag'         => array( array() ),
-			'only typicalTraffic'  => array( array( 'typicalTraffic' ) ),
-			'only trafficInsights' => array( array( 'trafficInsights' ) ),
-		);
+		$this->assertSame( array(), $this->service_requests, 'No request should reach the service without the feature flag.' );
 	}
 }

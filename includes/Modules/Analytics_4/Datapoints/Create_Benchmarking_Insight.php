@@ -63,8 +63,8 @@ class Create_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 				return $access_token;
 			}
 
-			$response = $this->google_proxy->send_benchmarking_insight_request(
-				$this->credentials,
+			$response = $this->get_google_proxy()->send_benchmarking_insight_request(
+				$this->get_credentials(),
 				$access_token,
 				$decoded_payload['request'],
 				$decoded_payload['locale']

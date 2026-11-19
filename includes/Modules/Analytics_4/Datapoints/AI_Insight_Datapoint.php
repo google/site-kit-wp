@@ -58,33 +58,55 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	const INVALID_RESPONSE_ERROR_CODE = 'invalid_ai_insight_response';
 
 	/**
-	 * Google_Proxy instance.
+	 * Callback that returns the Google_Proxy instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Google_Proxy
+	 * @var callable
 	 */
-	protected $google_proxy;
+	private $google_proxy;
 
 	/**
-	 * Credentials instance.
+	 * Callback that returns the Credentials instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Credentials
+	 * @var callable
 	 */
-	protected $credentials;
+	private $credentials;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` to reach the service with.
+	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` callbacks that return what reaches the service.
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 
 		$this->google_proxy = $definition['google_proxy'];
 		$this->credentials  = $definition['credentials'];
+	}
+
+	/**
+	 * Gets the Google_Proxy instance to reach the service with.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Proxy The Google_Proxy instance.
+	 */
+	protected function get_google_proxy() {
+		return call_user_func( $this->google_proxy );
+	}
+
+	/**
+	 * Gets the credentials to reach the service with.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Credentials The Credentials instance.
+	 */
+	protected function get_credentials() {
+		return call_user_func( $this->credentials );
 	}
 
 	/**

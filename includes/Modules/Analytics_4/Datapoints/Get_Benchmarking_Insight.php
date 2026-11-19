@@ -80,7 +80,7 @@ class Get_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 				return $access_token;
 			}
 
-			$operation = $this->google_proxy->get_ai_operation( $this->credentials, $access_token, $operation_id );
+			$operation = $this->get_google_proxy()->get_ai_operation( $this->get_credentials(), $access_token, $operation_id );
 
 			if ( is_wp_error( $operation ) ) {
 				return $this->get_error( $operation );

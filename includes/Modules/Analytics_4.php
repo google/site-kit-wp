@@ -1154,37 +1154,27 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'service' => '',
 				)
 			),
-		);
-
-		if ( Feature_Flags::enabled( 'typicalTraffic' ) ) {
-			$this->datapoints['GET:benchmarking-data'] = new Get_Benchmarking_Data(
+			'GET:benchmarking-data'                       => new Get_Benchmarking_Data(
 				array(
 					'module'                           => $this,
 					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
 				)
-			);
+			),
+		);
 
-			// The insight is written from the request that the response of
-			// `GET:benchmarking-data` carries.
-			if ( Feature_Flags::enabled( 'trafficInsights' ) ) {
-				$benchmarking_insight_definition = array(
-					'google_proxy' => $this->authentication->get_google_proxy(),
-					'credentials'  => $this->authentication->credentials(),
-				);
+		$insight_definition = array(
+			'google_proxy' => fn() => $this->authentication->get_google_proxy(),
+			'credentials'  => fn() => $this->authentication->credentials(),
+		);
 
-				$this->datapoints['POST:benchmarking-insight'] = new Create_Benchmarking_Insight( $benchmarking_insight_definition );
-				$this->datapoints['GET:benchmarking-insight']  = new Get_Benchmarking_Insight( $benchmarking_insight_definition );
-			}
+		if ( Feature_Flags::enabled( 'trafficInsights' ) ) {
+			$this->datapoints['POST:benchmarking-insight'] = new Create_Benchmarking_Insight( $insight_definition );
+			$this->datapoints['GET:benchmarking-insight']  = new Get_Benchmarking_Insight( $insight_definition );
 		}
 
 		if ( Feature_Flags::enabled( 'siteGoalsInsights' ) ) {
-			$conversion_insights_definition = array(
-				'google_proxy' => $this->authentication->get_google_proxy(),
-				'credentials'  => $this->authentication->credentials(),
-			);
-
-			$this->datapoints['POST:conversion-insights'] = new Create_Conversion_Insight( array_merge( $conversion_insights_definition, array( 'module' => $this ) ) );
-			$this->datapoints['GET:conversion-insights']  = new Get_Conversion_Insight( $conversion_insights_definition );
+			$this->datapoints['POST:conversion-insights'] = new Create_Conversion_Insight( array_merge( $insight_definition, array( 'module' => $this ) ) );
+			$this->datapoints['GET:conversion-insights']  = new Get_Conversion_Insight( $insight_definition );
 		}
 
 		$this->datapoints['GET:plain-permalink-top-posts'] = new Get_Plain_Permalink_Top_Posts(
