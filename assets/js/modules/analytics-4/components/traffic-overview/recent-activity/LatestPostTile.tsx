@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
@@ -29,15 +29,26 @@ import { TileShell } from '@/js/modules/analytics-4/components/common/tiles';
 interface LatestPostTileProps {
 	/** The tile's title, e.g. `Visitor breakdown`. */
 	title: string;
+	/** Tooltip content shown in an info icon next to the title. */
+	infoTooltip?: ReactNode;
+	/** Extra class for the tooltip's popup, e.g. to set its width. */
+	infoTooltipClassName?: string;
 }
 
-const LatestPostTile: FC< LatestPostTileProps > = ( { title, children } ) => {
+const LatestPostTile: FC< LatestPostTileProps > = ( {
+	title,
+	infoTooltip,
+	infoTooltipClassName,
+	children,
+} ) => {
 	return (
 		<TileShell
 			baseClassName="googlesitekit-table-tile"
 			className="googlesitekit-traffic-overview__latest-post-tile"
 			title={ title }
 			titleAs="h4"
+			infoTooltip={ infoTooltip }
+			infoTooltipClassName={ infoTooltipClassName }
 		>
 			{ children }
 		</TileShell>

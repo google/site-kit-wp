@@ -42,6 +42,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
@@ -195,6 +196,112 @@ describe( 'LatestPostPerformance', () => {
 			'Traffic sources',
 			'Engagement & outcomes',
 		] );
+	} );
+
+	it( 'should render an info icon in the visitor breakdown tile only', async () => {
+		provideLatestPostKeywordReport( registry );
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const tiles = container.querySelectorAll(
+			'.googlesitekit-traffic-overview__latest-post-tile'
+		);
+
+		expect(
+			tiles[ 0 ].querySelectorAll( '.googlesitekit-info-tooltip' )
+		).toHaveLength( 1 );
+		expect(
+			tiles[ 1 ].querySelector( '.googlesitekit-info-tooltip' )
+		).not.toBeInTheDocument();
+		expect(
+			tiles[ 2 ].querySelector( '.googlesitekit-info-tooltip' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should name the info icon of the visitor breakdown tile with the tooltip text', async () => {
+		provideLatestPostKeywordReport( registry );
+
+		const { getByRole, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'button', {
+				name: /Visitors can sometimes be counted as both "new" and "returning,"/,
+			} )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should open the tooltip with a "Learn more" link to the visitor groups support page when the info icon of the visitor breakdown tile is focused', async () => {
+		provideLatestPostKeywordReport( registry );
+
+		const { findByRole, getByRole, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const infoIcon = getByRole( 'button', {
+			name: /Visitors can sometimes be counted as both "new" and "returning,"/,
+		} );
+
+		// `Tooltip` opens only when the icon matches `:focus-visible`, which
+		// needs real focus, so a focus event alone does not open it.
+		act( () => infoIcon.focus() ); // eslint-disable-line sitekit/acronym-case
+
+		const tooltip = await findByRole( 'tooltip' );
+
+		expect( tooltip ).toHaveTextContent(
+			'Visitors can sometimes be counted as both "new" and "returning," so these totals may not add up. Learn more'
+		);
+
+		const learnMoreLink = within( tooltip ).getByRole( 'link', {
+			name: /Learn more/,
+		} );
+
+		expect( learnMoreLink ).toHaveAttribute(
+			'href',
+			'https://sitekit.withgoogle.com/support/?doc=visitor-group-insights'
+		);
+		expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
+	} );
+
+	it( 'should render the info icon in the visitor breakdown tile while the visitors report loads', async () => {
+		provideLatestPostKeywordReport( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				getLatestPostAnalyticsReportOptions( registry ).visitors,
+			] );
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const visitorBreakdownTile = container.querySelectorAll(
+			'.googlesitekit-traffic-overview__latest-post-tile'
+		)[ 0 ];
+
+		expect(
+			visitorBreakdownTile.querySelectorAll(
+				'.googlesitekit-preview-block'
+			)
+		).toHaveLength( 3 );
+		expect(
+			visitorBreakdownTile.querySelector( '.googlesitekit-info-tooltip' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should request the top keyword for the post URL on the reference site, and should keep the Analytics rows, when the reference site URL differs from the home URL', async () => {
@@ -429,11 +536,16 @@ describe( 'LatestPostPerformance', () => {
 		const tiles = getTiles( container );
 
 		expect( tiles[ 0 ].rows ).toEqual( [] );
+		const visitorBreakdownTile = container.querySelectorAll(
+			'.googlesitekit-traffic-overview__latest-post-tile'
+		)[ 0 ];
+
+		expect( visitorBreakdownTile ).toHaveTextContent(
+			'Something went wrong'
+		);
 		expect(
-			container.querySelectorAll(
-				'.googlesitekit-traffic-overview__latest-post-tile'
-			)[ 0 ]
-		).toHaveTextContent( 'Something went wrong' );
+			visitorBreakdownTile.querySelector( '.googlesitekit-info-tooltip' )
+		).toBeInTheDocument();
 		expect( tiles[ 1 ].rows ).toEqual( [
 			[ 'Top traffic source', 'Organic Social' ],
 			[ 'Top referring site', 'substack.com' ],
