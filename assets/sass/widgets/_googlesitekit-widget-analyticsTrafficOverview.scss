@@ -963,7 +963,7 @@ $traffic-overview-column-gap: 42px;
 		}
 
 		.googlesitekit-traffic-overview__latest-post-tile {
-			background: $c-surfaces-background;
+			background: $c-blue-b-10;
 			border-radius: $br-xs;
 			padding: 22px;
 		}
@@ -1036,8 +1036,9 @@ $traffic-overview-column-gap: 42px;
 				@include tile-connector(15px);
 			}
 
+			// The columns keep the 14px "body medium" title of the Traffic drivers design.
 			.googlesitekit-table-tile__title.googlesitekit-typography {
-				line-height: $lh-body-md;
+				@include googlesitekit-typography(body, medium);
 			}
 
 			.googlesitekit-table-tile__row + .googlesitekit-table-tile__row {

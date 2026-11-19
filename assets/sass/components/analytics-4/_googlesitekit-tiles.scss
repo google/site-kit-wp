@@ -153,10 +153,6 @@ $tile-connector-offset: 3.5px;
 
 		.googlesitekit-site-goals-tile__title {
 			color: $c-surfaces-on-surface;
-			font-size: $fs-body-md;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-s;
-			line-height: 20px;
 			margin: 0 8px 0 0;
 			position: relative;
 
@@ -172,13 +168,6 @@ $tile-connector-offset: 3.5px;
 				transform: translateY(-50%);
 				width: 9px;
 			}
-		}
-
-		.googlesitekit-site-goals-tile__title.googlesitekit-typography {
-			font-weight: $fw-normal;
-			letter-spacing: $ls-s;
-			line-height: 20px;
-			margin: 0 8px 0 0;
 		}
 
 		.googlesitekit-site-goals-tile__header-label.googlesitekit-typography {
@@ -304,10 +293,6 @@ $tile-connector-offset: 3.5px;
 
 		.googlesitekit-table-tile__title.googlesitekit-typography {
 			color: $c-surfaces-on-surface;
-			font-size: $fs-title-sm;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-s;
-			line-height: $lh-title-sm;
 			margin: 0 0 8px;
 			min-width: 0;
 			overflow: hidden;

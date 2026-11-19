@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
+import { Registry } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import useViewContext from '@/js/hooks/useViewContext';
 import * as tracking from '@/js/util/tracking';
 import {
 	act,
@@ -30,25 +30,32 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
+import { TooltipSettings } from './types';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-// Mock useViewContext to return a consistent value
-jest.mock( '../../hooks/useViewContext', () => jest.fn() );
-useViewContext.mockImplementation( () => 'test-context' );
-
 describe( 'AdminMenuTooltip', () => {
-	let registry;
+	let registry: Registry;
+
+	function setTooltipSettings( settings: TooltipSettings | undefined ) {
+		return registry
+			.dispatch( CORE_UI )
+			.setValue( 'admin-screen-tooltip', settings );
+	}
+
+	function getTooltipSettings(): TooltipSettings | undefined {
+		return registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' );
+	}
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
-		registry = createTestRegistry();
+		registry = createTestRegistry() as Registry;
 		jest.useFakeTimers();
 	} );
 
 	it( 'should not render when isTooltipVisible is false', async () => {
-		registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+		setTooltipSettings( {
 			isTooltipVisible: false,
 		} );
 
@@ -61,7 +68,7 @@ describe( 'AdminMenuTooltip', () => {
 				</div>
 				<AdminScreenTooltip />
 			</div>,
-			{ registry }
+			{ registry, viewContext: 'test-context' }
 		);
 
 		await waitFor( () => {
@@ -73,7 +80,7 @@ describe( 'AdminMenuTooltip', () => {
 
 	it( 'should render when isTooltipVisible is true and track view event', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
-		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+		await setTooltipSettings( {
 			isTooltipVisible: true,
 			title: 'Test Title',
 			content: 'Test Content',
@@ -90,7 +97,7 @@ describe( 'AdminMenuTooltip', () => {
 				</div>
 				<AdminScreenTooltip />
 			</div>,
-			{ registry }
+			{ registry, viewContext: 'test-context' }
 		);
 
 		// Wait for Joyride tooltip's useInterval to render.
@@ -118,14 +125,14 @@ describe( 'AdminMenuTooltip', () => {
 	} );
 
 	it( 'should render content-only tooltip when title is not provided', async () => {
-		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+		await setTooltipSettings( {
 			isTooltipVisible: true,
 			content: 'Test Content',
 			dismissLabel: 'Got it',
 			tooltipSlug: 'test-tooltip-slug',
 		} );
 
-		render(
+		const { findByRole } = render(
 			<div className="googlesitekit-plugin">
 				<div id="adminmenu">
 					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -134,7 +141,7 @@ describe( 'AdminMenuTooltip', () => {
 				</div>
 				<AdminScreenTooltip />
 			</div>,
-			{ registry }
+			{ registry, viewContext: 'test-context' }
 		);
 
 		// Wait for Joyride tooltip's useInterval to render.
@@ -142,11 +149,9 @@ describe( 'AdminMenuTooltip', () => {
 			jest.advanceTimersByTime( 1000 );
 		} );
 
-		let tooltip;
-		await waitFor( () => {
-			tooltip = document.querySelector( '.googlesitekit-tour-tooltip' );
-			expect( tooltip ).toBeInTheDocument();
-		} );
+		// Floater keeps the tooltip `visibility: hidden` in JSDOM, as it is never
+		// positioned, so it has to be included explicitly.
+		const tooltip = await findByRole( 'alertdialog', { hidden: true } );
 
 		expect( tooltip ).toHaveClass( 'googlesitekit-tour-tooltip--no-title' );
 		expect(
@@ -159,7 +164,7 @@ describe( 'AdminMenuTooltip', () => {
 
 	it( 'should close the tooltip on clicking the `X` button and track dismiss event', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
-		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+		await setTooltipSettings( {
 			isTooltipVisible: true,
 			title: 'Test Title',
 			content: 'Test Content',
@@ -167,7 +172,7 @@ describe( 'AdminMenuTooltip', () => {
 			tooltipSlug,
 		} );
 
-		render(
+		const { findByLabelText } = render(
 			<div className="googlesitekit-plugin">
 				<div id="adminmenu">
 					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -176,7 +181,7 @@ describe( 'AdminMenuTooltip', () => {
 				</div>
 				<AdminScreenTooltip />
 			</div>,
-			{ registry }
+			{ registry, viewContext: 'test-context' }
 		);
 
 		// Wait for Joyride tooltip's useInterval to render.
@@ -184,20 +189,7 @@ describe( 'AdminMenuTooltip', () => {
 			jest.advanceTimersByTime( 1000 );
 		} );
 
-		let closeButton;
-		await waitFor( () => {
-			const tooltip = document.querySelector(
-				'.googlesitekit-tour-tooltip'
-			);
-			expect( tooltip ).toBeInTheDocument();
-
-			closeButton = tooltip.querySelector(
-				'.googlesitekit-tooltip-close'
-			);
-			expect( closeButton ).toBeInTheDocument();
-		} );
-
-		fireEvent.click( closeButton );
+		fireEvent.click( await findByLabelText( 'Close' ) );
 
 		await waitFor( () => {
 			expect(
@@ -205,9 +197,7 @@ describe( 'AdminMenuTooltip', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		expect(
-			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
-		).toBeUndefined();
+		expect( getTooltipSettings() ).toBeUndefined();
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
@@ -218,7 +208,7 @@ describe( 'AdminMenuTooltip', () => {
 
 	it( 'should close the tooltip on clicking the `Got it` button and track dismiss event', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
-		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+		await setTooltipSettings( {
 			isTooltipVisible: true,
 			title: 'Test Title',
 			content: 'Test Content',
@@ -226,7 +216,7 @@ describe( 'AdminMenuTooltip', () => {
 			tooltipSlug,
 		} );
 
-		render(
+		const { findByLabelText } = render(
 			<div className="googlesitekit-plugin">
 				<div id="adminmenu">
 					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -235,7 +225,7 @@ describe( 'AdminMenuTooltip', () => {
 				</div>
 				<AdminScreenTooltip />
 			</div>,
-			{ registry }
+			{ registry, viewContext: 'test-context' }
 		);
 
 		// Wait for Joyride tooltip's useInterval to render.
@@ -243,21 +233,7 @@ describe( 'AdminMenuTooltip', () => {
 			jest.advanceTimersByTime( 1000 );
 		} );
 
-		let gotItButton;
-		await waitFor( () => {
-			const tooltip = document.querySelector(
-				'.googlesitekit-tour-tooltip'
-			);
-			expect( tooltip ).toBeInTheDocument();
-
-			gotItButton = tooltip.querySelector(
-				'.googlesitekit-tooltip-button'
-			);
-			expect( gotItButton ).toBeInTheDocument();
-		} );
-
-		// Click the Got it button
-		fireEvent.click( gotItButton );
+		fireEvent.click( await findByLabelText( 'Got it' ) );
 
 		await waitFor( () => {
 			expect(
@@ -265,9 +241,7 @@ describe( 'AdminMenuTooltip', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		expect(
-			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
-		).toBeUndefined();
+		expect( getTooltipSettings() ).toBeUndefined();
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
@@ -277,7 +251,7 @@ describe( 'AdminMenuTooltip', () => {
 	} );
 
 	it( 'should remove the tooltip body class when the tooltip is hidden without being dismissed', async () => {
-		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+		await setTooltipSettings( {
 			isTooltipVisible: true,
 			title: 'Test Title',
 			content: 'Test Content',
@@ -294,7 +268,7 @@ describe( 'AdminMenuTooltip', () => {
 				</div>
 				<AdminScreenTooltip />
 			</div>,
-			{ registry }
+			{ registry, viewContext: 'test-context' }
 		);
 
 		// Wait for Joyride tooltip's useInterval to render.
@@ -309,9 +283,7 @@ describe( 'AdminMenuTooltip', () => {
 		} );
 
 		act( () => {
-			registry
-				.dispatch( CORE_UI )
-				.setValue( 'admin-screen-tooltip', undefined );
+			setTooltipSettings( undefined );
 		} );
 
 		expect( document.body ).not.toHaveClass(
@@ -321,7 +293,7 @@ describe( 'AdminMenuTooltip', () => {
 
 	it( 'should use the provided tracking label when tracking GA events', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
-		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+		await setTooltipSettings( {
 			isTooltipVisible: true,
 			title: 'Test Title',
 			content: 'Test Content',
@@ -330,7 +302,7 @@ describe( 'AdminMenuTooltip', () => {
 			gaTrackingEventLabel: 'test-label',
 		} );
 
-		render(
+		const { findByLabelText } = render(
 			<div className="googlesitekit-plugin">
 				<div id="adminmenu">
 					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
@@ -339,7 +311,7 @@ describe( 'AdminMenuTooltip', () => {
 				</div>
 				<AdminScreenTooltip />
 			</div>,
-			{ registry }
+			{ registry, viewContext: 'test-context' }
 		);
 
 		// Wait for Joyride tooltip's useInterval to render.
@@ -347,27 +319,7 @@ describe( 'AdminMenuTooltip', () => {
 			jest.advanceTimersByTime( 1000 );
 		} );
 
-		await waitFor( () => {
-			const tooltip = document.querySelector(
-				'.googlesitekit-tour-tooltip'
-			);
-			expect( tooltip ).toBeInTheDocument();
-		} );
-
-		let closeButton;
-		await waitFor( () => {
-			const tooltip = document.querySelector(
-				'.googlesitekit-tour-tooltip'
-			);
-			expect( tooltip ).toBeInTheDocument();
-
-			closeButton = tooltip.querySelector(
-				'.googlesitekit-tooltip-close'
-			);
-			expect( closeButton ).toBeInTheDocument();
-		} );
-
-		fireEvent.click( closeButton );
+		fireEvent.click( await findByLabelText( 'Close' ) );
 
 		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 			1,
@@ -385,7 +337,7 @@ describe( 'AdminMenuTooltip', () => {
 	} );
 
 	it( 'should pass floaterProps to the JoyrideTooltip component when provided in the tooltip state', async () => {
-		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+		await setTooltipSettings( {
 			isTooltipVisible: true,
 			title: 'Test Title',
 			content: 'Test Content',
@@ -409,7 +361,7 @@ describe( 'AdminMenuTooltip', () => {
 				</div>
 				<AdminScreenTooltip />
 			</div>,
-			{ registry }
+			{ registry, viewContext: 'test-context' }
 		);
 
 		// Wait for Joyride tooltip's useInterval to render.
@@ -431,4 +383,62 @@ describe( 'AdminMenuTooltip', () => {
 			'margin-top: 42px; margin-bottom: 42px;'
 		);
 	} );
+
+	it.each( [
+		[ 'X', 'Close' ],
+		[ 'Got it', 'Got it' ],
+	] )(
+		'should call the optional onDismiss callback after clicking the `%s` button and still track the dismiss event',
+		async ( _, buttonName ) => {
+			const tooltipSlug = 'test-tooltip-slug';
+			const onDismiss = jest.fn();
+
+			await setTooltipSettings( {
+				isTooltipVisible: true,
+				content: 'Test Content',
+				dismissLabel: 'Got it',
+				tooltipSlug,
+				onDismiss,
+			} );
+
+			const { findByLabelText } = render(
+				<div className="googlesitekit-plugin">
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdminScreenTooltip />
+				</div>,
+				{ registry, viewContext: 'test-context' }
+			);
+
+			// Wait for Joyride tooltip's useInterval to render.
+			act( () => {
+				jest.advanceTimersByTime( 1000 );
+			} );
+
+			const button = await findByLabelText( buttonName );
+
+			expect( onDismiss ).not.toHaveBeenCalled();
+
+			fireEvent.click( button );
+
+			expect( onDismiss ).toHaveBeenCalledTimes( 1 );
+
+			expect( getTooltipSettings() ).toBeUndefined();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`test-context_${ tooltipSlug }`,
+				'tooltip_view',
+				undefined
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`test-context_${ tooltipSlug }`,
+				'tooltip_dismiss',
+				undefined
+			);
+		}
+	);
 } );

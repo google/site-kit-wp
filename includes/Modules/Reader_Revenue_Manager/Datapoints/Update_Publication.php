@@ -14,9 +14,7 @@ use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\RrmProduct;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\TosAcceptance;
@@ -30,53 +28,21 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\TosAcceptanc
  */
 class Update_Publication extends Datapoint implements Executable_Datapoint {
 
-	/**
-	 * Reader Revenue Manager settings.
-	 *
-	 * @since 1.186.0
-	 * @var Settings
-	 */
-	private $settings;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.186.0
-	 *
-	 * @param array $definition Definition fields.
-	 */
-	public function __construct( array $definition ) {
-		parent::__construct( $definition );
-
-		$this->settings = $definition['settings'];
-	}
+	use Publication_Params_Trait;
 
 	/**
 	 * Creates a request object.
 	 *
 	 * @since 1.186.0
+	 * @since n.e.x.t Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
-	 * @throws Missing_Required_Param_Exception   Thrown if a required parameter is missing or empty.
-	 * @throws Missing_Required_Setting_Exception Thrown if a fallback setting is missing.
+	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
 	 */
 	public function create_request( Data_Request $data_request ) {
 		if ( empty( $data_request->data['data'] ) ) {
 			throw new Missing_Required_Param_Exception( 'data' );
-		}
-
-		$settings = $this->settings->get();
-
-		$publication_id  = $data_request['publicationID'] ?? $settings['publicationID'];
-		$organization_id = $data_request['organizationID'] ?? $settings['organizationID'];
-
-		if ( empty( $publication_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'publicationID' );
-		}
-
-		if ( empty( $organization_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'organizationID' );
 		}
 
 		$publication_data = $data_request['data'];
@@ -121,11 +87,7 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 			$update_mask[] = 'publicationPrivacyPolicyUrl';
 		}
 
-		$name = sprintf(
-			'organizations/%s/publications/%s',
-			$organization_id,
-			$publication_id
-		);
+		$name = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications->patch(
 			$name,

@@ -34,7 +34,11 @@ export default function useExpressSetupEventCategory(): string | undefined {
 	const viewContext = useViewContext();
 	const [ cta ] = useQueryArg< string >( 'cta' );
 
-	if ( ! cta || ! Object.values( EXPRESS_SETUP_CTAS ).includes( cta ) ) {
+	const isValidCTA = (
+		Object.values( EXPRESS_SETUP_CTAS ) as string[]
+	 ).includes( cta ?? '' );
+
+	if ( ! cta || ! isValidCTA ) {
 		return undefined;
 	}
 

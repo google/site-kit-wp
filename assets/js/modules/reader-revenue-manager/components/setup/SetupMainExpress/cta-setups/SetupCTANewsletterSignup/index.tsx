@@ -83,7 +83,7 @@ const SetupCTANewsletterSignup: FC = () => {
 
 	const hasRequiredScopes = useExpressSetupScopes();
 
-	const { currentStep, advance } = useSetupFlow(
+	const { currentStep, goForward } = useSetupFlow(
 		STEPS,
 		EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
 	);
@@ -146,10 +146,10 @@ const SetupCTANewsletterSignup: FC = () => {
 	const onStepComplete = useCallback( () => {
 		const tracking = trackEvent( 'complete_step', stepEventLabel );
 
-		advance();
+		goForward();
 
 		return tracking;
-	}, [ advance, stepEventLabel, trackEvent ] );
+	}, [ goForward, stepEventLabel, trackEvent ] );
 
 	// Copy this flow overrides on the shared steps, keyed by step slug.
 	const stepProps: Record< string, object > = {

@@ -343,6 +343,8 @@ describe( 'StepSignupForm', () => {
 			expect( fetchMock ).toHaveFetched( createCTAEndpoint, {
 				body: {
 					data: {
+						organizationID: validSettings.organizationID,
+						publicationID: validSettings.publicationID,
 						data: {
 							displayName: 'My newsletter',
 							type: CTA_TYPES.NEWSLETTER_SIGNUP,
@@ -385,6 +387,8 @@ describe( 'StepSignupForm', () => {
 			expect( fetchMock ).toHaveFetched( createCTAEndpoint, {
 				body: {
 					data: {
+						organizationID: validSettings.organizationID,
+						publicationID: validSettings.publicationID,
 						data: {
 							displayName: 'My newsletter',
 							type: CTA_TYPES.NEWSLETTER_SIGNUP,

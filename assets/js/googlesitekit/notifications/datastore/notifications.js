@@ -102,18 +102,19 @@ export const actions = {
 	 * @since 1.132.0
 	 * @since 1.146.0 Added `featureFlag` parameter.
 	 * @since 1.155.0 Changed to a generator function to allow for state interaction.
+	 * @since n.e.x.t Allowed `featureFlag` to be an array of feature flags.
 	 *
-	 * @param {string}         id                           Notification's slug.
-	 * @param {Object}         settings                     Notification's settings.
-	 * @param {WPComponent}    [settings.Component]         React component used to display the contents of this notification.
-	 * @param {number}         [settings.priority]          Notification's priority for ordering (lower number is higher priority, like WordPress hooks). Ideally in increments of 10. Default 10.
-	 * @param {string}         [settings.areaSlug]          The slug of the area where the notification should be rendered, e.g. notification-area-banners-above-nav.
-	 * @param {string}         [settings.groupID]           Optional. The ID of the group of notifications that should be rendered in their own individual queue. Default 'default'.
-	 * @param {Array.<string>} [settings.viewContexts]      Optional. Array of Site Kit contexts, e.g. VIEW_CONTEXT_MAIN_DASHBOARD.
-	 * @param {Function}       [settings.checkRequirements] Optional. Callback function to determine if the notification should be queued.
-	 * @param {boolean}        [settings.isDismissible]     Optional. Flag to check if the notification should be queued and is not dismissed.
-	 * @param {number}         [settings.dismissRetries]    Optional. An integer number denoting how many times a notification should be shown again on dismissal. Default 0.
-	 * @param {string}         [settings.featureFlag]       Optional. Feature flag that must be enabled to register the notification.
+	 * @param {string}          id                           Notification's slug.
+	 * @param {Object}          settings                     Notification's settings.
+	 * @param {WPComponent}     [settings.Component]         React component used to display the contents of this notification.
+	 * @param {number}          [settings.priority]          Notification's priority for ordering (lower number is higher priority, like WordPress hooks). Ideally in increments of 10. Default 10.
+	 * @param {string}          [settings.areaSlug]          The slug of the area where the notification should be rendered, e.g. notification-area-banners-above-nav.
+	 * @param {string}          [settings.groupID]           Optional. The ID of the group of notifications that should be rendered in their own individual queue. Default 'default'.
+	 * @param {string[]}        [settings.viewContexts]      Optional. Array of Site Kit contexts, e.g. VIEW_CONTEXT_MAIN_DASHBOARD.
+	 * @param {Function}        [settings.checkRequirements] Optional. Callback function to determine if the notification should be queued.
+	 * @param {boolean}         [settings.isDismissible]     Optional. Flag to check if the notification should be queued and is not dismissed.
+	 * @param {number}          [settings.dismissRetries]    Optional. An integer number denoting how many times a notification should be shown again on dismissal. Default 0.
+	 * @param {string|string[]} [settings.featureFlag]       Optional. Feature flag that must be enabled to register the notification, or an array of feature flags that must all be enabled.
 	 */
 	registerNotification: createValidatedAction(
 		( id, { Component, areaSlug, viewContexts } ) => {
@@ -306,6 +307,29 @@ export const actions = {
 	resetQueue( groupID = NOTIFICATION_GROUPS.DEFAULT ) {
 		return { type: RESET_QUEUE, payload: { groupID } };
 	},
+	/**
+	 * Removes a notification from its group's queue for the current page view.
+	 *
+	 * Unlike `dismissNotification()`, this doesn't persist a dismissal, so the
+	 * notification can be queued again on a later page view.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} id Notification ID to remove from the queue.
+	 * @return {Object} Redux-style action.
+	 */
+	removeNotificationFromQueue: createValidatedAction(
+		( id ) => {
+			invariant(
+				id,
+				'A notification id is required to remove a notification from the queue.'
+			);
+		},
+		( id ) => ( {
+			type: DISMISS_NOTIFICATION,
+			payload: { id },
+		} )
+	),
 	/**
 	 * Populates a queue with qualifying notifications ordered by priority.
 	 *

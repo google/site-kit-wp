@@ -36,5 +36,5 @@ export interface NotificationSettings {
 	) => Promise< boolean >;
 	isDismissible?: boolean;
 	dismissRetries?: number;
-	featureFlag?: string;
+	featureFlag?: string | string[];
 }

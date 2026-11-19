@@ -866,6 +866,9 @@ class Google_Proxy {
 	/**
 	 * Sends a conversion insight request to the proxy.
 	 *
+	 * The request names the plugin release in its `User-Agent` header, so the
+	 * service can tie each request to the release that computed it.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param Credentials $credentials  Credentials instance.
@@ -881,6 +884,9 @@ class Google_Proxy {
 			array(
 				'access_token' => $access_token,
 				'json_request' => true,
+				'headers'      => array(
+					'User-Agent' => self::get_application_name(),
+				),
 				'body'         => array_merge( $payload, array( 'async' => true ) ),
 			)
 		);

@@ -92,6 +92,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 *
 	 * @since 1.30.0
 	 * @since 1.192.0 Always includes `freshDataIncludesWooCommerceProducts`.
+	 * @since n.e.x.t Added `measurementProtocolSecretID`.
 	 *
 	 * @return array
 	 */
@@ -128,6 +129,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'newConversionEventsLastUpdateAt'              => 0,
 			'lostConversionEventsLastUpdateAt'             => 0,
 			self::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS => true,
+			'measurementProtocolSecretID'                  => '',
 		);
 	}
 
@@ -135,6 +137,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.30.0
+	 * @since n.e.x.t Sanitizes `measurementProtocolSecretID`.
 	 *
 	 * @return callable|null
 	 */
@@ -148,6 +151,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				$this->sanitize_container_destination_ids( $option );
 				$this->sanitize_available_custom_dimensions( $option );
 				$this->sanitize_timestamp_properties( $option );
+				$this->sanitize_measurement_protocol_secret_id( $option );
 			}
 
 			return $option;
@@ -290,6 +294,22 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$option[ $timestamp_property ] = 0;
 				}
 			}
+		}
+	}
+
+	/**
+	 * Sanitizes the Measurement Protocol secret ID.
+	 *
+	 * Only Site Kit writes this ID, but saving the settings sends it back from the browser, so a value
+	 * that is not a string is replaced with an empty string.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array &$option The option array to sanitize.
+	 */
+	private function sanitize_measurement_protocol_secret_id( &$option ) {
+		if ( isset( $option['measurementProtocolSecretID'] ) && ! is_string( $option['measurementProtocolSecretID'] ) ) {
+			$option['measurementProtocolSecretID'] = '';
 		}
 	}
 }

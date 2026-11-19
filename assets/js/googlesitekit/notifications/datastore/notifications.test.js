@@ -844,6 +844,62 @@ describe( 'core/notifications Notifications', () => {
 			} );
 		} );
 
+		describe( 'removeNotificationFromQueue', () => {
+			function TestNotificationComponent() {
+				return <div>Test notification!</div>;
+			}
+
+			beforeEach( () => {
+				registerNotification( 'test-notification', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			} );
+
+			it( 'should require a notification ID to be provided', () => {
+				expect( () =>
+					registry
+						.dispatch( CORE_NOTIFICATIONS )
+						.removeNotificationFromQueue()
+				).toThrow(
+					'A notification id is required to remove a notification from the queue.'
+				);
+			} );
+
+			it( 'should remove the notification from the queue without persisting a dismissal', async () => {
+				let queuedNotifications = await registry
+					.resolveSelect( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				expect( queuedNotifications.map( ( { id } ) => id ) ).toContain(
+					'test-notification'
+				);
+
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.removeNotificationFromQueue( 'test-notification' );
+
+				queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+
+				expect(
+					queuedNotifications.map( ( { id } ) => id )
+				).not.toContain( 'test-notification' );
+
+				// Neither the dismissed items nor the prompts APIs are called.
+				expect( fetchMock ).not.toHaveFetched();
+				expect(
+					registry
+						.select( CORE_NOTIFICATIONS )
+						.isNotificationDismissed( 'test-notification' )
+				).toBe( false );
+			} );
+		} );
+
 		describe( 'pinNotification', () => {
 			it( 'should require a notification ID to be provided', () => {
 				const { pinNotification } =
