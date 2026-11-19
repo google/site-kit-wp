@@ -171,6 +171,32 @@ describe( 'LatestPostPerformance', () => {
 		] );
 	} );
 
+	it( 'should render the titles of the tiles as headings one level below the heading of the section', async () => {
+		provideLatestPostKeywordReport( registry );
+
+		const { getAllByRole, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getAllByRole( 'heading', { level: 3 } ).map(
+				( heading ) => heading.textContent
+			)
+		).toEqual( [ 'Latest post performance since published' ] );
+		expect(
+			getAllByRole( 'heading', { level: 4 } ).map(
+				( heading ) => heading.textContent
+			)
+		).toEqual( [
+			'Visitor breakdown',
+			'Traffic sources',
+			'Engagement & outcomes',
+		] );
+	} );
+
 	it( 'should request the top keyword for the post URL on the reference site, and should keep the Analytics rows, when the reference site URL differs from the home URL', async () => {
 		provideSiteInfo( registry, {
 			homeURL: 'https://example.com/',

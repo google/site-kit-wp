@@ -21,9 +21,22 @@
  */
 import { Chip as MuiChip, ChipCheckmark } from '@material/react-chips';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { ComponentProps, ElementType, FC } from 'react';
 
-export default function Chip( {
+interface ChipOwnProps {
+	CheckMark?: ElementType;
+	className?: classnames.Argument;
+	id: string;
+	label: string;
+}
+
+type ChipProps = ChipOwnProps &
+	Omit<
+		ComponentProps< typeof MuiChip >,
+		'chipCheckmark' | 'className' | 'id' | 'label'
+	>;
+
+const Chip: FC< ChipProps > = ( {
 	id,
 	label,
 	onClick,
@@ -32,7 +45,11 @@ export default function Chip( {
 	CheckMark = ChipCheckmark,
 	disabled,
 	...props
-} ) {
+} ) => {
+	const classNames = classnames( 'googlesitekit-chip', className, {
+		'googlesitekit-chip--disabled': disabled,
+	} );
+
 	return (
 		<MuiChip
 			chipCheckmark={ <CheckMark /> }
@@ -47,19 +64,10 @@ export default function Chip( {
 				onClick?.( event );
 			} }
 			selected={ selected }
-			className={ classnames( 'googlesitekit-chip', className, {
-				'googlesitekit-chip--disabled': disabled,
-			} ) }
+			className={ classNames }
 			{ ...props }
 		/>
 	);
-}
-
-Chip.propTypes = {
-	id: PropTypes.string.isRequired,
-	label: PropTypes.string.isRequired,
-	onClick: PropTypes.func,
-	selected: PropTypes.bool,
-	className: PropTypes.string,
-	CheckMark: PropTypes.elementType,
 };
+
+export default Chip;
