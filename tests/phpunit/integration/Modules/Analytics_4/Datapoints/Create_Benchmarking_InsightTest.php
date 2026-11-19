@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Insight_Payload;
-use Google\Site_Kit\Tests\Benchmarking_Insight_Datapoints_Trait;
+use Google\Site_Kit\Tests\AI_Insight_Datapoints_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_Error;
 use WP_REST_Request;
@@ -32,17 +32,22 @@ use WP_REST_Request;
  */
 class Create_Benchmarking_InsightTest extends TestCase {
 
-	use Benchmarking_Insight_Datapoints_Trait;
+	use AI_Insight_Datapoints_Trait;
 
 	/**
 	 * The operation the fake service starts for a request.
 	 */
 	const OPERATION_ID = 'YhMZgdgne7B3vkpA7VTLJa';
 
+	/**
+	 * The feature flags that define the benchmarking insight datapoints.
+	 */
+	const FEATURE_FLAGS = array( 'typicalTraffic', 'trafficInsights' );
+
 	public function set_up() {
 		parent::set_up();
 
-		$this->set_up_benchmarking_insight_datapoints();
+		$this->set_up_ai_insight_datapoints();
 	}
 
 	public function tear_down() {
@@ -130,7 +135,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__forwards_the_request_of_the_payload_to_the_service() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, array( 'operation_id' => self::OPERATION_ID ) );
 
 		$response = $this->request( array( 'payload' => $this->get_payload() ) );
@@ -163,7 +168,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__asks_for_the_insight_in_the_locale_of_the_payload() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, array( 'operation_id' => self::OPERATION_ID ) );
 
 		$this->request( array( 'payload' => $this->get_payload( null, 'de_DE_formal' ) ) );
@@ -172,7 +177,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__answers_with_the_insight_the_service_had_in_its_cache() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, $this->get_service_insight() );
 
 		$response = $this->request( array( 'payload' => $this->get_payload() ) );
@@ -195,7 +200,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__answers_null_for_an_empty_or_missing_insight_field() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			200,
 			array(
@@ -225,7 +230,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__answers_with_an_insight_that_has_only_a_driver() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, array( 'driver' => 'Organic Search brought most of the extra visits.' ) );
 
 		$response = $this->request( array( 'payload' => $this->get_payload() ) );
@@ -240,7 +245,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	 * @param mixed $body The body the service answers with.
 	 */
 	public function test_rest_endpoint__answers_500_for_a_response_with_neither_an_operation_nor_an_insight( $body ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, $body );
 
 		$response = $this->request( array( 'payload' => $this->get_payload() ) );
@@ -271,7 +276,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	 * @param array|null $data The `data` of the request.
 	 */
 	public function test_rest_endpoint__refuses_a_request_without_a_payload( $data ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$response = $this->request( $data );
 
@@ -295,7 +300,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	 * @param callable $get_payload Gets the payload, from the test case.
 	 */
 	public function test_rest_endpoint__refuses_a_payload_the_site_did_not_build_for_the_user( callable $get_payload ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$response = $this->request( array( 'payload' => $get_payload( $this ) ) );
 
@@ -368,7 +373,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	 * @param array $expected The data the error should carry.
 	 */
 	public function test_rest_endpoint__passes_the_status_reason_and_retry_after_of_a_service_error( $status, array $headers, array $expected ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			$status,
 			array(
@@ -462,7 +467,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	 * @param int $status The status the service answers with.
 	 */
 	public function test_rest_endpoint__answers_500_for_any_other_service_error( $status ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( $status, array( 'code' => 'INTERNAL' ) );
 
 		$response = $this->request( array( 'payload' => $this->get_payload() ) );
@@ -489,7 +494,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__answers_500_when_the_service_cannot_be_reached() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->fail_service_requests_with( new WP_Error( 'http_request_failed', 'cURL error 28: Operation timed out.' ) );
 
 		$response = $this->request( array( 'payload' => $this->get_payload() ) );
@@ -505,7 +510,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	 * @param object $client The Google client the request runs with.
 	 */
 	public function test_create_request__answers_403_without_an_access_token( $client ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$request = $this->analytics->get_datapoint_definition( 'POST:benchmarking-insight' )->create_request(
 			new Data_Request( 'POST', 'modules', 'analytics-4', 'benchmarking-insight', array( 'payload' => $this->get_payload() ) )
@@ -532,7 +537,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_create_request__answers_500_when_the_token_cannot_be_refreshed() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$request = $this->analytics->get_datapoint_definition( 'POST:benchmarking-insight' )->create_request(
 			new Data_Request( 'POST', 'modules', 'analytics-4', 'benchmarking-insight', array( 'payload' => $this->get_payload() ) )
@@ -547,7 +552,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_create_request__sends_the_access_token_the_client_refreshed() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, array( 'operation_id' => self::OPERATION_ID ) );
 
 		$request = $this->analytics->get_datapoint_definition( 'POST:benchmarking-insight' )->create_request(
@@ -623,10 +628,10 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__answers_a_view_only_reader_with_the_owners_account() {
-		$reader_id = $this->create_view_only_reader_of_analytics();
+		$reader_id = $this->create_view_only_user_of_analytics();
 
 		$this->switch_to_user( $reader_id );
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, array( 'operation_id' => self::OPERATION_ID ) );
 
 		$this->assertFalse( ( new Authentication( $this->context, $this->options, new User_Options( $this->context, $reader_id ) ) )->is_authenticated(), 'The reader should not have connected a Google account of their own.' );
@@ -640,11 +645,11 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__refuses_a_view_only_reader_a_payload_built_for_the_owner() {
-		$reader_id = $this->create_view_only_reader_of_analytics();
+		$reader_id = $this->create_view_only_user_of_analytics();
 		$payload   = $this->get_payload( $this->admin_id );
 
 		$this->switch_to_user( $reader_id );
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$response = $this->request( array( 'payload' => $payload ) );
 
@@ -659,10 +664,10 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	 * @param string $expected_code The code of the error the request should answer with.
 	 */
 	public function test_rest_endpoint__sends_no_request_for_a_view_only_reader_whose_owner_is_disconnected( $state, $expected_code ) {
-		$reader_id = $this->create_view_only_reader_of_analytics();
+		$reader_id = $this->create_view_only_user_of_analytics();
 
 		$this->switch_to_user( $reader_id );
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->disconnect_owner_of_analytics( $state );
 
 		$response = $this->request( array( 'payload' => $this->get_payload( $reader_id ) ) );
@@ -684,7 +689,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 		$subscriber_id = $this->factory()->user->create( array( 'role' => 'subscriber' ) );
 
 		$this->switch_to_user( $subscriber_id );
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'The subscriber should not be able to view the dashboard.' );
 
@@ -698,7 +703,7 @@ class Create_Benchmarking_InsightTest extends TestCase {
 		$other_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		$this->switch_to_user( $other_admin );
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$this->assertTrue( current_user_can( Permissions::SETUP ), 'The administrator should be able to run setup, which the route default accepts for a write.' );
 		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'The administrator should not be able to view the dashboard without an account of their own.' );

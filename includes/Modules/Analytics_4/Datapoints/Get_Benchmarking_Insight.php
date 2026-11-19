@@ -106,7 +106,7 @@ class Get_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 		$state = isset( $operation['state'] ) ? $operation['state'] : '';
 
 		if ( 'FAILED' === $state ) {
-			return $this->get_failed_operation_error( isset( $operation['error'] ) ? $operation['error'] : array() );
+			return $this->get_failed_operation_error( isset( $operation['error'] ) ? $operation['error'] : array(), 'benchmarking_insight_failed' );
 		}
 
 		if ( 'SUCCEEDED' === $state ) {
@@ -131,39 +131,6 @@ class Get_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 		return array(
 			'done'  => false,
 			'state' => 'RUNNING',
-		);
-	}
-
-	/**
-	 * Gets the error the datapoint answers with for a failed operation.
-	 *
-	 * The service fails an operation with code 503 when an instance shutdown
-	 * interrupted it, or when its instance died, and asking for the insight
-	 * again then starts a new generation. Any other failure is a failed
-	 * generation, which is a 500.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param mixed $operation_error The operation's `error`, with `code`, `message` and `status`.
-	 * @return WP_Error The error, with status 503 or 500, and the service's code as `reason`.
-	 */
-	private function get_failed_operation_error( $operation_error ) {
-		$operation_error = is_array( $operation_error ) ? $operation_error : array();
-
-		$data = array(
-			'status' => isset( $operation_error['code'] ) && 503 === (int) $operation_error['code'] ? 503 : 500,
-		);
-
-		if ( ! empty( $operation_error['status'] ) && is_string( $operation_error['status'] ) ) {
-			$data['reason'] = $operation_error['status'];
-		}
-
-		return new WP_Error(
-			'benchmarking_insight_failed',
-			! empty( $operation_error['message'] ) && is_string( $operation_error['message'] )
-				? $operation_error['message']
-				: __( 'The insight could not be generated.', 'google-site-kit' ),
-			$data
 		);
 	}
 }

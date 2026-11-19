@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Tests\Benchmarking_Insight_Datapoints_Trait;
+use Google\Site_Kit\Tests\AI_Insight_Datapoints_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_Error;
 use WP_REST_Request;
@@ -29,17 +29,22 @@ use WP_REST_Request;
  */
 class Get_Benchmarking_InsightTest extends TestCase {
 
-	use Benchmarking_Insight_Datapoints_Trait;
+	use AI_Insight_Datapoints_Trait;
 
 	/**
 	 * The operation the browser reads.
 	 */
 	const OPERATION_ID = 'YhMZgdgne7B3vkpA7VTLJa';
 
+	/**
+	 * The feature flags that define the benchmarking insight datapoints.
+	 */
+	const FEATURE_FLAGS = array( 'typicalTraffic', 'trafficInsights' );
+
 	public function set_up() {
 		parent::set_up();
 
-		$this->set_up_benchmarking_insight_datapoints();
+		$this->set_up_ai_insight_datapoints();
 	}
 
 	public function tear_down() {
@@ -90,7 +95,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__reads_the_operation_from_the_service() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			200,
 			array(
@@ -117,7 +122,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__encodes_the_operation_id_in_the_url() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			200,
 			array(
@@ -137,7 +142,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	 * @param array $operation The operation the service returns.
 	 */
 	public function test_rest_endpoint__answers_running_for_an_operation_that_is_not_done( array $operation ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, $operation );
 
 		$this->assertSame(
@@ -170,7 +175,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__answers_with_the_insight_of_a_succeeded_operation() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			200,
 			array(
@@ -202,7 +207,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__answers_null_for_an_empty_field_of_a_succeeded_operation() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			200,
 			array(
@@ -236,7 +241,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	 * @param mixed $operation The operation the service returns.
 	 */
 	public function test_rest_endpoint__answers_500_for_an_operation_it_cannot_read( $operation ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, $operation );
 
 		$response = $this->request();
@@ -280,7 +285,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	 * @param array  $data            The data the error should carry.
 	 */
 	public function test_rest_endpoint__answers_an_error_for_a_failed_operation( array $operation_error, $status, $message, array $data ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			200,
 			array(
@@ -366,7 +371,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	 * @param array $params The query parameters of the request.
 	 */
 	public function test_rest_endpoint__refuses_a_request_without_an_operation_id( array $params ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$response = $this->request( $params );
 
@@ -389,7 +394,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	 * @param mixed $operation_id An operation ID the datapoint refuses.
 	 */
 	public function test_rest_endpoint__refuses_an_operation_id_that_is_not_a_short_string( $operation_id ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$response = $this->request( array( 'operationID' => $operation_id ) );
 
@@ -406,7 +411,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__accepts_an_operation_id_of_256_characters() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			200,
 			array(
@@ -430,7 +435,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	 * @param array $expected_data   The data the error should carry.
 	 */
 	public function test_rest_endpoint__answers_a_service_error_with_its_status_or_500( $status, array $headers, $expected_status, array $expected_data ) {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			$status,
 			array(
@@ -540,7 +545,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__answers_500_when_the_service_cannot_be_reached() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->fail_service_requests_with( new WP_Error( 'http_request_failed', 'cURL error 6: Could not resolve host.' ) );
 
 		$response = $this->request();
@@ -550,7 +555,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_create_request__answers_403_without_an_access_token() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$request = $this->analytics->get_datapoint_definition( 'GET:benchmarking-insight' )->create_request(
 			new Data_Request( 'GET', 'modules', 'analytics-4', 'benchmarking-insight', array( 'operationID' => self::OPERATION_ID ) )
@@ -575,7 +580,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_create_request__answers_500_when_the_token_cannot_be_refreshed() {
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$request = $this->analytics->get_datapoint_definition( 'GET:benchmarking-insight' )->create_request(
 			new Data_Request( 'GET', 'modules', 'analytics-4', 'benchmarking-insight', array( 'operationID' => self::OPERATION_ID ) )
@@ -600,10 +605,10 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__answers_a_view_only_reader_with_the_owners_account() {
-		$reader_id = $this->create_view_only_reader_of_analytics();
+		$reader_id = $this->create_view_only_user_of_analytics();
 
 		$this->switch_to_user( $reader_id );
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
 			200,
 			array(
@@ -629,10 +634,10 @@ class Get_Benchmarking_InsightTest extends TestCase {
 	 * @param string $expected_code The code of the error the request should answer with.
 	 */
 	public function test_rest_endpoint__sends_no_request_for_a_view_only_reader_whose_owner_is_disconnected( $state, $expected_code ) {
-		$reader_id = $this->create_view_only_reader_of_analytics();
+		$reader_id = $this->create_view_only_user_of_analytics();
 
 		$this->switch_to_user( $reader_id );
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->disconnect_owner_of_analytics( $state );
 
 		$response = $this->request();
@@ -654,7 +659,7 @@ class Get_Benchmarking_InsightTest extends TestCase {
 		$subscriber_id = $this->factory()->user->create( array( 'role' => 'subscriber' ) );
 
 		$this->switch_to_user( $subscriber_id );
-		$this->enable_insight_datapoints();
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 
 		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'The subscriber should not be able to view the dashboard.' );
 
