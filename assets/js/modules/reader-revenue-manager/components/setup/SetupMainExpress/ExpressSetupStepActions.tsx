@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager survey CTA express setup step actions.
+ * Reader Revenue Manager express setup step actions.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -33,7 +33,6 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 
 interface ExpressSetupStepActionsProps {
 	canGoForward?: boolean;
-	canGoBack?: boolean;
 	isBusy: boolean;
 	label: string;
 	onGoBack?: () => void;
@@ -41,7 +40,6 @@ interface ExpressSetupStepActionsProps {
 
 const ExpressSetupStepActions: FC< ExpressSetupStepActionsProps > = ( {
 	canGoForward = true,
-	canGoBack = true,
 	isBusy,
 	label,
 	onGoBack,
@@ -59,7 +57,7 @@ const ExpressSetupStepActions: FC< ExpressSetupStepActionsProps > = ( {
 		{ onGoBack ? (
 			/* @ts-expect-error - The `Button` component is not typed yet. */
 			<Button
-				disabled={ isBusy || ! canGoBack }
+				disabled={ isBusy }
 				onClick={ onGoBack }
 				type="button"
 				tertiary

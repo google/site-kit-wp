@@ -75,20 +75,6 @@ describe( 'ExpressSetupStepActions', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'disables only the back action when it cannot go back', () => {
-		const { getByRole } = render(
-			<ExpressSetupStepActions
-				canGoBack={ false }
-				isBusy={ false }
-				label="Next"
-				onGoBack={ () => {} }
-			/>
-		);
-
-		expect( getByRole( 'button', { name: 'Back' } ) ).toBeDisabled();
-		expect( getByRole( 'button', { name: 'Next' } ) ).toBeEnabled();
-	} );
-
 	it( 'disables only the forward action when it cannot go forward', () => {
 		const { getByRole } = render(
 			<ExpressSetupStepActions
