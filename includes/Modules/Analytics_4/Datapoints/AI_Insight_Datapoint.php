@@ -219,6 +219,29 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	}
 
 	/**
+	 * Adds the time the service asks the browser to wait to an answer that
+	 * points at a running operation.
+	 *
+	 * The service sends a `Retry-After` header with an operation it started
+	 * or joined, and with every read of an operation that still runs: the
+	 * seconds to wait before the next read. `Google_Proxy` returns it as
+	 * `retryAfter`, and the answer keeps that name, as an error does.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $answer   The answer of the datapoint.
+	 * @param array $response The service's response, as `Google_Proxy` returns it.
+	 * @return array The answer, with `retryAfter` when the service's response has it.
+	 */
+	protected function with_retry_after( array $answer, array $response ) {
+		if ( isset( $response['retryAfter'] ) && is_int( $response['retryAfter'] ) ) {
+			$answer['retryAfter'] = $response['retryAfter'];
+		}
+
+		return $answer;
+	}
+
+	/**
 	 * Gets the error the datapoint answers with when it can't read the
 	 * service's response, such as one with neither an operation nor an
 	 * insight in it, or an insight without a text.

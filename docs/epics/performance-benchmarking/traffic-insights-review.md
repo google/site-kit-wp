@@ -242,8 +242,8 @@ These come from reading the plugin and the service side by side, not from a run.
 
 - **Contract:** every request key and type matches the service, and I found no
   builder output the service would refuse with a 400. The client loop matches the
-  service's client contract (poll every 2 s, one resubmit on 404, on `FAILED` with
-  503, or after two minutes).
+  service's client contract (poll every `Retry-After` seconds, 2 s without one, one
+  resubmit on 404, on `FAILED` with 503, or after two minutes).
 - **Baseline model:** I found no place where `Period_Baseline` computes a different
   result from the Go model for the same rows. The 33 conformance fixtures are
   byte-identical to the service's, and the conformance test, which checks every day's
@@ -269,8 +269,7 @@ The implementation follows the service; the docs
 - `days_in_period` is the selected range (7, 14, 28 or 90), not always 28.
 - The request has `visits.last_year` and `history_days`; `baseline` is only the two
   range bounds.
-- Error bodies are `{"error", "code"}`, a 429 carries `Retry-After`, and the plugin
-  sends a `User-Agent`.
+- Error bodies are `{"error", "code"}`, and the plugin sends a `User-Agent`.
 - The payload is signed, in place of the structural validation the doc describes.
 - The chart's band comes from one 28-day fit per day, on the days at least 28 days
   before it, scaled so that the days add up to the request's range (§5.4 *Request
@@ -290,8 +289,7 @@ The implementation follows the service; the docs
 
 ## Nits
 
-- The store waits fixed 2 s and 5 s rather than the `Retry-After` it is given;
-  `reason` is forwarded and unused.
+- `reason` is forwarded and unused.
 - The deadline is 60 s; the doc suggests about 40 s as an open question.
 - `PLACEHOLDER_TRAFFIC_INSIGHT` and `PLACEHOLDER_KEY_FACTORS_INSIGHT` are used only by
   stories now, and live in production modules.

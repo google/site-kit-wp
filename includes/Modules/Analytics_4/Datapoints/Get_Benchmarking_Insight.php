@@ -58,7 +58,7 @@ class Get_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable Closure that reads the operation. It returns `done` and `state`, with the `insight` once the operation succeeded, or an error, which has status 503 when an instance shutdown interrupted the operation and 500 when the generation failed.
+	 * @return callable Closure that reads the operation. It returns `done` and `state`, with the `insight` once the operation succeeded, or with the seconds to wait before the next read as `retryAfter` while it runs, when the service sent them; or an error, which has status 503 when an instance shutdown interrupted the operation and 500 when the generation failed.
 	 * @throws Missing_Required_Param_Exception Thrown when `operationID` is missing.
 	 * @throws Invalid_Param_Exception Thrown when `operationID` isn't a string of at most `MAX_OPERATION_ID_LENGTH` characters.
 	 */
@@ -96,7 +96,7 @@ class Get_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 	 * @since n.e.x.t
 	 *
 	 * @param mixed $operation The operation, as the service returned it.
-	 * @return array|WP_Error The state as `done` and `state`, with the `insight` once the operation succeeded, or an error when it failed.
+	 * @return array|WP_Error The state as `done` and `state`, with the `insight` once the operation succeeded, or with `retryAfter` while it runs, when the service sent it; or an error when it failed.
 	 */
 	private function parse_operation( $operation ) {
 		if ( ! is_array( $operation ) ) {
@@ -128,9 +128,12 @@ class Get_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 			return $this->get_invalid_response_error();
 		}
 
-		return array(
-			'done'  => false,
-			'state' => 'RUNNING',
+		return $this->with_retry_after(
+			array(
+				'done'  => false,
+				'state' => 'RUNNING',
+			),
+			$operation
 		);
 	}
 }

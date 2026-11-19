@@ -176,6 +176,22 @@ class Create_Benchmarking_InsightTest extends TestCase {
 		$this->assertSame( $this->get_service_url( '/v1/ai/benchmarking?hl=de_DE_formal' ), $this->service_requests[0]['url'], 'The request should carry the locale of the payload, as WordPress names it, as `hl`.' );
 	}
 
+	public function test_rest_endpoint__answers_with_the_wait_the_service_asks_for_before_the_first_read() {
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
+		$this->answer_service_with( 200, array( 'operation_id' => self::OPERATION_ID ), array( 'retry-after' => '2' ) );
+
+		$response = $this->request( array( 'payload' => $this->get_payload() ) );
+
+		$this->assertSame(
+			array(
+				'operationID' => self::OPERATION_ID,
+				'retryAfter'  => 2,
+			),
+			$response->get_data(),
+			'The response should carry the `Retry-After` of the service, in seconds, as `retryAfter`.'
+		);
+	}
+
 	public function test_rest_endpoint__answers_with_the_insight_the_service_had_in_its_cache() {
 		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with( 200, $this->get_service_insight() );

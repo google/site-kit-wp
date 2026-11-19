@@ -1307,6 +1307,113 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	/**
+	 * @dataProvider data_successful_response_retry_after
+	 *
+	 * @param array $response_headers The headers of the response.
+	 * @param array $expected_fields  The fields the answer should have besides the body of the response.
+	 */
+	public function test_send_benchmarking_insight_request__returns_the_retry_after_of_the_response( array $response_headers, array $expected_fields ) {
+		list ( $credentials ) = $this->get_credentials();
+
+		$body = array( 'operation_id' => 'operation-123' );
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/benchmarking?hl=de_DE' ), $body, 200, $response_headers );
+
+		$response = $this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de_DE' );
+
+		$this->assertSame( array_merge( $body, $expected_fields ), $response, 'The answer should be the body of the response, with a numeric `Retry-After` header as `retryAfter`.' );
+	}
+
+	/**
+	 * @dataProvider data_successful_response_retry_after
+	 *
+	 * @param array $response_headers The headers of the response.
+	 * @param array $expected_fields  The fields the answer should have besides the body of the response.
+	 */
+	public function test_send_conversion_insight_request__returns_the_retry_after_of_the_response( array $response_headers, array $expected_fields ) {
+		list ( $credentials ) = $this->get_credentials();
+
+		$body = array( 'operation_id' => 'YhMZgdgne7B3vkpA7VTLJa' );
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/conversion-insights?hl=de-DE' ), $body, 200, $response_headers );
+
+		$response = $this->google_proxy->send_conversion_insight_request( $credentials, 'abcd', array(), 'de-DE' );
+
+		$this->assertSame( array_merge( $body, $expected_fields ), $response, 'The answer should be the body of the response, with a numeric `Retry-After` header as `retryAfter`.' );
+	}
+
+	/**
+	 * @dataProvider data_successful_response_retry_after
+	 *
+	 * @param array $response_headers The headers of the response.
+	 * @param array $expected_fields  The fields the answer should have besides the body of the response.
+	 */
+	public function test_get_ai_operation__returns_the_retry_after_of_the_response( array $response_headers, array $expected_fields ) {
+		list ( $credentials, $site_id ) = $this->get_credentials();
+
+		$body = array(
+			'done'  => false,
+			'state' => 'RUNNING',
+		);
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id ),
+			$body,
+			200,
+			$response_headers
+		);
+
+		$response = $this->google_proxy->get_ai_operation( $credentials, 'dcba', 'operation-123' );
+
+		$this->assertSame( array_merge( $body, $expected_fields ), $response, 'The answer should be the operation, with a numeric `Retry-After` header as `retryAfter`.' );
+	}
+
+	public function data_successful_response_retry_after() {
+		return array(
+			'a Retry-After'                      => array(
+				array( 'retry-after' => '2' ),
+				array( 'retryAfter' => 2 ),
+			),
+			'a Retry-After of 0'                 => array(
+				array( 'retry-after' => '0' ),
+				array( 'retryAfter' => 0 ),
+			),
+			'no Retry-After'                     => array(
+				array(),
+				array(),
+			),
+			'a Retry-After that is an HTTP date' => array(
+				array( 'retry-after' => 'Wed, 16 Sep 2026 07:28:00 GMT' ),
+				array(),
+			),
+		);
+	}
+
+	public function test_send_feedback__returns_no_retry_after() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_request(
+			$this->google_proxy->url( Google_Proxy::FEEDBACK_URI ),
+			array( 'success' => true ),
+			200,
+			array( 'retry-after' => '2' )
+		);
+
+		$response = $this->google_proxy->send_feedback(
+			$credentials,
+			'abcd',
+			array(
+				'namespace' => 'feature_hub',
+				'group'     => 'feature_relevancy_analytics-4',
+				'key'       => 'vote',
+				'value'     => 'up',
+			)
+		);
+
+		$this->assertSame( array( 'success' => true ), $response, 'Only the AI requests should add the `Retry-After` header of a successful response to the answer.' );
+	}
+
+	/**
 	 * @dataProvider data_errors
 	 */
 	public function test_request_returns_error_for_invalid_response( $params ) {

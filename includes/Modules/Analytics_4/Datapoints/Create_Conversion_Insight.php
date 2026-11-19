@@ -106,7 +106,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable Closure that asks the service for the insight. It returns the ID of the operation that generates the insight as `operationID`, the insight as `insight` when the service had one in its cache, `insight` as null when there is no insight to write, or an error.
+	 * @return callable Closure that asks the service for the insight. It returns the ID of the operation that generates the insight as `operationID`, with the seconds to wait before its first read as `retryAfter` when the service sent them; the insight as `insight` when the service had one in its cache; `insight` as null when there is no insight to write; or an error.
 	 * @throws Invalid_Param_Exception Thrown when `tab` is longer than 500 characters, or `endDate` isn't a real day.
 	 */
 	public function create_request( Data_Request $data_request ) {
@@ -156,7 +156,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 			// wrote one for the same entry before, and with the operation that
 			// writes it otherwise.
 			if ( ! empty( $response['operation_id'] ) && is_string( $response['operation_id'] ) ) {
-				return array( 'operationID' => $response['operation_id'] );
+				return $this->with_retry_after( array( 'operationID' => $response['operation_id'] ), $response );
 			}
 
 			if ( isset( $response['scenario'] ) ) {

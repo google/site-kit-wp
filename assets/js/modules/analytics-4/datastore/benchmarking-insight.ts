@@ -57,6 +57,7 @@ import {
 	validateBenchmarkingDataParams,
 } from './benchmarking';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { getRetryAfterDelay } from './utils/ai-insight';
 
 const { clearSelectorError, setErrorForSelector } = errorStoreActions;
 
@@ -72,8 +73,9 @@ const { clearSelectorError, setErrorForSelector } = errorStoreActions;
 export const BENCHMARKING_INSIGHT_DEADLINE = 60 * 1000;
 
 /**
- * The time between two reads of the operation that generates an insight, in
- * milliseconds: the `Retry-After` the service sends while it runs.
+ * The time the store waits before it reads the operation that generates an
+ * insight, in milliseconds, when the service's answer doesn't say how long to
+ * wait. It is the `Retry-After` the service sends with an operation that runs.
  *
  * @since n.e.x.t
  */
@@ -81,8 +83,9 @@ export const BENCHMARKING_INSIGHT_POLL_INTERVAL = 2 * 1000;
 
 /**
  * The time before the store asks again for an insight that the service
- * turned away for being busy, in milliseconds: the `Retry-After` the service
- * sends with a 409 or a 503.
+ * turned away for being busy, in milliseconds, when the refusal doesn't say
+ * how long to wait. It is the `Retry-After` the service sends with a 409 or a
+ * 503.
  *
  * @since n.e.x.t
  */
@@ -99,8 +102,8 @@ export const BENCHMARKING_INSIGHT_OPERATION_LIFETIME = 2 * 60 * 1000;
 
 /**
  * The statuses of a refused request for an insight that the store sends
- * again after `BENCHMARKING_INSIGHT_RETRY_INTERVAL`: the service was setting up
- * an identical request (409), or had no capacity for a new one (503). Neither
+ * again after the refusal's `Retry-After`: the service was setting up an
+ * identical request (409), or had no capacity for a new one (503). Neither
  * spends the service's rate limit.
  */
 const RETRIED_SUBMIT_STATUSES = [ 409, 503 ];
@@ -119,6 +122,8 @@ const CLEAR_BENCHMARKING_INSIGHT = 'CLEAR_BENCHMARKING_INSIGHT';
 interface SubmitBenchmarkingInsightResponse {
 	/** The ID of the operation that generates the insight, when the service has to generate it. */
 	operationID?: string;
+	/** The seconds to wait before the first read of the operation, when the service said: its `Retry-After`. */
+	retryAfter?: number;
 	/** The insight, when the service already had it. */
 	insight?: BenchmarkingInsight;
 }
@@ -128,6 +133,8 @@ interface BenchmarkingInsightOperationResponse {
 	done: boolean;
 	/** `RUNNING` until the operation has finished, then `SUCCEEDED`. A failed operation is an error. */
 	state: 'RUNNING' | 'SUCCEEDED';
+	/** The seconds to wait before the next read of an operation that runs, when the service said: its `Retry-After`. */
+	retryAfter?: number;
 	/** The insight, once the operation has succeeded. */
 	insight?: BenchmarkingInsight;
 }
@@ -160,15 +167,21 @@ type InsightCacheEntry =
 type InsightOutcome = { insight: BenchmarkingInsight } | { error: ErrorObject };
 
 /**
- * The step after a request: an outcome, or an operation to read.
+ * The step after a request: an outcome, or an operation to read after
+ * `delay` milliseconds.
  */
-type SubmitStep = InsightOutcome | { operation: PendingOperation };
+type SubmitStep =
+	| InsightOutcome
+	| { operation: PendingOperation; delay: number };
 
 /**
  * The step after a read of an operation: an outcome, a new request for the
- * insight, or another read.
+ * insight, or another read after `delay` milliseconds.
  */
-type ReadStep = InsightOutcome | { resubmit: true } | { pending: true };
+type ReadStep =
+	| InsightOutcome
+	| { resubmit: true }
+	| { pending: true; delay: number };
 
 interface ResolveInsightPayload {
 	/** The signed request of the insight, as the benchmarking response has it. */
@@ -473,8 +486,9 @@ function readCacheEntryStep( entry?: InsightCacheEntry ): {
  *
  * The service answers from its cache with the insight, or starts to generate
  * it and returns the operation that does. While the service is too busy to
- * accept the request, the store asks again every
- * `BENCHMARKING_INSIGHT_RETRY_INTERVAL` until the deadline.
+ * accept the request, the store asks again after the `Retry-After` of each
+ * refusal, or `BENCHMARKING_INSIGHT_RETRY_INTERVAL` without one, until the
+ * deadline.
  *
  * @since n.e.x.t
  *
@@ -483,7 +497,7 @@ function readCacheEntryStep( entry?: InsightCacheEntry ): {
  * @param {string} args.payload  The signed request of the insight.
  * @param {string} args.cacheKey The key of the cache entry of the insight.
  * @param {number} deadline      The time to give up at, in milliseconds since the Unix epoch.
- * @return {Promise<Object>} The insight as `insight`, the error as `error`, or the operation to read as `operation`.
+ * @return {Promise<Object>} The insight as `insight`, the error as `error`, or the operation to read as `operation`, with the time to wait before its first read as `delay`.
  */
 async function submitInsight(
 	registry: Registry,
@@ -500,10 +514,19 @@ async function submitInsight(
 		result.error &&
 		RETRIED_SUBMIT_STATUSES.includes(
 			getErrorStatus( result.error ) as number
-		) &&
-		getCurrentTime() + BENCHMARKING_INSIGHT_RETRY_INTERVAL < deadline
+		)
 	) {
-		await sleep( BENCHMARKING_INSIGHT_RETRY_INTERVAL );
+		const delay = getRetryAfterDelay(
+			result.error.data?.retryAfter,
+			BENCHMARKING_INSIGHT_RETRY_INTERVAL
+		);
+
+		// A wait that ends at the deadline or after it isn't started.
+		if ( getCurrentTime() + delay >= deadline ) {
+			break;
+		}
+
+		await sleep( delay );
 		result = await fetchSubmitBenchmarkingInsight( payload );
 	}
 
@@ -534,7 +557,13 @@ async function submitInsight(
 	// service, so a reload reads it rather than asking for the insight again.
 	await writeInsightCacheEntry( cacheKey, operation, HOUR_IN_SECONDS );
 
-	return { operation };
+	return {
+		operation,
+		delay: getRetryAfterDelay(
+			response.retryAfter,
+			BENCHMARKING_INSIGHT_POLL_INTERVAL
+		),
+	};
 }
 
 /**
@@ -547,7 +576,7 @@ async function submitInsight(
  * @param {Object}  args.operation   The operation, with its `operationID` and the time it was `createdAt`.
  * @param {string}  args.cacheKey    The key of the cache entry of the insight.
  * @param {boolean} args.canResubmit Whether the store can still ask for the insight again.
- * @return {Promise<Object>} The insight as `insight`, the error as `error`, `resubmit` to ask for the insight again, or `pending` to read the operation again.
+ * @return {Promise<Object>} The insight as `insight`, the error as `error`, `resubmit` to ask for the insight again, or `pending` to read the operation again after `delay` milliseconds: the `Retry-After` of the read, or `BENCHMARKING_INSIGHT_POLL_INTERVAL` without one.
  */
 async function readOperation(
 	registry: Registry,
@@ -603,18 +632,25 @@ async function readOperation(
 		return canResubmit ? { resubmit: true } : { error: getTimeoutError() };
 	}
 
-	return { pending: true };
+	return {
+		pending: true,
+		delay: getRetryAfterDelay(
+			response?.retryAfter,
+			BENCHMARKING_INSIGHT_POLL_INTERVAL
+		),
+	};
 }
 
 /**
  * Asks the service for the insight, and waits until it arrives.
  *
- * The store reads the operation that generates the insight every
- * `BENCHMARKING_INSIGHT_POLL_INTERVAL` until it is done. Reading an operation
- * spends none of the service's rate limit, so the store asks for the insight
- * again only when the service's client contract says to: once, when the
- * operation has expired, was interrupted, or is older than
- * `BENCHMARKING_INSIGHT_OPERATION_LIFETIME`. A wait that gives up at the
+ * The store reads the operation that generates the insight until it is done,
+ * after the `Retry-After` of the answer that returned the operation and then
+ * after that of each read, or `BENCHMARKING_INSIGHT_POLL_INTERVAL` without
+ * one. Reading an operation spends none of the service's rate limit, so the
+ * store asks for the insight again only when the service's client contract
+ * says to: once, when the operation has expired, was interrupted, or is older
+ * than `BENCHMARKING_INSIGHT_OPERATION_LIFETIME`. A wait that gives up at the
  * deadline leaves the operation in the cache entry for the next load.
  *
  * @since n.e.x.t
@@ -637,9 +673,10 @@ async function waitForInsight(
 	// A lost operation is replaced only once, so the store never alternates
 	// between asking and reading for good.
 	let canResubmit = true;
-	// An operation read back from the cache may have finished in the
-	// meantime, so it is read without a wait.
-	let shouldWait = false;
+	// The time to wait before the next read, in milliseconds. An operation
+	// read back from the cache may have finished in the meantime, so it is
+	// read without a wait.
+	let delay = 0;
 
 	// Each step waits for the one before it, so the loop runs the requests
 	// one after the other.
@@ -652,21 +689,17 @@ async function waitForInsight(
 			}
 
 			operation = step.operation;
-			shouldWait = true;
+			delay = step.delay;
 		}
 
-		if ( shouldWait ) {
-			if (
-				getCurrentTime() + BENCHMARKING_INSIGHT_POLL_INTERVAL >=
-				deadline
-			) {
+		if ( delay > 0 ) {
+			// A wait that ends at the deadline or after it isn't started.
+			if ( getCurrentTime() + delay >= deadline ) {
 				break;
 			}
 
-			await sleep( BENCHMARKING_INSIGHT_POLL_INTERVAL );
+			await sleep( delay );
 		}
-
-		shouldWait = true;
 
 		const step = await readOperation( registry, {
 			operation,
@@ -677,7 +710,9 @@ async function waitForInsight(
 		if ( 'resubmit' in step ) {
 			canResubmit = false;
 			operation = undefined;
-		} else if ( ! ( 'pending' in step ) ) {
+		} else if ( 'pending' in step ) {
+			delay = step.delay;
+		} else {
 			return step;
 		}
 	}

@@ -82,6 +82,28 @@ class Get_Conversion_InsightTest extends TestCase {
 		$this->assertSame( 'Bearer valid-token', $this->service_requests[0]['args']['headers']['Authorization'], 'The request should be authorized with the access token of the user.' );
 	}
 
+	public function test_rest_endpoint__answers_with_the_wait_the_service_asks_for_before_the_next_read() {
+		$this->enable_insight_datapoints( array( 'siteGoalsInsights' ) );
+		$this->answer_service_with(
+			200,
+			array(
+				'done'  => false,
+				'state' => 'RUNNING',
+			),
+			array( 'retry-after' => '2' )
+		);
+
+		$this->assertSame(
+			array(
+				'done'       => false,
+				'state'      => 'RUNNING',
+				'retryAfter' => 2,
+			),
+			$this->request()->get_data(),
+			'A running operation should carry the `Retry-After` of the service, in seconds, as `retryAfter`.'
+		);
+	}
+
 	public function test_rest_endpoint__answers_with_the_insight_of_a_succeeded_operation() {
 		$this->enable_insight_datapoints( array( 'siteGoalsInsights' ) );
 		$this->answer_service_with(

@@ -46,8 +46,9 @@ import { ErrorObject } from '@/js/util/errors';
 const AI_INSIGHT_DEADLINE = 60 * 1000;
 
 /**
- * The time between two reads of the operation that generates an insight, in
- * milliseconds: the `Retry-After` the service sends while it runs.
+ * The time the store waits before it reads the operation that generates an
+ * insight, in milliseconds, when the service's answer doesn't say how long to
+ * wait. It is the `Retry-After` the service sends with an operation that runs.
  *
  * @since n.e.x.t
  */
@@ -55,12 +56,23 @@ const AI_INSIGHT_POLL_INTERVAL = 2 * 1000;
 
 /**
  * The time before the store asks again for an insight that the service
- * turned away for being busy, in milliseconds: the `Retry-After` the service
- * sends with a 409 or a 503.
+ * turned away for being busy, in milliseconds, when the refusal doesn't say
+ * how long to wait. It is the `Retry-After` the service sends with a 409 or a
+ * 503.
  *
  * @since n.e.x.t
  */
 const AI_INSIGHT_RETRY_INTERVAL = 5 * 1000;
+
+/**
+ * The shortest time the store waits before its next request, in
+ * milliseconds, whatever `Retry-After` the service sends. The service never
+ * asks for less than a second, and a `Retry-After` of 0 must not make the
+ * store send requests back to back.
+ *
+ * @since n.e.x.t
+ */
+const AI_INSIGHT_MIN_WAIT = 1000;
 
 /**
  * The age at which an operation that still runs is taken for lost, in
@@ -73,7 +85,7 @@ const AI_INSIGHT_OPERATION_LIFETIME = 2 * 60 * 1000;
 
 /**
  * The statuses of a refused request for an insight that the store sends
- * again after `AI_INSIGHT_RETRY_INTERVAL`: the service was setting up an
+ * again after the refusal's `Retry-After`: the service was setting up an
  * identical request (409), or had no capacity for a new one (503). Neither
  * counts against the service's rate limit.
  *
@@ -98,6 +110,8 @@ const RESUBMITTED_OPERATION_STATUSES = [ 404, 503 ];
 export interface AIInsightSubmitResponse< Insight > {
 	/** The ID of the operation that generates the insight, when the service has to generate it. */
 	operationID?: string;
+	/** The seconds to wait before the first read of the operation, when the service said: its `Retry-After`. */
+	retryAfter?: number;
 	/** The insight, when the service already had it, or null when there is none to show. */
 	insight?: Insight | null;
 }
@@ -112,6 +126,8 @@ export interface AIInsightOperationResponse< Insight > {
 	done: boolean;
 	/** `RUNNING` until the operation has finished, then `SUCCEEDED`. A failed operation is an error. */
 	state: 'RUNNING' | 'SUCCEEDED';
+	/** The seconds to wait before the next read of an operation that runs, when the service said: its `Retry-After`. */
+	retryAfter?: number;
 	/** The insight once the operation has succeeded, or null when there is none to show. */
 	insight?: Insight | null;
 }
@@ -179,20 +195,21 @@ type InsightCacheEntry< Insight > =
 	| PendingOperation;
 
 /**
- * The step after a request: an outcome, or an operation to read.
+ * The step after a request: an outcome, or an operation to read after
+ * `delay` milliseconds.
  */
 type SubmitStep< Insight > =
 	| AIInsightOutcome< Insight >
-	| { operation: PendingOperation };
+	| { operation: PendingOperation; delay: number };
 
 /**
  * The step after a read of an operation: an outcome, a new request for the
- * insight, or another read.
+ * insight, or another read after `delay` milliseconds.
  */
 type ReadStep< Insight > =
 	| AIInsightOutcome< Insight >
 	| { resubmit: true }
-	| { pending: true };
+	| { pending: true; delay: number };
 
 /**
  * Gets the current time.
@@ -221,6 +238,35 @@ function sleep( milliseconds: number ): Promise< void > {
 	return new Promise( ( resolve ) => {
 		setTimeout( resolve, milliseconds );
 	} );
+}
+
+/**
+ * Gets how long to wait before the next request to the service, from the
+ * `retryAfter` of a datapoint's answer or error: the `Retry-After` header the
+ * service sent, in seconds.
+ *
+ * A `retryAfter` that isn't a number of seconds the store can wait gives the
+ * fallback, and the store never waits less than `AI_INSIGHT_MIN_WAIT`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*}      retryAfter The `retryAfter` of the answer or the error, if it has one.
+ * @param {number} fallback   The time to wait without a usable `retryAfter`, in milliseconds.
+ * @return {number} The time to wait, in milliseconds.
+ */
+export function getRetryAfterDelay(
+	retryAfter: unknown,
+	fallback: number
+): number {
+	if (
+		typeof retryAfter !== 'number' ||
+		! Number.isFinite( retryAfter ) ||
+		retryAfter < 0
+	) {
+		return fallback;
+	}
+
+	return Math.max( AI_INSIGHT_MIN_WAIT, retryAfter * 1000 );
 }
 
 /**
@@ -432,14 +478,14 @@ function readCacheEntryStep< Insight >(
  *
  * The service answers from its cache with the insight, or starts to generate
  * it and returns the operation that does. While the service is too busy to
- * accept the request, the store asks again every `AI_INSIGHT_RETRY_INTERVAL`
- * until the deadline.
+ * accept the request, the store asks again after the `Retry-After` of each
+ * refusal, or `AI_INSIGHT_RETRY_INTERVAL` without one, until the deadline.
  *
  * @since n.e.x.t
  *
  * @param {Object} request  The requests and the cache entry of the insight.
  * @param {number} deadline The time to give up at, in milliseconds since the Unix epoch.
- * @return {Promise<Object>} The insight as `insight`, the error as `error`, or the operation to read as `operation`.
+ * @return {Promise<Object>} The insight as `insight`, the error as `error`, or the operation to read as `operation`, with the time to wait before its first read as `delay`.
  */
 async function submitInsight< Insight >(
 	request: AIInsightRequest< Insight >,
@@ -451,10 +497,19 @@ async function submitInsight< Insight >(
 		result.error &&
 		RETRIED_SUBMIT_STATUSES.includes(
 			getErrorStatus( result.error ) as number
-		) &&
-		getCurrentTime() + AI_INSIGHT_RETRY_INTERVAL < deadline
+		)
 	) {
-		await sleep( AI_INSIGHT_RETRY_INTERVAL );
+		const delay = getRetryAfterDelay(
+			result.error.data?.retryAfter,
+			AI_INSIGHT_RETRY_INTERVAL
+		);
+
+		// A wait that ends at the deadline or after it isn't started.
+		if ( getCurrentTime() + delay >= deadline ) {
+			break;
+		}
+
+		await sleep( delay );
 
 		// A device that slept through the wait wakes up after the deadline.
 		if ( getCurrentTime() >= deadline ) {
@@ -497,7 +552,13 @@ async function submitInsight< Insight >(
 		HOUR_IN_SECONDS
 	);
 
-	return { operation };
+	return {
+		operation,
+		delay: getRetryAfterDelay(
+			response.retryAfter,
+			AI_INSIGHT_POLL_INTERVAL
+		),
+	};
 }
 
 /**
@@ -509,7 +570,7 @@ async function submitInsight< Insight >(
  * @param {Object}  args             The read.
  * @param {Object}  args.operation   The operation, with its `operationID` and the time it was `createdAt`.
  * @param {boolean} args.canResubmit Whether the store can still ask for the insight again.
- * @return {Promise<Object>} The insight as `insight`, the error as `error`, `resubmit` to ask for the insight again, or `pending` to read the operation again.
+ * @return {Promise<Object>} The insight as `insight`, the error as `error`, `resubmit` to ask for the insight again, or `pending` to read the operation again after `delay` milliseconds: the `Retry-After` of the read, or `AI_INSIGHT_POLL_INTERVAL` without one.
  */
 async function readOperation< Insight >(
 	request: AIInsightRequest< Insight >,
@@ -569,17 +630,24 @@ async function readOperation< Insight >(
 			: { error: getTimeoutError( request.timeoutErrorCode ) };
 	}
 
-	return { pending: true };
+	return {
+		pending: true,
+		delay: getRetryAfterDelay(
+			response?.retryAfter,
+			AI_INSIGHT_POLL_INTERVAL
+		),
+	};
 }
 
 /**
  * Asks the service for the insight, and waits until it arrives.
  *
- * The store reads the operation that generates the insight every
- * `AI_INSIGHT_POLL_INTERVAL` until it is done. Reading an operation doesn't
- * count against the service's rate limit, so the store asks for the insight again
- * only when the service's client contract says to: once, when the operation
- * has expired, was interrupted, or is older than
+ * The store reads the operation that generates the insight until it is done,
+ * after the `Retry-After` of the answer that returned the operation and then
+ * after that of each read, or `AI_INSIGHT_POLL_INTERVAL` without one. Reading
+ * an operation doesn't count against the service's rate limit, so the store
+ * asks for the insight again only when the service's client contract says
+ * to: once, when the operation has expired, was interrupted, or is older than
  * `AI_INSIGHT_OPERATION_LIFETIME`. A wait that gives up at the deadline
  * leaves the operation in the cache entry for the next load.
  *
@@ -599,9 +667,10 @@ async function waitForInsight< Insight >(
 	// A lost operation is replaced only once, so the store never alternates
 	// between asking and reading for good.
 	let canResubmit = true;
-	// An operation read back from the cache may have finished in the
-	// meantime, so it is read without a wait.
-	let shouldWait = false;
+	// The time to wait before the next read, in milliseconds. An operation
+	// read back from the cache may have finished in the meantime, so it is
+	// read without a wait.
+	let delay = 0;
 
 	// Each step waits for the one before it, so the loop runs the requests
 	// one after the other.
@@ -614,15 +683,16 @@ async function waitForInsight< Insight >(
 			}
 
 			operation = step.operation;
-			shouldWait = true;
+			delay = step.delay;
 		}
 
-		if ( shouldWait ) {
-			if ( getCurrentTime() + AI_INSIGHT_POLL_INTERVAL >= deadline ) {
+		if ( delay > 0 ) {
+			// A wait that ends at the deadline or after it isn't started.
+			if ( getCurrentTime() + delay >= deadline ) {
 				break;
 			}
 
-			await sleep( AI_INSIGHT_POLL_INTERVAL );
+			await sleep( delay );
 
 			// A device that slept through the wait wakes up after the
 			// deadline.
@@ -630,8 +700,6 @@ async function waitForInsight< Insight >(
 				break;
 			}
 		}
-
-		shouldWait = true;
 
 		const step = await readOperation( request, {
 			operation,
@@ -641,7 +709,9 @@ async function waitForInsight< Insight >(
 		if ( 'resubmit' in step ) {
 			canResubmit = false;
 			operation = undefined;
-		} else if ( ! ( 'pending' in step ) ) {
+		} else if ( 'pending' in step ) {
+			delay = step.delay;
+		} else {
 			return step;
 		}
 	}

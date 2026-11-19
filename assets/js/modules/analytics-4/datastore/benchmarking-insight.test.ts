@@ -380,12 +380,56 @@ describe( 'modules/analytics-4 benchmarking-insight', () => {
 			[ 409, 'GENERATION_IN_PROGRESS' ],
 			[ 503, 'SERVICE_BUSY' ],
 		] )(
-			'should ask again after five seconds when the service refuses the request with a %d',
+			'should ask again after the `retryAfter` of a %d',
 			async ( status, reason ) => {
 				provideResponseWithPayload();
 				fetchMock.postOnce(
 					insightEndpoint,
-					errorResponse( status, { reason, retryAfter: 5 } )
+					errorResponse( status, { reason, retryAfter: 1 } )
+				);
+				fetchMock.postOnce( insightEndpoint, {
+					body: { insight: benchmarkingInsight },
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getBenchmarkingInsight( startDate, endDate );
+
+				await jest.advanceTimersByTimeAsync( 999 );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
+
+				await jest.advanceTimersByTimeAsync( 1 );
+
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).toHaveFetchedTimes( 2, insightEndpoint );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getBenchmarkingInsight( startDate, endDate )
+				).toEqual( benchmarkingInsight );
+				expect( getInsightError() ).toBeUndefined();
+				// The store reports the outcome alone.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getErrorForSelector( 'submitBenchmarkingInsight', [
+							payload,
+						] )
+				).toBeUndefined();
+			}
+		);
+
+		it.each( [
+			[ 409, 'GENERATION_IN_PROGRESS' ],
+			[ 503, 'SERVICE_BUSY' ],
+		] )(
+			'should ask again after five seconds when a %d has no `retryAfter`',
+			async ( status, reason ) => {
+				provideResponseWithPayload();
+				fetchMock.postOnce(
+					insightEndpoint,
+					errorResponse( status, { reason } )
 				);
 				fetchMock.postOnce( insightEndpoint, {
 					body: { insight: benchmarkingInsight },
@@ -410,17 +454,135 @@ describe( 'modules/analytics-4 benchmarking-insight', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getBenchmarkingInsight( startDate, endDate )
 				).toEqual( benchmarkingInsight );
-				expect( getInsightError() ).toBeUndefined();
-				// The store reports the outcome alone.
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getErrorForSelector( 'submitBenchmarkingInsight', [
-							payload,
-						] )
-				).toBeUndefined();
 			}
 		);
+
+		it( 'should not ask again when the `retryAfter` of a refusal ends after the deadline', async () => {
+			const refusal = errorResponse( 503, {
+				reason: 'SERVICE_BUSY',
+				retryAfter: BENCHMARKING_INSIGHT_DEADLINE / 1000,
+			} );
+
+			provideResponseWithPayload();
+			fetchMock.post( insightEndpoint, refusal );
+
+			expect( await resolveInsight() ).toBeNull();
+			expect( console ).toHaveErrored();
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
+			expect( getInsightError() ).toEqual( refusal.body );
+		} );
+
+		it( 'should read the operation after the `retryAfter` of the submit, and then after the `retryAfter` of each read', async () => {
+			provideResponseWithPayload();
+			fetchMock.postOnce( insightEndpoint, {
+				body: { operationID: 'operation-1', retryAfter: 3 },
+			} );
+			fetchMock.getOnce( insightEndpoint, {
+				body: { ...runningOperation, retryAfter: 1 },
+			} );
+			fetchMock.getOnce( insightEndpoint, { body: succeededOperation } );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingInsight( startDate, endDate );
+
+			await jest.advanceTimersByTimeAsync( 0 );
+			await jest.advanceTimersByTimeAsync( 2999 );
+
+			expect( fetchMock ).not.toHaveFetched( insightEndpoint, {
+				method: 'GET',
+			} );
+
+			await jest.advanceTimersByTimeAsync( 1 );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'GET',
+			} );
+
+			await jest.advanceTimersByTimeAsync( 999 );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'GET',
+			} );
+
+			await jest.advanceTimersByTimeAsync( 1 );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2, insightEndpoint, {
+				method: 'GET',
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getBenchmarkingInsight( startDate, endDate )
+			).toEqual( benchmarkingInsight );
+		} );
+
+		it.each( [
+			[ 'a second for a `retryAfter` of 0', 0, 1000 ],
+			[
+				'two seconds for a negative `retryAfter`',
+				-1,
+				BENCHMARKING_INSIGHT_POLL_INTERVAL,
+			],
+			[
+				'two seconds for a `retryAfter` that is not a number',
+				'1',
+				BENCHMARKING_INSIGHT_POLL_INTERVAL,
+			],
+		] )(
+			'should read the operation after %s',
+			async ( _, retryAfter, expectedDelay ) => {
+				provideResponseWithPayload();
+				fetchMock.postOnce( insightEndpoint, {
+					body: { operationID: 'operation-1', retryAfter },
+				} );
+				fetchMock.getOnce( insightEndpoint, {
+					body: succeededOperation,
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getBenchmarkingInsight( startDate, endDate );
+
+				await jest.advanceTimersByTimeAsync( 0 );
+				await jest.advanceTimersByTimeAsync( expectedDelay - 1 );
+
+				expect( fetchMock ).not.toHaveFetched( insightEndpoint, {
+					method: 'GET',
+				} );
+
+				await jest.advanceTimersByTimeAsync( 1 );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+					method: 'GET',
+				} );
+			}
+		);
+
+		it( 'should give up, and keep the operation, when the `retryAfter` of a read ends after the deadline', async () => {
+			provideResponseWithPayload();
+			fetchMock.postOnce( insightEndpoint, {
+				body: { operationID: 'operation-1' },
+			} );
+			fetchMock.getOnce( insightEndpoint, {
+				body: {
+					...runningOperation,
+					retryAfter: BENCHMARKING_INSIGHT_DEADLINE / 1000,
+				},
+			} );
+
+			expect( await resolveInsight() ).toBeNull();
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'GET',
+			} );
+			expect( getInsightError() ).toMatchObject( {
+				code: 'benchmarking_insight_timeout',
+			} );
+			expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				cacheHit: true,
+				value: { operationID: 'operation-1' },
+			} );
+		} );
 
 		it.each( [
 			[ 'has expired', errorResponse( 404, { reason: 'NOT_FOUND' } ) ],

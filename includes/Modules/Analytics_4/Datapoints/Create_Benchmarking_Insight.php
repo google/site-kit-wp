@@ -37,7 +37,7 @@ class Create_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable Closure that asks the service for the insight. It returns the insight as `insight` when the service had one in its cache, the ID of the operation that generates it as `operationID` otherwise, or an error.
+	 * @return callable Closure that asks the service for the insight. It returns the insight as `insight` when the service had one in its cache, the ID of the operation that generates it as `operationID` otherwise, with the seconds to wait before its first read as `retryAfter` when the service sent them, or an error.
 	 * @throws Missing_Required_Param_Exception Thrown when `payload` is missing.
 	 * @throws Invalid_Param_Exception Thrown when `payload` isn't one this site built for the current user.
 	 */
@@ -78,7 +78,7 @@ class Create_Benchmarking_Insight extends Benchmarking_Insight_Datapoint {
 			// generated one for the same request in the last day, and with the
 			// operation that generates it otherwise.
 			if ( ! empty( $response['operation_id'] ) && is_string( $response['operation_id'] ) ) {
-				return array( 'operationID' => $response['operation_id'] );
+				return $this->with_retry_after( array( 'operationID' => $response['operation_id'] ), $response );
 			}
 
 			$insight = $this->get_insight( $response );

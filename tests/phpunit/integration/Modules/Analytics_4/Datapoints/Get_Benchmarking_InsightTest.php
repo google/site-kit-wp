@@ -174,6 +174,28 @@ class Get_Benchmarking_InsightTest extends TestCase {
 		);
 	}
 
+	public function test_rest_endpoint__answers_with_the_wait_the_service_asks_for_before_the_next_read() {
+		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
+		$this->answer_service_with(
+			200,
+			array(
+				'done'  => false,
+				'state' => 'RUNNING',
+			),
+			array( 'retry-after' => '2' )
+		);
+
+		$this->assertSame(
+			array(
+				'done'       => false,
+				'state'      => 'RUNNING',
+				'retryAfter' => 2,
+			),
+			$this->request()->get_data(),
+			'A running operation should carry the `Retry-After` of the service, in seconds, as `retryAfter`.'
+		);
+	}
+
 	public function test_rest_endpoint__answers_with_the_insight_of_a_succeeded_operation() {
 		$this->enable_insight_datapoints( self::FEATURE_FLAGS );
 		$this->answer_service_with(
