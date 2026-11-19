@@ -34,14 +34,17 @@ import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 export interface FeatureCTAProps {
+	gaEventCategory: string;
 	isTertiary?: boolean;
 	onSetupComplete?: () => void;
 	slug: string;
 }
 
 const FeatureCTA: FC< FeatureCTAProps > = ( {
+	gaEventCategory,
 	isTertiary = false,
 	onSetupComplete,
 	slug,
@@ -81,17 +84,36 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 		[ feature ]
 	);
 
+	const isFeatureInProgress = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).isFeatureInProgress( slug ),
+		[ slug ]
+	);
+
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { setupFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 
 	const onClick = useCallback( async () => {
+		trackEvent(
+			gaEventCategory,
+			isFeatureInProgress ? 'click_resume_setup_cta' : 'click_setup_cta',
+			slug
+		);
+
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
 
 		await setupFeature( slug );
 
 		onSetupComplete?.();
-	}, [ onSetupComplete, setupFeature, slug, triggerSurvey ] );
+	}, [
+		gaEventCategory,
+		isFeatureInProgress,
+		onSetupComplete,
+		setupFeature,
+		slug,
+		triggerSurvey,
+	] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
 		return null;

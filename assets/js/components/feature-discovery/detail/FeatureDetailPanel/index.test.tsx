@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { RenderResult } from '@testing-library/react';
+
+/**
  * WordPress dependencies
  */
 import { ESCAPE } from '@wordpress/keycodes';
@@ -34,6 +39,7 @@ import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as tracking from '@/js/util/tracking';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
 import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
@@ -50,6 +56,9 @@ import {
 	within,
 } from '@tests/js/test-utils';
 import FeatureDetailPanel from './';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'FeatureDetailPanel', () => {
 	let registry: Registry;
@@ -100,6 +109,7 @@ describe( 'FeatureDetailPanel', () => {
 	} );
 
 	afterEach( () => {
+		mockTrackEvent.mockClear();
 		document.body.classList.remove(
 			'googlesitekit-side-sheet-scroll-lock'
 		);
@@ -466,5 +476,166 @@ describe( 'FeatureDetailPanel', () => {
 				body: { data: { triggerID: 'setup:feature_setup_in-place' } },
 			} )
 		);
+	} );
+
+	describe( 'event tracking', () => {
+		const viewContext = 'testViewContext';
+		const category = `${ viewContext }_feature-detail-panel`;
+
+		it.each( [
+			[
+				'the header close control',
+				( { getByRole }: RenderResult ) =>
+					fireEvent.click( getByRole( 'button', { name: 'Close' } ) ),
+			],
+			[
+				'Cancel',
+				( { getByRole }: RenderResult ) =>
+					fireEvent.click(
+						getByRole( 'button', { name: 'Cancel' } )
+					),
+			],
+			[
+				'ESC',
+				() =>
+					fireEvent.keyDown( document, {
+						key: 'Escape',
+						keyCode: ESCAPE,
+					} ),
+			],
+			[ 'a click outside', () => fireEvent.mouseDown( document.body ) ],
+		] )( 'should track close_panel when closed with %s', ( _, close ) => {
+			setFeature( 'first' );
+
+			const result = render( <FeatureDetailPanel />, {
+				registry,
+				viewContext,
+			} );
+
+			close( result );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				category,
+				'close_panel',
+				'first'
+			);
+		} );
+
+		it( 'should not track close_panel for a click outside while the panel is closed', () => {
+			render( <FeatureDetailPanel />, { registry, viewContext } );
+
+			fireEvent.mouseDown( document.body );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should track tab_select with the feature slug and tab name, and nothing for the active tab', () => {
+			setFeature( 'first' );
+
+			const { getByRole } = render( <FeatureDetailPanel />, {
+				registry,
+				viewContext,
+			} );
+
+			fireEvent.click( getByRole( 'tab', { name: 'Description' } ) );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+			for ( const [ name, tab ] of [
+				[ 'Requirements', 'requirements' ],
+				[ 'Screenshots', 'screenshots' ],
+				[ 'Description', 'description' ],
+			] ) {
+				mockTrackEvent.mockClear();
+
+				fireEvent.click( getByRole( 'tab', { name } ) );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					category,
+					'tab_select',
+					`first:${ tab }`
+				);
+			}
+		} );
+
+		it( 'should track the CTA and nothing on close after the setup completes', async () => {
+			provideSiteInfo( registry );
+			provideUserAuthentication( registry );
+			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+			provideFeatures( registry, [
+				{
+					slug: 'background',
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						activate: jest.fn().mockResolvedValue( {} ),
+					},
+				},
+			] );
+
+			setFeature( 'background' );
+
+			const { getByRole, queryByRole } = render( <FeatureDetailPanel />, {
+				registry,
+				viewContext,
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
+
+			await waitFor( () =>
+				expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument()
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				category,
+				'click_setup_cta',
+				'background'
+			);
+		} );
+
+		it( 'should track click_resume_setup_cta for a feature in progress', async () => {
+			provideSiteInfo( registry );
+			provideUserAuthentication( registry );
+			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+			provideFeatures( registry, [
+				{
+					slug: 'resumable',
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						activate: jest.fn().mockResolvedValue( {} ),
+						isEnabled: () => false,
+						isInProgress: () => true,
+					},
+				},
+			] );
+
+			setFeature( 'resumable' );
+
+			const { getByRole, queryByRole } = render( <FeatureDetailPanel />, {
+				registry,
+				viewContext,
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
+
+			await waitFor( () =>
+				expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument()
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				category,
+				'click_resume_setup_cta',
+				'resumable'
+			);
+		} );
 	} );
 } );

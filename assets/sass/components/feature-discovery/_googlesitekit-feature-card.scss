@@ -144,8 +144,7 @@ $bp-feature-card: 600px;
 		@container feature-card ( inline-size <= #{$bp-feature-card} ) {
 
 			.mdc-button {
-				min-block-size: 32px;
-				padding-block: 6px;
+				@include googlesitekit-mdc-button-small;
 			}
 		}
 	}

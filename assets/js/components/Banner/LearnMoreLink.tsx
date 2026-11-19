@@ -37,6 +37,7 @@ export interface LearnMoreLinkProps {
 	 * an external link icon next to them.
 	 */
 	external?: boolean;
+	hideExternalIndicator?: boolean;
 	/**
 	 * The URL the link should point to.
 	 */
@@ -50,18 +51,21 @@ export interface LearnMoreLinkProps {
  * specified URL to content like a paragraph.
  *
  * @since 1.153.0
+ * @since n.e.x.t Added the `hideExternalIndicator` prop.
  *
- * @param props            The props for the component.
- * @param props.className  The class name for the link.
- * @param [props.external] Whether the link is external. Optional, defaults to true.
- * @param props.href       The URL for the link.
- * @param props.label      The label for the link.
- * @param [props.onClick]  The function to call when the link is clicked. Optional, defaults to an empty function.
+ * @param props                         The props for the component.
+ * @param props.className               The class name for the link.
+ * @param [props.external]              Whether the link is external. Optional, defaults to true.
+ * @param [props.hideExternalIndicator] Whether to hide the external link icon. Optional, defaults to false.
+ * @param props.href                    The URL for the link.
+ * @param props.label                   The label for the link.
+ * @param [props.onClick]               The function to call when the link is clicked. Optional, defaults to an empty function.
  * @return The rendered component.
  */
 const LearnMoreLink: FC< LearnMoreLinkProps > = ( {
 	className,
 	external = true,
+	hideExternalIndicator = false,
 	href,
 	label = __( 'Learn more', 'google-site-kit' ),
 	onClick = () => {},
@@ -80,6 +84,7 @@ const LearnMoreLink: FC< LearnMoreLinkProps > = ( {
 			className={ className }
 			onClick={ onClick }
 			external={ external }
+			hideExternalIndicator={ hideExternalIndicator }
 		>
 			{ label }
 		</Link>
@@ -91,6 +96,7 @@ LearnMoreLink.propTypes = {
 	className: PropTypes.string,
 	label: PropTypes.string,
 	external: PropTypes.bool,
+	hideExternalIndicator: PropTypes.bool,
 	onClick: PropTypes.func,
 };
 

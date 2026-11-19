@@ -63,6 +63,11 @@ import { signupFormStep } from './StepSignupForm';
 const ORGANIZATION_ID = 'ABCD1234';
 const PUBLICATION_ID = 'ABCD_123-4';
 
+const PUBLICATION_PARAMS = {
+	organizationID: ORGANIZATION_ID,
+	publicationID: PUBLICATION_ID,
+};
+
 const PRE_EXISTING_CTA = {
 	name: `organizations/${ ORGANIZATION_ID }/publications/${ PUBLICATION_ID }/ctas/1`,
 	type: CTA_TYPES.NEWSLETTER_SIGNUP,
@@ -118,15 +123,14 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 	providePublications( registry, publications );
 
 	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
-		organizationID: ORGANIZATION_ID,
-		publicationID: PUBLICATION_ID,
+		...PUBLICATION_PARAMS,
 		snippetMode: 'sitewide',
 		postTypes: [],
 	} );
 
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [ NEWSLETTER_CTA ], params: {} } );
+		.receiveGetPublicationCTAs( [ NEWSLETTER_CTA ], PUBLICATION_PARAMS );
 }
 
 function connectPublication(
@@ -141,7 +145,7 @@ function connectPublication(
 function provideNoCTAs( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [], params: {} } );
+		.receiveGetPublicationCTAs( [], PUBLICATION_PARAMS );
 }
 
 function Template() {
@@ -240,10 +244,12 @@ SetupCompleteWithPreExistingCTAs.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		connectPublication( registry, COMPLETE_PUBLICATION );
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ],
-			params: {},
-		} );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationCTAs(
+				[ PRE_EXISTING_CTA, NEWSLETTER_CTA ],
+				PUBLICATION_PARAMS
+			);
 	},
 };
 SetupCompleteWithPreExistingCTAs.scenario = {};

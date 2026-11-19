@@ -78,3 +78,8 @@
 	top: 50%;
 	transform: translate(-50%, -50%);
 }
+
+@mixin googlesitekit-mdc-button-small {
+	min-block-size: 32px;
+	padding-block: 6px;
+}

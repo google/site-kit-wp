@@ -22,8 +22,12 @@
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import FeatureDetailRequirements from './FeatureDetailRequirements';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'FeatureDetailRequirements', () => {
 	let feature: Feature;
@@ -38,6 +42,10 @@ describe( 'FeatureDetailRequirements', () => {
 				.select( CORE_FEATURE_DISCOVERY )
 				.getFeature( 'test-feature' ),
 		};
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render effort, service requirements, checklist and external help links', () => {
@@ -72,4 +80,31 @@ describe( 'FeatureDetailRequirements', () => {
 
 		expect( container ).toMatchSnapshot();
 	} );
+
+	it.each( [ 'documentation', 'support forum' ] )(
+		'should track click_learn_more_link for the %s link',
+		( name ) => {
+			feature.detail = {
+				requirements: {
+					documentationURL: 'https://example.com/docs/',
+				},
+			};
+
+			const { getByRole } = render(
+				<FeatureDetailRequirements feature={ feature } />,
+				{ viewContext: 'testViewContext' }
+			);
+
+			fireEvent.click(
+				getByRole( 'link', { name: new RegExp( name ) } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'testViewContext_feature-detail-panel',
+				'click_learn_more_link',
+				'test-feature'
+			);
+		}
+	);
 } );
