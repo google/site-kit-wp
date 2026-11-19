@@ -35,6 +35,7 @@ import FeatureCard, {
 	FeatureCardProps,
 } from '@/js/components/feature-discovery/FeatureCard';
 import FeatureCTAButton from '@/js/components/feature-discovery/FeatureCTAButton';
+import getFeatureCardCTALabel from '@/js/components/feature-discovery/getFeatureCardCTALabel';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
@@ -240,6 +241,11 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		);
 	}
 
+	// The card renders nothing without its feature, so neither does its CTA.
+	if ( ! feature ) {
+		return null;
+	}
+
 	return (
 		<FeatureCard
 			slug={ slug }
@@ -250,7 +256,7 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 					onClick={ handleCardCTAClick }
 					isTertiary
 				>
-					{ feature?.setup?.ctaLabel }
+					{ getFeatureCardCTALabel( feature ) }
 				</FeatureCTAButton>
 			}
 		/>
