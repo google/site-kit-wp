@@ -82,7 +82,9 @@ describe( 'useFeatureDiscoveryNotOpenedSurveyTrigger', () => {
 		} );
 	}
 
-	beforeEach( () => {
+	// Creates a registry with the state every test shares. Each test then adds
+	// the remaining state it needs, or leaves it out to keep that value loading.
+	function setupRegistry() {
 		registry = createTestRegistry() as Registry;
 
 		provideUserAuthentication( registry );
@@ -90,6 +92,10 @@ describe( 'useFeatureDiscoveryNotOpenedSurveyTrigger', () => {
 		provideUserInfo( registry );
 		provideUserCapabilities( registry );
 		provideModules( registry, withConnected( 'search-console' ) );
+	}
+
+	beforeEach( () => {
+		setupRegistry();
 
 		registry
 			.dispatch( CORE_USER )
@@ -167,13 +173,7 @@ describe( 'useFeatureDiscoveryNotOpenedSurveyTrigger', () => {
 	} );
 
 	it( 'should not send the trigger when fewer than two features are available', async () => {
-		const unregistered = createTestRegistry() as Registry;
-		registry = unregistered;
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-		provideUserInfo( registry );
-		provideUserCapabilities( registry );
-		provideModules( registry, withConnected( 'search-console' ) );
+		setupRegistry();
 		registry
 			.dispatch( CORE_USER )
 			.receiveInitialSiteKitVersion( '1.187.0' );
@@ -189,12 +189,7 @@ describe( 'useFeatureDiscoveryNotOpenedSurveyTrigger', () => {
 	} );
 
 	it( 'should not send the trigger while the dismissed items are loading', async () => {
-		registry = createTestRegistry() as Registry;
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-		provideUserInfo( registry );
-		provideUserCapabilities( registry );
-		provideModules( registry, withConnected( 'search-console' ) );
+		setupRegistry();
 		registry
 			.dispatch( CORE_USER )
 			.receiveInitialSiteKitVersion( '1.187.0' );
@@ -213,12 +208,7 @@ describe( 'useFeatureDiscoveryNotOpenedSurveyTrigger', () => {
 	} );
 
 	it( 'should not send the trigger while the newness state is loading', async () => {
-		registry = createTestRegistry() as Registry;
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-		provideUserInfo( registry );
-		provideUserCapabilities( registry );
-		provideModules( registry, withConnected( 'search-console' ) );
+		setupRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registerFeature( 'feature-one' );
 		registerFeature( 'feature-two' );
