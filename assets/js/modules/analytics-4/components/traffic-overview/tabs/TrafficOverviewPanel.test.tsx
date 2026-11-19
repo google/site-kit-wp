@@ -33,6 +33,7 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { KEY_FACTORS_DAILY_CHANGE_THRESHOLD } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	createBenchmarkingResponse,
@@ -910,7 +911,9 @@ describe( 'TrafficOverviewPanel', () => {
 						{
 							kind: 'CHANNEL',
 							label: 'Email',
-							current: 90,
+							// The threshold a day over the selected 28 days.
+							current:
+								40 + KEY_FACTORS_DAILY_CHANGE_THRESHOLD * 28,
 							previous: 40,
 							sharePct: 61.2,
 							attributes: [],
@@ -948,6 +951,42 @@ describe( 'TrafficOverviewPanel', () => {
 					'No channel changed notably compared with the previous 28 days'
 				)
 			).toBeInTheDocument();
+		} );
+
+		it( 'should say that no channel changed notably when the visits of every key factor card changed by less than the threshold a day over the selected date range', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( {
+					keyFactors: [
+						{
+							kind: 'CHANNEL',
+							label: 'Email',
+							// One visit short of the threshold a day over the
+							// selected 28 days.
+							current:
+								40 +
+								KEY_FACTORS_DAILY_CHANGE_THRESHOLD * 28 -
+								1,
+							previous: 40,
+							sharePct: 61.2,
+							attributes: [],
+						},
+					],
+				} )
+			);
+
+			const { getByText, queryByRole, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					'No channel changed notably compared with the previous 28 days'
+				)
+			).toBeInTheDocument();
+			expect(
+				queryByRole( 'heading', { name: 'Email' } )
+			).not.toBeInTheDocument();
 		} );
 
 		it.each( [

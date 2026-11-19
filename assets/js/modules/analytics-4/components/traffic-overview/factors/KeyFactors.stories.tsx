@@ -87,6 +87,14 @@ const LONG_KEY_FACTORS: BenchmarkingKeyFactor[] = [
 	},
 ];
 
+/**
+ * The cards of the design, whose visits changed by one visit each over the
+ * story's 28 days, far below the threshold a day: traffic was steady.
+ */
+const STEADY_KEY_FACTORS: BenchmarkingKeyFactor[] = KEY_FACTORS.map(
+	( keyFactor ) => ( { ...keyFactor, current: keyFactor.previous + 1 } )
+);
+
 interface KeyFactorsStoryProps {
 	/** The key factor cards to show. */
 	keyFactors: BenchmarkingKeyFactor[];
@@ -158,6 +166,18 @@ NoNotableChange.args = {
 	keyFactors: [],
 };
 NoNotableChange.scenario = {};
+
+// `SteadyTraffic` runs no visual check, because it renders the notice of
+// `NoNotableChange`. The notice takes the place of the summary too, so the
+// story passes one, which it leaves out.
+export const SteadyTraffic = Template.bind(
+	{}
+) as Story< KeyFactorsStoryProps >;
+SteadyTraffic.storyName = 'Steady Traffic';
+SteadyTraffic.args = {
+	keyFactors: STEADY_KEY_FACTORS,
+	insight: PLACEHOLDER_KEY_FACTORS_INSIGHT,
+};
 
 export const LongLabels = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
 LongLabels.storyName = 'Long Labels';

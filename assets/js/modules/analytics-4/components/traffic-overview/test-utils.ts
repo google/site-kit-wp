@@ -171,7 +171,9 @@ export const INSUFFICIENT_PERMISSIONS_ERROR: ErrorObject = {
 };
 
 /**
- * The key factor cards of the design.
+ * The key factor cards of the design. The first card's visits changed more
+ * than in the design, by more than `KEY_FACTORS_DAILY_CHANGE_THRESHOLD` a day
+ * over 28 days, so traffic isn't steady and the cards show.
  *
  * @since n.e.x.t
  */
@@ -179,7 +181,7 @@ export const KEY_FACTORS: BenchmarkingKeyFactor[] = [
 	{
 		kind: 'CHANNEL',
 		label: 'Referral',
-		current: 245,
+		current: 545,
 		previous: 180,
 		sharePct: 52.4,
 		attributes: [

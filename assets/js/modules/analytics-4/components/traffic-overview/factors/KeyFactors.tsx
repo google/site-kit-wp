@@ -40,6 +40,7 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { KEY_FACTORS_MAX_CARDS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import { isSteadyTraffic } from './isSteadyTraffic';
 import KeyFactorCard from './KeyFactorCard';
 import KeyFactorCardPlaceholder from './KeyFactorCardPlaceholder';
 import KeyFactorsInsightNotice from './KeyFactorsInsightNotice';
@@ -85,11 +86,17 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 	);
 
 	const hasNoCards = loaded && cards.length === 0;
+	// Traffic is steady when every card's visits changed by less than the
+	// threshold a day, on average over the selected date range, in either
+	// direction. Such cards, and the summary of them, would only name noise,
+	// so the notice takes their place.
+	const isSteady = loaded && isSteadyTraffic( cards, daysInSelectedRange );
+	const showCards = loaded && cards.length > 0 && ! isSteady;
 	// The summary comes apart from the cards, so it can show above their
 	// placeholders, and it describes the change on its own where there are no
 	// cards. Without a summary, the notice takes the place of the cards.
-	const showInsight = insightLoading || !! insight;
-	const hasNoChange = hasNoCards && ! showInsight;
+	const showInsight = ! isSteady && ( insightLoading || !! insight );
+	const hasNoChange = ( hasNoCards && ! showInsight ) || isSteady;
 
 	const tooltipContent = createInterpolateElement(
 		__(
@@ -108,7 +115,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 				'googlesitekit-traffic-overview__key-factors',
 				{
 					'googlesitekit-traffic-overview__key-factors--no-change':
-						hasNoCards,
+						hasNoCards || isSteady,
 				}
 			) }
 			aria-labelledby={ headingID }
@@ -167,7 +174,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 					) }
 				</div>
 			) }
-			{ loaded && cards.length > 0 && (
+			{ showCards && (
 				<div className="googlesitekit-traffic-overview__key-factors-cards">
 					{ cards.map(
 						(
