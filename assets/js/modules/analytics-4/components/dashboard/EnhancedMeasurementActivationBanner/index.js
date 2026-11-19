@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip/useShowTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';

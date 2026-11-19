@@ -24,18 +24,28 @@ import { ElementType, FC } from 'react';
 /**
  * WordPress dependencies
  */
+import { useCallback, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { FEATURE_DISCOVERY_CALLOUT_NOTIFICATION } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG,
+	INCOMPLETE_SETUP_TOOLTIP_SLUG,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 interface IncompleteSetupReminderNotificationProps {
 	id: string;
@@ -46,6 +56,8 @@ const IncompleteSetupReminderNotification: FC<
 	IncompleteSetupReminderNotificationProps
 > = ( { id, Notification } ) => {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { removeNotificationFromQueue } = useDispatch( CORE_NOTIFICATIONS );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const feature = useSelect(
 		( select: Select ): Feature | undefined =>
@@ -68,7 +80,61 @@ const IncompleteSetupReminderNotification: FC<
 		[ feature ]
 	);
 
-	const { description, title } = feature?.incompleteSetupReminder || {};
+	const isCalloutDismissed = useSelect(
+		( select: Select ): boolean =>
+			select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+				FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+			),
+		[]
+	);
+
+	const isTooltipDismissed = useSelect(
+		( select: Select ): boolean =>
+			select( CORE_USER ).isItemDismissed(
+				INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG
+			),
+		[]
+	);
+
+	const { description, title, tooltip } =
+		feature?.incompleteSetupReminder || {};
+
+	const tooltipSettings = useMemo(
+		() => ( {
+			content: tooltip,
+			dismissLabel: __( 'Got it', 'google-site-kit' ),
+			onDismiss: () =>
+				dismissItem( INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG ),
+			placement: 'bottom' as const,
+			target: `.googlesitekit-add-features-button, .${ FEATURES_MENU_BUTTON_CLASS }`,
+			tooltipSlug: INCOMPLETE_SETUP_TOOLTIP_SLUG,
+		} ),
+		[ dismissItem, tooltip ]
+	);
+
+	const showTooltip = useShowTooltip( tooltipSettings );
+
+	const onDismiss = useCallback( () => {
+		if ( isTooltipDismissed || ! tooltip ) {
+			return;
+		}
+
+		// Keep the "Unlock more Site Kit features" callout from becoming the
+		// active notification on this page view, without dismissing it.
+		if ( isCalloutDismissed !== true ) {
+			removeNotificationFromQueue(
+				FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+			);
+		}
+
+		showTooltip();
+	}, [
+		isCalloutDismissed,
+		isTooltipDismissed,
+		removeNotificationFromQueue,
+		showTooltip,
+		tooltip,
+	] );
 
 	if ( ! description || ! resumeURL || ! title ) {
 		return null;
@@ -84,6 +150,7 @@ const IncompleteSetupReminderNotification: FC<
 				description={ description }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: onDismiss,
 				} }
 				notificationID={ id }
 				title={ title }

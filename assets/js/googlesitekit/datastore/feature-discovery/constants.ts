@@ -40,6 +40,17 @@ export const CORE_FEATURE_DISCOVERY = 'core/feature-discovery';
 // Session-only, as `core/ui` values are never persisted.
 export const SUCCEEDED_FEATURES_UI_KEY = 'feature-discovery-succeeded-features';
 
+// The dismissed item recording that the user closed the tooltip pointing to
+// "Add features" after dismissing an incomplete-setup reminder. Shared by all
+// features, so the tooltip is only ever shown once. It deliberately doesn't
+// start with the incomplete-setup reminder key prefix.
+export const INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG =
+	'feature-discovery-tooltip-incomplete-setup';
+
+// The tooltip slug used for the tooltip's GA events.
+export const INCOMPLETE_SETUP_TOOLTIP_SLUG =
+	'feature-discovery-incomplete-setup';
+
 export const FEATURE_CATEGORIES = {
 	AUDIENCE: 'audience',
 	ENGAGEMENT: 'engagement',
