@@ -61,6 +61,7 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Utilities;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Audience;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Conversion_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
@@ -74,6 +75,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Data;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Conversion_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
@@ -853,6 +855,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.30.0
 	 * @since 1.191.0 Registers `GET:plain-permalink-top-posts` with the `freshData` feature flag on.
 	 * @since 1.192.0 Always registers `GET:plain-permalink-top-posts`.
+	 * @since n.e.x.t Registers `POST:conversion-insights` and `GET:conversion-insights` with the `siteGoalsInsights` feature flag on.
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -1158,6 +1161,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
 				)
 			);
+		}
+
+		if ( Feature_Flags::enabled( 'siteGoalsInsights' ) ) {
+			$conversion_insights_definition = array(
+				'google_proxy' => $this->authentication->get_google_proxy(),
+				'credentials'  => $this->authentication->credentials(),
+			);
+
+			$this->datapoints['POST:conversion-insights'] = new Create_Conversion_Insight( array_merge( $conversion_insights_definition, array( 'module' => $this ) ) );
+			$this->datapoints['GET:conversion-insights']  = new Get_Conversion_Insight( $conversion_insights_definition );
 		}
 
 		$this->datapoints['GET:plain-permalink-top-posts'] = new Get_Plain_Permalink_Top_Posts(

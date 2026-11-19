@@ -23,6 +23,7 @@ export { default as benchmarkingData } from './benchmarking-data.json';
 export { default as container } from './container.json';
 export { default as containerE2E } from './container-e2e.json';
 export { default as containerDestinations } from './container-destinations.json';
+export { default as conversionInsight } from './conversion-insight.json';
 export { default as keyEvents } from './key-events.json';
 export { default as createProperty } from './create-property.json';
 export { default as createWebDataStream } from './create-webdatastream.json';
