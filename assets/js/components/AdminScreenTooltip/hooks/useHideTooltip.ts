@@ -1,5 +1,5 @@
 /**
- * Tooltip settings hook.
+ * `useHideTooltip` hook.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,9 +24,8 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { TooltipSettings } from './types';
 
 /**
  * Returns a callback that hides the admin screen tooltip.
@@ -41,40 +40,4 @@ export function useHideTooltip() {
 	return useCallback( () => {
 		setValue( 'admin-screen-tooltip', undefined );
 	}, [ setValue ] );
-}
-
-/**
- * Returns a callback that shows the admin screen tooltip.
- *
- * @since 1.163.0
- *
- * @param {Object} tooltipSettings Tooltip settings, passed to `AdminScreenTooltip`.
- * @return {Function} Callback that shows the tooltip.
- */
-export function useShowTooltip( tooltipSettings: TooltipSettings ) {
-	const { setValue } = useDispatch( CORE_UI );
-
-	return useCallback( () => {
-		setValue( 'admin-screen-tooltip', {
-			isTooltipVisible: true,
-			...tooltipSettings,
-		} );
-	}, [ setValue, tooltipSettings ] );
-}
-
-/**
- * Returns the admin screen tooltip settings.
- *
- * @since n.e.x.t
- *
- * @return {Object} Tooltip settings.
- */
-export function useTooltipSettings(): TooltipSettings {
-	return useSelect(
-		( select: Select ) =>
-			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
-				isTooltipVisible: false,
-			},
-		[]
-	);
 }

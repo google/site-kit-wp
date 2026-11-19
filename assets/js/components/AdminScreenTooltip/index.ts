@@ -17,5 +17,7 @@
  */
 
 export * from './AdminScreenTooltip';
-export * from './hooks';
+export * from './hooks/useHideTooltip';
+export * from './hooks/useShowTooltip';
+export * from './hooks/useTooltipSettings';
 export * from './types';

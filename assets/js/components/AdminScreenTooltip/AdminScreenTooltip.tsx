@@ -32,7 +32,8 @@ import {
 } from '@/js/hooks/useBreakpoint';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import { useHideTooltip, useTooltipSettings } from './hooks';
+import { useHideTooltip } from './hooks/useHideTooltip';
+import { useTooltipSettings } from './hooks/useTooltipSettings';
 
 export function AdminScreenTooltip() {
 	const viewContext = useViewContext();

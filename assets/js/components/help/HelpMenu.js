@@ -99,7 +99,7 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 		if ( ! menuOpen ) {
 			trackEvent( `${ viewContext }_headerbar`, 'open_helpmenu' );
 
-			if ( tooltipSettings?.target === `.${ HELP_MENU_BUTTON_CLASS }` ) {
+			if ( tooltipSettings.target === `.${ HELP_MENU_BUTTON_CLASS }` ) {
 				hideTooltip();
 			}
 		}
