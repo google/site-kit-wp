@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
+import { AdminScreenTooltip } from '@/js/components/AdminScreenTooltip';
 import { FEATURE_DISCOVERY_CALLOUT_NOTIFICATION } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
@@ -42,7 +43,6 @@ import {
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { getNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import {
-	act,
 	createTestRegistry,
 	fireEvent,
 	render,
@@ -284,30 +284,44 @@ describe( 'IncompleteSetupReminderNotification', () => {
 		} );
 
 		it( 'should persist the one-time tooltip dismissal when the tooltip is closed', async () => {
-			const { getByRole } = render(
-				<IncompleteSetupReminderNotification { ...props } />,
-				{ registry }
+			const { getByRole, findByRole } = render(
+				<div className="googlesitekit-plugin">
+					<button className="googlesitekit-add-features-button">
+						Add features
+					</button>
+					<IncompleteSetupReminderNotification { ...props } />
+					<AdminScreenTooltip />
+				</div>,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);
 
 			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
 
-			const { onDismiss } = registry
-				.select( CORE_UI )
-				.getValue( 'admin-screen-tooltip' );
+			await waitFor( () =>
+				expect(
+					registry.select( CORE_USER ).isItemDismissed( id )
+				).toBe( true )
+			);
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: [ id, INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG ],
 			} );
 
-			await act( () => onDismiss() );
+			fireEvent.click( await findByRole( 'button', { name: 'Got it' } ) );
+
+			await waitFor( () =>
+				expect(
+					registry
+						.select( CORE_USER )
+						.isItemDismissed(
+							INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG
+						)
+				).toBe( true )
+			);
 
 			expect(
-				registry
-					.select( CORE_USER )
-					.isItemDismissed(
-						INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG
-					)
-			).toBe( true );
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toBeUndefined();
 		} );
 
 		it( 'should remove the "Add features" callout from the queue when the tooltip is shown', async () => {
