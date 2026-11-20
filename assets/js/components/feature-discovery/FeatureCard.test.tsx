@@ -294,7 +294,7 @@ describe( 'FeatureCard', () => {
 				...TEST_FEATURE,
 				setup: {
 					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-					ctaLabel: 'Try it now',
+					ctaLabel: 'Enable test feature',
 				},
 			},
 		] );
@@ -305,8 +305,56 @@ describe( 'FeatureCard', () => {
 
 		// How the CTA itself looks and behaves is `FeatureCTA`'s own test.
 		expect(
+			getByRole( 'button', { name: 'Set up now' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should show "Set up now" for a setup flow feature with its own CTA label', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up Analytics',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard slug="test-feature" />,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up now' } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Set up Analytics' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should show "Try it now" for an in-place panel feature', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+					ctaLabel: 'Open the test panel',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard slug="test-feature" />,
+			{ registry }
+		);
+
+		expect(
 			getByRole( 'button', { name: 'Try it now' } )
 		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Open the test panel' } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should render the CTA given by ctaButton in place of the default one', () => {
@@ -315,7 +363,7 @@ describe( 'FeatureCard', () => {
 				...TEST_FEATURE,
 				setup: {
 					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-					ctaLabel: 'Try it now',
+					ctaLabel: 'Enable test feature',
 				},
 			},
 		] );
@@ -332,7 +380,7 @@ describe( 'FeatureCard', () => {
 			getByRole( 'button', { name: 'Custom CTA' } )
 		).toBeInTheDocument();
 		expect(
-			queryByRole( 'button', { name: 'Try it now' } )
+			queryByRole( 'button', { name: 'Set up now' } )
 		).not.toBeInTheDocument();
 	} );
 
@@ -486,7 +534,7 @@ describe( 'FeatureCard', () => {
 					...TEST_FEATURE,
 					setup: {
 						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-						ctaLabel: 'Try it now',
+						ctaLabel: 'Enable test feature',
 						activate: jest.fn().mockResolvedValue( {} ),
 					},
 				},
@@ -497,7 +545,7 @@ describe( 'FeatureCard', () => {
 				viewContext,
 			} );
 
-			const button = getByRole( 'button', { name: 'Try it now' } );
+			const button = getByRole( 'button', { name: 'Set up now' } );
 
 			fireEvent.click( button );
 

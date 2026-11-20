@@ -296,7 +296,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 								<FeatureCTA
 									gaEventCategory={ gaEventCategory }
 									slug={ slug }
-									isTertiary
+									isFeatureCardCTA
 								/>
 							) }
 							{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
