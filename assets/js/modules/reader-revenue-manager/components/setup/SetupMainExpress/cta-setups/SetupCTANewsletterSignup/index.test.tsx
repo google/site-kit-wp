@@ -907,7 +907,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 				} );
 
 				const [ overviewLink ] = getAllByRole( 'link', {
-					name: /Publisher center/i,
+					name: /Publisher Center/i,
 				} );
 
 				const serviceURL = new URL(
@@ -933,7 +933,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 				} );
 
 				const ctaEditLink = getByRole( 'link', {
-					name: /Publisher center/i,
+					name: /Publisher Center/i,
 				} );
 
 				const serviceURL = new URL(
@@ -989,7 +989,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 			it.each( [
 				{
 					action: 'click_change_display_order_link',
-					name: /Publisher center/i,
+					name: /Publisher Center/i,
 					hasPreExistingCTAs: true,
 				},
 				{
@@ -999,7 +999,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 				},
 				{
 					action: 'click_edit_content_link',
-					name: /Publisher center/i,
+					name: /Publisher Center/i,
 					hasPreExistingCTAs: false,
 				},
 				{
@@ -1710,7 +1710,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 				} );
 
 				fireEvent.click(
-					getByRole( 'button', { name: /Return to Dashboard/i } )
+					getByRole( 'button', { name: /Return to dashboard/i } )
 				);
 
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
