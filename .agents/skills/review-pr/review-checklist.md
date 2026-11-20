@@ -48,6 +48,11 @@ the file + section when flagging a violation.
 - **Prompts & dismissals** — correct system used and stored (`prompts-and-dismissals.md`).
 - **Tests** — integration tests (not unit mocks); correct test traits/fakes (`phpunit.md`).
 
+**User-facing copy** (see `docs/context/terminology.md`)
+
+- **Capitalization** — added or edited strings write each listed term in its listed form. Flag a term that is not listed when the change writes it in more than one form (`terminology.md`).
+- **Spelling and punctuation** — added or edited strings use American English spelling and the Oxford comma (`terminology.md`).
+
 ## 3. Code quality
 
 - Structure & readability; targeted changes (no gratuitous refactors).
