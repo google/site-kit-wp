@@ -727,7 +727,7 @@ class Response_BuilderTest extends TestCase {
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame(
-			array( 'visits', 'dailyTraffic', 'availability', 'keyFactors', 'steadyTraffic', 'contentMarkers' ),
+			array( 'visits', 'dailyTraffic', 'availability', 'bandReferenceDays', 'keyFactors', 'steadyTraffic', 'contentMarkers' ),
 			array_keys( $response ),
 			'Without the `trafficInsights` feature, the response should have no `insightRequest`.'
 		);
@@ -1217,6 +1217,33 @@ class Response_BuilderTest extends TestCase {
 			'110 days, from 2026-05-29' => array( '2026-05-29', false ),
 			'84 days, from 2026-06-24'  => array( '2026-06-24', false ),
 			'46 days, from 2026-08-01'  => array( '2026-08-01', false ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_band_reference_histories
+	 *
+	 * @param string|null $first_date The first day of the daily report with visits, as `YYYY-MM-DD`, or null for a report without visits.
+	 * @param int|null    $expected   The days the band of the period's last day should be fitted on, or null for no band.
+	 */
+	public function test_build__returns_the_days_of_traffic_the_band_of_the_period_s_last_day_is_fitted_on( $first_date, $expected ) {
+		$this->report_rows = array(
+			'date' => null === $first_date ? array() : $this->get_daily_report_rows( $first_date, '2026-09-15', fn() => 100 ),
+		);
+
+		$this->assertSame(
+			$expected,
+			$this->builder->build( '2026-08-19', '2026-09-15' )['bandReferenceDays'],
+			'`bandReferenceDays` should be the days before the 28 days that end on `2026-09-15`, at most 365, or null without a band.'
+		);
+	}
+
+	public function data_band_reference_histories() {
+		return array(
+			'420 days, from 2025-07-23' => array( '2025-07-23', 365 ),
+			'111 days, from 2026-05-28' => array( '2026-05-28', 83 ),
+			'110 days, from 2026-05-29' => array( '2026-05-29', null ),
+			'no visits'                 => array( null, null ),
 		);
 	}
 

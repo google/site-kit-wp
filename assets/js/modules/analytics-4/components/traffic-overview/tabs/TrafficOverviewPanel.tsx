@@ -117,6 +117,7 @@ const TrafficOverviewPanel: FC = () => {
 		keyFactorsAvailable,
 		insightRequestAllowed,
 		performanceInsightAvailable,
+		lastYearAvailable,
 	} = getTypicalTrafficAvailability( benchmarkingResponse );
 
 	// The insight arrives after the figures, since the service generates it
@@ -189,6 +190,13 @@ const TrafficOverviewPanel: FC = () => {
 								  )
 								: undefined
 						}
+						// The band's tooltip says how much of the site's
+						// traffic the band is based on, and mentions last
+						// year only once the history reaches it.
+						bandReferenceDays={
+							benchmarkingResponse?.bandReferenceDays
+						}
+						lastYearAvailable={ lastYearAvailable }
 					/>
 					{ ! isLoading && benchmarkingError && (
 						// The error shows once the figures do, so the

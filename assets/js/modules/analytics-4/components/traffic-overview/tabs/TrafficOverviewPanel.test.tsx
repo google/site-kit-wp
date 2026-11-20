@@ -1732,6 +1732,45 @@ describe( 'TrafficOverviewPanel', () => {
 			] );
 		} );
 
+		it.each( [
+			[
+				'without last year in the history',
+				false,
+				/Based on 52 weeks of your traffic\. Learn more/,
+			],
+			[
+				'with last year in the history',
+				true,
+				/Based on 52 weeks of your traffic, including the same time last year\. Learn more/,
+			],
+		] )(
+			'should say in the typical range tooltip how many weeks of traffic the benchmarking response fitted the band on, %s',
+			async ( _label, lastYearAvailable, name ) => {
+				const { startDate, endDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates();
+				const response = createBenchmarkingResponse(
+					startDate,
+					endDate
+				);
+
+				provideBenchmarkingResponse( registry, {
+					...response,
+					availability: {
+						...response.availability,
+						lastYearAvailable,
+					},
+					bandReferenceDays: 365,
+				} );
+
+				const { getByRole, waitForRegistry } = renderPanel();
+
+				await waitForRegistry();
+
+				expect( getByRole( 'button', { name } ) ).toBeInTheDocument();
+			}
+		);
+
 		it( 'should draw the typical range of each day of the benchmarking response', async () => {
 			provideDailyTraffic( ( day ) => ( {
 				...day,

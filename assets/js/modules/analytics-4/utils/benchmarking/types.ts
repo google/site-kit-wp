@@ -124,6 +124,12 @@ export interface DecodedBenchmarkingResponse {
 	dailyTraffic: BenchmarkingDailyTrafficRow[];
 	/** Which parts of the typical traffic view the date range has. */
 	availability: BenchmarkingAvailability;
+	/**
+	 * The number of days of traffic the band of the date range's last day is
+	 * fitted on, at most 365, which the band's tooltip names in weeks. Null
+	 * when the date range has no band.
+	 */
+	bandReferenceDays: number | null;
 	/** The key factor cards, in the order the response ranked them. */
 	keyFactors: BenchmarkingKeyFactor[];
 	/**

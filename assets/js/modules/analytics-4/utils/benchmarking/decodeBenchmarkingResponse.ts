@@ -39,6 +39,7 @@ import {
 	BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
 	BENCHMARKING_KEY_FACTOR_KINDS,
 	MEMBER_AVAILABILITY,
+	MEMBER_BAND_REFERENCE_DAYS,
 	MEMBER_CONTENT_MARKERS,
 	MEMBER_DAILY_EXPECTED_RANGES,
 	MEMBER_DAILY_VISITS,
@@ -63,10 +64,10 @@ import {
 } from './types';
 
 /** The members of a response built without the `trafficInsights` feature. */
-const MEMBER_COUNT = 11;
+const MEMBER_COUNT = 12;
 
 /** The members of a response built with the `trafficInsights` feature, which adds the insight's locale and request. */
-const MEMBER_COUNT_WITH_INSIGHT = 13;
+const MEMBER_COUNT_WITH_INSIGHT = 14;
 
 /** A day's expected range, as `[ expectedMin, expectedMax ]`, or null on a day without one. */
 type EncodedExpectedRange = [ number, number ] | null;
@@ -440,6 +441,20 @@ function readOptionalString( value: unknown ): string | null {
 }
 
 /**
+ * Reads the number of days of traffic the band is fitted on.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value The member's value.
+ * @return {number|null} The number of days, or null when the value is not a whole number above `0`.
+ */
+function readBandReferenceDays( value: unknown ): number | null {
+	return Number.isInteger( value ) && ( value as number ) > 0
+		? ( value as number )
+		: null;
+}
+
+/**
  * Decodes an encoded benchmarking response.
  *
  * A response of the `trafficInsights` feature has two more members, the
@@ -452,6 +467,7 @@ function readOptionalString( value: unknown ): string | null {
  * @since n.e.x.t Decodes the locale and the request of the generated insight of a response that has them.
  * @since n.e.x.t Decodes the content markers.
  * @since n.e.x.t Decodes whether traffic was steady.
+ * @since n.e.x.t Decodes the number of days of traffic the band is fitted on.
  *
  * @param {*} encoded The encoded response.
  * @return {Object|null} The decoded response, or null when it cannot be read.
@@ -506,6 +522,12 @@ export function decodeBenchmarkingResponse(
 			expectedRanges
 		),
 		availability: decodeAvailability( firstDate, encodedAvailability ),
+		// The number only names the band's history in its tooltip, so a
+		// member that cannot be read leaves the band without a tooltip rather
+		// than making the whole response unusable.
+		bandReferenceDays: readBandReferenceDays(
+			encoded[ MEMBER_BAND_REFERENCE_DAYS ]
+		),
 		keyFactors: decodeKeyFactors(
 			encodedKeyFactors,
 			encodedKeyFactorAttributes,

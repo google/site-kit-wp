@@ -29,6 +29,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 			keyFactorsAvailable: true,
 			insightRequestAllowed: true,
 			performanceInsightAvailable: true,
+			lastYearAvailable: false,
 		} );
 	} );
 
@@ -49,6 +50,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 					keyFactorsAvailable: false,
 					insightRequestAllowed: false,
 					performanceInsightAvailable: false,
+					lastYearAvailable: true,
 				},
 			} )
 		).toEqual(
@@ -57,6 +59,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 				keyFactorsAvailable: false,
 				insightRequestAllowed: false,
 				performanceInsightAvailable: false,
+				lastYearAvailable: true,
 			} )
 		);
 	} );

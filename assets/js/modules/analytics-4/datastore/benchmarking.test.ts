@@ -103,6 +103,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, 4, true, -19, true, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -153,6 +154,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					performanceInsightAvailable: false,
 					lastYearAvailable: false,
 				},
+				bandReferenceDays: null,
 				keyFactors: [
 					{
 						kind: 'CHANNEL',
@@ -182,6 +184,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -221,6 +224,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -243,6 +247,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -276,6 +281,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -315,6 +321,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -335,6 +342,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -350,6 +358,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -389,6 +398,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -409,6 +419,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -424,6 +435,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -439,6 +451,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -491,6 +504,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -510,6 +524,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -529,6 +544,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -548,6 +564,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 						},
 					],
 					availability: availabilityWithoutTraffic,
+					bandReferenceDays: null,
 					keyFactors: [],
 					steadyTraffic: false,
 					contentMarkers: [],
@@ -661,6 +678,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -717,6 +735,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -754,6 +773,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -869,6 +889,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -927,6 +948,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 						},
 					],
 					availability: availabilityWithoutTraffic,
+					bandReferenceDays: null,
 					keyFactors: [],
 					steadyTraffic: false,
 					contentMarkers: [],
@@ -971,6 +993,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 						},
 					],
 					availability: availabilityWithoutTraffic,
+					bandReferenceDays: null,
 					keyFactors: [],
 					steadyTraffic: false,
 					contentMarkers: [],
@@ -989,6 +1012,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 						},
 					],
 					availability: availabilityWithoutTraffic,
+					bandReferenceDays: null,
 					keyFactors: [],
 					steadyTraffic: false,
 					contentMarkers: [],
@@ -1011,6 +1035,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -1040,6 +1065,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -1060,6 +1086,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -1075,6 +1102,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -1128,6 +1156,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -1148,6 +1177,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -1163,6 +1193,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				],
 			} );
 
@@ -1202,6 +1233,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					},
 				],
 				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],

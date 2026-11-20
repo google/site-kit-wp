@@ -82,6 +82,8 @@ interface TrafficChartStoryProps {
 	gatheringData?: boolean;
 	/** The posts published in the range. */
 	publishedPosts?: PublishedPost[];
+	/** The number of days of traffic the band is fitted on, which its tooltip names in weeks. */
+	bandReferenceDays?: number;
 }
 
 function Template( {
@@ -89,6 +91,7 @@ function Template( {
 	setupRegistry,
 	gatheringData,
 	publishedPosts,
+	bandReferenceDays,
 }: TrafficChartStoryProps ) {
 	// The chart's styles are scoped to the widget and the panel, so the story
 	// renders inside both.
@@ -100,6 +103,7 @@ function Template( {
 						dailyTraffic={ storyDailyTraffic }
 						gatheringData={ gatheringData }
 						publishedPosts={ publishedPosts }
+						bandReferenceDays={ bandReferenceDays }
 					/>
 				</div>
 			</div>
@@ -132,6 +136,8 @@ TypicalTrafficRangeAndPublishedPosts.storyName =
 TypicalTrafficRangeAndPublishedPosts.args = {
 	dailyTraffic: addTypicalTrafficRange( dailyTraffic ),
 	publishedPosts: postsWithURLs,
+	// A year of traffic before the range's 28 days.
+	bandReferenceDays: 364,
 	setupRegistry: commonSetup,
 };
 
@@ -147,6 +153,7 @@ PublishedPostTooltip.storyName = 'Published Post Tooltip';
 PublishedPostTooltip.args = {
 	dailyTraffic: addTypicalTrafficRange( dailyTraffic ),
 	publishedPosts: postsWithURLs,
+	bandReferenceDays: 364,
 	setupRegistry: commonSetup,
 };
 PublishedPostTooltip.scenario = {

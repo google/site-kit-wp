@@ -35,7 +35,7 @@ final class Wire_Format {
 	 * @since 1.189.0
 	 * @since 1.191.0 Renamed the constants of members `3` and `4` from visitors to visits, and replaced members `5` and `6` with the key factor cards and their attributes.
 	 * @since n.e.x.t Added members `7` and `8`, the expected range of each day and which parts of the typical traffic view show.
-	 * @since n.e.x.t Added member `9`, the content markers, member `10`, whether traffic was steady, and members `11` and `12`, the locale of the generated insight and its signed request. Only a response built with the `trafficInsights` feature carries members `11` and `12`.
+	 * @since n.e.x.t Added member `9`, the content markers, member `10`, whether traffic was steady, member `11`, the days of traffic the band is fitted on, and members `12` and `13`, the locale of the generated insight and its signed request. Only a response built with the `trafficInsights` feature carries members `12` and `13`.
 	 */
 	const MEMBER_VERSION               = 0;
 	const MEMBER_STRINGS               = 1;
@@ -48,8 +48,9 @@ final class Wire_Format {
 	const MEMBER_AVAILABILITY          = 8;
 	const MEMBER_CONTENT_MARKERS       = 9;
 	const MEMBER_STEADY_TRAFFIC        = 10;
-	const MEMBER_INSIGHT_LOCALE        = 11;
-	const MEMBER_INSIGHT_PAYLOAD       = 12;
+	const MEMBER_BAND_REFERENCE_DAYS   = 11;
+	const MEMBER_INSIGHT_LOCALE        = 12;
+	const MEMBER_INSIGHT_PAYLOAD       = 13;
 
 	/**
 	 * The fields of the availability member, by position, in the order

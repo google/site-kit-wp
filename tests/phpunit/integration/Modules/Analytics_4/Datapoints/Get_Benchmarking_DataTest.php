@@ -422,7 +422,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( array( array() ), $data[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry one empty list of attributes for the card.' );
 		$this->assertSame( array( null, array( 31.4, 62.8 ) ), $data[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'The response should carry the expected range of each day, and null for the day without one.' );
 		$this->assertSame( array( false, false, 3, true, -26, true, false, false ), $data[ Wire_Format::MEMBER_AVAILABILITY ], 'The response should carry which parts of the typical traffic view show, with each day as its offset from the first plotted day.' );
-		$this->assertCount( 11, $data, 'Without the `trafficInsights` feature, the response should have its eleven members and no insight members.' );
+		$this->assertCount( 12, $data, 'Without the `trafficInsights` feature, the response should have its twelve members and no insight members.' );
 	}
 
 	/**
@@ -459,16 +459,16 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 		$data = $this->request()->get_data();
 
-		$this->assertCount( 13, $data, 'With an insight request, the response should have thirteen members.' );
-		$this->assertSame( get_user_locale(), $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 11 should be the locale of the current user.' );
-		$this->assertSame( 'de_DE', $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 11 should be the locale the user chose, as WordPress names it.' );
+		$this->assertCount( 14, $data, 'With an insight request, the response should have fourteen members.' );
+		$this->assertSame( get_user_locale(), $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the current user.' );
+		$this->assertSame( 'de_DE', $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale the user chose, as WordPress names it.' );
 		$this->assertSame(
 			array(
 				'request' => $this->get_insight_request(),
 				'locale'  => 'de_DE',
 			),
 			Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $this->admin_id ),
-			'Member 12 should be the payload of the insight request and the locale, signed for the current user.'
+			'Member 13 should be the payload of the insight request and the locale, signed for the current user.'
 		);
 		$this->assertNull(
 			Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $this->factory()->user->create() ),
@@ -492,9 +492,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 		$data = $this->request()->get_data();
 
-		$this->assertCount( 13, $data, 'With the `trafficInsights` feature, the response should have thirteen members even without an insight request.' );
-		$this->assertSame( get_user_locale(), $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 11 should be the locale of the current user.' );
-		$this->assertNull( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 12 should be null when there is no insight to request.' );
+		$this->assertCount( 14, $data, 'With the `trafficInsights` feature, the response should have fourteen members even without an insight request.' );
+		$this->assertSame( get_user_locale(), $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the current user.' );
+		$this->assertNull( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 13 should be null when there is no insight to request.' );
 	}
 
 	public function test_rest_endpoint__signs_the_insight_request_built_from_the_reports() {
@@ -508,7 +508,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$data     = $response->get_data();
 
 		$this->assertSame( 200, $response->get_status(), 'The request should answer 200.' );
-		$this->assertSame( 'de_DE_formal', $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 11 should be the locale of the administrator.' );
+		$this->assertSame( 'de_DE_formal', $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the administrator.' );
 
 		$pair = fn( $current, $previous ) => array(
 			'current'  => $current,
@@ -600,7 +600,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 				'locale'  => 'de_DE_formal',
 			),
 			Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $this->admin_id ),
-			'Member 12 should be the signed insight request, built from the daily series and from every row of the reports.'
+			'Member 13 should be the signed insight request, built from the daily series and from every row of the reports.'
 		);
 	}
 
@@ -616,7 +616,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 			)
 		)->get_data();
 
-		$this->assertCount( 13, $data, 'With the `trafficInsights` feature, the response should have thirteen members.' );
+		$this->assertCount( 14, $data, 'With the `trafficInsights` feature, the response should have fourteen members.' );
 		$this->assertNull( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'A 6-day period should get no insight payload.' );
 	}
 
@@ -918,8 +918,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$payload  = Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $reader_id );
 
 		$this->assertSame( 200, $response->get_status(), 'A view-only reader should get the benchmarking data.' );
-		$this->assertSame( 'fr_FR', $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 11 should be the locale of the reader rather than of the owner.' );
-		$this->assertNotNull( $payload, 'Member 12 should be signed for the reader, who sends it back to ask for the insight.' );
+		$this->assertSame( 'fr_FR', $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the reader rather than of the owner.' );
+		$this->assertNotNull( $payload, 'Member 13 should be signed for the reader, who sends it back to ask for the insight.' );
 		$this->assertSame( 'fr_FR', $payload['locale'], 'The payload should ask for the insight in the locale of the reader.' );
 		$this->assertSame( 400, $payload['request']['visits']['current_period'], 'The payload should hold the request built from the reports the reader reads with the owner\'s account.' );
 		$this->assertNull( Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $this->admin_id ), 'The payload of the reader should not decode for the owner.' );

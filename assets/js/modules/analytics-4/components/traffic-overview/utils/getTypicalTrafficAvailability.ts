@@ -30,18 +30,21 @@ export type TypicalTrafficAvailability = Pick<
 	| 'keyFactorsAvailable'
 	| 'insightRequestAllowed'
 	| 'performanceInsightAvailable'
+	| 'lastYearAvailable'
 >;
 
 /**
  * The parts of the typical traffic view while the benchmarking response loads:
  * every part, so each keeps its placeholder until the response says otherwise,
- * and no short-range notice, which takes the place of the key factors.
+ * and no short-range notice, which takes the place of the key factors. The
+ * band's tooltip shows with the band alone, so no history of last year either.
  */
 const AVAILABILITY_WHILE_LOADING: TypicalTrafficAvailability = {
 	rangeTooShort: false,
 	keyFactorsAvailable: true,
 	insightRequestAllowed: true,
 	performanceInsightAvailable: true,
+	lastYearAvailable: false,
 };
 
 /**
@@ -55,7 +58,7 @@ const AVAILABILITY_WHILE_LOADING: TypicalTrafficAvailability = {
  * @since n.e.x.t
  *
  * @param {Object} [benchmarkingResponse] Optional. The benchmarking response for the selected date range, or `undefined` while it loads.
- * @return {Object} Whether the range is too short for the key factors, whether it has them, whether the panel asks for the generated insight, and whether it shows the insight's analysis. Every part is `true`, and the range not too short, while the response loads.
+ * @return {Object} Whether the range is too short for the key factors, whether it has them, whether the panel asks for the generated insight, whether it shows the insight's analysis, and whether the site's history reaches the same time last year. Every part is `true`, and the range neither too short nor with last year's history, while the response loads.
  */
 export function getTypicalTrafficAvailability(
 	benchmarkingResponse?: DecodedBenchmarkingResponse

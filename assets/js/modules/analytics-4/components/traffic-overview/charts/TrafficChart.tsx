@@ -24,7 +24,7 @@ import { FC, useMemo, useRef } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -32,7 +32,6 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import GoogleChart from '@/js/components/GoogleChart';
-import Link from '@/js/components/Link';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -44,6 +43,7 @@ import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
 import { getPropertyCreatedMarkerDate } from './getPropertyCreatedMarkerDate';
 import { PublishedPost, getTrafficChartData } from './getTrafficChartData';
 import { getTrafficLegendItem } from './getTrafficLegendItem';
+import { getTypicalTrafficLegendItem } from './getTypicalTrafficLegendItem';
 import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
 import PublishedPostTooltip, {
 	PublishedPostTooltipHandle,
@@ -51,7 +51,6 @@ import PublishedPostTooltip, {
 import {
 	PUBLISHED_POST_COLOR,
 	TRAFFIC_CHART_OPTIONS,
-	TYPICAL_TRAFFIC_RANGE_COLOR,
 } from './trafficChartOptions';
 
 /** What Google Charts reports when the pointer moves onto or off a day. */
@@ -81,6 +80,10 @@ export interface TrafficChartProps {
 	gatheringData?: boolean;
 	/** The posts published in the selected range. The chart marks the day of each with a dot on the line. */
 	publishedPosts?: PublishedPost[];
+	/** The number of days of traffic the band of the range's last day is fitted on, which the band's tooltip names in weeks. Without it, the band has no tooltip. */
+	bandReferenceDays?: number | null;
+	/** Whether the site's history reaches the same time last year, which the band's tooltip then mentions. */
+	lastYearAvailable?: boolean;
 }
 
 const TrafficChart: FC< TrafficChartProps > = ( {
@@ -88,6 +91,8 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 	loaded = true,
 	gatheringData = false,
 	publishedPosts,
+	bandReferenceDays,
+	lastYearAvailable,
 } ) => {
 	const { startDate, endDate } = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
@@ -154,23 +159,12 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 	];
 
 	if ( hasTypicalTrafficRange ) {
-		legendItems.push( {
-			label: __( 'Typical traffic range', 'google-site-kit' ),
-			color: TYPICAL_TRAFFIC_RANGE_COLOR,
-			swatch: 'area',
-			info: createInterpolateElement(
-				__(
-					'Site Kit analyzes the last 12 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. <a>Learn more</a>',
-					'google-site-kit'
-				),
-				{
-					// TODO: Point the link at the typical traffic range's support
-					// page.
-					a: <Link href="#" external hideExternalIndicator />,
-				}
-			),
-			isBeta: true,
-		} );
+		legendItems.push(
+			getTypicalTrafficLegendItem( {
+				referenceDays: bandReferenceDays,
+				lastYearAvailable,
+			} )
+		);
 	}
 
 	if ( hasPublishedPosts ) {

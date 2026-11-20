@@ -27,5 +27,6 @@
 	[ null, [ 118.4, 183.1 ], [ 124.3, 191.5 ], [ 117.9, 182.6 ] ],
 	[ false, false, 4, true, -19, true, false, false ],
 	[ [ 2, [ 5, 1 ] ] ],
-	false
+	false,
+	null
 ]

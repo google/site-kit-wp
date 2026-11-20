@@ -639,6 +639,7 @@ describe( 'TrafficChart', () => {
 				<TrafficChart
 					dailyTraffic={ dailyTrafficWithRange }
 					publishedPosts={ publishedPosts }
+					bandReferenceDays={ 83 }
 				/>,
 				{ registry }
 			);
@@ -658,7 +659,7 @@ describe( 'TrafficChart', () => {
 			).toHaveStyle( { backgroundColor: '#e3d1ff' } );
 			expect(
 				within( rangeItem ).getByRole( 'button', {
-					name: /^Site Kit analyzes the last 12 months of your traffic history to estimate a typical range/,
+					name: /^Site Kit estimates a typical range from your traffic history, .* Based on 11 weeks of your traffic\. Learn more/,
 				} )
 			).toBeInTheDocument();
 			expect(
@@ -673,6 +674,39 @@ describe( 'TrafficChart', () => {
 			).toHaveStyle( { backgroundColor: '#a983e6' } );
 
 			expect( otherItems ).toHaveLength( 0 );
+		} );
+
+		it( 'should mention the same time last year in the "Typical traffic range" tooltip once the history reaches it', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<TrafficChart
+					dailyTraffic={ dailyTrafficWithRange }
+					bandReferenceDays={ 365 }
+					lastYearAvailable
+				/>,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'button', {
+					name: /Based on 52 weeks of your traffic, including the same time last year\. Learn more/,
+				} )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should show no tooltip on the "Typical traffic range" legend item without the days of traffic the band is fitted on', async () => {
+			const { getAllByRole, waitForRegistry } = render(
+				<TrafficChart dailyTraffic={ dailyTrafficWithRange } />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			const [ , rangeItem ] = getAllByRole( 'listitem' );
+
+			expect( rangeItem ).toHaveTextContent( 'Typical traffic range' );
+			expect( within( rangeItem ).queryByRole( 'button' ) ).toBeNull();
 		} );
 
 		it( 'should list only the traffic legend item when no day the chart plots has a typical range or a post', async () => {

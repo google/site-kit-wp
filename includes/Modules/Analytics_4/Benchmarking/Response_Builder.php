@@ -89,19 +89,21 @@ class Response_Builder {
 	 * @since n.e.x.t Returns `contentMarkers`.
 	 * @since n.e.x.t Returns `keyFactors` in place of `dimensions` and `contextualData`.
 	 * @since n.e.x.t Returns `steadyTraffic`.
+	 * @since n.e.x.t Returns `bandReferenceDays`.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
 	 * @return array|WP_Error {
 	 *     The assembled response, or the error a failed report returned.
 	 *
-	 *     @type array       $visits           Visit totals for the selected period and the one before it.
-	 *     @type array       $dailyTraffic     List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the band `Period_Baseline::get_daily_ranges()` fits for the period. The bounds are null on every day when the period has no band, with fewer than `Period_Baseline::get_min_band_history_days()` days of recorded traffic up to and including its last day.
-	 *     @type array       $availability     Which parts of the typical traffic view show for the period, as `Typical_Traffic_Availability::get()` returns them, so the panel reads them instead of working them out again.
-	 *     @type array       $keyFactors       The key factor cards, as `Key_Factors::build()` returns them, or as `Key_Factors::build_steady()` does when `steadyTraffic` is true. Empty when `availability` has no key factors for the period: it is shorter than 7 days, or the compare period starts before the site's first day with visits, since a day before it wasn't measured yet. Also empty when no candidate stays.
-	 *     @type bool        $steadyTraffic    Whether no channel changed notably, as `Decomposition_Builder::is_steady()` tells. The key factor cards are then the channels with the most visits, each with its share of the site's visits as `sharePct`. False when the period has no key factors.
-	 *     @type array       $contentMarkers   The posts published in the selected period that the chart marks, as `Content_Markers::build()` returns them. Empty when the property has no post date custom dimension, since the content report doesn't run then, or when the dimension has no data yet.
-	 *     @type array|null  $insightRequest   Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request, which includes a period without key factors.
+	 *     @type array       $visits            Visit totals for the selected period and the one before it.
+	 *     @type array       $dailyTraffic      List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the band `Period_Baseline::get_daily_ranges()` fits for the period. The bounds are null on every day when the period has no band, with fewer than `Period_Baseline::get_min_band_history_days()` days of recorded traffic up to and including its last day.
+	 *     @type array       $availability      Which parts of the typical traffic view show for the period, as `Typical_Traffic_Availability::get()` returns them, so the panel reads them instead of working them out again.
+	 *     @type int|null    $bandReferenceDays The number of days of traffic the band of the period's last day is fitted on, at most 365, which the band's tooltip names in weeks. Null when the period has no band.
+	 *     @type array       $keyFactors        The key factor cards, as `Key_Factors::build()` returns them, or as `Key_Factors::build_steady()` does when `steadyTraffic` is true. Empty when `availability` has no key factors for the period: it is shorter than 7 days, or the compare period starts before the site's first day with visits, since a day before it wasn't measured yet. Also empty when no candidate stays.
+	 *     @type bool        $steadyTraffic     Whether no channel changed notably, as `Decomposition_Builder::is_steady()` tells. The key factor cards are then the channels with the most visits, each with its share of the site's visits as `sharePct`. False when the period has no key factors.
+	 *     @type array       $contentMarkers    The posts published in the selected period that the chart marks, as `Content_Markers::build()` returns them. Empty when the property has no post date custom dimension, since the content report doesn't run then, or when the dimension has no data yet.
+	 *     @type array|null  $insightRequest    Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request, which includes a period without key factors.
 	 * }
 	 */
 	public function build( $start_date, $end_date ) {
@@ -159,13 +161,18 @@ class Response_Builder {
 			return $key_factors;
 		}
 
+		// The band's tooltip says how much traffic the band is based on: the
+		// days the fit of the period's last day reads, the longest of any day.
+		$daily_range = $period_baseline->get_daily_range( $end_date, $report_options->get_period_days() );
+
 		$response = array(
-			'visits'         => $visits,
-			'dailyTraffic'   => $this->get_daily_traffic( $daily_series, $start_date, $end_date, $period_baseline ),
-			'availability'   => $availability,
-			'keyFactors'     => $key_factors,
-			'steadyTraffic'  => $steady_traffic,
-			'contentMarkers' => ( new Content_Markers() )->build(
+			'visits'            => $visits,
+			'dailyTraffic'      => $this->get_daily_traffic( $daily_series, $start_date, $end_date, $period_baseline ),
+			'availability'      => $availability,
+			'bandReferenceDays' => null === $daily_range ? null : $daily_range['reference_days'],
+			'keyFactors'        => $key_factors,
+			'steadyTraffic'     => $steady_traffic,
+			'contentMarkers'    => ( new Content_Markers() )->build(
 				isset( $contextual_data['content'] ) ? $contextual_data['content'] : array(),
 				$start_date,
 				$end_date

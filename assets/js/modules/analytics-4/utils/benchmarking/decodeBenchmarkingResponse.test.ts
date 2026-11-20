@@ -25,7 +25,7 @@ import { provideTimezone } from '@tests/js/test-utils';
 import { decodeBenchmarkingResponse } from './decodeBenchmarkingResponse';
 
 describe( 'decodeBenchmarkingResponse', () => {
-	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, `availability`, `keyFactors`, `steadyTraffic`, and `contentMarkers`', () => {
+	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, `availability`, `bandReferenceDays`, `keyFactors`, `steadyTraffic`, and `contentMarkers`', () => {
 		expect( decodeBenchmarkingResponse( benchmarkingData ) ).toEqual( {
 			visits: { current: 412, previous: 388 },
 			dailyTraffic: [
@@ -66,6 +66,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 				performanceInsightAvailable: false,
 				lastYearAvailable: false,
 			},
+			// The four days have no band.
+			bandReferenceDays: null,
 			keyFactors: [
 				{
 					kind: 'REFERRING_SITE',
@@ -163,6 +165,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ false, false, null, false, null, false, false, false ],
 				[],
 				false,
+				null,
 			] );
 			const dates =
 				decoded?.dailyTraffic.map( ( { date } ) => date ) ?? [];
@@ -208,6 +211,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					],
 					[],
 					false,
+					null,
 				] )?.availability;
 
 				expect( availability?.bandAvailableFrom ).toBe( date );
@@ -229,6 +233,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[ [ 10, [ 0, 1 ] ] ],
 					false,
+					null,
 				] )?.contentMarkers[ 0 ].date
 			).toBe( '2026-04-11' );
 		} );
@@ -250,6 +255,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
+			null,
 		] );
 
 		expect( decoded?.keyFactors[ 0 ].label ).toBeNull();
@@ -273,18 +279,22 @@ describe( 'decodeBenchmarkingResponse', () => {
 			( benchmarkingData as unknown[] ).slice( 0, 10 ),
 		],
 		[
-			'a response of twelve members',
+			'a response of eleven members, without the days of traffic the band is fitted on',
+			( benchmarkingData as unknown[] ).slice( 0, 11 ),
+		],
+		[
+			'a response of thirteen members',
 			[ ...( benchmarkingData as unknown[] ), [] ],
 		],
 		[
-			'a response of fourteen members',
+			'a response of fifteen members',
 			[ ...( benchmarkingData as unknown[] ), 'en_US', 'payload', null ],
 		],
 	] )( 'decodes %s to null', ( _label, encoded ) => {
 		expect( decodeBenchmarkingResponse( encoded ) ).toBeNull();
 	} );
 
-	it( 'should decode the locale and the request of the generated insight from a response of thirteen members', () => {
+	it( 'should decode the locale and the request of the generated insight from a response of fourteen members', () => {
 		const decoded = decodeBenchmarkingResponse( [
 			...( benchmarkingData as unknown[] ),
 			'de_DE_formal',
@@ -298,7 +308,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 		} );
 	} );
 
-	it( 'should leave out the locale and the request of the generated insight from a response of eleven members', () => {
+	it( 'should leave out the locale and the request of the generated insight from a response of twelve members', () => {
 		const decoded = decodeBenchmarkingResponse( benchmarkingData );
 
 		expect( decoded ).not.toHaveProperty( 'insightLocale' );
@@ -341,6 +351,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
+			null,
 		];
 
 		expect( () => decodeBenchmarkingResponse( encoded ) ).not.toThrow();
@@ -348,11 +359,41 @@ describe( 'decodeBenchmarkingResponse', () => {
 			visits: { current: 0, previous: 0 },
 			dailyTraffic: [],
 			availability: availabilityWithoutTraffic,
+			bandReferenceDays: null,
 			keyFactors: [],
 			steadyTraffic: false,
 			contentMarkers: [],
 		} );
 	} );
+
+	it( 'should decode the number of days of traffic the band is fitted on', () => {
+		const encoded = [ ...( benchmarkingData as unknown[] ) ];
+		encoded[ 11 ] = 364;
+
+		expect( decodeBenchmarkingResponse( encoded ) ).toEqual( {
+			...decodeBenchmarkingResponse( benchmarkingData ),
+			bandReferenceDays: 364,
+		} );
+	} );
+
+	it.each( [
+		[ 'null', null ],
+		[ '0', 0 ],
+		[ 'a negative number', -7 ],
+		[ 'not a whole number', 83.5 ],
+		[ 'a string', '83' ],
+	] )(
+		'should decode the number of days of traffic the band is fitted on to null, and keep the rest of the response, when it is %s',
+		( _label, bandReferenceDays ) => {
+			const encoded = [ ...( benchmarkingData as unknown[] ) ];
+			encoded[ 11 ] = bandReferenceDays;
+
+			expect( decodeBenchmarkingResponse( encoded ) ).toEqual( {
+				...decodeBenchmarkingResponse( benchmarkingData ),
+				bandReferenceDays: null,
+			} );
+		}
+	);
 
 	it( 'should decode each flag of the availability from its own position', () => {
 		const encoded = [ ...( benchmarkingData as unknown[] ) ];
@@ -420,6 +461,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					availability,
 					[],
 					false,
+					null,
 				] )
 			).toBeNull();
 		}
@@ -445,6 +487,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				] )
 			).toBeNull();
 		}
@@ -475,6 +518,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ false, false, 4, true, -19, true, false, false ],
 				[],
 				false,
+				null,
 			];
 
 			// The response as written decodes, so only the hostile member
@@ -512,6 +556,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				] )
 			).toBeNull();
 		}
@@ -536,6 +581,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				] )
 			).toBeNull();
 		}
@@ -560,6 +606,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				] )
 			).toBeNull();
 		}
@@ -588,6 +635,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
+					null,
 				] )
 			).toBeNull();
 		}
@@ -656,6 +704,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ false, false, null, false, null, false, false, false ],
 				[],
 				false,
+				null,
 			] );
 
 			expect( decoded?.keyFactors ).toEqual( [
@@ -684,6 +733,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
+			null,
 		] );
 
 		expect( decoded?.keyFactors[ 0 ].attributes ).toEqual( [
@@ -710,6 +760,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
+			null,
 		] );
 
 		expect( decoded?.keyFactors ).toEqual( [
@@ -749,6 +800,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
+			null,
 		] );
 
 		expect( decoded?.keyFactors.map( ( { kind } ) => kind ) ).toEqual( [
@@ -796,6 +848,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
+			null,
 		] );
 
 		// Both cards with an unknown kind are left out with their own
@@ -849,6 +902,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ false, false, null, false, null, false, false, false ],
 				contentMarkers,
 				false,
+				null,
 			] )?.contentMarkers;
 		}
 
@@ -952,6 +1006,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ false, false, null, false, null, false, false, false ],
 					[ [ 0, [ 0, 1 ] ] ],
 					false,
+					null,
 				] )?.contentMarkers
 			).toEqual( [] );
 		} );

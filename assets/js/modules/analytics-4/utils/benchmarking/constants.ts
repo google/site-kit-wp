@@ -40,14 +40,15 @@ export const MEMBER_DAILY_EXPECTED_RANGES = 7;
 export const MEMBER_AVAILABILITY = 8;
 export const MEMBER_CONTENT_MARKERS = 9;
 export const MEMBER_STEADY_TRAFFIC = 10;
+export const MEMBER_BAND_REFERENCE_DAYS = 11;
 
 /**
  * The members only a response of the `trafficInsights` feature carries: the
  * locale the generated insight is written in, and the signed request it is
  * written from, which the browser sends back unread.
  */
-export const MEMBER_INSIGHT_LOCALE = 11;
-export const MEMBER_INSIGHT_PAYLOAD = 12;
+export const MEMBER_INSIGHT_LOCALE = 12;
+export const MEMBER_INSIGHT_PAYLOAD = 13;
 
 /**
  * The fields of the availability member, by position. Each `*_FROM` field is a
