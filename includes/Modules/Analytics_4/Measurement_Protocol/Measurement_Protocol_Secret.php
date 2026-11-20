@@ -19,7 +19,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use WP_Error;
 
 /**
- * Class that reads, stores, reuses and clears the Measurement Protocol secret of the connected web data stream.
+ * Class that finds or creates the Measurement Protocol secret of the connected web data stream, and stores, reads and clears it.
  *
  * @since n.e.x.t
  * @access private
@@ -225,11 +225,12 @@ class Measurement_Protocol_Secret {
 			$this->store( $created_secret );
 		}
 
-		// `store()` skips a secret whose property or web data stream is no longer the connected one.
+		// `store()` skips a secret that has no value or whose property or web data stream is no longer the connected one,
+		// and fails when the secret can't be saved.
 		if ( empty( $this->get_api_secret() ) ) {
 			return new WP_Error(
 				'measurement_protocol_secret_not_stored',
-				__( 'Site Kit could not save the Measurement Protocol secret for the connected Google Analytics web data stream. Please try again.', 'google-site-kit' ),
+				__( 'Site Kit couldn’t save the Measurement Protocol secret for the connected Google Analytics web data stream. Reload the page and try again.', 'google-site-kit' ),
 				array( 'status' => 409 )
 			);
 		}
@@ -242,8 +243,9 @@ class Measurement_Protocol_Secret {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Google_Service_Exception $exception Exception for the error response, whose message is the response body.
-	 * @return WP_Error The Editor access error for a 403 `PERMISSION_DENIED` response, otherwise an error with the `error.message` of the response, or with the whole response when it is not JSON.
+	 * @param Google_Service_Exception $exception Exception thrown for the error response. Its message is the response body.
+	 * @return WP_Error The Editor access error for a 403 `PERMISSION_DENIED` response. Otherwise an error with the `error.message` of the response,
+	 *                  or with the whole response body when it has no `error.message`.
 	 *                  Its data has the HTTP status as `status` and the `error.status` of the response as `reason`.
 	 */
 	public static function exception_to_error( Google_Service_Exception $exception ) {
