@@ -162,6 +162,72 @@ describe( 'WooCommerce event provider', () => {
 		}
 	);
 
+	it( 'should send the `purchase` shipping and tax in the store currency', async () => {
+		const gtagEvent = await loadEventScript( {
+			currency: 'USD',
+			currencyMinorUnit: 2,
+			eventsToTrack: [ 'add_to_cart', 'purchase' ],
+			purchase: {
+				id: 99,
+				affiliation: 'Test Store',
+				totals: {
+					currency_code: 'USD',
+					tax_total: 450,
+					shipping_total: 500,
+					total_price: 5950,
+				},
+				items: [ createProduct( 5000 ) ],
+			},
+		} );
+
+		expect( gtagEvent ).toHaveBeenCalledWith(
+			'purchase',
+			expect.objectContaining( { value: 59.5, shipping: 5, tax: 4.5 } )
+		);
+		expect( gtagEvent ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'should send the `purchase` coupon and the item discount when the order used a coupon', async () => {
+		const gtagEvent = await loadEventScript( {
+			currency: 'USD',
+			currencyMinorUnit: 2,
+			eventsToTrack: [ 'add_to_cart', 'purchase' ],
+			purchase: {
+				id: 99,
+				affiliation: 'Test Store',
+				totals: {
+					currency_code: 'USD',
+					tax_total: 0,
+					shipping_total: 0,
+					total_price: 4000,
+				},
+				coupon: 'summer20,vip',
+				items: [ { ...createProduct( 4000 ), discount: 1000 } ],
+			},
+		} );
+
+		expect( gtagEvent ).toHaveBeenCalledWith( 'purchase', {
+			value: 40,
+			currency: 'USD',
+			transaction_id: 99,
+			shipping: 0,
+			tax: 0,
+			coupon: 'summer20,vip',
+			items: [
+				{
+					item_id: 42,
+					item_name: 'Site Kit T-Shirt',
+					item_category: 'Clothing',
+					price: 40,
+					discount: 10,
+					quantity: 1,
+				},
+			],
+			googlesitekit_event_provider: 'woocommerce',
+		} );
+		expect( gtagEvent ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'should fall back to two decimal places when the page data has no `currencyMinorUnit`', async () => {
 		const gtagEvent = await loadEventScript( {
 			currency: 'USD',

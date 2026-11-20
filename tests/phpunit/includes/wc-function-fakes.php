@@ -96,6 +96,24 @@ if ( ! function_exists( 'is_wc_endpoint_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wc_get_product_terms' ) ) {
+	/**
+	 * Fakes `wc_get_product_terms()` for a test that runs WooCommerce-aware code
+	 * with the WooCommerce plugin inactive.
+	 *
+	 * WooCommerce registers no product categories in this test environment, so this fake ignores the
+	 * product ID, taxonomy and query arguments the real function takes, and finds
+	 * no terms.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Always an empty array.
+	 */
+	function wc_get_product_terms() {
+		return array();
+	}
+}
+
 if ( ! function_exists( 'wc_get_page_id' ) ) {
 	/**
 	 * Fakes `wc_get_page_id()` for a test that runs WooCommerce-aware code
