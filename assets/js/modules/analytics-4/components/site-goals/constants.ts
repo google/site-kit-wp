@@ -127,6 +127,28 @@ export const SITE_GOALS_PANEL_FEEDBACK_GROUPS_BY_GOAL_TYPE = {
 	[ GOAL_TYPES.LEAD ]: SITE_GOALS_FEEDBACK_GROUP_PANEL_LEAD_GENERATION,
 };
 
-// Placeholder for the downvote "Tell us more" Google Form URL. Replace it once
-// the real URL is ready. Tracked in #13447. (Currently unused.)
-export const SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL = '#';
+// The reasons a user can give after voting on a Site Goals thumbs control,
+// sent as the `vote_reason` feedback value.
+export const SITE_GOALS_WIDGET_UPVOTE_REASONS = {
+	SHOWS_WHAT_DRIVES_RESULTS: 'shows_what_drives_results',
+	CLEAR_CHANNEL_VISIBILITY: 'clear_channel_visibility',
+	EASY_TO_UNDERSTAND: 'easy_to_understand',
+} as const;
+
+export const SITE_GOALS_WIDGET_DOWNVOTE_REASONS = {
+	MISSING_METRICS: 'missing_metrics',
+	NUMBERS_WRONG: 'numbers_wrong',
+	METRIC_UNCLEAR: 'metric_unclear',
+} as const;
+
+export const SITE_GOALS_PANEL_UPVOTE_REASONS = {
+	MATTERS_MOST: 'matters_most',
+	ONLY_SOME_MATTER: 'only_some_matter',
+	OTHER_ACTIONS_MATTER: 'other_actions_matter',
+} as const;
+
+export const SITE_GOALS_PANEL_DOWNVOTE_REASONS = {
+	MISSING_OR_WRONG: 'missing_or_wrong',
+	CALL_OR_EMAIL_INSTEAD: 'call_or_email_instead',
+	SOMETHING_ELSE_MATTERS_MORE: 'something_else_matters_more',
+} as const;
