@@ -41,87 +41,11 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { KEY_FACTORS_MAX_CARDS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { getKeyFactorsWaitingText } from '@/js/modules/analytics-4/components/traffic-overview/utils/getKeyFactorsWaitingText';
+import { getKeyFactorsNoticeText } from '@/js/modules/analytics-4/components/traffic-overview/utils/getKeyFactorsNoticeText';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import KeyFactorCard from './KeyFactorCard';
 import KeyFactorCardPlaceholder from './KeyFactorCardPlaceholder';
 import KeyFactorsInsightNotice from './KeyFactorsInsightNotice';
-
-interface KeyFactorsNoticeOptions {
-	/** Whether the selected date range is too short for the key factors. */
-	rangeTooShort: boolean;
-	/** Whether the site's recorded traffic doesn't cover the period before the selected date range yet. */
-	noPreviousPeriod: boolean;
-	/** The last day of the first date range of this length with the key factors, as `YYYY-MM-DD`, or null. */
-	keyFactorsAvailableFrom: string | null;
-	/** Today, as `YYYY-MM-DD`. */
-	referenceDate: string;
-	/** Whether no channel changed notably: traffic was steady, or there are neither cards nor a summary. */
-	noChange: boolean;
-	/** The number of days in the selected date range. */
-	daysInSelectedRange: number;
-}
-
-/**
- * Gets the text of the notice under the section's heading, if it has one.
- *
- * A range too short for the key factors has none, and no summary either, so
- * the notice says what range they need, in place of the cards. Until the
- * site's recorded traffic covers the period before the range, there are none
- * either, so the notice says when they will show, as the scenarios doc agreed
- * (D13). In both cases, "No channel changed notably…" would describe a
- * comparison that wasn't made. Otherwise, the notice says that no channel
- * changed notably: above the cards on a steady period, or in their place when
- * there are no cards and no summary.
- *
- * @since n.e.x.t
- *
- * @param {Object}      options                         The state of the section.
- * @param {boolean}     options.rangeTooShort           Whether the selected date range is too short for the key factors.
- * @param {boolean}     options.noPreviousPeriod        Whether the site's recorded traffic doesn't cover the period before the selected date range yet.
- * @param {string|null} options.keyFactorsAvailableFrom The last day of the first date range of this length with the key factors, as `YYYY-MM-DD`, or null.
- * @param {string}      options.referenceDate           Today, as `YYYY-MM-DD`.
- * @param {boolean}     options.noChange                Whether no channel changed notably: traffic was steady, or there are neither cards nor a summary.
- * @param {number}      options.daysInSelectedRange     The number of days in the selected date range.
- * @return {string|null} The notice's text, or null when the section has no notice.
- */
-function getNoticeText( {
-	rangeTooShort,
-	noPreviousPeriod,
-	keyFactorsAvailableFrom,
-	referenceDate,
-	noChange,
-	daysInSelectedRange,
-}: KeyFactorsNoticeOptions ): string | null {
-	if ( rangeTooShort ) {
-		return __(
-			'Select a date range of at least 7 days to see which channels changed the most',
-			'google-site-kit'
-		);
-	}
-
-	if ( noPreviousPeriod ) {
-		return getKeyFactorsWaitingText(
-			keyFactorsAvailableFrom,
-			referenceDate
-		);
-	}
-
-	if ( noChange ) {
-		return sprintf(
-			/* translators: %d: the number of days in the selected date range, such as "28" */
-			_n(
-				'No channel changed notably compared with the previous %d day',
-				'No channel changed notably compared with the previous %d days',
-				daysInSelectedRange,
-				'google-site-kit'
-			),
-			daysInSelectedRange
-		);
-	}
-
-	return null;
-}
 
 export interface KeyFactorsProps {
 	/** The key factor cards, in the order to show them. None until they arrive. */
@@ -210,7 +134,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 	const showInsight = insightLoading || !! insight;
 	// The notice waits for the key factors, like the cards.
 	const noticeText = loaded
-		? getNoticeText( {
+		? getKeyFactorsNoticeText( {
 				rangeTooShort,
 				noPreviousPeriod,
 				keyFactorsAvailableFrom,

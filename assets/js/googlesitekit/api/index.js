@@ -111,6 +111,7 @@ export function dispatchAPIError( error ) {
  *
  * @since 1.5.0
  * @since 1.187.0 Normalizes falsy errors returned by the API fetch implementation.
+ * @since n.e.x.t Added the `shared` option.
  * @private
  *
  * @param {string}  type                The data to access. One of 'core' or 'modules'.
@@ -122,6 +123,7 @@ export function dispatchAPIError( error ) {
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {Object}  options.queryParams Query params to send with the request.
  * @param {boolean} options.useCache    Enable or disable caching for this request only. Caching is only used for `GET` requests.
+ * @param {boolean} options.shared      Whether every tab of the login session shares the cached response, rather than only the current tab. Default is `false`.
  * @param {Object}  options.signal      Abort the fetch request.
  * @return {Promise} Response of HTTP request.
  */
@@ -135,6 +137,7 @@ export async function siteKitRequest(
 		method = 'GET',
 		queryParams,
 		useCache = undefined,
+		shared = false,
 		signal,
 	} = {}
 ) {
@@ -151,7 +154,9 @@ export async function siteKitRequest(
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
 
 	if ( useCacheForRequest ) {
-		const { cacheHit, value, isError } = await getItem( cacheKey );
+		const { cacheHit, value, isError } = await getItem( cacheKey, {
+			shared,
+		} );
 
 		if ( isError ) {
 			dispatchAPIError( value );
@@ -176,7 +181,7 @@ export async function siteKitRequest(
 		} );
 
 		if ( useCacheForRequest ) {
-			await setItem( cacheKey, response, { ttl: cacheTTL } );
+			await setItem( cacheKey, response, { ttl: cacheTTL, shared } );
 		}
 
 		return response;
@@ -199,6 +204,7 @@ export async function siteKitRequest(
 			await setItem( cacheKey, error, {
 				ttl: error.data.cacheTTL,
 				isError: true,
+				shared,
 			} );
 		}
 
@@ -227,6 +233,7 @@ export async function siteKitRequest(
  * are required to use this method.
  *
  * @since 1.5.0
+ * @since n.e.x.t Added the `shared` option.
  *
  * @param {string}  type               The data to access. One of 'core' or 'modules'.
  * @param {string}  identifier         The data identifier, eg. a module slug like `search-console`.
@@ -235,6 +242,7 @@ export async function siteKitRequest(
  * @param {Object}  options            Extra options for this request.
  * @param {number}  [options.cacheTTL] Optional. The oldest cache data to use, in seconds.
  * @param {boolean} [options.useCache] Optional. Enable or disable caching for this request only.
+ * @param {boolean} [options.shared]   Optional. Whether every tab of the login session shares the cached response, rather than only the current tab. Default is `false`.
  * @param {Object}  [options.signal]   Optional. Abort the fetch request.
  * @return {Promise} A promise for the `fetch` request.
  */
@@ -243,12 +251,18 @@ export function get(
 	identifier,
 	datapoint,
 	data,
-	{ cacheTTL = HOUR_IN_SECONDS, useCache = undefined, signal } = {}
+	{
+		cacheTTL = HOUR_IN_SECONDS,
+		useCache = undefined,
+		shared = false,
+		signal,
+	} = {}
 ) {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,
 		queryParams: data,
 		useCache,
+		shared,
 		signal,
 	} );
 }
@@ -335,8 +349,10 @@ export function usingCache() {
  *
  * Calling `invalidateCache()` will invalidate _all_ cached data, while calling
  * `invalidateCache( 'modules', 'adsense' )` will invalidate all AdSense data only.
+ * The items that every tab shares are invalidated too.
  *
  * @since 1.5.0
+ * @since n.e.x.t Resolves once every item is deleted, and deletes the shared items too.
  *
  * @param {string} type       The data type to operate on. One of 'core' or 'modules'.
  * @param {string} identifier The data identifier, eg. a module slug like `'adsense'`.
@@ -347,15 +363,17 @@ export async function invalidateCache( type, identifier, datapoint ) {
 
 	const allKeys = await getKeys();
 
-	allKeys.forEach( ( key ) => {
-		if (
-			new RegExp(
-				`^${ STORAGE_KEY_PREFIX_ROOT }([^_]+_){2}${ groupPrefix }`
-			).test( key )
-		) {
-			deleteItem( key );
-		}
-	} );
+	// The returned promise resolves once every item is deleted, so a request
+	// right after it never reads one of them.
+	await Promise.all(
+		allKeys
+			.filter( ( key ) =>
+				new RegExp(
+					`^${ STORAGE_KEY_PREFIX_ROOT }([^_]+_){2}${ groupPrefix }`
+				).test( key )
+			)
+			.map( ( key ) => deleteItem( key ) )
+	);
 }
 
 const API = {

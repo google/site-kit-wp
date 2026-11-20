@@ -170,6 +170,17 @@ export interface AIInsightRequest< Insight > {
 	>;
 	/** The key of the entry the store keeps for the insight in the storage of the API cache. */
 	cacheKey: string;
+	/**
+	 * Whether every tab of the login session shares the entry, rather than
+	 * only the current tab, as `getSharedStorage()` of the API cache
+	 * explains. Default is `false`.
+	 */
+	shared?: boolean;
+	/**
+	 * Gets how long the entry keeps a failure, in seconds, or `undefined` for
+	 * a failure it doesn't keep. Default is `getFailureLifetime()`.
+	 */
+	getFailureLifetime?: ( error: ErrorObject ) => number | undefined;
 	/** The code of the error for an answer the store can't read, such as `invalid_conversion_insight_response`. */
 	invalidResponseErrorCode: string;
 	/** The code of the error for a passed deadline, such as `conversion_insight_timeout`. */
@@ -336,7 +347,8 @@ function isInsightOrNull( value: unknown ): boolean {
 
 /**
  * Gets how long the store keeps a failure, so the widget doesn't ask again on
- * every load for an insight that the service would refuse.
+ * every load for an insight that the service would refuse. An insight whose
+ * request says otherwise passes its own `getFailureLifetime`.
  *
  * A refusal for the rate limit (429) is kept for at least an hour, in which
  * the user's own allowance accepts a request again, and for as long as the
@@ -349,7 +361,7 @@ function isInsightOrNull( value: unknown ): boolean {
  * @param {Object} error The error of the request.
  * @return {(number|undefined)} The time to keep the failure, in seconds, or `undefined` when it isn't kept.
  */
-function getFailureLifetime( error: ErrorObject ): number | undefined {
+export function getFailureLifetime( error: ErrorObject ): number | undefined {
 	const status = getErrorStatus( error );
 
 	if ( status === 403 ) {
@@ -376,18 +388,23 @@ function getFailureLifetime( error: ErrorObject ): number | undefined {
  *
  * @since n.e.x.t
  *
- * @param {string} key The key of the entry.
+ * @param {Object}  request          The requests and the cache entry of the insight.
+ * @param {string}  request.cacheKey The key of the entry.
+ * @param {boolean} [request.shared] Optional. Whether every tab of the login session shares the entry.
  * @return {Promise<(Object|undefined)>} The entry, or `undefined` when there is none, it has expired, it can't be read, or the API cache is off.
  */
-async function readInsightCacheEntry< Insight >(
-	key: string
-): Promise< InsightCacheEntry< Insight > | undefined > {
+async function readInsightCacheEntry< Insight >( {
+	cacheKey,
+	shared = false,
+}: Pick< AIInsightRequest< Insight >, 'cacheKey' | 'shared' > ): Promise<
+	InsightCacheEntry< Insight > | undefined
+> {
 	if ( ! usingCache() ) {
 		return undefined;
 	}
 
 	try {
-		const { cacheHit, value } = await getItem( key );
+		const { cacheHit, value } = await getItem( cacheKey, { shared } );
 
 		return cacheHit && isPlainObject( value )
 			? ( value as InsightCacheEntry< Insight > )
@@ -404,18 +421,23 @@ async function readInsightCacheEntry< Insight >(
  *
  * @since n.e.x.t
  *
- * @param {string} key   The key of the entry.
- * @param {Object} entry The entry.
- * @param {number} ttl   The time to keep the entry, in seconds.
+ * @param {Object}  request          The requests and the cache entry of the insight.
+ * @param {string}  request.cacheKey The key of the entry.
+ * @param {boolean} [request.shared] Optional. Whether every tab of the login session shares the entry.
+ * @param {Object}  entry            The entry.
+ * @param {number}  ttl              The time to keep the entry, in seconds.
  * @return {Promise} A promise that resolves once the entry is written.
  */
 async function writeInsightCacheEntry< Insight >(
-	key: string,
+	{
+		cacheKey,
+		shared = false,
+	}: Pick< AIInsightRequest< Insight >, 'cacheKey' | 'shared' >,
 	entry: InsightCacheEntry< Insight >,
 	ttl: number
 ): Promise< void > {
 	if ( usingCache() ) {
-		await setItem( key, entry, { ttl } );
+		await setItem( cacheKey, entry, { ttl, shared } );
 	}
 }
 
@@ -546,11 +568,7 @@ async function submitInsight< Insight >(
 
 	// The operation is kept while it runs, which is up to an hour in the
 	// service, so a reload reads it rather than asking for the insight again.
-	await writeInsightCacheEntry(
-		request.cacheKey,
-		operation,
-		HOUR_IN_SECONDS
-	);
+	await writeInsightCacheEntry( request, operation, HOUR_IN_SECONDS );
 
 	return {
 		operation,
@@ -723,9 +741,9 @@ async function waitForInsight< Insight >(
  * Gets an insight from its cache entry, or from the service, and keeps the
  * outcome in the cache entry.
  *
- * A failure is kept for as long as `getFailureLifetime()` says, and the
- * operation of a wait that gave up stays in the entry, so the next load
- * reads it.
+ * A failure is kept for as long as the request's `getFailureLifetime`, or
+ * `getFailureLifetime()` without one, says, and the operation of a wait that
+ * gave up stays in the entry, so the next load reads it.
  *
  * @since n.e.x.t
  *
@@ -736,7 +754,7 @@ export async function resolveAIInsight< Insight >(
 	request: AIInsightRequest< Insight >
 ): Promise< AIInsightOutcome< Insight > > {
 	const { outcome: cachedOutcome, operation } = readCacheEntryStep(
-		await readInsightCacheEntry< Insight >( request.cacheKey )
+		await readInsightCacheEntry< Insight >( request )
 	);
 
 	if ( cachedOutcome ) {
@@ -749,16 +767,14 @@ export async function resolveAIInsight< Insight >(
 		// The service keeps an insight for a day. The insight keeps
 		// describing the period when the figures change later in the day,
 		// rather than costing a generation each time they do.
-		await writeInsightCacheEntry(
-			request.cacheKey,
-			outcome,
-			DAY_IN_SECONDS
-		);
+		await writeInsightCacheEntry( request, outcome, DAY_IN_SECONDS );
 	} else {
-		const lifetime = getFailureLifetime( outcome.error );
+		const lifetime = ( request.getFailureLifetime ?? getFailureLifetime )(
+			outcome.error
+		);
 
 		if ( lifetime ) {
-			await writeInsightCacheEntry( request.cacheKey, outcome, lifetime );
+			await writeInsightCacheEntry( request, outcome, lifetime );
 		}
 	}
 

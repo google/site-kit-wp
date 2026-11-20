@@ -41,13 +41,14 @@ import {
 	TYPE_TITLE,
 } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { formatVisitsShare } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatVisitsShare';
 import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils/getPageURL';
 import {
 	BenchmarkingKeyFactorAttribute,
 	BenchmarkingKeyFactorKind,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
-import { numFmt } from '@/js/util';
 import { KEY_FACTOR_ATTRIBUTE_TITLES } from './attributeTitles';
+import { getKeyFactorName } from './getKeyFactorName';
 import { getLandingPageLabel } from './getLandingPageLabel';
 import KeyFactorAttribute from './KeyFactorAttribute';
 import KeyFactorChangeBadge from './KeyFactorChangeBadge';
@@ -157,16 +158,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 		[ namedAttributes, referenceSiteURL ]
 	);
 
-	// A landing page's card names the site's homepage "Homepage", as its
-	// landing page attributes do. The group of the paid channels has a name of
-	// the plugin's, rather than one Analytics reports, so it is translated.
-	let name = label;
-
-	if ( kind === 'CONTENT' ) {
-		name = getLandingPageLabel( label, referenceSiteURL );
-	} else if ( kind === 'CHANNEL_GROUP' ) {
-		name = __( 'Paid traffic', 'google-site-kit' );
-	}
+	const name = getKeyFactorName( kind, label, referenceSiteURL );
 
 	return (
 		<section
@@ -192,14 +184,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 					size={ SIZE_SMALL }
 					className="googlesitekit-traffic-overview__key-factor-visits-share"
 				>
-					{ sprintf(
-						/* translators: %s: the share of the site's visits that a channel brought, such as "45.2%" */
-						__( '%s of all visits', 'google-site-kit' ),
-						numFmt( visitsSharePct / 100, {
-							style: 'percent',
-							maximumFractionDigits: 1,
-						} )
-					) }
+					{ formatVisitsShare( visitsSharePct ) }
 				</Typography>
 			) }
 			{ namedAttributes.length > 0 && (

@@ -26,6 +26,7 @@ import {
 	deleteItem,
 	getItem,
 	getKeys,
+	getSharedStorage,
 	getStorage,
 	resetDefaultStorageOrder,
 	setItem,
@@ -419,6 +420,138 @@ describe( 'googlesitekit.api.cache', () => {
 		}
 	);
 
+	describe( 'Shared items', () => {
+		// A key that `createCacheKey()` builds has `::` in it.
+		const sharedKey = 'modules::analytics-4::benchmarking-data::abc';
+		const otherSharedKey = 'modules::analytics-4::benchmarking-data::def';
+		// Site Kit keeps items of its own in `localStorage` too.
+		const notificationKey = 'googlesitekit_notification_seen';
+
+		beforeAll( () => {
+			// In a browser, the rest of the cache is in `sessionStorage`.
+			setStorageOrder( [ 'sessionStorage', 'localStorage' ] );
+		} );
+
+		afterAll( () => {
+			resetDefaultStorageOrder();
+		} );
+
+		it( 'should keep the shared items in localStorage, apart from the items of one tab', async () => {
+			expect( await getStorage() ).toBe( sessionStorage );
+			expect( await getSharedStorage() ).toBe( localStorage );
+
+			await setItem( sharedKey, 'shared data', { shared: true } );
+			await setItem( otherSharedKey, 'tab data' );
+
+			// An array path, since the key has dots in it.
+			expect( localStorage.__STORE__ ).toHaveProperty( [
+				`${ STORAGE_KEY_PREFIX }${ sharedKey }`,
+			] );
+			expect( sessionStorage.__STORE__ ).not.toHaveProperty( [
+				`${ STORAGE_KEY_PREFIX }${ sharedKey }`,
+			] );
+			expect( await getItem( sharedKey, { shared: true } ) ).toEqual( {
+				cacheHit: true,
+				value: 'shared data',
+				isError: false,
+			} );
+			expect( await getItem( sharedKey ) ).toMatchObject( {
+				cacheHit: false,
+			} );
+			expect(
+				await getItem( otherSharedKey, { shared: true } )
+			).toMatchObject( { cacheHit: false } );
+		} );
+
+		it( 'should read a shared item in another tab, whose own items are gone', async () => {
+			await setItem( sharedKey, 'shared data', { shared: true } );
+
+			sessionStorage.clear();
+
+			expect(
+				await getItem( sharedKey, { shared: true } )
+			).toMatchObject( { cacheHit: true, value: 'shared data' } );
+		} );
+
+		it( 'should not read a shared item after its time has passed', async () => {
+			const now = Math.round( Date.now() / 1000 );
+
+			await setItem( sharedKey, 'shared data', {
+				shared: true,
+				ttl: 60,
+				timestamp: now - 61,
+			} );
+
+			expect(
+				await getItem( sharedKey, { shared: true } )
+			).toMatchObject( { cacheHit: false } );
+		} );
+
+		it( 'should delete a shared item with deleteItem()', async () => {
+			await setItem( sharedKey, 'shared data', { shared: true } );
+
+			expect( await deleteItem( sharedKey ) ).toBe( true );
+			expect(
+				await getItem( sharedKey, { shared: true } )
+			).toMatchObject( { cacheHit: false } );
+		} );
+
+		it( 'should return the keys of the shared items, and no other key in localStorage', async () => {
+			localStorage.setItem( notificationKey, '{}' );
+			await setItem( sharedKey, 'shared data', { shared: true } );
+			await setItem( otherSharedKey, 'tab data' );
+
+			expect( await getKeys() ).toEqual( [
+				`${ STORAGE_KEY_PREFIX }${ otherSharedKey }`,
+				`${ STORAGE_KEY_PREFIX }${ sharedKey }`,
+			] );
+		} );
+
+		it( 'should clear the shared items with clearCache(), and keep the other keys in localStorage', async () => {
+			localStorage.setItem( notificationKey, '{}' );
+			await setItem( sharedKey, 'shared data', { shared: true } );
+			await setItem( otherSharedKey, 'tab data' );
+
+			await clearCache();
+
+			expect( await getKeys() ).toEqual( [] );
+			expect( Object.keys( localStorage.__STORE__ ) ).toEqual( [
+				notificationKey,
+			] );
+		} );
+
+		it( 'should delete the expired shared items, and any it cannot read, when it writes a shared item', async () => {
+			const now = Math.round( Date.now() / 1000 );
+			// An item of an earlier version of Site Kit.
+			const oldKey = `${ STORAGE_KEY_PREFIX_ROOT }1.0.0_xyz123_${ otherSharedKey }`;
+
+			localStorage.setItem( notificationKey, '{}' );
+			await setItem( sharedKey, 'expired', {
+				shared: true,
+				ttl: 60,
+				timestamp: now - 61,
+			} );
+			await setItem( otherSharedKey, 'valid', {
+				shared: true,
+				ttl: 3600,
+				timestamp: now - 61,
+			} );
+			localStorage.setItem( oldKey, 'not JSON' );
+
+			await setItem( 'modules::search-console::report::abc', 'new', {
+				shared: true,
+			} );
+
+			expect( Object.keys( localStorage.__STORE__ ).sort() ).toEqual(
+				[
+					notificationKey,
+					`${ STORAGE_KEY_PREFIX }${ otherSharedKey }`,
+					`${ STORAGE_KEY_PREFIX }modules::search-console::report::abc`,
+				].sort()
+			);
+		} );
+	} );
+
 	describe( 'No-op caching (Null backend)', () => {
 		beforeAll( () => {
 			// Set the backend storage mechanism to nothing; this will cause all
@@ -450,6 +583,15 @@ describe( 'googlesitekit.api.cache', () => {
 		describe( 'set', () => {
 			it( 'should not save when no storage is available', async () => {
 				const didSave = await setItem( 'key1', 'data' );
+				expect( didSave ).toEqual( false );
+				expect( localStorage.setItem ).not.toHaveBeenCalled();
+				expect( sessionStorage.setItem ).not.toHaveBeenCalled();
+			} );
+
+			it( 'should not save a shared item when no storage is available', async () => {
+				const didSave = await setItem( 'modules::a::b', 'data', {
+					shared: true,
+				} );
 				expect( didSave ).toEqual( false );
 				expect( localStorage.setItem ).not.toHaveBeenCalled();
 				expect( sessionStorage.setItem ).not.toHaveBeenCalled();

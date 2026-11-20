@@ -26,7 +26,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { createCacheKey } from '@/js/googlesitekit/api';
-import { getItem, setItem } from '@/js/googlesitekit/api/cache';
+import {
+	getItem,
+	resetDefaultStorageOrder,
+	setItem,
+	setStorageOrder,
+} from '@/js/googlesitekit/api/cache';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { BenchmarkingInsight } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '@/js/util';
@@ -43,6 +49,7 @@ import {
 	provideBenchmarkingData,
 	provideBenchmarkingInsight,
 } from './__factories__/benchmarking';
+import { getBenchmarkingDataCacheTTL } from './benchmarking';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	AI_INSIGHT_DEADLINE,
@@ -51,12 +58,54 @@ import {
 	AI_INSIGHT_RETRY_INTERVAL,
 } from './utils/ai-insight';
 
+/**
+ * Reads an item that every tab of the login session shares, as the store keeps
+ * the benchmarking response and the insight.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} key The key of the item.
+ * @return {Promise<Object>} The read, with `cacheHit` and `value`.
+ */
+function getSharedItem( key: string ) {
+	return getItem( key, { shared: true } );
+}
+
+/**
+ * Writes an item that every tab of the login session shares.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} key         The key of the item.
+ * @param {*}      value       The value.
+ * @param {Object} options     The options of the item.
+ * @param {number} options.ttl The time to keep the item, in seconds.
+ * @return {Promise<boolean>} Whether the item was written.
+ */
+function setSharedItem(
+	key: string,
+	value: unknown,
+	{ ttl }: { ttl: number }
+) {
+	return setItem( key, value, { ttl, shared: true } );
+}
+
 describe( 'modules/analytics-4 benchmarking', () => {
 	const benchmarkingDataEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
 	);
 
 	let registry: WPDataRegistry;
+
+	beforeAll( () => {
+		// The cache keeps the items of one tab in `sessionStorage`, and the
+		// items every tab shares in `localStorage`, as in a browser.
+		setStorageOrder( [ 'sessionStorage', 'localStorage' ] );
+	} );
+
+	afterAll( () => {
+		resetDefaultStorageOrder();
+	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -67,6 +116,9 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 		beforeEach( () => {
 			dateNowSpy = jest.spyOn( Date, 'now' );
+			// The day after the date ranges of the tests, whose figures GA4
+			// still updates.
+			registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-16' );
 		} );
 
 		afterEach( () => {
@@ -403,6 +455,111 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				steadyTraffic: false,
 				contentMarkers: [],
 			} );
+		} );
+
+		it( 'should not send a request when another tab loads the page while the response is valid', async () => {
+			fetchMock.getOnce( benchmarkingDataEndpoint, {
+				body: [
+					1,
+					[],
+					'2025-08-18',
+					[ 132 ],
+					[ 412, 388 ],
+					[],
+					[],
+					[ null ],
+					[ false, false, null, false, null, false, false, false ],
+					[],
+					false,
+					null,
+				],
+			} );
+
+			dateNowSpy.mockReturnValue( Date.parse( '2026-09-16T09:00:00Z' ) );
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingData( '2026-08-19', '2026-09-15' );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
+
+			// Another tab starts with an empty `sessionStorage`.
+			sessionStorage.clear();
+			const otherTabRegistry = createTestRegistry();
+
+			dateNowSpy.mockReturnValue( Date.parse( '2026-09-16T09:30:00Z' ) );
+			otherTabRegistry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingData( '2026-08-19', '2026-09-15' );
+			await untilResolved(
+				otherTabRegistry,
+				MODULES_ANALYTICS_4
+			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			expect(
+				otherTabRegistry
+					.select( MODULES_ANALYTICS_4 )
+					.getBenchmarkingData( '2026-08-19', '2026-09-15' )
+			).toMatchObject( { visits: { current: 412, previous: 388 } } );
+		} );
+
+		it( 'should keep the response for a day when its date range ends before the last three days', async () => {
+			const response = {
+				body: [
+					1,
+					[],
+					'2025-08-18',
+					[ 132 ],
+					[ 412, 388 ],
+					[],
+					[],
+					[ null ],
+					[ false, false, null, false, null, false, false, false ],
+					[],
+					false,
+					null,
+				],
+			};
+			fetchMock.get( benchmarkingDataEndpoint, response );
+
+			// 2026-09-16, 2026-09-17 and 2026-09-18 are the last three days.
+			registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-18' );
+			dateNowSpy.mockReturnValue( Date.parse( '2026-09-18T09:00:00Z' ) );
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingData( '2026-08-19', '2026-09-15' );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
+
+			const laterRegistry = createTestRegistry();
+
+			dateNowSpy.mockReturnValue( Date.parse( '2026-09-19T08:59:00Z' ) );
+			laterRegistry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingData( '2026-08-19', '2026-09-15' );
+			await untilResolved(
+				laterRegistry,
+				MODULES_ANALYTICS_4
+			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+			const nextDayRegistry = createTestRegistry();
+
+			dateNowSpy.mockReturnValue( Date.parse( '2026-09-19T09:01:00Z' ) );
+			nextDayRegistry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingData( '2026-08-19', '2026-09-15' );
+			await untilResolved(
+				nextDayRegistry,
+				MODULES_ANALYTICS_4
+			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 		} );
 
 		it( 'should send a request for each pair of dates and keep the response of each pair', async () => {
@@ -835,6 +992,22 @@ describe( 'modules/analytics-4 benchmarking', () => {
 		} );
 	} );
 
+	describe( 'getBenchmarkingDataCacheTTL', () => {
+		it.each( [
+			[ 'ends today', '2026-09-15', HOUR_IN_SECONDS ],
+			[ 'ends two days ago', '2026-09-13', HOUR_IN_SECONDS ],
+			[ 'ends three days ago', '2026-09-12', DAY_IN_SECONDS ],
+			[ 'ended a month ago', '2026-08-15', DAY_IN_SECONDS ],
+		] )(
+			'should keep the response of a date range that %s for %d seconds',
+			( _, endDate, ttl ) => {
+				expect(
+					getBenchmarkingDataCacheTTL( endDate, '2026-09-15' )
+				).toBe( ttl );
+			}
+		);
+	} );
+
 	describe( 'isLoadingBenchmarkingData', () => {
 		it( 'should return `false` before the start date and the end date are selected', () => {
 			expect(
@@ -1122,13 +1295,13 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				MODULES_ANALYTICS_4
 			).getBenchmarkingData( '2026-06-18', '2026-09-15' );
 
-			expect( sessionStorage ).toHaveLength( 2 );
+			expect( localStorage ).toHaveLength( 2 );
 
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.clearBenchmarkingData( '2026-08-19', '2026-09-15' );
 
-			expect( sessionStorage ).toHaveLength( 1 );
+			expect( localStorage ).toHaveLength( 1 );
 
 			const nextPageRegistry = createTestRegistry();
 
@@ -1254,6 +1427,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 		const endDate = '2026-09-15';
 		const locale = 'en_US';
 		const payload = 'eyJsb2NhbGUiOiJlbl9VUyJ9.c2lnbmF0dXJl';
+		const otherPayload = 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl';
 
 		const insightEndpoint = new RegExp(
 			'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-insight'
@@ -1280,15 +1454,15 @@ describe( 'modules/analytics-4 benchmarking', () => {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {string} [entryLocale] Optional. The locale of the insight. Default is `en_US`.
+		 * @param {string} [entryPayload] Optional. The request the insight is written from. Default is the test's request.
 		 * @return {string} The key.
 		 */
-		function getCacheKey( entryLocale = locale ) {
+		function getCacheKey( entryPayload = payload ) {
 			return createCacheKey(
 				'modules',
 				'analytics-4',
 				'benchmarking-generated-insight',
-				{ startDate, endDate, locale: entryLocale }
+				{ payload: entryPayload }
 			);
 		}
 
@@ -1298,20 +1472,20 @@ describe( 'modules/analytics-4 benchmarking', () => {
 		 * @since n.e.x.t
 		 *
 		 * @param {Object} [targetRegistry] Optional. The registry to store it in. Default is the test's registry.
-		 * @param {string} [insightLocale]  Optional. The locale of the insight. Default is `en_US`.
+		 * @param {string} [insightPayload] Optional. The request the insight is written from. Default is the test's request.
 		 * @return {void}
 		 */
 		function provideResponseWithPayload(
 			targetRegistry = registry,
-			insightLocale = locale
+			insightPayload = payload
 		) {
 			provideBenchmarkingData(
 				targetRegistry,
 				{ startDate, endDate },
 				{
 					...decodedBenchmarkingResponse,
-					insightLocale,
-					insightPayload: payload,
+					insightLocale: locale,
+					insightPayload,
 				}
 			);
 		}
@@ -1551,7 +1725,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 						.getBenchmarkingInsight( startDate, endDate )
 				).toEqual( benchmarkingInsight );
 				// The insight replaces the operation in the cache entry.
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: true,
 					value: { insight: benchmarkingInsight },
 				} );
@@ -1570,7 +1744,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 				await jest.advanceTimersByTimeAsync( 0 );
 
-				expect( await getItem( getCacheKey() ) ).toEqual( {
+				expect( await getSharedItem( getCacheKey() ) ).toEqual( {
 					cacheHit: true,
 					value: {
 						operationID: 'operation-1',
@@ -1800,7 +1974,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				expect( getInsightError() ).toMatchObject( {
 					code: 'benchmarking_insight_timeout',
 				} );
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: true,
 					value: { operationID: 'operation-1' },
 				} );
@@ -1873,14 +2047,14 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				expect( getInsightError() ).toMatchObject( {
 					data: { status: 404, reason: 'NOT_FOUND' },
 				} );
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: false,
 				} );
 			} );
 
 			it( 'should ask for the insight again, once, when an operation from the cache entry still runs two minutes after it started', async () => {
 				provideResponseWithPayload();
-				await setItem(
+				await setSharedItem(
 					getCacheKey(),
 					{
 						operationID: 'operation-1',
@@ -1907,7 +2081,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 			it( 'should read an operation from the cache entry at once, rather than ask for the insight again', async () => {
 				provideResponseWithPayload();
-				await setItem(
+				await setSharedItem(
 					getCacheKey(),
 					{
 						operationID: 'operation-1',
@@ -1937,7 +2111,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				).toEqual( benchmarkingInsight );
 			} );
 
-			it( 'should return null with the error, and delete the operation, when the generation fails', async () => {
+			it( 'should return null with the error, and keep it for an hour in place of the operation, when the generation fails', async () => {
 				const failure = errorResponse(
 					500,
 					{ reason: 'MODEL_OUTPUT_INVALID' },
@@ -1962,8 +2136,17 @@ describe( 'modules/analytics-4 benchmarking', () => {
 							[ 'operation-1' ]
 						)
 				).toBeUndefined();
-				// The next load asks for the insight again.
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				// The next load within the hour shows no insight either,
+				// rather than costing another generation.
+				expect( await getSharedItem( getCacheKey() ) ).toEqual( {
+					cacheHit: true,
+					value: { error: failure.body },
+					isError: false,
+				} );
+
+				jest.setSystemTime( Date.now() + HOUR_IN_SECONDS * 1000 );
+
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: false,
 				} );
 			} );
@@ -1986,7 +2169,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				expect( getInsightError() ).toMatchObject( {
 					code: 'benchmarking_insight_timeout',
 				} );
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: true,
 					value: { operationID: 'operation-1' },
 				} );
@@ -2020,24 +2203,24 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 				jest.setSystemTime( Date.now() + DAY_IN_SECONDS * 1000 - 1000 );
 
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: true,
 				} );
 
 				jest.setSystemTime( Date.now() + 1000 );
 
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: false,
 				} );
 			} );
 
-			it( 'should ask for a new insight when the locale changes', async () => {
-				await setItem(
-					getCacheKey( 'en_US' ),
+			it( 'should ask for a new insight when the request changes, such as for new figures or another locale', async () => {
+				await setSharedItem(
+					getCacheKey( payload ),
 					{ insight: benchmarkingInsight },
 					{ ttl: DAY_IN_SECONDS }
 				);
-				provideResponseWithPayload( registry, 'de_DE' );
+				provideResponseWithPayload( registry, otherPayload );
 				fetchMock.postOnce( insightEndpoint, {
 					body: {
 						insight: {
@@ -2074,8 +2257,20 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					DAY_IN_SECONDS,
 				],
 				[ 'permissions, for an hour', 403, undefined, HOUR_IN_SECONDS ],
+				[
+					'an invalid request, for a day',
+					400,
+					undefined,
+					DAY_IN_SECONDS,
+				],
+				[
+					'a failed generation, for an hour',
+					500,
+					undefined,
+					HOUR_IN_SECONDS,
+				],
 			] )(
-				'should keep a refusal for %s, so the next load sends no request',
+				'should keep a failure for %s, so the next load sends no request',
 				async ( _, status, retryAfter, lifetime ) => {
 					const refusal = errorResponse( status, { retryAfter } );
 
@@ -2096,21 +2291,27 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 					jest.setSystemTime( Date.now() + lifetime * 1000 - 1000 );
 
-					expect( await getItem( getCacheKey() ) ).toMatchObject( {
+					expect(
+						await getSharedItem( getCacheKey() )
+					).toMatchObject( {
 						cacheHit: true,
 					} );
 
 					jest.setSystemTime( Date.now() + 1000 );
 
-					expect( await getItem( getCacheKey() ) ).toMatchObject( {
+					expect(
+						await getSharedItem( getCacheKey() )
+					).toMatchObject( {
 						cacheHit: false,
 					} );
 				}
 			);
 
-			it( 'should keep no other failure, so the next load asks again', async () => {
+			it( 'should keep no failure without a status, so the next load asks again', async () => {
 				provideResponseWithPayload();
-				fetchMock.post( insightEndpoint, errorResponse( 500 ) );
+				fetchMock.post( insightEndpoint, {
+					throws: new Error( 'The network is down.' ),
+				} );
 
 				expect( await resolveInsight() ).toBeNull();
 				expect( console ).toHaveErrored();
@@ -2151,7 +2352,9 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					} );
 					// The store reports the refusal, and keeps nothing.
 					expect( getInsightError() ).toEqual( refusal.body );
-					expect( await getItem( getCacheKey() ) ).toMatchObject( {
+					expect(
+						await getSharedItem( getCacheKey() )
+					).toMatchObject( {
 						cacheHit: false,
 					} );
 				}
@@ -2172,7 +2375,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				expect( console ).toHaveErrored();
 				expect( getInsightError() ).toEqual( refusal.body );
 				// The refusal replaces the operation in the cache entry.
-				expect( await getItem( getCacheKey() ) ).toEqual( {
+				expect( await getSharedItem( getCacheKey() ) ).toEqual( {
 					cacheHit: true,
 					value: { error: refusal.body },
 					isError: false,
@@ -2188,7 +2391,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 
-			it( 'should drop the operation, and keep nothing, when a read of the operation is refused as invalid', async () => {
+			it( 'should drop the operation, and keep the refusal for a day, when a read of the operation is refused as invalid', async () => {
 				const refusal = errorResponse( 400, {
 					reason: 'INVALID_ARGUMENT',
 				} );
@@ -2202,7 +2405,16 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				expect( await resolveInsight() ).toBeNull();
 				expect( console ).toHaveErrored();
 				expect( getInsightError() ).toEqual( refusal.body );
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				// The refusal replaces the operation in the cache entry.
+				expect( await getSharedItem( getCacheKey() ) ).toEqual( {
+					cacheHit: true,
+					value: { error: refusal.body },
+					isError: false,
+				} );
+
+				jest.setSystemTime( Date.now() + DAY_IN_SECONDS * 1000 );
+
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: false,
 				} );
 			} );
@@ -2225,13 +2437,13 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					method: 'POST',
 				} );
 				// The next load reads the operation again.
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: true,
 					value: { operationID: 'operation-1' },
 				} );
 			} );
 
-			it( 'should return null with an error, and delete the operation, when the operation is done without an insight', async () => {
+			it( 'should return null with an error, and keep it for an hour in place of the operation, when the operation is done without an insight', async () => {
 				provideResponseWithPayload();
 				fetchMock.postOnce( insightEndpoint, {
 					body: { operationID: 'operation-1' },
@@ -2244,7 +2456,18 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				expect( getInsightError() ).toMatchObject( {
 					code: 'invalid_benchmarking_insight_response',
 				} );
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
+					cacheHit: true,
+					value: {
+						error: {
+							code: 'invalid_benchmarking_insight_response',
+						},
+					},
+				} );
+
+				jest.setSystemTime( Date.now() + HOUR_IN_SECONDS * 1000 );
+
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: false,
 				} );
 			} );
@@ -2261,7 +2484,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			] )(
 				'should ask for the insight when the cache entry is %s',
 				async ( _, entry ) => {
-					await setItem( getCacheKey(), entry, {
+					await setSharedItem( getCacheKey(), entry, {
 						ttl: DAY_IN_SECONDS,
 					} );
 					provideResponseWithPayload();
@@ -2274,22 +2497,19 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					);
 					expect( fetchMock ).toHaveFetchedTimes( 1 );
 					// The insight replaces the entry the store could not use.
-					expect( await getItem( getCacheKey() ) ).toMatchObject( {
+					expect(
+						await getSharedItem( getCacheKey() )
+					).toMatchObject( {
 						cacheHit: true,
 						value: { insight: benchmarkingInsight },
 					} );
 				}
 			);
 
-			it( 'should keep the insight of another date range when it asks for an insight', async () => {
-				const otherRangeKey = createCacheKey(
-					'modules',
-					'analytics-4',
-					'benchmarking-generated-insight',
-					{ startDate: '2026-06-18', endDate, locale }
-				);
+			it( 'should keep the insight of another request when it asks for an insight', async () => {
+				const otherRangeKey = getCacheKey( otherPayload );
 
-				await setItem(
+				await setSharedItem(
 					otherRangeKey,
 					{ insight: benchmarkingInsight },
 					{ ttl: DAY_IN_SECONDS }
@@ -2305,14 +2525,14 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				} );
 				// A request to a datapoint clears the cache entries of that
 				// datapoint, which the insights the store keeps are not.
-				expect( await getItem( otherRangeKey ) ).toMatchObject( {
+				expect( await getSharedItem( otherRangeKey ) ).toMatchObject( {
 					cacheHit: true,
 					value: { insight: benchmarkingInsight },
 				} );
 			} );
 
 			it( 'should neither read nor write the cache entry while the API cache is off', async () => {
-				await setItem(
+				await setSharedItem(
 					getCacheKey(),
 					{
 						insight: {
@@ -2337,7 +2557,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					setUsingCache( true );
 				}
 
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					value: { insight: { analysis: 'Cached.' } },
 				} );
 			} );
@@ -2380,12 +2600,9 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			const otherStartDate = '2026-06-18';
 
 			it( 'should delete the insight of the dates from the store and its cache entry, and keep the insight of another date range', async () => {
-				const otherRangeKey = createCacheKey(
-					'modules',
-					'analytics-4',
-					'benchmarking-generated-insight',
-					{ startDate: otherStartDate, endDate, locale }
-				);
+				// The benchmarking response of another date range carries
+				// another request.
+				const otherRangeKey = getCacheKey( otherPayload );
 
 				provideResponseWithPayload();
 				provideBenchmarkingInsight( registry, { startDate, endDate } );
@@ -2393,12 +2610,12 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					startDate: otherStartDate,
 					endDate,
 				} );
-				await setItem(
+				await setSharedItem(
 					getCacheKey(),
 					{ insight: benchmarkingInsight },
 					{ ttl: DAY_IN_SECONDS }
 				);
-				await setItem(
+				await setSharedItem(
 					otherRangeKey,
 					{ insight: benchmarkingInsight },
 					{ ttl: DAY_IN_SECONDS }
@@ -2408,10 +2625,10 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.clearBenchmarkingData( startDate, endDate );
 
-				expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
 					cacheHit: false,
 				} );
-				expect( await getItem( otherRangeKey ) ).toMatchObject( {
+				expect( await getSharedItem( otherRangeKey ) ).toMatchObject( {
 					cacheHit: true,
 					value: { insight: benchmarkingInsight },
 				} );

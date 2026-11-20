@@ -180,26 +180,40 @@ export function getTotalsReportArgs( {
  * Builds the complete GA4 `getReport` args for the report of visits on each
  * day of the selected range. They equal the args `useTrafficReport` builds
  * from `DAILY_VISITS_REPORT_OPTIONS`, so the PDF export reads the report the
- * entity dashboard has loaded.
+ * dashboard has loaded.
+ *
+ * With the range before the selected one, the report's totals hold the visits
+ * of both ranges, as the main dashboard's report does.
  *
  * @since n.e.x.t
  *
- * @param {Object} options           Options.
- * @param {string} options.startDate Report start date.
- * @param {string} options.endDate   Report end date.
- * @param {string} [options.url]     Entity URL filter, if any.
+ * @param {Object} options                    Options.
+ * @param {string} options.startDate          Report start date.
+ * @param {string} options.endDate            Report end date.
+ * @param {string} [options.compareStartDate] Optional. The first day of the range to compare with.
+ * @param {string} [options.compareEndDate]   Optional. The last day of the range to compare with.
+ * @param {string} [options.url]              Entity URL filter, if any.
  * @return {Object} GA4 getReport args.
  */
 export function getDailyVisitsReportArgs( {
 	startDate,
 	endDate,
+	compareStartDate,
+	compareEndDate,
 	url,
-}: Pick< ReportOptions, 'startDate' | 'endDate' | 'url' > ): ReportOptions {
+}: Pick<
+	ReportOptions,
+	'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate' | 'url'
+> ): ReportOptions {
 	const args: ReportOptions = {
 		startDate,
 		endDate,
 		...DAILY_VISITS_REPORT_OPTIONS,
 	};
+	if ( compareStartDate && compareEndDate ) {
+		args.compareStartDate = compareStartDate;
+		args.compareEndDate = compareEndDate;
+	}
 	if ( url ) {
 		args.url = url;
 	}

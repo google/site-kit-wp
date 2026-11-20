@@ -109,6 +109,26 @@ describe( 'getDailyVisitsReportArgs', () => {
 		} );
 	} );
 
+	it( 'should add the range to compare with when it receives both of its dates', () => {
+		expect(
+			getDailyVisitsReportArgs( {
+				startDate: '2025-01-08',
+				endDate: '2025-02-04',
+				compareStartDate: '2024-12-11',
+				compareEndDate: '2025-01-07',
+			} )
+		).toEqual( {
+			startDate: '2025-01-08',
+			endDate: '2025-02-04',
+			compareStartDate: '2024-12-11',
+			compareEndDate: '2025-01-07',
+			metrics: [ { name: 'sessions' } ],
+			dimensions: [ 'date' ],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_dailyVisitsArgs',
+		} );
+	} );
+
 	it( 'should add the URL to the args when it receives an entity URL', () => {
 		expect(
 			getDailyVisitsReportArgs( {
