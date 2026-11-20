@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { BadgeProps } from '@/js/components/Badge';
 import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
+import { FEEDBACK_KEY_VOTE_REASON } from '@/js/components/feedback/constants';
 import {
 	FeatureBadge,
 	FeatureCategoryChipID,
@@ -196,6 +197,6 @@ export const FEATURE_RELEVANCY_REASONS = {
 export const FEATURE_HUB_FEEDBACK_NAMESPACE = 'feature_hub';
 
 export const FEATURE_RELEVANCY_FEEDBACK_KEYS = {
-	VOTE_REASON: 'vote_reason',
+	VOTE_REASON: FEEDBACK_KEY_VOTE_REASON,
 	DISMISS_REASON: 'dismiss_reason',
 } as const;
