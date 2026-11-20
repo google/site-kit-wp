@@ -95,7 +95,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( Sign_In_With_Google::MODULE_SLUG, $this->module->slug, 'Module slug should match constant.' );
 		$this->assertEquals( 'Sign in with Google', $this->module->name, 'Module name should match.' );
 		$this->assertEquals( 'https://developers.google.com/identity/gsi/web/guides/overview', $this->module->homepage, 'Module homepage should match expected URL.' );
-		$this->assertEquals( 'Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors', $this->module->description, 'Module description should match expected text.' );
+		$this->assertEquals( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalized experience for your visitors', $this->module->description, 'Module description should match expected text.' );
 		$this->assertEquals( 10, $this->module->order, 'Module order should be 10.' );
 	}
 
