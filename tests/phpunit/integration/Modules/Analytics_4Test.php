@@ -3630,18 +3630,26 @@ class Analytics_4Test extends TestCase {
 		);
 		$this->analytics->register();
 		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+		$modules = new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->force_set_property( $modules, 'modules', array( Analytics_4::MODULE_SLUG => $this->analytics ) );
+		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( Analytics_4::MODULE_SLUG ) );
+		$this->register_modules_rest_routes( $modules );
 
-		$response = $this->analytics->set_data(
-			'create-measurement-protocol-secret',
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/create-measurement-protocol-secret' );
+		$request->set_body_params(
 			array(
-				'propertyID'      => '123456789',
-				'webDataStreamID' => '987654321',
+				'data' => array(
+					'propertyID'      => '123456789',
+					'webDataStreamID' => '987654321',
+				),
 			)
 		);
+		$response = rest_get_server()->dispatch( $request );
 
+		$this->assertSame( 200, $response->get_status(), 'The `POST:create-measurement-protocol-secret` request should succeed.' );
 		$this->assertSame(
 			array( 'measurementProtocolSecretID' => 'new-secret-id' ),
-			$response,
+			$response->get_data(),
 			'The response should contain only the secret ID, never the secret value.'
 		);
 		$this->assertSame(
@@ -3805,7 +3813,7 @@ class Analytics_4Test extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
 			function ( Request $request ) {
-				// Listing the secrets succeeds, so Google refuses only the `POST` request of each datapoint.
+				// Google answers the request that lists the secrets, and refuses the `POST` request of each datapoint.
 				if ( 'GET' === $request->getMethod() ) {
 					return new FulfilledPromise( new Response( 200, array(), wp_json_encode( new GoogleAnalyticsAdminV1betaListMeasurementProtocolSecretsResponse() ) ) );
 				}
@@ -3859,6 +3867,54 @@ class Analytics_4Test extends TestCase {
 			'acknowledge-user-data-collection'   => array( 'acknowledge-user-data-collection' ),
 			'create-measurement-protocol-secret' => array( 'create-measurement-protocol-secret' ),
 		);
+	}
+
+	/**
+	 * @dataProvider data_server_side_events_datapoints__editor_access_required
+	 *
+	 * @param string $datapoint Datapoint name.
+	 */
+	public function test_server_side_events_datapoints__view_only_user( $datapoint ) {
+		$this->enable_feature( 'serverSideEvents' );
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+			)
+		);
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				$this->request_handler_calls[] = $request;
+
+				return new FulfilledPromise( new Response( 200, array(), '{}' ) );
+			}
+		);
+		$this->analytics->register();
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+		$modules = new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->force_set_property( $modules, 'modules', array( Analytics_4::MODULE_SLUG => $this->analytics ) );
+		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( Analytics_4::MODULE_SLUG ) );
+		$this->register_modules_rest_routes( $modules );
+		$this->share_modules_with_editors( array( Analytics_4::MODULE_SLUG ) );
+		$reader_id = $this->create_view_only_reader();
+		$this->register_permissions_for_user( $reader_id, $modules );
+		wp_set_current_user( $reader_id );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . "/modules/analytics-4/data/$datapoint" );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'propertyID'      => '123456789',
+					'webDataStreamID' => '987654321',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertSame( 403, $response->get_status(), 'The request of a view-only user should be refused.' );
+		$this->assertSame( 'rest_forbidden', $response->get_data()['code'], 'The error code should be `rest_forbidden` for a view-only user.' );
+		$this->assertCount( 0, $this->request_handler_calls, 'No request should be sent to Google for a view-only user.' );
 	}
 
 	public function test_create_custom_dimension() {
