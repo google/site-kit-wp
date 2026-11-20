@@ -23,6 +23,10 @@ export const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH =
 
 export const GLOBAL_SURVEYS_TIMEOUT_SLUG = '__global';
 
+// The largest signed 32-bit integer, in seconds. Used as the `ttl` for survey
+// triggers that must be sent once per user, so that 32-bit PHP can store it.
+export const SURVEY_TRIGGER_MAX_TTL = 2 ** 31 - 1;
+
 export const FORM_TEMPORARY_PERSIST_PERMISSION_ERROR =
 	'temporary_persist_permission_error';
 
