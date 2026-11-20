@@ -1,5 +1,5 @@
 /**
- * PrimaryActionRow component tests.
+ * KeyActionFeedback component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -41,7 +41,7 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
-import PrimaryActionRow from './PrimaryActionRow';
+import KeyActionFeedback from './KeyActionFeedback';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -58,7 +58,7 @@ const DOWNVOTE_REASONS = [
 	[ 'Something else matters more', 'something_else_matters_more' ],
 ];
 
-describe( 'PrimaryActionRow', () => {
+describe( 'KeyActionFeedback', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
@@ -83,24 +83,35 @@ describe( 'PrimaryActionRow', () => {
 		mockTrackEvent.mockClear();
 	} );
 
-	describe.each< [ GoalType, string ] >( [
+	describe.each< [ GoalType, string, string ] >( [
 		[
 			GOAL_TYPES.ECOMMERCE,
 			'site_goals_primary_action_panel_online_store',
+			ENUM_CONVERSION_EVENTS.PURCHASE,
 		],
-		[ GOAL_TYPES.LEAD, 'site_goals_primary_action_panel_lead_generation' ],
-	] )( 'for the %s goal', ( goalType, group ) => {
+		[
+			GOAL_TYPES.LEAD,
+			'site_goals_primary_action_panel_lead_generation',
+			ENUM_CONVERSION_EVENTS.CONTACT,
+		],
+	] )( 'for the %s goal', ( goalType, group, eventSlug ) => {
 		describe.each( [
 			[ 'Yes, this was helpful', 'up', UPVOTE_REASONS ],
 			[ 'No, this was not helpful', 'down', DOWNVOTE_REASONS ],
 		] )( 'after clicking "%s"', ( buttonName, direction, reasons ) => {
-			it( 'should send the vote and open the "Help us improve" menu with the reasons for that vote', async () => {
+			it( 'should send and track the vote, and open the "Help us improve" menu with the reasons for that vote', async () => {
 				const { getByRole, getAllByRole, waitForRegistry } = render(
-					<PrimaryActionRow goalType={ goalType } />,
+					<KeyActionFeedback goalType={ goalType } />,
 					{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 				);
 
 				fireEvent.click( getByRole( 'button', { name: buttonName } ) );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'mainDashboard_site-goals-key-action-survey',
+					`vote_${ direction }`,
+					eventSlug
+				);
 
 				expect(
 					getByRole( 'heading', { name: 'Help us improve' } )
@@ -131,7 +142,7 @@ describe( 'PrimaryActionRow', () => {
 				'should send the "%s" reason as `%s` without a GA event',
 				async ( label, value ) => {
 					const { getByRole, findByText } = render(
-						<PrimaryActionRow goalType={ goalType } />,
+						<KeyActionFeedback goalType={ goalType } />,
 						{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 					);
 
