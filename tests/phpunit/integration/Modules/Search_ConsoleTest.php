@@ -348,9 +348,17 @@ class Search_ConsoleTest extends TestCase {
 						'previous' => 210,
 					),
 				),
+				// The fake API answers the report of the site's clicks with
+				// the `plant garlic` row too.
+				'searchClicks'       => array(
+					array(
+						'current'  => 300,
+						'previous' => 210,
+					),
+				),
 			),
 			$contextual_data,
-			'The filter should add the `plant garlic` query under `searchQueries`, its page and its device under `searchQueryPages` and `searchQueryDevices`, and keep `channelBreakdowns` as it was.'
+			'The filter should add the `plant garlic` query under `searchQueries`, its page and its device under `searchQueryPages` and `searchQueryDevices`, the site\'s clicks under `searchClicks`, and keep `channelBreakdowns` as it was.'
 		);
 	}
 

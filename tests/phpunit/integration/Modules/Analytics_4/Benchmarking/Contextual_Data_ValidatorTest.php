@@ -403,4 +403,32 @@ class Contextual_Data_ValidatorTest extends TestCase {
 
 		$this->assertSame( $rows, ( new Contextual_Data_Validator() )->validate( $rows ), 'The rows of `searchQueryPages` and `searchQueryDevices` should be kept as they are.' );
 	}
+
+	public function test_validate__keeps_the_site_search_clicks_with_their_counts_as_integers() {
+		$this->assertSame(
+			array(
+				'searchClicks' => array(
+					array(
+						'current'  => 1250,
+						'previous' => 980,
+					),
+				),
+			),
+			( new Contextual_Data_Validator() )->validate(
+				array(
+					'searchClicks' => array(
+						array(
+							'current'  => '1250',
+							'previous' => 980,
+							'label'    => 'every query',
+						),
+						array(
+							'current' => 'many',
+						),
+					),
+				)
+			),
+			'A `searchClicks` row should keep its clicks as integers and lose a field it does not define, and a row without valid clicks should be removed.'
+		);
+	}
 }

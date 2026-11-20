@@ -27,6 +27,10 @@ use DateTimeZone;
  * The service requires only the period totals, and narrates whatever else the
  * request has, so a field without data is left out rather than sent empty.
  *
+ * The request carries the key factor cards the panel shows, as
+ * `decomposition`, so the insight's driver text describes those cards rather
+ * than rows the service ranks itself.
+ *
  * Building the request is deterministic: the same reports always give the same
  * request, since the service keys the insights it keeps for a day on the
  * request's values.
@@ -73,12 +77,43 @@ class Insight_Request_Builder {
 	const MAX_RECENT_CONTENT = 10;
 
 	/**
+	 * The most landing pages the request lists for each channel and direction:
+	 * the pages that rose most, and the pages that fell most.
+	 *
+	 * @since n.e.x.t
+	 */
+	const MAX_CHANNEL_PAGES_PER_DIRECTION = 30;
+
+	/**
+	 * The most campaigns the request lists for each channel.
+	 *
+	 * @since n.e.x.t
+	 */
+	const MAX_CHANNEL_CAMPAIGNS = 5;
+
+	/**
+	 * The most visited pages the request lists for each period.
+	 *
+	 * @since n.e.x.t
+	 */
+	const MAX_TOP_PAGES = 20;
+
+	/**
 	 * The paths, in lower case and without a trailing slash, that the service
 	 * reads as the home page rather than as content.
 	 *
 	 * @since n.e.x.t
 	 */
 	const HOME_PAGE_PATHS = array( '', '/home', '/index.html', '/index.php' );
+
+	/**
+	 * The ID of the post at each path looked up so far, or `0` for a path that
+	 * isn't a post.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $post_ids = array();
 
 	/**
 	 * Builds the request for the selected period.
@@ -90,16 +125,22 @@ class Insight_Request_Builder {
 	 * the request has `history_days` instead, so the service can say when the
 	 * site will have a range.
 	 *
+	 * The request has a `decomposition` whenever it has channel rows, with the
+	 * given key factor cards. It has one with no cards when the panel shows
+	 * none, so the service doesn't name a driver the panel doesn't show.
+	 *
 	 * @since n.e.x.t
+	 * @since n.e.x.t Added the `$key_factors` parameter, sent as `decomposition`, and sends the channel breakdowns, the search clicks and the most visited pages.
 	 *
 	 * @param string          $start_date      The first day of the selected period, as `YYYY-MM-DD`.
 	 * @param string          $end_date        The last day of the selected period, as `YYYY-MM-DD`.
 	 * @param Period_Baseline $period_baseline The model of the visits of every day up to and including `$end_date`, from the first day with visits on, as `Period_Baseline::from_daily_series()` builds it. The chart's band reads the same model, so its fits are made once.
 	 * @param array           $visits          The visits of the selected period and of the period before it, as `current` and `previous`.
 	 * @param array           $contextual_data The rows of the benchmarking response, keyed by `contextualData` key, before they are ranked.
+	 * @param array           $key_factors     Optional. The key factor cards the panel shows, as `Key_Factors::build()` returns them. Default empty array.
 	 * @return array|null The request, or null when there is no insight to request: the period is shorter than `MIN_PERIOD_DAYS` days or longer than `MAX_PERIOD_DAYS` days, or neither period has a visit.
 	 */
-	public function build( $start_date, $end_date, Period_Baseline $period_baseline, array $visits, array $contextual_data ) {
+	public function build( $start_date, $end_date, Period_Baseline $period_baseline, array $visits, array $contextual_data, array $key_factors = array() ) {
 		$days_in_period = $this->get_days_in_period( $start_date, $end_date );
 
 		if ( $days_in_period < self::MIN_PERIOD_DAYS || $days_in_period > self::MAX_PERIOD_DAYS ) {
@@ -138,10 +179,23 @@ class Insight_Request_Builder {
 			$request['history_days'] = $period_baseline->get_history_days( $end_date );
 		}
 
-		$request_contextual_data = $this->build_contextual_data( $contextual_data, $days_in_period );
+		$request_contextual_data = $this->build_contextual_data( $contextual_data, $end_date, $days_in_period );
 
 		if ( ! empty( $request_contextual_data ) ) {
 			$request['contextual_data'] = $request_contextual_data;
+		}
+
+		$decomposition = ( new Decomposition_Builder(
+			array(
+				'current'  => $current_period,
+				'previous' => $previous_period,
+			),
+			$this->get_rows( $contextual_data, 'channels' ),
+			$this->get_search_clicks( $contextual_data )
+		) )->build( $key_factors );
+
+		if ( null !== $decomposition ) {
+			$request['decomposition'] = $decomposition;
 		}
 
 		return $request;
@@ -168,11 +222,18 @@ class Insight_Request_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $contextual_data The rows, keyed by `contextualData` key.
-	 * @param int   $days_in_period  The number of days in the selected period.
+	 * @since n.e.x.t Added the `$end_date` parameter, and the channel breakdowns, the search clicks and the most visited pages.
+	 *
+	 * @param array  $contextual_data The rows, keyed by `contextualData` key.
+	 * @param string $end_date        The last day of the selected period, as `YYYY-MM-DD`.
+	 * @param int    $days_in_period  The number of days in the selected period.
 	 * @return array The contextual data, keyed by the service's field names, without the fields that have no rows.
 	 */
-	private function build_contextual_data( array $contextual_data, $days_in_period ) {
+	private function build_contextual_data( array $contextual_data, $end_date, $days_in_period ) {
+		$compare_end_date = ( new DateTimeImmutable( $end_date, new DateTimeZone( 'UTC' ) ) )
+			->modify( "-{$days_in_period} days" )
+			->format( 'Y-m-d' );
+
 		$fields = array(
 			// Every channel, so the channels add up to the site's visits.
 			'traffic_channel_surges'  => array_map(
@@ -223,6 +284,38 @@ class Insight_Request_Builder {
 				),
 				$this->get_recent_content_rows( $contextual_data, $days_in_period )
 			),
+			// Every combination, so each channel's devices and visitor types
+			// add up to it.
+			'channel_breakdowns'      => array_map(
+				fn( $row ) => array(
+					'channel'  => $row['channel'],
+					'device'   => $row['device'],
+					'segment'  => $row['userType'],
+					'sessions' => $this->get_pair( $row ),
+				),
+				$this->sort_by_current( $this->get_rows( $contextual_data, 'channelBreakdowns' ), array( 'channel', 'device', 'userType' ) )
+			),
+			'channel_pages'           => array_map(
+				fn( $row ) => array(
+					'channel'  => $row['channel'],
+					'url'      => $row['page'],
+					'sessions' => $this->get_pair( $row ),
+				),
+				$this->get_channel_page_rows( $contextual_data )
+			),
+			'channel_campaigns'       => array_map(
+				fn( $row ) => array(
+					'channel'  => $row['channel'],
+					'campaign' => $row['campaign'],
+					'sessions' => $this->get_pair( $row ),
+				),
+				$this->get_channel_campaign_rows( $contextual_data )
+			),
+			'search_clicks'           => $this->get_search_clicks( $contextual_data ),
+			// A page published after a period's last day had no categories
+			// to draw visits with in it.
+			'top_pages'               => $this->get_top_page_rows( $contextual_data, 'current', $end_date ),
+			'previous_top_pages'      => $this->get_top_page_rows( $contextual_data, 'previous', $compare_end_date ),
 		);
 
 		return array_filter( $fields );
@@ -245,20 +338,22 @@ class Insight_Request_Builder {
 
 	/**
 	 * Sorts rows by their visits in the selected period, most first, and then
-	 * by their label.
+	 * by their labels.
 	 *
-	 * `usort()` isn't stable on PHP 7.4, so the label orders rows with the same
+	 * `usort()` isn't stable on PHP 7.4, so the labels order rows with the same
 	 * visits, for the request to come out the same on every run.
 	 *
 	 * @since n.e.x.t
+	 * @since n.e.x.t Added the `$label_fields` parameter.
 	 *
-	 * @param array $rows The rows, each with `label` and `current`.
+	 * @param array $rows         The rows, each with `current` and the label fields.
+	 * @param array $label_fields Optional. The fields that label a row, compared in order. Default `array( 'label' )`.
 	 * @return array The sorted rows.
 	 */
-	private function sort_by_current( array $rows ) {
+	private function sort_by_current( array $rows, array $label_fields = array( 'label' ) ) {
 		usort(
 			$rows,
-			fn( $first, $second ) => ( $second['current'] <=> $first['current'] ) ?: strcmp( $first['label'], $second['label'] )
+			fn( $first, $second ) => ( $second['current'] <=> $first['current'] ) ?: self::compare_labels( $first, $second, $label_fields )
 		);
 
 		return $rows;
@@ -266,22 +361,46 @@ class Insight_Request_Builder {
 
 	/**
 	 * Sorts rows by how far they moved from one period to the other, most
-	 * first, then by their larger period, and then by their label.
+	 * first, then by their larger period, and then by their labels.
 	 *
 	 * @since n.e.x.t
+	 * @since n.e.x.t Added the `$label_fields` parameter.
 	 *
-	 * @param array $rows The rows, each with `label`, `current` and `previous`.
+	 * @param array $rows         The rows, each with `current`, `previous` and the label fields.
+	 * @param array $label_fields Optional. The fields that label a row, compared in order. Default `array( 'label' )`.
 	 * @return array The sorted rows.
 	 */
-	private function sort_by_change( array $rows ) {
+	private function sort_by_change( array $rows, array $label_fields = array( 'label' ) ) {
 		usort(
 			$rows,
 			fn( $first, $second ) => ( abs( $second['current'] - $second['previous'] ) <=> abs( $first['current'] - $first['previous'] ) )
 				?: ( max( $second['current'], $second['previous'] ) <=> max( $first['current'], $first['previous'] ) )
-				?: strcmp( $first['label'], $second['label'] )
+				?: self::compare_labels( $first, $second, $label_fields )
 		);
 
 		return $rows;
+	}
+
+	/**
+	 * Compares the labels of two rows, field by field.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $first        The first row.
+	 * @param array $second       The second row.
+	 * @param array $label_fields The fields that label a row, compared in order.
+	 * @return int Less than, equal to, or greater than `0` when the first row's labels sort before, with, or after the second's.
+	 */
+	private static function compare_labels( array $first, array $second, array $label_fields ) {
+		foreach ( $label_fields as $field ) {
+			$result = strcmp( $first[ $field ], $second[ $field ] );
+
+			if ( 0 !== $result ) {
+				return $result;
+			}
+		}
+
+		return 0;
 	}
 
 	/**
@@ -351,6 +470,191 @@ class Insight_Request_Builder {
 		);
 
 		return array_slice( $rows, 0, self::MAX_RECENT_CONTENT );
+	}
+
+	/**
+	 * Gets the landing pages the request lists: for each channel, the
+	 * `MAX_CHANNEL_PAGES_PER_DIRECTION` pages that rose most and the
+	 * `MAX_CHANNEL_PAGES_PER_DIRECTION` that fell most.
+	 *
+	 * The service finds the page that carried each channel's change among
+	 * them, and a page that didn't move carried none of it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $contextual_data The rows, keyed by `contextualData` key.
+	 * @return array The rows of the pages, each with `channel`, `page`, `current` and `previous`.
+	 */
+	private function get_channel_page_rows( array $contextual_data ) {
+		$rows_by_direction = array();
+
+		foreach ( $this->get_rows( $contextual_data, 'channelPages' ) as $row ) {
+			$delta = (int) $row['current'] - (int) $row['previous'];
+
+			if ( 0 !== $delta ) {
+				$rows_by_direction[ wp_json_encode( array( $row['channel'], $delta > 0 ) ) ][] = $row;
+			}
+		}
+
+		$rows = array();
+
+		foreach ( $rows_by_direction as $direction_rows ) {
+			$rows = array_merge( $rows, array_slice( $this->sort_by_change( $direction_rows, array( 'page' ) ), 0, self::MAX_CHANNEL_PAGES_PER_DIRECTION ) );
+		}
+
+		return $this->sort_by_change( $rows, array( 'channel', 'page' ) );
+	}
+
+	/**
+	 * Gets the campaigns the request lists: for each channel, the
+	 * `MAX_CHANNEL_CAMPAIGNS` that moved most.
+	 *
+	 * Analytics names the visits of no campaign with a placeholder, such as
+	 * `(organic)` or `(not set)`, which no card can name, so it never takes a
+	 * campaign's place.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $contextual_data The rows, keyed by `contextualData` key.
+	 * @return array The rows of the campaigns, each with `channel`, `campaign`, `current` and `previous`.
+	 */
+	private function get_channel_campaign_rows( array $contextual_data ) {
+		$rows_by_channel = array();
+
+		foreach ( $this->get_rows( $contextual_data, 'channelCampaigns' ) as $row ) {
+			if ( ! self::is_placeholder( $row['campaign'] ) && (int) $row['current'] !== (int) $row['previous'] ) {
+				$rows_by_channel[ $row['channel'] ][] = $row;
+			}
+		}
+
+		$rows = array();
+
+		foreach ( $rows_by_channel as $channel_rows ) {
+			$rows = array_merge( $rows, array_slice( $this->sort_by_change( $channel_rows, array( 'campaign' ) ), 0, self::MAX_CHANNEL_CAMPAIGNS ) );
+		}
+
+		return $this->sort_by_change( $rows, array( 'channel', 'campaign' ) );
+	}
+
+	/**
+	 * Gets the site's search clicks in each period.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $contextual_data The rows, keyed by `contextualData` key.
+	 * @return array|null The clicks, as `current` and `previous`, or null without them, as when Search Console isn't connected or a report failed.
+	 */
+	private function get_search_clicks( array $contextual_data ) {
+		$rows = $this->get_rows( $contextual_data, 'searchClicks' );
+
+		return empty( $rows ) ? null : $this->get_pair( $rows[0] );
+	}
+
+	/**
+	 * Gets the `MAX_TOP_PAGES` most visited pages of a period, with the
+	 * categories of the post at each.
+	 *
+	 * A page's visits are the sum of its visits through every channel. The
+	 * home page is listed like any other page, since the service counts the
+	 * categories of the most visited pages among all of them.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $contextual_data The rows, keyed by `contextualData` key.
+	 * @param string $period          The period, `current` or `previous`.
+	 * @param string $last_date       The period's last day, as `YYYY-MM-DD`. A post published after it has no categories in the list.
+	 * @return array List of pages, most visited first, then by path. Each has `url`, the page's path, and `visits`, and `categories` when it is a post with categories.
+	 */
+	private function get_top_page_rows( array $contextual_data, $period, $last_date ) {
+		$visits = array();
+
+		foreach ( $this->get_rows( $contextual_data, 'channelPages' ) as $row ) {
+			// A landing page's query names no other page, and Analytics names
+			// the visits with no landing page with a placeholder.
+			$path = preg_replace( '/[?#].*$/', '', $row['page'] );
+
+			if ( ! self::is_placeholder( $path ) ) {
+				$visits[ $path ] = ( isset( $visits[ $path ] ) ? $visits[ $path ] : 0 ) + (int) $row[ $period ];
+			}
+		}
+
+		$paths = array_keys( array_filter( $visits ) );
+
+		// A path never looks like a number, so it stays a string as a key.
+		usort(
+			$paths,
+			fn( $first, $second ) => ( $visits[ $second ] <=> $visits[ $first ] ) ?: strcmp( $first, $second )
+		);
+
+		return array_map(
+			function ( $path ) use ( $visits, $last_date ) {
+				$row = array(
+					'url'    => $path,
+					'visits' => (int) $visits[ $path ],
+				);
+
+				$categories = $this->get_post_categories( $path, $last_date );
+
+				if ( ! empty( $categories ) ) {
+					$row['categories'] = $categories;
+				}
+
+				return $row;
+			},
+			array_slice( $paths, 0, self::MAX_TOP_PAGES )
+		);
+	}
+
+	/**
+	 * Gets the names of the categories of the published post at a path.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $path      The path of the page on the site's host, such as `/plant-garlic/`.
+	 * @param string $last_date The last day the post may have been published on, as `YYYY-MM-DD` in UTC.
+	 * @return array List of the names of the post's categories, or an empty list when the page isn't a post published by `$last_date`.
+	 */
+	private function get_post_categories( $path, $last_date ) {
+		if ( ! isset( $this->post_ids[ $path ] ) ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.url_to_postid_url_to_postid -- A page that isn't a post simply has no categories.
+			$this->post_ids[ $path ] = url_to_postid( self::get_site_origin() . $path );
+		}
+
+		$post_id = $this->post_ids[ $path ];
+
+		if ( ! $post_id || 'publish' !== get_post_status( $post_id ) || get_post_time( 'Y-m-d', true, $post_id ) > $last_date ) {
+			return array();
+		}
+
+		$categories = get_the_category( $post_id );
+
+		// A term's name is stored with its HTML characters escaped.
+		return array_values(
+			array_unique(
+				array_map(
+					fn( $category ) => wp_specialchars_decode( $category->name, ENT_QUOTES ),
+					$categories
+				)
+			)
+		);
+	}
+
+	/**
+	 * Gets the scheme and host of the site's URL, which a landing page's path
+	 * is on.
+	 *
+	 * A landing page's path already has the folder a site lives under, so the
+	 * site's own path is left out.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The scheme and host, with the port when the URL has one, such as `https://example.com`.
+	 */
+	private static function get_site_origin() {
+		$home_url = wp_parse_url( home_url() );
+		$origin   = ( isset( $home_url['scheme'] ) ? $home_url['scheme'] : 'https' ) . '://' . ( isset( $home_url['host'] ) ? $home_url['host'] : '' );
+
+		return isset( $home_url['port'] ) ? "{$origin}:{$home_url['port']}" : $origin;
 	}
 
 	/**

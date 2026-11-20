@@ -159,10 +159,11 @@ class Response_Builder {
 		if ( Feature_Flags::enabled( 'trafficInsights' ) ) {
 			// The insight's driver describes the change the key factor cards
 			// show, so the insight is requested only with them, whether the
-			// period has a band or not. The request reads the same fits as the
-			// band of `dailyTraffic`, so the chart and the verdict agree.
+			// period has a band or not, and the request carries them. The
+			// request reads the same fits as the band of `dailyTraffic`, so the
+			// chart and the verdict agree.
 			$response['insightRequest'] = $availability['insight_request_allowed']
-				? ( new Insight_Request_Builder() )->build( $start_date, $end_date, $period_baseline, $visits, $this->get_insight_rows( $contextual_data ) )
+				? ( new Insight_Request_Builder() )->build( $start_date, $end_date, $period_baseline, $visits, $this->get_insight_rows( $contextual_data ), $key_factors )
 				: null;
 		}
 
@@ -230,35 +231,43 @@ class Response_Builder {
 	 *
 	 * The channels, devices, visitor types and referring sources are the sums
 	 * of the breakdowns the key factor cards are picked from, so the insight
-	 * and the cards describe the same visits.
+	 * and the cards describe the same visits. The breakdowns themselves are
+	 * passed on too.
 	 *
 	 * @since n.e.x.t
+	 * @since n.e.x.t Also returns the `channelBreakdowns`, `channelPages`, `channelCampaigns` and `searchClicks` rows.
 	 *
 	 * @param array $contextual_data The rows, keyed by contextual data key.
-	 * @return array The rows, keyed by `channels`, `devices`, `visitorMix`, `referrers`, `searchQueries` and `content`. Each `channels`, `devices`, `visitorMix` and `referrers` row has `label`, `current` and `previous`.
+	 * @return array The rows, keyed by `channels`, `devices`, `visitorMix`, `referrers`, `searchQueries`, `content`, and by the contextual data keys passed on. Each `channels`, `devices`, `visitorMix` and `referrers` row has `label`, `current` and `previous`.
 	 */
 	private function get_insight_rows( array $contextual_data ) {
 		$breakdowns = isset( $contextual_data['channelBreakdowns'] ) ? $contextual_data['channelBreakdowns'] : array();
 		$sources    = isset( $contextual_data['channelSources'] ) ? $contextual_data['channelSources'] : array();
 
-		return array(
-			'channels'      => Key_Factors::sum_by( $breakdowns, 'channel' ),
-			'devices'       => Key_Factors::sum_by( $breakdowns, 'device' ),
-			'visitorMix'    => array_values(
-				array_filter(
-					Key_Factors::sum_by( $breakdowns, 'userType' ),
-					fn( $row ) => '' !== $row['label']
-				)
+		return array_merge(
+			array_intersect_key(
+				$contextual_data,
+				array_flip( array( 'channelBreakdowns', 'channelPages', 'channelCampaigns', 'searchClicks' ) )
 			),
-			// Analytics reports `(direct)` for a visit that no site referred.
-			'referrers'     => array_values(
-				array_filter(
-					Key_Factors::sum_by( $sources, 'source' ),
-					fn( $row ) => '(direct)' !== $row['label']
-				)
-			),
-			'searchQueries' => isset( $contextual_data['searchQueries'] ) ? $contextual_data['searchQueries'] : array(),
-			'content'       => isset( $contextual_data['content'] ) ? $contextual_data['content'] : array(),
+			array(
+				'channels'      => Key_Factors::sum_by( $breakdowns, 'channel' ),
+				'devices'       => Key_Factors::sum_by( $breakdowns, 'device' ),
+				'visitorMix'    => array_values(
+					array_filter(
+						Key_Factors::sum_by( $breakdowns, 'userType' ),
+						fn( $row ) => '' !== $row['label']
+					)
+				),
+				// Analytics reports `(direct)` for a visit that no site referred.
+				'referrers'     => array_values(
+					array_filter(
+						Key_Factors::sum_by( $sources, 'source' ),
+						fn( $row ) => '(direct)' !== $row['label']
+					)
+				),
+				'searchQueries' => isset( $contextual_data['searchQueries'] ) ? $contextual_data['searchQueries'] : array(),
+				'content'       => isset( $contextual_data['content'] ) ? $contextual_data['content'] : array(),
+			)
 		);
 	}
 
@@ -621,6 +630,8 @@ class Response_Builder {
 		 * - `searchQueryPages`: `query` and `page`, the path of the page.
 		 * - `searchQueryDevices`: `query` and `device`, as Analytics names
 		 *   it, such as `mobile`.
+		 * - `searchClicks`: one row, with no field besides the clicks of
+		 *   every search query.
 		 * - `content`: `url`, `title` and `publishedDaysAgo`.
 		 *
 		 * What a callback returns is checked before the next callback receives
@@ -635,6 +646,7 @@ class Response_Builder {
 		 * @since 1.190.0
 		 * @since n.e.x.t The rows count visits in place of visitors.
 		 * @since n.e.x.t The channel breakdowns and the search queries' pages and devices in place of the channel, device, visitor mix, referrer and category rows.
+		 * @since n.e.x.t Added `searchClicks`.
 		 *
 		 * @param array $contextual_data The rows, keyed by contextual data key.
 		 * @param array $args {

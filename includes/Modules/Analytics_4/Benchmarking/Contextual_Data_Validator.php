@@ -29,6 +29,7 @@ class Contextual_Data_Validator {
 	 *
 	 * @since 1.190.0
 	 * @since n.e.x.t Keyed by contextual data key, with the channel breakdowns in place of the channel, device, visitor mix and referrer rows, the search queries' pages and devices, and without the categories.
+	 * @since n.e.x.t Added `searchClicks`, the site's clicks over every search query.
 	 */
 	const ROW_FIELDS = array(
 		'channelBreakdowns'  => array(
@@ -72,6 +73,10 @@ class Contextual_Data_Validator {
 		'searchQueryDevices' => array(
 			'query'    => 'string',
 			'device'   => 'string',
+			'current'  => 'count',
+			'previous' => 'count',
+		),
+		'searchClicks'       => array(
 			'current'  => 'count',
 			'previous' => 'count',
 		),

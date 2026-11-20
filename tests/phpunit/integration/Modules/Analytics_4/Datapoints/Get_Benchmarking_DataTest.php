@@ -509,7 +509,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 		// The 56 days up to the end date are too little history for an
 		// expected range or for last year's visits. Search Console adds the
-		// `plant garlic` row.
+		// `plant garlic` row, and the site's clicks, which its fake API
+		// reports as those of `plant garlic`. The key factor card is the one
+		// referring site, which carries the whole change.
 		$this->assertSame(
 			array(
 				'request' => array(
@@ -550,6 +552,39 @@ class Get_Benchmarking_DataTest extends TestCase {
 								'query'    => 'plant garlic',
 								'clicks'   => $pair( 300, 210 ),
 								'position' => $pair( 3.4, 4.8 ),
+							),
+						),
+						'channel_breakdowns'     => array(
+							array(
+								'channel'  => 'Organic Search',
+								'device'   => 'mobile',
+								'segment'  => 'new',
+								'sessions' => $pair( 240, 200 ),
+							),
+						),
+						'search_clicks'          => $pair( 300, 210 ),
+					),
+					'decomposition'   => array(
+						'opening_sessions' => 200,
+						'closing_sessions' => 240,
+						'residual_delta'   => 0,
+						'shape'            => 'CONCENTRATED',
+						'key_factors'      => array(
+							array(
+								'dimension'          => 'SOURCES',
+								'entity_kind'        => 'REFERRING_SITE',
+								'title'              => 'a.example.com',
+								'volume'             => 240,
+								'delta'              => 40,
+								'is_large_share'     => true,
+								'direction'          => 'UP',
+								// JSON writes a whole float without its
+								// decimal point.
+								'traffic_impact_pct' => 100,
+								'metric_type'        => 'DELTA',
+								'share_basis'        => 'GROSS_CHANGE',
+								'role'               => 'PRIMARY',
+								'attributes'         => array(),
 							),
 						),
 					),
@@ -845,7 +880,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( 200, $reader_response->get_status(), 'A view-only reader should get the benchmarking data.' );
 		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->google_api_authorizations['analyticsdata.googleapis.com'], 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
 		$this->assertEquals( $owner_response->get_data(), $reader_response->get_data(), 'The reader should get the response the owner gets.' );
-		$this->assertSame( array( 'channelBreakdowns', 'channelSources', 'channelPages', 'channelCampaigns', 'searchQueries', 'searchQueryPages', 'searchQueryDevices' ), $this->contextual_data_keys, 'The builder should have the four channel breakdowns, and the search queries with their pages and devices, for the reader.' );
+		$this->assertSame( array( 'channelBreakdowns', 'channelSources', 'channelPages', 'channelCampaigns', 'searchQueries', 'searchQueryPages', 'searchQueryDevices', 'searchClicks' ), $this->contextual_data_keys, 'The builder should have the four channel breakdowns, the search queries with their pages and devices, and the site\'s search clicks, for the reader.' );
 		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry no key factor cards, since the compare period starts before the first day with traffic.' );
 		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry no key factor attributes, since it carries no cards.' );
 	}

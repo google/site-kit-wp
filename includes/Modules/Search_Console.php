@@ -398,10 +398,11 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 *
 	 * @since 1.190.0
 	 * @since n.e.x.t Also adds the `searchQueryPages` and `searchQueryDevices` rows.
+	 * @since n.e.x.t Also adds the `searchClicks` row.
 	 *
 	 * @param array $contextual_data The rows of the benchmarking response, keyed by contextual data key.
 	 * @param array $args            The period the rows are for, with `start_date`, `end_date`, `compare_start_date`, `compare_end_date`, and `row_limit`.
-	 * @return array The contextual data, with the `searchQueries`, `searchQueryPages` and `searchQueryDevices` rows that Search Console reported.
+	 * @return array The contextual data, with the `searchQueries`, `searchQueryPages`, `searchQueryDevices` and `searchClicks` rows that Search Console reported.
 	 */
 	private function add_search_query_rows( array $contextual_data, array $args ) {
 		if ( empty( $this->get_property_id() ) ) {

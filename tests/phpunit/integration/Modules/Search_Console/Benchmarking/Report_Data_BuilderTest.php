@@ -196,7 +196,7 @@ class Report_Data_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build_rows__asks_for_the_queries_their_pages_and_their_devices_of_each_period_with_the_row_limit() {
+	public function test_build_rows__asks_for_the_queries_their_pages_their_devices_and_the_site_clicks_of_each_period() {
 		$this->build_rows();
 
 		// Each part of the batch body has its JSON request on one line.
@@ -219,6 +219,19 @@ class Report_Data_BuilderTest extends TestCase {
 			);
 		}
 
+		// The report of the site's clicks has no dimensions, so its one row
+		// counts every query. The datapoint's default row limit applies.
+		$requests[] = array(
+			'endDate'   => '2026-09-15',
+			'rowLimit'  => 1000,
+			'startDate' => '2026-08-19',
+		);
+		$requests[] = array(
+			'endDate'   => '2026-08-18',
+			'rowLimit'  => 1000,
+			'startDate' => '2026-07-22',
+		);
+
 		$this->assertSame(
 			$requests,
 			array_map(
@@ -228,7 +241,87 @@ class Report_Data_BuilderTest extends TestCase {
 				),
 				$request_bodies[0]
 			),
-			'The batch call should ask for the queries, the queries by page, and the queries by device, each of the selected period and then of the compare period, each limited to 50 rows.'
+			'The batch call should ask for the queries, the queries by page, and the queries by device, each of the selected period and then of the compare period, each limited to 50 rows, and then for the site\'s clicks in each period.'
+		);
+	}
+
+	public function test_build_rows__lists_the_site_clicks_of_each_period() {
+		$this->report_rows = array(
+			'current'         => array(
+				array( 'plant garlic', 300, 3.4 ),
+			),
+			'previous'        => array(
+				array( 'plant garlic', 210, 4.8 ),
+			),
+			'current-totals'  => array(
+				array( 1250, 8.1 ),
+			),
+			'previous-totals' => array(
+				array( 980, 8.6 ),
+			),
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'current'  => 1250,
+					'previous' => 980,
+				),
+			),
+			$this->build_rows()['searchClicks'],
+			'`searchClicks` should have one row with the site\'s clicks in the selected and the compare period, over every query rather than the queries listed.'
+		);
+	}
+
+	public function test_build_rows__lists_0_site_clicks_for_a_period_without_a_click() {
+		$this->report_rows = array(
+			'previous-totals' => array(
+				array( 980, 8.6 ),
+			),
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'current'  => 0,
+					'previous' => 980,
+				),
+			),
+			$this->build_rows()['searchClicks'],
+			'A period whose report has no row should have 0 clicks.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_refused_site_clicks_reports
+	 *
+	 * @param string $refused_report_identifier The identifier of the report Search Console refuses.
+	 */
+	public function test_build_rows__returns_no_site_clicks_when_the_report_of_either_period_fails( $refused_report_identifier ) {
+		$this->report_rows = array(
+			'current'         => array(
+				array( 'plant garlic', 300, 3.4 ),
+			),
+			'previous'        => array(
+				array( 'plant garlic', 210, 4.8 ),
+			),
+			'current-totals'  => array(
+				array( 1250, 8.1 ),
+			),
+			'previous-totals' => array(
+				array( 980, 8.6 ),
+			),
+		);
+
+		$this->refused_report_identifier = $refused_report_identifier;
+
+		$this->assertSame( array( 'searchQueries' ), array_keys( $this->build_rows() ), "There should be no `searchClicks` when the `{$refused_report_identifier}` report fails, rather than a row with `0` clicks in it." );
+	}
+
+	public function data_refused_site_clicks_reports() {
+		return array(
+			'the selected period' => array( 'current-totals' ),
+			'the compare period'  => array( 'previous-totals' ),
 		);
 	}
 

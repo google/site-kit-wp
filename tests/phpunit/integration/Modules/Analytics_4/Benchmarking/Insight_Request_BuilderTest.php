@@ -188,9 +188,20 @@ class Insight_Request_BuilderTest extends TestCase {
 						),
 					),
 				),
+				// The period is steady, and Direct fell by 2.5% of the site's
+				// visits beyond the site's own rate, so its channels offset each
+				// other. The panel shows no card, so the decomposition has
+				// none, and the whole change is its residual.
+				'decomposition'   => array(
+					'opening_sessions' => 7714,
+					'closing_sessions' => 7730,
+					'residual_delta'   => 16,
+					'shape'            => 'OFFSETTING',
+					'key_factors'      => array(),
+				),
 			),
 			$request,
-			'The request should carry the end date, the period length, the visit totals with last year\'s, the expected range of `Period_Baseline`, and the channel rows.'
+			'The request should carry the end date, the period length, the visit totals with last year\'s, the expected range of `Period_Baseline`, the channel rows, and a decomposition without cards.'
 		);
 	}
 
@@ -913,6 +924,372 @@ class Insight_Request_BuilderTest extends TestCase {
 		);
 	}
 
+	public function test_build__lists_every_channel_breakdown_with_the_most_visited_first() {
+		$breakdown = fn( $channel, $device, $user_type, $current, $previous ) => array(
+			'channel'  => $channel,
+			'device'   => $device,
+			'userType' => $user_type,
+			'current'  => $current,
+			'previous' => $previous,
+		);
+
+		$request = $this->build_with_rows(
+			array(
+				'channelBreakdowns' => array(
+					$breakdown( 'Direct', 'mobile', 'returning', 40, 40 ),
+					$breakdown( 'Organic Search', 'desktop', 'new', 0, 15 ),
+					$breakdown( 'Organic Search', 'mobile', 'new', 300, 200 ),
+					$breakdown( 'Direct', 'desktop', '(not set)', 40, 30 ),
+				),
+			)
+		);
+
+		$segment = fn( $channel, $device, $segment, $current, $previous ) => array(
+			'channel'  => $channel,
+			'device'   => $device,
+			'segment'  => $segment,
+			'sessions' => array(
+				'current'  => $current,
+				'previous' => $previous,
+			),
+		);
+
+		$this->assertSame(
+			array(
+				$segment( 'Organic Search', 'mobile', 'new', 300, 200 ),
+				$segment( 'Direct', 'desktop', '(not set)', 40, 30 ),
+				$segment( 'Direct', 'mobile', 'returning', 40, 40 ),
+				$segment( 'Organic Search', 'desktop', 'new', 0, 15 ),
+			),
+			$request['contextual_data']['channel_breakdowns'],
+			'Every row of the channel breakdown should be listed with its visitor type as `segment`, raw, the most visited first and then by channel, device and segment.'
+		);
+	}
+
+	public function test_build__lists_the_30_landing_pages_of_each_channel_that_rose_most_and_the_30_that_fell_most() {
+		$page = fn( $channel, $page, $current, $previous ) => array(
+			'channel'  => $channel,
+			'page'     => $page,
+			'current'  => $current,
+			'previous' => $previous,
+		);
+
+		$rows = array( $page( 'Organic Search', '/unchanged/', 500, 500 ) );
+
+		foreach ( range( 1, 32 ) as $n ) {
+			$rows[] = $page( 'Organic Search', "/rise-$n/", 100 + $n, 100 );
+			$rows[] = $page( 'Organic Search', "/fall-$n/", 100, 100 + $n );
+		}
+
+		$rows[] = $page( 'Direct', '/', 90, 50 );
+
+		$request = $this->build_with_rows( array( 'channelPages' => $rows ) );
+		$urls    = array_column( $request['contextual_data']['channel_pages'], 'url' );
+
+		$this->assertCount( 61, $urls, 'Organic Search should list 30 pages in each direction, and Direct its one page.' );
+		$this->assertSame(
+			array( '/', '/fall-32/', '/rise-32/', '/fall-31/', '/rise-31/' ),
+			array_slice( $urls, 0, 5 ),
+			'The pages should be listed by how far they moved, then by their larger period, then by channel and page.'
+		);
+		$this->assertSame(
+			array( '/fall-3/', '/rise-3/' ),
+			array_slice( $urls, -2 ),
+			'The pages that moved least in each direction should be left out.'
+		);
+		$this->assertNotContains( '/unchanged/', $urls, 'A page whose visits did not change should be left out.' );
+		$this->assertSame(
+			array(
+				'channel'  => 'Direct',
+				'url'      => '/',
+				'sessions' => array(
+					'current'  => 90,
+					'previous' => 50,
+				),
+			),
+			$request['contextual_data']['channel_pages'][0],
+			'A page should be listed with its channel, its address as `url`, and its visits.'
+		);
+	}
+
+	public function test_build__lists_the_5_campaigns_of_each_channel_that_moved_most() {
+		$campaign = fn( $channel, $campaign, $current, $previous ) => array(
+			'channel'  => $channel,
+			'campaign' => $campaign,
+			'current'  => $current,
+			'previous' => $previous,
+		);
+
+		$request = $this->build_with_rows(
+			array(
+				'channelCampaigns' => array(
+					$campaign( 'Email', '(not set)', 900, 100 ),
+					$campaign( 'Email', 'unchanged', 400, 400 ),
+					$campaign( 'Email', 'news-1', 110, 100 ),
+					$campaign( 'Email', 'news-2', 100, 120 ),
+					$campaign( 'Email', 'news-3', 130, 100 ),
+					$campaign( 'Email', 'news-4', 100, 140 ),
+					$campaign( 'Email', 'news-5', 150, 100 ),
+					$campaign( 'Email', 'news-6', 100, 160 ),
+					$campaign( 'Organic Social', '(organic)', 300, 0 ),
+					$campaign( 'Organic Social', 'launch', 5, 0 ),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 'Email', 'news-6' ),
+				array( 'Email', 'news-5' ),
+				array( 'Email', 'news-4' ),
+				array( 'Email', 'news-3' ),
+				array( 'Email', 'news-2' ),
+				array( 'Organic Social', 'launch' ),
+			),
+			array_map(
+				fn( $row ) => array( $row['channel'], $row['campaign'] ),
+				$request['contextual_data']['channel_campaigns']
+			),
+			'Each channel should list the 5 named campaigns that moved most, without a placeholder or a campaign whose visits did not change.'
+		);
+	}
+
+	public function test_build__sends_the_site_search_clicks() {
+		$request = $this->build_with_rows(
+			array(
+				'searchClicks' => array(
+					array(
+						'current'  => '1250',
+						'previous' => 980.0,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'current'  => 1250,
+				'previous' => 980,
+			),
+			$request['contextual_data']['search_clicks'],
+			'The site\'s search clicks should be sent as integers.'
+		);
+		$this->assertArrayNotHasKey( 'contextual_data', $this->build_with_rows( array( 'searchClicks' => array() ) ), 'Without the site\'s search clicks, the request should carry no `search_clicks`.' );
+	}
+
+	public function test_build__lists_the_20_most_visited_pages_of_each_period_over_every_channel() {
+		$rows = array(
+			array(
+				'channel'  => 'Organic Search',
+				'page'     => '/',
+				'current'  => 300,
+				'previous' => 10,
+			),
+			array(
+				'channel'  => 'Direct',
+				'page'     => '/',
+				'current'  => 200,
+				'previous' => 10,
+			),
+			array(
+				'channel'  => 'Referral',
+				'page'     => '/?utm_source=newsletter',
+				'current'  => 50,
+				'previous' => 0,
+			),
+			array(
+				'channel'  => 'Direct',
+				'page'     => '(not set)',
+				'current'  => 900,
+				'previous' => 900,
+			),
+		);
+
+		foreach ( range( 1, 22 ) as $n ) {
+			$rows[] = array(
+				'channel'  => 'Organic Search',
+				'page'     => sprintf( '/page-%02d/', $n ),
+				'current'  => 100 - $n,
+				'previous' => $n,
+			);
+		}
+
+		$request = $this->build_with_rows( array( 'channelPages' => $rows ) );
+
+		$this->assertSame(
+			array_merge(
+				array(
+					array(
+						'url'    => '/',
+						'visits' => 550,
+					),
+				),
+				array_map(
+					fn( $n ) => array(
+						'url'    => sprintf( '/page-%02d/', $n ),
+						'visits' => 100 - $n,
+					),
+					range( 1, 19 )
+				)
+			),
+			$request['contextual_data']['top_pages'],
+			'The 20 most visited pages of the selected period should be listed, each with its visits through every channel and without its query, the home page included and the placeholder left out.'
+		);
+		// The home page's 20 visits tie with `/page-20/`, which its path sorts
+		// before.
+		$this->assertSame(
+			array_merge(
+				array( '/page-22/', '/page-21/', '/' ),
+				array_map( fn( $n ) => sprintf( '/page-%02d/', $n ), range( 20, 4 ) )
+			),
+			array_column( $request['contextual_data']['previous_top_pages'], 'url' ),
+			'The 20 most visited pages of the compare period should be listed, the most visited first and then by path.'
+		);
+	}
+
+	public function test_build__lists_the_categories_of_each_post_published_by_the_last_day_of_the_period() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$garden = self::factory()->category->create( array( 'name' => 'Garden' ) );
+		$food   = self::factory()->category->create( array( 'name' => 'Food & Drink' ) );
+
+		// Published during the selected period, which ends on `2026-09-15`, and
+		// after the compare period, which ends on `2026-08-18`.
+		self::factory()->post->create(
+			array(
+				'post_name'     => 'plant-garlic',
+				'post_date'     => '2026-09-01 10:00:00',
+				'post_date_gmt' => '2026-09-01 10:00:00',
+				'post_category' => array( $garden, $food ),
+			)
+		);
+		self::factory()->post->create(
+			array(
+				'post_name'     => 'raised-beds',
+				'post_date'     => '2026-01-10 10:00:00',
+				'post_date_gmt' => '2026-01-10 10:00:00',
+				'post_category' => array( $garden ),
+			)
+		);
+		self::factory()->post->create(
+			array(
+				'post_name'     => 'a-draft',
+				'post_status'   => 'draft',
+				'post_date'     => '2026-01-10 10:00:00',
+				'post_date_gmt' => '2026-01-10 10:00:00',
+				'post_category' => array( $garden ),
+			)
+		);
+		self::factory()->post->create(
+			array(
+				'post_type' => 'page',
+				'post_name' => 'about',
+			)
+		);
+
+		$request = $this->build_with_rows(
+			array(
+				'channelPages' => array_map(
+					fn( $page ) => array(
+						'channel'  => 'Organic Search',
+						'page'     => $page,
+						'current'  => 100,
+						'previous' => 100,
+					),
+					array( '/plant-garlic/', '/raised-beds/', '/a-draft/', '/about/', '/' )
+				),
+			)
+		);
+
+		$categories = fn( $pages ) => array_combine(
+			array_column( $pages, 'url' ),
+			array_map( fn( $page ) => isset( $page['categories'] ) ? $page['categories'] : null, $pages )
+		);
+
+		$this->assertSame(
+			array(
+				'/'              => null,
+				'/a-draft/'      => null,
+				'/about/'        => null,
+				'/plant-garlic/' => array( 'Food & Drink', 'Garden' ),
+				'/raised-beds/'  => array( 'Garden' ),
+			),
+			$categories( $request['contextual_data']['top_pages'] ),
+			'A published post should carry the names of its categories in the selected period, and a draft, a page and the home page none.'
+		);
+		$this->assertSame(
+			array(
+				'/'              => null,
+				'/a-draft/'      => null,
+				'/about/'        => null,
+				'/plant-garlic/' => null,
+				'/raised-beds/'  => array( 'Garden' ),
+			),
+			$categories( $request['contextual_data']['previous_top_pages'] ),
+			'A post published after the compare period should carry no categories in it.'
+		);
+	}
+
+	public function test_build__sends_the_key_factor_cards_as_the_decomposition() {
+		$request = $this->builder->build(
+			self::START_DATE,
+			self::END_DATE,
+			$this->get_period_baseline( self::SERIES_START_DATE, self::END_DATE, array( $this, 'get_varying_visits' ) ),
+			array(
+				'current'  => 7730,
+				'previous' => 7714,
+			),
+			array(
+				'channels' => array(
+					array(
+						'label'    => 'Direct',
+						'current'  => 2730,
+						'previous' => 2914,
+					),
+					array(
+						'label'    => 'Organic Search',
+						'current'  => 5000,
+						'previous' => 4800,
+					),
+				),
+			),
+			array(
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Organic Search',
+					'current'    => 5000,
+					'previous'   => 4800,
+					'sharePct'   => 100.0,
+					'attributes' => array(),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'Organic Search' ),
+			array_column( $request['decomposition']['key_factors'], 'title' ),
+			'The decomposition should carry the key factor card.'
+		);
+		$this->assertSame( 16 - 200, $request['decomposition']['residual_delta'], 'The residual should be the site\'s change less the card\'s.' );
+		$this->assertSame( 'decomposition', array_key_last( $request ), 'The decomposition should close the request, after the contextual data.' );
+	}
+
+	public function test_build__sends_no_decomposition_without_channels() {
+		$request = $this->build_with_rows(
+			array(
+				'devices' => array(
+					array(
+						'label'    => 'mobile',
+						'current'  => 300,
+						'previous' => 250,
+					),
+				),
+			)
+		);
+
+		$this->assertArrayNotHasKey( 'decomposition', $request, 'Without channels, the cards\' changes add up to nothing, so the request should carry no decomposition.' );
+	}
+
 	public function test_build__leaves_out_each_contextual_field_without_rows() {
 		$request = $this->build_with_rows(
 			array(
@@ -1024,6 +1401,57 @@ class Insight_Request_BuilderTest extends TestCase {
 			),
 		);
 
+		$contextual_data['channelBreakdowns'] = array(
+			array(
+				'channel'  => 'Organic Search',
+				'device'   => 'mobile',
+				'userType' => 'new',
+				'current'  => 40,
+				'previous' => 30,
+			),
+			array(
+				'channel'  => 'Direct',
+				'device'   => 'desktop',
+				'userType' => 'returning',
+				'current'  => 40,
+				'previous' => 20,
+			),
+		);
+		$contextual_data['channelPages']      = array(
+			array(
+				'channel'  => 'Organic Search',
+				'page'     => '/b/',
+				'current'  => 40,
+				'previous' => 20,
+			),
+			array(
+				'channel'  => 'Organic Search',
+				'page'     => '/a/',
+				'current'  => 20,
+				'previous' => 40,
+			),
+			array(
+				'channel'  => 'Direct',
+				'page'     => '/a/',
+				'current'  => 40,
+				'previous' => 20,
+			),
+		);
+		$contextual_data['channelCampaigns']  = array(
+			array(
+				'channel'  => 'Email',
+				'campaign' => 'b',
+				'current'  => 10,
+				'previous' => 20,
+			),
+			array(
+				'channel'  => 'Email',
+				'campaign' => 'a',
+				'current'  => 20,
+				'previous' => 10,
+			),
+		);
+
 		$reversed_data = array_map( 'array_reverse', $contextual_data );
 		$request       = $this->build_with_rows( $contextual_data );
 
@@ -1041,21 +1469,21 @@ class Insight_Request_BuilderTest extends TestCase {
 				'previous' => 7714.0,
 			),
 			array(
-				'channels'      => array(
+				'channels'          => array(
 					array(
 						'label'    => 'Direct',
 						'current'  => '10',
 						'previous' => 5.0,
 					),
 				),
-				'referrers'     => array(
+				'referrers'         => array(
 					array(
 						'label'    => 'a.example.com',
 						'current'  => 12.0,
 						'previous' => '3',
 					),
 				),
-				'searchQueries' => array(
+				'searchQueries'     => array(
 					array(
 						'label'            => 'garlic',
 						'current'          => '20',
@@ -1064,7 +1492,7 @@ class Insight_Request_BuilderTest extends TestCase {
 						'positionPrevious' => 3,
 					),
 				),
-				'content'       => array(
+				'content'           => array(
 					array(
 						'url'              => '/a/',
 						'title'            => 'A',
@@ -1073,16 +1501,71 @@ class Insight_Request_BuilderTest extends TestCase {
 						'previous'         => '0',
 					),
 				),
+				'channelBreakdowns' => array(
+					array(
+						'channel'  => 'Direct',
+						'device'   => 'mobile',
+						'userType' => 'new',
+						'current'  => '10',
+						'previous' => 5.0,
+					),
+				),
+				'channelPages'      => array(
+					array(
+						'channel'  => 'Direct',
+						'page'     => '/a/',
+						'current'  => 7.0,
+						'previous' => '3',
+					),
+				),
+				'channelCampaigns'  => array(
+					array(
+						'channel'  => 'Email',
+						'campaign' => 'spring-sale',
+						'current'  => '4',
+						'previous' => 2.0,
+					),
+				),
+				'searchClicks'      => array(
+					array(
+						'current'  => '25',
+						'previous' => 15.0,
+					),
+				),
+			),
+			array(
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Direct',
+					'current'    => '10',
+					'previous'   => 5.0,
+					'sharePct'   => 100.0,
+					'attributes' => array(
+						array(
+							'kind'     => 'LANDING_PAGE',
+							'label'    => '/a/',
+							'current'  => 7.0,
+							'previous' => '3',
+							'sharePct' => 80.0,
+						),
+					),
+				),
 			)
 		);
 
 		$leaves    = $this->get_leaves( $request );
 		$positions = array_filter( $leaves, fn( $path ) => false !== strpos( $path, '.position.' ), ARRAY_FILTER_USE_KEY );
-		$counts    = array_filter( array_diff_key( $leaves, $positions ), 'is_numeric' );
+		// A card's share and excess change, and a row's share, are the
+		// request's other numbers with decimals.
+		$decimals = array_filter( $leaves, fn( $path ) => (bool) preg_match( '/(_pct|\.excess)$/', $path ), ARRAY_FILTER_USE_KEY );
+		$counts   = array_filter( array_diff_key( $leaves, $positions, $decimals ), 'is_numeric' );
 
-		$this->assertNotEmpty( $counts, 'The request should have counts.' );
+		$this->assertArrayHasKey( 'decomposition.key_factors.0.attributes.0.entity_delta', $counts, 'The request should have the counts of the decomposition.' );
+		$this->assertArrayHasKey( 'contextual_data.search_clicks.current', $counts, 'The request should have the counts of the contextual data.' );
 		$this->assertSame( array(), array_keys( array_filter( $counts, fn( $value ) => ! is_int( $value ) ) ), 'Every count of the request should be an integer, since the service refuses a count with a decimal point.' );
 		$this->assertSame( array(), array_keys( array_filter( $positions, fn( $value ) => ! is_float( $value ) ) ), 'Every position of the request should be a float.' );
+		$this->assertNotEmpty( $decimals, 'The request should have the shares of the decomposition.' );
+		$this->assertSame( array(), array_keys( array_filter( $decimals, fn( $value ) => ! is_float( $value ) ) ), 'Every share and excess change of the request should be a float.' );
 		$this->assertSame( 'a.example.com', $request['contextual_data']['referrers'][0]['referrer'], 'A label should be sent as a string.' );
 	}
 }

@@ -726,11 +726,20 @@ class Response_BuilderTest extends TestCase {
 			'previous' => $previous,
 		);
 
+		$breakdown = fn( $channel, $device, $segment, $current, $previous ) => array(
+			'channel'  => $channel,
+			'device'   => $device,
+			'segment'  => $segment,
+			'sessions' => $pair( $current, $previous ),
+		);
+
 		// The 56 days up to the end date are too little history for an
 		// expected range, and leave last year's periods out. The channels,
 		// devices and visitor types are the sums of the channel breakdown, and
 		// the referrers the sums of the channel and source breakdown, without
-		// `(direct)`.
+		// `(direct)`. The breakdowns themselves follow, and the most visited
+		// pages are the sums of the channel and page breakdown. The
+		// decomposition has a test of its own.
 		$this->assertSame(
 			array(
 				'end_date'        => '2026-09-15',
@@ -809,10 +818,82 @@ class Response_BuilderTest extends TestCase {
 							'sessions'           => 30,
 						),
 					),
+					'channel_breakdowns'      => array(
+						$breakdown( 'Organic Search', 'mobile', 'new', 210, 168 ),
+						$breakdown( 'Direct', 'desktop', 'returning', 118, 137 ),
+						$breakdown( 'Referral', 'mobile', 'new', 47, 0 ),
+						$breakdown( 'Email', 'desktop', 'returning', 42, 40 ),
+						$breakdown( 'Affiliates', 'mobile', 'returning', 30, 10 ),
+						$breakdown( 'Display', 'desktop', 'new', 30, 10 ),
+					),
+					'channel_pages'           => array(
+						array(
+							'channel'  => 'Organic Search',
+							'url'      => '/plant-garlic/',
+							'sessions' => $pair( 120, 100 ),
+						),
+					),
+					'channel_campaigns'       => array(
+						array(
+							'channel'  => 'Email',
+							'campaign' => 'spring-sale',
+							'sessions' => $pair( 42, 40 ),
+						),
+					),
+					'top_pages'               => array(
+						array(
+							'url'    => '/plant-garlic/',
+							'visits' => 120,
+						),
+					),
+					'previous_top_pages'      => array(
+						array(
+							'url'    => '/plant-garlic/',
+							'visits' => 100,
+						),
+					),
 				),
 			),
-			$response['insightRequest'],
-			'With the `trafficInsights` feature, the response should carry the insight request, built from the daily series and from the sums of the breakdowns.'
+			array_diff_key( $response['insightRequest'], array( 'decomposition' => true ) ),
+			'With the `trafficInsights` feature, the response should carry the insight request, built from the daily series, from the sums of the breakdowns, and from the breakdowns themselves.'
+		);
+	}
+
+	public function test_build__sends_the_key_factor_cards_as_the_decomposition_of_the_insight_request() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->provide_reports_for_every_dimension();
+
+		$this->report_rows['date'] = array(
+			array( '20260722', 388 ),
+			array( '20260915', 412 ),
+		);
+
+		$response      = $this->builder->build( '2026-08-19', '2026-09-15' );
+		$decomposition = $response['insightRequest']['decomposition'];
+
+		$this->assertSame(
+			array_column( $response['keyFactors'], 'label' ),
+			array_column( $decomposition['key_factors'], 'title' ),
+			'The decomposition should carry the key factor cards of the response, in their order.'
+		);
+		$this->assertSame(
+			array_map( fn( $card ) => $card['current'] - $card['previous'], $response['keyFactors'] ),
+			array_column( $decomposition['key_factors'], 'delta' ),
+			'Each card of the decomposition should carry the change of its key factor card.'
+		);
+
+		// The channels count fewer visits in the compare period than the daily
+		// series, so the cards' changes add up from the site's totals. The
+		// residual is the 24 visits the site gained, less the 150 its three
+		// referring sites gained.
+		$this->assertSame(
+			array(
+				'opening_sessions' => 388,
+				'closing_sessions' => 412,
+				'residual_delta'   => -126,
+			),
+			array_intersect_key( $decomposition, array_flip( array( 'opening_sessions', 'closing_sessions', 'residual_delta' ) ) ),
+			'The cards\' changes and the residual should add up to the change in the site\'s visits.'
 		);
 	}
 

@@ -40,12 +40,15 @@ final class Insight_Payload {
 	const SIGNATURE_ALGORITHM = 'sha256';
 
 	/**
-	 * The longest payload that is decoded, in bytes. The request's lists are
-	 * short, so a real payload is a few kilobytes.
+	 * The longest payload that is decoded, in bytes. The request's longest
+	 * lists, the channel breakdowns and the landing pages of each channel, come
+	 * from reports of at most `Report_Options::REPORT_ROW_LIMIT` rows, so a
+	 * real payload is at most a few hundred kilobytes, well under the
+	 * service's limit of 2 MiB.
 	 *
 	 * @since n.e.x.t
 	 */
-	const MAX_LENGTH = 262144;
+	const MAX_LENGTH = 1048576;
 
 	/**
 	 * Encodes and signs a request for the given user.

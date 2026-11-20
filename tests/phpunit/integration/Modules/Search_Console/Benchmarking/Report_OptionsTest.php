@@ -50,4 +50,25 @@ class Report_OptionsTest extends TestCase {
 			'There should be a `query`, a `query,page` and a `query,device` report for the selected period and for the compare period, each limited to 50 rows.'
 		);
 	}
+
+	public function test_get_search_clicks_requests__asks_for_the_clicks_of_each_period_without_dimensions() {
+		$report_options = new Report_Options( '2026-08-19', '2026-09-15', '2026-07-22', '2026-08-18', 50 );
+
+		$this->assertSame(
+			array(
+				array(
+					'identifier' => 'current-totals',
+					'startDate'  => '2026-08-19',
+					'endDate'    => '2026-09-15',
+				),
+				array(
+					'identifier' => 'previous-totals',
+					'startDate'  => '2026-07-22',
+					'endDate'    => '2026-08-18',
+				),
+			),
+			$report_options->get_search_clicks_requests(),
+			'There should be a report of the site\'s clicks without dimensions for the selected period and for the compare period.'
+		);
+	}
 }

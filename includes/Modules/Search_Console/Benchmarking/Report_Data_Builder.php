@@ -49,7 +49,13 @@ class Report_Data_Builder {
 	 * as Analytics names a landing page, and a device is in lowercase, as
 	 * Analytics names it, so the rows of both modules match.
 	 *
+	 * The site's clicks are left out when neither period has one, since Search
+	 * Console reports no row both for a period without clicks and for a
+	 * property without data, and the insight request never sends a `0` for
+	 * missing data.
+	 *
 	 * @since n.e.x.t
+	 * @since n.e.x.t Also returns the site's clicks in each period, as `searchClicks`.
 	 *
 	 * @param array $args {
 	 *     The period the rows are for, as the `googlesitekit_benchmarking_contextual_data` filter passes it.
@@ -66,6 +72,7 @@ class Report_Data_Builder {
 	 *     @type array $searchQueries      List of rows, one per query, each with `label`, `current`, `previous`, `positionCurrent`, and `positionPrevious`.
 	 *     @type array $searchQueryPages   List of rows, one per query and page, each with `query`, `page`, `current`, and `previous`.
 	 *     @type array $searchQueryDevices List of rows, one per query and device, each with `query`, `device`, `current`, and `previous`.
+	 *     @type array $searchClicks       List of one row, with the site's clicks over every query as `current` and `previous`.
 	 * }
 	 */
 	public function build_rows( array $args ) {
@@ -80,7 +87,10 @@ class Report_Data_Builder {
 		$reports = $this->search_console->set_data(
 			'searchanalytics-batch',
 			array(
-				'requests' => $report_options->get_search_query_requests(),
+				'requests' => array_merge(
+					$report_options->get_search_query_requests(),
+					$report_options->get_search_clicks_requests()
+				),
 			)
 		);
 
@@ -105,9 +115,33 @@ class Report_Data_Builder {
 			'searchQueryDevices' => $this->has_both_periods( $reports, '-devices' )
 				? $this->build_breakdown_rows( $reports, '-devices', 'device', 'strtolower' )
 				: array(),
+			'searchClicks'       => $this->has_both_periods( $reports, '-totals' ) ? $this->build_search_clicks_rows( $reports ) : array(),
 		);
 
 		return array_filter( $rows );
+	}
+
+	/**
+	 * Builds the row of the site's clicks in each period.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $reports The reports of the batch call, keyed by identifier.
+	 * @return array List of one row with `current` and `previous`, or an empty list when neither period has a click.
+	 */
+	private function build_search_clicks_rows( array $reports ) {
+		$clicks = array();
+
+		foreach ( array( 'current', 'previous' ) as $period ) {
+			$clicks[ $period ] = array_sum(
+				array_map(
+					fn( $report_row ) => (int) $report_row->getClicks(),
+					$reports[ "{$period}-totals" ]
+				)
+			);
+		}
+
+		return 0 === $clicks['current'] && 0 === $clicks['previous'] ? array() : array( $clicks );
 	}
 
 	/**

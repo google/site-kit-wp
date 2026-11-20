@@ -115,4 +115,30 @@ class Report_Options {
 
 		return $requests;
 	}
+
+	/**
+	 * Gets the requests of the site's clicks in each period, over every query.
+	 *
+	 * A report without dimensions has one row, with the site's total clicks.
+	 * The query report can't give them, since its row limit leaves out the
+	 * queries with the fewest clicks.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of the two `searchanalytics-batch` requests, identified by `current-totals` for the selected period and `previous-totals` for the compare period.
+	 */
+	public function get_search_clicks_requests() {
+		return array(
+			array(
+				'identifier' => 'current-totals',
+				'startDate'  => $this->start_date,
+				'endDate'    => $this->end_date,
+			),
+			array(
+				'identifier' => 'previous-totals',
+				'startDate'  => $this->compare_start_date,
+				'endDate'    => $this->compare_end_date,
+			),
+		);
+	}
 }
