@@ -29,13 +29,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { VoteDirection } from '@/js/components/feedback/constants';
-import { FeedbackMenuOption } from '@/js/components/feedback/FeedbackMenu';
-import ThumbsFeedback from '@/js/components/feedback/ThumbsFeedback';
 import Typography from '@/js/components/Typography';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 import { trackEvent } from '@/js/util';
+import { VoteDirection } from './constants';
+import { FeedbackMenuOption } from './FeedbackMenu';
+import ThumbsFeedback from './ThumbsFeedback';
 
 interface FeedbackPromptProps {
 	/** The product area the feedback is about. */
@@ -66,7 +66,7 @@ interface FeedbackPromptProps {
  * @since 1.190.0 Replaced the `goalType` prop with `gaTrackingEventArgs`.
  * @since 1.191.0 Added the `hideQuestion` prop to show only the thumbs.
  * @since 1.192.0 Added the `onVote` prop. Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
- * @since n.e.x.t Added the `feedbackOptions` prop.
+ * @since n.e.x.t Added the `feedbackOptions` prop, and moved to the shared feedback components.
  *
  * @param props                     Component props.
  * @param props.feedbackNamespace   The product area the feedback is about.

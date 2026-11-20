@@ -37,13 +37,13 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import FeedbackPrompt from '@/js/components/feedback/FeedbackPrompt';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useViewContext from '@/js/hooks/useViewContext';
-import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
 import { TilesGroup } from '@/js/modules/analytics-4/components/common/tiles';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
