@@ -76,7 +76,7 @@ export default function PublicationApprovedOverlayNotification( {
 					'google-site-kit'
 				) }
 				description={ __(
-					'Unlock your full reader opportunity by enabling features like paywall, subscriptions, contributions and newsletter sign ups.',
+					'Unlock your full reader opportunity by enabling features like paywall, subscriptions, contributions, and newsletter sign-ups.',
 					'google-site-kit'
 				) }
 				ctaButton={ {

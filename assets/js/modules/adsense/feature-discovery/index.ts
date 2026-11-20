@@ -122,7 +122,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: adsenseEarningsScreenshotURL,
 					alt: __(
-						'Screenshot of the monetization section of the Site Kit dashboard showing AdSense earnings, page RPM, impressions and page CTR compared with the previous period, and a list of the top earning pages',
+						'Screenshot of the monetization section of the Site Kit dashboard showing AdSense earnings, page RPM, impressions, and page CTR compared with the previous period, and a list of the top earning pages',
 						'google-site-kit'
 					),
 					width: 620,

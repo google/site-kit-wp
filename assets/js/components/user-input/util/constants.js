@@ -170,7 +170,7 @@ export function getUserInputAnswers() {
 			),
 			growing_audience: __( 'Grow my audience', 'google-site-kit' ),
 			expanding_business: __(
-				'Expand my business into new cities, states or markets',
+				'Expand my business into new cities, states, or markets',
 				'google-site-kit'
 			),
 			generating_revenue: __(

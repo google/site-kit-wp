@@ -78,7 +78,7 @@ export default function PAXSetupSuccessSubtleNotification( {
 					'google-site-kit'
 				) }
 				description={ __(
-					'Track your conversions, measure your campaign results and make the most of your ad spend',
+					'Track your conversions, measure your campaign results, and make the most of your ad spend',
 					'google-site-kit'
 				) }
 				dismissButton={ {

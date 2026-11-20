@@ -91,7 +91,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				documentationURL:
 					'https://sitekit.withgoogle.com/documentation/supported-services/ads/',
 				serviceRequirements: __(
-					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information and payment details',
+					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information, and payment details',
 					'google-site-kit'
 				),
 				setupList: [

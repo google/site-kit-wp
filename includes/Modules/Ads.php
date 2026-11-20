@@ -298,7 +298,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		return array(
 			'slug'        => 'ads',
 			'name'        => _x( 'Ads', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Grow sales, leads or awareness for your business by advertising with Google Ads', 'google-site-kit' ),
+			'description' => __( 'Grow sales, leads, or awareness for your business by advertising with Google Ads', 'google-site-kit' ),
 			'homepage'    => __( 'https://google.com/ads', 'google-site-kit' ),
 		);
 	}

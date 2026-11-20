@@ -202,7 +202,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		detail: {
 			description: {
 				whatIs: __(
-					'Email reports enable all users with access to the Site Kit dashboard to opt in to receive reports containing site performance metrics on a weekly, monthly, or quarterly basis. Other users can also be invited to receive email reports. The contents of the email summarize the performance of your site into easily understood sections, providing an overview of how people found your site, the most engaging content and more.',
+					'Email reports enable all users with access to the Site Kit dashboard to opt in to receive reports containing site performance metrics on a weekly, monthly, or quarterly basis. Other users can also be invited to receive email reports. The contents of the email summarize the performance of your site into easily understood sections, providing an overview of how people found your site, the most engaging content, and more.',
 					'google-site-kit'
 				),
 				whyUseHeading: __(
@@ -277,7 +277,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: emailReportsEmailScreenshotURL,
 					alt: __(
-						'Screenshot of a Site Kit email report on a mobile device summarizing site performance for the past week, including online store sales, form completions and visitor numbers compared with the previous period',
+						'Screenshot of a Site Kit email report on a mobile device summarizing site performance for the past week, including online store sales, form completions, and visitor numbers compared with the previous period',
 						'google-site-kit'
 					),
 					width: 375,
@@ -286,7 +286,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: emailReportsSubscriptionScreenshotURL,
 					alt: __(
-						'Screenshot of the email reports subscription panel in Site Kit with options to receive reports weekly, monthly or quarterly, and a list of other site users to invite',
+						'Screenshot of the email reports subscription panel in Site Kit with options to receive reports weekly, monthly, or quarterly, and a list of other site users to invite',
 						'google-site-kit'
 					),
 					width: 620,
@@ -339,7 +339,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		detail: {
 			description: {
 				whatIs: __(
-					'In just a couple of clicks, you can export a snapshot of the Site Kit dashboard, selecting what you wish to be included, into a PDF document. By generating PDF reports, you can easily share, print or review how you site is performing, similar to how it appears on the Site Kit dashboard.',
+					'In just a couple of clicks, you can export a snapshot of the Site Kit dashboard, selecting what you wish to be included, into a PDF document. By generating PDF reports, you can easily share, print, or review how you site is performing, similar to how it appears on the Site Kit dashboard.',
 					'google-site-kit'
 				),
 				whyUseHeading: __( 'Why use PDF reports?', 'google-site-kit' ),
@@ -388,7 +388,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: pdfReportPanelScreenshotURL,
 					alt: __(
-						'Screenshot of the download report panel in Site Kit with checkboxes to choose which sections of the dashboard to include in the PDF report, such as key metrics, traffic, content, speed and monetization',
+						'Screenshot of the download report panel in Site Kit with checkboxes to choose which sections of the dashboard to include in the PDF report, such as key metrics, traffic, content, speed, and monetization',
 						'google-site-kit'
 					),
 					width: 620,
@@ -397,7 +397,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: pdfReportFullScreenshotURL,
 					alt: __(
-						"Screenshot of a Site Kit PDF report showing the site's performance for a date range, with key metrics followed by charts of traffic over time, visitors by channel, location and device, and search traffic",
+						"Screenshot of a Site Kit PDF report showing the site's performance for a date range, with key metrics followed by charts of traffic over time, visitors by channel, location, and device, and search traffic",
 						'google-site-kit'
 					),
 					width: 620,
