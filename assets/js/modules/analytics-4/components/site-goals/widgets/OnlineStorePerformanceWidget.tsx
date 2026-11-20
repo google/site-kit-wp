@@ -82,6 +82,7 @@ import {
 	VisitorEngagementTiles,
 	resolveVisitorEngagementSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import { SITE_GOALS_WIDGET_FEEDBACK_OPTIONS } from '@/js/modules/analytics-4/components/site-goals/widgets/feedbackOptions';
 import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -689,6 +690,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 					feedbackGroup={
 						SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE
 					}
+					feedbackOptions={ SITE_GOALS_WIDGET_FEEDBACK_OPTIONS }
 					gaTrackingEventArgs={ {
 						category: `${ viewContext }_site-goals-widget-survey`,
 						label: GOAL_TYPES.ECOMMERCE,

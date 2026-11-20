@@ -79,6 +79,7 @@ import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/
 import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import { SITE_GOALS_WIDGET_FEEDBACK_OPTIONS } from '@/js/modules/analytics-4/components/site-goals/widgets/feedbackOptions';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent, untrailingslashit } from '@/js/util';
@@ -754,6 +755,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					feedbackGroup={
 						SITE_GOALS_FEEDBACK_GROUP_WIDGET_LEAD_GENERATION
 					}
+					feedbackOptions={ SITE_GOALS_WIDGET_FEEDBACK_OPTIONS }
 					gaTrackingEventArgs={ {
 						category: `${ viewContext }_site-goals-widget-survey`,
 						label: GOAL_TYPES.LEAD,

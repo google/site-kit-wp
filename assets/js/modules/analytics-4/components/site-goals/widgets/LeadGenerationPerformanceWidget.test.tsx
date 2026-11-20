@@ -1603,6 +1603,111 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 	} );
 
+	describe.each< [ string, [ string, string ][] ] >( [
+		[
+			'Yes, this was helpful',
+			[
+				[
+					'Shows me which traffic actually drives results',
+					'shows_what_drives_results',
+				],
+				[
+					'Clear visibility into which channels are working for me',
+					'clear_channel_visibility',
+				],
+				[ 'Easy to understand at a glance', 'easy_to_understand' ],
+			],
+		],
+		[
+			'No, this was not helpful',
+			[
+				[
+					'It’s missing the metrics I track / care about',
+					'missing_metrics',
+				],
+				[ 'Numbers are wrong or out of date', 'numbers_wrong' ],
+				[ 'I don’t understand what a metric means', 'metric_unclear' ],
+			],
+		],
+	] )( 'after clicking "%s"', ( buttonName, reasons ) => {
+		it( 'should open the "Help us improve" menu with the reasons for that vote', async () => {
+			fetchMock.post( feedbackEndpoint, {
+				status: 200,
+				body: { success: true },
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+			seedReadyReports();
+
+			const { getByRole, getAllByRole, waitForRegistry } = render(
+				<LeadGenerationPerformanceWidget { ...widgetProps } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: buttonName } ) );
+
+			expect(
+				getByRole( 'heading', { name: 'Help us improve' } )
+			).toBeInTheDocument();
+			expect(
+				getAllByRole( 'menuitem' ).map( ( item ) => item.textContent )
+			).toEqual( reasons.map( ( [ label ] ) => label ) );
+
+			await waitForRegistry();
+		} );
+
+		it.each( reasons )(
+			'should send the "%s" reason as `%s` without a GA event',
+			async ( label, value ) => {
+				fetchMock.post( feedbackEndpoint, {
+					status: 200,
+					body: { success: true },
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					] );
+				seedReadyReports();
+
+				const { getByRole, findByText, waitForRegistry } = render(
+					<LeadGenerationPerformanceWidget { ...widgetProps } />,
+					{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+				);
+				await waitForRegistry();
+
+				fireEvent.click( getByRole( 'button', { name: buttonName } ) );
+
+				mockTrackEvent.mockClear();
+
+				fireEvent.click( getByRole( 'menuitem', { name: label } ) );
+
+				expect(
+					await findByText( 'Thanks for the feedback!' )
+				).toBeInTheDocument();
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
+						body: {
+							data: {
+								namespace: 'analytics',
+								group: 'site_goals_widget_lead_generation',
+								key: 'vote_reason',
+								value,
+							},
+						},
+					} )
+				);
+
+				expect( mockTrackEvent ).not.toHaveBeenCalled();
+			}
+		);
+	} );
+
 	function seedReadyReports() {
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
 			compare: true,
