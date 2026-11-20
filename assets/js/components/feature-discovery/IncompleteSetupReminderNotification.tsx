@@ -32,13 +32,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { INCOMPLETE_SETUP_REMINDER_NOTIFICATION_EVENT_ID } from '@/js/components/feature-discovery/constants';
 import { FEATURE_DISCOVERY_CALLOUT_NOTIFICATION } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
 import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
 	INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG,
-	INCOMPLETE_SETUP_TOOLTIP_SLUG,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
@@ -46,6 +46,7 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 
 interface IncompleteSetupReminderNotificationProps {
 	id: string;
@@ -58,6 +59,8 @@ const IncompleteSetupReminderNotification: FC<
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { removeNotificationFromQueue } = useDispatch( CORE_NOTIFICATIONS );
 	const { dismissItem } = useDispatch( CORE_USER );
+
+	const viewContext = useViewContext();
 
 	const feature = useSelect(
 		( select: Select ): Feature | undefined =>
@@ -96,20 +99,29 @@ const IncompleteSetupReminderNotification: FC<
 		[]
 	);
 
-	const { description, title, tooltip } =
-		feature?.incompleteSetupReminder || {};
+	const { incompleteSetupReminder, slug } = feature || {};
+	const { description, title, tooltip } = incompleteSetupReminder || {};
+
+	const gaTrackingEventArgs = useMemo(
+		() => ( {
+			category: `${ viewContext }_${ INCOMPLETE_SETUP_REMINDER_NOTIFICATION_EVENT_ID }`,
+			label: slug,
+		} ),
+		[ slug, viewContext ]
+	);
 
 	const tooltipSettings = useMemo(
 		() => ( {
 			content: tooltip,
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
+			gaTrackingEventArgs,
+			id,
 			onDismiss: () =>
 				dismissItem( INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG ),
 			placement: 'bottom' as const,
 			target: `.googlesitekit-add-features-button, .${ FEATURES_MENU_BUTTON_CLASS }`,
-			tooltipSlug: INCOMPLETE_SETUP_TOOLTIP_SLUG,
 		} ),
-		[ dismissItem, tooltip ]
+		[ dismissItem, gaTrackingEventArgs, id, tooltip ]
 	);
 
 	const showTooltip = useShowTooltip( tooltipSettings );
@@ -136,12 +148,15 @@ const IncompleteSetupReminderNotification: FC<
 		tooltip,
 	] );
 
-	if ( ! description || ! resumeURL || ! title ) {
+	if ( ! description || ! resumeURL || ! slug || ! title ) {
 		return null;
 	}
 
 	return (
-		<Notification maxViewedDates={ 0 }>
+		<Notification
+			gaTrackingEventArgs={ gaTrackingEventArgs }
+			maxViewedDates={ 0 }
+		>
 			<NoticeNotification
 				ctaButton={ {
 					label: __( 'Complete setup', 'google-site-kit' ),
@@ -152,6 +167,7 @@ const IncompleteSetupReminderNotification: FC<
 					label: __( 'Maybe later', 'google-site-kit' ),
 					onClick: onDismiss,
 				} }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
 				notificationID={ id }
 				title={ title }
 				type={ NOTICE_TYPES.REMINDER }

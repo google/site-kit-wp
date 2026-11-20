@@ -22,15 +22,41 @@
 import { ReactNode } from 'react';
 import { Step } from 'react-joyride';
 
-export interface TooltipSettings
-	extends Pick< Step, 'title' | 'placement' | 'floaterProps' > {
+/**
+ * Internal dependencies
+ */
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
+
+type JoyrideStep = Pick< Step, 'title' | 'placement' | 'floaterProps' >;
+
+interface TooltipOwnSettings {
 	className?: string;
 	content?: ReactNode;
 	dismissLabel?: string;
-	gaTrackingEventLabel?: string;
 	isCenteredOnMobile?: boolean;
 	isTooltipVisible?: boolean;
 	onDismiss?: () => void;
 	target?: string | HTMLElement; // eslint-disable-line sitekit/acronym-case
-	tooltipSlug?: string;
 }
+
+interface TooltipTrackingSettingsWithID {
+	gaTrackingEventArgs?: GATrackingEventArgs;
+	gaTrackingEventLabel?: never;
+	id: string;
+	tooltipSlug?: never;
+}
+
+interface TooltipTrackingSettingsWithSlug {
+	gaTrackingEventArgs?: never;
+	gaTrackingEventLabel?: string;
+	id?: never;
+	tooltipSlug: string;
+}
+
+type TooltipTrackingSettings =
+	| TooltipTrackingSettingsWithID
+	| TooltipTrackingSettingsWithSlug;
+
+export type TooltipSettings = JoyrideStep &
+	TooltipOwnSettings &
+	TooltipTrackingSettings;

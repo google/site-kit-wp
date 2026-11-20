@@ -38,13 +38,15 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'AdminMenuTooltip', () => {
 	let registry: Registry;
 
-	function setTooltipSettings( settings: TooltipSettings | undefined ) {
+	function setTooltipSettings(
+		settings: Partial< TooltipSettings > | undefined
+	) {
 		return registry
 			.dispatch( CORE_UI )
 			.setValue( 'admin-screen-tooltip', settings );
 	}
 
-	function getTooltipSettings(): TooltipSettings | undefined {
+	function getTooltipSettings(): Partial< TooltipSettings > | undefined {
 		return registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' );
 	}
 
@@ -120,6 +122,7 @@ describe( 'AdminMenuTooltip', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
 			'tooltip_view',
+			undefined,
 			undefined
 		);
 	} );
@@ -202,6 +205,7 @@ describe( 'AdminMenuTooltip', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
 			'tooltip_dismiss',
+			undefined,
 			undefined
 		);
 	} );
@@ -246,6 +250,7 @@ describe( 'AdminMenuTooltip', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
 			'tooltip_dismiss',
+			undefined,
 			undefined
 		);
 	} );
@@ -325,14 +330,115 @@ describe( 'AdminMenuTooltip', () => {
 			1,
 			`test-context_${ tooltipSlug }`,
 			'tooltip_view',
-			'test-label'
+			'test-label',
+			undefined
 		);
 
 		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 			2,
 			`test-context_${ tooltipSlug }`,
 			'tooltip_dismiss',
-			'test-label'
+			'test-label',
+			undefined
+		);
+	} );
+
+	it( 'should track GA events with the provided gaTrackingEventArgs when an id is given', async () => {
+		await setTooltipSettings( {
+			isTooltipVisible: true,
+			title: 'Test Title',
+			content: 'Test Content',
+			dismissLabel: 'Got it',
+			id: 'test-tooltip-id',
+			gaTrackingEventArgs: {
+				category: 'test-category',
+				label: 'test-label',
+				value: 1,
+			},
+		} );
+
+		const { findByLabelText } = render(
+			<div className="googlesitekit-plugin">
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<AdminScreenTooltip />
+			</div>,
+			{ registry, viewContext: 'test-context' }
+		);
+
+		// Wait for Joyride tooltip's useInterval to render.
+		act( () => {
+			jest.advanceTimersByTime( 1000 );
+		} );
+
+		fireEvent.click( await findByLabelText( 'Close' ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			'test-category',
+			'tooltip_view',
+			'test-label',
+			1
+		);
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			'test-category',
+			'tooltip_dismiss',
+			'test-label',
+			1
+		);
+	} );
+
+	it( 'should track GA events with a category based on the id when no category is given', async () => {
+		await setTooltipSettings( {
+			isTooltipVisible: true,
+			title: 'Test Title',
+			content: 'Test Content',
+			dismissLabel: 'Got it',
+			id: 'test-tooltip-id',
+		} );
+
+		const { findByLabelText } = render(
+			<div className="googlesitekit-plugin">
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<AdminScreenTooltip />
+			</div>,
+			{ registry, viewContext: 'test-context' }
+		);
+
+		// Wait for Joyride tooltip's useInterval to render.
+		act( () => {
+			jest.advanceTimersByTime( 1000 );
+		} );
+
+		fireEvent.click( await findByLabelText( 'Close' ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			'test-context_test-tooltip-id',
+			'tooltip_view',
+			undefined,
+			undefined
+		);
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			'test-context_test-tooltip-id',
+			'tooltip_dismiss',
+			undefined,
+			undefined
 		);
 	} );
 
@@ -431,12 +537,14 @@ describe( 'AdminMenuTooltip', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				`test-context_${ tooltipSlug }`,
 				'tooltip_view',
+				undefined,
 				undefined
 			);
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				`test-context_${ tooltipSlug }`,
 				'tooltip_dismiss',
+				undefined,
 				undefined
 			);
 		}

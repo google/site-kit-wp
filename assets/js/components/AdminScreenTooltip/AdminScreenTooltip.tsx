@@ -19,30 +19,34 @@
 /**
  * WordPress dependencies
  */
+import { useInstanceId } from '@wordpress/compose';
 import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import JoyrideTooltip from '@/js/components/JoyrideTooltip';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
 import { useHideTooltip } from './hooks/useHideTooltip';
 import { useTooltipSettings } from './hooks/useTooltipSettings';
 
 export function AdminScreenTooltip() {
-	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
-
 	const hideTooltip = useHideTooltip();
 	const tooltipSettings = useTooltipSettings();
 
+	const instanceID = useInstanceId(
+		AdminScreenTooltip,
+		'googlesitekit-admin-screen-tooltip'
+	) as string;
+
 	const {
+		id,
 		isTooltipVisible = false,
 		target,
 		placement,
@@ -51,39 +55,32 @@ export function AdminScreenTooltip() {
 		title,
 		content,
 		dismissLabel,
+		gaTrackingEventArgs = {},
 		gaTrackingEventLabel,
 		floaterProps,
 		isCenteredOnMobile = true,
 		onDismiss,
 	} = tooltipSettings;
 
-	function handleViewTooltip() {
-		trackEvent(
-			`${ viewContext }_${ tooltipSlug }`,
-			'tooltip_view',
-			gaTrackingEventLabel
-		);
-	}
+	const { category, label, value } = gaTrackingEventArgs;
+
+	const eventID = id ?? tooltipSlug ?? instanceID;
+	const eventLabel = label ?? gaTrackingEventLabel;
+
+	const { dismiss, view } = useNotificationEvents( eventID, category, {
+		dismissAction: 'tooltip_dismiss',
+		viewAction: 'tooltip_view',
+	} );
+
+	const handleViewTooltip = useCallback( () => {
+		view( eventLabel, value );
+	}, [ eventLabel, value, view ] );
 
 	const handleDismissTooltip = useCallback( () => {
-		// Track dismiss event.
-		if ( tooltipSlug ) {
-			trackEvent(
-				`${ viewContext }_${ tooltipSlug }`,
-				'tooltip_dismiss',
-				gaTrackingEventLabel
-			);
-		}
-
+		dismiss( eventLabel, value );
 		hideTooltip();
 		onDismiss?.();
-	}, [
-		hideTooltip,
-		tooltipSlug,
-		viewContext,
-		gaTrackingEventLabel,
-		onDismiss,
-	] );
+	}, [ dismiss, eventLabel, hideTooltip, onDismiss, value ] );
 
 	if ( ! isTooltipVisible ) {
 		return null;

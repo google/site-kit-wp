@@ -48,10 +48,6 @@ export const SUCCEEDED_FEATURES_UI_KEY = 'feature-discovery-succeeded-features';
 export const INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG =
 	'feature-discovery-tooltip-incomplete-setup';
 
-// The tooltip slug used for the tooltip's GA events.
-export const INCOMPLETE_SETUP_TOOLTIP_SLUG =
-	'feature-discovery-incomplete-setup';
-
 export const FEATURE_CATEGORIES = {
 	AUDIENCE: 'audience',
 	ENGAGEMENT: 'engagement',
