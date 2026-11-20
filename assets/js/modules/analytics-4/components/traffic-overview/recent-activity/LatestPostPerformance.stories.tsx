@@ -227,6 +227,36 @@ KeywordError.args = {
 };
 KeywordError.scenario = {};
 
+/** The visitor breakdown tile keeps its title and info icon above the error. */
+export const VisitorBreakdownError = Template.bind(
+	{}
+) as Story< LatestPostPerformanceStoryProps >;
+VisitorBreakdownError.storyName = 'Visitor Breakdown Error';
+VisitorBreakdownError.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideLatestPostAnalyticsReports( registry );
+		provideLatestPostKeywordReport( registry );
+
+		const options =
+			getLatestPostAnalyticsReportOptions( registry ).visitors;
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'Test error message.',
+				data: {},
+			},
+			'getReport',
+			[ options ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ options ] );
+	},
+};
+VisitorBreakdownError.scenario = {};
+
 /** Values too long for their row are cut off rather than overlapping the label. */
 export const LongValues = Template.bind(
 	{}
