@@ -66,7 +66,8 @@ class Acknowledge_User_Data_Collection extends Datapoint implements Executable_D
 			$request_body
 		);
 
-		// The request is sent here rather than by `execute_data_request()`, so that its error response can be converted.
+		// Client defer is on while this method runs, so the request above is not sent yet. The closure sends it,
+		// rather than `execute_data_request()`, so that its error response can be converted.
 		return function ( Google_Site_Kit_Client $client ) use ( $request ) {
 			try {
 				return $client->execute( $request );
