@@ -121,11 +121,11 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 	}
 
 	return (
-		<div className="googlesitekit-site-goals-widget__feedback">
+		<div className="googlesitekit-feedback-prompt">
 			<Typography
 				type="label"
 				size="small"
-				className="googlesitekit-site-goals-widget__feedback-prompt"
+				className="googlesitekit-feedback-prompt__question"
 			>
 				{ __( 'Is this section helpful?', 'google-site-kit' ) }
 			</Typography>
