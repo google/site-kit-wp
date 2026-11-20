@@ -19,9 +19,14 @@
 /**
  * Internal dependencies
  */
+import { preventNavigation } from '@/js/event-providers/content-events/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	fireEvent,
 	render,
 	screen,
@@ -1038,4 +1043,175 @@ describe( 'KeyFactors', () => {
 			)
 		).toEqual( [ 'Referral', 'Organic Search' ] );
 	} );
+} );
+
+describe( 'KeyFactors page links', () => {
+	const NEW_POST: BenchmarkingKeyFactor = {
+		kind: 'CONTENT',
+		label: 'Ice cream is good for your health',
+		current: 260,
+		previous: 0,
+		sharePct: 86.7,
+		attributes: [],
+		url: '/ice-cream-is-good-for-your-health/',
+	};
+
+	const ENTITY_DASHBOARD_URL =
+		'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=https%3A%2F%2Fexample.com%2Fice-cream-is-good-for-your-health%2F';
+
+	mockLocation();
+
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+	beforeEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
+	/**
+	 * Renders the section on the main dashboard with the given cards.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array} keyFactors The cards.
+	 * @return {Object} The render result.
+	 */
+	function renderOnMainDashboard( keyFactors: BenchmarkingKeyFactor[] ) {
+		const registry = createTestRegistry();
+		provideSiteInfo( registry );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+
+		return render(
+			<KeyFactors
+				keyFactors={ keyFactors }
+				daysInSelectedRange={ 28 }
+				referenceSiteURL={ REFERENCE_SITE_URL }
+			/>,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+	}
+
+	it( 'should link the title of a post’s card to the post’s entity dashboard, in the same tab', () => {
+		const { getByRole } = renderOnMainDashboard( [ NEW_POST ] );
+
+		const link = getByRole( 'link', {
+			name: 'Ice cream is good for your health',
+		} );
+
+		expect( link ).toHaveAttribute( 'href', ENTITY_DASHBOARD_URL );
+		expect( link ).not.toHaveAttribute( 'target' );
+		expect(
+			getByRole( 'heading', {
+				level: 4,
+				name: 'Ice cream is good for your health',
+			} )
+		).toContainElement( link );
+	} );
+
+	it.each( [
+		[ 'without its path', { ...NEW_POST, url: undefined } ],
+		[ 'of another kind', { ...REFERRAL, attributes: [] } ],
+	] )( 'should not link the title of a card %s', ( _label, card ) => {
+		const { getByRole, queryByRole } = renderOnMainDashboard( [ card ] );
+
+		expect( getByRole( 'heading', { level: 4 } ) ).toBeInTheDocument();
+		expect( queryByRole( 'link' ) ).not.toBeInTheDocument();
+	} );
+
+	it.each( [
+		[
+			'the title of a post’s card',
+			NEW_POST,
+			'Ice cream is good for your health',
+			'CONTENT',
+		],
+		[
+			'a landing page row',
+			REFERRAL,
+			'/ice-cream-is-good-for-your-health/',
+			'CHANNEL',
+		],
+	] )(
+		'should track `click_page_link` labeled with the card’s kind, then open the entity dashboard, when %s is clicked',
+		async ( _label, card, linkName, cardKind ) => {
+			let resolveTrackEvent: ( () => void ) | undefined;
+			mockTrackEvent.mockImplementationOnce(
+				() =>
+					new Promise( ( resolve ) => {
+						resolveTrackEvent = () => resolve( undefined );
+					} )
+			);
+
+			const { getByRole } = renderOnMainDashboard( [ card ] );
+
+			const notPrevented = fireEvent.click(
+				getByRole( 'link', { name: linkName } )
+			);
+
+			expect( notPrevented ).toBe( false );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_typical-traffic',
+				'click_page_link',
+				cardKind
+			);
+			// The page stays open until the event is sent.
+			expect( global.location.assign ).not.toHaveBeenCalled();
+
+			await act( async () => {
+				resolveTrackEvent?.();
+				await Promise.resolve();
+			} );
+
+			await waitFor( () =>
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					ENTITY_DASHBOARD_URL
+				)
+			);
+		}
+	);
+
+	it.each( [
+		[ 'Command', { metaKey: true } ],
+		[ 'Control', { ctrlKey: true } ],
+	] )(
+		'should track `click_page_link` and leave the click to the browser when a link is clicked with %s held',
+		( _key, modifiers ) => {
+			const { getByRole } = renderOnMainDashboard( [ NEW_POST ] );
+
+			let wasPreventedByComponent: boolean | undefined;
+			function recordAndPreventNavigation( event: Event ) {
+				wasPreventedByComponent = event.defaultPrevented;
+				// jsdom can't open the link in a new tab, so it would log
+				// "Not implemented: navigation".
+				preventNavigation( event );
+			}
+
+			global.document.addEventListener(
+				'click',
+				recordAndPreventNavigation
+			);
+
+			try {
+				fireEvent.click(
+					getByRole( 'link', {
+						name: 'Ice cream is good for your health',
+					} ),
+					modifiers
+				);
+			} finally {
+				global.document.removeEventListener(
+					'click',
+					recordAndPreventNavigation
+				);
+			}
+
+			expect( wasPreventedByComponent ).toBe( false );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_typical-traffic',
+				'click_page_link',
+				'CONTENT'
+			);
+			expect( global.location.assign ).not.toHaveBeenCalled();
+		}
+	);
 } );

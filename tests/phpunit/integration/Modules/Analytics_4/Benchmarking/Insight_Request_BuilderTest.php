@@ -844,7 +844,10 @@ class Insight_Request_BuilderTest extends TestCase {
 		$request = $this->build_with_rows(
 			array(
 				'content' => array(
-					$post( '/a-post-on-the-first-day/', 28, 50 ),
+					$post( '/a-post-on-the-first-day/', 27, 50 ),
+					// 28 days before `2026-09-15` is `2026-08-18`, the day before the
+					// period starts, which the chart doesn't mark.
+					$post( '/a-post-on-the-day-before/', 28, 400 ),
 					$post( '/an-older-post/', 29, 500 ),
 					$post( '/an-unvisited-post/', 5, 0 ),
 					$post( '/homework/', 2, 80 ),
@@ -884,12 +887,12 @@ class Insight_Request_BuilderTest extends TestCase {
 				array(
 					'url'                => '/a-post-on-the-first-day/',
 					'title'              => 'Title of /a-post-on-the-first-day/',
-					'published_days_ago' => 28,
+					'published_days_ago' => 27,
 					'sessions'           => 50,
 				),
 			),
 			$request['contextual_data']['recent_content_momentum'],
-			'The posts published during the period with visits in it should be listed, the most visited first and then by URL, without the home page in any form.'
+			'The posts published during the period, from its first day, 27 days before the last, with visits in it should be listed, the most visited first and then by URL, without the home page in any form. A post published the day before should not.'
 		);
 	}
 

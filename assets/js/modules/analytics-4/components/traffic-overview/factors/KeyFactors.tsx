@@ -223,6 +223,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 								previous,
 								sharePct,
 								attributes,
+								url,
 							},
 							index
 						) => (
@@ -239,6 +240,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 									isSteady ? sharePct : undefined
 								}
 								attributes={ attributes }
+								url={ url }
 								referenceSiteURL={ referenceSiteURL }
 							/>
 						)

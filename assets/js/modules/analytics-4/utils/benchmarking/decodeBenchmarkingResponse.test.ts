@@ -106,6 +106,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					current: 64,
 					previous: 15,
 					sharePct: 12.6,
+					url: '/how-to-plant-garlic/',
 					attributes: [
 						{
 							kind: 'TRAFFIC_CHANNEL',
@@ -875,6 +876,38 @@ describe( 'decodeBenchmarkingResponse', () => {
 				],
 			},
 		] );
+	} );
+
+	it( "should read the path of a post's card, and of no other card", () => {
+		const decoded = decodeBenchmarkingResponse( [
+			1,
+			[ 'How to plant garlic', '/how-to-plant-garlic/', 'Direct' ],
+			'2025-08-18',
+			[ 132 ],
+			[ 412, 388 ],
+			[
+				[ 1, 0, 64, 0, 86.7, 1 ],
+				// A path out of the string table is no path.
+				[ 1, 0, 64, 0, 86.7, 9 ],
+				// Only a post's card carries a path.
+				[ 0, 2, 500, 480, 12.5, 1 ],
+			],
+			[ [], [], [] ],
+			[ null ],
+			[ false, false, null, false, null, false, false, false ],
+			[],
+			false,
+			null,
+		] );
+
+		expect(
+			decoded?.keyFactors.map( ( { kind, url } ) => ( { kind, url } ) )
+		).toEqual( [
+			{ kind: 'CONTENT', url: '/how-to-plant-garlic/' },
+			{ kind: 'CONTENT', url: undefined },
+			{ kind: 'CHANNEL', url: undefined },
+		] );
+		expect( decoded?.keyFactors[ 1 ] ).not.toHaveProperty( 'url' );
 	} );
 
 	describe( 'content markers', () => {

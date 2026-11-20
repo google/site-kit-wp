@@ -43,6 +43,7 @@ final class Response_Encoder {
 	 * @since n.e.x.t Encodes the content markers.
 	 * @since n.e.x.t Encodes whether traffic was steady.
 	 * @since n.e.x.t Encodes the days of traffic the band is fitted on.
+	 * @since n.e.x.t Encodes the path of a post's card.
 	 *
 	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `availability`, `bandReferenceDays`, `keyFactors`, `steadyTraffic` and `contentMarkers`. `bandReferenceDays` is the number of days of traffic the band of the period's last day is fitted on, or null without a band. `steadyTraffic` is whether no channel changed notably, when the key factor cards are the channels with the most visits. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `availability` is which parts of the typical traffic view show, as `Typical_Traffic_Availability::get()` returns it. Each `contentMarkers` item has a `date`, as `YYYY-MM-DD`, and its `posts`, each with `title` and `url`. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
 	 * @return array The encoded response.
@@ -155,20 +156,27 @@ final class Response_Encoder {
 	 * same layout.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Adds the path of a post's card.
 	 *
 	 * @param int   $kind_index The position the card's or the attribute's kind travels as.
-	 * @param array $row        Card or attribute to encode, with `label`, `current`, `previous` and `sharePct`.
+	 * @param array $row        Card or attribute to encode, with `label`, `current`, `previous` and `sharePct`, and a post's card with its path as `url`.
 	 * @param array $strings    String table, added to as strings are seen.
-	 * @return array The encoded card or attribute, as the list `[ kind, label, current, previous, sharePct ]`.
+	 * @return array The encoded card or attribute, as the list `[ kind, label, current, previous, sharePct ]`, followed by the path for a post's card.
 	 */
 	private function encode_key_factor_row( $kind_index, array $row, array &$strings ) {
-		return array(
+		$encoded = array(
 			$kind_index,
 			$this->encode_string( isset( $row['label'] ) ? $row['label'] : null, $strings ),
 			$this->encode_int( isset( $row['current'] ) ? $row['current'] : null ),
 			$this->encode_int( isset( $row['previous'] ) ? $row['previous'] : null ),
 			$this->encode_share( isset( $row['sharePct'] ) ? $row['sharePct'] : null ),
 		);
+
+		if ( isset( $row['url'] ) && is_string( $row['url'] ) && '' !== $row['url'] ) {
+			$encoded[] = $this->encode_string( $row['url'], $strings );
+		}
+
+		return $encoded;
 	}
 
 	/**

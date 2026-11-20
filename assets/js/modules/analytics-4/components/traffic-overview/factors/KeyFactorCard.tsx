@@ -31,6 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
@@ -41,6 +42,7 @@ import {
 	TYPE_TITLE,
 } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useKeyFactorLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorLinkClick';
 import { formatVisitsShare } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatVisitsShare';
 import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils/getPageURL';
 import {
@@ -67,6 +69,8 @@ export interface KeyFactorCardProps {
 	visitsSharePct?: number;
 	/** The values inside the driver that carried its change, in the order to show them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
+	/** The post's path on a `CONTENT` card, which its title links to. */
+	url?: string;
 	/** The site's URL, which a landing page's path is resolved against to link to the page's entity dashboard. */
 	referenceSiteURL?: string;
 }
@@ -119,6 +123,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 	change,
 	visitsSharePct,
 	attributes,
+	url,
 	referenceSiteURL,
 } ) => {
 	// `useInstanceId` is typed as `string | number`, so it is read as a string
@@ -158,6 +163,20 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 		[ namedAttributes, referenceSiteURL ]
 	);
 
+	// A post's title links to the post's entity dashboard, as a landing page
+	// row does.
+	const titleHref = useSelect(
+		( select: Select ) =>
+			kind === 'CONTENT' && url && referenceSiteURL
+				? select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+						permaLink: getPageURL( referenceSiteURL, url ),
+				  } )
+				: undefined,
+		[ kind, url, referenceSiteURL ]
+	);
+
+	const handleLinkClick = useKeyFactorLinkClick( kind );
+
 	const name = getKeyFactorName( kind, label, referenceSiteURL );
 
 	return (
@@ -173,7 +192,20 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 					id={ titleID }
 					className="googlesitekit-traffic-overview__key-factor-title"
 				>
-					{ name }
+					{ titleHref ? (
+						// The link leads to another Site Kit dashboard, so it
+						// opens in the same tab.
+						<Link
+							href={ titleHref }
+							onClick={ ( event ) =>
+								handleLinkClick( event, titleHref )
+							}
+						>
+							{ name }
+						</Link>
+					) : (
+						name
+					) }
 				</Typography>
 				<KeyFactorChangeBadge change={ change } />
 			</div>
@@ -227,6 +259,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 										: 'visits'
 								}
 								href={ attributeHrefs[ index ] }
+								onLinkClick={ handleLinkClick }
 							/>
 						) ) }
 					</dl>

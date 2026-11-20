@@ -1159,7 +1159,10 @@ final class Key_Factors {
 					'parent_channel_delta' => $delta,
 				);
 
-			return $this->build_card( $child['kind'], $child['title'], $child['current'], $child['previous'], $role, $share, array() );
+			// A post's card carries its path, which its title links to.
+			$url = 'CONTENT' === $child['kind'] ? $child['text'] : null;
+
+			return $this->build_card( $child['kind'], $child['title'], $child['current'], $child['previous'], $role, $share, array(), $url );
 		}
 
 		return $this->build_card(
@@ -2115,7 +2118,7 @@ final class Key_Factors {
 		$posts = array_filter(
 			$this->get_rows( 'content' ),
 			fn( $row ) => (int) $row['current'] > 0
-				&& (int) $row['publishedDaysAgo'] <= $this->days_in_period
+				&& (int) $row['publishedDaysAgo'] < $this->days_in_period
 				&& ! Insight_Request_Builder::is_home_page( $row['url'] )
 		);
 
@@ -2207,9 +2210,10 @@ final class Key_Factors {
 	 * @param string $role     The card's role, `PRIMARY` or `OFFSET`.
 	 * @param array  $share    The card's share, with `share_basis` and `traffic_impact_pct`, and `parent_channel` and `parent_channel_delta` on `PARENT_CHANNEL`.
 	 * @param array  $rows     The card's rows, each with `wire` and `attribute`.
-	 * @return array The card, with `key_factor` and `wire`.
+	 * @param string $url      Optional. The path of a post's card, which the panel links its title to. Default null.
+	 * @return array The card, with `key_factor` and `wire`. A post's `key_factor` also has its path as `url`.
 	 */
-	private function build_card( $kind, $title, $current, $previous, $role, array $share, array $rows ) {
+	private function build_card( $kind, $title, $current, $previous, $role, array $share, array $rows, $url = null ) {
 		list( $dimension, $entity_kind ) = self::CARD_KINDS[ $kind ];
 
 		$delta  = $current - $previous;
@@ -2250,16 +2254,22 @@ final class Key_Factors {
 		$wire['role']       = $role;
 		$wire['attributes'] = array_column( $rows, 'wire' );
 
+		$key_factor = array(
+			'kind'       => $kind,
+			'label'      => $title,
+			'current'    => $current,
+			'previous'   => $previous,
+			'sharePct'   => $share['traffic_impact_pct'],
+			'attributes' => array_column( $rows, 'attribute' ),
+		);
+
+		if ( null !== $url ) {
+			$key_factor['url'] = $url;
+		}
+
 		return array(
 			'wire'       => $wire,
-			'key_factor' => array(
-				'kind'       => $kind,
-				'label'      => $title,
-				'current'    => $current,
-				'previous'   => $previous,
-				'sharePct'   => $share['traffic_impact_pct'],
-				'attributes' => array_column( $rows, 'attribute' ),
-			),
+			'key_factor' => $key_factor,
 		);
 	}
 

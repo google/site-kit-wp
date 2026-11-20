@@ -31,6 +31,7 @@ import {
 	TYPE_BODY,
 	TYPE_LABEL,
 } from '@/js/components/Typography/constants';
+import { KeyFactorLinkClickHandler } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorLinkClick';
 import { formatClicksChange } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatClicksChange';
 import { formatVisitsChange } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatVisitsChange';
 
@@ -45,6 +46,8 @@ export interface KeyFactorAttributeProps {
 	unit?: 'visits' | 'clicks';
 	/** The Site Kit page the value links to, such as a landing page's entity dashboard, or `undefined` when it is not a link. */
 	href?: string;
+	/** Called on a click on the link, with the click event and `href`. */
+	onLinkClick?: KeyFactorLinkClickHandler;
 }
 
 const KeyFactorAttribute: FC< KeyFactorAttributeProps > = ( {
@@ -53,6 +56,7 @@ const KeyFactorAttribute: FC< KeyFactorAttributeProps > = ( {
 	change,
 	unit = 'visits',
 	href,
+	onLinkClick,
 } ) => (
 	<div className="googlesitekit-traffic-overview__key-factor-attribute">
 		<Typography
@@ -76,7 +80,12 @@ const KeyFactorAttribute: FC< KeyFactorAttributeProps > = ( {
 					// its text as it cuts off a value that is not a link. The
 					// link leads to another Site Kit dashboard, so it opens in
 					// the same tab.
-					<Link href={ href } noFlex secondary>
+					<Link
+						href={ href }
+						onClick={ ( event ) => onLinkClick?.( event, href ) }
+						noFlex
+						secondary
+					>
 						{ label }
 					</Link>
 				) : (

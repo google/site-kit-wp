@@ -25,7 +25,7 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -136,8 +136,10 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( {
 								>
 									{ sprintf(
 										/* translators: %d: number of days in the comparison period */
-										__(
+										_n(
+											'Vs. prev. %d day',
 											'Vs. prev. %d days',
+											comparisonDays,
 											'google-site-kit'
 										),
 										comparisonDays

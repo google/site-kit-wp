@@ -320,14 +320,20 @@ class Key_FactorsTest extends TestCase {
 				'previous'   => 0,
 				'sharePct'   => 86.7,
 				'attributes' => array(),
+				'url'        => '/new-post/',
 			),
 			$key_factors->get_cards()[0],
-			'The panel should show the post\'s card.'
+			'The panel should show the post\'s card, with the post\'s path for its title to link to.'
 		);
 		$this->assertSame( 300 - 260, $key_factors->get_decomposition()['residual_delta'], 'What Referral moved beyond the post should fall in the residual.' );
 	}
 
-	public function test_get_cards__keeps_the_channel_card_when_its_landing_page_is_no_post_published_in_the_period() {
+	/**
+	 * @dataProvider data_posts_published_before_the_period
+	 *
+	 * @param int $published_days_ago The days from the post's publication to the last day of the 28-day period.
+	 */
+	public function test_get_cards__keeps_the_channel_card_when_its_landing_page_is_no_post_published_in_the_period( $published_days_ago ) {
 		$key_factors = $this->build(
 			array( 1300, 1000 ),
 			array(
@@ -340,7 +346,7 @@ class Key_FactorsTest extends TestCase {
 					array(
 						'url'              => '/old-post/',
 						'title'            => 'An old post',
-						'publishedDaysAgo' => 90,
+						'publishedDaysAgo' => $published_days_ago,
 						'current'          => 300,
 						'previous'         => 50,
 					),
@@ -350,6 +356,14 @@ class Key_FactorsTest extends TestCase {
 
 		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'A page that is no new post should not take its channel\'s card.' );
 		$this->assertSame( '/old-post/', $key_factors->get_cards()[0]['attributes'][0]['label'], 'The page should be a row of the channel\'s card.' );
+	}
+
+	public function data_posts_published_before_the_period() {
+		return array(
+			// The first day of a 28-day period is 27 days before its last.
+			'the day before the period' => array( 28 ),
+			'months before'             => array( 90 ),
+		);
 	}
 
 	/**

@@ -118,6 +118,7 @@ class Response_EncoderTest extends TestCase {
 				array(
 					'kind'       => 'CONTENT',
 					'label'      => '/how-to-plant-garlic/',
+					'url'        => '/how-to-plant-garlic/',
 					'current'    => 64,
 					'previous'   => 15,
 					'sharePct'   => 12.6,
@@ -183,6 +184,42 @@ class Response_EncoderTest extends TestCase {
 			array_values( array_filter( $encoded[ Wire_Format::MEMBER_STRINGS ], fn( $value ) => '/how-to-plant-garlic/' === $value ) ),
 			'The shared label should be in the table once.'
 		);
+	}
+
+	public function test_encode__writes_the_path_of_a_post_card_after_its_share() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CONTENT',
+						'label'      => 'How to plant garlic',
+						'url'        => '/how-to-plant-garlic/',
+						'current'    => 64,
+						'previous'   => 0,
+						'sharePct'   => 86.7,
+						'attributes' => array(),
+					),
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Direct',
+						'current'    => 500,
+						'previous'   => 480,
+						'sharePct'   => 12.5,
+						'attributes' => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 1, 0, 64, 0, 86.7, 1 ),
+				array( 0, 2, 500, 480, 12.5 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'A post\'s card should carry its path as a sixth position, through the string table, and another card should keep five.'
+		);
+		$this->assertSame( array( 'How to plant garlic', '/how-to-plant-garlic/', 'Direct' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'The path should be in the string table.' );
 	}
 
 	public function test_encode__skips_a_card_or_an_attribute_without_a_kind_the_format_lists() {

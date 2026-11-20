@@ -452,7 +452,10 @@ class Insight_Request_Builder {
 		$rows = array_filter(
 			$this->get_rows( $contextual_data, 'content' ),
 			fn( $row ) => $row['current'] > 0
-				&& $row['publishedDaysAgo'] <= $days_in_period
+				// `publishedDaysAgo` counts back from the last day, so the first
+				// day of the period is `$days_in_period - 1` days ago, as for the
+				// chart's markers (`Content_Markers`).
+				&& $row['publishedDaysAgo'] < $days_in_period
 				&& ! self::is_home_page( $row['url'] )
 		);
 

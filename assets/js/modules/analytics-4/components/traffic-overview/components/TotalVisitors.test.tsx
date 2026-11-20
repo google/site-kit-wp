@@ -19,8 +19,10 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { render } from '@tests/js/test-utils';
+import { createTestRegistry } from '@tests/js/utils';
 import TotalVisitors from './TotalVisitors';
 
 /**
@@ -96,6 +98,23 @@ describe( 'TotalVisitors', () => {
 		);
 
 		expect( getByText( 'Vs. prev. 28 days' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should name a one-day comparison period in the singular', async () => {
+		const registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-07' );
+		await registry.dispatch( CORE_USER ).setDateRangeSelection( {
+			type: 'custom',
+			startDate: '2026-09-06',
+			endDate: '2026-09-06',
+		} );
+
+		const { getByText } = render(
+			<TotalVisitors totalVisits={ { current: 1200, previous: 1000 } } />,
+			{ registry }
+		);
+
+		expect( getByText( 'Vs. prev. 1 day' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render zero and a zero badge when both totals are zero', () => {

@@ -1831,6 +1831,7 @@ class Response_BuilderTest extends TestCase {
 					'previous'   => 0,
 					'sharePct'   => 75.0,
 					'attributes' => array(),
+					'url'        => '/plant-garlic/',
 				),
 				array(
 					'kind'       => 'CHANNEL',

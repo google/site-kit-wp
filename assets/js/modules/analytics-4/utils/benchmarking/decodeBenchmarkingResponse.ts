@@ -277,6 +277,7 @@ function decodeKeyFactorRow< Kind extends string >(
  * Decodes the key factor cards, each with the attributes at its own position.
  *
  * @since 1.191.0
+ * @since n.e.x.t Reads the path of a post's card.
  *
  * @param {Array} cards      The encoded cards, in rank order.
  * @param {Array} attributes One list of encoded attributes per card, in the same order.
@@ -304,8 +305,16 @@ function decodeKeyFactors(
 			? cardAttributes
 			: [];
 
+		// A post's card carries its path after its share. `decodeKeyFactorRow`
+		// returns a card only for a list.
+		const url =
+			keyFactor.kind === 'CONTENT'
+				? readString( strings, ( card as unknown[] )[ 5 ] )
+				: null;
+
 		return {
 			...keyFactor,
+			...( url ? { url } : {} ),
 			attributes: attributeRows.flatMap(
 				( attribute ) =>
 					decodeKeyFactorRow(

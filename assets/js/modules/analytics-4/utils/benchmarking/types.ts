@@ -112,6 +112,8 @@ export interface BenchmarkingKeyFactor {
 	sharePct: number;
 	/** The values inside the driver that carried its change, in the order the response ranked them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
+	/** The post's path, such as `/how-to-plant-garlic/`, on a `CONTENT` card. */
+	url?: string;
 }
 
 export interface BenchmarkingContentMarkerPost {
