@@ -90,6 +90,10 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 	// popper past the card edge. Center it above the thumbs instead and let
 	// Popper shift it to fit.
 	const popperPlacement = breakpoint === BREAKPOINT_SMALL ? 'top' : 'top-end';
+	// Likewise, open the feedback menu from the start of the feedback row on
+	// mobile, and from the end of the right-aligned thumbs on larger screens.
+	const feedbackMenuPlacement =
+		breakpoint === BREAKPOINT_SMALL ? 'top-start' : 'top-end';
 
 	function handleVote( direction: VoteDirection ) {
 		trackEvent(
@@ -106,6 +110,7 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 			feedbackNamespace={ feedbackNamespace }
 			feedbackGroup={ feedbackGroup }
 			feedbackOptions={ feedbackOptions }
+			feedbackMenuPlacement={ feedbackMenuPlacement }
 			onVote={ handleVote }
 			popperPlacement={ popperPlacement }
 		/>

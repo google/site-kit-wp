@@ -259,6 +259,14 @@
 		gap: 6px;
 		margin-top: 20px;
 
+		// Position the "Help us improve" menu against the whole row, so on
+		// mobile it starts at the question instead of running past the card.
+		position: relative;
+
+		.googlesitekit-thumbs-feedback.mdc-menu-surface--anchor {
+			position: static;
+		}
+
 		@media (min-width: $bp-tablet) {
 			justify-content: flex-end;
 			margin-top: 14px;
