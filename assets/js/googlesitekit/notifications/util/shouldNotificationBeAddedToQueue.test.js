@@ -59,6 +59,45 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 		).toBe( true );
 	} );
 
+	it( 'requires every feature flag to be enabled when an array of feature flags is given', () => {
+		const notificationToCheck = {
+			id: 'feature-flags-notification',
+			Component: TestNotificationComponent,
+			areaSlug: NOTIFICATION_AREAS.HEADER,
+			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			priority: 11,
+			featureFlag: [ 'test-feature-flag-a', 'test-feature-flag-b' ],
+			isDismissible: false,
+		};
+
+		expect(
+			shouldNotificationBeAddedToQueue( notificationToCheck, {
+				_enabledFeatureFlags: [],
+			} )
+		).toBe( false );
+
+		expect(
+			shouldNotificationBeAddedToQueue( notificationToCheck, {
+				_enabledFeatureFlags: [ 'test-feature-flag-a' ],
+			} )
+		).toBe( false );
+
+		expect(
+			shouldNotificationBeAddedToQueue( notificationToCheck, {
+				_enabledFeatureFlags: [ 'test-feature-flag-b' ],
+			} )
+		).toBe( false );
+
+		expect(
+			shouldNotificationBeAddedToQueue( notificationToCheck, {
+				_enabledFeatureFlags: [
+					'test-feature-flag-a',
+					'test-feature-flag-b',
+				],
+			} )
+		).toBe( true );
+	} );
+
 	it( 'checks if a notification is dismissed', () => {
 		// Create the notification so it can be checked.
 		const nonDismissibleNotification = {

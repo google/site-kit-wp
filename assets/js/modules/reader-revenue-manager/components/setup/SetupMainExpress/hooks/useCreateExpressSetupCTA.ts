@@ -56,8 +56,8 @@ type CreateExpressSetupCTACallback = (
 export default function useCreateExpressSetupCTA(): CreateExpressSetupCTACallback {
 	const {
 		createCTA,
-		fetchGetPublication,
-		fetchGetCTAs,
+		refreshPublication,
+		refreshCTAs,
 		setPublicationOnboardingStateChanged,
 		saveSettings,
 	} = useDispatch( MODULES_READER_REVENUE_MANAGER );
@@ -80,10 +80,10 @@ export default function useCreateExpressSetupCTA(): CreateExpressSetupCTACallbac
 				setCTAID( ctaID );
 			}
 
-			// Dispatch the fetch actions rather than reading the selectors:
-			// the `getPublication` and `getCTAs` resolvers do nothing when the
-			// store already has data, so selecting would not refresh it.
-			await Promise.all( [ fetchGetPublication(), fetchGetCTAs() ] );
+			// Request the publication and its CTAs again rather than reading
+			// the selectors: their resolvers do nothing when the store already
+			// has data, so selecting would not refresh it.
+			await Promise.all( [ refreshPublication(), refreshCTAs() ] );
 
 			// Save only after both fetches finish, as `saveSettings()` sends
 			// the whole settings object from the store.
@@ -94,8 +94,8 @@ export default function useCreateExpressSetupCTA(): CreateExpressSetupCTACallbac
 		},
 		[
 			createCTA,
-			fetchGetCTAs,
-			fetchGetPublication,
+			refreshPublication,
+			refreshCTAs,
 			saveSettings,
 			setCTAID,
 			setPublicationOnboardingStateChanged,

@@ -445,6 +445,30 @@ class SettingsTest extends SettingsTestCase {
 	}
 
 	/**
+	 * @dataProvider data_measurement_protocol_secret_ids
+	 *
+	 * @param mixed  $value    Value to save.
+	 * @param string $expected Expected saved value.
+	 */
+	public function test_sanitize_measurement_protocol_secret_id( $value, $expected ) {
+		$this->settings->register();
+		$this->settings->merge( array( 'measurementProtocolSecretID' => $value ) );
+
+		$this->assertSame(
+			$expected,
+			get_option( $this->get_option_name() )['measurementProtocolSecretID'],
+			'The `measurementProtocolSecretID` setting should be saved only as a string.'
+		);
+	}
+
+	public function data_measurement_protocol_secret_ids() {
+		return array(
+			'a string' => array( 'test-secret-id', 'test-secret-id' ),
+			'a number' => array( 123, '' ),
+		);
+	}
+
+	/**
 	 * Test sanitization with mixed inputs.
 	 */
 	public function test_sanitization_with_mixed_inputs() {

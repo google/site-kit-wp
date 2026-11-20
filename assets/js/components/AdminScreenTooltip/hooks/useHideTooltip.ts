@@ -1,7 +1,7 @@
 /**
- * ChipCheckmark component.
+ * `useHideTooltip` hook.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,27 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import CheckMark from '@/svg/icons/check-2.svg';
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
-export function ChipCheckmark() {
-	return (
-		<div className="mdc-chip__checkmark">
-			<CheckMark className="mdc-chip__checkmark-svg" />
-		</div>
-	);
+/**
+ * Returns a callback that hides the admin screen tooltip.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Function} Callback that hides the tooltip.
+ */
+export function useHideTooltip() {
+	const { setValue } = useDispatch( CORE_UI );
+
+	return useCallback( () => {
+		setValue( 'admin-screen-tooltip', undefined );
+	}, [ setValue ] );
 }

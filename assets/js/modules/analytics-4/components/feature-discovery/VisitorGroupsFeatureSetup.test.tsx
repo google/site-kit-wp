@@ -35,6 +35,7 @@ import {
 } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { VISITOR_GROUPS_SETUP_FAILURE_KEY } from '@/js/modules/analytics-4/datastore/constants';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -63,6 +64,7 @@ interface HookOptions {
 
 describe( 'VisitorGroupsFeatureSetup', () => {
 	let registry: Registry;
+	let mockTrackEvent: jest.SpyInstance;
 	let onEnableGroups: jest.Mock;
 	let hookState: {
 		apiErrors: unknown[];
@@ -74,6 +76,9 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+		mockTrackEvent = jest
+			.spyOn( tracking, 'trackEvent' )
+			.mockImplementation( () => Promise.resolve() );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
@@ -112,6 +117,49 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 
 	afterEach( () => {
 		jest.restoreAllMocks();
+	} );
+
+	describe( 'event tracking', () => {
+		const viewContext = 'testViewContext';
+
+		beforeEach( () => {
+			jest.spyOn(
+				registry.dispatch( CORE_USER ),
+				'triggerSurvey'
+			).mockResolvedValue( undefined );
+		} );
+
+		it( 'should track click_setup_cta when the card CTA is clicked', () => {
+			const { getByRole } = render(
+				<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
+				{ registry, viewContext }
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Enable visitor groups' } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ viewContext }_feature-card`,
+				'click_setup_cta',
+				SLUG
+			);
+		} );
+
+		it( 'should not track from the card when the setup is requested from the detail panel', () => {
+			render(
+				<VisitorGroupsFeatureSetup
+					slug={ SLUG }
+					hideUnreadDot
+					isSetupRequested
+				/>,
+				{ registry, viewContext }
+			);
+
+			expect( onEnableGroups ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+		} );
 	} );
 
 	it( 'triggers the setup survey and enables the groups when the card CTA is clicked', () => {

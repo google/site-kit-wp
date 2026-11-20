@@ -40,6 +40,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	const OPTION_ADDITIONAL_AUTH_SCOPES = 'googlesitekit_additional_auth_scopes';
 	const OPTION_REDIRECT_URL           = 'googlesitekit_redirect_url';
 	const OPTION_ERROR_REDIRECT_URL     = 'googlesitekit_error_redirect_url';
+	const STATE_NONCE_ACTION            = 'googlesitekit_oauth_state';
 	const CRON_REFRESH_PROFILE_DATA     = 'googlesitekit_cron_refresh_profile_data';
 
 	/**
@@ -335,6 +336,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.0.0
 	 * @since 1.9.0 Added $additional_scopes parameter.
 	 * @since 1.34.1 Updated handling of $additional_scopes to restore rewritten scope.
+	 * @since 1.192.0 Adds a `state` value.
 	 *
 	 * @param string   $redirect_url      Redirect URL after authentication.
 	 * @param string   $error_redirect_url Redirect URL after authentication error.
@@ -377,6 +379,9 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$scopes = array_merge( $this->get_required_scopes(), $additional_scopes );
 		$this->get_client()->setScopes( array_unique( $scopes ) );
 
+		// Bind the callback to the user who started this authorization.
+		$this->get_client()->setState( wp_create_nonce( self::STATE_NONCE_ACTION ) );
+
 		return add_query_arg(
 			$this->google_proxy->get_metadata_fields(),
 			$this->get_client()->createAuthUrl()
@@ -389,8 +394,17 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *
 	 * @since 1.0.0
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since 1.192.0 Rejects a callback without a valid `state`.
 	 */
 	public function authorize_user() {
+		// Only accept a callback for an authorization the current user started.
+		$state = $this->context->input()->filter( INPUT_GET, 'state' );
+		if ( ! wp_verify_nonce( $state, self::STATE_NONCE_ACTION ) ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, 'invalid_state' );
+			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
+			exit();
+		}
+
 		$code       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'code' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 		$error_code = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'error' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 
@@ -429,7 +443,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 		try {
 			$token_response = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
 		} catch ( Google_Proxy_Code_Exception $e ) {
-			// Redirect back to proxy immediately with the access code.
+			// Redirect back to proxy immediately with the access code. Unlike after a failed refresh, this
+			// access code names the proxy session of this browser flow, so its redirect carries `state`.
 			$credentials = $this->credentials->get();
 			$params      = array(
 				'code'    => $e->getAccessCode(),

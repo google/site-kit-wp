@@ -1,7 +1,7 @@
 /**
- * ChipMultiSelect context for React components.
+ * AdminScreenTooltip types.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,20 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { createContext } from '@wordpress/element';
+import { ReactNode } from 'react';
+import { Step } from 'react-joyride';
 
-const ChipMultiSelectContext = createContext( {} );
-
-export const { Consumer, Provider } = ChipMultiSelectContext;
-
-export default ChipMultiSelectContext;
+export interface TooltipSettings
+	extends Pick< Step, 'title' | 'placement' | 'floaterProps' > {
+	className?: string;
+	content?: ReactNode;
+	dismissLabel?: string;
+	gaTrackingEventLabel?: string;
+	isCenteredOnMobile?: boolean;
+	isTooltipVisible?: boolean;
+	onDismiss?: () => void;
+	target?: string | HTMLElement; // eslint-disable-line sitekit/acronym-case
+	tooltipSlug?: string;
+}

@@ -27,7 +27,7 @@ import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import StepSurveyCTA from './StepSurveyCTA';
 
 function Template() {
-	return <StepSurveyCTA onComplete={ () => {} } />;
+	return <StepSurveyCTA onComplete={ () => {} } onGoBack={ () => {} } />;
 }
 
 export const Default = Template.bind( {} ) as Story;

@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import { omit } from 'lodash';
-import PropTypes from 'prop-types';
+import { ComponentProps, FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -33,12 +32,18 @@ import { useContext } from '@wordpress/element';
 import { Chip } from 'googlesitekit-components';
 import { ChipCheckmark } from './ChipCheckmark';
 import ChipMultiSelectContext from './ChipMultiSelectContext';
-export default function ChipMultiSelectItem( {
+
+interface ChipMultiSelectItemProps
+	extends Omit< ComponentProps< typeof Chip >, 'label' | 'onClick' > {
+	children: string;
+}
+
+const ChipMultiSelectItem: FC< ChipMultiSelectItemProps > = ( {
 	children,
 	id,
 	selected,
 	...props
-} ) {
+} ) => {
 	const { onToggleChip } = useContext( ChipMultiSelectContext );
 
 	return (
@@ -46,7 +51,6 @@ export default function ChipMultiSelectItem( {
 			className="googlesitekit-chip-multi-select__item"
 			CheckMark={ ChipCheckmark }
 			onClick={ () => {
-				// Indicate the desired state of the chip.
 				onToggleChip( id, ! selected );
 			} }
 			id={ id }
@@ -55,10 +59,6 @@ export default function ChipMultiSelectItem( {
 			{ ...props }
 		/>
 	);
-}
-
-ChipMultiSelectItem.propTypes = {
-	children: PropTypes.string.isRequired,
-	id: PropTypes.string.isRequired,
-	...omit( Chip.propTypes, 'label' ),
 };
+
+export default ChipMultiSelectItem;

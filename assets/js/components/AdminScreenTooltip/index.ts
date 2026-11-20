@@ -1,7 +1,7 @@
 /**
- * ChipMultiSelect component.
+ * AdminScreenTooltip exports.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,8 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
- * Internal dependencies
- */
-import { Provider } from './ChipMultiSelectContext';
-
-export default function ChipMultiSelect( {
-	children,
-	onToggleChip = () => {},
-} ) {
-	return (
-		<Provider value={ { onToggleChip } }>
-			<div className="googlesitekit-chip-multi-select">{ children }</div>
-		</Provider>
-	);
-}
-
-ChipMultiSelect.propTypes = {
-	children: PropTypes.node.isRequired,
-	onToggleChip: PropTypes.func,
-};
+export * from './AdminScreenTooltip';
+export * from './hooks/useHideTooltip';
+export * from './hooks/useShowTooltip';
+export * from './hooks/useTooltipSettings';
+export * from './types';

@@ -28,6 +28,8 @@ import { BadgeProps } from '@/js/components/Badge';
 import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import {
 	FeatureBadge,
+	FeatureCategoryChipID,
+	FeatureCategorySlug,
 	FeatureEffort,
 } from '@/js/googlesitekit/datastore/feature-discovery/types';
 
@@ -37,6 +39,17 @@ export const CORE_FEATURE_DISCOVERY = 'core/feature-discovery';
 // leaving the hub and are showing their success notice in place of their card.
 // Session-only, as `core/ui` values are never persisted.
 export const SUCCEEDED_FEATURES_UI_KEY = 'feature-discovery-succeeded-features';
+
+// The dismissed item recording that the user closed the tooltip pointing to
+// "Add features" after dismissing an incomplete-setup reminder. Shared by all
+// features, so the tooltip is only ever shown once. It deliberately doesn't
+// start with the incomplete-setup reminder key prefix.
+export const INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG =
+	'feature-discovery-tooltip-incomplete-setup';
+
+// The tooltip slug used for the tooltip's GA events.
+export const INCOMPLETE_SETUP_TOOLTIP_SLUG =
+	'feature-discovery-incomplete-setup';
 
 export const FEATURE_CATEGORIES = {
 	AUDIENCE: 'audience',
@@ -48,6 +61,9 @@ export const FEATURE_CATEGORIES = {
 	PRODUCTIVITY: 'productivity',
 } as const;
 
+// ID for the "All services" chip.
+export const FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID = 'all-services';
+
 // The curated order the categories are displayed in.
 export const FEATURE_CATEGORY_ORDER = [
 	FEATURE_CATEGORIES.AUDIENCE,
@@ -58,6 +74,74 @@ export const FEATURE_CATEGORY_ORDER = [
 	FEATURE_CATEGORIES.PERFORMANCE,
 	FEATURE_CATEGORIES.PRODUCTIVITY,
 ] as const;
+
+export const FEATURE_CATEGORY_TITLES: Record< FeatureCategorySlug, string > = {
+	[ FEATURE_CATEGORIES.AUDIENCE ]: __(
+		'Get to know your audience',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.ENGAGEMENT ]: __(
+		'Engage your visitors',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.MONETIZATION ]: __(
+		'Earn money from your content',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.TRAFFIC ]: __(
+		'Drive traffic to your site',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.PRIVACY ]: __( 'Manage privacy', 'google-site-kit' ),
+	[ FEATURE_CATEGORIES.PERFORMANCE ]: __(
+		'Improve your site speed and experience',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.PRODUCTIVITY ]: __(
+		'Collaborate and save time',
+		'google-site-kit'
+	),
+};
+
+export const FEATURE_CATEGORY_CHIP_LABELS: Record<
+	FeatureCategoryChipID,
+	string
+> = {
+	[ FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID ]: __(
+		'All services',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.AUDIENCE ]: __(
+		'Know your audience',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.ENGAGEMENT ]: __(
+		'Engage your visitors',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.MONETIZATION ]: __( 'Monetize', 'google-site-kit' ),
+	[ FEATURE_CATEGORIES.TRAFFIC ]: __( 'Drive traffic', 'google-site-kit' ),
+	[ FEATURE_CATEGORIES.PRIVACY ]: __( 'Manage privacy', 'google-site-kit' ),
+	[ FEATURE_CATEGORIES.PERFORMANCE ]: __(
+		'Improve site speed',
+		'google-site-kit'
+	),
+	[ FEATURE_CATEGORIES.PRODUCTIVITY ]: __( 'Collaborate', 'google-site-kit' ),
+};
+
+export const FEATURE_CATEGORY_CHIP_EVENT_LABELS: Record<
+	FeatureCategoryChipID,
+	string
+> = {
+	[ FEATURE_CATEGORY_ALL_SERVICES_CHIP_ID ]: 'all',
+	[ FEATURE_CATEGORIES.AUDIENCE ]: 'know-your-audience',
+	[ FEATURE_CATEGORIES.ENGAGEMENT ]: 'engage-your-visitors',
+	[ FEATURE_CATEGORIES.MONETIZATION ]: 'monetize',
+	[ FEATURE_CATEGORIES.TRAFFIC ]: 'drive-traffic',
+	[ FEATURE_CATEGORIES.PRIVACY ]: 'manage-privacy',
+	[ FEATURE_CATEGORIES.PERFORMANCE ]: 'improve-site-speed',
+	[ FEATURE_CATEGORIES.PRODUCTIVITY ]: 'collaborate',
+};
 
 // Low is "Just a few clicks", medium "A short setup", high "In depth setup".
 export const FEATURE_EFFORTS = {

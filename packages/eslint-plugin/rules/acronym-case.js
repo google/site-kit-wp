@@ -129,7 +129,8 @@ module.exports = {
 		// Helpers
 		//--------------------------------------------------------------------------
 
-		// contains reported nodes to avoid reporting twice on destructuring with shorthand notation
+		// contains the start offsets of reported nodes to avoid reporting twice on destructuring with shorthand notation,
+		// where the key and the value are separate nodes at the same location.
 		const reported = [];
 		const acronyms = [
 			'AMP',
@@ -165,8 +166,8 @@ module.exports = {
 		 * @return {void}
 		 */
 		function report( node ) {
-			if ( ! reported.includes( node ) ) {
-				reported.push( node );
+			if ( ! reported.includes( node.range[ 0 ] ) ) {
+				reported.push( node.range[ 0 ] );
 				context.report( {
 					data: { name: node.name },
 					message: `\`${ node.name }\` violates naming rules.`,

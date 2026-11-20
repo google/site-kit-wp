@@ -34,8 +34,11 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  */
 import { Button, Menu } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import {
+	useHideTooltip,
+	useTooltipSettings,
+} from '@/js/components/AdminScreenTooltip';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
@@ -89,24 +92,20 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 		[ showFeatureTour ]
 	);
 
-	const tooltipTarget = useSelect(
-		( select ) =>
-			select( CORE_UI ).getValue( 'admin-screen-tooltip' )?.target
-	);
-
-	const { setValue } = useDispatch( CORE_UI );
+	const hideTooltip = useHideTooltip();
+	const tooltipSettings = useTooltipSettings();
 
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {
 			trackEvent( `${ viewContext }_headerbar`, 'open_helpmenu' );
 
-			if ( tooltipTarget === `.${ HELP_MENU_BUTTON_CLASS }` ) {
-				setValue( 'admin-screen-tooltip', undefined );
+			if ( tooltipSettings.target === `.${ HELP_MENU_BUTTON_CLASS }` ) {
+				hideTooltip();
 			}
 		}
 
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen, viewContext, tooltipTarget, setValue ] );
+	}, [ hideTooltip, menuOpen, tooltipSettings, viewContext ] );
 
 	const handleMenuSelected = useCallback( () => {
 		setMenuOpen( false );

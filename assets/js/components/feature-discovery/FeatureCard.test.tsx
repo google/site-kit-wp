@@ -33,12 +33,16 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as tracking from '@/js/util/tracking';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -88,6 +92,9 @@ const TEST_BADGED_FEATURE: Feature = {
 	badges: [ FEATURE_BADGES.PAID_SERVICE ],
 };
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'FeatureCard', () => {
 	let registry: Registry;
 
@@ -104,6 +111,7 @@ describe( 'FeatureCard', () => {
 
 	afterEach( () => {
 		jest.useRealTimers();
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should resolve its copy, effort, and service from the catalog entry', () => {
@@ -462,5 +470,90 @@ describe( 'FeatureCard', () => {
 				.select( CORE_UI )
 				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
 		).toBe( TEST_FEATURE.slug );
+	} );
+
+	describe( 'event tracking', () => {
+		const viewContext = 'testViewContext';
+
+		it( 'should track the CTA click in the feature card category', async () => {
+			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+			provideSiteInfo( registry );
+			provideUserAuthentication( registry );
+			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+			provideFeatures( registry, [
+				{
+					...TEST_FEATURE,
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						ctaLabel: 'Try it now',
+						activate: jest.fn().mockResolvedValue( {} ),
+					},
+				},
+			] );
+
+			const { getByRole } = render( <FeatureCard slug="test-feature" />, {
+				registry,
+				viewContext,
+			} );
+
+			const button = getByRole( 'button', { name: 'Try it now' } );
+
+			fireEvent.click( button );
+
+			// Let the setup finish so that no update lands after the test.
+			await waitFor( () => expect( button ).not.toBeDisabled() );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ viewContext }_feature-card`,
+				'click_setup_cta',
+				'test-feature'
+			);
+		} );
+
+		it( 'should track click_read_more', () => {
+			provideFeatures( registry, [ TEST_FEATURE ] );
+
+			const { getByRole } = render( <FeatureCard slug="test-feature" />, {
+				registry,
+				viewContext,
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Read more' } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ viewContext }_feature-card`,
+				'click_read_more',
+				'test-feature'
+			);
+		} );
+
+		it( 'should track open_dismiss_menu only when the menu is opened', () => {
+			provideFeatures( registry, [ TEST_FEATURE ] );
+
+			const { getByRole } = render(
+				<FeatureCard slug="test-feature" isDismissible />,
+				{ registry, viewContext }
+			);
+
+			const button = getByRole( 'button', {
+				name: 'Dismiss Test feature title',
+			} );
+
+			fireEvent.click( button );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ viewContext }_feature-card`,
+				'open_dismiss_menu',
+				'test-feature'
+			);
+
+			// Closing the menu with the same control sends nothing.
+			fireEvent.click( button );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		} );
 	} );
 } );

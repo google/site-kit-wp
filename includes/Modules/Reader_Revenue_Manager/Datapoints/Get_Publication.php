@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication as Publication_Synchronization;
@@ -27,6 +26,8 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
  * @ignore
  */
 class Get_Publication extends Datapoint implements Executable_Datapoint {
+
+	use Publication_Params_Trait;
 
 	/**
 	 * Reader Revenue Manager settings.
@@ -62,30 +63,13 @@ class Get_Publication extends Datapoint implements Executable_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.186.0
+	 * @since n.e.x.t Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
-	 * @throws Missing_Required_Setting_Exception Thrown if a fallback setting is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$settings = $this->settings->get();
-
-		$publication_id  = $data_request['publicationID'] ?? $settings['publicationID'];
-		$organization_id = $data_request['organizationID'] ?? $settings['organizationID'];
-
-		if ( empty( $publication_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'publicationID' );
-		}
-
-		if ( empty( $organization_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'organizationID' );
-		}
-
-		$name = sprintf(
-			'organizations/%s/publications/%s',
-			$organization_id,
-			$publication_id
-		);
+		$name = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications->get( $name );
 	}

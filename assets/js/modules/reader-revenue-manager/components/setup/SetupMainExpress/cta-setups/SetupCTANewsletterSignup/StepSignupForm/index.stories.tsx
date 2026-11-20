@@ -70,8 +70,10 @@ const validSettings = {
 };
 
 const publicationWithDisplayName = {
-	// eslint-disable-next-line sitekit/acronym-case
+	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+	organizationId: validSettings.organizationID,
 	publicationId: validSettings.publicationID,
+	/* eslint-enable sitekit/acronym-case */
 	displayName: 'Example Publication',
 	onboardingState: validSettings.publicationOnboardingState,
 };

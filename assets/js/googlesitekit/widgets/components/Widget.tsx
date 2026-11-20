@@ -39,6 +39,7 @@ import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 
 export interface WidgetProps {
 	className?: string;
+	id?: string;
 	collapsible?: boolean;
 	defaultCollapsed?: boolean;
 	isCollapsed?: boolean;
@@ -55,6 +56,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 	(
 		{
 			className = '',
+			id,
 			children,
 			collapsible = false,
 			defaultCollapsed,
@@ -139,6 +141,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 
 		return (
 			<div
+				id={ id }
 				className={ classnames(
 					'googlesitekit-widget',
 					`googlesitekit-widget--${ widgetSlug }`,
