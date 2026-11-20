@@ -33,7 +33,7 @@ class Response_Builder {
 	/**
 	 * The fields each row of a breakdown report gets its dimension values as,
 	 * in the order the report asks for the dimensions, keyed by contextual data
-	 * key or by the name of a report filtered on a key factor card's driver.
+	 * key.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -42,9 +42,6 @@ class Response_Builder {
 		'channelSources'    => array( 'channel', 'source' ),
 		'channelPages'      => array( 'channel', 'page' ),
 		'channelCampaigns'  => array( 'channel', 'campaign' ),
-		'audience'          => array( 'device', 'userType' ),
-		'sources'           => array( 'channel', 'source' ),
-		'pages'             => array( 'page' ),
 	);
 
 	/**
@@ -100,8 +97,8 @@ class Response_Builder {
 	 *     @type array       $dailyTraffic      List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the band `Period_Baseline::get_daily_ranges()` fits for the period. The bounds are null on every day when the period has no band, with fewer than `Period_Baseline::get_min_band_history_days()` days of recorded traffic up to and including its last day.
 	 *     @type array       $availability      Which parts of the typical traffic view show for the period, as `Typical_Traffic_Availability::get()` returns them, so the panel reads them instead of working them out again.
 	 *     @type int|null    $bandReferenceDays The number of days of traffic the band of the period's last day is fitted on, at most 365, which the band's tooltip names in weeks. Null when the period has no band.
-	 *     @type array       $keyFactors        The key factor cards, as `Key_Factors::build()` returns them, or as `Key_Factors::build_steady()` does when `steadyTraffic` is true. Empty when `availability` has no key factors for the period: it is shorter than 7 days, or the compare period starts before the site's first day with visits, since a day before it wasn't measured yet. Also empty when no candidate stays.
-	 *     @type bool        $steadyTraffic     Whether no channel changed notably, as `Decomposition_Builder::is_steady()` tells. The key factor cards are then the channels with the most visits, each with its share of the site's visits as `sharePct`. False when the period has no key factors.
+	 *     @type array       $keyFactors        The key factor cards, as `Key_Factors::get_cards()` returns them. Empty when `availability` has no key factors for the period: it is shorter than 7 days, or the compare period starts before the site's first day with visits, since a day before it wasn't measured yet. Also empty when nothing moved enough for a card.
+	 *     @type bool        $steadyTraffic     Whether no channel changed notably, as `Key_Factors::is_steady()` tells. The key factor cards are then the channels with the most visits, each with its share of the site's visits as `sharePct`. False when the period has no key factors.
 	 *     @type array       $contentMarkers    The posts published in the selected period that the chart marks, as `Content_Markers::build()` returns them. Empty when the property has no post date custom dimension, since the content report doesn't run then, or when the dimension has no data yet.
 	 *     @type array|null  $insightRequest    Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request, which includes a period without key factors.
 	 * }
@@ -141,24 +138,16 @@ class Response_Builder {
 		// too short for a card.
 		$key_factors    = array();
 		$steady_traffic = false;
+		$decomposition  = null;
 
 		if ( $availability['key_factors_available'] ) {
-			// A steady period has no change to explain, so its cards are the
-			// channels with the most visits. The insight request's
-			// decomposition tells it the same way, from the same figures.
-			$decomposition_builder = new Decomposition_Builder(
-				$visits,
-				Key_Factors::sum_by( isset( $contextual_data['channelBreakdowns'] ) ? $contextual_data['channelBreakdowns'] : array(), 'channel' )
-			);
-			$steady_traffic        = $decomposition_builder->is_steady();
-
-			$key_factors = $steady_traffic
-				? ( new Key_Factors( $contextual_data ) )->build_steady( $decomposition_builder->get_closing_sessions() )
-				: $this->build_key_factors( $contextual_data, $report_options );
-		}
-
-		if ( is_wp_error( $key_factors ) ) {
-			return $key_factors;
+			// The insight request carries the cards the panel shows as its
+			// decomposition, built in the same pass from the same figures, so
+			// the insight's text describes the cards.
+			$key_factors_builder = new Key_Factors( $contextual_data, $visits, $report_options->get_period_days(), self::get_home_path() );
+			$key_factors         = $key_factors_builder->get_cards();
+			$steady_traffic      = $key_factors_builder->is_steady();
+			$decomposition       = $key_factors_builder->get_decomposition();
 		}
 
 		// The band's tooltip says how much traffic the band is based on: the
@@ -186,7 +175,7 @@ class Response_Builder {
 			// request reads the same fits as the band of `dailyTraffic`, so the
 			// chart and the verdict agree.
 			$response['insightRequest'] = $availability['insight_request_allowed']
-				? ( new Insight_Request_Builder() )->build( $start_date, $end_date, $period_baseline, $visits, $this->get_insight_rows( $contextual_data ), $key_factors )
+				? ( new Insight_Request_Builder() )->build( $start_date, $end_date, $period_baseline, $visits, $this->get_insight_rows( $contextual_data ), $decomposition )
 				: null;
 		}
 
@@ -194,59 +183,18 @@ class Response_Builder {
 	}
 
 	/**
-	 * Builds the key factor cards.
-	 *
-	 * `Key_Factors` picks the drivers, and each landing page, campaign or
-	 * referring site among them gets the reports filtered on it that its
-	 * attributes need. Those reports run only for the drivers that are kept,
-	 * in batch calls of their own.
+	 * Gets the path of the site's homepage, which a key factor card names the
+	 * homepage by, and which tells the homepage of a site that lives under a
+	 * folder.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array          $contextual_data The rows, keyed by contextual data key.
-	 * @param Report_Options $report_options  The report options for the selected period.
-	 * @return array|WP_Error The cards, as `Key_Factors::build()` returns them, or the error a failed report returned.
+	 * @return string The path, with a trailing slash, such as `/` or `/blog/`.
 	 */
-	private function build_key_factors( array $contextual_data, Report_Options $report_options ) {
-		$key_factors = new Key_Factors( $contextual_data );
-		$drivers     = $key_factors->select_drivers();
-		$requests    = array();
+	private static function get_home_path() {
+		$path = wp_parse_url( home_url(), PHP_URL_PATH );
 
-		foreach ( $drivers as $index => $driver ) {
-			$driver_filters = Key_Factors::get_driver_filters( $driver );
-
-			foreach ( Key_Factors::get_driver_reports( $driver ) as $report_name ) {
-				switch ( $report_name ) {
-					case 'audience':
-						$requests[ "{$index}:{$report_name}" ] = $report_options->get_driver_audience_options( $driver_filters );
-						break;
-					case 'sources':
-						$requests[ "{$index}:{$report_name}" ] = $report_options->get_driver_sources_options( $driver_filters );
-						break;
-					case 'pages':
-						$requests[ "{$index}:{$report_name}" ] = $report_options->get_driver_pages_options( $driver_filters );
-						break;
-				}
-			}
-		}
-
-		$driver_reports = array();
-
-		if ( ! empty( $requests ) ) {
-			$reports = $this->run_reports( $requests );
-
-			if ( is_wp_error( $reports ) ) {
-				return $reports;
-			}
-
-			foreach ( $reports as $request_key => $report_rows ) {
-				list( $index, $report_name ) = explode( ':', $request_key );
-
-				$driver_reports[ (int) $index ][ $report_name ] = $this->build_breakdown_rows( $report_name, $report_rows );
-			}
-		}
-
-		return $key_factors->build( $drivers, $driver_reports );
+		return trailingslashit( is_string( $path ) ? $path : '' );
 	}
 
 	/**
@@ -628,9 +576,6 @@ class Response_Builder {
 		 * - `searchQueries`: `label`, and the average position of each
 		 *   period as `positionCurrent` and `positionPrevious`, or `null`
 		 *   for a period the query isn't reported in.
-		 * - `searchQueryPages`: `query` and `page`, the path of the page.
-		 * - `searchQueryDevices`: `query` and `device`, as Analytics names
-		 *   it, such as `mobile`.
 		 * - `searchClicks`: one row, with no field besides the clicks of
 		 *   every search query.
 		 * - `content`: `url`, `title` and `publishedDaysAgo`.
@@ -641,12 +586,12 @@ class Response_Builder {
 		 * - A key whose value isn't a list of rows.
 		 * - A row that misses a field or has a value of the wrong type.
 		 *
-		 * A numeric string is stored as a number. A row a callback adds is a
-		 * candidate for a key factor card like any other row.
+		 * A numeric string is stored as a number. A row a callback adds counts
+		 * towards the key factor cards like any other row.
 		 *
 		 * @since 1.190.0
 		 * @since n.e.x.t The rows count visits in place of visitors.
-		 * @since n.e.x.t The channel breakdowns and the search queries' pages and devices in place of the channel, device, visitor mix, referrer and category rows.
+		 * @since n.e.x.t The channel breakdowns in place of the channel, device, visitor mix, referrer and category rows.
 		 * @since n.e.x.t Added `searchClicks`.
 		 *
 		 * @param array $contextual_data The rows, keyed by contextual data key.

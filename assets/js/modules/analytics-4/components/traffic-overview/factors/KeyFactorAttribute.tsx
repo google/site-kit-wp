@@ -31,6 +31,7 @@ import {
 	TYPE_BODY,
 	TYPE_LABEL,
 } from '@/js/components/Typography/constants';
+import { formatClicksChange } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatClicksChange';
 import { formatVisitsChange } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatVisitsChange';
 
 export interface KeyFactorAttributeProps {
@@ -38,8 +39,10 @@ export interface KeyFactorAttributeProps {
 	title: string;
 	/** The attribute's value, such as a page path or a referring site. */
 	label: string;
-	/** The change in visits, negative for a drop. */
+	/** The change, negative for a drop. */
 	change: number;
+	/** What the change counts: visits, or a search keyword's clicks in Search Console. Default `visits`. */
+	unit?: 'visits' | 'clicks';
 	/** The Site Kit page the value links to, such as a landing page's entity dashboard, or `undefined` when it is not a link. */
 	href?: string;
 }
@@ -48,6 +51,7 @@ const KeyFactorAttribute: FC< KeyFactorAttributeProps > = ( {
 	title,
 	label,
 	change,
+	unit = 'visits',
 	href,
 } ) => (
 	<div className="googlesitekit-traffic-overview__key-factor-attribute">
@@ -84,7 +88,9 @@ const KeyFactorAttribute: FC< KeyFactorAttributeProps > = ( {
 				size={ SIZE_SMALL }
 				className="googlesitekit-traffic-overview__key-factor-attribute-change"
 			>
-				{ formatVisitsChange( change ) }
+				{ unit === 'clicks'
+					? formatClicksChange( change )
+					: formatVisitsChange( change ) }
 			</Typography>
 		</dd>
 	</div>

@@ -279,23 +279,23 @@ class Response_EncoderTest extends TestCase {
 								'previous' => 1,
 								'sharePct' => 5.5,
 							),
-							array( 'TRAFFIC_CHANNEL', 'LANDING_PAGE', 'SEARCH_KEYWORD', 'REFERRING_SITE', 'PLATFORM', 'CAMPAIGN', 'DEVICE', 'USER_TYPE' )
+							array( 'TRAFFIC_CHANNEL', 'LANDING_PAGE', 'SEARCH_KEYWORD', 'REFERRING_SITE', 'PLATFORM', 'CAMPAIGN', 'DEVICE', 'USER_TYPE', 'ASSISTANT' )
 						),
 					),
-					array( 'CHANNEL', 'CONTENT', 'SEARCH_KEYWORD', 'REFERRING_SITE', 'CAMPAIGN' )
+					array( 'CHANNEL', 'CONTENT', 'SEARCH_KEYWORD', 'REFERRING_SITE', 'CAMPAIGN', 'CHANNEL_GROUP' )
 				),
 			)
 		);
 
 		$this->assertSame(
-			array( 0, 1, 2, 3, 4 ),
+			array( 0, 1, 2, 3, 4, 5 ),
 			array_column( $encoded[ Wire_Format::MEMBER_KEY_FACTORS ], 0 ),
-			'Each driver kind should travel as its position: `CHANNEL` 0, `CONTENT` 1, `SEARCH_KEYWORD` 2, `REFERRING_SITE` 3 and `CAMPAIGN` 4.'
+			'Each driver kind should travel as its position: `CHANNEL` 0, `CONTENT` 1, `SEARCH_KEYWORD` 2, `REFERRING_SITE` 3, `CAMPAIGN` 4 and `CHANNEL_GROUP` 5.'
 		);
 		$this->assertSame(
-			array( 0, 1, 2, 3, 4, 5, 6, 7 ),
+			array( 0, 1, 2, 3, 4, 5, 6, 7, 8 ),
 			array_column( $encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ][0], 0 ),
-			'Each attribute kind should travel as its position: `TRAFFIC_CHANNEL` 0, `LANDING_PAGE` 1, `SEARCH_KEYWORD` 2, `REFERRING_SITE` 3, `PLATFORM` 4, `CAMPAIGN` 5, `DEVICE` 6 and `USER_TYPE` 7.'
+			'Each attribute kind should travel as its position: `TRAFFIC_CHANNEL` 0, `LANDING_PAGE` 1, `SEARCH_KEYWORD` 2, `REFERRING_SITE` 3, `PLATFORM` 4, `CAMPAIGN` 5, `DEVICE` 6, `USER_TYPE` 7 and `ASSISTANT` 8.'
 		);
 	}
 

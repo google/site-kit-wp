@@ -197,53 +197,6 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider data_driver_options
-	 *
-	 * @param string $method     The method that returns the report options.
-	 * @param array  $dimensions The dimensions the report counts sessions by.
-	 */
-	public function test_get_driver_options__counts_the_sessions_of_a_driver_in_the_selected_period_and_the_compare_period( $method, array $dimensions ) {
-		$driver_filters = array(
-			'sessionSource'                 => array( 'facebook.com', 'm.facebook.com' ),
-			'sessionDefaultChannelGrouping' => array( 'Referral', 'Organic Social' ),
-		);
-
-		$this->assertSame(
-			array(
-				'startDate'        => '2026-08-19',
-				'endDate'          => '2026-09-15',
-				'compareStartDate' => '2026-07-22',
-				'compareEndDate'   => '2026-08-18',
-				'metrics'          => array(
-					array( 'name' => 'sessions' ),
-				),
-				'dimensions'       => array_map(
-					fn( $dimension ) => array( 'name' => $dimension ),
-					$dimensions
-				),
-				'orderby'          => array(
-					array(
-						'metric' => array( 'metricName' => 'sessions' ),
-						'desc'   => true,
-					),
-				),
-				'limit'            => 500,
-				'dimensionFilters' => $driver_filters,
-			),
-			$this->report_options->$method( $driver_filters ),
-			sprintf( "The `%s()` method should ask for up to 500 rows of `sessions` by `%s`, in the selected period and the compare period, filtered on the driver's values.", $method, implode( '`, `', $dimensions ) )
-		);
-	}
-
-	public function data_driver_options() {
-		return array(
-			'audience' => array( 'get_driver_audience_options', array( 'deviceCategory', 'newVsReturning' ) ),
-			'sources'  => array( 'get_driver_sources_options', array( 'sessionDefaultChannelGrouping', 'sessionSource' ) ),
-			'pages'    => array( 'get_driver_pages_options', array( 'landingPage' ) ),
-		);
-	}
-
 	public function test_get_content_options__counts_sessions_by_post_with_a_post_date_in_the_selected_period_and_the_compare_period() {
 		$this->assertSame(
 			array(

@@ -73,6 +73,7 @@ final class Wire_Format {
 	 * only ever added at the end, so a position never changes meaning.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Added `CHANNEL_GROUP`, the paid channels as one group. No card is a `SEARCH_KEYWORD` any more, but its position keeps its meaning.
 	 */
 	const KEY_FACTOR_KINDS = array(
 		'CHANNEL'        => 0,
@@ -80,6 +81,7 @@ final class Wire_Format {
 		'SEARCH_KEYWORD' => 2,
 		'REFERRING_SITE' => 3,
 		'CAMPAIGN'       => 4,
+		'CHANNEL_GROUP'  => 5,
 	);
 
 	/**
@@ -87,6 +89,7 @@ final class Wire_Format {
 	 * kind is only ever added at the end, so a position never changes meaning.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Added `ASSISTANT`, the AI assistant behind an `AI Assistant` card.
 	 */
 	const KEY_FACTOR_ATTRIBUTE_KINDS = array(
 		'TRAFFIC_CHANNEL' => 0,
@@ -97,6 +100,7 @@ final class Wire_Format {
 		'CAMPAIGN'        => 5,
 		'DEVICE'          => 6,
 		'USER_TYPE'       => 7,
+		'ASSISTANT'       => 8,
 	);
 
 	/**

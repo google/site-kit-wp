@@ -305,6 +305,103 @@ describe( 'KeyFactors', () => {
 		] );
 	} );
 
+	it( 'should give the change of a search keyword in clicks, since Search Console counts it in clicks rather than visits', () => {
+		const { getByRole } = renderKeyFactors();
+
+		const organicSearch = getByRole( 'region', { name: 'Organic Search' } );
+
+		expect(
+			organicSearch.querySelector(
+				'.googlesitekit-traffic-overview__key-factor-attribute dd'
+			)?.textContent
+		).toBe( 'healthy ice cream types-3 clicks' );
+	} );
+
+	it( 'should name the card of the paid channels as one group "Paid traffic", with a row for each of its channels', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					kind: 'CHANNEL_GROUP',
+					label: 'Paid traffic',
+					current: 455,
+					previous: 350,
+					sharePct: 51.2,
+					attributes: [
+						{
+							kind: 'TRAFFIC_CHANNEL',
+							label: 'Paid Search',
+							current: 300,
+							previous: 100,
+							sharePct: 65.6,
+						},
+						{
+							kind: 'TRAFFIC_CHANNEL',
+							label: 'Paid Social',
+							current: 100,
+							previous: 200,
+							sharePct: 32.8,
+						},
+					],
+				},
+			],
+		} );
+
+		const paidTraffic = getByRole( 'region', { name: 'Paid traffic' } );
+
+		expect(
+			within( paidTraffic ).getByText( '+105 visits' )
+		).toBeInTheDocument();
+		expect(
+			Array.from(
+				paidTraffic.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factor-attribute'
+				)
+			).map( ( attribute ) => [
+				attribute.querySelector( 'dt' )?.textContent,
+				attribute.querySelector( 'dd' )?.textContent,
+			] )
+		).toEqual( [
+			[ 'Traffic channel', 'Paid Search+200 visits' ],
+			[ 'Traffic channel', 'Paid Social-100 visits' ],
+		] );
+	} );
+
+	it( 'should title the assistant behind an `AI Assistant` card "AI assistant"', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					kind: 'CHANNEL',
+					label: 'AI Assistant',
+					current: 110,
+					previous: 10,
+					sharePct: 100,
+					attributes: [
+						{
+							kind: 'ASSISTANT',
+							label: 'chatgpt.com',
+							current: 85,
+							previous: 5,
+							sharePct: 80,
+						},
+					],
+				},
+			],
+		} );
+
+		const attribute = getByRole( 'region', {
+			name: 'AI Assistant',
+		} ).querySelector(
+			'.googlesitekit-traffic-overview__key-factor-attribute'
+		);
+
+		expect( attribute?.querySelector( 'dt' )?.textContent ).toBe(
+			'AI assistant'
+		);
+		expect( attribute?.querySelector( 'dd' )?.textContent ).toBe(
+			'chatgpt.com+80 visits'
+		);
+	} );
+
 	it( 'should link a landing page to the entity dashboard of that page on the site, in the same tab', () => {
 		const { getByRole } = renderKeyFactors();
 

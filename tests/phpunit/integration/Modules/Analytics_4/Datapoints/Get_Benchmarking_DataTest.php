@@ -519,7 +519,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 		// expected range or for last year's visits. Search Console adds the
 		// `plant garlic` row, and the site's clicks, which its fake API
 		// reports as those of `plant garlic`. The key factor card is the one
-		// referring site, which carries the whole change.
+		// channel, `Organic Search`, with the `plant garlic` keyword, whose
+		// clicks moved as the site's did, and the visitor type that carried
+		// its rise.
 		$this->assertSame(
 			array(
 				'request' => array(
@@ -579,9 +581,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 						'shape'            => 'CONCENTRATED',
 						'key_factors'      => array(
 							array(
-								'dimension'          => 'SOURCES',
-								'entity_kind'        => 'REFERRING_SITE',
-								'title'              => 'a.example.com',
+								'dimension'          => 'TRAFFIC_CHANNELS',
+								'entity_kind'        => 'CHANNEL',
+								'title'              => 'Organic Search',
 								'volume'             => 240,
 								'delta'              => 40,
 								'is_large_share'     => true,
@@ -592,7 +594,24 @@ class Get_Benchmarking_DataTest extends TestCase {
 								'metric_type'        => 'DELTA',
 								'share_basis'        => 'GROSS_CHANGE',
 								'role'               => 'PRIMARY',
-								'attributes'         => array(),
+								'attributes'         => array(
+									array(
+										'kind'         => 'SOURCE_TYPE',
+										'role'         => 'CONTEXT',
+										'label'        => 'Search keyword',
+										'value'        => array( 'text' => 'plant garlic' ),
+										'entity_delta' => 90,
+										'share_of_search_clicks_pct' => 30,
+									),
+									array(
+										'kind'         => 'VISITOR_TYPE',
+										'role'         => 'DECOMPOSITION',
+										'label'        => 'Visitor type',
+										'value'        => array( 'text' => 'new' ),
+										'share_of_parent_change_pct' => 100,
+										'entity_delta' => 40,
+									),
+								),
 							),
 						),
 					),
@@ -888,7 +907,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( 200, $reader_response->get_status(), 'A view-only reader should get the benchmarking data.' );
 		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->google_api_authorizations['analyticsdata.googleapis.com'], 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
 		$this->assertEquals( $owner_response->get_data(), $reader_response->get_data(), 'The reader should get the response the owner gets.' );
-		$this->assertSame( array( 'channelBreakdowns', 'channelSources', 'channelPages', 'channelCampaigns', 'searchQueries', 'searchQueryPages', 'searchQueryDevices', 'searchClicks' ), $this->contextual_data_keys, 'The builder should have the four channel breakdowns, the search queries with their pages and devices, and the site\'s search clicks, for the reader.' );
+		$this->assertSame( array( 'channelBreakdowns', 'channelSources', 'channelPages', 'channelCampaigns', 'searchQueries', 'searchClicks' ), $this->contextual_data_keys, 'The builder should have the four channel breakdowns, the search queries and the site\'s search clicks, for the reader.' );
 		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry no key factor cards, since the compare period starts before the first day with traffic.' );
 		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry no key factor attributes, since it carries no cards.' );
 	}

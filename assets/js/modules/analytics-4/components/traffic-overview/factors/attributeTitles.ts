@@ -30,9 +30,9 @@ import { BenchmarkingKeyFactorAttributeKind } from '@/js/modules/analytics-4/uti
  * The title a key factor card shows above each kind of attribute, such as
  * "Landing page" above a page path.
  *
- * `REFERRING_SITE` and `PLATFORM` are both the session's source. A `Referral`
- * or `Organic Social` card calls it a referring site, and a paid or video card
- * calls it a platform.
+ * `REFERRING_SITE`, `PLATFORM` and `ASSISTANT` are all the session's source.
+ * A paid or video card calls it a platform, an `AI Assistant` card an AI
+ * assistant, and any other card a referring site.
  *
  * @since n.e.x.t
  */
@@ -48,4 +48,5 @@ export const KEY_FACTOR_ATTRIBUTE_TITLES: Record<
 	CAMPAIGN: __( 'Campaign', 'google-site-kit' ),
 	DEVICE: __( 'Device', 'google-site-kit' ),
 	USER_TYPE: __( 'Visitor type', 'google-site-kit' ),
+	ASSISTANT: __( 'AI assistant', 'google-site-kit' ),
 };

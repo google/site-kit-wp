@@ -19,37 +19,50 @@ use Google\Site_Kit\Tests\TestCase;
 class Key_FactorsTest extends TestCase {
 
 	/**
-	 * Gets a `channelBreakdowns` row.
+	 * Builds the key factors of a period.
 	 *
-	 * @param string $channel   The channel.
-	 * @param int    $previous  The visits of the compare period.
-	 * @param int    $current   The visits of the selected period.
-	 * @param string $device    Optional. The device. Default `desktop`.
-	 * @param string $user_type Optional. The visitor type. Default `returning`.
-	 * @return array The row.
+	 * Each channel's `channelBreakdowns` row has no device and no visitor
+	 * type, so a card has neither as a row unless a test gives its own rows.
+	 *
+	 * @param array $visits          The site's visits, as `array( current, previous )`.
+	 * @param array $channels        The channels, each as `array( title, current, previous )`.
+	 * @param array $contextual_data Optional. The other rows, keyed by contextual data key. Default empty array.
+	 * @param int   $days_in_period  Optional. The number of days in the period. Default 28.
+	 * @return Key_Factors The key factors.
 	 */
-	private function get_breakdown( $channel, $previous, $current, $device = 'desktop', $user_type = 'returning' ) {
-		return array(
-			'channel'  => $channel,
-			'device'   => $device,
-			'userType' => $user_type,
-			'current'  => $current,
-			'previous' => $previous,
+	private function build( array $visits, array $channels, array $contextual_data = array(), $days_in_period = 28 ) {
+		$breakdowns = array_map(
+			fn( $channel ) => array(
+				'channel'  => $channel[0],
+				'device'   => '(not set)',
+				'userType' => '(not set)',
+				'current'  => $channel[1],
+				'previous' => $channel[2],
+			),
+			$channels
+		);
+
+		return new Key_Factors(
+			array_merge( array( 'channelBreakdowns' => $breakdowns ), $contextual_data ),
+			array(
+				'current'  => $visits[0],
+				'previous' => $visits[1],
+			),
+			$days_in_period
 		);
 	}
 
 	/**
-	 * Gets a row of a breakdown with one more field than the channel, such as
-	 * a `channelPages` row.
+	 * Gets a row of a breakdown of a channel, such as a `channelPages` row.
 	 *
 	 * @param string $channel  The channel.
 	 * @param string $field    The field, such as `page`.
 	 * @param string $value    The value of the field.
-	 * @param int    $previous The visits of the compare period.
 	 * @param int    $current  The visits of the selected period.
+	 * @param int    $previous The visits of the compare period.
 	 * @return array The row.
 	 */
-	private function get_channel_row( $channel, $field, $value, $previous, $current ) {
+	private function row( $channel, $field, $value, $current, $previous ) {
 		return array(
 			'channel'  => $channel,
 			$field     => $value,
@@ -59,844 +72,968 @@ class Key_FactorsTest extends TestCase {
 	}
 
 	/**
-	 * Gets a row with a label, such as a `searchQueries` row.
+	 * Gets a `content` row of a post published in the period.
 	 *
-	 * @param string $label    The label.
-	 * @param int    $previous The visits, or clicks, of the compare period.
-	 * @param int    $current  The visits, or clicks, of the selected period.
+	 * @param string $url     The post's path.
+	 * @param string $title   The post's title.
+	 * @param int    $current The post's visits in the period.
 	 * @return array The row.
 	 */
-	private function get_row( $label, $previous, $current ) {
+	private function post( $url, $title, $current ) {
 		return array(
-			'label'    => $label,
-			'current'  => $current,
-			'previous' => $previous,
+			'url'              => $url,
+			'title'            => $title,
+			'publishedDaysAgo' => 5,
+			'current'          => $current,
+			'previous'         => 0,
 		);
 	}
 
 	/**
-	 * Gets the kind and the label of each driver.
+	 * Gets the title of each card of the decomposition, with its kind.
 	 *
-	 * @param array $drivers The drivers.
-	 * @return array List of `KIND label` strings.
+	 * @param Key_Factors $key_factors The key factors.
+	 * @return array List of `{entity_kind} {title}`.
 	 */
-	private function get_driver_names( array $drivers ) {
+	private function get_card_titles( Key_Factors $key_factors ) {
 		return array_map(
-			fn( $driver ) => "{$driver['kind']} {$driver['label']}",
-			$drivers
+			fn( $card ) => "{$card['entity_kind']} {$card['title']}",
+			$key_factors->get_decomposition()['key_factors']
 		);
 	}
 
-	public function test_select_drivers__keeps_the_3_channels_that_explain_most_of_the_site_change() {
-		$key_factors = new Key_Factors(
+	public function test_get_decomposition__returns_the_services_wire_format_example() {
+		// The example of service §5.10 "Wire format": visits from 1000 to
+		// 1300, with Referral from 500 to 800 and Direct unchanged at 500, and
+		// Referral's landing page `/post` from 175 to 400.
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
 			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 400, 600 ),
-					$this->get_breakdown( 'Direct', 300, 380 ),
-					$this->get_breakdown( 'Referral', 100, 160 ),
-					$this->get_breakdown( 'Email', 100, 110 ),
-				),
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array(
+				'channelPages' => array( $this->row( 'Referral', 'page', '/post', 400, 175 ) ),
 			)
 		);
 
 		$this->assertSame(
 			array(
-				array(
-					'kind'     => 'CHANNEL',
-					'label'    => 'Organic Search',
-					'current'  => 600,
-					'previous' => 400,
-					'sharePct' => 57.1,
-				),
-				array(
-					'kind'     => 'CHANNEL',
-					'label'    => 'Direct',
-					'current'  => 380,
-					'previous' => 300,
-					'sharePct' => 22.9,
-				),
-				array(
-					'kind'     => 'CHANNEL',
-					'label'    => 'Referral',
-					'current'  => 160,
-					'previous' => 100,
-					'sharePct' => 17.1,
-				),
-			),
-			$key_factors->select_drivers(),
-			'The 3 highest scoring channels should be the drivers, each with its share of the 350 visits the channels gained, and `Email` should be left out.'
-		);
-	}
-
-	public function test_select_drivers__adds_up_a_channel_across_its_devices_and_visitor_types() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 100, 150, 'mobile', 'new' ),
-					$this->get_breakdown( 'Organic Search', 100, 150, 'desktop', 'returning' ),
-					$this->get_breakdown( 'Direct', 500, 500 ),
-				),
-			)
-		);
-
-		$drivers = $key_factors->select_drivers();
-
-		$this->assertSame( array( 'CHANNEL Organic Search' ), $this->get_driver_names( $drivers ), 'Only `Organic Search` should be a driver, since `Direct` did not change.' );
-		$this->assertSame( array( 200, 300 ), array( $drivers[0]['previous'], $drivers[0]['current'] ), 'The `Organic Search` driver should add up the visits of its two rows.' );
-	}
-
-	public function test_select_drivers__returns_no_drivers_without_rows() {
-		$this->assertSame( array(), ( new Key_Factors( array() ) )->select_drivers(), 'There should be no drivers without rows.' );
-	}
-
-	public function test_select_drivers__does_not_name_a_placeholder_value() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 400, 600 ),
-					$this->get_breakdown( 'Direct', 300, 300 ),
-				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Organic Search', 'page', '(not set)', 100, 300 ),
-					$this->get_channel_row( 'Organic Search', 'page', '/raised-beds/', 300, 300 ),
-				),
-				'channelCampaigns'  => array(
-					$this->get_channel_row( 'Organic Search', 'campaign', '(organic)', 400, 600 ),
-				),
-			)
-		);
-
-		$this->assertSame( array( 'CHANNEL Organic Search' ), $this->get_driver_names( $key_factors->select_drivers() ), 'The `(not set)` page and the `(organic)` campaign should not be drivers, and should leave `Organic Search` a driver.' );
-	}
-
-	public function test_select_drivers__names_a_landing_page_with_10_visits_and_15_percent_of_the_site_change_in_place_of_its_channel() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 400, 600 ),
-					$this->get_breakdown( 'Direct', 300, 380 ),
-				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Organic Search', 'page', '/plant-garlic/', 50, 150 ),
-					$this->get_channel_row( 'Organic Search', 'page', '/a/', 70, 90 ),
-					$this->get_channel_row( 'Organic Search', 'page', '/b/', 70, 90 ),
-					$this->get_channel_row( 'Organic Search', 'page', '/c/', 70, 90 ),
-					$this->get_channel_row( 'Organic Search', 'page', '/d/', 70, 90 ),
-					$this->get_channel_row( 'Organic Search', 'page', '/e/', 70, 90 ),
-				),
-			)
-		);
-
-		$drivers = $key_factors->select_drivers();
-
-		$this->assertSame( array( 'CONTENT /plant-garlic/', 'CHANNEL Direct' ), $this->get_driver_names( $drivers ), 'The `/plant-garlic/` page, with 35.7% of the change, should be a driver in place of `Organic Search`, and the pages that gained 20 visits each should not be drivers.' );
-		$this->assertSame( 35.7, $drivers[0]['sharePct'], 'The page should have 100 of the 280 visits the channels gained.' );
-	}
-
-	public function test_select_drivers__keeps_the_channel_when_its_landing_page_has_under_15_percent_of_the_site_change() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 400, 600 ),
-					$this->get_breakdown( 'Direct', 300, 380 ),
-				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Organic Search', 'page', '/plant-garlic/', 100, 140 ),
-					$this->get_channel_row( 'Organic Search', 'page', '/raised-beds/', 300, 460 ),
-				),
-			)
-		);
-
-		$this->assertNotContains( 'CONTENT /plant-garlic/', $this->get_driver_names( $key_factors->select_drivers() ), 'The `/plant-garlic/` page, with 14.3% of the change, should not be a driver.' );
-	}
-
-	public function test_select_drivers__keeps_the_channel_when_its_landing_page_changed_by_under_10_visits() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 40, 48 ),
-					$this->get_breakdown( 'Direct', 50, 50 ),
-				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Organic Search', 'page', '/plant-garlic/', 2, 10 ),
-				),
-			)
-		);
-
-		$this->assertSame( array( 'CHANNEL Organic Search' ), $this->get_driver_names( $key_factors->select_drivers() ), 'The `/plant-garlic/` page, which gained 8 visits, should not be a driver, even with all of the change.' );
-	}
-
-	public function test_select_drivers__keeps_the_channel_of_a_landing_page_that_moved_against_it() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Direct', 1900, 5300 ),
-					$this->get_breakdown( 'Organic Search', 320, 130 ),
-				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Direct', 'page', '/', 630, 320 ),
-				),
-			)
-		);
-
-		$drivers = $key_factors->select_drivers();
-
-		$this->assertSame( array( 'CHANNEL Direct', 'CONTENT /', 'CHANNEL Organic Search' ), $this->get_driver_names( $drivers ), 'The `/` page fell while `Direct` grew, so `Direct` should stay a driver next to it.' );
-		$this->assertSame( 100.0, $drivers[1]['sharePct'], 'The `/` page lost more visits than the 190 the channels lost, so its share should be cut at 100%.' );
-	}
-
-	public function test_select_drivers__names_a_search_keyword_in_place_of_organic_search() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 400, 600 ),
-					$this->get_breakdown( 'Direct', 300, 380 ),
-				),
-				'searchQueries'     => array(
+				'opening_sessions' => 1000,
+				'closing_sessions' => 1300,
+				'residual_delta'   => 0,
+				'shape'            => 'CONCENTRATED',
+				'key_factors'      => array(
 					array(
-						'label'            => 'plant garlic',
-						'current'          => 120,
-						'previous'         => 20,
-						'positionCurrent'  => 2.1,
-						'positionPrevious' => 8.4,
-					),
-				),
-			)
-		);
-
-		$this->assertSame( array( 'SEARCH_KEYWORD plant garlic', 'CHANNEL Direct' ), $this->get_driver_names( $key_factors->select_drivers() ), 'The `plant garlic` search keyword should be a driver in place of `Organic Search`.' );
-	}
-
-	public function test_select_drivers__counts_the_sources_of_facebook_as_one_referring_site() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Social', 100, 190 ),
-					$this->get_breakdown( 'Direct', 500, 700 ),
-				),
-				'channelSources'    => array(
-					$this->get_channel_row( 'Organic Social', 'source', 'm.facebook.com', 30, 60 ),
-					$this->get_channel_row( 'Organic Social', 'source', 'facebook.com', 40, 70 ),
-					$this->get_channel_row( 'Organic Social', 'source', 'l.facebook.com', 20, 50 ),
-					$this->get_channel_row( 'Organic Social', 'source', 'x.com', 10, 10 ),
-				),
-			)
-		);
-
-		$this->assertSame(
-			array(
-				array(
-					'kind'     => 'CHANNEL',
-					'label'    => 'Direct',
-					'current'  => 700,
-					'previous' => 500,
-					'sharePct' => 69.0,
-				),
-				array(
-					'kind'     => 'REFERRING_SITE',
-					'label'    => 'Facebook',
-					'current'  => 180,
-					'previous' => 90,
-					'sharePct' => 31.0,
-					'sources'  => array( 'facebook.com', 'l.facebook.com', 'm.facebook.com' ),
-				),
-			),
-			$key_factors->select_drivers(),
-			'The three Facebook sources, each with 10.3% of the change, should be one referring site with 31%, in place of `Organic Social`, listing the sources it counts.'
-		);
-	}
-
-	public function test_select_drivers__counts_only_the_visits_of_a_referring_site_through_referral_and_organic_social() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Social', 20, 80 ),
-					$this->get_breakdown( 'Paid Social', 300, 100 ),
-					$this->get_breakdown( 'Direct', 400, 700 ),
-				),
-				'channelSources'    => array(
-					$this->get_channel_row( 'Organic Social', 'source', 'facebook.com', 20, 80 ),
-					$this->get_channel_row( 'Paid Social', 'source', 'facebook.com', 300, 100 ),
-				),
-			)
-		);
-
-		$drivers = array_values(
-			array_filter(
-				$key_factors->select_drivers(),
-				fn( $driver ) => 'REFERRING_SITE' === $driver['kind']
-			)
-		);
-
-		$this->assertSame( array( 80, 20 ), array( $drivers[0]['current'], $drivers[0]['previous'] ), 'The `Facebook` referring site should count its `Organic Social` visits, and not its `Paid Social` visits.' );
-	}
-
-	public function test_select_drivers__gives_a_channel_that_fell_its_share_of_the_visits_the_channels_lost() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 400, 600 ),
-					$this->get_breakdown( 'Direct', 300, 240 ),
-					$this->get_breakdown( 'Referral', 100, 80 ),
-				),
-			)
-		);
-
-		$this->assertSame(
-			array(
-				'Organic Search' => 100.0,
-				'Direct'         => 75.0,
-				'Referral'       => 25.0,
-			),
-			array_column( $key_factors->select_drivers(), 'sharePct', 'label' ),
-			'A channel that gained should have its share of the 200 visits gained, and a channel that fell its share of the 80 visits lost.'
-		);
-	}
-
-	public function test_select_drivers__orders_two_drivers_with_the_same_score_by_label() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Email', 100, 150 ),
-					$this->get_breakdown( 'Affiliates', 100, 150 ),
-					$this->get_breakdown( 'Direct', 800, 800 ),
-				),
-			)
-		);
-
-		$this->assertSame( array( 'CHANNEL Affiliates', 'CHANNEL Email' ), $this->get_driver_names( $key_factors->select_drivers() ), 'Two channels with the same score should be ordered by label.' );
-	}
-
-	public function test_get_driver_reports__names_the_reports_each_kind_of_driver_needs() {
-		$this->assertSame( array( 'audience', 'sources' ), Key_Factors::get_driver_reports( array( 'kind' => 'CONTENT' ) ), 'A landing page should need the `audience` and `sources` reports.' );
-		$this->assertSame( array( 'audience', 'pages' ), Key_Factors::get_driver_reports( array( 'kind' => 'CAMPAIGN' ) ), 'A campaign should need the `audience` and `pages` reports.' );
-		$this->assertSame( array( 'audience', 'pages' ), Key_Factors::get_driver_reports( array( 'kind' => 'REFERRING_SITE' ) ), 'A referring site should need the `audience` and `pages` reports.' );
-		$this->assertSame( array(), Key_Factors::get_driver_reports( array( 'kind' => 'CHANNEL' ) ), 'A channel should need no report.' );
-		$this->assertSame( array(), Key_Factors::get_driver_reports( array( 'kind' => 'SEARCH_KEYWORD' ) ), 'A search keyword should need no report.' );
-	}
-
-	public function test_get_driver_filters__keeps_only_the_visits_of_a_driver() {
-		$this->assertSame(
-			array( 'landingPage' => array( '/plant-garlic/' ) ),
-			Key_Factors::get_driver_filters(
-				array(
-					'kind'  => 'CONTENT',
-					'label' => '/plant-garlic/',
-				)
-			),
-			'A landing page should be filtered on its path.'
-		);
-		$this->assertSame(
-			array( 'sessionCampaignName' => array( 'spring-sale' ) ),
-			Key_Factors::get_driver_filters(
-				array(
-					'kind'  => 'CAMPAIGN',
-					'label' => 'spring-sale',
-				)
-			),
-			'A campaign should be filtered on its name.'
-		);
-		$this->assertSame(
-			array(
-				'sessionSource'                 => array( 'facebook.com', 'm.facebook.com' ),
-				'sessionDefaultChannelGrouping' => array( 'Referral', 'Organic Social' ),
-			),
-			Key_Factors::get_driver_filters(
-				array(
-					'kind'    => 'REFERRING_SITE',
-					'label'   => 'Facebook',
-					'sources' => array( 'facebook.com', 'm.facebook.com' ),
-				)
-			),
-			'A referring site should be filtered on its sources, through `Referral` and `Organic Social`.'
-		);
-		$this->assertSame(
-			array(),
-			Key_Factors::get_driver_filters(
-				array(
-					'kind'  => 'CHANNEL',
-					'label' => 'Direct',
-				)
-			),
-			'A channel should have no filter.'
-		);
-	}
-
-	public function test_build__gives_a_channel_card_the_2_attribute_kinds_whose_values_moved_most() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 200, 260, 'mobile', 'returning' ),
-					$this->get_breakdown( 'Organic Search', 200, 340, 'desktop', 'returning' ),
-				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Organic Search', 'page', '/plant-garlic/', 50, 80 ),
-				),
-				'searchQueries'     => array(
-					array(
-						'label'            => 'plant garlic',
-						'current'          => 110,
-						'previous'         => 10,
-						'positionCurrent'  => 2.1,
-						'positionPrevious' => 8.4,
-					),
-				),
-			)
-		);
-
-		$this->assertSame(
-			array(
-				array(
-					'kind'       => 'CHANNEL',
-					'label'      => 'Organic Search',
-					'current'    => 600,
-					'previous'   => 400,
-					'sharePct'   => 100.0,
-					'attributes' => array(
-						array(
-							'kind'     => 'DEVICE',
-							'label'    => 'desktop',
-							'current'  => 340,
-							'previous' => 200,
-							'sharePct' => 70.0,
-						),
-						array(
-							'kind'     => 'SEARCH_KEYWORD',
-							'label'    => 'plant garlic',
-							'current'  => 110,
-							'previous' => 10,
-							'sharePct' => 50.0,
+						'dimension'          => 'TRAFFIC_CHANNELS',
+						'entity_kind'        => 'CHANNEL',
+						'title'              => 'Referral',
+						'volume'             => 800,
+						'delta'              => 300,
+						'excess'             => 150.0,
+						'outsized'           => true,
+						'is_large_share'     => true,
+						'direction'          => 'UP',
+						'traffic_impact_pct' => 100.0,
+						'metric_type'        => 'DELTA',
+						'share_basis'        => 'GROSS_CHANGE',
+						'role'               => 'PRIMARY',
+						'attributes'         => array(
+							array(
+								'kind'         => 'TARGET_PAGE',
+								'role'         => 'DECOMPOSITION',
+								'label'        => 'Target page',
+								'value'        => array( 'text' => '/post' ),
+								'share_of_parent_change_pct' => 75.0,
+								'entity_delta' => 225,
+							),
 						),
 					),
 				),
 			),
-			$key_factors->build(
-				array(
-					array(
-						'kind'     => 'CHANNEL',
-						'label'    => 'Organic Search',
-						'current'  => 600,
-						'previous' => 400,
-						'sharePct' => 100.0,
-					),
-				)
-			),
-			'The card should show `desktop` and `plant garlic`, which moved more than `/plant-garlic/`, and not `returning`, which grew 50% like the card.'
+			$key_factors->get_decomposition(),
+			'The decomposition should be the one of the service\'s wire format example.'
 		);
-	}
-
-	public function test_build__orders_two_attribute_kinds_whose_values_moved_as_much_by_the_order_of_the_kinds() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 200, 350, 'mobile', 'new' ),
-					$this->get_breakdown( 'Organic Search', 200, 250, 'desktop', 'returning' ),
-				),
-			)
-		);
-
-		$cards = $key_factors->build(
-			array(
-				array(
-					'kind'     => 'CHANNEL',
-					'label'    => 'Organic Search',
-					'current'  => 600,
-					'previous' => 400,
-					'sharePct' => 100.0,
-				),
-			)
-		);
-
-		$this->assertSame(
-			array( 'USER_TYPE new', 'DEVICE mobile' ),
-			array_map( fn( $attribute ) => "{$attribute['kind']} {$attribute['label']}", $cards[0]['attributes'] ),
-			'`new` and `mobile` both gained 150 visits, so the visitor type should come first, as `Organic Search` lists it before the device.'
-		);
-	}
-
-	public function test_build__does_not_show_a_value_that_moved_against_its_card_or_a_placeholder() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Direct', 300, 380 ),
-				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Direct', 'page', '/old/', 100, 20 ),
-					$this->get_channel_row( 'Direct', 'page', '(not set)', 0, 100 ),
-					$this->get_channel_row( 'Direct', 'page', '/new/', 0, 10 ),
-				),
-			)
-		);
-
-		$cards = $key_factors->build(
-			array(
-				array(
-					'kind'     => 'CHANNEL',
-					'label'    => 'Direct',
-					'current'  => 380,
-					'previous' => 300,
-					'sharePct' => 100.0,
-				),
-			)
-		);
-
-		$this->assertSame( array( '/new/' ), array_column( $cards[0]['attributes'], 'label' ), 'The card should show `/new/`, and neither `/old/`, which fell, nor `(not set)`.' );
-	}
-
-	public function test_build__gives_a_landing_page_card_its_channel_and_its_visitor_type_from_its_audience_report() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Organic Search', 400, 600 ),
-				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Organic Search', 'page', '/plant-garlic/', 30, 120 ),
-					$this->get_channel_row( 'Direct', 'page', '/plant-garlic/', 20, 30 ),
-				),
-			)
-		);
-
-		$cards = $key_factors->build(
-			array(
-				array(
-					'kind'     => 'CONTENT',
-					'label'    => '/plant-garlic/',
-					'current'  => 150,
-					'previous' => 50,
-					'sharePct' => 50.0,
-				),
-			),
-			array(
-				array(
-					'audience' => array(
-						array(
-							'device'   => 'mobile',
-							'userType' => 'new',
-							'current'  => 110,
-							'previous' => 30,
-						),
-						array(
-							'device'   => 'desktop',
-							'userType' => 'returning',
-							'current'  => 40,
-							'previous' => 20,
-						),
-					),
-				),
-			)
-		);
-
-		$this->assertSame(
-			array( 'TRAFFIC_CHANNEL Organic Search', 'USER_TYPE new' ),
-			array_map( fn( $attribute ) => "{$attribute['kind']} {$attribute['label']}", $cards[0]['attributes'] ),
-			'The card should show `Organic Search`, which brought 90 more visits, and `new`, which the page lists before `mobile` with the same 80 visits.'
-		);
-	}
-
-	public function test_build__gives_a_landing_page_card_the_referring_sites_of_its_sources_report_through_referral_and_organic_social() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Referral', 100, 400 ),
-				),
-			)
-		);
-
-		$cards = $key_factors->build(
-			array(
-				array(
-					'kind'     => 'CONTENT',
-					'label'    => '/plant-garlic/',
-					'current'  => 300,
-					'previous' => 50,
-					'sharePct' => 83.3,
-				),
-			),
-			array(
-				array(
-					'sources' => array(
-						$this->get_channel_row( 'Paid Social', 'source', 'facebook.com', 0, 200 ),
-						$this->get_channel_row( 'Referral', 'source', 'news.example.com', 10, 60 ),
-					),
-				),
-			)
-		);
-
 		$this->assertSame(
 			array(
-				array(
-					'kind'     => 'REFERRING_SITE',
-					'label'    => 'news.example.com',
-					'current'  => 60,
-					'previous' => 10,
-					'sharePct' => 16.7,
-				),
-			),
-			$cards[0]['attributes'],
-			'The card should show `news.example.com`, and not `facebook.com`, whose visits came through `Paid Social`.'
-		);
-	}
-
-	public function test_build__gives_a_search_keyword_card_its_pages_and_devices() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns'  => array(
-					$this->get_breakdown( 'Organic Search', 400, 600 ),
-				),
-				'searchQueryPages'   => array(
-					array(
-						'query'    => 'plant garlic',
-						'page'     => '/plant-garlic/',
-						'current'  => 100,
-						'previous' => 15,
-					),
-					array(
-						'query'    => 'plant garlic',
-						'page'     => '/garlic/',
-						'current'  => 20,
-						'previous' => 5,
-					),
-					array(
-						'query'    => 'raised beds',
-						'page'     => '/raised-beds/',
-						'current'  => 500,
-						'previous' => 0,
-					),
-				),
-				'searchQueryDevices' => array(
-					array(
-						'query'    => 'plant garlic',
-						'device'   => 'mobile',
-						'current'  => 90,
-						'previous' => 10,
-					),
-					array(
-						'query'    => 'plant garlic',
-						'device'   => 'desktop',
-						'current'  => 30,
-						'previous' => 10,
-					),
-				),
-			)
-		);
-
-		$cards = $key_factors->build(
-			array(
-				array(
-					'kind'     => 'SEARCH_KEYWORD',
-					'label'    => 'plant garlic',
-					'current'  => 120,
-					'previous' => 20,
-					'sharePct' => 50.0,
-				),
-			)
-		);
-
-		$this->assertSame(
-			array( 'LANDING_PAGE /plant-garlic/', 'DEVICE mobile' ),
-			array_map( fn( $attribute ) => "{$attribute['kind']} {$attribute['label']}", $cards[0]['attributes'] ),
-			'The card should show the page and the device of its own clicks, and not the page of `raised beds`.'
-		);
-	}
-
-	public function test_build__gives_a_paid_channel_card_its_campaign_and_its_sources_as_a_platform() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Paid Social', 100, 300 ),
-				),
-				'channelSources'    => array(
-					$this->get_channel_row( 'Paid Social', 'source', 'instagram.com', 50, 150 ),
-					$this->get_channel_row( 'Paid Social', 'source', 'facebook.com', 50, 150 ),
-				),
-				'channelCampaigns'  => array(
-					$this->get_channel_row( 'Paid Social', 'campaign', 'spring-sale', 0, 150 ),
-				),
-			)
-		);
-
-		$cards = $key_factors->build(
-			array(
-				array(
-					'kind'     => 'CHANNEL',
-					'label'    => 'Paid Social',
-					'current'  => 300,
-					'previous' => 100,
-					'sharePct' => 100.0,
-				),
-			)
-		);
-
-		$this->assertSame(
-			array( 'CAMPAIGN spring-sale', 'PLATFORM Facebook' ),
-			array_map( fn( $attribute ) => "{$attribute['kind']} {$attribute['label']}", $cards[0]['attributes'] ),
-			'The card should show its campaign, and `Facebook` as its platform, which comes before `instagram.com` with the same 100 visits.'
-		);
-	}
-
-	public function test_build__gives_an_unassigned_card_only_its_landing_page() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Unassigned', 5, 50, 'mobile', 'new' ),
-					$this->get_breakdown( 'Unassigned', 5, 10, 'desktop', 'new' ),
-				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Unassigned', 'page', '/plant-garlic/', 10, 60 ),
-				),
-			)
-		);
-
-		$cards = $key_factors->build(
-			array(
-				array(
-					'kind'     => 'CHANNEL',
-					'label'    => 'Unassigned',
-					'current'  => 60,
-					'previous' => 10,
-					'sharePct' => 100.0,
-				),
-			)
-		);
-
-		$this->assertSame( array( 'LANDING_PAGE' ), array_column( $cards[0]['attributes'], 'kind' ), 'An `Unassigned` card should show its landing page alone, even with a device that moved more.' );
-	}
-
-	public function test_build_steady__returns_the_3_channels_with_the_most_visits_with_their_share_of_the_site_visits() {
-		$key_factors = new Key_Factors(
-			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Direct', 200, 199 ),
-					$this->get_breakdown( 'Email', 80, 78 ),
-					$this->get_breakdown( 'Organic Search', 150, 151, 'mobile' ),
-					$this->get_breakdown( 'Organic Search', 150, 151, 'desktop' ),
-					$this->get_breakdown( 'Referral', 120, 121 ),
-				),
-			)
-		);
-
-		$this->assertSame(
-			array(
-				array(
-					'kind'       => 'CHANNEL',
-					'label'      => 'Organic Search',
-					'current'    => 302,
-					'previous'   => 300,
-					'sharePct'   => 43.1,
-					'attributes' => array(),
-				),
-				array(
-					'kind'       => 'CHANNEL',
-					'label'      => 'Direct',
-					'current'    => 199,
-					'previous'   => 200,
-					'sharePct'   => 28.4,
-					'attributes' => array(),
-				),
 				array(
 					'kind'       => 'CHANNEL',
 					'label'      => 'Referral',
-					'current'    => 121,
-					'previous'   => 120,
-					'sharePct'   => 17.3,
-					'attributes' => array(),
+					'current'    => 800,
+					'previous'   => 500,
+					'sharePct'   => 100.0,
+					'attributes' => array(
+						array(
+							'kind'     => 'LANDING_PAGE',
+							'label'    => '/post',
+							'current'  => 400,
+							'previous' => 175,
+							'sharePct' => 75.0,
+						),
+					),
 				),
 			),
-			$key_factors->build_steady( 700 ),
-			'The cards should be the three channels with the most visits, each added up across its devices, with its share of the 700 visits, and not `Email`, which has fewer.'
+			$key_factors->get_cards(),
+			'The panel should show the same card, with the page\'s own visits.'
+		);
+		$this->assertFalse( $key_factors->is_steady(), 'A period that rose should not be steady.' );
+	}
+
+	public function test_get_decomposition__returns_null_without_channels() {
+		$key_factors = $this->build( array( 1300, 1000 ), array() );
+
+		$this->assertNull( $key_factors->get_decomposition(), 'Without channels, the cards\' changes add up to nothing, so there should be no decomposition.' );
+		$this->assertSame( array(), $key_factors->get_cards(), 'Without channels, there should be no cards.' );
+		$this->assertFalse( $key_factors->is_steady(), 'A period without channels should not be steady.' );
+	}
+
+	public function test_get_cards__returns_the_channels_with_the_largest_share_of_the_visits_of_a_steady_period() {
+		// The site's visits went from 700 to 701, and no channel moved by 1%
+		// of them beyond the site's own rate.
+		$key_factors = $this->build(
+			array( 701, 700 ),
+			array(
+				array( 'Organic Search', 302, 300 ),
+				array( 'Direct', 199, 200 ),
+				array( 'Referral', 121, 120 ),
+				array( 'Email', 79, 80 ),
+			)
+		);
+
+		$this->assertTrue( $key_factors->is_steady(), 'A period on which no channel changed notably should be steady.' );
+		$this->assertSame(
+			array(
+				array( 'Organic Search', 43.1 ),
+				array( 'Direct', 28.4 ),
+				array( 'Referral', 17.3 ),
+			),
+			array_map( fn( $card ) => array( $card['label'], $card['sharePct'] ), $key_factors->get_cards() ),
+			'The cards should be the three channels with the most visits, each with its share of the site\'s 701 visits.'
+		);
+
+		$decomposition = $key_factors->get_decomposition();
+
+		$this->assertSame( 'STEADY', $decomposition['shape'], 'The shape of a steady period should be `STEADY`.' );
+		$this->assertSame(
+			array(
+				'dimension'          => 'TRAFFIC_CHANNELS',
+				'entity_kind'        => 'CHANNEL',
+				'title'              => 'Direct',
+				'volume'             => 199,
+				'delta'              => -1,
+				'excess'             => -1.3,
+				'direction'          => 'STABLE',
+				'traffic_impact_pct' => 28.4,
+				'metric_type'        => 'VOLUME_SHARE',
+				'share_basis'        => 'VOLUME',
+				'role'               => 'PRIMARY',
+				'attributes'         => array(),
+			),
+			$decomposition['key_factors'][1],
+			'A steady card should carry its own change, and its share of the site\'s visits, whichever way it moved.'
+		);
+		$this->assertSame( -1, $decomposition['residual_delta'], 'The residual should be the change of `Email`, which has no card.' );
+	}
+
+	public function test_get_cards__gives_a_steady_card_only_the_landing_page_device_and_visitor_type_that_moved_with_it() {
+		$key_factors = $this->build(
+			array( 1010, 1000 ),
+			array(),
+			array(
+				'channelBreakdowns' => array(
+					array(
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
+						'current'  => 610,
+						'previous' => 600,
+					),
+					array(
+						'channel'  => 'Direct',
+						'device'   => 'desktop',
+						'userType' => 'returning',
+						'current'  => 400,
+						'previous' => 400,
+					),
+				),
+				'channelPages'      => array( $this->row( 'Organic Search', 'page', '/plant-garlic/', 110, 100 ) ),
+				'channelSources'    => array( $this->row( 'Organic Search', 'source', 'example.com', 610, 600 ) ),
+			)
+		);
+
+		$this->assertTrue( $key_factors->is_steady(), 'The period should be steady.' );
+		$this->assertSame(
+			array(
+				array( 'LANDING_PAGE', '/plant-garlic/' ),
+			),
+			array_map( fn( $attribute ) => array( $attribute['kind'], $attribute['label'] ), $key_factors->get_cards()[0]['attributes'] ),
+			'`Organic Search` should list its page, and no source, since a steady card lists no part of another breakdown. Its visitor type falls in another cut than the page.'
+		);
+		$this->assertSame( array(), $key_factors->get_cards()[1]['attributes'], '`Direct` did not change, so it should have no rows.' );
+	}
+
+	public function test_get_cards__makes_a_post_published_in_the_period_that_carried_most_of_its_channels_rise_the_card() {
+		// `/new-post/` carried 250 of the 300 visits Referral gained, and it is
+		// a post published 5 days ago.
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array(
+				'channelPages' => array(
+					$this->row( 'Referral', 'page', '/new-post/', 250, 0 ),
+					$this->row( 'Referral', 'page', '/old-post/', 50, 0 ),
+				),
+				'content'      => array( $this->post( '/new-post/', 'A new post', 260 ) ),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'dimension'            => 'PAGES',
+				'entity_kind'          => 'CONTENT',
+				'title'                => 'A new post',
+				'volume'               => 260,
+				'delta'                => 260,
+				'excess'               => 260.0,
+				'outsized'             => true,
+				'is_large_share'       => true,
+				'direction'            => 'UP',
+				'traffic_impact_pct'   => 86.7,
+				'metric_type'          => 'DELTA',
+				'share_basis'          => 'PARENT_CHANNEL',
+				'parent_channel'       => 'Referral',
+				'parent_channel_delta' => 300,
+				'role'                 => 'PRIMARY',
+				'attributes'           => array(),
+			),
+			$key_factors->get_decomposition()['key_factors'][0],
+			'The post should take Referral\'s card, with its visits in the period as its change, and its share of Referral\'s change.'
+		);
+		$this->assertSame(
+			array(
+				'kind'       => 'CONTENT',
+				'label'      => 'A new post',
+				'current'    => 260,
+				'previous'   => 0,
+				'sharePct'   => 86.7,
+				'attributes' => array(),
+			),
+			$key_factors->get_cards()[0],
+			'The panel should show the post\'s card.'
+		);
+		$this->assertSame( 300 - 260, $key_factors->get_decomposition()['residual_delta'], 'What Referral moved beyond the post should fall in the residual.' );
+	}
+
+	public function test_get_cards__keeps_the_channel_card_when_its_landing_page_is_no_post_published_in_the_period() {
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array(
+				'channelPages' => array( $this->row( 'Referral', 'page', '/old-post/', 290, 40 ) ),
+				'content'      => array(
+					array(
+						'url'              => '/old-post/',
+						'title'            => 'An old post',
+						'publishedDaysAgo' => 90,
+						'current'          => 300,
+						'previous'         => 50,
+					),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'A page that is no new post should not take its channel\'s card.' );
+		$this->assertSame( '/old-post/', $key_factors->get_cards()[0]['attributes'][0]['label'], 'The page should be a row of the channel\'s card.' );
+	}
+
+	/**
+	 * @dataProvider data_hidden_landing_pages
+	 *
+	 * @param string $page The landing page's path.
+	 */
+	public function test_get_cards__never_names_the_homepage_or_a_page_a_reader_would_not_recognise( $page ) {
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array(
+				'channelPages' => array(
+					$this->row( 'Referral', 'page', '/about/', 10, 5 ),
+					$this->row( 'Referral', 'page', $page, 400, 125 ),
+				),
+				'content'      => array( $this->post( $page, 'A page', 400 ) ),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'The page should not take Referral\'s card.' );
+		$this->assertSame( array(), $key_factors->get_cards()[0]['attributes'], 'The page should not be a row, and `/about/` should not take its place.' );
+	}
+
+	public function data_hidden_landing_pages() {
+		return array(
+			'the root'                 => array( '/' ),
+			'another homepage address' => array( '/index.php' ),
+			'a feed'                   => array( '/blog/feed/' ),
+			'a later page of a list'   => array( '/blog/page/2/' ),
+			'the sample post'          => array( '/hello-world/' ),
+			'a login page'             => array( '/wp-login.php' ),
 		);
 	}
 
-	public function test_build_steady__orders_channels_with_as_many_visits_by_label_and_leaves_out_a_placeholder_and_a_channel_without_visits() {
-		$key_factors = new Key_Factors(
+	public function test_get_cards__lists_the_homepage_of_direct_without_its_address() {
+		// The homepage carried 80 of the 100 visits Direct gained, well above
+		// its 63.3% share of Direct's visits.
+		$key_factors = $this->build(
+			array( 1100, 1000 ),
 			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( '(not set)', 500, 500 ),
-					$this->get_breakdown( 'Referral', 100, 100 ),
-					$this->get_breakdown( 'Email', 100, 100 ),
-					$this->get_breakdown( 'Display', 40, 0 ),
+				array( 'Direct', 600, 500 ),
+				array( 'Organic Search', 500, 500 ),
+			),
+			array(
+				'channelPages' => array(
+					$this->row( 'Direct', 'page', '/', 380, 300 ),
+					$this->row( 'Direct', 'page', '/a/', 220, 200 ),
 				),
 			)
 		);
 
 		$this->assertSame(
-			array( 'Email', 'Referral' ),
-			array_column( $key_factors->build_steady( 700 ), 'label' ),
-			'Two channels with as many visits should be ordered by label, and neither the placeholder nor `Display`, which had no visit, should be a card.'
+			array(
+				array(
+					'kind'                       => 'HOMEPAGE',
+					'role'                       => 'DECOMPOSITION',
+					'label'                      => 'Homepage',
+					'share_of_parent_change_pct' => 80.0,
+					'entity_delta'               => 80,
+				),
+				array(
+					'kind'                       => 'TARGET_PAGE',
+					'role'                       => 'CONTEXT',
+					'label'                      => 'Target page',
+					'value'                      => array( 'text' => '/a/' ),
+					'share_of_parent_change_pct' => 20.0,
+					'entity_delta'               => 20,
+				),
+			),
+			$key_factors->get_decomposition()['key_factors'][0]['attributes'],
+			'Direct should list its homepage, without an address, and then its page.'
+		);
+		$this->assertSame(
+			array( '/', '/a/' ),
+			array_column( $key_factors->get_cards()[0]['attributes'], 'label' ),
+			'The panel should name the homepage by the site\'s home path.'
 		);
 	}
 
-	public function test_build_steady__gives_no_share_without_site_visits() {
-		$key_factors = new Key_Factors(
+	public function test_get_cards__does_not_list_a_homepage_that_changed_no_more_than_its_share_of_direct() {
+		// The homepage has 80% of Direct's visits, and carried 80% of its rise.
+		$key_factors = $this->build(
+			array( 1100, 1000 ),
 			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Direct', 10, 12 ),
+				array( 'Direct', 600, 500 ),
+				array( 'Organic Search', 500, 500 ),
+			),
+			array(
+				'channelPages' => array(
+					$this->row( 'Direct', 'page', '/', 480, 400 ),
+					$this->row( 'Direct', 'page', '/a/', 120, 100 ),
 				),
 			)
 		);
 
-		$this->assertSame( 0.0, $key_factors->build_steady( 0 )[0]['sharePct'], 'Without site visits, a card\'s share should be `0`.' );
+		$this->assertSame(
+			array( 'TARGET_PAGE' ),
+			array_column( $key_factors->get_decomposition()['key_factors'][0]['attributes'], 'kind' ),
+			'Direct should list its page, but not its homepage, which only shows where its visitors already land.'
+		);
 	}
 
-	public function test_build_steady__gives_a_card_only_its_landing_pages_devices_and_visitor_types_that_moved_with_it() {
-		$key_factors = new Key_Factors(
+	public function test_get_cards__never_makes_a_search_keyword_a_card_but_lists_it_on_organic_search_in_clicks() {
+		$key_factors = $this->build(
+			array( 1400, 1000 ),
 			array(
-				'channelBreakdowns' => array(
-					$this->get_breakdown( 'Referral', 100, 130, 'mobile', 'new' ),
-					$this->get_breakdown( 'Referral', 100, 80, 'desktop', 'new' ),
-					$this->get_breakdown( 'Direct', 300, 300 ),
+				array( 'Organic Search', 1000, 600 ),
+				array( 'Direct', 400, 400 ),
+			),
+			array(
+				'searchQueries' => array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 300,
+						'previous'         => 100,
+						'positionCurrent'  => 2.0,
+						'positionPrevious' => 6.0,
+					),
+					array(
+						'label'            => 'raised beds',
+						'current'          => 90,
+						'previous'         => 80,
+						'positionCurrent'  => 4.0,
+						'positionPrevious' => 4.0,
+					),
 				),
-				'channelPages'      => array(
-					$this->get_channel_row( 'Referral', 'page', '/plant-garlic/', 20, 45 ),
-					$this->get_channel_row( 'Direct', 'page', '/plant-garlic/', 100, 120 ),
-				),
-				'channelSources'    => array(
-					$this->get_channel_row( 'Referral', 'source', 'example.com', 10, 80 ),
+				'searchClicks'  => array(
+					array(
+						'current'  => 2500,
+						'previous' => 2000,
+					),
 				),
 			)
 		);
 
-		$cards = $key_factors->build_steady( 510 );
-
-		$this->assertSame( array( 'Direct', 'Referral' ), array_column( $cards, 'label' ), 'The cards should be `Direct` and `Referral`, most visits first.' );
-		$this->assertSame( array(), $cards[0]['attributes'], 'A channel that did not change should have no attributes, though one of its pages moved.' );
+		$this->assertSame( array( 'CHANNEL Organic Search' ), $this->get_card_titles( $key_factors ), 'The only card should be `Organic Search`, not a search keyword.' );
 		$this->assertSame(
 			array(
 				array(
-					'kind'     => 'DEVICE',
-					'label'    => 'mobile',
-					'current'  => 130,
-					'previous' => 100,
-					'sharePct' => 100.0,
-				),
-				array(
-					'kind'     => 'LANDING_PAGE',
-					'label'    => '/plant-garlic/',
-					'current'  => 45,
-					'previous' => 20,
-					'sharePct' => 100.0,
+					'kind'                       => 'SOURCE_TYPE',
+					'role'                       => 'CONTEXT',
+					'label'                      => 'Search keyword',
+					'value'                      => array( 'text' => 'plant garlic' ),
+					'entity_delta'               => 200,
+					'share_of_search_clicks_pct' => 8.0,
 				),
 			),
-			$cards[1]['attributes'],
-			'The `Referral` card should show its device and its landing page that moved with it, and not `example.com`, a source inside it, though it moved most, nor `new`, which grew 5% like the card.'
+			$key_factors->get_decomposition()['key_factors'][0]['attributes'],
+			'The keyword should be context, with its change in clicks as a share of all of the site\'s 2,500 search clicks.'
+		);
+		$this->assertSame(
+			array(
+				'kind'     => 'SEARCH_KEYWORD',
+				'label'    => 'plant garlic',
+				'current'  => 300,
+				'previous' => 100,
+				'sharePct' => 8.0,
+			),
+			$key_factors->get_cards()[0]['attributes'][0],
+			'The panel should show the keyword\'s clicks.'
 		);
 	}
 
-	public function test_sum_by__adds_up_the_rows_with_the_same_value() {
+	public function test_get_cards__does_not_name_a_keyword_that_carried_under_a_quarter_of_the_change_in_search_clicks() {
+		$key_factors = $this->build(
+			array( 1400, 1000 ),
+			array(
+				array( 'Organic Search', 1000, 600 ),
+				array( 'Direct', 400, 400 ),
+			),
+			array(
+				'searchQueries' => array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 200,
+						'previous'         => 100,
+						'positionCurrent'  => 2.0,
+						'positionPrevious' => 6.0,
+					),
+				),
+				'searchClicks'  => array(
+					array(
+						'current'  => 2500,
+						'previous' => 2000,
+					),
+				),
+			)
+		);
+
+		$this->assertSame( array(), $key_factors->get_cards()[0]['attributes'], 'A keyword that gained 100 of the 500 clicks the site gained should not be named.' );
+	}
+
+	public function test_get_cards__makes_a_referring_site_that_carried_most_of_its_channels_change_the_card() {
+		// Facebook's sources gained 230 of the 300 visits Organic Social
+		// gained, and `x.com`, under a quarter of it, so Facebook is named.
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Organic Social', 400, 100 ),
+				array( 'Direct', 900, 900 ),
+			),
+			array(
+				'channelSources' => array(
+					$this->row( 'Organic Social', 'source', 'facebook.com', 150, 50 ),
+					$this->row( 'Organic Social', 'source', 'm.facebook.com', 120, 20 ),
+					$this->row( 'Organic Social', 'source', 'l.facebook.com', 40, 10 ),
+					$this->row( 'Organic Social', 'source', 't.co', 50, 10 ),
+					$this->row( 'Organic Social', 'source', 'x.com', 40, 10 ),
+				),
+			)
+		);
+
+		$card = $key_factors->get_decomposition()['key_factors'][0];
+
 		$this->assertSame(
 			array(
-				$this->get_row( 'Organic Search', 300, 500 ),
-				$this->get_row( 'Direct', 50, 40 ),
+				'entity_kind'          => 'REFERRING_SITE',
+				'title'                => 'Facebook',
+				'volume'               => 310,
+				'delta'                => 230,
+				'traffic_impact_pct'   => 76.7,
+				'share_basis'          => 'PARENT_CHANNEL',
+				'parent_channel'       => 'Organic Social',
+				'parent_channel_delta' => 300,
 			),
-			Key_Factors::sum_by(
-				array(
-					$this->get_breakdown( 'Organic Search', 100, 200, 'mobile' ),
-					$this->get_breakdown( 'Direct', 50, 40 ),
-					$this->get_breakdown( 'Organic Search', 200, 300, 'desktop' ),
-				),
-				'channel'
-			),
-			'The two `Organic Search` rows should be added up, in the order the channels first appear.'
+			array_intersect_key( $card, array_flip( array( 'entity_kind', 'title', 'volume', 'delta', 'traffic_impact_pct', 'share_basis', 'parent_channel', 'parent_channel_delta' ) ) ),
+			'Facebook should take the card of Organic Social, with its share of the channel\'s change.'
 		);
+		$this->assertSame( 'REFERRING_SITE', $key_factors->get_cards()[0]['kind'], 'The panel should show Facebook\'s card as a referring site.' );
+	}
+
+	public function test_get_cards__lists_two_referring_sites_of_one_channel_when_neither_carried_most_of_its_change() {
+		// `x.com`, with `t.co`, gained 90 of the 320 visits Organic Social
+		// gained, over a quarter of them, so Facebook doesn't take the card.
+		$key_factors = $this->build(
+			array( 1320, 1000 ),
+			array(
+				array( 'Organic Social', 420, 100 ),
+				array( 'Direct', 900, 900 ),
+			),
+			array(
+				'channelSources' => array(
+					$this->row( 'Organic Social', 'source', 'facebook.com', 280, 50 ),
+					$this->row( 'Organic Social', 'source', 't.co', 70, 10 ),
+					$this->row( 'Organic Social', 'source', 'x.com', 70, 40 ),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Organic Social' ), $this->get_card_titles( $key_factors ), 'Organic Social should keep its card.' );
+		$this->assertSame(
+			array(
+				array( 'Referring site', 'Facebook', 71.9, 230 ),
+				array( 'Referring site', 'x.com', 28.1, 90 ),
+			),
+			array_map(
+				fn( $row ) => array( $row['label'], $row['value']['text'], $row['share_of_parent_change_pct'], $row['entity_delta'] ),
+				$key_factors->get_decomposition()['key_factors'][0]['attributes']
+			),
+			'Both sites should be rows, named as the service names them, each with its share of the channel\'s change.'
+		);
+	}
+
+	public function test_get_cards__keeps_the_card_of_a_channel_whose_largest_part_carried_little_of_its_change() {
+		// `a.example.com` carried 60 of the 400 visits Referral gained.
+		$key_factors = $this->build(
+			array( 1400, 1000 ),
+			array(
+				array( 'Referral', 600, 200 ),
+				array( 'Direct', 800, 800 ),
+			),
+			array(
+				'channelSources' => array(
+					$this->row( 'Referral', 'source', 'a.example.com', 100, 40 ),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'A site with 15% of the channel\'s change should not take the card of the channel with the rest.' );
+		$this->assertSame( array(), $key_factors->get_cards()[0]['attributes'], 'The site should not be a row either, under a quarter of the change.' );
+	}
+
+	public function test_get_cards__lists_both_sides_of_a_channel_that_is_the_net_of_parts_that_moved_both_ways() {
+		$key_factors = $this->build(
+			array( 1100, 1000 ),
+			array(
+				array( 'Referral', 300, 200 ),
+				array( 'Direct', 800, 800 ),
+			),
+			array(
+				'channelSources' => array(
+					$this->row( 'Referral', 'source', 'a.example.com', 250, 50 ),
+					$this->row( 'Referral', 'source', 'b.example.com', 50, 150 ),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'Neither site is a share of Referral, so Referral should keep its card.' );
+		$this->assertSame(
+			array(
+				array(
+					'kind'         => 'SOURCE_TYPE',
+					'role'         => 'CONTEXT',
+					'label'        => 'Referring site',
+					'value'        => array( 'text' => 'a.example.com' ),
+					'entity_delta' => 200,
+				),
+				array(
+					'kind'         => 'SOURCE_TYPE',
+					'role'         => 'CONTEXT',
+					'label'        => 'Referring site',
+					'value'        => array( 'text' => 'b.example.com' ),
+					'entity_delta' => -100,
+				),
+			),
+			$key_factors->get_decomposition()['key_factors'][0]['attributes'],
+			'Both sides should be rows with their own changes and no share.'
+		);
+	}
+
+	public function test_get_cards__lists_the_assistant_of_ai_assistant_without_making_it_the_card() {
+		$key_factors = $this->build(
+			array( 1100, 1000 ),
+			array(
+				array( 'AI Assistant', 110, 10 ),
+				array( 'Direct', 990, 990 ),
+			),
+			array(
+				'channelSources' => array(
+					$this->row( 'AI Assistant', 'source', 'chat.openai.com', 85, 5 ),
+					$this->row( 'AI Assistant', 'source', 'perplexity', 25, 5 ),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL AI Assistant' ), $this->get_card_titles( $key_factors ), 'An assistant should never take the channel\'s card.' );
+		$this->assertSame(
+			array(
+				'kind'                       => 'SOURCE_TYPE',
+				'role'                       => 'DECOMPOSITION',
+				'label'                      => 'Assistant',
+				'value'                      => array( 'text' => 'chatgpt.com' ),
+				'share_of_parent_change_pct' => 80.0,
+				'entity_delta'               => 80,
+			),
+			$key_factors->get_decomposition()['key_factors'][0]['attributes'][0],
+			'ChatGPT should be the `Assistant` row, named as the service names it.'
+		);
+		$this->assertSame( 'ASSISTANT', $key_factors->get_cards()[0]['attributes'][0]['kind'], 'The panel should show the row as an assistant.' );
+	}
+
+	public function test_get_cards__makes_a_campaign_that_carried_most_of_its_channels_change_the_card() {
+		$key_factors = $this->build(
+			array( 1100, 1000 ),
+			array(
+				array( 'Email', 200, 100 ),
+				array( 'Direct', 900, 900 ),
+			),
+			array(
+				'channelCampaigns' => array(
+					$this->row( 'Email', 'campaign', 'Newsletter_October_2025', 90, 0 ),
+					$this->row( 'Email', 'campaign', '20103244', 10, 0 ),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CAMPAIGN the October 2025 newsletter' ), $this->get_card_titles( $key_factors ), 'The campaign should take Email\'s card, named for readers.' );
+		$this->assertSame( 'CAMPAIGN', $key_factors->get_cards()[0]['kind'], 'The panel should show a campaign card.' );
+	}
+
+	public function test_get_cards__leaves_out_search_engines_and_hosts_no_reader_would_recognise_as_sources() {
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Referral', 600, 300 ),
+				array( 'Direct', 700, 700 ),
+			),
+			array(
+				'channelSources' => array(
+					$this->row( 'Referral', 'source', 'google.co.uk', 200, 0 ),
+					$this->row( 'Referral', 'source', 'staging.example.com', 200, 100 ),
+					$this->row( 'Referral', 'source', '(not set)', 200, 100 ),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'No source should take Referral\'s card.' );
+		$this->assertSame( array(), $key_factors->get_cards()[0]['attributes'], 'No source should be a row.' );
+	}
+
+	public function test_get_cards__shows_one_card_moving_against_a_period_that_dropped_as_offsetting() {
+		// The site dropped by 300 visits, Organic Search by 400, and Organic
+		// Social and Email rose against it.
+		$key_factors = $this->build(
+			array( 1700, 2000 ),
+			array(
+				array( 'Organic Search', 1100, 1500 ),
+				array( 'Organic Social', 400, 300 ),
+				array( 'Direct', 140, 140 ),
+				array( 'Email', 60, 60 ),
+			),
+			array(
+				'channelBreakdowns' => array(
+					array(
+						'channel'  => 'Organic Search',
+						'device'   => '(not set)',
+						'userType' => '(not set)',
+						'current'  => 1100,
+						'previous' => 1500,
+					),
+					array(
+						'channel'  => 'Organic Social',
+						'device'   => '(not set)',
+						'userType' => '(not set)',
+						'current'  => 400,
+						'previous' => 300,
+					),
+					array(
+						'channel'  => 'Email',
+						'device'   => '(not set)',
+						'userType' => '(not set)',
+						'current'  => 100,
+						'previous' => 60,
+					),
+					array(
+						'channel'  => 'Direct',
+						'device'   => '(not set)',
+						'userType' => '(not set)',
+						'current'  => 100,
+						'previous' => 140,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'CHANNEL Organic Search', 'CHANNEL Direct', 'CHANNEL Organic Social' ),
+			$this->get_card_titles( $key_factors ),
+			'The cards should be the channels that dropped, then the largest one that rose, but not Email, a second channel moving against the drop.'
+		);
+
+		$offset = $key_factors->get_decomposition()['key_factors'][2];
+
+		$this->assertSame(
+			array( 'OFFSET', 'NET_CHANGE', 33.3 ),
+			array( $offset['role'], $offset['share_basis'], $offset['traffic_impact_pct'] ),
+			'Organic Social should offset a third of the 300 visits the site lost.'
+		);
+	}
+
+	public function test_get_cards__shows_both_sides_of_a_flat_period_whose_channels_moved_against_each_other() {
+		$key_factors = $this->build(
+			array( 1000, 1000 ),
+			array(
+				array( 'Organic Search', 400, 600 ),
+				array( 'Referral', 350, 200 ),
+				array( 'Organic Social', 150, 100 ),
+				array( 'Direct', 100, 100 ),
+			)
+		);
+
+		$decomposition = $key_factors->get_decomposition();
+
+		$this->assertSame( 'OFFSETTING', $decomposition['shape'], 'A flat period whose channels moved against each other should be `OFFSETTING`.' );
+		$this->assertSame(
+			array(
+				array( 'Organic Search', 'PRIMARY' ),
+				array( 'Referral', 'OFFSET' ),
+			),
+			array_map( fn( $card ) => array( $card['title'], $card['role'] ), array_slice( $decomposition['key_factors'], 0, 2 ) ),
+			'The channel that moved most should be primary, and the largest channel moving against it offsetting.'
+		);
+		$this->assertCount( 3, $decomposition['key_factors'], 'The free slot should take the next channel of either side.' );
+		$this->assertFalse( $key_factors->is_steady(), 'An offsetting period should not be steady.' );
+	}
+
+	public function test_get_cards__makes_the_other_side_of_a_flat_period_primary_when_a_part_of_the_largest_channel_shows_less() {
+		// Referral gained 1,000 visits and Direct lost 800, but `substack.com`
+		// takes Referral's card with 550, which reads as the smaller story.
+		$key_factors = $this->build(
+			array( 5200, 5000 ),
+			array(
+				array( 'Referral', 2000, 1000 ),
+				array( 'Direct', 1200, 2000 ),
+				array( 'Organic Search', 2000, 2000 ),
+			),
+			array(
+				'channelSources' => array(
+					$this->row( 'Referral', 'source', 'substack.com', 550, 0 ),
+					$this->row( 'Referral', 'source', 'b.example.com', 300, 100 ),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 'Direct', 'PRIMARY' ),
+				array( 'substack.com', 'OFFSET' ),
+			),
+			array_map( fn( $card ) => array( $card['title'], $card['role'] ), $key_factors->get_decomposition()['key_factors'] ),
+			'Direct should be primary, and `substack.com` should offset it.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_period_lengths
+	 *
+	 * @param int   $days_in_period The number of days in the period.
+	 * @param array $card_titles    The titles of the cards.
+	 */
+	public function test_get_cards__scales_the_smallest_change_of_a_card_with_the_length_of_the_period( $days_in_period, array $card_titles ) {
+		// Referral gained 5 visits, which is enough in 7 days, whose smallest
+		// change is 3 visits, but not in 28, whose smallest change is 10.
+		$key_factors = $this->build(
+			array( 500, 400 ),
+			array(
+				array( 'Organic Search', 395, 300 ),
+				array( 'Referral', 105, 100 ),
+			),
+			array(),
+			$days_in_period
+		);
+
+		$this->assertSame( $card_titles, $this->get_card_titles( $key_factors ), 'The cards should take the channels that moved enough for the period\'s length.' );
+	}
+
+	public function data_period_lengths() {
+		return array(
+			'7 days'  => array( 7, array( 'CHANNEL Organic Search', 'CHANNEL Referral' ) ),
+			'28 days' => array( 28, array( 'CHANNEL Organic Search' ) ),
+		);
+	}
+
+	public function test_get_cards__groups_the_paid_channels_when_two_of_them_moved_materially() {
+		$key_factors = $this->build(
+			array( 955, 850 ),
+			array(
+				array( 'Direct', 500, 500 ),
+				array( 'Paid Search', 300, 100 ),
+				array( 'Paid Social', 100, 200 ),
+				array( 'Display', 55, 50 ),
+			),
+			array(
+				'channelCampaigns' => array(
+					$this->row( 'Paid Search', 'campaign', 'Spring sale', 180, 30 ),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'dimension'          => 'TRAFFIC_CHANNELS',
+				'entity_kind'        => 'CHANNEL_GROUP',
+				'title'              => 'Paid traffic',
+				'volume'             => 455,
+				'delta'              => 105,
+				'excess'             => 61.8,
+				'outsized'           => true,
+				'is_large_share'     => true,
+				'direction'          => 'UP',
+				'traffic_impact_pct' => 51.2,
+				'metric_type'        => 'DELTA',
+				'share_basis'        => 'GROSS_CHANGE',
+				'role'               => 'PRIMARY',
+				'attributes'         => array(
+					array(
+						'kind'                     => 'CHANNEL',
+						'role'                     => 'DECOMPOSITION',
+						'label'                    => 'Channel',
+						'value'                    => array( 'text' => 'Paid Search' ),
+						'entity_delta'             => 200,
+						'share_of_group_gross_pct' => 65.6,
+						'campaign'                 => 'Spring sale',
+						'campaign_delta'           => 150,
+					),
+					array(
+						'kind'                     => 'CHANNEL',
+						'role'                     => 'DECOMPOSITION',
+						'label'                    => 'Channel',
+						'value'                    => array( 'text' => 'Paid Social' ),
+						'entity_delta'             => -100,
+						'share_of_group_gross_pct' => 32.8,
+					),
+				),
+			),
+			$key_factors->get_decomposition()['key_factors'][0],
+			'The paid channels should be one card, with the two that moved materially as rows, each with its share of the paid channels\' 305 visits of movement.'
+		);
+		$this->assertSame(
+			array( 'CHANNEL_GROUP', array( 'TRAFFIC_CHANNEL', 'TRAFFIC_CHANNEL' ) ),
+			array( $key_factors->get_cards()[0]['kind'], array_column( $key_factors->get_cards()[0]['attributes'], 'kind' ) ),
+			'The panel should show the group with its channels.'
+		);
+	}
+
+	public function test_get_cards__keeps_the_paid_channels_apart_when_only_one_of_them_moved_materially() {
+		$key_factors = $this->build(
+			array( 1205, 1000 ),
+			array(
+				array( 'Direct', 600, 500 ),
+				array( 'Paid Search', 500, 400 ),
+				array( 'Display', 105, 100 ),
+			)
+		);
+
+		// Both gained 100 visits, and Paid Search moved further beyond the
+		// site's own rate, so it ranks first.
+		$this->assertSame( array( 'CHANNEL Paid Search', 'CHANNEL Direct' ), $this->get_card_titles( $key_factors ), 'Paid Search should be a channel card of its own.' );
+	}
+
+	/**
+	 * @dataProvider data_spread_rises
+	 *
+	 * @param array  $channels The channels, each as `array( title, current, previous )`.
+	 * @param string $shape    The shape.
+	 */
+	public function test_get_decomposition__gives_a_rise_spread_over_its_channels_the_shape_of_its_cards( array $channels, $shape ) {
+		$visits = array(
+			array_sum( array_column( $channels, 1 ) ),
+			array_sum( array_column( $channels, 2 ) ),
+		);
+
+		$this->assertSame( $shape, $this->build( $visits, $channels )->get_decomposition()['shape'], 'The rise should have the shape of its cards.' );
+	}
+
+	public function data_spread_rises() {
+		$small_channels = array_map(
+			fn( $title ) => array( $title, 69, 60 ),
+			array( 'Email', 'Referral', 'Direct', 'Organic Social', 'Organic Video', 'Affiliates', 'Audio', 'SMS', 'Mobile Push Notifications', 'Unassigned' )
+		);
+
+		return array(
+			'three channels with cards'                 => array(
+				array(
+					array( 'Organic Search', 440, 400 ),
+					array( 'Referral', 340, 300 ),
+					array( 'Direct', 340, 300 ),
+				),
+				'DIFFUSE',
+			),
+			// Organic Search carried 40 of the 130 visits gained, but no other
+			// channel gained enough for a card, and the service names at least
+			// two primary cards for a diffuse rise.
+			'one channel with a card of many that rose' => array(
+				array_merge( array( array( 'Organic Search', 440, 400 ) ), $small_channels ),
+				'CONCENTRATED',
+			),
+		);
+	}
+
+	public function test_get_decomposition__adds_the_cards_up_from_the_site_totals_when_the_channels_count_fewer_previous_visits() {
+		$decomposition = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 400, 400 ),
+			)
+		)->get_decomposition();
+
+		$this->assertSame(
+			array( 1000, 1300, 0 ),
+			array( $decomposition['opening_sessions'], $decomposition['closing_sessions'], $decomposition['residual_delta'] ),
+			'The cards should add up from the site\'s totals, since the channels count fewer visits in the previous period than the site.'
+		);
+	}
+
+	public function test_get_decomposition__leaves_out_the_excess_outsized_and_large_share_fields_of_a_card_without_them() {
+		// Every channel rose at the site's own rate, 20%.
+		$card = $this->build(
+			array( 1200, 1000 ),
+			array(
+				array( 'Organic Search', 600, 500 ),
+				array( 'Direct', 360, 300 ),
+				array( 'Referral', 240, 200 ),
+			)
+		)->get_decomposition()['key_factors'][2];
+
+		$this->assertSame( 'Referral', $card['title'], 'The third card should be Referral.' );
+		$this->assertArrayNotHasKey( 'excess', $card, 'A card that changed at the site\'s rate should have no excess change.' );
+		$this->assertArrayNotHasKey( 'outsized', $card, 'A card that changed at the site\'s rate should not be outsized.' );
+		$this->assertArrayNotHasKey( 'is_large_share', $card, 'A card with under a quarter of the site\'s movement should not be a large share.' );
 	}
 }

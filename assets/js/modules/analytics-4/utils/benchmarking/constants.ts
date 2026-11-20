@@ -77,6 +77,7 @@ export const BENCHMARKING_KEY_FACTOR_KINDS = [
 	'SEARCH_KEYWORD',
 	'REFERRING_SITE',
 	'CAMPAIGN',
+	'CHANNEL_GROUP',
 ] as const;
 
 /**
@@ -93,4 +94,5 @@ export const BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS = [
 	'CAMPAIGN',
 	'DEVICE',
 	'USER_TYPE',
+	'ASSISTANT',
 ] as const;

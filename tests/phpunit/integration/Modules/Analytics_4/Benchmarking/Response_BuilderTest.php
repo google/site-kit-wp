@@ -48,7 +48,6 @@ class Response_BuilderTest extends TestCase {
 	const CHANNEL_PAGES      = 'sessionDefaultChannelGrouping,landingPage';
 	const CHANNEL_CAMPAIGNS  = 'sessionDefaultChannelGrouping,sessionCampaignName';
 	const CONTENT            = 'pagePath,pageTitle,customEvent:googlesitekit_post_date';
-	const DRIVER_AUDIENCE    = 'driver:deviceCategory,newVsReturning';
 
 	/**
 	 * Custom_Dimensions_Data_Available instance.
@@ -153,8 +152,7 @@ class Response_BuilderTest extends TestCase {
 	 * from the rows in `$report_rows` for the report's dimensions.
 	 *
 	 * The rows are keyed by the report's dimensions joined by commas, such as
-	 * `self::CHANNEL_PAGES`. A report filtered on a key factor card's driver can
-	 * have the same dimensions as a breakdown, so its key starts with `driver:`.
+	 * `self::CHANNEL_PAGES`.
 	 *
 	 * @since 1.190.0
 	 * @since n.e.x.t Keys the rows by every dimension of the report.
@@ -165,10 +163,6 @@ class Response_BuilderTest extends TestCase {
 	private function build_report( array $report_request ) {
 		$dimension_names = array_column( $report_request['dimensions'], 'name' );
 		$rows_key        = implode( ',', $dimension_names );
-
-		if ( ! empty( $this->get_driver_filters( $report_request ) ) ) {
-			$rows_key = "driver:{$rows_key}";
-		}
 
 		// Analytics adds a `dateRange` dimension to a report with two periods.
 		if ( count( $report_request['dateRanges'] ) > 1 ) {
@@ -209,29 +203,6 @@ class Response_BuilderTest extends TestCase {
 		}
 
 		return $report;
-	}
-
-	/**
-	 * Gets the dimension filters of a report request, other than the filter on
-	 * the site's host name that every report has.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $report_request The report request, as the batch call sent it.
-	 * @return array The values each `inListFilter` keeps, keyed by dimension name.
-	 */
-	private function get_driver_filters( array $report_request ) {
-		$filters = array();
-
-		foreach ( $report_request['dimensionFilter']['andGroup']['expressions'] ?? array() as $expression ) {
-			$field_name = $expression['filter']['fieldName'] ?? null;
-
-			if ( null !== $field_name && 'hostName' !== $field_name ) {
-				$filters[ $field_name ] = $expression['filter']['inListFilter']['values'] ?? array();
-			}
-		}
-
-		return $filters;
 	}
 
 	/**
@@ -364,12 +335,13 @@ class Response_BuilderTest extends TestCase {
 
 	/**
 	 * Makes the fake Analytics API return rows from which the key factor cards
-	 * are the `/plant-garlic/` page and the `Direct` channel, on a site with
-	 * recorded traffic on every day of the compare period.
+	 * are `Organic Search` and `Direct`, on a site with recorded traffic on
+	 * every day of the compare period.
 	 *
-	 * `/plant-garlic/` gains 100 of the 280 visits the channels gain, and takes
-	 * `Organic Search` out of the candidates. The pages that gain 20 visits each
-	 * have too small a share to be cards.
+	 * The site's visits rise from 700 to 980. `Organic Search` gains 200 of
+	 * them, half on `/plant-garlic/`, a post published in the period, and
+	 * `Direct` gains 80, all from returning visitors. The content report has
+	 * the post only when the property has the post date dimension.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -385,7 +357,7 @@ class Response_BuilderTest extends TestCase {
 		}
 
 		$this->report_rows = array(
-			'date'                   => $this->get_daily_report_rows( '2026-07-22', '2026-09-15', fn() => 25 ),
+			'date'                   => $this->get_daily_report_rows( '2026-07-22', '2026-09-15', fn( $position ) => $position < 28 ? 25 : 35 ),
 			self::CHANNEL_BREAKDOWNS => array(
 				array( 'Organic Search', 'desktop', 'returning', 'date_range_0', 600 ),
 				array( 'Direct', 'desktop', 'returning', 'date_range_0', 380 ),
@@ -393,11 +365,8 @@ class Response_BuilderTest extends TestCase {
 				array( 'Direct', 'desktop', 'returning', 'date_range_1', 300 ),
 			),
 			self::CHANNEL_PAGES      => $pages,
-			self::DRIVER_AUDIENCE    => array(
-				array( 'mobile', 'new', 'date_range_0', 110 ),
-				array( 'desktop', 'returning', 'date_range_0', 40 ),
-				array( 'mobile', 'new', 'date_range_1', 20 ),
-				array( 'desktop', 'returning', 'date_range_1', 30 ),
+			self::CONTENT            => array(
+				array( '/plant-garlic/', 'Plant garlic', '20260901', 'date_range_0', 150 ),
 			),
 		);
 	}
@@ -909,13 +878,13 @@ class Response_BuilderTest extends TestCase {
 
 		// The channels count fewer visits in the compare period than the daily
 		// series, so the cards' changes add up from the site's totals. The
-		// residual is the 24 visits the site gained, less the 150 its three
-		// referring sites gained.
+		// residual is the 24 visits the site gained, less the 109 that
+		// `Referral`, `Organic Search` and `Affiliates` gained.
 		$this->assertSame(
 			array(
 				'opening_sessions' => 388,
 				'closing_sessions' => 412,
-				'residual_delta'   => -126,
+				'residual_delta'   => -85,
 			),
 			array_intersect_key( $decomposition, array_flip( array( 'opening_sessions', 'closing_sessions', 'residual_delta' ) ) ),
 			'The cards\' changes and the residual should add up to the change in the site\'s visits.'
@@ -1849,6 +1818,7 @@ class Response_BuilderTest extends TestCase {
 
 	public function test_build__returns_the_key_factor_cards_with_their_attributes() {
 		$this->provide_key_factor_reports();
+		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
@@ -1856,26 +1826,11 @@ class Response_BuilderTest extends TestCase {
 			array(
 				array(
 					'kind'       => 'CONTENT',
-					'label'      => '/plant-garlic/',
+					'label'      => 'Plant garlic',
 					'current'    => 150,
-					'previous'   => 50,
-					'sharePct'   => 35.7,
-					'attributes' => array(
-						array(
-							'kind'     => 'TRAFFIC_CHANNEL',
-							'label'    => 'Organic Search',
-							'current'  => 150,
-							'previous' => 50,
-							'sharePct' => 35.7,
-						),
-						array(
-							'kind'     => 'USER_TYPE',
-							'label'    => 'new',
-							'current'  => 110,
-							'previous' => 20,
-							'sharePct' => 32.1,
-						),
-					),
+					'previous'   => 0,
+					'sharePct'   => 75.0,
+					'attributes' => array(),
 				),
 				array(
 					'kind'       => 'CHANNEL',
@@ -1883,11 +1838,46 @@ class Response_BuilderTest extends TestCase {
 					'current'    => 380,
 					'previous'   => 300,
 					'sharePct'   => 28.6,
-					'attributes' => array(),
+					'attributes' => array(
+						array(
+							'kind'     => 'USER_TYPE',
+							'label'    => 'returning',
+							'current'  => 380,
+							'previous' => 300,
+							'sharePct' => 100.0,
+						),
+					),
 				),
 			),
 			$response['keyFactors'],
-			'The cards should be the `/plant-garlic/` page, with its channel and the visitor type of its own report, and `Direct`, whose devices and visitor types grew as much as it did.'
+			'The cards should be the new `/plant-garlic/` post, whose 150 visits are 75% of the rise of `Organic Search`, and `Direct`, with the visitor type that carried its rise.'
+		);
+	}
+
+	public function test_build__lists_the_landing_page_of_a_channel_card_when_the_page_is_no_post_published_in_the_period() {
+		$this->provide_key_factor_reports();
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				'kind'       => 'CHANNEL',
+				'label'      => 'Organic Search',
+				'current'    => 600,
+				'previous'   => 400,
+				'sharePct'   => 71.4,
+				'attributes' => array(
+					array(
+						'kind'     => 'LANDING_PAGE',
+						'label'    => '/plant-garlic/',
+						'current'  => 150,
+						'previous' => 50,
+						'sharePct' => 50.0,
+					),
+				),
+			),
+			$response['keyFactors'][0],
+			'Without the post date dimension, `/plant-garlic/` is no new post, so `Organic Search` should keep its card, with the page that carried half of its rise.'
 		);
 	}
 
@@ -1974,32 +1964,12 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( -2, $decomposition['residual_delta'], 'The residual should be the change of `Email`, which has no card.' );
 	}
 
-	public function test_build__asks_for_the_audience_and_the_sources_of_a_landing_page_card_in_a_call_of_their_own() {
-		$this->provide_key_factor_reports();
-
-		$this->builder->build( '2026-08-19', '2026-09-15' );
-
-		$this->assertSame(
-			array(
-				$this->get_first_call_dimensions(),
-				array(
-					array( 'deviceCategory', 'newVsReturning' ),
-					array( 'sessionDefaultChannelGrouping', 'sessionSource' ),
-				),
-			),
-			$this->get_requested_dimensions(),
-			'The `build()` method should ask for the `/plant-garlic/` card its visits by device and visitor type, and by channel and source, in a second call.'
-		);
-		$this->assertSame(
-			array_fill( 0, 2, array( 'landingPage' => array( '/plant-garlic/' ) ) ),
-			array_map( array( $this, 'get_driver_filters' ), $this->batch_requests[1]['requests'] ),
-			'Both reports should be filtered on the `/plant-garlic/` landing page.'
-		);
-	}
-
-	public function test_build__filters_the_reports_of_a_referring_site_card_on_its_sources_through_referral_and_organic_social() {
+	public function test_build__names_the_sources_of_facebook_as_one_referring_site_card() {
 		$this->report_rows = array(
-			'date'                   => $this->get_daily_report_rows( '2026-07-22', '2026-09-15', fn() => 25 ),
+			'date'                   => array(
+				array( '20260722', 600 ),
+				array( '20260819', 890 ),
+			),
 			self::CHANNEL_BREAKDOWNS => array(
 				array( 'Organic Social', 'desktop', 'returning', 'date_range_0', 190 ),
 				array( 'Direct', 'desktop', 'returning', 'date_range_0', 700 ),
@@ -2020,30 +1990,15 @@ class Response_BuilderTest extends TestCase {
 
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
-		$this->assertSame( array( 'Direct', 'Facebook' ), array_column( $response['keyFactors'], 'label' ), 'The cards should be `Direct` and the `Facebook` referring site, in place of `Organic Social`.' );
 		$this->assertSame(
-			array(
-				array( 'deviceCategory', 'newVsReturning' ),
-				array( 'landingPage' ),
-			),
-			$this->get_requested_dimensions()[1],
-			'The `build()` method should ask for the `Facebook` card its visits by device and visitor type, and by landing page.'
+			array( 'CHANNEL Direct', 'REFERRING_SITE Facebook' ),
+			array_map( fn( $card ) => "{$card['kind']} {$card['label']}", $response['keyFactors'] ),
+			'The cards should be `Direct` and the `Facebook` referring site, whose three sources carried all of the rise of `Organic Social`.'
 		);
-		$this->assertSame(
-			array_fill(
-				0,
-				2,
-				array(
-					'sessionSource'                 => array( 'facebook.com', 'l.facebook.com', 'm.facebook.com' ),
-					'sessionDefaultChannelGrouping' => array( 'Referral', 'Organic Social' ),
-				)
-			),
-			array_map( array( $this, 'get_driver_filters' ), $this->batch_requests[1]['requests'] ),
-			'Both reports should be filtered on the three Facebook sources, through `Referral` and `Organic Social`.'
-		);
+		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for no reports of its own for the cards.' );
 	}
 
-	public function test_build__makes_no_more_calls_when_every_key_factor_card_is_a_channel() {
+	public function test_build__makes_no_more_calls_for_the_key_factor_cards() {
 		$this->report_rows = array(
 			'date'                   => $this->get_daily_report_rows( '2026-07-22', '2026-09-15', fn() => 25 ),
 			self::CHANNEL_BREAKDOWNS => array(
@@ -2055,18 +2010,7 @@ class Response_BuilderTest extends TestCase {
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame( array( 'Organic Search' ), array_column( $response['keyFactors'], 'label' ), 'The only card should be `Organic Search`.' );
-		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should make no call for the attributes of a channel card.' );
-	}
-
-	public function test_build__returns_the_error_of_the_call_for_the_attributes_of_the_key_factor_cards() {
-		$this->provide_key_factor_reports();
-
-		$this->refused_batch_call = 2;
-
-		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
-
-		$this->assertWPError( $response, 'The `build()` method should return an error when the call for the attributes of the cards fails.' );
-		$this->assertSame( 403, $response->get_error_code(), 'The error should have the `403` code the Analytics 4 module returned.' );
+		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should make no call for the rows of a card.' );
 	}
 
 	public function test_build__returns_no_key_factor_cards_while_the_compare_period_starts_before_the_first_day_with_traffic() {
@@ -2090,33 +2034,66 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( array(), $response['keyFactors'], 'There should be no key factor cards when no day of the daily series has traffic.' );
 	}
 
-	public function test_build__makes_a_search_query_a_callback_adds_a_key_factor_card() {
+	public function test_build__lists_a_search_query_a_callback_adds_on_the_card_of_organic_search() {
 		$this->provide_key_factor_reports();
 
-		add_filter(
-			'googlesitekit_benchmarking_contextual_data',
-			function ( $contextual_data ) {
-				$contextual_data['searchQueries'] = array(
-					array(
-						'label'            => 'plant garlic',
-						'current'          => 160,
-						'previous'         => 20,
-						'positionCurrent'  => 2.1,
-						'positionPrevious' => 8.4,
-					),
-				);
-
-				return $contextual_data;
-			}
-		);
+		add_filter( 'googlesitekit_benchmarking_contextual_data', array( $this, 'add_plant_garlic_search_rows' ) );
 
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame(
-			array( 'SEARCH_KEYWORD plant garlic', 'CONTENT /plant-garlic/', 'CHANNEL Direct' ),
+			array( 'CHANNEL Organic Search', 'CHANNEL Direct' ),
 			array_map( fn( $card ) => "{$card['kind']} {$card['label']}", $response['keyFactors'] ),
-			'The `plant garlic` search query, which gained 140 clicks, should be the first card.'
+			'No search query should be a card.'
 		);
+		$this->assertSame(
+			array(
+				array(
+					'kind'     => 'SEARCH_KEYWORD',
+					'label'    => 'plant garlic',
+					'current'  => 160,
+					'previous' => 20,
+					'sharePct' => 46.7,
+				),
+				array(
+					'kind'     => 'LANDING_PAGE',
+					'label'    => '/plant-garlic/',
+					'current'  => 150,
+					'previous' => 50,
+					'sharePct' => 50.0,
+				),
+			),
+			$response['keyFactors'][0]['attributes'],
+			'The `plant garlic` search query, which gained 140 of the site\'s 200 more search clicks, should be a row of `Organic Search`, before its landing page.'
+		);
+	}
+
+	/**
+	 * Adds the `plant garlic` search query and the site's search clicks to the
+	 * contextual data, as the `googlesitekit_benchmarking_contextual_data`
+	 * callback of Search Console does.
+	 *
+	 * @param array $contextual_data The rows, keyed by contextual data key.
+	 * @return array The rows, with `searchQueries` and `searchClicks`.
+	 */
+	public function add_plant_garlic_search_rows( $contextual_data ) {
+		$contextual_data['searchQueries'] = array(
+			array(
+				'label'            => 'plant garlic',
+				'current'          => 160,
+				'previous'         => 20,
+				'positionCurrent'  => 2.1,
+				'positionPrevious' => 8.4,
+			),
+		);
+		$contextual_data['searchClicks']  = array(
+			array(
+				'current'  => 300,
+				'previous' => 100,
+			),
+		);
+
+		return $contextual_data;
 	}
 
 	/**
@@ -2127,22 +2104,7 @@ class Response_BuilderTest extends TestCase {
 	public function test_build__keeps_the_rows_of_analytics_and_of_every_other_callback_when_a_callback_fails( $failing_callback ) {
 		$this->provide_key_factor_reports();
 
-		add_filter(
-			'googlesitekit_benchmarking_contextual_data',
-			function ( $contextual_data ) {
-				$contextual_data['searchQueries'] = array(
-					array(
-						'label'            => 'plant garlic',
-						'current'          => 160,
-						'previous'         => 20,
-						'positionCurrent'  => 2.1,
-						'positionPrevious' => 8.4,
-					),
-				);
-
-				return $contextual_data;
-			}
-		);
+		add_filter( 'googlesitekit_benchmarking_contextual_data', array( $this, 'add_plant_garlic_search_rows' ) );
 
 		$expected_response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
@@ -2152,8 +2114,8 @@ class Response_BuilderTest extends TestCase {
 
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
-		$this->assertSame( 'SEARCH_KEYWORD', $expected_response['keyFactors'][0]['kind'], 'The response without the failing callback should have the search keyword card of the other callback.' );
-		$this->assertSame( $expected_response, $response, 'The failing callback should leave the response the same, with the card of the other callback and every card built from Analytics reports.' );
+		$this->assertSame( 'SEARCH_KEYWORD', $expected_response['keyFactors'][0]['attributes'][0]['kind'], 'The response without the failing callback should have the search keyword row of the other callback.' );
+		$this->assertSame( $expected_response, $response, 'The failing callback should leave the response the same, with the row of the other callback and every card built from Analytics reports.' );
 	}
 
 	public function data_failing_contextual_data_callbacks() {

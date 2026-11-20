@@ -39,43 +39,35 @@ const REFERENCE_SITE_URL = 'https://example.com';
  */
 const LONG_KEY_FACTORS: BenchmarkingKeyFactor[] = [
 	{
-		kind: 'CAMPAIGN',
-		label: 'spring-sale-newsletter-subscribers-europe-and-north-america',
+		kind: 'CHANNEL',
+		label: 'Organic Search',
 		current: 1480,
 		previous: 230,
 		sharePct: 71.4,
 		attributes: [
 			{
+				kind: 'SEARCH_KEYWORD',
+				label: 'how long does homemade ice cream last in the freezer',
+				current: 310,
+				previous: 90,
+				sharePct: 12.7,
+			},
+			{
 				kind: 'LANDING_PAGE',
 				label: '/the-complete-guide-to-making-ice-cream-at-home-without-a-machine/',
 				current: 960,
 				previous: 120,
-				sharePct: 48.3,
-			},
-			{
-				kind: 'TRAFFIC_CHANNEL',
-				label: 'Email',
-				current: 1350,
-				previous: 210,
-				sharePct: 65.6,
+				sharePct: 67.2,
 			},
 		],
 	},
 	{
-		kind: 'SEARCH_KEYWORD',
-		label: 'how long does homemade ice cream last in the freezer',
-		current: 310,
-		previous: 90,
-		sharePct: 12.7,
-		attributes: [
-			{
-				kind: 'LANDING_PAGE',
-				label: '/how-long-does-homemade-ice-cream-last/',
-				current: 250,
-				previous: 60,
-				sharePct: 10.9,
-			},
-		],
+		kind: 'CONTENT',
+		label: 'The complete guide to making ice cream at home without a machine, from custard bases to sorbets',
+		current: 250,
+		previous: 0,
+		sharePct: 82.6,
+		attributes: [],
 	},
 	{
 		kind: 'CHANNEL',

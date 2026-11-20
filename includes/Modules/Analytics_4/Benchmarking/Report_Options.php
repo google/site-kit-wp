@@ -158,8 +158,8 @@ class Report_Options {
 	 * Gets the options of the report that counts visits by channel, device and
 	 * visitor type.
 	 *
-	 * The key factor cards take the channel candidates, the site's totals, and
-	 * the device and visitor type attributes of a channel card from it.
+	 * The key factor cards take the channels, the site's totals, and the device
+	 * and visitor type rows of a channel card from it.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -172,8 +172,8 @@ class Report_Options {
 	/**
 	 * Gets the options of the report that counts visits by channel and source.
 	 *
-	 * The key factor cards take the referring site candidates, and the
-	 * referring site and platform attributes of a channel card from it.
+	 * The key factor cards take each channel's referring sites, platforms,
+	 * assistants and source campaigns from it.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -187,9 +187,8 @@ class Report_Options {
 	 * Gets the options of the report that counts visits by channel and landing
 	 * page.
 	 *
-	 * The key factor cards take the landing page candidates, the landing page
-	 * attribute of a channel card, and the traffic channel attribute of a
-	 * landing page card from it.
+	 * The key factor cards take each channel's landing pages, and `Direct`'s
+	 * homepage, from it.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -203,9 +202,7 @@ class Report_Options {
 	 * Gets the options of the report that counts visits by channel and
 	 * campaign.
 	 *
-	 * The key factor cards take the campaign candidates, the campaign attribute
-	 * of a channel card, and the traffic channel attribute of a campaign card
-	 * from it.
+	 * The key factor cards take each channel's campaigns from it.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -213,45 +210,6 @@ class Report_Options {
 	 */
 	public function get_channel_campaigns_options() {
 		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'sessionCampaignName' ) );
-	}
-
-	/**
-	 * Gets the options of the report that counts the visits of one key factor
-	 * card's driver by device and visitor type.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $driver_filters The dimension filters that keep only the driver's visits, keyed by dimension name, as `Key_Factors::get_driver_filters()` returns them.
-	 * @return array Report request options array.
-	 */
-	public function get_driver_audience_options( array $driver_filters ) {
-		return $this->get_dimension_options( array( 'deviceCategory', 'newVsReturning' ), $driver_filters );
-	}
-
-	/**
-	 * Gets the options of the report that counts the visits of one key factor
-	 * card's driver by channel and source.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $driver_filters The dimension filters that keep only the driver's visits, keyed by dimension name, as `Key_Factors::get_driver_filters()` returns them.
-	 * @return array Report request options array.
-	 */
-	public function get_driver_sources_options( array $driver_filters ) {
-		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'sessionSource' ), $driver_filters );
-	}
-
-	/**
-	 * Gets the options of the report that counts the visits of one key factor
-	 * card's driver by landing page.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $driver_filters The dimension filters that keep only the driver's visits, keyed by dimension name, as `Key_Factors::get_driver_filters()` returns them.
-	 * @return array Report request options array.
-	 */
-	public function get_driver_pages_options( array $driver_filters ) {
-		return $this->get_dimension_options( array( 'landingPage' ), $driver_filters );
 	}
 
 	/**

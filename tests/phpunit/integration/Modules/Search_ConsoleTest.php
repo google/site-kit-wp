@@ -314,7 +314,7 @@ class Search_ConsoleTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'channelBreakdowns'  => array(
+				'channelBreakdowns' => array(
 					array(
 						'channel'  => 'Organic Search',
 						'device'   => 'mobile',
@@ -323,7 +323,7 @@ class Search_ConsoleTest extends TestCase {
 						'previous' => 200,
 					),
 				),
-				'searchQueries'      => array(
+				'searchQueries'     => array(
 					array(
 						'label'            => 'plant garlic',
 						'current'          => 300,
@@ -332,25 +332,9 @@ class Search_ConsoleTest extends TestCase {
 						'positionPrevious' => 4.8,
 					),
 				),
-				'searchQueryPages'   => array(
-					array(
-						'query'    => 'plant garlic',
-						'page'     => '/plant-garlic/',
-						'current'  => 300,
-						'previous' => 210,
-					),
-				),
-				'searchQueryDevices' => array(
-					array(
-						'query'    => 'plant garlic',
-						'device'   => 'mobile',
-						'current'  => 300,
-						'previous' => 210,
-					),
-				),
 				// The fake API answers the report of the site's clicks with
 				// the `plant garlic` row too.
-				'searchClicks'       => array(
+				'searchClicks'      => array(
 					array(
 						'current'  => 300,
 						'previous' => 210,
@@ -358,7 +342,7 @@ class Search_ConsoleTest extends TestCase {
 				),
 			),
 			$contextual_data,
-			'The filter should add the `plant garlic` query under `searchQueries`, its page and its device under `searchQueryPages` and `searchQueryDevices`, the site\'s clicks under `searchClicks`, and keep `channelBreakdowns` as it was.'
+			'The filter should add the `plant garlic` query under `searchQueries`, the site\'s clicks under `searchClicks`, and keep `channelBreakdowns` as it was.'
 		);
 	}
 

@@ -77,16 +77,25 @@ export interface BenchmarkingKeyFactorAttribute {
 	kind: BenchmarkingKeyFactorAttributeKind;
 	/** The attribute's name, or null when the response carried none. */
 	label: string | null;
-	/** Visits in the date range the reader chose. */
+	/** Visits in the date range the reader chose, or clicks for a `SEARCH_KEYWORD`. */
 	current: number;
-	/** Visits in the range before it. */
+	/** Visits in the range before it, or clicks for a `SEARCH_KEYWORD`. */
 	previous: number;
-	/** The percentage of the site's change, in the same direction, that the attribute accounts for. */
+	/**
+	 * The attribute's share, in percent, as the generated insight reads it:
+	 * of its card's change, of the site's search clicks for a
+	 * `SEARCH_KEYWORD`, or of the paid channels' movement for a
+	 * `TRAFFIC_CHANNEL` of the paid group. `0` without one.
+	 */
 	sharePct: number;
 }
 
 export interface BenchmarkingKeyFactor {
-	/** The kind of driver behind the card's change, such as `CHANNEL` or `CONTENT`. */
+	/**
+	 * The kind of driver behind the card's change: a `CHANNEL`, the paid
+	 * channels as one `CHANNEL_GROUP`, or a part of a channel that carried most
+	 * of its change, a `CONTENT` post, a `REFERRING_SITE` or a `CAMPAIGN`.
+	 */
 	kind: BenchmarkingKeyFactorKind;
 	/** The driver's name, or null when the response carried none. */
 	label: string | null;
@@ -95,8 +104,10 @@ export interface BenchmarkingKeyFactor {
 	/** Visits in the range before it. */
 	previous: number;
 	/**
-	 * The percentage of the site's change, in the same direction, that the
-	 * card accounts for, or of the site's visits when traffic was steady.
+	 * The card's share, in percent, as the generated insight reads it: of the
+	 * site's visits when traffic was steady, and otherwise of the change it is
+	 * part of, such as the site's change in its direction, or its channel's
+	 * change for a part of a channel.
 	 */
 	sharePct: number;
 	/** The values inside the driver that carried its change, in the order the response ranked them. */

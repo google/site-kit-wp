@@ -158,11 +158,15 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 	);
 
 	// A landing page's card names the site's homepage "Homepage", as its
-	// landing page attributes do.
-	const name =
-		kind === 'CONTENT'
-			? getLandingPageLabel( label, referenceSiteURL )
-			: label;
+	// landing page attributes do. The group of the paid channels has a name of
+	// the plugin's, rather than one Analytics reports, so it is translated.
+	let name = label;
+
+	if ( kind === 'CONTENT' ) {
+		name = getLandingPageLabel( label, referenceSiteURL );
+	} else if ( kind === 'CHANNEL_GROUP' ) {
+		name = __( 'Paid traffic', 'google-site-kit' );
+	}
 
 	return (
 		<section
@@ -229,6 +233,13 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 								) }
 								change={
 									attribute.current - attribute.previous
+								}
+								// A search keyword's change counts its clicks
+								// in Search Console, which are not visits.
+								unit={
+									attribute.kind === 'SEARCH_KEYWORD'
+										? 'clicks'
+										: 'visits'
 								}
 								href={ attributeHrefs[ index ] }
 							/>

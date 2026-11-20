@@ -45,9 +45,7 @@ class Report_Data_Builder {
 	 * for, in one batch call.
 	 *
 	 * Without both periods every query would look new or gone, so a key whose
-	 * report fails in either period is left out. A page is the path of its URL,
-	 * as Analytics names a landing page, and a device is in lowercase, as
-	 * Analytics names it, so the rows of both modules match.
+	 * report fails in either period is left out.
 	 *
 	 * The site's clicks are left out when neither period has one, since Search
 	 * Console reports no row both for a period without clicks and for a
@@ -69,10 +67,8 @@ class Report_Data_Builder {
 	 * @return array {
 	 *     The rows, keyed by contextual data key, without a key whose reports failed or have no rows.
 	 *
-	 *     @type array $searchQueries      List of rows, one per query, each with `label`, `current`, `previous`, `positionCurrent`, and `positionPrevious`.
-	 *     @type array $searchQueryPages   List of rows, one per query and page, each with `query`, `page`, `current`, and `previous`.
-	 *     @type array $searchQueryDevices List of rows, one per query and device, each with `query`, `device`, `current`, and `previous`.
-	 *     @type array $searchClicks       List of one row, with the site's clicks over every query as `current` and `previous`.
+	 *     @type array $searchQueries List of rows, one per query, each with `label`, `current`, `previous`, `positionCurrent`, and `positionPrevious`.
+	 *     @type array $searchClicks  List of one row, with the site's clicks over every query as `current` and `previous`.
 	 * }
 	 */
 	public function build_rows( array $args ) {
@@ -99,23 +95,8 @@ class Report_Data_Builder {
 		}
 
 		$rows = array(
-			'searchQueries'      => $this->has_both_periods( $reports, '' ) ? $this->build_search_query_rows( $reports ) : array(),
-			'searchQueryPages'   => $this->has_both_periods( $reports, '-pages' )
-				? $this->build_breakdown_rows(
-					$reports,
-					'-pages',
-					'page',
-					function ( $url ) {
-						$path = wp_parse_url( $url, PHP_URL_PATH );
-
-						return is_string( $path ) && '' !== $path ? $path : '/';
-					}
-				)
-				: array(),
-			'searchQueryDevices' => $this->has_both_periods( $reports, '-devices' )
-				? $this->build_breakdown_rows( $reports, '-devices', 'device', 'strtolower' )
-				: array(),
-			'searchClicks'       => $this->has_both_periods( $reports, '-totals' ) ? $this->build_search_clicks_rows( $reports ) : array(),
+			'searchQueries' => $this->has_both_periods( $reports, '' ) ? $this->build_search_query_rows( $reports ) : array(),
+			'searchClicks'  => $this->has_both_periods( $reports, '-totals' ) ? $this->build_search_clicks_rows( $reports ) : array(),
 		);
 
 		return array_filter( $rows );
@@ -150,7 +131,7 @@ class Report_Data_Builder {
 	 * @since n.e.x.t
 	 *
 	 * @param array  $reports The reports of the batch call, keyed by identifier.
-	 * @param string $suffix  The suffix of the breakdown's identifiers, such as `-pages`, or an empty string for the queries.
+	 * @param string $suffix  The suffix of the report's identifiers, such as `-totals`, or an empty string for the queries.
 	 * @return bool True when both reports have rows to read, otherwise false.
 	 */
 	private function has_both_periods( array $reports, $suffix ) {
@@ -195,46 +176,6 @@ class Report_Data_Builder {
 
 				$rows[ $query ][ $period ]       = (int) $report_row->getClicks();
 				$rows[ $query ][ $position_key ] = (float) $report_row->getPosition();
-			}
-		}
-
-		return array_values( $rows );
-	}
-
-	/**
-	 * Builds the rows of a breakdown of the queries' clicks by a second
-	 * dimension, each with its clicks in both periods.
-	 *
-	 * Two values that name the same thing once they are mapped, such as the
-	 * `http` and the `https` URL of a page, are one row.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array    $reports   The reports of the batch call, keyed by identifier.
-	 * @param string   $suffix    The suffix of the breakdown's identifiers, such as `-pages`.
-	 * @param string   $field     The field of the second dimension in a row, such as `page`.
-	 * @param callable $map_value Maps a value of the second dimension to the value the row lists.
-	 * @return array List of rows, one per query and value, each with `query`, the field, `current`, and `previous`.
-	 */
-	private function build_breakdown_rows( array $reports, $suffix, $field, callable $map_value ) {
-		$rows = array();
-
-		foreach ( array( 'current', 'previous' ) as $period ) {
-			foreach ( $reports[ $period . $suffix ] as $report_row ) {
-				$keys  = $report_row->getKeys();
-				$value = $map_value( $keys[1] );
-				$key   = wp_json_encode( array( $keys[0], $value ) );
-
-				if ( ! isset( $rows[ $key ] ) ) {
-					$rows[ $key ] = array(
-						'query'    => $keys[0],
-						$field     => $value,
-						'current'  => 0,
-						'previous' => 0,
-					);
-				}
-
-				$rows[ $key ][ $period ] += (int) $report_row->getClicks();
 			}
 		}
 

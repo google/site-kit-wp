@@ -28,59 +28,47 @@ class Contextual_Data_Validator {
 	 * The fields of a row, and the type of each, keyed by contextual data key.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t Keyed by contextual data key, with the channel breakdowns in place of the channel, device, visitor mix and referrer rows, the search queries' pages and devices, and without the categories.
+	 * @since n.e.x.t Keyed by contextual data key, with the channel breakdowns in place of the channel, device, visitor mix and referrer rows, and without the categories.
 	 * @since n.e.x.t Added `searchClicks`, the site's clicks over every search query.
 	 */
 	const ROW_FIELDS = array(
-		'channelBreakdowns'  => array(
+		'channelBreakdowns' => array(
 			'channel'  => 'string',
 			'device'   => 'string',
 			'userType' => 'string',
 			'current'  => 'count',
 			'previous' => 'count',
 		),
-		'channelSources'     => array(
+		'channelSources'    => array(
 			'channel'  => 'string',
 			'source'   => 'string',
 			'current'  => 'count',
 			'previous' => 'count',
 		),
-		'channelPages'       => array(
+		'channelPages'      => array(
 			'channel'  => 'string',
 			'page'     => 'string',
 			'current'  => 'count',
 			'previous' => 'count',
 		),
-		'channelCampaigns'   => array(
+		'channelCampaigns'  => array(
 			'channel'  => 'string',
 			'campaign' => 'string',
 			'current'  => 'count',
 			'previous' => 'count',
 		),
-		'searchQueries'      => array(
+		'searchQueries'     => array(
 			'label'            => 'string',
 			'current'          => 'count',
 			'previous'         => 'count',
 			'positionCurrent'  => 'position',
 			'positionPrevious' => 'position',
 		),
-		'searchQueryPages'   => array(
-			'query'    => 'string',
-			'page'     => 'string',
+		'searchClicks'      => array(
 			'current'  => 'count',
 			'previous' => 'count',
 		),
-		'searchQueryDevices' => array(
-			'query'    => 'string',
-			'device'   => 'string',
-			'current'  => 'count',
-			'previous' => 'count',
-		),
-		'searchClicks'       => array(
-			'current'  => 'count',
-			'previous' => 'count',
-		),
-		'content'            => array(
+		'content'           => array(
 			'url'              => 'string',
 			'title'            => 'string',
 			'publishedDaysAgo' => 'count',

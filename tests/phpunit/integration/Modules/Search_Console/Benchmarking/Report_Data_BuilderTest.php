@@ -35,10 +35,10 @@ class Report_Data_BuilderTest extends TestCase {
 
 	/**
 	 * Rows the fake Search Console API returns, keyed by the identifier of the
-	 * report, such as `current` or `previous-pages`.
+	 * report, such as `current` or `previous-totals`.
 	 *
-	 * Each row lists its keys, the query and then the page or the device of a
-	 * page or device report, then its clicks and its average position.
+	 * Each row lists its keys, the query of a query report, then its clicks
+	 * and its average position.
 	 *
 	 * @var array
 	 */
@@ -196,7 +196,7 @@ class Report_Data_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build_rows__asks_for_the_queries_their_pages_their_devices_and_the_site_clicks_of_each_period() {
+	public function test_build_rows__asks_for_the_queries_and_the_site_clicks_of_each_period() {
 		$this->build_rows();
 
 		// Each part of the batch body has its JSON request on one line.
@@ -204,20 +204,18 @@ class Report_Data_BuilderTest extends TestCase {
 
 		$requests = array();
 
-		foreach ( array( array( 'query' ), array( 'query', 'page' ), array( 'query', 'device' ) ) as $dimensions ) {
-			$requests[] = array(
-				'dimensions' => $dimensions,
-				'endDate'    => '2026-09-15',
-				'rowLimit'   => 50,
-				'startDate'  => '2026-08-19',
-			);
-			$requests[] = array(
-				'dimensions' => $dimensions,
-				'endDate'    => '2026-08-18',
-				'rowLimit'   => 50,
-				'startDate'  => '2026-07-22',
-			);
-		}
+		$requests[] = array(
+			'dimensions' => array( 'query' ),
+			'endDate'    => '2026-09-15',
+			'rowLimit'   => 50,
+			'startDate'  => '2026-08-19',
+		);
+		$requests[] = array(
+			'dimensions' => array( 'query' ),
+			'endDate'    => '2026-08-18',
+			'rowLimit'   => 50,
+			'startDate'  => '2026-07-22',
+		);
 
 		// The report of the site's clicks has no dimensions, so its one row
 		// counts every query. The datapoint's default row limit applies.
@@ -241,7 +239,7 @@ class Report_Data_BuilderTest extends TestCase {
 				),
 				$request_bodies[0]
 			),
-			'The batch call should ask for the queries, the queries by page, and the queries by device, each of the selected period and then of the compare period, each limited to 50 rows, and then for the site\'s clicks in each period.'
+			'The batch call should ask for the queries of the selected period and then of the compare period, each limited to 50 rows, and then for the site\'s clicks in each period.'
 		);
 	}
 
@@ -357,69 +355,6 @@ class Report_Data_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build_rows__lists_the_page_of_each_query_as_its_path_and_adds_up_the_urls_of_a_path() {
-		$this->report_rows = array(
-			'current-pages'  => array(
-				array( 'plant garlic', 'https://example.com/plant-garlic/', 90, 2.0 ),
-				array( 'plant garlic', 'http://example.com/plant-garlic/', 10, 3.0 ),
-				array( 'plant garlic', 'https://example.com', 5, 1.0 ),
-			),
-			'previous-pages' => array(
-				array( 'plant garlic', 'https://example.com/plant-garlic/', 40, 4.0 ),
-			),
-		);
-
-		$this->assertSame(
-			array(
-				array(
-					'query'    => 'plant garlic',
-					'page'     => '/plant-garlic/',
-					'current'  => 100,
-					'previous' => 40,
-				),
-				array(
-					'query'    => 'plant garlic',
-					'page'     => '/',
-					'current'  => 5,
-					'previous' => 0,
-				),
-			),
-			$this->build_rows()['searchQueryPages'],
-			'Each page should be its path, as Analytics names a landing page, with the clicks of its `http` and `https` URLs added up.'
-		);
-	}
-
-	public function test_build_rows__lists_the_device_of_each_query_in_lowercase() {
-		$this->report_rows = array(
-			'current-devices'  => array(
-				array( 'plant garlic', 'MOBILE', 70, 2.0 ),
-			),
-			'previous-devices' => array(
-				array( 'plant garlic', 'MOBILE', 30, 3.0 ),
-				array( 'plant garlic', 'DESKTOP', 5, 3.0 ),
-			),
-		);
-
-		$this->assertSame(
-			array(
-				array(
-					'query'    => 'plant garlic',
-					'device'   => 'mobile',
-					'current'  => 70,
-					'previous' => 30,
-				),
-				array(
-					'query'    => 'plant garlic',
-					'device'   => 'desktop',
-					'current'  => 0,
-					'previous' => 5,
-				),
-			),
-			$this->build_rows()['searchQueryDevices'],
-			'Each device should be in lowercase, as Analytics names it.'
-		);
-	}
-
 	public function test_build_rows__returns_no_rows_when_the_batch_call_fails() {
 		$this->report_rows = array(
 			'current'  => array(
@@ -460,30 +395,6 @@ class Report_Data_BuilderTest extends TestCase {
 			'the selected period' => array( 'current' ),
 			'the compare period'  => array( 'previous' ),
 		);
-	}
-
-	public function test_build_rows__keeps_the_queries_and_their_devices_when_a_page_report_fails() {
-		$this->report_rows = array(
-			'current'          => array(
-				array( 'plant garlic', 300, 3.4 ),
-			),
-			'previous'         => array(
-				array( 'plant garlic', 210, 4.8 ),
-			),
-			'current-pages'    => array(
-				array( 'plant garlic', 'https://example.com/plant-garlic/', 300, 3.4 ),
-			),
-			'current-devices'  => array(
-				array( 'plant garlic', 'MOBILE', 300, 3.4 ),
-			),
-			'previous-devices' => array(
-				array( 'plant garlic', 'MOBILE', 210, 4.8 ),
-			),
-		);
-
-		$this->refused_report_identifier = 'previous-pages';
-
-		$this->assertSame( array( 'searchQueries', 'searchQueryDevices' ), array_keys( $this->build_rows() ), 'A failed page report should leave out the pages alone.' );
 	}
 
 	public function test_build_rows__returns_no_rows_when_no_report_has_rows() {

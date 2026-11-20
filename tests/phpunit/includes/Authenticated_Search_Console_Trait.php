@@ -68,12 +68,7 @@ trait Authenticated_Search_Console_Trait {
 	 * of the selected period, whose identifier starts with `current`, and 210
 	 * clicks at position 4.8 for any other.
 	 *
-	 * A report whose identifier ends with `-pages` has the row on the
-	 * `https://example.com/plant-garlic/` page, and one whose identifier ends
-	 * with `-devices` has it on `MOBILE`.
-	 *
 	 * @since 1.191.0
-	 * @since n.e.x.t Answers the page and device reports of each period.
 	 *
 	 * @param RequestInterface $request The batch request.
 	 * @return Response The batch response.
@@ -83,13 +78,6 @@ trait Authenticated_Search_Console_Trait {
 			$request,
 			function ( $identifier ) {
 				$is_current = 0 === strpos( $identifier, 'current' );
-				$keys       = array( 'plant garlic' );
-
-				if ( '-pages' === substr( $identifier, -6 ) ) {
-					$keys[] = 'https://example.com/plant-garlic/';
-				} elseif ( '-devices' === substr( $identifier, -8 ) ) {
-					$keys[] = 'MOBILE';
-				}
 
 				return new Response(
 					200,
@@ -98,7 +86,7 @@ trait Authenticated_Search_Console_Trait {
 						array(
 							'rows' => array(
 								array(
-									'keys'     => $keys,
+									'keys'     => array( 'plant garlic' ),
 									'clicks'   => $is_current ? 300 : 210,
 									'position' => $is_current ? 3.4 : 4.8,
 								),

@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Benchmarking;
 use DateTimeImmutable;
 use DateTimeZone;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Insight_Request_Builder;
+use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Key_Factors;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Period_Baseline;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -188,20 +189,9 @@ class Insight_Request_BuilderTest extends TestCase {
 						),
 					),
 				),
-				// The period is steady, and Direct fell by 2.5% of the site's
-				// visits beyond the site's own rate, so its channels offset each
-				// other. The panel shows no card, so the decomposition has
-				// none, and the whole change is its residual.
-				'decomposition'   => array(
-					'opening_sessions' => 7714,
-					'closing_sessions' => 7730,
-					'residual_delta'   => 16,
-					'shape'            => 'OFFSETTING',
-					'key_factors'      => array(),
-				),
 			),
 			$request,
-			'The request should carry the end date, the period length, the visit totals with last year\'s, the expected range of `Period_Baseline`, the channel rows, and a decomposition without cards.'
+			'The request should carry the end date, the period length, the visit totals with last year\'s, the expected range of `Period_Baseline`, and the channel rows, and no decomposition without one.'
 		);
 	}
 
@@ -1230,7 +1220,15 @@ class Insight_Request_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build__sends_the_key_factor_cards_as_the_decomposition() {
+	public function test_build__sends_the_decomposition_it_is_given_last() {
+		$decomposition = array(
+			'opening_sessions' => 7714,
+			'closing_sessions' => 7730,
+			'residual_delta'   => 16,
+			'shape'            => 'OFFSETTING',
+			'key_factors'      => array(),
+		);
+
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
@@ -1243,51 +1241,16 @@ class Insight_Request_BuilderTest extends TestCase {
 				'channels' => array(
 					array(
 						'label'    => 'Direct',
-						'current'  => 2730,
-						'previous' => 2914,
-					),
-					array(
-						'label'    => 'Organic Search',
-						'current'  => 5000,
-						'previous' => 4800,
+						'current'  => 7730,
+						'previous' => 7714,
 					),
 				),
 			),
-			array(
-				array(
-					'kind'       => 'CHANNEL',
-					'label'      => 'Organic Search',
-					'current'    => 5000,
-					'previous'   => 4800,
-					'sharePct'   => 100.0,
-					'attributes' => array(),
-				),
-			)
+			$decomposition
 		);
 
-		$this->assertSame(
-			array( 'Organic Search' ),
-			array_column( $request['decomposition']['key_factors'], 'title' ),
-			'The decomposition should carry the key factor card.'
-		);
-		$this->assertSame( 16 - 200, $request['decomposition']['residual_delta'], 'The residual should be the site\'s change less the card\'s.' );
+		$this->assertSame( $decomposition, $request['decomposition'], 'The request should carry the decomposition as it is given.' );
 		$this->assertSame( 'decomposition', array_key_last( $request ), 'The decomposition should close the request, after the contextual data.' );
-	}
-
-	public function test_build__sends_no_decomposition_without_channels() {
-		$request = $this->build_with_rows(
-			array(
-				'devices' => array(
-					array(
-						'label'    => 'mobile',
-						'current'  => 300,
-						'previous' => 250,
-					),
-				),
-			)
-		);
-
-		$this->assertArrayNotHasKey( 'decomposition', $request, 'Without channels, the cards\' changes add up to nothing, so the request should carry no decomposition.' );
 	}
 
 	public function test_build__leaves_out_each_contextual_field_without_rows() {
@@ -1460,97 +1423,85 @@ class Insight_Request_BuilderTest extends TestCase {
 	}
 
 	public function test_build__sends_every_count_as_an_integer() {
+		$visits          = array(
+			'current'  => '7730',
+			'previous' => 7714.0,
+		);
+		$contextual_data = array(
+			'channels'          => array(
+				array(
+					'label'    => 'Direct',
+					'current'  => '100',
+					'previous' => 50.0,
+				),
+			),
+			'referrers'         => array(
+				array(
+					'label'    => 'a.example.com',
+					'current'  => 12.0,
+					'previous' => '3',
+				),
+			),
+			'searchQueries'     => array(
+				array(
+					'label'            => 'garlic',
+					'current'          => '20',
+					'previous'         => 10.0,
+					'positionCurrent'  => '2.25',
+					'positionPrevious' => 3,
+				),
+			),
+			'content'           => array(
+				array(
+					'url'              => '/a/',
+					'title'            => 'A',
+					'publishedDaysAgo' => '4',
+					'current'          => 40.0,
+					'previous'         => '0',
+				),
+			),
+			'channelBreakdowns' => array(
+				array(
+					'channel'  => 'Direct',
+					'device'   => 'mobile',
+					'userType' => 'new',
+					'current'  => '100',
+					'previous' => 50.0,
+				),
+			),
+			'channelPages'      => array(
+				array(
+					'channel'  => 'Direct',
+					'page'     => '/a/',
+					'current'  => 70.0,
+					'previous' => '30',
+				),
+			),
+			'channelCampaigns'  => array(
+				array(
+					'channel'  => 'Email',
+					'campaign' => 'spring-sale',
+					'current'  => '4',
+					'previous' => 2.0,
+				),
+			),
+			'searchClicks'      => array(
+				array(
+					'current'  => '25',
+					'previous' => 15.0,
+				),
+			),
+		);
+
+		// The rows may come from a callback, with numbers as strings or
+		// floats, and the decomposition is built from the same rows.
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
 			$this->get_period_baseline( self::SERIES_START_DATE, self::END_DATE, fn( $position ) => (string) $this->get_varying_visits( $position ) ),
-			array(
-				'current'  => '7730',
-				'previous' => 7714.0,
-			),
-			array(
-				'channels'          => array(
-					array(
-						'label'    => 'Direct',
-						'current'  => '10',
-						'previous' => 5.0,
-					),
-				),
-				'referrers'         => array(
-					array(
-						'label'    => 'a.example.com',
-						'current'  => 12.0,
-						'previous' => '3',
-					),
-				),
-				'searchQueries'     => array(
-					array(
-						'label'            => 'garlic',
-						'current'          => '20',
-						'previous'         => 10.0,
-						'positionCurrent'  => '2.25',
-						'positionPrevious' => 3,
-					),
-				),
-				'content'           => array(
-					array(
-						'url'              => '/a/',
-						'title'            => 'A',
-						'publishedDaysAgo' => '4',
-						'current'          => 40.0,
-						'previous'         => '0',
-					),
-				),
-				'channelBreakdowns' => array(
-					array(
-						'channel'  => 'Direct',
-						'device'   => 'mobile',
-						'userType' => 'new',
-						'current'  => '10',
-						'previous' => 5.0,
-					),
-				),
-				'channelPages'      => array(
-					array(
-						'channel'  => 'Direct',
-						'page'     => '/a/',
-						'current'  => 7.0,
-						'previous' => '3',
-					),
-				),
-				'channelCampaigns'  => array(
-					array(
-						'channel'  => 'Email',
-						'campaign' => 'spring-sale',
-						'current'  => '4',
-						'previous' => 2.0,
-					),
-				),
-				'searchClicks'      => array(
-					array(
-						'current'  => '25',
-						'previous' => 15.0,
-					),
-				),
-			),
-			array(
-				array(
-					'kind'       => 'CHANNEL',
-					'label'      => 'Direct',
-					'current'    => '10',
-					'previous'   => 5.0,
-					'sharePct'   => 100.0,
-					'attributes' => array(
-						array(
-							'kind'     => 'LANDING_PAGE',
-							'label'    => '/a/',
-							'current'  => 7.0,
-							'previous' => '3',
-							'sharePct' => 80.0,
-						),
-					),
-				),
-			)
+			$visits,
+			$contextual_data,
+			( new Key_Factors( $contextual_data, $visits, 28 ) )->get_decomposition()
 		);
 
 		$leaves    = $this->get_leaves( $request );

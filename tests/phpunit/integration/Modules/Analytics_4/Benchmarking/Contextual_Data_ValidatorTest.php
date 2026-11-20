@@ -381,7 +381,7 @@ class Contextual_Data_ValidatorTest extends TestCase {
 		);
 	}
 
-	public function test_validate__keeps_the_rows_of_the_search_queries_pages_and_devices() {
+	public function test_validate__removes_the_rows_of_the_search_queries_pages_and_devices() {
 		$rows = array(
 			'searchQueryPages'   => array(
 				array(
@@ -401,7 +401,7 @@ class Contextual_Data_ValidatorTest extends TestCase {
 			),
 		);
 
-		$this->assertSame( $rows, ( new Contextual_Data_Validator() )->validate( $rows ), 'The rows of `searchQueryPages` and `searchQueryDevices` should be kept as they are.' );
+		$this->assertSame( array(), ( new Contextual_Data_Validator() )->validate( $rows ), 'The response no longer defines `searchQueryPages` and `searchQueryDevices`, so their rows should be removed.' );
 	}
 
 	public function test_validate__keeps_the_site_search_clicks_with_their_counts_as_integers() {

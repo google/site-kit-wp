@@ -125,22 +125,23 @@ class Insight_Request_Builder {
 	 * the request has `history_days` instead, so the service can say when the
 	 * site will have a range.
 	 *
-	 * The request has a `decomposition` whenever it has channel rows, with the
-	 * given key factor cards. It has one with no cards when the panel shows
-	 * none, so the service doesn't name a driver the panel doesn't show.
+	 * The request carries the given `decomposition`, the key factor cards the
+	 * panel shows, as `Key_Factors::get_decomposition()` builds them. It has
+	 * one with no cards when the panel shows none, so the service doesn't name
+	 * a driver the panel doesn't show.
 	 *
 	 * @since n.e.x.t
-	 * @since n.e.x.t Added the `$key_factors` parameter, sent as `decomposition`, and sends the channel breakdowns, the search clicks and the most visited pages.
+	 * @since n.e.x.t Added the `$decomposition` parameter, and sends the channel breakdowns, the search clicks and the most visited pages.
 	 *
 	 * @param string          $start_date      The first day of the selected period, as `YYYY-MM-DD`.
 	 * @param string          $end_date        The last day of the selected period, as `YYYY-MM-DD`.
 	 * @param Period_Baseline $period_baseline The model of the visits of every day up to and including `$end_date`, from the first day with visits on, as `Period_Baseline::from_daily_series()` builds it. The chart's band reads the same model, so its fits are made once.
 	 * @param array           $visits          The visits of the selected period and of the period before it, as `current` and `previous`.
 	 * @param array           $contextual_data The rows of the benchmarking response, keyed by `contextualData` key, before they are ranked.
-	 * @param array           $key_factors     Optional. The key factor cards the panel shows, as `Key_Factors::build()` returns them. Default empty array.
+	 * @param array|null      $decomposition   Optional. The key factor cards the panel shows, as `Key_Factors::get_decomposition()` returns them, or null without channels. Default null.
 	 * @return array|null The request, or null when there is no insight to request: the period is shorter than `MIN_PERIOD_DAYS` days or longer than `MAX_PERIOD_DAYS` days, or neither period has a visit.
 	 */
-	public function build( $start_date, $end_date, Period_Baseline $period_baseline, array $visits, array $contextual_data, array $key_factors = array() ) {
+	public function build( $start_date, $end_date, Period_Baseline $period_baseline, array $visits, array $contextual_data, $decomposition = null ) {
 		$days_in_period = $this->get_days_in_period( $start_date, $end_date );
 
 		if ( $days_in_period < self::MIN_PERIOD_DAYS || $days_in_period > self::MAX_PERIOD_DAYS ) {
@@ -185,16 +186,7 @@ class Insight_Request_Builder {
 			$request['contextual_data'] = $request_contextual_data;
 		}
 
-		$decomposition = ( new Decomposition_Builder(
-			array(
-				'current'  => $current_period,
-				'previous' => $previous_period,
-			),
-			$this->get_rows( $contextual_data, 'channels' ),
-			$this->get_search_clicks( $contextual_data )
-		) )->build( $key_factors );
-
-		if ( null !== $decomposition ) {
+		if ( is_array( $decomposition ) ) {
 			$request['decomposition'] = $decomposition;
 		}
 
@@ -510,8 +502,9 @@ class Insight_Request_Builder {
 	 * `MAX_CHANNEL_CAMPAIGNS` that moved most.
 	 *
 	 * Analytics names the visits of no campaign with a placeholder, such as
-	 * `(organic)` or `(not set)`, which no card can name, so it never takes a
-	 * campaign's place.
+	 * `(organic)` or `(not set)`, which no card can name, and an ID or a
+	 * personal label is no name a card shows either, so neither takes a
+	 * campaign's place. See `Source_Classifier::get_campaign_title()`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -522,7 +515,7 @@ class Insight_Request_Builder {
 		$rows_by_channel = array();
 
 		foreach ( $this->get_rows( $contextual_data, 'channelCampaigns' ) as $row ) {
-			if ( ! self::is_placeholder( $row['campaign'] ) && (int) $row['current'] !== (int) $row['previous'] ) {
+			if ( '' !== Source_Classifier::get_campaign_title( $row['campaign'] ) && (int) $row['current'] !== (int) $row['previous'] ) {
 				$rows_by_channel[ $row['channel'] ][] = $row;
 			}
 		}
