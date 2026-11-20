@@ -81,7 +81,7 @@ These terms are lowercase unless they start a sentence, heading, or label.
 | settings             | Settings                                   | Site Kit's settings, including "Site Kit settings".                                                             |
 | visitor groups       | Visitor Groups                             | The user-facing name of the feature. Do not use "audience segmentation" in user-facing copy.                    |
 | Google tag           | Google Tag                                 | Only "Google" is capitalized.                                                                                   |
-| property             | Property                                   | An Analytics property.                                                                                          |
+| property             | Property                                   | An Analytics or Search Console property.                                                                        |
 | web data stream      | Web Data Stream, Web data stream           |                                                                                                                 |
 | measurement ID       | Measurement ID, measurement id             |                                                                                                                 |
 | conversion events    | Conversion Events                          |                                                                                                                 |
