@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { VoteDirection } from '@/js/components/feedback/constants';
+import { FeedbackMenuOption } from '@/js/components/feedback/FeedbackMenu';
 import ThumbsFeedback from '@/js/components/feedback/ThumbsFeedback';
 import Typography from '@/js/components/Typography';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
@@ -54,6 +55,8 @@ interface FeedbackPromptProps {
 	hideQuestion?: boolean;
 	/** Called with the vote's direction, after the vote is tracked. */
 	onVote?: ( direction: VoteDirection ) => void;
+	/** The reasons offered in a "Help us improve" menu after each vote. */
+	feedbackOptions?: Partial< Record< VoteDirection, FeedbackMenuOption[] > >;
 }
 
 /**
@@ -63,6 +66,7 @@ interface FeedbackPromptProps {
  * @since 1.190.0 Replaced the `goalType` prop with `gaTrackingEventArgs`.
  * @since 1.191.0 Added the `hideQuestion` prop to show only the thumbs.
  * @since 1.192.0 Added the `onVote` prop. Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
+ * @since n.e.x.t Added the `feedbackOptions` prop.
  *
  * @param props                     Component props.
  * @param props.feedbackNamespace   The product area the feedback is about.
@@ -70,6 +74,7 @@ interface FeedbackPromptProps {
  * @param props.gaTrackingEventArgs Category and label used to track the vote event.
  * @param [props.hideQuestion]      Optional. Whether to hide the "Is this section helpful?" text.
  * @param [props.onVote]            Optional. Called with the vote's direction, after the vote is tracked.
+ * @param [props.feedbackOptions]   Optional. The reasons offered in a "Help us improve" menu after each vote.
  * @return React element.
  */
 const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
@@ -78,6 +83,7 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 	gaTrackingEventArgs,
 	hideQuestion,
 	onVote,
+	feedbackOptions,
 } ) => {
 	const breakpoint = useBreakpoint();
 	// On mobile the feedback row isn't right-aligned, so `top-end` pushes the
@@ -99,6 +105,7 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 		<ThumbsFeedback
 			feedbackNamespace={ feedbackNamespace }
 			feedbackGroup={ feedbackGroup }
+			feedbackOptions={ feedbackOptions }
 			onVote={ handleVote }
 			popperPlacement={ popperPlacement }
 		/>
