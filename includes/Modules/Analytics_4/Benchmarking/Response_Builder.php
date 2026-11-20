@@ -84,7 +84,7 @@ class Response_Builder {
 	 * @since 1.190.0
 	 * @since 1.191.0 Returns `visits` in place of `visitors`, and each day's count as `visits`.
 	 * @since 1.192.0 `dailyTraffic` changed from the 395 days that end on the end date to the days of the selected period.
-	 * @since n.e.x.t Gives each day of `dailyTraffic` its expected range, and returns `firstTrafficDate`.
+	 * @since n.e.x.t Gives each day of `dailyTraffic` its expected range, and returns `availability`.
 	 * @since n.e.x.t Returns `insightRequest` with the `trafficInsights` feature.
 	 * @since n.e.x.t Returns `contentMarkers`.
 	 * @since n.e.x.t Returns `keyFactors` in place of `dimensions` and `contextualData`.
@@ -97,8 +97,8 @@ class Response_Builder {
 	 *
 	 *     @type array       $visits           Visit totals for the selected period and the one before it.
 	 *     @type array       $dailyTraffic     List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the band `Period_Baseline::get_daily_ranges()` fits for the period. The bounds are null on every day when the period has no band, with fewer than `Period_Baseline::get_min_band_history_days()` days of recorded traffic up to and including its last day.
-	 *     @type string|null $firstTrafficDate The first day of the daily report with visits, as `YYYY-MM-DD`, or null when no day has any.
-	 *     @type array       $keyFactors       The key factor cards, as `Key_Factors::build()` returns them, or as `Key_Factors::build_steady()` does when `steadyTraffic` is true. Empty when `Typical_Traffic_Availability` has no key factors for the period: it is shorter than 7 days, or the compare period starts before `firstTrafficDate`, since a day before it wasn't measured yet. Also empty when no candidate stays.
+	 *     @type array       $availability     Which parts of the typical traffic view show for the period, as `Typical_Traffic_Availability::get()` returns them, so the panel reads them instead of working them out again.
+	 *     @type array       $keyFactors       The key factor cards, as `Key_Factors::build()` returns them, or as `Key_Factors::build_steady()` does when `steadyTraffic` is true. Empty when `availability` has no key factors for the period: it is shorter than 7 days, or the compare period starts before the site's first day with visits, since a day before it wasn't measured yet. Also empty when no candidate stays.
 	 *     @type bool        $steadyTraffic    Whether no channel changed notably, as `Decomposition_Builder::is_steady()` tells. The key factor cards are then the channels with the most visits, each with its share of the site's visits as `sharePct`. False when the period has no key factors.
 	 *     @type array       $contentMarkers   The posts published in the selected period that the chart marks, as `Content_Markers::build()` returns them. Empty when the property has no post date custom dimension, since the content report doesn't run then, or when the dimension has no data yet.
 	 *     @type array|null  $insightRequest   Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request, which includes a period without key factors.
@@ -112,11 +112,10 @@ class Response_Builder {
 			return $reports;
 		}
 
-		$daily_series       = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
-		$period_baseline    = Period_Baseline::from_daily_series( $daily_series );
-		$compare_range      = $report_options->get_compare_range();
-		$first_traffic_date = $this->get_first_traffic_date( $daily_series );
-		$availability       = Typical_Traffic_Availability::get( $period_baseline, $end_date, $report_options->get_period_days() );
+		$daily_series    = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
+		$period_baseline = Period_Baseline::from_daily_series( $daily_series );
+		$compare_range   = $report_options->get_compare_range();
+		$availability    = Typical_Traffic_Availability::get( $period_baseline, $end_date, $report_options->get_period_days() );
 
 		$visits = array(
 			'current'  => $this->sum_visits( $daily_series, $start_date, $end_date ),
@@ -161,12 +160,12 @@ class Response_Builder {
 		}
 
 		$response = array(
-			'visits'           => $visits,
-			'dailyTraffic'     => $this->get_daily_traffic( $daily_series, $start_date, $end_date, $period_baseline ),
-			'firstTrafficDate' => $first_traffic_date,
-			'keyFactors'       => $key_factors,
-			'steadyTraffic'    => $steady_traffic,
-			'contentMarkers'   => ( new Content_Markers() )->build(
+			'visits'         => $visits,
+			'dailyTraffic'   => $this->get_daily_traffic( $daily_series, $start_date, $end_date, $period_baseline ),
+			'availability'   => $availability,
+			'keyFactors'     => $key_factors,
+			'steadyTraffic'  => $steady_traffic,
+			'contentMarkers' => ( new Content_Markers() )->build(
 				isset( $contextual_data['content'] ) ? $contextual_data['content'] : array(),
 				$start_date,
 				$end_date
@@ -503,28 +502,6 @@ class Response_Builder {
 			},
 			$period_days
 		);
-	}
-
-	/**
-	 * Gets the first day of the daily series with visits.
-	 *
-	 * The expected range counts a site's history from this day, so the days
-	 * before it, when the site wasn't measured yet, don't count as days with no
-	 * visits.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $daily_series The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
-	 * @return string|null The day, as `YYYY-MM-DD`, or null when no day has visits.
-	 */
-	private function get_first_traffic_date( array $daily_series ) {
-		foreach ( $daily_series as $day ) {
-			if ( $day['visits'] > 0 ) {
-				return $day['date'];
-			}
-		}
-
-		return null;
 	}
 
 	/**

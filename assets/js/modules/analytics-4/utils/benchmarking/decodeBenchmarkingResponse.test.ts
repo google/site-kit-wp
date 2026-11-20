@@ -19,12 +19,13 @@
 /**
  * Internal dependencies
  */
+import { availabilityWithoutTraffic } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import benchmarkingData from '@/js/modules/analytics-4/datastore/__fixtures__/benchmarking-data.json';
 import { provideTimezone } from '@tests/js/test-utils';
 import { decodeBenchmarkingResponse } from './decodeBenchmarkingResponse';
 
 describe( 'decodeBenchmarkingResponse', () => {
-	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, `firstTrafficDate`, `keyFactors`, `steadyTraffic`, and `contentMarkers`', () => {
+	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, `availability`, `keyFactors`, `steadyTraffic`, and `contentMarkers`', () => {
 		expect( decodeBenchmarkingResponse( benchmarkingData ) ).toEqual( {
 			visits: { current: 412, previous: 388 },
 			dailyTraffic: [
@@ -53,8 +54,18 @@ describe( 'decodeBenchmarkingResponse', () => {
 					expectedMax: 182.6,
 				},
 			],
-			// 26 days before the first plotted day.
-			firstTrafficDate: '2025-07-23',
+			// The days travel as 4 days after and 19 days before the first
+			// plotted day.
+			availability: {
+				rangeTooShort: false,
+				bandAvailable: false,
+				bandAvailableFrom: '2025-08-22',
+				keyFactorsAvailable: true,
+				keyFactorsAvailableFrom: '2025-07-30',
+				insightRequestAllowed: true,
+				performanceInsightAvailable: false,
+				lastYearAvailable: false,
+			},
 			keyFactors: [
 				{
 					kind: 'REFERRING_SITE',
@@ -104,9 +115,9 @@ describe( 'decodeBenchmarkingResponse', () => {
 					],
 				},
 			],
+			steadyTraffic: false,
 			// 2 days after the first plotted day, with the path the `CONTENT`
 			// card carries too.
-			steadyTraffic: false,
 			contentMarkers: [
 				{
 					date: '2025-08-20',
@@ -149,7 +160,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[],
 				[],
 				new Array( 90 ).fill( null ),
-				null,
+				[ false, false, null, false, null, false, false, false ],
 				[],
 				false,
 			] );
@@ -174,23 +185,33 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ 'before', '2026-04-20', -30, '2026-03-21' ],
 			[ 'after', '2026-04-01', 10, '2026-04-11' ],
 		] )(
-			'should decode a first traffic day %s the first plotted day, across the clock change, to its own date',
-			( _label, firstDate, dayOffset, firstTrafficDate ) => {
-				expect(
-					decodeBenchmarkingResponse( [
-						1,
-						[],
-						firstDate,
-						[ 132 ],
-						[ 412, 388 ],
-						[],
-						[],
-						[ null ],
-						dayOffset,
-						[],
+			'should decode a day of the availability %s the first plotted day, across the clock change, to its own date',
+			( _label, firstDate, dayOffset, date ) => {
+				const availability = decodeBenchmarkingResponse( [
+					1,
+					[],
+					firstDate,
+					[ 132 ],
+					[ 412, 388 ],
+					[],
+					[],
+					[ null ],
+					[
 						false,
-					] )?.firstTrafficDate
-				).toBe( firstTrafficDate );
+						false,
+						dayOffset,
+						false,
+						dayOffset,
+						false,
+						false,
+						false,
+					],
+					[],
+					false,
+				] )?.availability;
+
+				expect( availability?.bandAvailableFrom ).toBe( date );
+				expect( availability?.keyFactorsAvailableFrom ).toBe( date );
 			}
 		);
 
@@ -205,7 +226,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					[],
 					new Array( 14 ).fill( null ),
-					null,
+					[ false, false, null, false, null, false, false, false ],
 					[ [ 10, [ 0, 1 ] ] ],
 					false,
 				] )?.contentMarkers[ 0 ].date
@@ -226,7 +247,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ [ 0, labelIndex, 210, 222, 40.3 ] ],
 			[ [] ],
 			[ null ],
-			null,
+			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
 		] );
@@ -317,7 +338,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[],
 			[],
 			[],
-			null,
+			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
 		];
@@ -326,10 +347,26 @@ describe( 'decodeBenchmarkingResponse', () => {
 		expect( decodeBenchmarkingResponse( encoded ) ).toEqual( {
 			visits: { current: 0, previous: 0 },
 			dailyTraffic: [],
-			firstTrafficDate: null,
+			availability: availabilityWithoutTraffic,
 			keyFactors: [],
 			steadyTraffic: false,
 			contentMarkers: [],
+		} );
+	} );
+
+	it( 'should decode each flag of the availability from its own position', () => {
+		const encoded = [ ...( benchmarkingData as unknown[] ) ];
+		encoded[ 8 ] = [ true, false, null, false, null, true, false, true ];
+
+		expect( decodeBenchmarkingResponse( encoded )?.availability ).toEqual( {
+			rangeTooShort: true,
+			bandAvailable: false,
+			bandAvailableFrom: null,
+			keyFactorsAvailable: false,
+			keyFactorsAvailableFrom: null,
+			insightRequestAllowed: true,
+			performanceInsightAvailable: false,
+			lastYearAvailable: true,
 		} );
 	} );
 
@@ -339,34 +376,54 @@ describe( 'decodeBenchmarkingResponse', () => {
 		[ 5, '2025-08-23' ],
 		[ -26, '2025-07-23' ],
 	] )(
-		'should decode a first traffic day offset of %p to a `firstTrafficDate` of %p',
-		( dayOffset, firstTrafficDate ) => {
+		'should decode a day offset of %p in the availability to the day %p',
+		( dayOffset, date ) => {
 			const encoded = [ ...( benchmarkingData as unknown[] ) ];
-			encoded[ 8 ] = dayOffset;
+			encoded[ 8 ] = [
+				false,
+				true,
+				dayOffset,
+				true,
+				dayOffset,
+				true,
+				true,
+				false,
+			];
 
-			expect(
-				decodeBenchmarkingResponse( encoded )?.firstTrafficDate
-			).toBe( firstTrafficDate );
+			const availability =
+				decodeBenchmarkingResponse( encoded )?.availability;
+
+			expect( availability?.bandAvailableFrom ).toBe( date );
+			expect( availability?.keyFactorsAvailableFrom ).toBe( date );
 		}
 	);
 
-	it( 'should decode an empty series with a first traffic day offset to null, since it has no first plotted day to count from', () => {
-		expect(
-			decodeBenchmarkingResponse( [
-				1,
-				[],
-				null,
-				[],
-				[ 0, 0 ],
-				[],
-				[],
-				[],
-				5,
-				[],
-				false,
-			] )
-		).toBeNull();
-	} );
+	it.each( [
+		[ 'the band', [ false, false, 5, false, null, false, false, false ] ],
+		[
+			'the key factors',
+			[ false, false, null, false, 5, false, false, false ],
+		],
+	] )(
+		'should decode an empty series whose availability has a day for %s to null, since it has no first plotted day to count from',
+		( _label, availability ) => {
+			expect(
+				decodeBenchmarkingResponse( [
+					1,
+					[],
+					null,
+					[],
+					[ 0, 0 ],
+					[],
+					[],
+					[],
+					availability,
+					[],
+					false,
+				] )
+			).toBeNull();
+		}
+	);
 
 	it.each( [
 		[ 'null', null ],
@@ -385,7 +442,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					[],
 					[ null, null ],
-					null,
+					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
 				] )
@@ -415,7 +472,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ [ 0, 0, 1, 2, 3.5 ] ],
 				[ [] ],
 				[ [ 118.4, 183.1 ] ],
-				-26,
+				[ false, false, 4, true, -19, true, false, false ],
 				[],
 				false,
 			];
@@ -452,7 +509,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					],
 					attributes,
 					[ null ],
-					null,
+					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
 				] )
@@ -476,7 +533,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					[],
 					[ null ],
-					null,
+					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
 				] )
@@ -500,7 +557,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					[],
 					expectedRanges,
-					null,
+					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
 				] )
@@ -528,7 +585,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					[],
 					[ null, expectedRange ],
-					null,
+					[ false, false, null, false, null, false, false, false ],
 					[],
 					false,
 				] )
@@ -536,15 +593,39 @@ describe( 'decodeBenchmarkingResponse', () => {
 		}
 	);
 
+	// A response cached in the layout that sent the first day with recorded
+	// traffic in place of the availability must be asked for again, rather
+	// than read as a site without any part of the view.
 	it.each( [
-		[ 'a fraction of a day', 1.5 ],
-		[ 'a string', '-18' ],
-		[ 'a list', [] ],
+		[ 'a number, as the first traffic day offset was', -26 ],
+		[ 'null', null ],
+		[ 'an empty list', [] ],
+		[
+			'a list of seven fields',
+			[ false, false, 4, true, -19, true, false ],
+		],
+		[
+			'a list of nine fields',
+			[ false, false, 4, true, -19, true, false, false, false ],
+		],
+		[
+			'a list with a flag that is not a boolean',
+			[ 0, false, 4, true, -19, true, false, false ],
+		],
+		[
+			'a list with a day that is a fraction',
+			[ false, false, 4.5, true, -19, true, false, false ],
+		],
+		[
+			'a list with a day that is a string',
+			[ false, false, 4, true, '-19', true, false, false ],
+		],
+		[ 'an object', { rangeTooShort: false, bandAvailable: false } ],
 	] )(
-		'should decode a response whose first traffic day offset is %s to null',
-		( _label, dayOffset ) => {
+		'should decode a response whose availability is %s to null',
+		( _label, availability ) => {
 			const encoded = [ ...( benchmarkingData as unknown[] ) ];
-			encoded[ 8 ] = dayOffset;
+			encoded[ 8 ] = availability;
 
 			expect( decodeBenchmarkingResponse( encoded ) ).toBeNull();
 		}
@@ -572,7 +653,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ card, [ 0, 0, 1, 2, 3.5 ] ],
 				[ [], [] ],
 				[ null ],
-				null,
+				[ false, false, null, false, null, false, false, false ],
 				[],
 				false,
 			] );
@@ -600,7 +681,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ [ 0, 0, 1, 2, 3.5 ] ],
 			[ [ [ 6, 0, 1, 2 ], null, [ 6, 0, 3, 4, 5.5 ] ] ],
 			[ null ],
-			null,
+			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
 		] );
@@ -626,7 +707,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ [ 0, 0, 1, 2, 3.5 ] ],
 			[ 'not a list' ],
 			[ null ],
-			null,
+			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
 		] );
@@ -665,7 +746,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[],
 			],
 			[ null ],
-			null,
+			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
 		] );
@@ -712,7 +793,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				],
 			],
 			[ null ],
-			null,
+			[ false, false, null, false, null, false, false, false ],
 			[],
 			false,
 		] );
@@ -765,7 +846,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[],
 				[],
 				[ null, null, null, null ],
-				null,
+				[ false, false, null, false, null, false, false, false ],
 				contentMarkers,
 				false,
 			] )?.contentMarkers;
@@ -868,7 +949,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					[],
 					[],
-					null,
+					[ false, false, null, false, null, false, false, false ],
 					[ [ 0, [ 0, 1 ] ] ],
 					false,
 				] )?.contentMarkers

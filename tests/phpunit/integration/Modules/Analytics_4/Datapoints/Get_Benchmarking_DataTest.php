@@ -359,11 +359,11 @@ class Get_Benchmarking_DataTest extends TestCase {
 	public function test_rest_endpoint__answers_with_the_encoded_response() {
 		$builder = $this->enable_datapoint(
 			array(
-				'visits'           => array(
+				'visits'       => array(
 					'current'  => 1200,
 					'previous' => 1000,
 				),
-				'dailyTraffic'     => array(
+				'dailyTraffic' => array(
 					array(
 						'date'        => '2026-08-19',
 						'visits'      => 40,
@@ -377,10 +377,19 @@ class Get_Benchmarking_DataTest extends TestCase {
 						'expectedMax' => 62.8,
 					),
 				),
-				// The first day with recorded traffic, 26 days before the first
-				// plotted day.
-				'firstTrafficDate' => '2026-07-24',
-				'keyFactors'       => array(
+				// The period gets its band 3 days after its first day, and had
+				// its key factor cards from 26 days before it.
+				'availability' => array(
+					'range_too_short'               => false,
+					'band_available'                => false,
+					'band_available_from'           => '2026-08-22',
+					'key_factors_available'         => true,
+					'key_factors_available_from'    => '2026-07-24',
+					'insight_request_allowed'       => true,
+					'performance_insight_available' => false,
+					'last_year_available'           => false,
+				),
+				'keyFactors'   => array(
 					array(
 						'kind'       => 'CHANNEL',
 						'label'      => 'Organic Search',
@@ -412,7 +421,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( array( array( 0, 0, 700, 600, 58.3 ) ), $data[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry the `CHANNEL` card as a list of its kind, label, counts and share.' );
 		$this->assertSame( array( array() ), $data[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry one empty list of attributes for the card.' );
 		$this->assertSame( array( null, array( 31.4, 62.8 ) ), $data[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'The response should carry the expected range of each day, and null for the day without one.' );
-		$this->assertSame( -26, $data[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ], 'The response should carry the first day with recorded traffic as its offset from the first plotted day.' );
+		$this->assertSame( array( false, false, 3, true, -26, true, false, false ), $data[ Wire_Format::MEMBER_AVAILABILITY ], 'The response should carry which parts of the typical traffic view show, with each day as its offset from the first plotted day.' );
 		$this->assertCount( 11, $data, 'Without the `trafficInsights` feature, the response should have its eleven members and no insight members.' );
 	}
 
@@ -438,14 +447,13 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->enable_feature( 'trafficInsights' );
 		$this->enable_datapoint(
 			array(
-				'visits'           => array(
+				'visits'         => array(
 					'current'  => 1200,
 					'previous' => 1000,
 				),
-				'dailyTraffic'     => array(),
-				'firstTrafficDate' => null,
-				'keyFactors'       => array(),
-				'insightRequest'   => $this->get_insight_request(),
+				'dailyTraffic'   => array(),
+				'keyFactors'     => array(),
+				'insightRequest' => $this->get_insight_request(),
 			)
 		);
 

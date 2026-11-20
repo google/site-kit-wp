@@ -38,12 +38,12 @@ final class Response_Encoder {
 	 *
 	 * @since 1.189.0
 	 * @since 1.191.0 Encodes the key factor cards in place of the dimension rows, and reads `visits` in place of `visitors`.
-	 * @since n.e.x.t Encodes the expected range of each day and the first day with recorded traffic.
+	 * @since n.e.x.t Encodes the expected range of each day and which parts of the typical traffic view show.
 	 * @since n.e.x.t Encodes the locale and the signed request of the generated insight when the response has them.
 	 * @since n.e.x.t Encodes the content markers.
 	 * @since n.e.x.t Encodes whether traffic was steady.
 	 *
-	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `firstTrafficDate`, `keyFactors`, `steadyTraffic` and `contentMarkers`. `steadyTraffic` is whether no channel changed notably, when the key factor cards are the channels with the most visits. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `firstTrafficDate` is the first day with recorded traffic, as `YYYY-MM-DD`, or null when there is none. Each `contentMarkers` item has a `date`, as `YYYY-MM-DD`, and its `posts`, each with `title` and `url`. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
+	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `availability`, `keyFactors`, `steadyTraffic` and `contentMarkers`. `steadyTraffic` is whether no channel changed notably, when the key factor cards are the channels with the most visits. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `availability` is which parts of the typical traffic view show, as `Typical_Traffic_Availability::get()` returns it. Each `contentMarkers` item has a `date`, as `YYYY-MM-DD`, and its `posts`, each with `title` and `url`. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
 	 * @return array The encoded response.
 	 */
 	public function encode( array $response ) {
@@ -116,9 +116,9 @@ final class Response_Encoder {
 			array_values( $daily_traffic )
 		);
 
-		$encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ] = $this->encode_day_offset(
-			$encoded[ Wire_Format::MEMBER_FIRST_DATE ],
-			isset( $response['firstTrafficDate'] ) ? $response['firstTrafficDate'] : null
+		$encoded[ Wire_Format::MEMBER_AVAILABILITY ] = $this->encode_availability(
+			$first_date,
+			isset( $response['availability'] ) ? $response['availability'] : array()
 		);
 
 		$encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ] = $encoded_content_markers;
@@ -279,6 +279,32 @@ final class Response_Encoder {
 			round( (float) $row['expectedMin'], Wire_Format::EXPECTED_RANGE_DECIMAL_PLACES ),
 			round( (float) $row['expectedMax'], Wire_Format::EXPECTED_RANGE_DECIMAL_PLACES ),
 		);
+	}
+
+	/**
+	 * Encodes which parts of the typical traffic view show.
+	 *
+	 * A part the availability doesn't name doesn't show.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|null $first_date   The first plotted day, as `YYYY-MM-DD`.
+	 * @param array       $availability Which parts show, as `Typical_Traffic_Availability::get()` returns them.
+	 * @return array The encoded availability, as the list of its fields at the `Wire_Format::AVAILABILITY_*` positions. Each flag is a boolean, and each day is its offset from `$first_date`, or null when there is no day.
+	 */
+	private function encode_availability( $first_date, array $availability ) {
+		$encoded = array();
+
+		$encoded[ Wire_Format::AVAILABILITY_RANGE_TOO_SHORT ]               = ! empty( $availability['range_too_short'] );
+		$encoded[ Wire_Format::AVAILABILITY_BAND_AVAILABLE ]                = ! empty( $availability['band_available'] );
+		$encoded[ Wire_Format::AVAILABILITY_BAND_AVAILABLE_FROM ]           = $this->encode_day_offset( $first_date, isset( $availability['band_available_from'] ) ? $availability['band_available_from'] : null );
+		$encoded[ Wire_Format::AVAILABILITY_KEY_FACTORS_AVAILABLE ]         = ! empty( $availability['key_factors_available'] );
+		$encoded[ Wire_Format::AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ]    = $this->encode_day_offset( $first_date, isset( $availability['key_factors_available_from'] ) ? $availability['key_factors_available_from'] : null );
+		$encoded[ Wire_Format::AVAILABILITY_INSIGHT_REQUEST_ALLOWED ]       = ! empty( $availability['insight_request_allowed'] );
+		$encoded[ Wire_Format::AVAILABILITY_PERFORMANCE_INSIGHT_AVAILABLE ] = ! empty( $availability['performance_insight_available'] );
+		$encoded[ Wire_Format::AVAILABILITY_LAST_YEAR_AVAILABLE ]           = ! empty( $availability['last_year_available'] );
+
+		return $encoded;
 	}
 
 	/**

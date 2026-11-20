@@ -86,9 +86,8 @@ const TrafficOverviewPanel: FC = () => {
 	const showKeyFactors = isKeyFactorsShown && ! benchmarkingError;
 	const showInsights = showKeyFactors && trafficInsightsEnabled;
 
-	const { startDate, endDate, compareStartDate } = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( { compare: true } ),
+	const { startDate, endDate } = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
 
@@ -116,11 +115,7 @@ const TrafficOverviewPanel: FC = () => {
 		keyFactorsAvailable,
 		insightRequestAllowed,
 		performanceInsightAvailable,
-	} = getTypicalTrafficAvailability( {
-		benchmarkingResponse,
-		compareStartDate,
-		daysInRange: daysInSelectedRange,
-	} );
+	} = getTypicalTrafficAvailability( benchmarkingResponse );
 
 	// The insight arrives after the figures, since the service generates it
 	// from them. Without an insight, the panel shows its figures alone.

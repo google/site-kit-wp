@@ -43,6 +43,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	availabilityWithoutTraffic,
 	benchmarkingInsight,
 	provideBenchmarkingInsight,
 } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
@@ -1084,20 +1085,28 @@ describe( 'TrafficOverviewPanel', () => {
 		} );
 
 		it.each( [
-			// The previous period runs from `2024-12-12` to `2025-01-08`.
+			// The previous period runs from `2024-12-12` to `2025-01-08`, so
+			// with recorded traffic from `2024-12-13` on, a 28-day range has
+			// the key factors from the one that ends on `2025-02-06`.
 			[
 				'the previous period starts the day before the first day with recorded traffic',
-				'2024-12-13',
+				{
+					...availabilityWithoutTraffic,
+					bandAvailableFrom: '2025-04-02',
+					keyFactorsAvailableFrom: '2025-02-06',
+				},
 			],
-			[ 'the site has no recorded traffic', null ],
+			[ 'the site has no recorded traffic', availabilityWithoutTraffic ],
 		] )(
-			'should leave out the key factors when %s',
-			async ( _, firstTrafficDate ) => {
+			'should leave out the key factors when the benchmarking response has none for the selected range, as when %s',
+			async ( _, availability ) => {
 				// The response has no key factors until every day of the
-				// previous period has recorded traffic.
+				// previous period has recorded traffic, and says so in its
+				// availability, which the panel reads rather than working it
+				// out again.
 				provideBenchmarkingResponse(
 					registry,
-					createResponse( { firstTrafficDate, keyFactors: [] } )
+					createResponse( { availability, keyFactors: [] } )
 				);
 
 				const { container, waitForRegistry } = renderPanel();
@@ -1112,11 +1121,21 @@ describe( 'TrafficOverviewPanel', () => {
 			}
 		);
 
-		it( 'should render the key factors when the previous period starts on the first day with recorded traffic', async () => {
-			// The previous period runs from `2024-12-12` to `2025-01-08`.
+		it( 'should render the key factors when the benchmarking response has them for the selected range, as when the previous period starts on the first day with recorded traffic', async () => {
+			// The previous period runs from `2024-12-12` to `2025-01-08`, so
+			// with recorded traffic from `2024-12-12` on, the selected range is
+			// the first 28-day range with the key factors.
 			provideBenchmarkingResponse(
 				registry,
-				createResponse( { firstTrafficDate: '2024-12-12' } )
+				createResponse( {
+					availability: {
+						...availabilityWithoutTraffic,
+						bandAvailableFrom: '2025-04-01',
+						keyFactorsAvailable: true,
+						keyFactorsAvailableFrom: '2025-02-05',
+						insightRequestAllowed: true,
+					},
+				} )
 			);
 
 			const { getByRole, waitForRegistry } = renderPanel();
@@ -1356,12 +1375,12 @@ describe( 'TrafficOverviewPanel', () => {
 			// `ReportError` and the panel's `onRetry` both invalidate the
 			// resolution, and the two send one request.
 			expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint );
-			// The fixture's first day with recorded traffic comes after the
-			// selected range, so its key factors wait for more history, and the
-			// test reads the sections that show without it.
+			// The fixture's availability has the key factors, so every section
+			// shows.
 			expect( getSectionClassNames( container ) ).toEqual( [
 				'googlesitekit-traffic-overview__summary',
 				'googlesitekit-traffic-overview__chart',
+				'googlesitekit-traffic-overview__key-factors',
 				'googlesitekit-traffic-overview__breakdown',
 			] );
 		} );
@@ -1922,20 +1941,27 @@ describe( 'TrafficOverviewPanel', () => {
 			).toHaveTextContent( 'Organic Search' );
 		} );
 
-		it( 'should leave out the traffic insight, and not ask for it, when the previous period starts before the first day with recorded traffic', async () => {
+		it( 'should leave out the traffic insight, and not ask for it, when the selected range has no key factors', async () => {
 			const { startDate, endDate } = registry
 				.select( CORE_USER )
 				.getDateRangeDates();
+			const response = createBenchmarkingResponse( startDate, endDate );
 
-			// The previous period runs from `2024-12-12` to `2025-01-08`, so
-			// the response has no key factors. The insight's driver would
-			// describe a change against days that weren't measured, so the
-			// panel asks for no insight, even though every day has its typical
-			// range, as the days of a 90-day range have it before its key
-			// factors.
+			// The response has no key factors, as when the previous period
+			// starts before the first day with recorded traffic. The insight's
+			// driver would describe a change against days that weren't
+			// measured, so the panel asks for no insight, even though every
+			// day has its typical range, as the days of a 90-day range have it
+			// before its key factors.
 			provideBenchmarkingResponse( registry, {
-				...createBenchmarkingResponse( startDate, endDate ),
-				firstTrafficDate: '2024-12-13',
+				...response,
+				availability: {
+					...response.availability,
+					keyFactorsAvailable: false,
+					keyFactorsAvailableFrom: '2025-02-06',
+					insightRequestAllowed: false,
+					performanceInsightAvailable: false,
+				},
 				keyFactors: [],
 				insightLocale: 'en_US',
 				insightPayload: 'signed-payload',
@@ -1984,7 +2010,13 @@ describe( 'TrafficOverviewPanel', () => {
 					expectedMin: null,
 					expectedMax: null,
 				} ) ),
-				firstTrafficDate: '2024-12-12',
+				availability: {
+					...response.availability,
+					bandAvailable: false,
+					bandAvailableFrom: '2025-04-01',
+					keyFactorsAvailableFrom: '2025-02-05',
+					performanceInsightAvailable: false,
+				},
 				insightLocale: 'en_US',
 				insightPayload: 'signed-payload',
 			} );

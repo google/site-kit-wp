@@ -26,14 +26,23 @@ import {
 	stringToDate,
 } from '@/js/util';
 import {
+	AVAILABILITY_BAND_AVAILABLE,
+	AVAILABILITY_BAND_AVAILABLE_FROM,
+	AVAILABILITY_FIELD_COUNT,
+	AVAILABILITY_INSIGHT_REQUEST_ALLOWED,
+	AVAILABILITY_KEY_FACTORS_AVAILABLE,
+	AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM,
+	AVAILABILITY_LAST_YEAR_AVAILABLE,
+	AVAILABILITY_PERFORMANCE_INSIGHT_AVAILABLE,
+	AVAILABILITY_RANGE_TOO_SHORT,
 	BENCHMARKING_FORMAT_VERSION,
 	BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
 	BENCHMARKING_KEY_FACTOR_KINDS,
+	MEMBER_AVAILABILITY,
 	MEMBER_CONTENT_MARKERS,
 	MEMBER_DAILY_EXPECTED_RANGES,
 	MEMBER_DAILY_VISITS,
 	MEMBER_FIRST_DATE,
-	MEMBER_FIRST_TRAFFIC_DAY_OFFSET,
 	MEMBER_INSIGHT_LOCALE,
 	MEMBER_INSIGHT_PAYLOAD,
 	MEMBER_KEY_FACTORS,
@@ -44,6 +53,7 @@ import {
 	MEMBER_VISIT_TOTALS,
 } from './constants';
 import {
+	BenchmarkingAvailability,
 	BenchmarkingContentMarker,
 	BenchmarkingContentMarkerPost,
 	BenchmarkingDailyTrafficRow,
@@ -138,22 +148,88 @@ function decodeDailyTraffic(
 }
 
 /**
- * Decodes the first day with recorded traffic, which travels as its offset in
- * days from the first plotted day.
+ * Decodes a day that travels as its offset in days from the first plotted day.
  *
  * @since n.e.x.t
  *
  * @param {string}      firstDate The first plotted day, as `YYYY-MM-DD`.
- * @param {number|null} dayOffset The number of days from the first plotted day, negative for an earlier day, or null when the site has no recorded traffic.
+ * @param {number|null} dayOffset The number of days from the first plotted day, negative for an earlier day, or null when there is no day.
  * @return {string|null} The day, as `YYYY-MM-DD`, or null.
  */
-function decodeFirstTrafficDate(
+function decodeDayOffset(
 	firstDate: string,
 	dayOffset: number | null
 ): string | null {
 	// The day is counted on the calendar, so a clock change between the two
 	// days moves neither of them.
 	return dayOffset === null ? null : addDays( firstDate, dayOffset );
+}
+
+/**
+ * Checks whether a value is the availability member: a list of its flags and
+ * its days, each day an offset from the first plotted day or null.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value The value to check.
+ * @return {boolean} True when the value is a list with a boolean or a day at each position, false otherwise.
+ */
+function isAvailability( value: unknown ): value is unknown[] {
+	const dayPositions: unknown[] = [
+		AVAILABILITY_BAND_AVAILABLE_FROM,
+		AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM,
+	];
+
+	return (
+		Array.isArray( value ) &&
+		value.length === AVAILABILITY_FIELD_COUNT &&
+		value.every( ( field, position ) =>
+			dayPositions.includes( position )
+				? field === null || Number.isInteger( field )
+				: typeof field === 'boolean'
+		)
+	);
+}
+
+/**
+ * Decodes which parts of the typical traffic view the date range has.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} firstDate    The first plotted day, as `YYYY-MM-DD`.
+ * @param {Array}  availability The encoded availability, as `isAvailability()` checks it.
+ * @return {Object} The decoded availability.
+ */
+function decodeAvailability(
+	firstDate: string,
+	availability: unknown[]
+): BenchmarkingAvailability {
+	return {
+		rangeTooShort: availability[ AVAILABILITY_RANGE_TOO_SHORT ] as boolean,
+		bandAvailable: availability[ AVAILABILITY_BAND_AVAILABLE ] as boolean,
+		bandAvailableFrom: decodeDayOffset(
+			firstDate,
+			availability[ AVAILABILITY_BAND_AVAILABLE_FROM ] as number | null
+		),
+		keyFactorsAvailable: availability[
+			AVAILABILITY_KEY_FACTORS_AVAILABLE
+		] as boolean,
+		keyFactorsAvailableFrom: decodeDayOffset(
+			firstDate,
+			availability[ AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ] as
+				| number
+				| null
+		),
+		insightRequestAllowed: availability[
+			AVAILABILITY_INSIGHT_REQUEST_ALLOWED
+		] as boolean,
+		performanceInsightAvailable: availability[
+			AVAILABILITY_PERFORMANCE_INSIGHT_AVAILABLE
+		] as boolean,
+		lastYearAvailable: availability[
+			AVAILABILITY_LAST_YEAR_AVAILABLE
+		] as boolean,
+	};
 }
 
 /**
@@ -312,8 +388,8 @@ function decodeContentMarkers(
 
 /**
  * Checks whether the members that describe each day hold their shapes: the
- * daily counts, the expected range of each day, and the first day with
- * recorded traffic, which travels as its offset from the first plotted day.
+ * daily counts, the expected range of each day, and the availability, whose
+ * days travel as their offsets from the first plotted day.
  *
  * @since n.e.x.t
  *
@@ -324,26 +400,30 @@ function dailyMembersHoldTheirShapes( encoded: unknown[] ): boolean {
 	const firstDate = encoded[ MEMBER_FIRST_DATE ];
 	const dailyVisits = encoded[ MEMBER_DAILY_VISITS ];
 	const expectedRanges = encoded[ MEMBER_DAILY_EXPECTED_RANGES ];
-	const firstTrafficDayOffset = encoded[ MEMBER_FIRST_TRAFFIC_DAY_OFFSET ];
+	const availability = encoded[ MEMBER_AVAILABILITY ];
 
-	if ( ! Array.isArray( dailyVisits ) || ! Array.isArray( expectedRanges ) ) {
+	if (
+		! Array.isArray( dailyVisits ) ||
+		! Array.isArray( expectedRanges ) ||
+		! isAvailability( availability )
+	) {
 		return false;
 	}
 
 	// The encoder writes no first date for an empty series, so a day to count
-	// from is only needed once there are counts to date or a first traffic day
-	// to count to.
+	// from is only needed once there are counts to date or an availability
+	// day to count to.
 	const countsFromTheFirstDate =
-		dailyVisits.length > 0 || firstTrafficDayOffset !== null;
+		dailyVisits.length > 0 ||
+		availability[ AVAILABILITY_BAND_AVAILABLE_FROM ] !== null ||
+		availability[ AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ] !== null;
 
 	return (
 		( ! countsFromTheFirstDate || isValidDateString( firstDate ) ) &&
 		// Each day reads its expected range from its own position, so a list
 		// of a different length gives a day another day's range.
 		expectedRanges.length === dailyVisits.length &&
-		expectedRanges.every( isExpectedRange ) &&
-		( firstTrafficDayOffset === null ||
-			Number.isInteger( firstTrafficDayOffset ) )
+		expectedRanges.every( isExpectedRange )
 	);
 }
 
@@ -368,7 +448,7 @@ function readOptionalString( value: unknown ): string | null {
  *
  * @since 1.189.0
  * @since 1.191.0 Decodes the key factor cards in place of the dimension rows, and returns `visits` in place of `visitors`.
- * @since n.e.x.t Decodes the expected range of each day and the first day with recorded traffic.
+ * @since n.e.x.t Decodes the expected range of each day and which parts of the typical traffic view the date range has.
  * @since n.e.x.t Decodes the locale and the request of the generated insight of a response that has them.
  * @since n.e.x.t Decodes the content markers.
  * @since n.e.x.t Decodes whether traffic was steady.
@@ -394,7 +474,7 @@ export function decodeBenchmarkingResponse(
 	const encodedKeyFactors = encoded[ MEMBER_KEY_FACTORS ];
 	const encodedKeyFactorAttributes = encoded[ MEMBER_KEY_FACTOR_ATTRIBUTES ];
 	const expectedRanges = encoded[ MEMBER_DAILY_EXPECTED_RANGES ];
-	const firstTrafficDayOffset = encoded[ MEMBER_FIRST_TRAFFIC_DAY_OFFSET ];
+	const encodedAvailability = encoded[ MEMBER_AVAILABILITY ];
 	const encodedContentMarkers = encoded[ MEMBER_CONTENT_MARKERS ];
 
 	const membersHoldTheirShapes =
@@ -425,10 +505,7 @@ export function decodeBenchmarkingResponse(
 			dailyVisits,
 			expectedRanges
 		),
-		firstTrafficDate: decodeFirstTrafficDate(
-			firstDate,
-			firstTrafficDayOffset
-		),
+		availability: decodeAvailability( firstDate, encodedAvailability ),
 		keyFactors: decodeKeyFactors(
 			encodedKeyFactors,
 			encodedKeyFactorAttributes,

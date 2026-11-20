@@ -727,7 +727,7 @@ class Response_BuilderTest extends TestCase {
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame(
-			array( 'visits', 'dailyTraffic', 'firstTrafficDate', 'keyFactors', 'steadyTraffic', 'contentMarkers' ),
+			array( 'visits', 'dailyTraffic', 'availability', 'keyFactors', 'steadyTraffic', 'contentMarkers' ),
 			array_keys( $response ),
 			'Without the `trafficInsights` feature, the response should have no `insightRequest`.'
 		);
@@ -1244,36 +1244,62 @@ class Response_BuilderTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_first_traffic_dates
+	 * @dataProvider data_availability_histories
 	 *
-	 * @param array       $report_rows        The rows of the daily report.
-	 * @param string|null $first_traffic_date The first day of the daily report with visits, as `YYYY-MM-DD`, or null.
+	 * @param array $report_rows The rows of the daily report.
+	 * @param array $expected    The parts of the availability the history decides.
 	 */
-	public function test_build__returns_the_first_day_of_the_daily_report_with_visits( $report_rows, $first_traffic_date ) {
+	public function test_build__returns_the_availability_of_the_history_from_the_first_day_of_the_daily_report_with_visits( $report_rows, $expected ) {
 		$this->report_rows = array( 'date' => $report_rows );
 
+		$availability = $this->builder->build( '2026-08-19', '2026-09-15' )['availability'];
+
 		$this->assertSame(
-			$first_traffic_date,
-			$this->builder->build( '2026-08-19', '2026-09-15' )['firstTrafficDate'],
-			'`firstTrafficDate` should be the first day of the daily report with visits, or null when no day has any.'
+			$expected,
+			array_intersect_key( $availability, $expected ),
+			'`availability` should count the history from the first day of the daily report with visits: the band needs 111 days of it, and the key factor cards 56.'
 		);
 	}
 
-	public function data_first_traffic_dates() {
+	public function data_availability_histories() {
 		$get_visits = fn() => 100;
 
+		// 46 days of history up to `2026-09-15`, too few for either part.
+		$from_2026_08_01 = array(
+			'band_available'             => false,
+			'band_available_from'        => '2026-11-19',
+			'key_factors_available'      => false,
+			'key_factors_available_from' => '2026-09-25',
+		);
+
 		return array(
-			'visits from `2026-08-01` on'  => array( $this->get_daily_report_rows( '2026-08-01', '2026-09-15', $get_visits ), '2026-08-01' ),
-			'visits on every day'          => array( $this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ), '2025-08-20' ),
-			'visits on `2026-08-01` alone' => array( array( array( '20260801', 100 ) ), '2026-08-01' ),
+			'visits from `2026-08-01` on'  => array( $this->get_daily_report_rows( '2026-08-01', '2026-09-15', $get_visits ), $from_2026_08_01 ),
+			'visits on every day'          => array(
+				$this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ),
+				array(
+					'band_available'             => true,
+					'band_available_from'        => '2025-12-08',
+					'key_factors_available'      => true,
+					'key_factors_available_from' => '2025-10-14',
+				),
+			),
+			'visits on `2026-08-01` alone' => array( array( array( '20260801', 100 ) ), $from_2026_08_01 ),
 			'a day with no visits first'   => array(
 				array(
 					array( '20260731', 0 ),
 					array( '20260801', 100 ),
 				),
-				'2026-08-01',
+				$from_2026_08_01,
 			),
-			'no visits'                    => array( array(), null ),
+			'no visits'                    => array(
+				array(),
+				array(
+					'band_available'             => false,
+					'band_available_from'        => null,
+					'key_factors_available'      => false,
+					'key_factors_available_from' => null,
+				),
+			),
 		);
 	}
 
@@ -2022,7 +2048,8 @@ class Response_BuilderTest extends TestCase {
 
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
-		$this->assertSame( '2026-07-23', $response['firstTrafficDate'], 'The first day with traffic should be `2026-07-23`, the day after the compare period starts.' );
+		$this->assertFalse( $response['availability']['key_factors_available'], 'The availability should have no key factor cards while the compare period starts the day before the first day with traffic.' );
+		$this->assertSame( '2026-09-16', $response['availability']['key_factors_available_from'], 'The cards should show from the period that ends on `2026-09-16`, whose compare period starts on `2026-07-23`, the first day with traffic.' );
 		$this->assertSame( array(), $response['keyFactors'], 'There should be no key factor cards while the compare period has a day before the site was measured.' );
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should make no call for the attributes of cards it does not return.' );
 	}

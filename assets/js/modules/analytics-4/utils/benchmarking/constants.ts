@@ -37,7 +37,7 @@ export const MEMBER_VISIT_TOTALS = 4;
 export const MEMBER_KEY_FACTORS = 5;
 export const MEMBER_KEY_FACTOR_ATTRIBUTES = 6;
 export const MEMBER_DAILY_EXPECTED_RANGES = 7;
-export const MEMBER_FIRST_TRAFFIC_DAY_OFFSET = 8;
+export const MEMBER_AVAILABILITY = 8;
 export const MEMBER_CONTENT_MARKERS = 9;
 export const MEMBER_STEADY_TRAFFIC = 10;
 
@@ -48,6 +48,22 @@ export const MEMBER_STEADY_TRAFFIC = 10;
  */
 export const MEMBER_INSIGHT_LOCALE = 11;
 export const MEMBER_INSIGHT_PAYLOAD = 12;
+
+/**
+ * The fields of the availability member, by position. Each `*_FROM` field is a
+ * day, which travels as its offset from the first plotted day.
+ */
+export const AVAILABILITY_RANGE_TOO_SHORT = 0;
+export const AVAILABILITY_BAND_AVAILABLE = 1;
+export const AVAILABILITY_BAND_AVAILABLE_FROM = 2;
+export const AVAILABILITY_KEY_FACTORS_AVAILABLE = 3;
+export const AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM = 4;
+export const AVAILABILITY_INSIGHT_REQUEST_ALLOWED = 5;
+export const AVAILABILITY_PERFORMANCE_INSIGHT_AVAILABLE = 6;
+export const AVAILABILITY_LAST_YEAR_AVAILABLE = 7;
+
+/** The number of fields of the availability member. */
+export const AVAILABILITY_FIELD_COUNT = 8;
 
 /**
  * The driver kinds of a key factor card, in the order they travel as. A kind's

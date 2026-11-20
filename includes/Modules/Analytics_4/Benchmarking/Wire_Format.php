@@ -34,22 +34,38 @@ final class Wire_Format {
 	 *
 	 * @since 1.189.0
 	 * @since 1.191.0 Renamed the constants of members `3` and `4` from visitors to visits, and replaced members `5` and `6` with the key factor cards and their attributes.
-	 * @since n.e.x.t Added members `7` and `8`, the expected range of each day and the first day with recorded traffic.
+	 * @since n.e.x.t Added members `7` and `8`, the expected range of each day and which parts of the typical traffic view show.
 	 * @since n.e.x.t Added member `9`, the content markers, member `10`, whether traffic was steady, and members `11` and `12`, the locale of the generated insight and its signed request. Only a response built with the `trafficInsights` feature carries members `11` and `12`.
 	 */
-	const MEMBER_VERSION                  = 0;
-	const MEMBER_STRINGS                  = 1;
-	const MEMBER_FIRST_DATE               = 2;
-	const MEMBER_DAILY_VISITS             = 3;
-	const MEMBER_VISIT_TOTALS             = 4;
-	const MEMBER_KEY_FACTORS              = 5;
-	const MEMBER_KEY_FACTOR_ATTRIBUTES    = 6;
-	const MEMBER_DAILY_EXPECTED_RANGES    = 7;
-	const MEMBER_FIRST_TRAFFIC_DAY_OFFSET = 8;
-	const MEMBER_CONTENT_MARKERS          = 9;
-	const MEMBER_STEADY_TRAFFIC           = 10;
-	const MEMBER_INSIGHT_LOCALE           = 11;
-	const MEMBER_INSIGHT_PAYLOAD          = 12;
+	const MEMBER_VERSION               = 0;
+	const MEMBER_STRINGS               = 1;
+	const MEMBER_FIRST_DATE            = 2;
+	const MEMBER_DAILY_VISITS          = 3;
+	const MEMBER_VISIT_TOTALS          = 4;
+	const MEMBER_KEY_FACTORS           = 5;
+	const MEMBER_KEY_FACTOR_ATTRIBUTES = 6;
+	const MEMBER_DAILY_EXPECTED_RANGES = 7;
+	const MEMBER_AVAILABILITY          = 8;
+	const MEMBER_CONTENT_MARKERS       = 9;
+	const MEMBER_STEADY_TRAFFIC        = 10;
+	const MEMBER_INSIGHT_LOCALE        = 11;
+	const MEMBER_INSIGHT_PAYLOAD       = 12;
+
+	/**
+	 * The fields of the availability member, by position, in the order
+	 * `Typical_Traffic_Availability::get()` returns them. Each `*_FROM` field
+	 * is a day, which travels as its offset from the first plotted day.
+	 *
+	 * @since n.e.x.t
+	 */
+	const AVAILABILITY_RANGE_TOO_SHORT               = 0;
+	const AVAILABILITY_BAND_AVAILABLE                = 1;
+	const AVAILABILITY_BAND_AVAILABLE_FROM           = 2;
+	const AVAILABILITY_KEY_FACTORS_AVAILABLE         = 3;
+	const AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM    = 4;
+	const AVAILABILITY_INSIGHT_REQUEST_ALLOWED       = 5;
+	const AVAILABILITY_PERFORMANCE_INSIGHT_AVAILABLE = 6;
+	const AVAILABILITY_LAST_YEAR_AVAILABLE           = 7;
 
 	/**
 	 * The position each driver kind of a key factor card travels as. A kind is

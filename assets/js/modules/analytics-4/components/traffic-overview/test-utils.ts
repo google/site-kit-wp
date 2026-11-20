@@ -1000,9 +1000,20 @@ export function createBenchmarkingResponse(
 	return {
 		visits: PLACEHOLDER_TOTAL_VISITS,
 		dailyTraffic: addTypicalTrafficRange( dailyTraffic ),
-		// The site recorded traffic on every day of the year of history the
-		// response reads, so every day of the range has a typical range.
-		firstTrafficDate: addDays( startDate, -364 ),
+		// The site recorded traffic on every day of the year before the range,
+		// so the range has every part of the view. The days a range of 28 days
+		// gets the band and the key factors from are counted from that year's
+		// first day, which is too late for last year's history.
+		availability: {
+			rangeTooShort: false,
+			bandAvailable: true,
+			bandAvailableFrom: addDays( startDate, -254 ),
+			keyFactorsAvailable: true,
+			keyFactorsAvailableFrom: addDays( startDate, -309 ),
+			insightRequestAllowed: true,
+			performanceInsightAvailable: true,
+			lastYearAvailable: false,
+		},
 		keyFactors: KEY_FACTORS,
 		steadyTraffic: false,
 		// The design's posts, each on a day of its own, at a path made from

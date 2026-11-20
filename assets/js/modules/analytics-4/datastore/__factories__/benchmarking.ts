@@ -29,6 +29,7 @@ import { BenchmarkingDataParams } from '@/js/modules/analytics-4/datastore/bench
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { decodeBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benchmarking/decodeBenchmarkingResponse';
 import {
+	BenchmarkingAvailability,
 	BenchmarkingInsight,
 	DecodedBenchmarkingResponse,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
@@ -42,6 +43,24 @@ import {
 export const decodedBenchmarkingResponse = decodeBenchmarkingResponse(
 	benchmarkingData
 ) as DecodedBenchmarkingResponse;
+
+/**
+ * The availability of a date range on a site with no recorded traffic, as
+ * `getBenchmarkingData()` returns it: no part of the typical traffic view, and
+ * no day it waits for.
+ *
+ * @since n.e.x.t
+ */
+export const availabilityWithoutTraffic: BenchmarkingAvailability = {
+	rangeTooShort: false,
+	bandAvailable: false,
+	bandAvailableFrom: null,
+	keyFactorsAvailable: false,
+	keyFactorsAvailableFrom: null,
+	insightRequestAllowed: false,
+	performanceInsightAvailable: false,
+	lastYearAvailable: false,
+};
 
 /**
  * Stores a decoded benchmarking response for a date range, so

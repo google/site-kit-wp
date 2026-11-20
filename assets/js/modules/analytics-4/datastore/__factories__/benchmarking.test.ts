@@ -26,7 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { createTestRegistry } from '@tests/js/utils';
-import { provideBenchmarkingData } from '.';
+import { availabilityWithoutTraffic, provideBenchmarkingData } from '.';
 
 describe( 'provideBenchmarkingData', () => {
 	let registry: WPDataRegistry;
@@ -69,7 +69,7 @@ describe( 'provideBenchmarkingData', () => {
 						expectedMax: null,
 					},
 				],
-				firstTrafficDate: null,
+				availability: availabilityWithoutTraffic,
 				keyFactors: [],
 				steadyTraffic: false,
 				contentMarkers: [],
@@ -90,7 +90,7 @@ describe( 'provideBenchmarkingData', () => {
 					expectedMax: null,
 				},
 			],
-			firstTrafficDate: null,
+			availability: availabilityWithoutTraffic,
 			keyFactors: [],
 			steadyTraffic: false,
 			contentMarkers: [],

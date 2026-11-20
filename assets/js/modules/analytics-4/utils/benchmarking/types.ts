@@ -48,6 +48,30 @@ export interface BenchmarkingDailyTrafficRow {
 	expectedMax: number | null;
 }
 
+/**
+ * Which parts of the typical traffic view the date range has, as the Site Kit
+ * service's rules decide them on the server. Each part waits for its own
+ * history, counted from the site's first day with recorded traffic.
+ */
+export interface BenchmarkingAvailability {
+	/** Whether the date range is shorter than 7 days, too short for the key factors and the generated insight. */
+	rangeTooShort: boolean;
+	/** Whether every day of the date range has its typical range, so the chart draws the band. */
+	bandAvailable: boolean;
+	/** The first last day of a date range of this length with the band, as `YYYY-MM-DD`, or null when the site has no recorded traffic. */
+	bandAvailableFrom: string | null;
+	/** Whether the date range has the key factors: it is long enough, and every day of the range before it has recorded traffic. */
+	keyFactorsAvailable: boolean;
+	/** The first last day of a date range of this length with the key factors, as `YYYY-MM-DD`, or null when the site has no recorded traffic. */
+	keyFactorsAvailableFrom: string | null;
+	/** Whether the panel asks for the generated insight: with the key factors, since the insight's driver describes the change they show. */
+	insightRequestAllowed: boolean;
+	/** Whether the panel shows the insight's analysis, which compares the visits with the typical range: with the band and the request. */
+	performanceInsightAvailable: boolean;
+	/** Whether last year's two windows are in the site's history, so the band can mention the season. */
+	lastYearAvailable: boolean;
+}
+
 export interface BenchmarkingKeyFactorAttribute {
 	/** The attribute's kind, such as `DEVICE` for the device behind a `Direct` card. */
 	kind: BenchmarkingKeyFactorAttributeKind;
@@ -98,8 +122,8 @@ export interface DecodedBenchmarkingResponse {
 	visits: BenchmarkingVisits;
 	/** One row per day, in ascending date order. */
 	dailyTraffic: BenchmarkingDailyTrafficRow[];
-	/** The first day with recorded traffic, as `YYYY-MM-DD`, or null when the site has none. */
-	firstTrafficDate: string | null;
+	/** Which parts of the typical traffic view the date range has. */
+	availability: BenchmarkingAvailability;
 	/** The key factor cards, in the order the response ranked them. */
 	keyFactors: BenchmarkingKeyFactor[];
 	/**

@@ -39,11 +39,11 @@ class Response_EncoderTest extends TestCase {
 	 */
 	private function get_fixture_response() {
 		return array(
-			'visits'           => array(
+			'visits'         => array(
 				'current'  => 412,
 				'previous' => 388,
 			),
-			'dailyTraffic'     => array(
+			'dailyTraffic'   => array(
 				array(
 					'date'        => '2025-08-18',
 					'visits'      => 132,
@@ -69,11 +69,20 @@ class Response_EncoderTest extends TestCase {
 					'expectedMax' => 182.6,
 				),
 			),
-			// 26 days before the first plotted day, so `2025-08-18` is the 27th day
-			// with recorded traffic, which has no expected range, and `2025-08-19`
-			// is the 28th, which has one.
-			'firstTrafficDate' => '2025-07-23',
-			'keyFactors'       => array(
+			// `2025-08-18` has no expected range, so a period of these four
+			// days has no band. The first such period with one starts on
+			// `2025-08-19`, the first day with an expected range.
+			'availability'   => array(
+				'range_too_short'               => false,
+				'band_available'                => false,
+				'band_available_from'           => '2025-08-22',
+				'key_factors_available'         => true,
+				'key_factors_available_from'    => '2025-07-30',
+				'insight_request_allowed'       => true,
+				'performance_insight_available' => false,
+				'last_year_available'           => false,
+			),
+			'keyFactors'     => array(
 				array(
 					'kind'       => 'REFERRING_SITE',
 					'label'      => 'Facebook',
@@ -122,7 +131,7 @@ class Response_EncoderTest extends TestCase {
 					),
 				),
 			),
-			'contentMarkers'   => array(
+			'contentMarkers' => array(
 				array(
 					'date'  => '2025-08-20',
 					'posts' => array(
@@ -468,26 +477,51 @@ class Response_EncoderTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider data_first_traffic_dates
-	 *
-	 * @param string $first_traffic_date The first day with recorded traffic, as `YYYY-MM-DD`.
-	 * @param int    $day_offset         The number of days from the first plotted day, `2025-08-18`, to that day.
-	 */
-	public function test_encode__writes_the_first_traffic_day_as_its_offset_from_the_first_plotted_day( $first_traffic_date, $day_offset ) {
-		$response                     = $this->get_fixture_response();
-		$response['firstTrafficDate'] = $first_traffic_date;
+	public function test_encode__writes_the_availability_as_its_fields_in_the_order_of_the_wire_format() {
+		$response                 = $this->get_fixture_response();
+		$response['availability'] = array(
+			'range_too_short'               => true,
+			'band_available'                => false,
+			'band_available_from'           => '2025-08-25',
+			'key_factors_available'         => false,
+			'key_factors_available_from'    => '2025-08-29',
+			'insight_request_allowed'       => false,
+			'performance_insight_available' => false,
+			'last_year_available'           => true,
+		);
 
-		$encoded = $this->encoder->encode( $response );
+		$availability = $this->encode_as_sent( $response )[ Wire_Format::MEMBER_AVAILABILITY ];
 
 		$this->assertSame(
-			$day_offset,
-			$encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ],
-			"A `firstTrafficDate` of `$first_traffic_date` should be encoded as $day_offset days from `2025-08-18`."
+			array( true, false, 7, false, 11, false, false, true ),
+			$availability,
+			'The availability should be encoded as its flags, and its days as their offsets from `2025-08-18`.'
 		);
+		$this->assertTrue( $availability[ Wire_Format::AVAILABILITY_RANGE_TOO_SHORT ], '`range_too_short` should be encoded at its position.' );
+		$this->assertSame( 7, $availability[ Wire_Format::AVAILABILITY_BAND_AVAILABLE_FROM ], '`band_available_from` should be encoded at its position.' );
+		$this->assertSame( 11, $availability[ Wire_Format::AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ], '`key_factors_available_from` should be encoded at its position.' );
+		$this->assertTrue( $availability[ Wire_Format::AVAILABILITY_LAST_YEAR_AVAILABLE ], '`last_year_available` should be encoded at its position.' );
 	}
 
-	public function data_first_traffic_dates() {
+	/**
+	 * @dataProvider data_availability_days
+	 *
+	 * @param string $date       A day of the availability, as `YYYY-MM-DD`.
+	 * @param int    $day_offset The number of days from the first plotted day, `2025-08-18`, to that day.
+	 */
+	public function test_encode__writes_each_day_of_the_availability_as_its_offset_from_the_first_plotted_day( $date, $day_offset ) {
+		$response = $this->get_fixture_response();
+
+		$response['availability']['band_available_from']        = $date;
+		$response['availability']['key_factors_available_from'] = $date;
+
+		$availability = $this->encoder->encode( $response )[ Wire_Format::MEMBER_AVAILABILITY ];
+
+		$this->assertSame( $day_offset, $availability[ Wire_Format::AVAILABILITY_BAND_AVAILABLE_FROM ], "A `band_available_from` of `$date` should be encoded as $day_offset days from `2025-08-18`." );
+		$this->assertSame( $day_offset, $availability[ Wire_Format::AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ], "A `key_factors_available_from` of `$date` should be encoded as $day_offset days from `2025-08-18`." );
+	}
+
+	public function data_availability_days() {
 		return array(
 			'18 days before the first plotted day' => array( '2025-07-31', -18 ),
 			'on the first plotted day'             => array( '2025-08-18', 0 ),
@@ -495,34 +529,47 @@ class Response_EncoderTest extends TestCase {
 		);
 	}
 
-	public function test_encode__writes_null_as_the_first_traffic_day_when_there_is_none() {
-		$response                     = $this->get_fixture_response();
-		$response['firstTrafficDate'] = null;
+	public function test_encode__writes_null_as_a_day_of_the_availability_when_there_is_none() {
+		$response = $this->get_fixture_response();
 
-		$this->assertNull(
-			$this->encoder->encode( $response )[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ],
-			'A `firstTrafficDate` of null should be encoded as null.'
-		);
+		$response['availability']['band_available_from']        = null;
+		$response['availability']['key_factors_available_from'] = null;
 
-		unset( $response['firstTrafficDate'] );
+		$availability = $this->encoder->encode( $response )[ Wire_Format::MEMBER_AVAILABILITY ];
 
-		$this->assertNull(
-			$this->encoder->encode( $response )[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ],
-			'A response with no `firstTrafficDate` should encode it as null.'
+		$this->assertNull( $availability[ Wire_Format::AVAILABILITY_BAND_AVAILABLE_FROM ], 'A `band_available_from` of null should be encoded as null.' );
+		$this->assertNull( $availability[ Wire_Format::AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ], 'A `key_factors_available_from` of null should be encoded as null.' );
+	}
+
+	public function test_encode__writes_every_part_as_unavailable_when_the_response_has_no_availability() {
+		$response = $this->get_fixture_response();
+
+		unset( $response['availability'] );
+
+		$this->assertSame(
+			array( false, false, null, false, null, false, false, false ),
+			$this->encoder->encode( $response )[ Wire_Format::MEMBER_AVAILABILITY ],
+			'A response with no `availability` should encode every flag as false and every day as null.'
 		);
 	}
 
-	public function test_encode__writes_an_empty_expected_range_and_no_first_traffic_day_for_an_empty_daily_series() {
+	public function test_encode__writes_an_empty_expected_range_and_no_availability_day_for_an_empty_daily_series() {
+		$response = $this->get_fixture_response();
+
 		$encoded = $this->encode_as_sent(
 			array(
-				'dailyTraffic'     => array(),
-				'firstTrafficDate' => '2025-07-23',
+				'dailyTraffic' => array(),
+				'availability' => $response['availability'],
 			)
 		);
 
 		$this->assertCount( 11, $encoded, 'The encoded response should have eleven members.' );
 		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'An empty `dailyTraffic` should give an empty list of expected ranges.' );
-		$this->assertNull( $encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ], 'With no first plotted day to count from, the first traffic day should be encoded as null.' );
+		$this->assertSame(
+			array( false, false, null, true, null, true, false, false ),
+			$encoded[ Wire_Format::MEMBER_AVAILABILITY ],
+			'With no first plotted day to count from, the days of the availability should be encoded as null, and its flags as they are.'
+		);
 	}
 
 	public function test_encode__writes_no_date_but_the_first() {
