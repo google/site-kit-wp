@@ -285,7 +285,9 @@ export default function SetupMain() {
 						</div>
 					) : (
 						<Link onClick={ onCancel }>
-							{ __( 'Cancel', 'google-site-kit' ) }
+							{ createMessageCTAClicked
+								? __( 'Exit setup', 'google-site-kit' )
+								: __( 'Cancel', 'google-site-kit' ) }
 						</Link>
 					) }
 				</div>
