@@ -30,17 +30,62 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import { VoteDirection } from '@/js/components/feedback/constants';
+import {
+	VOTE_DIRECTION_DOWN,
+	VOTE_DIRECTION_UP,
+	VoteDirection,
+} from '@/js/components/feedback/constants';
+import { FeedbackMenuOption } from '@/js/components/feedback/FeedbackMenu';
 import ThumbsFeedback from '@/js/components/feedback/ThumbsFeedback';
 import Typography from '@/js/components/Typography';
 import useViewContext from '@/js/hooks/useViewContext';
 import {
 	SITE_GOALS_FEEDBACK_NAMESPACE,
+	SITE_GOALS_PANEL_DOWNVOTE_REASONS,
 	SITE_GOALS_PANEL_FEEDBACK_GROUPS_BY_GOAL_TYPE,
+	SITE_GOALS_PANEL_UPVOTE_REASONS,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
+
+// The "Help us improve" reasons offered after voting on "Is this a key action?".
+const FEEDBACK_OPTIONS: Record< VoteDirection, FeedbackMenuOption[] > = {
+	[ VOTE_DIRECTION_UP ]: [
+		{
+			id: SITE_GOALS_PANEL_UPVOTE_REASONS.MATTERS_MOST,
+			label: __( 'It’s what matters most', 'google-site-kit' ),
+			value: SITE_GOALS_PANEL_UPVOTE_REASONS.MATTERS_MOST,
+		},
+		{
+			id: SITE_GOALS_PANEL_UPVOTE_REASONS.ONLY_SOME_MATTER,
+			label: __( 'Only some of them matter', 'google-site-kit' ),
+			value: SITE_GOALS_PANEL_UPVOTE_REASONS.ONLY_SOME_MATTER,
+		},
+		{
+			id: SITE_GOALS_PANEL_UPVOTE_REASONS.OTHER_ACTIONS_MATTER,
+			label: __( 'Other actions matter too', 'google-site-kit' ),
+			value: SITE_GOALS_PANEL_UPVOTE_REASONS.OTHER_ACTIONS_MATTER,
+		},
+	],
+	[ VOTE_DIRECTION_DOWN ]: [
+		{
+			id: SITE_GOALS_PANEL_DOWNVOTE_REASONS.MISSING_OR_WRONG,
+			label: __( 'Some are missing or wrong', 'google-site-kit' ),
+			value: SITE_GOALS_PANEL_DOWNVOTE_REASONS.MISSING_OR_WRONG,
+		},
+		{
+			id: SITE_GOALS_PANEL_DOWNVOTE_REASONS.CALL_OR_EMAIL_INSTEAD,
+			label: __( 'People call or email instead', 'google-site-kit' ),
+			value: SITE_GOALS_PANEL_DOWNVOTE_REASONS.CALL_OR_EMAIL_INSTEAD,
+		},
+		{
+			id: SITE_GOALS_PANEL_DOWNVOTE_REASONS.SOMETHING_ELSE_MATTERS_MORE,
+			label: __( 'Something else matters more', 'google-site-kit' ),
+			value: SITE_GOALS_PANEL_DOWNVOTE_REASONS.SOMETHING_ELSE_MATTERS_MORE,
+		},
+	],
+};
 
 interface PrimaryActionRowProps {
 	goalType: GoalType;
@@ -51,6 +96,7 @@ interface PrimaryActionRowProps {
  * in the Site Goals selection panel.
  *
  * @since 1.182.0
+ * @since n.e.x.t Offers a "Help us improve" menu of reasons after each vote.
  *
  * @param props          Component props.
  * @param props.goalType Goal type (`ecommerce` or `lead`).
@@ -117,6 +163,7 @@ const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
 				<ThumbsFeedback
 					feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
 					feedbackGroup={ feedbackGroup }
+					feedbackOptions={ FEEDBACK_OPTIONS }
 					onVote={ handleVote }
 					ariaLabel={ __(
 						'Is this a key action?',
