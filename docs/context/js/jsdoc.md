@@ -213,6 +213,7 @@ export function createFetchStore( {
 
 1. **Always include \@since** for new functions and significant changes using the `n.e.x.t` placeholder label
 2. **Document breaking changes** in function descriptions
+3. **Keep the docblock when moving or renaming code.** The original `\@since` stays, and a second `\@since n.e.x.t` line says what changed, for example `\@since n.e.x.t Moved into RequestHelpers for shared use.`
 
 ### Consistency Rules
 
