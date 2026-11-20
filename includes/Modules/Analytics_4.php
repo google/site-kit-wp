@@ -45,6 +45,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
@@ -60,6 +61,7 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Utilities;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Audience;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Conversion_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
@@ -73,6 +75,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Data;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Conversion_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
@@ -100,6 +103,8 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Update_Enhanced_Measurement_S
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Secret;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Plain_Permalink_Top_Posts;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
@@ -256,6 +261,24 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected Advanced_Data_Breakdowns_Settings $advanced_data_breakdowns_settings;
 
 	/**
+	 * Measurement_Protocol_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Measurement_Protocol_Settings
+	 */
+	protected $measurement_protocol_settings;
+
+	/**
+	 * Measurement_Protocol_Secret instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Measurement_Protocol_Secret
+	 */
+	protected $measurement_protocol_secret;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -282,6 +305,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->audience_utilities                = new Audience_Utilities( $this->audience_settings );
 		$this->resource_data_availability_date   = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 		$this->advanced_data_breakdowns_settings = new Advanced_Data_Breakdowns_Settings( $this->options );
+		$this->measurement_protocol_settings     = new Measurement_Protocol_Settings( new Encrypted_Options( $this->options ) );
+		$this->measurement_protocol_secret       = new Measurement_Protocol_Secret(
+			$this->get_settings(),
+			$this->measurement_protocol_settings,
+			function () {
+				return $this->get_service( 'analyticsadmin' );
+			}
+		);
 	}
 
 	/**
@@ -290,6 +321,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.30.0
 	 * @since 1.101.0 Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
 	 * @since 1.190.0 The `googlesitekit_proxy_setup_mode` callback no longer overrides a mode that is already set.
+	 * @since n.e.x.t Registers the Measurement Protocol secret setting, which the settings change callback deletes when the property, web data stream or measurement ID changes.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -326,6 +358,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->site_goals_settings->register();
 		$this->site_goals_site_settings->register();
 		$this->advanced_data_breakdowns_settings->register();
+		$this->measurement_protocol_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
@@ -423,6 +456,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 					// Reset audience specific settings.
 					$this->reset_audiences->reset_audience_data();
+				}
+
+				// A stored Measurement Protocol secret only works for the web data stream it was created on.
+				if (
+					$old_value['propertyID'] !== $new_value['propertyID'] ||
+					$old_value['webDataStreamID'] !== $new_value['webDataStreamID'] ||
+					$old_value['measurementID'] !== $new_value['measurementID']
+				) {
+					$this->measurement_protocol_secret->clear();
 				}
 
 				if ( $this->is_connected() ) {
@@ -621,6 +663,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Cleans up when the module is deactivated.
 	 *
 	 * @since 1.30.0
+	 * @since n.e.x.t Deletes the stored Measurement Protocol secret.
 	 */
 	public function on_deactivation() {
 		// We need to reset the resource data availability dates before deleting the settings.
@@ -633,6 +676,18 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->audience_settings->delete();
 		$this->site_goals_settings->delete();
 		$this->advanced_data_breakdowns_settings->delete();
+		$this->measurement_protocol_settings->delete();
+	}
+
+	/**
+	 * Gets the Measurement_Protocol_Secret instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Measurement_Protocol_Secret Measurement_Protocol_Secret instance.
+	 */
+	public function get_measurement_protocol_secret() {
+		return $this->measurement_protocol_secret;
 	}
 
 	/**
@@ -800,6 +855,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.30.0
 	 * @since 1.191.0 Registers `GET:plain-permalink-top-posts` with the `freshData` feature flag on.
 	 * @since 1.192.0 Always registers `GET:plain-permalink-top-posts`.
+	 * @since n.e.x.t Registers `POST:conversion-insights` and `GET:conversion-insights` with the `siteGoalsInsights` feature flag on.
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -1105,6 +1161,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
 				)
 			);
+		}
+
+		if ( Feature_Flags::enabled( 'siteGoalsInsights' ) ) {
+			$conversion_insights_definition = array(
+				'google_proxy' => $this->authentication->get_google_proxy(),
+				'credentials'  => $this->authentication->credentials(),
+			);
+
+			$this->datapoints['POST:conversion-insights'] = new Create_Conversion_Insight( array_merge( $conversion_insights_definition, array( 'module' => $this ) ) );
+			$this->datapoints['GET:conversion-insights']  = new Get_Conversion_Insight( $conversion_insights_definition );
 		}
 
 		$this->datapoints['GET:plain-permalink-top-posts'] = new Get_Plain_Permalink_Top_Posts(
@@ -1900,6 +1966,19 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	public static function normalize_property_id( $property_id ) {
 		return 'properties/' . $property_id;
+	}
+
+	/**
+	 * Gets the resource name of a web data stream.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $property_id        Property ID.
+	 * @param string $web_data_stream_id Web data stream ID.
+	 * @return string Web data stream resource name, in the format `properties/{propertyID}/dataStreams/{webDataStreamID}`.
+	 */
+	public static function get_web_data_stream_name( $property_id, $web_data_stream_id ) {
+		return self::normalize_property_id( $property_id ) . '/dataStreams/' . $web_data_stream_id;
 	}
 
 	/**

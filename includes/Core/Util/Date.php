@@ -57,6 +57,30 @@ class Date {
 	}
 
 	/**
+	 * Checks whether a value names a real day, written as `YYYY-MM-DD`.
+	 *
+	 * The end of the pattern is `\z` rather than `$`, which would also accept a
+	 * date with a trailing newline. The parts are checked with `checkdate()` as
+	 * well, so `2026-13-45` is rejected rather than rolled forward into another
+	 * month.
+	 *
+	 * @since 1.190.0
+	 * @since n.e.x.t Moved from `Get_Benchmarking_Data`, as a public method.
+	 *
+	 * @param mixed $value The value, such as a request parameter as it arrived.
+	 * @return bool True when the value names a real day, false otherwise.
+	 */
+	public static function is_valid_date( $value ) {
+		if ( ! is_string( $value ) || ! preg_match( '/\A(\d{4})-(\d{2})-(\d{2})\z/', $value, $matches ) ) {
+			return false;
+		}
+
+		list( , $year, $month, $day ) = $matches;
+
+		return checkdate( (int) $month, (int) $day, (int) $year );
+	}
+
+	/**
 	 * Parses a date range string into a start date and an end date.
 	 *
 	 * @since 1.99.0
