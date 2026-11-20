@@ -96,7 +96,6 @@ interface PrimaryActionRowProps {
  * in the Site Goals selection panel.
  *
  * @since 1.182.0
- * @since n.e.x.t Offers a "Help us improve" menu of reasons after each vote.
  *
  * @param props          Component props.
  * @param props.goalType Goal type (`ecommerce` or `lead`).
