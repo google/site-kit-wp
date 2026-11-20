@@ -342,11 +342,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					'google-site-kit'
 				),
 				description: __(
-					'You can always update your sign-up form settings in Publisher center',
+					'You can always update your sign-up form settings in Publisher Center',
 					'google-site-kit'
 				),
 				cta: {
-					label: __( 'Go to Publisher center', 'google-site-kit' ),
+					label: __( 'Go to Publisher Center', 'google-site-kit' ),
 					getURL: ( select ) =>
 						select( CORE_MODULES ).getDetailsLinkURL(
 							MODULE_SLUG_READER_REVENUE_MANAGER

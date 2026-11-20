@@ -157,7 +157,7 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 				<Button onClick={ onReturnClick }>
 					{ hubURL
 						? __( 'Return to features page', 'google-site-kit' )
-						: __( 'Return to Dashboard', 'google-site-kit' ) }
+						: __( 'Return to dashboard', 'google-site-kit' ) }
 				</Button>
 				{ secondaryCTA }
 			</div>
