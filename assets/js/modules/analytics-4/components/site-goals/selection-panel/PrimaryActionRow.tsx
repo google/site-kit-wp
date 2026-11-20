@@ -170,6 +170,7 @@ const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
 						'google-site-kit'
 					) }
 					popperPlacement="bottom-end"
+					feedbackMenuPlacement="top-end"
 				/>
 			</div>
 		</div>
