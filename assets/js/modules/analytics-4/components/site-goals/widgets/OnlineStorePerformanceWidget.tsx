@@ -37,7 +37,6 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
-import FeedbackPrompt from '@/js/components/feedback/FeedbackPrompt';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -59,8 +58,6 @@ import {
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
-	SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE,
-	SITE_GOALS_FEEDBACK_NAMESPACE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -82,7 +79,7 @@ import {
 	VisitorEngagementTiles,
 	resolveVisitorEngagementSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
-import { SITE_GOALS_WIDGET_FEEDBACK_OPTIONS } from '@/js/modules/analytics-4/components/site-goals/widgets/feedbackOptions';
+import SiteGoalsWidgetFeedback from '@/js/modules/analytics-4/components/site-goals/widgets/SiteGoalsWidgetFeedback';
 import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -685,17 +682,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 					</Fragment>
 				) }
 
-				<FeedbackPrompt
-					feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
-					feedbackGroup={
-						SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE
-					}
-					feedbackOptions={ SITE_GOALS_WIDGET_FEEDBACK_OPTIONS }
-					gaTrackingEventArgs={ {
-						category: `${ viewContext }_site-goals-widget-survey`,
-						label: GOAL_TYPES.ECOMMERCE,
-					} }
-				/>
+				<SiteGoalsWidgetFeedback goalType={ GOAL_TYPES.ECOMMERCE } />
 			</WidgetComponent>
 		);
 	}

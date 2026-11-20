@@ -37,7 +37,6 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
-import FeedbackPrompt from '@/js/components/feedback/FeedbackPrompt';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -59,8 +58,6 @@ import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
-	SITE_GOALS_FEEDBACK_GROUP_WIDGET_LEAD_GENERATION,
-	SITE_GOALS_FEEDBACK_NAMESPACE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -79,7 +76,7 @@ import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/
 import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
-import { SITE_GOALS_WIDGET_FEEDBACK_OPTIONS } from '@/js/modules/analytics-4/components/site-goals/widgets/feedbackOptions';
+import SiteGoalsWidgetFeedback from '@/js/modules/analytics-4/components/site-goals/widgets/SiteGoalsWidgetFeedback';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent, untrailingslashit } from '@/js/util';
@@ -750,17 +747,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					</Fragment>
 				) }
 
-				<FeedbackPrompt
-					feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
-					feedbackGroup={
-						SITE_GOALS_FEEDBACK_GROUP_WIDGET_LEAD_GENERATION
-					}
-					feedbackOptions={ SITE_GOALS_WIDGET_FEEDBACK_OPTIONS }
-					gaTrackingEventArgs={ {
-						category: `${ viewContext }_site-goals-widget-survey`,
-						label: GOAL_TYPES.LEAD,
-					} }
-				/>
+				<SiteGoalsWidgetFeedback goalType={ GOAL_TYPES.LEAD } />
 			</WidgetComponent>
 		);
 	}

@@ -1,5 +1,5 @@
 /**
- * Site Goals widget feedback options.
+ * SiteGoalsWidgetFeedback component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -30,17 +35,19 @@ import {
 	VoteDirection,
 } from '@/js/components/feedback/constants';
 import { FeedbackMenuOption } from '@/js/components/feedback/FeedbackMenu';
+import FeedbackPrompt from '@/js/components/feedback/FeedbackPrompt';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
+	SITE_GOALS_FEEDBACK_NAMESPACE,
 	SITE_GOALS_WIDGET_DOWNVOTE_REASONS,
+	SITE_GOALS_WIDGET_FEEDBACK_GROUPS_BY_GOAL_TYPE,
 	SITE_GOALS_WIDGET_UPVOTE_REASONS,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
-// The "Help us improve" reasons offered after voting on the "Is this section
-// helpful?" thumbs in the Site Goals widget footers.
-export const SITE_GOALS_WIDGET_FEEDBACK_OPTIONS: Record<
-	VoteDirection,
-	FeedbackMenuOption[]
-> = {
+// The "Help us improve" reasons offered after voting on "Is this section
+// helpful?".
+const FEEDBACK_OPTIONS: Record< VoteDirection, FeedbackMenuOption[] > = {
 	[ VOTE_DIRECTION_UP ]: [
 		{
 			id: `site-goals-widget-feedback-${ SITE_GOALS_WIDGET_UPVOTE_REASONS.SHOWS_WHAT_DRIVES_RESULTS }`,
@@ -88,3 +95,39 @@ export const SITE_GOALS_WIDGET_FEEDBACK_OPTIONS: Record<
 		},
 	],
 };
+
+interface SiteGoalsWidgetFeedbackProps {
+	goalType: GoalType;
+}
+
+/**
+ * Renders the "Is this section helpful?" feedback in a Site Goals widget's
+ * footer, with a "Help us improve" menu of reasons after each vote.
+ *
+ * @since n.e.x.t
+ *
+ * @param props          Component props.
+ * @param props.goalType Goal type of the widget (`ecommerce` or `lead`).
+ * @return React element.
+ */
+const SiteGoalsWidgetFeedback: FC< SiteGoalsWidgetFeedbackProps > = ( {
+	goalType,
+} ) => {
+	const viewContext = useViewContext();
+
+	return (
+		<FeedbackPrompt
+			feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
+			feedbackGroup={
+				SITE_GOALS_WIDGET_FEEDBACK_GROUPS_BY_GOAL_TYPE[ goalType ]
+			}
+			feedbackOptions={ FEEDBACK_OPTIONS }
+			gaTrackingEventArgs={ {
+				category: `${ viewContext }_site-goals-widget-survey`,
+				label: goalType,
+			} }
+		/>
+	);
+};
+
+export default SiteGoalsWidgetFeedback;
