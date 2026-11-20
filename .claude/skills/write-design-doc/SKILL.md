@@ -1,0 +1,1 @@
+../../../.agents/skills/write-design-doc/SKILL.md
