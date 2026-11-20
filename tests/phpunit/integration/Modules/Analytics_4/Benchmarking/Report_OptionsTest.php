@@ -143,11 +143,15 @@ class Report_OptionsTest extends TestCase {
 		return array(
 			// Up to 28 days, the band of the period's first day reaches back
 			// further than last year's periods; from 28 days on, they do.
-			'1 day'   => array( '2026-09-15', '2025-08-19' ),
-			'7 days'  => array( '2026-09-09', '2025-08-13' ),
-			'14 days' => array( '2026-09-02', '2025-08-06' ),
-			'28 days' => array( '2026-08-19', '2025-07-23' ),
-			'90 days' => array( '2026-06-18', '2025-03-21' ),
+			'1 day'    => array( '2026-09-15', '2025-08-19' ),
+			'7 days'   => array( '2026-09-09', '2025-08-13' ),
+			'14 days'  => array( '2026-09-02', '2025-08-06' ),
+			'28 days'  => array( '2026-08-19', '2025-07-23' ),
+			'90 days'  => array( '2026-06-18', '2025-03-21' ),
+			// The longest period the service writes an insight for, and a
+			// longer one, which the date picker allows.
+			'364 days' => array( '2025-09-17', '2023-09-20' ),
+			'426 days' => array( '2025-07-17', '2023-05-19' ),
 		);
 	}
 

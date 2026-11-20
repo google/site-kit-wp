@@ -841,6 +841,72 @@ describe( 'TrafficOverviewPanel', () => {
 				] );
 		}
 
+		/**
+		 * Builds the arguments the panel passes to `getReport` for the daily
+		 * visits report, which it requests when the benchmarking request
+		 * fails.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {Object} The daily visits report's arguments.
+		 */
+		function getDailyVisitsArgs(): ReportOptions {
+			const { startDate, endDate, compareStartDate, compareEndDate } =
+				registry
+					.select( CORE_USER )
+					.getDateRangeDates( { compare: true } );
+
+			return {
+				startDate,
+				endDate,
+				compareStartDate,
+				compareEndDate,
+				metrics: [ { name: 'sessions' } ],
+				dimensions: [ 'date' ],
+				reportID:
+					'analytics-4_dashboard-all-traffic-widget-ga4_widget_dailyVisitsArgs',
+			};
+		}
+
+		/**
+		 * Puts the daily visits report in the store with a row for each day
+		 * given, and the visits over each range in its totals.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Array.<Array>} days           Each day of the selected range as `[ YYYYMMDD, visits ]`.
+		 * @param {number}        currentVisits  The visits over the selected range.
+		 * @param {number}        previousVisits The visits over the range before it.
+		 * @return {void}
+		 */
+		function provideDailyVisitsReport(
+			days: Array< [ string, number ] >,
+			currentVisits: number,
+			previousVisits: number
+		) {
+			const options = getDailyVisitsArgs();
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+				{
+					rows: days.map( ( [ date, visits ] ) => ( {
+						dimensionValues: [
+							{ value: date },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: `${ visits }` } ],
+					} ) ),
+					totals: [
+						{ metricValues: [ { value: `${ currentVisits }` } ] },
+						{ metricValues: [ { value: `${ previousVisits }` } ] },
+					],
+				},
+				{ options }
+			);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ options ] );
+		}
+
 		beforeEach( () => {
 			provideTotalsReport( 843, 700 );
 		} );
@@ -1078,14 +1144,21 @@ describe( 'TrafficOverviewPanel', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		it( 'should render the report error and its "Retry" button in place of the sections when the benchmarking request fails', async () => {
+		it( 'should render the error of the benchmarking request and its "Retry" button in place of the key factors, between the chart and the breakdown, when the request fails', async () => {
 			provideBenchmarkingError();
+			provideDailyVisitsReport( [], 1234, 1000 );
 
 			const { container, getByRole, getByText, waitForRegistry } =
 				renderPanel();
 
 			await waitForRegistry();
 
+			expect( getSectionClassNames( container ) ).toEqual( [
+				'googlesitekit-traffic-overview__summary',
+				'googlesitekit-traffic-overview__chart',
+				'googlesitekit-traffic-overview__benchmarking-error',
+				'googlesitekit-traffic-overview__breakdown',
+			] );
 			expect(
 				getByText( 'The benchmarking request failed.' )
 			).toBeInTheDocument();
@@ -1094,7 +1167,133 @@ describe( 'TrafficOverviewPanel', () => {
 			).toBeInTheDocument();
 			expect(
 				container.querySelector(
-					'.googlesitekit-traffic-overview__total-visitors'
+					'.googlesitekit-traffic-overview__key-factors'
+				)
+			).toBeNull();
+		} );
+
+		it( 'should show the visits of the daily visits report, against the range before, and the unique visitors of the totals report when the benchmarking request fails', async () => {
+			provideBenchmarkingError();
+			provideDailyVisitsReport( [], 1234, 1000 );
+
+			const { container, getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect( getByText( '1.2K' ) ).toHaveClass(
+				'googlesitekit-traffic-overview__total-visits-figure'
+			);
+			expect(
+				container.querySelector( '.googlesitekit-change-badge' )
+			).toBeInTheDocument();
+			expect( getByText( 'Vs. prev. 28 days' ) ).toBeInTheDocument();
+			expect( getByText( '843' ) ).toHaveClass(
+				'googlesitekit-traffic-overview__unique-visitors-figure'
+			);
+		} );
+
+		it( 'should draw the visits on each day of the daily visits report in the chart, without a typical range, when the benchmarking request fails', async () => {
+			provideBenchmarkingError();
+			provideDailyVisitsReport(
+				[
+					[ '20250109', 12 ],
+					[ '20250111', 34 ],
+				],
+				46,
+				40
+			);
+
+			const { getByText, queryByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			// Google Charts draws nothing under Jest, so this test reads the
+			// chart's screen-reader lines instead. Without a typical range,
+			// a line names the day's visits alone.
+			expect(
+				getByText( 'January 9, 2025: 12 visits' )
+			).toBeInTheDocument();
+			expect(
+				getByText( 'January 10, 2025: 0 visits' )
+			).toBeInTheDocument();
+			expect(
+				getByText( 'January 11, 2025: 34 visits' )
+			).toBeInTheDocument();
+			expect(
+				queryByText( 'Typical traffic range' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render the sections as placeholders while the daily visits report is still loading after the benchmarking request fails', async () => {
+			provideBenchmarkingError();
+			// A started resolution sends no request, so the report stays on
+			// its way.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ getDailyVisitsArgs() ] );
+
+			const { container, queryByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect( getPlaceholderCounts( container ) ).toEqual( {
+				totalVisitors: 1,
+				chart: 1,
+				breakdownRows: 15,
+			} );
+			expect(
+				queryByText( 'The benchmarking request failed.' )
+			).not.toBeInTheDocument();
+
+			act( () => {
+				provideDailyVisitsReport( [], 1234, 1000 );
+			} );
+
+			// The benchmarking error renders with the figures, and updates
+			// once more after it mounts, so the test waits for the registry
+			// before it ends.
+			await waitForRegistry();
+
+			expect( getPlaceholderCounts( container ) ).toEqual( {
+				totalVisitors: 0,
+				chart: 0,
+				breakdownRows: 0,
+			} );
+			expect(
+				queryByText( 'The benchmarking request failed.' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should render the errors of the daily visits report and of the benchmarking request in place of the sections when both fail', async () => {
+			const dailyVisitsArgs = getDailyVisitsArgs();
+
+			provideBenchmarkingError();
+			registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+				{
+					code: 'test_error',
+					message: 'The daily visits report failed.',
+					data: { status: 500, reason: 'backendError' },
+				},
+				'getReport',
+				[ dailyVisitsArgs ]
+			);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ dailyVisitsArgs ] );
+
+			const { container, getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'The daily visits report failed.' )
+			).toBeInTheDocument();
+			expect(
+				getByText( 'The benchmarking request failed.' )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__summary'
 				)
 			).toBeNull();
 			expect(
@@ -1102,15 +1301,11 @@ describe( 'TrafficOverviewPanel', () => {
 					'.googlesitekit-traffic-overview__chart'
 				)
 			).toBeNull();
-			expect(
-				container.querySelector(
-					'.googlesitekit-traffic-overview__key-factors'
-				)
-			).toBeNull();
 		} );
 
-		it( 'should request the benchmarking response once again and render the sections on a "Retry" click', async () => {
+		it( 'should request the benchmarking response once again and render its sections on a "Retry" click', async () => {
 			provideBenchmarkingError();
+			provideDailyVisitsReport( [], 1234, 1000 );
 			fetchMock.get( benchmarkingEndpoint, {
 				body: benchmarkingData,
 				status: 200,
@@ -1136,16 +1331,11 @@ describe( 'TrafficOverviewPanel', () => {
 			// The fixture's first day with recorded traffic comes after the
 			// selected range, so its key factors wait for more history, and the
 			// test reads the sections that show without it.
-			expect(
-				container.querySelector(
-					'.googlesitekit-traffic-overview__total-visitors'
-				)
-			).toBeInTheDocument();
-			expect(
-				container.querySelector(
-					'.googlesitekit-traffic-overview__chart'
-				)
-			).toBeInTheDocument();
+			expect( getSectionClassNames( container ) ).toEqual( [
+				'googlesitekit-traffic-overview__summary',
+				'googlesitekit-traffic-overview__chart',
+				'googlesitekit-traffic-overview__breakdown',
+			] );
 		} );
 
 		it( 'should send no benchmarking request for a view-only user who cannot view Analytics', async () => {

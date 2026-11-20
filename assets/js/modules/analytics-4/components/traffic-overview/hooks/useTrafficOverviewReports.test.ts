@@ -441,6 +441,20 @@ describe( 'useTrafficOverviewReports', () => {
 			data: { status: 500 },
 		};
 
+		// The visits on each day of the selected range, against the range
+		// before it, which the hook requests when the benchmarking request
+		// fails.
+		const dailyVisitsArgs: ReportOptions = {
+			startDate: '2025-01-09',
+			endDate: '2025-02-05',
+			compareStartDate: '2024-12-12',
+			compareEndDate: '2025-01-08',
+			metrics: [ { name: 'sessions' } ],
+			dimensions: [ 'date' ],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_dailyVisitsArgs',
+		};
+
 		beforeEach( () => {
 			// The hook reads whether the property is gathering data to tell
 			// whether the panel has the key factors.
@@ -500,6 +514,11 @@ describe( 'useTrafficOverviewReports', () => {
 			);
 			expect( result.current.loaded ).toBe( true );
 			expect( result.current.errors ).toEqual( [] );
+			expect( result.current.benchmarkingError ).toBeUndefined();
+			// The response draws the visits, so the hook asks for no daily
+			// visits report.
+			expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+			expect( result.current.dailyVisitsReport ).toBeUndefined();
 		} );
 
 		it( 'should not request the benchmarking response, or wait for it, without the typicalTraffic feature', async () => {
@@ -563,8 +582,9 @@ describe( 'useTrafficOverviewReports', () => {
 			expect( result.current.loaded ).toBe( false );
 		} );
 
-		it( 'should set `loaded` to `true` and return the error of the benchmarking request when it fails', async () => {
+		it( 'should return the error of the benchmarking request apart from the errors of the reports, and the daily visits report in place of the response, when the request alone fails', async () => {
 			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			provideAnalytics4MockReport( registry, dailyVisitsArgs );
 			provideBenchmarkingError();
 
 			const { result, waitForRegistry } = renderHook(
@@ -579,7 +599,98 @@ describe( 'useTrafficOverviewReports', () => {
 			await waitForRegistry();
 
 			expect( result.current.loaded ).toBe( true );
-			expect( result.current.errors ).toEqual( [ benchmarkingError ] );
+			expect( result.current.errors ).toEqual( [] );
+			expect( result.current.benchmarkingError ).toEqual(
+				benchmarkingError
+			);
+			expect( result.current.benchmarkingResponse ).toBeUndefined();
+			expect( result.current.dailyVisitsReport ).toEqual(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( dailyVisitsArgs )
+			);
+		} );
+
+		it( 'should request the visits on each day of the selected range, against the range before it, when the benchmarking request fails', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			provideBenchmarkingError();
+			fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+
+			const { waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasFinishedResolution( 'getReport', [ dailyVisitsArgs ] )
+			).toBe( true );
+		} );
+
+		it( 'should leave `loaded` set to `false` while the daily visits report is still loading after the benchmarking request fails', async () => {
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			provideBenchmarkingError();
+			freezeFetch( reportEndpoint );
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( result.current.loaded ).toBe( false );
+		} );
+
+		it( 'should return the error of the daily visits report, then the error of the benchmarking request, when the report fails after the request', async () => {
+			const dailyVisitsError = {
+				code: 'test_error',
+				message: 'The daily visits report failed.',
+				data: {},
+			};
+
+			provideAnalytics4MockReport( registry, getExpectedArgs() );
+			provideBenchmarkingError();
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setErrorForSelector( dailyVisitsError, 'getReport', [
+					dailyVisitsArgs,
+				] );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ dailyVisitsArgs ] );
+
+			const { result, waitForRegistry } = renderHook(
+				() => useTrafficOverviewReports(),
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( result.current.loaded ).toBe( true );
+			expect( result.current.errors ).toEqual( [
+				dailyVisitsError,
+				benchmarkingError,
+			] );
+			expect( result.current.benchmarkingError ).toEqual(
+				benchmarkingError
+			);
 		} );
 
 		it( 'should return the error of the totals report before the error of the benchmarking request when both fail', async () => {
@@ -598,6 +709,7 @@ describe( 'useTrafficOverviewReports', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.finishResolution( 'getReport', [ expectedArgs ] );
+			provideAnalytics4MockReport( registry, dailyVisitsArgs );
 			provideBenchmarkingError();
 
 			const { result, waitForRegistry } = renderHook(
@@ -615,6 +727,9 @@ describe( 'useTrafficOverviewReports', () => {
 				totalsError,
 				benchmarkingError,
 			] );
+			expect( result.current.benchmarkingError ).toEqual(
+				benchmarkingError
+			);
 		} );
 	} );
 } );

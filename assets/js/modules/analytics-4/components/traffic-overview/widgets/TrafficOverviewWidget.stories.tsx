@@ -470,6 +470,43 @@ ReportFailure.args = {
 	},
 };
 
+export const TypicalTrafficFailure = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+TypicalTrafficFailure.storyName =
+	'Typical Traffic, Benchmarking Failure (typicalTraffic enabled)';
+TypicalTrafficFailure.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+
+		const { startDate, endDate, compareStartDate, compareEndDate } =
+			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
+
+		// When the benchmarking request fails, the panel draws and adds up
+		// the visits of the daily visits report, against the range before.
+		provideAnalytics4MockReport( registry, {
+			...getDailyVisitsReportArgs( { startDate, endDate } ),
+			compareStartDate,
+			compareEndDate,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setErrorForSelector(
+				INTERNAL_SERVER_ERROR,
+				'getBenchmarkingData',
+				[ startDate, endDate ]
+			);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getBenchmarkingData', [ startDate, endDate ] );
+	},
+};
+TypicalTrafficFailure.parameters = {
+	features: [ 'typicalTraffic' ],
+};
+
 export const RecentActivity = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;

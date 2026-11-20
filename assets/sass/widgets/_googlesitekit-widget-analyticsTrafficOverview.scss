@@ -312,6 +312,12 @@ $traffic-overview-column-gap: 42px;
 			margin-top: 70px;
 		}
 
+		// The error of a failed benchmarking request takes the place of the key
+		// factors, so it sits as far under the chart.
+		.googlesitekit-traffic-overview__benchmarking-error {
+			margin-top: 70px;
+		}
+
 		// Without cards, the design leaves 36px under the notice, so the
 		// breakdown sits about as far under the notice as it sits under the
 		// last attribute of the cards.

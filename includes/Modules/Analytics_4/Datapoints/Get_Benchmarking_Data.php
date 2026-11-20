@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 
-use DateTimeImmutable;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\Modules\Permission_Aware_Datapoint;
 use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
@@ -19,7 +18,6 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Insight_Payload;
-use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Encoder;
 use WP_Error;
@@ -62,12 +60,19 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 * The two dates are the only parameters the response depends on. The
 	 * analysis is site-wide, so there is no per-page version of it to ask for.
 	 *
+	 * A period of any length is accepted, so the Traffic overview tab never
+	 * fails for the range the user picked. Each part of the response shows once
+	 * the site's history is long enough for it, as `Typical_Traffic_Availability`
+	 * decides, and the insight is requested only for a period the service writes
+	 * one for, as `Insight_Request_Builder` decides.
+	 *
 	 * @since 1.190.0
 	 * @since 1.192.0 The longest period it accepts changed from 197 days to 90.
 	 * @since n.e.x.t With the `trafficInsights` feature, the response also carries the locale and the signed request of the generated insight.
+	 * @since n.e.x.t Accepts a period of any length.
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date, for a `startDate` later than `endDate`, or for a period longer than `Report_Options::MAXIMUM_PERIOD_DAYS` days.
+	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date or for a `startDate` later than `endDate`.
 	 * @throws Missing_Required_Param_Exception Thrown when `startDate` or `endDate` is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
@@ -102,20 +107,6 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 		if ( $start_date > $end_date ) {
 			return $this->invalid_param_error(
 				__( 'Request parameter startDate must not be later than endDate.', 'google-site-kit' )
-			);
-		}
-
-		// No preset date range is longer than `Report_Options::MAXIMUM_PERIOD_DAYS`,
-		// so refuse a longer period before any report runs.
-		$period_days = ( new DateTimeImmutable( $start_date ) )->diff( new DateTimeImmutable( $end_date ) )->days + 1;
-
-		if ( $period_days > Report_Options::MAXIMUM_PERIOD_DAYS ) {
-			return $this->invalid_param_error(
-				sprintf(
-					/* translators: %d: the maximum number of days the period can have, e.g. 90 */
-					__( 'The period from startDate to endDate must not be longer than %d days.', 'google-site-kit' ),
-					Report_Options::MAXIMUM_PERIOD_DAYS
-				)
 			);
 		}
 

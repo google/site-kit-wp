@@ -37,9 +37,7 @@ import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { useFeature } from '@/js/hooks/useFeature';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
 import { getPublishedPosts } from '@/js/modules/analytics-4/components/traffic-overview/charts/getPublishedPosts';
-import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
-import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
 import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
@@ -47,6 +45,7 @@ import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/fac
 import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
 import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
+import { getTrafficOverviewVisits } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTrafficOverviewVisits';
 import { getTypicalTrafficAvailability } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalTrafficAvailability';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -54,8 +53,10 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 const TrafficOverviewPanel: FC = () => {
 	const {
 		totalsReport,
+		dailyVisitsReport,
 		breakdownValues,
 		benchmarkingResponse,
+		benchmarkingError,
 		loaded,
 		errors,
 		retryBenchmarkingData,
@@ -73,9 +74,16 @@ const TrafficOverviewPanel: FC = () => {
 		[ canViewSharedAnalytics4 ]
 	);
 
-	const { isAvailable: hasKeyFactors, isShown: showKeyFactors } =
+	const { isAvailable: hasKeyFactors, isShown: isKeyFactorsShown } =
 		useKeyFactorsVisibility();
 	const trafficInsightsEnabled = useFeature( 'trafficInsights' );
+
+	// A failed benchmarking request takes only the parts that the response
+	// alone has: the band, the published posts, the key factors and the
+	// insight. The panel still shows its figures, from the daily visits
+	// report, and the breakdown, with the request's error in place of the key
+	// factors.
+	const showKeyFactors = isKeyFactorsShown && ! benchmarkingError;
 	const showInsights = showKeyFactors && trafficInsightsEnabled;
 
 	const { startDate, endDate, compareStartDate } = useSelect(
@@ -123,18 +131,16 @@ const TrafficOverviewPanel: FC = () => {
 	const isLoading = ! loaded || isGatheringData === undefined;
 
 	// The panel reads the benchmarking response wherever it has the key
-	// factors. Each day of the response carries its typical range, which the
-	// chart draws behind the line.
-	//
-	// TODO: Give the chart and the total visits figures of their own without
-	// the `typicalTraffic` feature, where the panel reads no benchmarking
-	// response.
-	const dailyTraffic = hasKeyFactors
-		? benchmarkingResponse?.dailyTraffic
-		: getPlaceholderDailyTraffic( startDate, endDate );
-	const totalVisits = hasKeyFactors
-		? benchmarkingResponse?.visits
-		: PLACEHOLDER_TOTAL_VISITS;
+	// factors, and the daily visits report when the benchmarking request
+	// fails.
+	const { dailyTraffic, totalVisits } = getTrafficOverviewVisits( {
+		readsBenchmarkingResponse: hasKeyFactors,
+		benchmarkingResponse,
+		benchmarkingFailed: !! benchmarkingError,
+		dailyVisitsReport,
+		startDate,
+		endDate,
+	} );
 
 	return (
 		<div
@@ -187,6 +193,17 @@ const TrafficOverviewPanel: FC = () => {
 								: undefined
 						}
 					/>
+					{ ! isLoading && benchmarkingError && (
+						// The error shows once the figures do, so the
+						// sections around it don't move when it arrives.
+						<div className="googlesitekit-traffic-overview__benchmarking-error">
+							<ReportError
+								moduleSlug={ MODULE_SLUG_ANALYTICS_4 }
+								error={ benchmarkingError }
+								onRetry={ retryBenchmarkingData }
+							/>
+						</div>
+					) }
 					{ showKeyFactors && keyFactorsAvailable && (
 						<KeyFactors
 							keyFactors={

@@ -16,9 +16,9 @@ use DateTimeZone;
 /**
  * Encodes an assembled benchmarking response for the browser.
  *
- * The response has one count for each day of the selected period, up to
- * `Report_Options::MAXIMUM_PERIOD_DAYS` days. Written as objects, the counts
- * repeat a field name and a date on every day. The dashboard keeps one
+ * The response has one count for each day of the selected period, which can
+ * be over a year long. Written as objects, the counts repeat a field name and
+ * a date on every day. The dashboard keeps one
  * response per date range in browser storage. The encoded response leaves out
  * the repeated field names and the date of every day but the first, and
  * stores each string once.

@@ -36,6 +36,11 @@ import {
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
 
+export interface TrafficReportOptions {
+	/** Whether the hook requests the report. Default is `true`. */
+	isEnabled?: boolean;
+}
+
 export interface TrafficReport {
 	/**
 	 * The GA4 report. It reads `undefined` when:
@@ -43,6 +48,7 @@ export interface TrafficReport {
 	 * - The request has not finished.
 	 * - The Traffic Overview widget is out of view.
 	 * - A view-only user's role cannot view Analytics.
+	 * - The hook's `isEnabled` option is `false`.
 	 */
 	report?: Report;
 	/**
@@ -62,12 +68,16 @@ export interface TrafficReport {
  * the user's role can view Analytics.
  *
  * @since 1.188.0
+ * @since n.e.x.t Added the `isEnabled` option.
  *
- * @param {Object} reportOptions The options for one report.
+ * @param {Object}  reportOptions       The options for one report.
+ * @param {Object}  [options]           Optional. The hook's options.
+ * @param {boolean} [options.isEnabled] Optional. Whether the hook requests the report. Default is `true`.
  * @return {Object} The report, and the arguments passed to the `getReport` selector.
  */
 export function useTrafficReport(
-	reportOptions: Partial< ReportOptions >
+	reportOptions: Partial< ReportOptions >,
+	{ isEnabled = true }: TrafficReportOptions = {}
 ): TrafficReport {
 	const canViewSharedAnalytics4 = useCanViewSharedModule(
 		MODULE_SLUG_ANALYTICS_4
@@ -101,12 +111,14 @@ export function useTrafficReport(
 	// On a view-only dashboard, `canViewSharedAnalytics4` reads `undefined`
 	// until the user's capabilities load. Neither `undefined` nor `false`
 	// sends a request.
+	const shouldRequest = isEnabled && canViewSharedAnalytics4;
+
 	const report = useInViewSelect< Report | undefined >(
 		( select: Select ) =>
-			canViewSharedAnalytics4
+			shouldRequest
 				? select( MODULES_ANALYTICS_4 ).getReport( args )
 				: undefined,
-		[ canViewSharedAnalytics4, args ]
+		[ shouldRequest, args ]
 	);
 
 	return { report, args };

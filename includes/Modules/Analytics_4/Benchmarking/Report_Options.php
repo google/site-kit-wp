@@ -24,17 +24,6 @@ use Google\Site_Kit\Modules\Analytics_4;
 class Report_Options {
 
 	/**
-	 * The maximum number of days in the selected period, the longest preset of
-	 * `DateRangeSelector`.
-	 *
-	 * The `core/user` store accepts a longer `custom` date range, which only
-	 * `DateRangePicker` can set, and `Get_Benchmarking_Data` refuses it.
-	 *
-	 * @since 1.192.0
-	 */
-	const MAXIMUM_PERIOD_DAYS = 90;
-
-	/**
 	 * The most rows a dimension report asks for.
 	 *
 	 * A row that the report cuts off in one period counts as a row without

@@ -948,6 +948,39 @@ class Response_BuilderTest extends TestCase {
 		);
 	}
 
+	public function test_build__gives_every_day_of_a_period_longer_than_a_year_a_band_and_requests_no_insight() {
+		$this->enable_feature( 'trafficInsights' );
+		// The 426 days from `2025-07-17` to `2026-09-15`, the longest custom
+		// range the date picker allows, after more than three years of 100
+		// visits a day: the band's 509 days, and the 852 days of the period
+		// and the one before it.
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows( '2023-05-19', '2026-09-15', fn() => 100 ),
+		);
+
+		$response = $this->builder->build( '2025-07-17', '2026-09-15' );
+
+		// Each day's fit reads 365 days of 100 visits a day, so each day has the
+		// same band. The traffic-size default grows more slowly than the total,
+		// so the margin of the 426 days' total is relatively narrower than a
+		// 28-day total's, which gives each of its days `83.6` to `116.4`.
+		$this->assertCount( 426, $response['dailyTraffic'], 'The daily traffic should list each of the 426 days of the period.' );
+		$this->assertSame(
+			array_fill( 0, 426, array( 88.7, 111.3 ) ),
+			$this->get_expected_ranges( $response['dailyTraffic'] ),
+			'With 100 visits on every day of the daily report, each of the 426 days should have `88.7` to `111.3` as its expected range.'
+		);
+		$this->assertSame(
+			array(
+				'current'  => 42600,
+				'previous' => 42600,
+			),
+			$response['visits'],
+			'Each of the two periods should have 426 days of 100 visits.'
+		);
+		$this->assertNull( $response['insightRequest'], 'A period longer than 364 days, which the service writes no insight for, should have no insight request.' );
+	}
+
 	public function test_build__gives_each_day_the_band_period_baseline_fits_for_the_period() {
 		$get_visits        = fn( $position ) => 150 + ( $position * 37 ) % 91 - ( 0 === $position % 7 ? 60 : 0 );
 		$this->report_rows = array(
