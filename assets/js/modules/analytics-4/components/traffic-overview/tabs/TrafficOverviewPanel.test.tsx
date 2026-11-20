@@ -1459,7 +1459,7 @@ describe( 'TrafficOverviewPanel', () => {
 
 			expect(
 				getByRole( 'heading', {
-					name: 'Biggest channel shifts vs. the previous 14 days',
+					name: 'Biggest traffic shifts vs. the previous 14 days',
 				} )
 			).toBeInTheDocument();
 		} );
@@ -1512,7 +1512,7 @@ describe( 'TrafficOverviewPanel', () => {
 			] );
 			expect(
 				getByRole( 'heading', {
-					name: 'Biggest channel shifts vs. the previous 3 days',
+					name: 'Biggest traffic shifts vs. the previous 3 days',
 				} )
 			).toBeInTheDocument();
 			expect(

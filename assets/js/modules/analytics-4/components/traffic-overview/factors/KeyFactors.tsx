@@ -147,11 +147,12 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 					size={ SIZE_MEDIUM }
 					id={ headingID }
 				>
+					{ /* A card can name a page, keyword, referring site or campaign as well as a channel, so the heading names traffic. */ }
 					{ sprintf(
 						/* translators: %d: the number of days in the selected date range, such as "28" */
 						_n(
-							'Biggest channel shifts vs. the previous %d day',
-							'Biggest channel shifts vs. the previous %d days',
+							'Biggest traffic shifts vs. the previous %d day',
+							'Biggest traffic shifts vs. the previous %d days',
 							daysInSelectedRange,
 							'google-site-kit'
 						),

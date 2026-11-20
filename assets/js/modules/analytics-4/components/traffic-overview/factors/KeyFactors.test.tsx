@@ -143,8 +143,8 @@ function renderKeyFactors( props: Partial< KeyFactorsProps > = {} ) {
 
 describe( 'KeyFactors', () => {
 	it.each( [
-		[ 28, 'Biggest channel shifts vs. the previous 28 days' ],
-		[ 1, 'Biggest channel shifts vs. the previous 1 day' ],
+		[ 28, 'Biggest traffic shifts vs. the previous 28 days' ],
+		[ 1, 'Biggest traffic shifts vs. the previous 1 day' ],
 	] )(
 		'should name the section after the %d days of the selected date range',
 		( daysInSelectedRange, heading ) => {
@@ -648,7 +648,7 @@ describe( 'KeyFactors', () => {
 
 		expect(
 			getByRole( 'heading', {
-				name: 'Biggest channel shifts vs. the previous 3 days',
+				name: 'Biggest traffic shifts vs. the previous 3 days',
 			} )
 		).toBeInTheDocument();
 		expect(
@@ -804,7 +804,7 @@ describe( 'KeyFactors', () => {
 		expect(
 			getByRole( 'heading', {
 				level: 3,
-				name: 'Biggest channel shifts vs. the previous 28 days',
+				name: 'Biggest traffic shifts vs. the previous 28 days',
 			} )
 		).toBeInTheDocument();
 		expect(
