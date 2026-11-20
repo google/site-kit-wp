@@ -45,7 +45,7 @@ only for a rule that must hold even when the skill does not run.
 
 -   `npm run build` / `npm run dev` - Asset builds
 -   `npm run lint` / `composer run lint` - Code quality
--   `npm run test` / `composer run test` - Run tests
+-   `npm -w tests/js run test:js -- <test files>` / `composer test -- --filter <TestClassName>` - Run the tests of the files you changed
 -   `npm run watch` - Development auto-rebuild
 
 ### Key Config Files

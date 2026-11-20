@@ -9,7 +9,7 @@ description: >
   for the audience tile showing no data", "write the remaining issues from design-doc.md", "add
   acceptance criteria to #12345") in the google/site-kit-wp repo.
 argument-hint: "[design-doc-path, issue-number, bug report, or requirements]"
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write
+allowed-tools: Read Grep Glob Edit Write Bash(gh issue view *) Bash(gh search issues *)
 ---
 
 # Write an issue's requirements
@@ -61,8 +61,7 @@ Source material arrives one of three ways, and only the user can tell you which:
 
 - **A design doc** — a path in the repo, or a hosted doc.
 - **Requirements written directly in the user's message.**
-- **An existing issue** — a GitHub issue number (`gh issue view <number> --json title,body`) or a
-  path to a local issue file, when only the criteria are wanted.
+- **An existing issue**: a GitHub issue number (`gh issue view <number> --repo google/site-kit-wp --json title,body`) or a path to a local issue file, when only the criteria are wanted.
 
 There are two modes, and they decide what you are allowed to touch:
 
@@ -93,6 +92,7 @@ breakdown: one issue per row, with its title and its point estimate. Do not re-s
 - **For a bug report, the whole report as the user gave it** — the plugin version, the module
   state, the browser, the exact values they saw. Read whatever the report names as evidence: a
   support thread, a linked issue, or the pull request the user says introduced the problem.
+- **An issue already filed on the same problem.** Search GitHub with two or three words of it: `gh search issues --repo google/site-kit-wp '<words>' --json number,title,state`. Where an open issue covers the whole problem, write no new issue, and name that issue in your reply. Where one covers a part, write the rest, and name it in the description.
 
 ## Step 3 — Verify everything against the code
 
@@ -160,8 +160,7 @@ issue", not "the issue that adds the store".
 **Ask the user for the number.** Never infer it from the design doc's ordering, never guess it
 from a nearby issue number, and never leave a placeholder to be filled in later:
 
-- **The issue is already in GitHub** — ask the user for its number, then confirm it is the issue
-  you mean with `gh issue view <number> --json title` before citing it.
+- **The issue is already in GitHub**: ask the user for its number, then confirm it is the issue you mean with `gh issue view <number> --repo google/site-kit-wp --json title` before citing it.
 - **The issue only exists locally** — a markdown file you or the user wrote that has not been
   filed yet. Say so, and ask the user to create it in GitHub and give you the new number. Wait
   for it: a cross-reference is the one thing you cannot write around.
@@ -217,6 +216,7 @@ The **Steps to reproduce** are the numbered list a tester follows with nothing b
 
 - **Start from a state the tester can reach.** A fresh install, a connected module, a setting at a
   named value. Make the starting state step 1 when the bug needs one.
+- **Undo what an earlier visit changed.** Where a step changes what the screen shows next time, such as a dismissed notice, add the step that undoes it, so the steps work a second time.
 - **One action per step**, with the real thing to click, type or paste — the page, the menu item,
   the URL, the value in the field. "Set the date range to `Last 28 days`", not "choose a date
   range".
@@ -244,6 +244,10 @@ English as a first language, and none of them should have to read a sentence twi
   contact link, the listener emits `contact_link_click` and stops, so the same click is never
   also reported as an outbound click" can be read in only one.
 - **Cut the sentence that only sounds good.** If removing it loses no information, remove it.
+- **Keep each sentence to 25 words or fewer.** Split a sentence past 30 words in two. Put the condition first, before what it decides: "When the flag is off, the tab renders nothing", not "The tab renders nothing when the flag is off".
+- **Write the verb, not a noun made from it.** "Decide", not "make a decision". "Check", not "perform a check". Cut the words that add length and no meaning, such as "very", "really", "basically", "actually", "genuinely" and "honestly". Write what a thing does in place of a word that rates it, such as "seamless", "powerful", "comprehensive" or "essential".
+- **Give each thing one name.** Call one thing by the same name in the whole description and the criteria, and give no name two meanings. Take the name the code or the design doc already uses.
+- **State each fact as you checked it.** Write no "may", "should probably", "it is worth noting" or "could potentially" over a fact you checked in the code. Name the one thing you could not check, and flag a decision you had to make as a decision (Step 7).
 
 Read the finished description once more and rewrite every sentence that needs a second reading.
 The same rules apply to the acceptance criteria (Step 6) and to your reply to the user (Step 7).
@@ -295,6 +299,7 @@ and the fix stay out of the criteria, in the same way technique does for a featu
 - **One outcome per bullet.** Nest a second level when a single outcome has an enumerable set of
   cases — the conditions under which a hook must not fire, the values a param may take, the
   forms excluded from a match rule.
+- **Say a shared condition once.** Where several outcomes share a condition, such as one user role, one feature flag or one screen, open one criterion on that condition and put each outcome under it. Say a shared outcome once the same way. Open no criterion on "the same" or "as above".
 - A **table** when a criterion enumerates a lookup that prose would obscure (each widget slug
   and the module that owns it). Inline it; never link out to it.
 
@@ -318,12 +323,12 @@ Each bullet states an outcome:
 - **List every case you refer to as a group.** "Share links are excluded" is not checkable until
   the criterion writes out the share links it means. Give the members inline, or in a table the
   criterion carries.
-- **Give the values**: `viewContext: 'mainDashboard'`, `dateRange: 'last-28-days'`, `limit: 3`,
-  a 300-second cache TTL.
+- **Give the values**: `viewContext: 'mainDashboard'`, `dateRange: 'last-28-days'`, `limit: 3`, a 300-second cache TTL.
 - **State cardinality** when it matters: "at most once per request", "exactly once per page
   view", "exactly one of the four states".
 - **Say what must stay unchanged** when the change touches shared code, naming the consumers
   that would otherwise regress.
+- **Walk each state and reader the change reaches**: loading, an error, zero data, a view-only user, a keyboard user, a screen reader user, each dashboard and each screen size. Where a screen loads several requests, give the outcome when one of them fails. End on what keeps working, with "still".
 
 ### Keep them compact
 
@@ -364,6 +369,7 @@ Everything you decided, cut or discovered belongs in your reply to the user — 
   user can overrule them.
 - **Discrepancies** between the design doc and the code, with the `file:line` you checked.
 - **Anything you added** beyond the design doc's scope for this issue, so the user can drop it.
+- **User-facing copy, journeys or experiences that no design gives**, for the Product Manager to approve, often with the Engineering Lead.
 - **On a bug report**: the cause you found, with its `file:line`; anything in the report you could
   not confirm in the code; and the environment facts you left blank because the user did not
   state them.

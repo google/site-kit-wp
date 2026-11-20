@@ -6,7 +6,7 @@ description: >
   "implement issue #12345", "build the feature in issue 12345", "follow the implementation
   brief for #12345") in the google/site-kit-wp repo.
 argument-hint: "[issue-number]"
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write
+allowed-tools: Read Grep Glob Edit Write Bash(gh issue view *) Bash(gh pr list *) Bash(git status *) Bash(git diff *) Bash(git log *) Bash(git blame *) Bash(git grep *) Bash(git switch -c *) Bash(git checkout -b *) Bash(npm run lint:js:files *) Bash(npm run typecheck-staged *) Bash(npx stylelint *) Bash(npm run build:dev *) Bash(npm -w tests/js run test:js *) Bash(npm run storybook *) Bash(npm run test:visualtest *) Bash(npm run test:visualapprove *) Bash(composer lint *) Bash(composer lint-fix *) Bash(composer analyze *) Bash(composer test *)
 ---
 
 # Implement a GitHub issue
@@ -21,8 +21,7 @@ convention docs relevant to the issue (see the map in Step 3).
 
 ## Step 1 — Fetch and parse the issue
 
-Fetch the issue from `google/site-kit-wp` (e.g. `gh issue view <number> --json title,body,labels`,
-or the GitHub MCP issue tools).
+Fetch the issue from `google/site-kit-wp` (e.g. `gh issue view <number> --repo google/site-kit-wp --json title,body,labels`, or the GitHub MCP issue tools).
 
 Site Kit issues follow `.github/ISSUE_TEMPLATE/feature_request.md`. Extract these sections
 verbatim:
@@ -56,11 +55,7 @@ builds on, `(see #13005)` for the extension point it leaves open, "the create va
 #13022" for the half that isn't yours. Those references carry requirements that the issue
 in front of you does not repeat.
 
-Collect every issue referenced anywhere in the Feature Description, Acceptance criteria,
-Implementation Brief and Test Coverage — `#12345`, a full `github.com/google/site-kit-wp/issues/…`
-URL, the parent epic, and anything GitHub lists as linked — and read each one with
-`gh issue view <number> --json title,body,state,url` **before** you start implementing. From
-each, take:
+Collect every issue mentioned anywhere in the Feature Description, Acceptance criteria, Implementation Brief and Test Coverage. That covers `#12345`, a full `github.com/google/site-kit-wp/issues/…` URL, the parent epic, and anything GitHub lists as linked. Read each one with `gh issue view <number> --repo google/site-kit-wp --json title,body,state,url` **before** you start implementing. From each, take:
 
 - **What it delivered**, when it is closed — the classes, selectors, hooks and constants your
   brief expects to already be there. Confirm they exist in the branch you are on; a closed
@@ -142,6 +137,7 @@ Follow the conventions you loaded in Step 3. In addition:
   (see `docs/context/js/feature-flags.md`).
 - Cover every Implementation Brief checkbox and Acceptance criterion. Implement the
   **Test Coverage** items as real tests.
+- **Code whose reason you can't see.** Before you change or delete existing code whose reason the code doesn't show, read its `git blame` and the pull request that added it. `gh pr list --repo google/site-kit-wp --search <commit> --state merged` finds that pull request.
 
 ## Step 5 — Self-review
 
@@ -154,29 +150,19 @@ written and passing.
 
 Run, and fix anything that fails:
 
+- **Fix the code, not the check**: add no `eslint-disable`, `phpcs:ignore` or `@phpstan-ignore`, no PHPStan baseline entry and no moved threshold, and make no test easier to pass. Where one such move is right, say why in your summary (Step 7).
 - **Lint** — prefer scoping to the files you touched over the whole codebase:
-  - JS: `npm run lint:js:files -- <path/to/file.js>` (auto-fix the full codebase with
-    `npm run lint:js-fix`, or just your files with
-    `npm run lint:js:files -- --fix <path/to/file.js>`).
-  - PHP: `composer lint -- <path/to/File.php>` (auto-fix with `composer lint-fix`).
+  - JS: `npm run lint:js:files -- <path/to/file.js>` (auto-fix with `npm run lint:js:files -- --fix <path/to/file.js>`).
+  - PHP: `composer lint -- <path/to/File.php>` (auto-fix with `composer lint-fix -- <path/to/File.php>`).
+- **Type check**: `npm run typecheck-staged -- <path/to/file.ts>`, over each `.ts` and `.tsx` file you touched.
+- **Style lint**: `npx stylelint <path/to/file.scss>`, over each `.scss` file you touched.
+- **PHPStan**: `composer analyze -- <path/to/File.php>`, over each PHP file you touched under `includes/`.
 - **Build** — `npm run build:dev` when JS/asset changes are non-trivial.
 - **Tests** — run the **specific** test files you touched, not the whole suite:
   - JS: `npm -w tests/js run test:js -- <path/to/file.test.js>`
   - PHP: `composer test -- --filter <TestClassName>`
-- **Visual check (any change that affects rendering)** — for SCSS, layout, spacing,
-  alignment, or responsive rules, **render the change and look at it** before declaring it
-  done. Lint and build passing do **not** prove visual correctness, and a change that looks
-  like a trivial value tweak in the brief can still be visually wrong. Prefer the Storybook
-  story at the affected viewport(s); if no dev server is running, build a throwaway HTML
-  reproduction using the **real computed values** (typography from
-  `assets/sass/components/global/_googlesitekit-typography.scss`, breakpoints/sizes from
-  `assets/sass/config/`) and open it in the browser. For responsive / `@media` changes,
-  check **both sides** of every breakpoint you touch (the breakpoint variables, such as
-  `$bp-tablet`, are defined in `assets/sass/config/_variables.scss`). A mobile-only rule is
-  invisible at desktop width, so look at the change at a width on each side. Confirm that
-  the VRT viewports in `tests/vrt/README.md` cover both sides too. Re-check the exact state
-  described in the issue (e.g. the badge *next to the title*, not just the component in
-  isolation).
+  - Callers: add the tests of each file that imports a file you changed. A data store's callers reach it through the registry rather than by an import, so find them by name for each selector, resolver, action and control you touched, with `git grep -l -w -e '<name>' -- assets packages storybook tests/js`.
+- **Visual check (any change that affects rendering)**: for SCSS, layout, spacing, alignment, or responsive rules, **render the change and look at it** before declaring it done. Lint and build passing do **not** prove that the change renders correctly. A change that looks like a trivial value tweak in the brief can still be visually wrong. Look at the Storybook story at the affected viewport(s). If no Storybook is running, start it with `npm run storybook`, and add a story where none shows the state. A hand-made HTML copy of the styles shows the copy, not the code that ships. For responsive / `@media` changes, check **both sides** of every breakpoint you touch (the breakpoint variables, such as `$bp-tablet`, are defined in `assets/sass/config/_variables.scss`). A mobile-only rule is invisible at desktop width, so look at the change at a width on each side. Confirm that the VRT viewports in `tests/vrt/README.md` cover both sides too. Re-check the exact state described in the issue (e.g. the badge *next to the title*, not just the component in isolation).
 - **VRT** — if you added/changed a Storybook story, check just that story rather than
   the full suite: `npm run test:visualtest -- --grep "<story label>"`, and
   `npm run test:visualapprove -- --grep "<story label>"` to write the new reference

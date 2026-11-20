@@ -12,7 +12,7 @@ the file + section when flagging a violation.
 ## 1. Requirements adherence
 
 - Every **Acceptance criterion** is met.
-- Every **Implementation Brief** checkbox is implemented.
+- Every **Implementation Brief** checkbox is implemented, or is built another way that breaks no criterion and adds no risk, with its reason in the PR's "Relevant technical choices".
 - Every **Test Coverage** item exists as a real, passing test.
 - Edge cases named in the issue are handled. No required behavior is missing.
 
@@ -56,11 +56,12 @@ the file + section when flagging a violation.
 - **Performance** — no needless re-renders, missing memoization, expensive selectors, N+1 queries, or large asset bloat.
 - **Documentation** — complex logic and all exports documented.
 - Accessibility and backward compatibility where relevant.
+- **Checks kept as strict**: no check made easier to pass with no reason given. Such a change is a threshold moved in a lint, PHPStan or test config, or a test made easier to pass. So is a new `eslint-disable`, `phpcs:ignore`, `@phpstan-ignore` or PHPStan baseline entry, or unfinished work such as an empty `catch`.
 
 ## 4. Verification
 
-- Lint passes — for the full suite: `npm run lint:js` / `composer lint`; scoped to the
-  changed files: `npm run lint:js:files -- <path...>` / `composer lint -- <path...>`.
+- Lint passes over the changed files: `npm run lint:js:files -- <path...>` / `composer lint -- <path...>`.
+- The type check, the style lint and PHPStan pass over the changed files: `npm run typecheck-staged -- <.ts and .tsx files>`, `npx stylelint <.scss files>` and `composer analyze -- <PHP files under includes/>`.
 - Relevant tests were **actually executed** and pass.
 - Build succeeds for non-trivial asset changes (`npm run build:dev`).
 - Any change that affects rendering (SCSS, layout, spacing, alignment) is **visually

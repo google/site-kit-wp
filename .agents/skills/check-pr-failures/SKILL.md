@@ -7,7 +7,7 @@ description: >
   check or watch a PR's checks, or to work through test failures on a pull request (e.g.
   "why is CI failing on #12345", "check the failures on my PR", "/check-pr-failures 12345").
 argument-hint: "[pr-number]"
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write
+allowed-tools: Read Grep Glob Edit Write Bash(gh pr checks *) Bash(gh pr view *) Bash(gh run list *) Bash(gh run view *) Bash(gh api --method GET *) Bash(gh issue list *) Bash(git merge-base *) Bash(git worktree *) Bash(npm install *) Bash(npm run build:test *) Bash(npm run test:e2e *) Bash(npm run test:visualtest *) Bash(npm -w tests/js run test:js *) Bash(composer test *)
 ---
 
 # Check a pull request's CI failures
@@ -26,7 +26,7 @@ order. Don't guess how long they will take. Estimate it from recent passing runs
 workflow, using the workflow's file name from `.github/workflows/`:
 
 ```
-gh run list --workflow <workflow-file> --status success --limit 5 --json databaseId,createdAt,updatedAt \
+gh run list --repo google/site-kit-wp --workflow <workflow-file> --status success --limit 5 --json databaseId,createdAt,updatedAt \
   --jq '.[] | "\(.databaseId)\t\(((.updatedAt | fromdate) - (.createdAt | fromdate)) / 60 | floor) min"'
 ```
 
@@ -34,7 +34,7 @@ A run's time includes any time it spent queued. For the time of each job on its 
 those run IDs:
 
 ```
-gh run view <run-id> --json jobs \
+gh run view <run-id> --repo google/site-kit-wp --json jobs \
   --jq '.jobs[] | select(.conclusion == "success") | "\(((.completedAt | fromdate) - (.startedAt | fromdate)) / 60 | floor) min\t\(.name)"'
 ```
 
@@ -42,7 +42,7 @@ Tell the user when to expect the slowest check. Rather than polling by hand, wat
 report each one as it lands:
 
 ```
-gh api "repos/google/site-kit-wp/commits/$(gh pr view <number> --json headRefOid --jq .headRefOid)/check-runs?per_page=100" \
+gh api --method GET "repos/google/site-kit-wp/commits/$(gh pr view <number> --repo google/site-kit-wp --json headRefOid --jq .headRefOid)/check-runs?per_page=100" \
   --jq '.check_runs[]? | select(.status=="completed") | select(.conclusion!="skipped") | "\(.conclusion|ascii_upcase): \(.name)"'
 ```
 
@@ -64,8 +64,8 @@ already settled.
 ## Step 1 — Collect the check results
 
 ```
-gh pr checks <number>
-gh api "repos/google/site-kit-wp/commits/$(gh pr view <number> --json headRefOid --jq .headRefOid)/check-runs?per_page=100" \
+gh pr checks <number> --repo google/site-kit-wp
+gh api --method GET "repos/google/site-kit-wp/commits/$(gh pr view <number> --repo google/site-kit-wp --json headRefOid --jq .headRefOid)/check-runs?per_page=100" \
   --jq '.check_runs[] | select(.conclusion=="failure" or .status!="completed") | "\(.status)\t\(.conclusion // "-")\t\(.name)"'
 ```
 
@@ -78,7 +78,7 @@ not workflow level, before telling anyone what broke.
 ## Step 2 — Get the failure detail
 
 ```
-gh run view <run-id> --log-failed
+gh run view <run-id> --repo google/site-kit-wp --log-failed
 ```
 
 Check-run **annotations are usually useless** (`Process completed with exit code 1`). The job
@@ -127,8 +127,8 @@ PR's, make sure the result repeats: the test fails on every run here and passes 
 the merge base. Then check whether the same job has recently failed on `develop`:
 
 ```
-gh run list --workflow <workflow-file> --branch develop --status failure --limit 10
-gh run view <run-id> --log-failed
+gh run list --repo google/site-kit-wp --workflow <workflow-file> --branch develop --status failure --limit 10
+gh run view <run-id> --repo google/site-kit-wp --log-failed
 ```
 
 If any of those runs failed the same test, the test is flaky. Report it as flaky, with links to
