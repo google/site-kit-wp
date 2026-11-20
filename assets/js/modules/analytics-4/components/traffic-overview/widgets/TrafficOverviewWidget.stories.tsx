@@ -54,6 +54,7 @@ import {
 	INSUFFICIENT_PERMISSIONS_ERROR,
 	INTERNAL_SERVER_ERROR,
 	LATEST_POST,
+	createBenchmarkingResponse,
 	createBreakdownReport,
 	getExpiryFromNow,
 	getRecentTrafficBreakdownReportOptions,
@@ -362,6 +363,55 @@ TypicalTrafficWithInsights.parameters = {
 	features: [ 'typicalTraffic', 'trafficInsights' ],
 };
 TypicalTrafficWithInsights.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+};
+
+export const TypicalTrafficShortHistory = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+TypicalTrafficShortHistory.storyName =
+	'Typical Traffic, Short History (typicalTraffic enabled)';
+TypicalTrafficShortHistory.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+
+		const { startDate, endDate } = registry
+			.select( CORE_USER )
+			.getDateRangeDates();
+		const response = createBenchmarkingResponse( startDate, endDate );
+
+		// The site recorded its first visits on `2025-01-01`, 36 days before
+		// today. A 28-day range has the key factors once every day of the
+		// period before it has recorded traffic, from the one that ends on
+		// `2025-02-25`, and the typical traffic range once its first day has
+		// 84 days of history, from the one that ends on `2025-04-21`. Until
+		// then, the panel says when each will show.
+		provideBenchmarkingResponse( registry, {
+			...response,
+			dailyTraffic: response.dailyTraffic.map( ( day ) => ( {
+				...day,
+				expectedMin: null,
+				expectedMax: null,
+			} ) ),
+			availability: {
+				...response.availability,
+				bandAvailable: false,
+				bandAvailableFrom: '2025-04-21',
+				keyFactorsAvailable: false,
+				keyFactorsAvailableFrom: '2025-02-25',
+				insightRequestAllowed: false,
+				performanceInsightAvailable: false,
+			},
+			bandReferenceDays: null,
+			keyFactors: [],
+		} );
+	},
+};
+TypicalTrafficShortHistory.parameters = {
+	features: [ 'typicalTraffic' ],
+};
+TypicalTrafficShortHistory.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 

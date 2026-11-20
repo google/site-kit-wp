@@ -22,8 +22,14 @@
 import classnames from 'classnames';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { KEY_FACTORS } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
@@ -33,6 +39,21 @@ import KeyFactors from './KeyFactors';
 import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from './placeholderKeyFactors';
 
 const REFERENCE_SITE_URL = 'https://example.com';
+
+/**
+ * Puts the site info in the store, whose admin URL a landing page's link is
+ * built on, and `2025-02-05` as today, which the notice of `noPreviousPeriod`
+ * compares its day with.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to set up.
+ * @return {void}
+ */
+function setupRegistry( registry: WPDataRegistry ) {
+	provideSiteInfo( registry );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+}
 
 /**
  * Cards whose names and values are longer than a card is wide.
@@ -125,6 +146,10 @@ interface KeyFactorsStoryProps {
 	steady?: boolean;
 	/** Whether the selected date range is too short for the key factors. */
 	rangeTooShort?: boolean;
+	/** Whether the site's recorded traffic doesn't cover the period before the selected date range yet. */
+	noPreviousPeriod?: boolean;
+	/** The last day of the first date range of this length with the key factors. */
+	keyFactorsAvailableFrom?: string | null;
 	/** The number of days in the selected date range. */
 	daysInSelectedRange?: number;
 	/** Whether the key factors have arrived. */
@@ -139,6 +164,8 @@ function Template( {
 	keyFactors,
 	steady,
 	rangeTooShort,
+	noPreviousPeriod,
+	keyFactorsAvailableFrom,
 	daysInSelectedRange = 28,
 	loaded,
 	insight,
@@ -146,10 +173,9 @@ function Template( {
 }: KeyFactorsStoryProps ) {
 	// The section's styles are scoped to the widget and the panel, so the
 	// story renders inside both. The placeholders' color comes from their
-	// pulse animation, which the VRT build only keeps when paused. A landing
-	// page links to its entity dashboard at the admin URL of the site info.
+	// pulse animation, which the VRT build only keeps when paused.
 	return (
-		<WithRegistrySetup func={ provideSiteInfo }>
+		<WithRegistrySetup func={ setupRegistry }>
 			<div
 				className={ classnames(
 					'googlesitekit-widget--analyticsTrafficOverview',
@@ -161,6 +187,8 @@ function Template( {
 						keyFactors={ keyFactors }
 						steady={ steady }
 						rangeTooShort={ rangeTooShort }
+						noPreviousPeriod={ noPreviousPeriod }
+						keyFactorsAvailableFrom={ keyFactorsAvailableFrom }
 						loaded={ loaded }
 						insight={ insight }
 						daysInSelectedRange={ daysInSelectedRange }
@@ -223,6 +251,18 @@ RangeTooShort.args = {
 	keyFactors: [],
 	rangeTooShort: true,
 	daysInSelectedRange: 3,
+};
+
+// `NoPreviousPeriod` runs no visual check, because it only changes the
+// notice text of `NoNotableChange`.
+export const NoPreviousPeriod = Template.bind(
+	{}
+) as Story< KeyFactorsStoryProps >;
+NoPreviousPeriod.storyName = 'No Previous Period';
+NoPreviousPeriod.args = {
+	keyFactors: [],
+	noPreviousPeriod: true,
+	keyFactorsAvailableFrom: '2025-02-25',
 };
 
 export const LongLabels = Template.bind( {} ) as Story< KeyFactorsStoryProps >;

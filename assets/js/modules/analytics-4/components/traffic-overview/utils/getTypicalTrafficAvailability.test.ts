@@ -26,7 +26,10 @@ describe( 'getTypicalTrafficAvailability', () => {
 	it( 'should show every part while the benchmarking response loads', () => {
 		expect( getTypicalTrafficAvailability( undefined ) ).toEqual( {
 			rangeTooShort: false,
+			bandAvailable: true,
+			bandAvailableFrom: null,
 			keyFactorsAvailable: true,
+			keyFactorsAvailableFrom: null,
 			insightRequestAllowed: true,
 			performanceInsightAvailable: true,
 			lastYearAvailable: false,
@@ -47,7 +50,10 @@ describe( 'getTypicalTrafficAvailability', () => {
 				availability: {
 					...response.availability,
 					rangeTooShort: true,
+					bandAvailable: false,
+					bandAvailableFrom: '2025-04-02',
 					keyFactorsAvailable: false,
+					keyFactorsAvailableFrom: null,
 					insightRequestAllowed: false,
 					performanceInsightAvailable: false,
 					lastYearAvailable: true,
@@ -56,7 +62,10 @@ describe( 'getTypicalTrafficAvailability', () => {
 		).toEqual(
 			expect.objectContaining( {
 				rangeTooShort: true,
+				bandAvailable: false,
+				bandAvailableFrom: '2025-04-02',
 				keyFactorsAvailable: false,
+				keyFactorsAvailableFrom: null,
 				insightRequestAllowed: false,
 				performanceInsightAvailable: false,
 				lastYearAvailable: true,

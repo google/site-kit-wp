@@ -40,6 +40,7 @@ import { getPublishedPosts } from '@/js/modules/analytics-4/components/traffic-o
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
 import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
+import TypicalTrafficRangeNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTrafficRangeNotice';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors';
 import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
@@ -105,16 +106,26 @@ const TrafficOverviewPanel: FC = () => {
 	// rules of the Site Kit service. Until the benchmarking response arrives,
 	// the panel keeps the placeholders of every part.
 	//
-	// The key factors compare the selected range with the period before it,
-	// so the benchmarking response has none until every day of that period
-	// has recorded traffic. Until then, the panel leaves out their section,
-	// whose notice would say that no channel changed notably, and asks for no
-	// insight, whose driver would describe a change against days that weren't
-	// measured. A range too short for the key factors has none either, and
-	// their section says what range they need instead.
+	// A part the site's history is too short for says when it will show, as
+	// the scenarios doc agreed (D13): the response has the last day of the
+	// first range of this length with each part.
+	//
+	// - The band needs a typical range under every day, and the analysis,
+	//   which compares the visits with it, needs the band. Until then, the
+	//   summary says when the band will show, in the analysis's place.
+	// - The key factors compare the selected range with the period before it,
+	//   so the response has none until every day of that period has recorded
+	//   traffic. Until then, their section says when they will, rather than
+	//   that no channel changed notably, and the panel asks for no insight,
+	//   whose driver would describe a change against days that weren't
+	//   measured. A range too short for the key factors has none either, and
+	//   their section says what range they need instead.
 	const {
 		rangeTooShort,
+		bandAvailable,
+		bandAvailableFrom,
 		keyFactorsAvailable,
+		keyFactorsAvailableFrom,
 		insightRequestAllowed,
 		performanceInsightAvailable,
 		lastYearAvailable,
@@ -169,6 +180,14 @@ const TrafficOverviewPanel: FC = () => {
 								loading={ insightLoading }
 							/>
 						) }
+						{ showKeyFactors && (
+							// In the analysis's place, while the band waits.
+							<TypicalTrafficRangeNotice
+								bandAvailable={ bandAvailable }
+								availableFrom={ bandAvailableFrom }
+								loaded={ ! isLoading }
+							/>
+						) }
 						<TotalVisitors
 							report={ totalsReport }
 							totalVisits={ totalVisits }
@@ -209,21 +228,24 @@ const TrafficOverviewPanel: FC = () => {
 							/>
 						</div>
 					) }
-					{ showKeyFactors &&
-						( keyFactorsAvailable || rangeTooShort ) && (
-							<KeyFactors
-								keyFactors={ benchmarkingResponse?.keyFactors }
-								steady={ benchmarkingResponse?.steadyTraffic }
-								rangeTooShort={ rangeTooShort }
-								loaded={ ! isLoading }
-								// The driver describes the change against the
-								// previous period, and what carried it.
-								insight={ insight?.driver }
-								insightLoading={ insightLoading }
-								daysInSelectedRange={ daysInSelectedRange }
-								referenceSiteURL={ referenceSiteURL }
-							/>
-						) }
+					{ showKeyFactors && (
+						<KeyFactors
+							keyFactors={ benchmarkingResponse?.keyFactors }
+							steady={ benchmarkingResponse?.steadyTraffic }
+							rangeTooShort={ rangeTooShort }
+							noPreviousPeriod={
+								! rangeTooShort && ! keyFactorsAvailable
+							}
+							keyFactorsAvailableFrom={ keyFactorsAvailableFrom }
+							loaded={ ! isLoading }
+							// The driver describes the change against the
+							// previous period, and what carried it.
+							insight={ insight?.driver }
+							insightLoading={ insightLoading }
+							daysInSelectedRange={ daysInSelectedRange }
+							referenceSiteURL={ referenceSiteURL }
+						/>
+					) }
 					<TrafficBreakdown
 						values={ breakdownValues }
 						loaded={ ! isLoading }

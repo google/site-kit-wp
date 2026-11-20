@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import {
 	fireEvent,
@@ -119,7 +120,8 @@ const STEADY_KEY_FACTORS: BenchmarkingKeyFactor[] = [
 /**
  * Renders the section with the cards of `REFERRAL` and `ORGANIC_SEARCH` and
  * the site's URL, over 28 days, unless the props say otherwise. The registry
- * has the site info, whose admin URL a landing page's link is built on.
+ * has the site info, whose admin URL a landing page's link is built on, and
+ * `2025-02-05` as today.
  *
  * @since n.e.x.t
  *
@@ -129,6 +131,7 @@ const STEADY_KEY_FACTORS: BenchmarkingKeyFactor[] = [
 function renderKeyFactors( props: Partial< KeyFactorsProps > = {} ) {
 	const registry = createTestRegistry();
 	provideSiteInfo( registry );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 
 	return render(
 		<KeyFactors
@@ -793,6 +796,56 @@ describe( 'KeyFactors', () => {
 			queryByText(
 				'Select a date range of at least 7 days to see which channels changed the most'
 			)
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelectorAll(
+				'.googlesitekit-traffic-overview__key-factor--loading'
+			)
+		).toHaveLength( 3 );
+	} );
+
+	it( 'should say when the key factors will show under the heading, in place of the cards and of "No channel changed notably…", when the site\'s recorded traffic doesn\'t cover the previous period yet', () => {
+		const { container, getByRole, getByText, queryByText } =
+			renderKeyFactors( {
+				keyFactors: [],
+				noPreviousPeriod: true,
+				keyFactorsAvailableFrom: '2025-02-06',
+			} );
+
+		expect(
+			getByRole( 'heading', {
+				name: 'Biggest traffic shifts vs. the previous 28 days',
+			} )
+		).toBeInTheDocument();
+		expect(
+			getByText(
+				'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.'
+			)
+		).toBeInTheDocument();
+		expect(
+			queryByText(
+				'No channel changed notably compared with the previous 28 days'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors'
+			)
+		).toHaveClass(
+			'googlesitekit-traffic-overview__key-factors--no-change'
+		);
+	} );
+
+	it( 'should render the placeholder cards, and no notice of when the key factors will show, while the key factors load', () => {
+		const { container, queryByText } = renderKeyFactors( {
+			keyFactors: [],
+			noPreviousPeriod: true,
+			keyFactorsAvailableFrom: '2025-02-06',
+			loaded: false,
+		} );
+
+		expect(
+			queryByText( /There’s no previous period to compare to/ )
 		).not.toBeInTheDocument();
 		expect(
 			container.querySelectorAll(

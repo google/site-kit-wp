@@ -1095,11 +1095,16 @@ describe( 'TrafficOverviewPanel', () => {
 					bandAvailableFrom: '2025-04-02',
 					keyFactorsAvailableFrom: '2025-02-06',
 				},
+				'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.',
 			],
-			[ 'the site has no recorded traffic', availabilityWithoutTraffic ],
+			[
+				'the site has no recorded traffic',
+				availabilityWithoutTraffic,
+				'There’s no previous period to compare to.',
+			],
 		] )(
-			'should leave out the key factors when the benchmarking response has none for the selected range, as when %s',
-			async ( _, availability ) => {
+			'should say when the key factors will show, in place of their cards, when the benchmarking response has none for the selected range, as when %s',
+			async ( _, availability, notice ) => {
 				// The response has no key factors until every day of the
 				// previous period has recorded traffic, and says so in its
 				// availability, which the panel reads rather than working it
@@ -1109,17 +1114,150 @@ describe( 'TrafficOverviewPanel', () => {
 					createResponse( { availability, keyFactors: [] } )
 				);
 
-				const { container, waitForRegistry } = renderPanel();
+				const {
+					container,
+					getByRole,
+					getByText,
+					queryByText,
+					waitForRegistry,
+				} = renderPanel();
 
 				await waitForRegistry();
 
+				// Without cards, the section has the space under its notice
+				// that it has under "No channel changed notably…".
 				expect( getSectionClassNames( container ) ).toEqual( [
 					'googlesitekit-traffic-overview__summary',
 					'googlesitekit-traffic-overview__chart',
+					'googlesitekit-traffic-overview__key-factors googlesitekit-traffic-overview__key-factors--no-change',
 					'googlesitekit-traffic-overview__breakdown',
 				] );
+				expect(
+					getByRole( 'heading', {
+						name: 'Biggest traffic shifts vs. the previous 28 days',
+					} )
+				).toBeInTheDocument();
+				expect( getByText( notice ) ).toBeInTheDocument();
+				// No comparison was made, so nothing says that no channel
+				// changed.
+				expect(
+					queryByText(
+						'No channel changed notably compared with the previous 28 days'
+					)
+				).not.toBeInTheDocument();
 			}
 		);
+
+		it( 'should ask for a date range that ends later, in place of the key factor cards, when the selected range ends before the first range of its length with them, and still say when to check back for the typical traffic range', async () => {
+			// With recorded traffic from `2024-12-08` on, the 28 days that
+			// end on `2025-01-20` have no key factors, and the 28-day ranges
+			// that end on `2025-02-01` or later have them: one could be
+			// selected today. The first with the typical traffic range ends
+			// on `2025-03-28`, after today.
+			registry.dispatch( CORE_USER ).setDateRangeSelection( {
+				type: 'custom',
+				startDate: '2024-12-24',
+				endDate: '2025-01-20',
+			} );
+
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( {
+					availability: {
+						...availabilityWithoutTraffic,
+						bandAvailableFrom: '2025-03-28',
+						keyFactorsAvailableFrom: '2025-02-01',
+					},
+					keyFactors: [],
+				} )
+			);
+
+			const { getByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					'There’s no previous period to compare to. Select a date range that ends on or after February 1, 2025 to see which channels changed the most.'
+				)
+			).toBeInTheDocument();
+			expect(
+				getByText(
+					'We’re still learning what’s usual for your site. Check back on March 28, 2025 to see your typical traffic range.'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it.each( [
+			[
+				'a later day',
+				{
+					...availabilityWithoutTraffic,
+					bandAvailableFrom: '2025-04-02',
+					keyFactorsAvailableFrom: '2025-02-06',
+				},
+				'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.',
+			],
+			[
+				'no day, as when the site has no recorded traffic',
+				availabilityWithoutTraffic,
+				'There isn’t enough traffic history for a typical traffic range on these dates.',
+			],
+		] )(
+			'should say when the typical traffic range will show, above the visitor figures, when the days of the selected range have none, and the benchmarking response names %s',
+			async ( _, availability, notice ) => {
+				provideBenchmarkingResponse(
+					registry,
+					createResponse( {
+						dailyTraffic: createResponse().dailyTraffic.map(
+							( day ) => ( {
+								...day,
+								expectedMin: null,
+								expectedMax: null,
+							} )
+						),
+						availability,
+						keyFactors: [],
+					} )
+				);
+
+				const { getByText, waitForRegistry } = renderPanel();
+
+				await waitForRegistry();
+
+				const bandNotice = getByText( notice ).closest(
+					'.googlesitekit-notice-container'
+				);
+
+				// The notice sits where the analysis would, at the top of
+				// the summary, above the visitor figures.
+				expect( bandNotice?.parentElement ).toHaveClass(
+					'googlesitekit-traffic-overview__summary'
+				);
+				expect( bandNotice?.nextElementSibling ).toHaveClass(
+					'googlesitekit-traffic-overview__total-visitors'
+				);
+				expect(
+					bandNotice?.querySelector(
+						'.googlesitekit-traffic-overview__band-notice'
+					)
+				).toBeInTheDocument();
+			}
+		);
+
+		it( 'should leave out the notice of the typical traffic range when every day of the selected range has its typical range', async () => {
+			provideBenchmarkingResponse( registry, createResponse() );
+
+			const { container, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__band-notice'
+				)
+			).not.toBeInTheDocument();
+		} );
 
 		it( 'should render the key factors when the benchmarking response has them for the selected range, as when the previous period starts on the first day with recorded traffic', async () => {
 			// The previous period runs from `2024-12-12` to `2025-01-08`, so

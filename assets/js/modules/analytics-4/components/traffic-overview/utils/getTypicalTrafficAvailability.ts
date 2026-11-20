@@ -27,7 +27,10 @@ import {
 export type TypicalTrafficAvailability = Pick<
 	BenchmarkingAvailability,
 	| 'rangeTooShort'
+	| 'bandAvailable'
+	| 'bandAvailableFrom'
 	| 'keyFactorsAvailable'
+	| 'keyFactorsAvailableFrom'
 	| 'insightRequestAllowed'
 	| 'performanceInsightAvailable'
 	| 'lastYearAvailable'
@@ -36,12 +39,16 @@ export type TypicalTrafficAvailability = Pick<
 /**
  * The parts of the typical traffic view while the benchmarking response loads:
  * every part, so each keeps its placeholder until the response says otherwise,
- * and no short-range notice, which takes the place of the key factors. The
- * band's tooltip shows with the band alone, so no history of last year either.
+ * and no notice that takes the place of a part: neither the short-range notice
+ * nor the days a waiting part arrives. The band's tooltip shows with the band
+ * alone, so no history of last year either.
  */
 const AVAILABILITY_WHILE_LOADING: TypicalTrafficAvailability = {
 	rangeTooShort: false,
+	bandAvailable: true,
+	bandAvailableFrom: null,
 	keyFactorsAvailable: true,
+	keyFactorsAvailableFrom: null,
 	insightRequestAllowed: true,
 	performanceInsightAvailable: true,
 	lastYearAvailable: false,
@@ -58,7 +65,7 @@ const AVAILABILITY_WHILE_LOADING: TypicalTrafficAvailability = {
  * @since n.e.x.t
  *
  * @param {Object} [benchmarkingResponse] Optional. The benchmarking response for the selected date range, or `undefined` while it loads.
- * @return {Object} Whether the range is too short for the key factors, whether it has them, whether the panel asks for the generated insight, whether it shows the insight's analysis, and whether the site's history reaches the same time last year. Every part is `true`, and the range neither too short nor with last year's history, while the response loads.
+ * @return {Object} Whether the range is too short for the key factors, whether it has the band and the key factors, the last day of the first range of its length with each, whether the panel asks for the generated insight, whether it shows the insight's analysis, and whether the site's history reaches the same time last year. Every part is `true`, with no days, and the range neither too short nor with last year's history, while the response loads.
  */
 export function getTypicalTrafficAvailability(
 	benchmarkingResponse?: DecodedBenchmarkingResponse
