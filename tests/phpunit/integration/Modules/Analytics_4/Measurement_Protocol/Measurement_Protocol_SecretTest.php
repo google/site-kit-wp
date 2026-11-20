@@ -20,6 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protoco
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListMeasurementProtocolSecretsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaMeasurementProtocolSecret;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
@@ -316,14 +317,14 @@ class Measurement_Protocol_SecretTest extends TestCase {
 			function () {
 				return new FulfilledPromise(
 					new Response(
-						403,
+						404,
 						array(),
 						wp_json_encode(
 							array(
 								'error' => array(
-									'code'    => 403,
-									'message' => 'The caller does not have permission',
-									'status'  => 'PERMISSION_DENIED',
+									'code'    => 404,
+									'message' => 'Requested entity was not found.',
+									'status'  => 'NOT_FOUND',
 								),
 							)
 						)
@@ -339,6 +340,11 @@ class Measurement_Protocol_SecretTest extends TestCase {
 			'analytics_admin_request_failed',
 			$result->get_error_code(),
 			'The error code should be `analytics_admin_request_failed`.'
+		);
+		$this->assertSame(
+			'Requested entity was not found.',
+			$result->get_error_message(),
+			'The error message should be the `error.message` of the response body, not the whole body.'
 		);
 		$this->assertOptionNotExists(
 			Measurement_Protocol_Settings::OPTION,
@@ -377,6 +383,273 @@ class Measurement_Protocol_SecretTest extends TestCase {
 		return array(
 			'empty property' => array( array( 'propertyID' => '' ) ),
 			'empty stream'   => array( array( 'webDataStreamID' => '' ) ),
+		);
+	}
+
+	public function test_create__existing_secret() {
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				$this->requests[] = $request;
+
+				$response = new GoogleAnalyticsAdminV1betaListMeasurementProtocolSecretsResponse();
+				$secret   = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+				$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/test-secret-id' );
+				$secret->setDisplayName( 'Site Kit by Google' );
+				$secret->setSecretValue( 'test-secret-value' );
+				$response->setMeasurementProtocolSecrets( array( $secret ) );
+
+				return new FulfilledPromise( new Response( 200, array(), wp_json_encode( $response ) ) );
+			}
+		);
+
+		$this->assertTrue(
+			$this->measurement_protocol_secret->create(),
+			'Creating should succeed when the stream already has a "Site Kit by Google" secret.'
+		);
+		$this->assertCount( 1, $this->requests, 'No secret should be created when the stream already has a "Site Kit by Google" secret.' );
+		$this->assertSame(
+			'GET',
+			$this->requests[0]->getMethod(),
+			'The one request sent should list the secrets.'
+		);
+		$this->assertSame(
+			'test-secret-value',
+			$this->measurement_protocol_secret->get_api_secret(),
+			'The existing "Site Kit by Google" secret should be stored.'
+		);
+	}
+
+	public function test_create__no_existing_secret() {
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				$this->requests[] = $request;
+
+				if ( 'POST' === $request->getMethod() ) {
+					$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+					$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/new-secret-id' );
+					$secret->setDisplayName( 'Site Kit by Google' );
+					$secret->setSecretValue( 'new-secret-value' );
+
+					return new FulfilledPromise( new Response( 200, array(), wp_json_encode( $secret ) ) );
+				}
+
+				return new FulfilledPromise( new Response( 200, array(), wp_json_encode( new GoogleAnalyticsAdminV1betaListMeasurementProtocolSecretsResponse() ) ) );
+			}
+		);
+
+		$this->assertTrue(
+			$this->measurement_protocol_secret->create(),
+			'Creating should succeed when the stream has no "Site Kit by Google" secret.'
+		);
+		$this->assertCount( 2, $this->requests, 'The secrets should be listed, then a secret should be created.' );
+		$this->assertSame(
+			'POST https://analyticsadmin.googleapis.com/v1beta/properties/123456789/dataStreams/987654321/measurementProtocolSecrets',
+			$this->requests[1]->getMethod() . ' ' . $this->requests[1]->getUri(),
+			'The secret should be created under the connected web data stream.'
+		);
+		$this->assertSame(
+			array( 'displayName' => 'Site Kit by Google' ),
+			json_decode( (string) $this->requests[1]->getBody(), true ),
+			'The created secret should be named "Site Kit by Google".'
+		);
+		$this->assertSame(
+			'new-secret-value',
+			$this->measurement_protocol_secret->get_api_secret(),
+			'The created secret should be stored.'
+		);
+	}
+
+	public function test_create__list_request_fails() {
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				$this->requests[] = $request;
+
+				return new FulfilledPromise(
+					new Response(
+						404,
+						array(),
+						wp_json_encode(
+							array(
+								'error' => array(
+									'code'    => 404,
+									'message' => 'Requested entity was not found.',
+									'status'  => 'NOT_FOUND',
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+
+		$result = $this->measurement_protocol_secret->create();
+
+		$this->assertWPError( $result, 'Creating should return a WP_Error when listing the secrets fails.' );
+		$this->assertSame(
+			'Requested entity was not found.',
+			$result->get_error_message(),
+			'The error of the list request should be returned.'
+		);
+		$this->assertCount( 1, $this->requests, 'No secret should be created when listing the secrets fails.' );
+	}
+
+	public function test_create__create_request_fails() {
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				if ( 'POST' === $request->getMethod() ) {
+					return new FulfilledPromise(
+						new Response(
+							400,
+							array(),
+							wp_json_encode(
+								array(
+									'error' => array(
+										'code'    => 400,
+										'message' => 'User has not acknowledged the user data collection terms for this property.',
+										'status'  => 'FAILED_PRECONDITION',
+									),
+								)
+							)
+						)
+					);
+				}
+
+				return new FulfilledPromise( new Response( 200, array(), wp_json_encode( new GoogleAnalyticsAdminV1betaListMeasurementProtocolSecretsResponse() ) ) );
+			}
+		);
+
+		$result = $this->measurement_protocol_secret->create();
+
+		$this->assertWPError( $result, 'Creating should return a WP_Error when the Admin API refuses the create request.' );
+		$this->assertSame(
+			'analytics_admin_request_failed',
+			$result->get_error_code(),
+			'The error code should be `analytics_admin_request_failed` for a refused create request.'
+		);
+		$this->assertSame(
+			'User has not acknowledged the user data collection terms for this property.',
+			$result->get_error_message(),
+			'The error message should be the `error.message` of the response body.'
+		);
+		$this->assertSame(
+			array(
+				'status' => 400,
+				'reason' => 'FAILED_PRECONDITION',
+			),
+			$result->get_error_data(),
+			'The error data should contain the HTTP status and the `error.status` of the response body.'
+		);
+		$this->assertOptionNotExists(
+			Measurement_Protocol_Settings::OPTION,
+			'Nothing should be stored when the create request fails.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_create__stream_changes
+	 *
+	 * @param string   $display_name     Display name of the secret that the list request returns.
+	 * @param string   $request_method   Method of the request whose response returns the secret to store.
+	 * @param string[] $expected_methods Methods of the requests that should be sent.
+	 */
+	public function test_create__stream_changes( $display_name, $request_method, $expected_methods ) {
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( $display_name, $request_method ) {
+				$this->requests[] = $request;
+
+				// Another web data stream gets connected while the request that returns the secret is sent.
+				if ( $request_method === $request->getMethod() ) {
+					$this->analytics->get_settings()->merge( array( 'webDataStreamID' => '222222222' ) );
+				}
+
+				$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+				$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/test-secret-id' );
+				$secret->setDisplayName( $display_name );
+				$secret->setSecretValue( 'test-secret-value' );
+
+				if ( 'POST' === $request->getMethod() ) {
+					return new FulfilledPromise( new Response( 200, array(), wp_json_encode( $secret ) ) );
+				}
+
+				$response = new GoogleAnalyticsAdminV1betaListMeasurementProtocolSecretsResponse();
+				$response->setMeasurementProtocolSecrets( array( $secret ) );
+
+				return new FulfilledPromise( new Response( 200, array(), wp_json_encode( $response ) ) );
+			}
+		);
+
+		$result = $this->measurement_protocol_secret->create();
+
+		$this->assertWPError( $result, 'Creating should return a WP_Error when the secret belongs to a stream that is no longer connected.' );
+		$this->assertSame(
+			'measurement_protocol_secret_not_stored',
+			$result->get_error_code(),
+			'The error code should be `measurement_protocol_secret_not_stored`.'
+		);
+		$this->assertSame(
+			array( 'status' => 409 ),
+			$result->get_error_data(),
+			'The error data should contain status 409, since the connected web data stream changed.'
+		);
+		$this->assertSame(
+			$expected_methods,
+			array_map(
+				fn ( Request $request ) => $request->getMethod(),
+				$this->requests
+			),
+			'The secrets should be listed, and a secret should be created only when none is named "Site Kit by Google".'
+		);
+		$this->assertOptionNotExists(
+			Measurement_Protocol_Settings::OPTION,
+			'The secret of a stream that is no longer connected should not be stored.'
+		);
+	}
+
+	public function data_create__stream_changes() {
+		return array(
+			'existing secret reused' => array( 'Site Kit by Google', 'GET', array( 'GET' ) ),
+			'new secret created'     => array( 'Other secret', 'POST', array( 'GET', 'POST' ) ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_exception_to_error__body_not_json
+	 *
+	 * @param string $body   Response body.
+	 * @param int    $status HTTP status of the response.
+	 */
+	public function test_exception_to_error__body_not_json( $body, $status ) {
+		$result = Measurement_Protocol_Secret::exception_to_error( new Google_Service_Exception( $body, $status ) );
+
+		$this->assertSame(
+			'analytics_admin_request_failed',
+			$result->get_error_code(),
+			'The error code should be `analytics_admin_request_failed` for a response body that is not JSON, even with status 403.'
+		);
+		$this->assertSame(
+			$body,
+			$result->get_error_message(),
+			'The error message should be the whole response body when it is not JSON.'
+		);
+		$this->assertSame(
+			array(
+				'status' => $status,
+				'reason' => '',
+			),
+			$result->get_error_data(),
+			'The error data should contain the HTTP status and an empty reason when the response body is not JSON.'
+		);
+	}
+
+	public function data_exception_to_error__body_not_json() {
+		return array(
+			'502 Bad Gateway' => array( 'Bad Gateway', 502 ),
+			'403 Forbidden'   => array( 'Forbidden', 403 ),
 		);
 	}
 
