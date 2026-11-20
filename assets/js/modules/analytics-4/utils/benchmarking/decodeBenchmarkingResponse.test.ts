@@ -24,7 +24,7 @@ import { provideTimezone } from '@tests/js/test-utils';
 import { decodeBenchmarkingResponse } from './decodeBenchmarkingResponse';
 
 describe( 'decodeBenchmarkingResponse', () => {
-	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, `firstTrafficDate`, `keyFactors`, and `contentMarkers`', () => {
+	it( 'should decode the checked-in response to `visits`, `dailyTraffic`, `firstTrafficDate`, `keyFactors`, `steadyTraffic`, and `contentMarkers`', () => {
 		expect( decodeBenchmarkingResponse( benchmarkingData ) ).toEqual( {
 			visits: { current: 412, previous: 388 },
 			dailyTraffic: [
@@ -106,6 +106,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			],
 			// 2 days after the first plotted day, with the path the `CONTENT`
 			// card carries too.
+			steadyTraffic: false,
 			contentMarkers: [
 				{
 					date: '2025-08-20',
@@ -150,6 +151,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				new Array( 90 ).fill( null ),
 				null,
 				[],
+				false,
 			] );
 			const dates =
 				decoded?.dailyTraffic.map( ( { date } ) => date ) ?? [];
@@ -186,6 +188,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 						[ null ],
 						dayOffset,
 						[],
+						false,
 					] )?.firstTrafficDate
 				).toBe( firstTrafficDate );
 			}
@@ -204,6 +207,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					new Array( 14 ).fill( null ),
 					null,
 					[ [ 10, [ 0, 1 ] ] ],
+					false,
 				] )?.contentMarkers[ 0 ].date
 			).toBe( '2026-04-11' );
 		} );
@@ -224,6 +228,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ null ],
 			null,
 			[],
+			false,
 		] );
 
 		expect( decoded?.keyFactors[ 0 ].label ).toBeNull();
@@ -243,18 +248,22 @@ describe( 'decodeBenchmarkingResponse', () => {
 			( benchmarkingData as unknown[] ).slice( 0, 9 ),
 		],
 		[
-			'a response of eleven members',
+			'a response of ten members, without whether traffic was steady',
+			( benchmarkingData as unknown[] ).slice( 0, 10 ),
+		],
+		[
+			'a response of twelve members',
 			[ ...( benchmarkingData as unknown[] ), [] ],
 		],
 		[
-			'a response of thirteen members',
+			'a response of fourteen members',
 			[ ...( benchmarkingData as unknown[] ), 'en_US', 'payload', null ],
 		],
 	] )( 'decodes %s to null', ( _label, encoded ) => {
 		expect( decodeBenchmarkingResponse( encoded ) ).toBeNull();
 	} );
 
-	it( 'should decode the locale and the request of the generated insight from a response of twelve members', () => {
+	it( 'should decode the locale and the request of the generated insight from a response of thirteen members', () => {
 		const decoded = decodeBenchmarkingResponse( [
 			...( benchmarkingData as unknown[] ),
 			'de_DE_formal',
@@ -268,7 +277,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 		} );
 	} );
 
-	it( 'should leave out the locale and the request of the generated insight from a response of ten members', () => {
+	it( 'should leave out the locale and the request of the generated insight from a response of eleven members', () => {
 		const decoded = decodeBenchmarkingResponse( benchmarkingData );
 
 		expect( decoded ).not.toHaveProperty( 'insightLocale' );
@@ -299,7 +308,19 @@ describe( 'decodeBenchmarkingResponse', () => {
 	it( "should decode the encoder's output for an empty series without throwing", () => {
 		// What Response_Encoder writes when `dailyTraffic` is empty: no first
 		// date, because there is no day to write.
-		const encoded = [ 1, [], null, [], [ 0, 0 ], [], [], [], null, [] ];
+		const encoded = [
+			1,
+			[],
+			null,
+			[],
+			[ 0, 0 ],
+			[],
+			[],
+			[],
+			null,
+			[],
+			false,
+		];
 
 		expect( () => decodeBenchmarkingResponse( encoded ) ).not.toThrow();
 		expect( decodeBenchmarkingResponse( encoded ) ).toEqual( {
@@ -307,6 +328,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			dailyTraffic: [],
 			firstTrafficDate: null,
 			keyFactors: [],
+			steadyTraffic: false,
 			contentMarkers: [],
 		} );
 	} );
@@ -341,6 +363,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[],
 				5,
 				[],
+				false,
 			] )
 		).toBeNull();
 	} );
@@ -364,6 +387,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ null, null ],
 					null,
 					[],
+					false,
 				] )
 			).toBeNull();
 		}
@@ -393,6 +417,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ [ 118.4, 183.1 ] ],
 				-26,
 				[],
+				false,
 			];
 
 			// The response as written decodes, so only the hostile member
@@ -429,6 +454,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				] )
 			).toBeNull();
 		}
@@ -452,6 +478,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				] )
 			).toBeNull();
 		}
@@ -475,6 +502,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					expectedRanges,
 					null,
 					[],
+					false,
 				] )
 			).toBeNull();
 		}
@@ -502,6 +530,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[ null, expectedRange ],
 					null,
 					[],
+					false,
 				] )
 			).toBeNull();
 		}
@@ -545,6 +574,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ null ],
 				null,
 				[],
+				false,
 			] );
 
 			expect( decoded?.keyFactors ).toEqual( [
@@ -572,6 +602,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ null ],
 			null,
 			[],
+			false,
 		] );
 
 		expect( decoded?.keyFactors[ 0 ].attributes ).toEqual( [
@@ -597,6 +628,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ null ],
 			null,
 			[],
+			false,
 		] );
 
 		expect( decoded?.keyFactors ).toEqual( [
@@ -635,6 +667,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ null ],
 			null,
 			[],
+			false,
 		] );
 
 		expect( decoded?.keyFactors.map( ( { kind } ) => kind ) ).toEqual( [
@@ -681,6 +714,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 			[ null ],
 			null,
 			[],
+			false,
 		] );
 
 		// Both cards with an unknown kind are left out with their own
@@ -733,6 +767,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 				[ null, null, null, null ],
 				null,
 				contentMarkers,
+				false,
 			] )?.contentMarkers;
 		}
 
@@ -835,6 +870,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					[],
 					null,
 					[ [ 0, [ 0, 1 ] ] ],
+					false,
 				] )?.contentMarkers
 			).toEqual( [] );
 		} );

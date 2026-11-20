@@ -520,7 +520,7 @@ class Response_EncoderTest extends TestCase {
 			)
 		);
 
-		$this->assertCount( 10, $encoded, 'The encoded response should have ten members.' );
+		$this->assertCount( 11, $encoded, 'The encoded response should have eleven members.' );
 		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'An empty `dailyTraffic` should give an empty list of expected ranges.' );
 		$this->assertNull( $encoded[ Wire_Format::MEMBER_FIRST_TRAFFIC_DAY_OFFSET ], 'With no first plotted day to count from, the first traffic day should be encoded as null.' );
 	}
@@ -545,36 +545,36 @@ class Response_EncoderTest extends TestCase {
 		);
 	}
 
-	public function test_encode__writes_ten_members_for_a_response_without_an_insight_payload() {
+	public function test_encode__writes_eleven_members_for_a_response_without_an_insight_payload() {
 		$response                  = $this->get_fixture_response();
 		$response['insightLocale'] = 'de_DE';
 
 		$encoded = $this->encode_as_sent( $response );
 
-		$this->assertCount( 10, $encoded, 'A response without `insightPayload` should keep its ten members, even with a locale.' );
+		$this->assertCount( 11, $encoded, 'A response without `insightPayload` should keep its eleven members, even with a locale.' );
 		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_LOCALE, $encoded, 'A response without `insightPayload` should have no insight locale member.' );
 		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_PAYLOAD, $encoded, 'A response without `insightPayload` should have no insight payload member.' );
 	}
 
-	public function test_encode__writes_the_insight_locale_and_the_insight_payload_as_members_10_and_11() {
+	public function test_encode__writes_the_insight_locale_and_the_insight_payload_as_members_11_and_12() {
 		$response                   = $this->get_fixture_response();
 		$response['insightLocale']  = 'de_DE_formal';
 		$response['insightPayload'] = 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl';
 
 		$encoded = $this->encode_as_sent( $response );
 
-		$this->assertCount( 12, $encoded, 'A response with `insightPayload` should have twelve members.' );
+		$this->assertCount( 13, $encoded, 'A response with `insightPayload` should have thirteen members.' );
 		// The browser reads the members by their positions, so the positions
 		// are named here rather than read from `Wire_Format`.
-		$this->assertSame( range( 0, 11 ), array_keys( $encoded ), 'The response should stay a list, so it is sent as a JSON array.' );
-		$this->assertSame( 'de_DE_formal', $encoded[10], 'The locale of the insight should be at position 10.' );
-		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[11], 'The payload should be at position 11.' );
-		$this->assertSame( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 10 should be the locale of the insight, as it is.' );
-		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 11 should be the payload, as it is.' );
+		$this->assertSame( range( 0, 12 ), array_keys( $encoded ), 'The response should stay a list, so it is sent as a JSON array.' );
+		$this->assertSame( 'de_DE_formal', $encoded[11], 'The locale of the insight should be at position 11.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[12], 'The payload should be at position 12.' );
+		$this->assertSame( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 11 should be the locale of the insight, as it is.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 12 should be the payload, as it is.' );
 		$this->assertSame(
 			$this->encode_as_sent( $this->get_fixture_response() ),
-			array_slice( $encoded, 0, 10 ),
-			'The first ten members should be the same as those of the response without the insight members.'
+			array_slice( $encoded, 0, 11 ),
+			'The first eleven members should be the same as those of the response without the insight members.'
 		);
 		$this->assertNotContains( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_STRINGS ], 'The locale should not be added to the string table.' );
 	}
@@ -586,9 +586,9 @@ class Response_EncoderTest extends TestCase {
 
 		$encoded = $this->encode_as_sent( $response );
 
-		$this->assertCount( 12, $encoded, 'A response with a null `insightPayload` should still have twelve members.' );
-		$this->assertSame( 'de_DE', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 10 should be the locale of the insight.' );
-		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 11 should be null when there is no insight to request.' );
+		$this->assertCount( 13, $encoded, 'A response with a null `insightPayload` should still have thirteen members.' );
+		$this->assertSame( 'de_DE', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 11 should be the locale of the insight.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 12 should be null when there is no insight to request.' );
 	}
 
 	public function test_encode__writes_null_as_the_insight_locale_when_the_response_has_none() {
@@ -597,8 +597,8 @@ class Response_EncoderTest extends TestCase {
 
 		$encoded = $this->encode_as_sent( $response );
 
-		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 10 should be null for a response without `insightLocale`.' );
-		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 11 should be the payload.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 11 should be null for a response without `insightLocale`.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 12 should be the payload.' );
 	}
 
 	public function test_encode__writes_each_content_marker_as_its_day_offset_followed_by_its_posts() {
@@ -705,8 +705,28 @@ class Response_EncoderTest extends TestCase {
 
 		$encoded = $this->encode_as_sent( $response );
 
-		$this->assertCount( 10, $encoded, 'A response without `contentMarkers` should still have ten members.' );
+		$this->assertCount( 11, $encoded, 'A response without `contentMarkers` should still have eleven members.' );
 		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ], 'Member 9 should be an empty list.' );
+	}
+
+	public function test_encode__writes_whether_traffic_was_steady_as_member_10() {
+		$response                  = $this->get_fixture_response();
+		$response['steadyTraffic'] = true;
+
+		$encoded = $this->encode_as_sent( $response );
+
+		// The browser reads the members by their positions, so the position is
+		// named here rather than read from `Wire_Format`.
+		$this->assertTrue( $encoded[10], 'Member 10 should be true for a steady period.' );
+		$this->assertSame( 10, Wire_Format::MEMBER_STEADY_TRAFFIC, 'The steady traffic member should be member 10.' );
+
+		$response['steadyTraffic'] = false;
+
+		$this->assertFalse( $this->encode_as_sent( $response )[10], 'Member 10 should be false for a period that is not steady.' );
+
+		unset( $response['steadyTraffic'] );
+
+		$this->assertFalse( $this->encode_as_sent( $response )[10], 'Member 10 should be false for a response without `steadyTraffic`.' );
 	}
 
 	/**

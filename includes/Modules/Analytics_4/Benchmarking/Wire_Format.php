@@ -35,7 +35,7 @@ final class Wire_Format {
 	 * @since 1.189.0
 	 * @since 1.191.0 Renamed the constants of members `3` and `4` from visitors to visits, and replaced members `5` and `6` with the key factor cards and their attributes.
 	 * @since n.e.x.t Added members `7` and `8`, the expected range of each day and the first day with recorded traffic.
-	 * @since n.e.x.t Added member `9`, the content markers, and members `10` and `11`, the locale of the generated insight and its signed request. Only a response built with the `trafficInsights` feature carries members `10` and `11`.
+	 * @since n.e.x.t Added member `9`, the content markers, member `10`, whether traffic was steady, and members `11` and `12`, the locale of the generated insight and its signed request. Only a response built with the `trafficInsights` feature carries members `11` and `12`.
 	 */
 	const MEMBER_VERSION                  = 0;
 	const MEMBER_STRINGS                  = 1;
@@ -47,8 +47,9 @@ final class Wire_Format {
 	const MEMBER_DAILY_EXPECTED_RANGES    = 7;
 	const MEMBER_FIRST_TRAFFIC_DAY_OFFSET = 8;
 	const MEMBER_CONTENT_MARKERS          = 9;
-	const MEMBER_INSIGHT_LOCALE           = 10;
-	const MEMBER_INSIGHT_PAYLOAD          = 11;
+	const MEMBER_STEADY_TRAFFIC           = 10;
+	const MEMBER_INSIGHT_LOCALE           = 11;
+	const MEMBER_INSIGHT_PAYLOAD          = 12;
 
 	/**
 	 * The position each driver kind of a key factor card travels as. A kind is

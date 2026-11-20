@@ -762,6 +762,126 @@ class Key_FactorsTest extends TestCase {
 		$this->assertSame( array( 'LANDING_PAGE' ), array_column( $cards[0]['attributes'], 'kind' ), 'An `Unassigned` card should show its landing page alone, even with a device that moved more.' );
 	}
 
+	public function test_build_steady__returns_the_3_channels_with_the_most_visits_with_their_share_of_the_site_visits() {
+		$key_factors = new Key_Factors(
+			array(
+				'channelBreakdowns' => array(
+					$this->get_breakdown( 'Direct', 200, 199 ),
+					$this->get_breakdown( 'Email', 80, 78 ),
+					$this->get_breakdown( 'Organic Search', 150, 151, 'mobile' ),
+					$this->get_breakdown( 'Organic Search', 150, 151, 'desktop' ),
+					$this->get_breakdown( 'Referral', 120, 121 ),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Organic Search',
+					'current'    => 302,
+					'previous'   => 300,
+					'sharePct'   => 43.1,
+					'attributes' => array(),
+				),
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Direct',
+					'current'    => 199,
+					'previous'   => 200,
+					'sharePct'   => 28.4,
+					'attributes' => array(),
+				),
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Referral',
+					'current'    => 121,
+					'previous'   => 120,
+					'sharePct'   => 17.3,
+					'attributes' => array(),
+				),
+			),
+			$key_factors->build_steady( 700 ),
+			'The cards should be the three channels with the most visits, each added up across its devices, with its share of the 700 visits, and not `Email`, which has fewer.'
+		);
+	}
+
+	public function test_build_steady__orders_channels_with_as_many_visits_by_label_and_leaves_out_a_placeholder_and_a_channel_without_visits() {
+		$key_factors = new Key_Factors(
+			array(
+				'channelBreakdowns' => array(
+					$this->get_breakdown( '(not set)', 500, 500 ),
+					$this->get_breakdown( 'Referral', 100, 100 ),
+					$this->get_breakdown( 'Email', 100, 100 ),
+					$this->get_breakdown( 'Display', 40, 0 ),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'Email', 'Referral' ),
+			array_column( $key_factors->build_steady( 700 ), 'label' ),
+			'Two channels with as many visits should be ordered by label, and neither the placeholder nor `Display`, which had no visit, should be a card.'
+		);
+	}
+
+	public function test_build_steady__gives_no_share_without_site_visits() {
+		$key_factors = new Key_Factors(
+			array(
+				'channelBreakdowns' => array(
+					$this->get_breakdown( 'Direct', 10, 12 ),
+				),
+			)
+		);
+
+		$this->assertSame( 0.0, $key_factors->build_steady( 0 )[0]['sharePct'], 'Without site visits, a card\'s share should be `0`.' );
+	}
+
+	public function test_build_steady__gives_a_card_only_its_landing_pages_devices_and_visitor_types_that_moved_with_it() {
+		$key_factors = new Key_Factors(
+			array(
+				'channelBreakdowns' => array(
+					$this->get_breakdown( 'Referral', 100, 130, 'mobile', 'new' ),
+					$this->get_breakdown( 'Referral', 100, 80, 'desktop', 'new' ),
+					$this->get_breakdown( 'Direct', 300, 300 ),
+				),
+				'channelPages'      => array(
+					$this->get_channel_row( 'Referral', 'page', '/plant-garlic/', 20, 45 ),
+					$this->get_channel_row( 'Direct', 'page', '/plant-garlic/', 100, 120 ),
+				),
+				'channelSources'    => array(
+					$this->get_channel_row( 'Referral', 'source', 'example.com', 10, 80 ),
+				),
+			)
+		);
+
+		$cards = $key_factors->build_steady( 510 );
+
+		$this->assertSame( array( 'Direct', 'Referral' ), array_column( $cards, 'label' ), 'The cards should be `Direct` and `Referral`, most visits first.' );
+		$this->assertSame( array(), $cards[0]['attributes'], 'A channel that did not change should have no attributes, though one of its pages moved.' );
+		$this->assertSame(
+			array(
+				array(
+					'kind'     => 'DEVICE',
+					'label'    => 'mobile',
+					'current'  => 130,
+					'previous' => 100,
+					'sharePct' => 100.0,
+				),
+				array(
+					'kind'     => 'LANDING_PAGE',
+					'label'    => '/plant-garlic/',
+					'current'  => 45,
+					'previous' => 20,
+					'sharePct' => 100.0,
+				),
+			),
+			$cards[1]['attributes'],
+			'The `Referral` card should show its device and its landing page that moved with it, and not `example.com`, a source inside it, though it moved most, nor `new`, which grew 5% like the card.'
+		);
+	}
+
 	public function test_sum_by__adds_up_the_rows_with_the_same_value() {
 		$this->assertSame(
 			array(

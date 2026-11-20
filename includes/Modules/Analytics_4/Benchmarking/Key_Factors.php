@@ -25,6 +25,10 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
  * `get_driver_reports()` names for each of them, and `build()` gives each
  * driver its attributes.
  *
+ * A steady period, on which no channel changed notably, has no change to
+ * explain, so `build_steady()` builds its cards from the channels with the
+ * most visits instead.
+ *
  * @since n.e.x.t
  * @access private
  * @ignore
@@ -142,6 +146,16 @@ final class Key_Factors {
 	 * @since n.e.x.t
 	 */
 	const OTHER_CHANNEL_ATTRIBUTE_KINDS = array( 'LANDING_PAGE', 'USER_TYPE', 'DEVICE' );
+
+	/**
+	 * The attribute kinds a channel's card can show on a steady period, of
+	 * those its channel lists. They are the parts of its visits, its landing
+	 * pages, visitor types and devices, rather than the sources inside it, as
+	 * the service's steady cards list them.
+	 *
+	 * @since n.e.x.t
+	 */
+	const STEADY_ATTRIBUTE_KINDS = array( 'LANDING_PAGE', 'USER_TYPE', 'DEVICE' );
 
 	/**
 	 * The attribute kinds the card of each other driver kind can show, in the
@@ -430,11 +444,71 @@ final class Key_Factors {
 				'current'    => $driver['current'],
 				'previous'   => $driver['previous'],
 				'sharePct'   => $driver['sharePct'],
-				'attributes' => $this->get_attributes( $driver, isset( $driver_reports[ $index ] ) ? $driver_reports[ $index ] : array() ),
+				'attributes' => $this->get_attributes(
+					$driver,
+					$this->get_attribute_kinds( $driver ),
+					isset( $driver_reports[ $index ] ) ? $driver_reports[ $index ] : array()
+				),
 			);
 		}
 
 		return $cards;
+	}
+
+	/**
+	 * Builds the cards of a steady period, on which no channel changed
+	 * notably, as `Decomposition_Builder::is_steady()` tells.
+	 *
+	 * Such a period has no change to explain, so its cards are the
+	 * `MAX_CARDS` channels with the most visits in the selected period, each
+	 * with its share of the site's visits as `sharePct`, as the service's steady
+	 * cards are. A channel named by a placeholder, such as `(not set)`, or
+	 * without a visit is left out. A card's attributes are its parts that moved
+	 * with it, of the kinds `STEADY_ATTRIBUTE_KINDS` lists, as on any card, and
+	 * a channel that didn't change has none.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $site_visits The site's visits in the selected period that the shares are measured against, as `Decomposition_Builder::get_closing_sessions()` returns them.
+	 * @return array List of cards, most visits first, then by label. Each has `kind`, which is `CHANNEL`, `label`, `current`, `previous`, `sharePct`, the share of `$site_visits` in percent, and `attributes`, as `build()` gives them.
+	 */
+	public function build_steady( $site_visits ) {
+		$channels = array_values(
+			array_filter(
+				self::sum_by( $this->get_rows( 'channelBreakdowns' ), 'channel' ),
+				fn( $channel ) => $channel['current'] > 0 && ! Insight_Request_Builder::is_placeholder( $channel['label'] )
+			)
+		);
+
+		// `usort()` isn't stable on PHP 7.4. So the label orders channels with
+		// the same visits, to come back in the same order on every run.
+		usort(
+			$channels,
+			fn( $first, $second ) => ( $second['current'] <=> $first['current'] ) ?: strcmp( $first['label'], $second['label'] )
+		);
+
+		return array_map(
+			function ( $channel ) use ( $site_visits ) {
+				$driver = array(
+					'kind'     => 'CHANNEL',
+					'label'    => $channel['label'],
+					'current'  => $channel['current'],
+					'previous' => $channel['previous'],
+				);
+
+				$driver['sharePct']   = $site_visits > 0 ? round( $channel['current'] * 100 / $site_visits, Wire_Format::SHARE_DECIMAL_PLACES ) : 0.0;
+				$driver['attributes'] = $channel['current'] === $channel['previous']
+					? array()
+					: $this->get_attributes(
+						$driver,
+						array_values( array_intersect( $this->get_attribute_kinds( $driver ), self::STEADY_ATTRIBUTE_KINDS ) ),
+						array()
+					);
+
+				return $driver;
+			},
+			array_slice( $channels, 0, self::MAX_CARDS )
+		);
 	}
 
 	/**
@@ -593,13 +667,14 @@ final class Key_Factors {
 	 * @since n.e.x.t
 	 *
 	 * @param array $driver  The driver, as `select_drivers()` returns it.
+	 * @param array $kinds   The attribute kinds the card can show, in the order that breaks a tie.
 	 * @param array $reports The rows of the driver's reports, keyed by report name.
 	 * @return array List of attributes, at most `MAX_ATTRIBUTES`, most moved first.
 	 */
-	private function get_attributes( array $driver, array $reports ) {
+	private function get_attributes( array $driver, array $kinds, array $reports ) {
 		$representatives = array();
 
-		foreach ( $this->get_attribute_kinds( $driver ) as $position => $kind ) {
+		foreach ( $kinds as $position => $kind ) {
 			$value = $this->get_attribute_value( $driver, $kind, $this->get_attribute_rows( $driver, $kind, $reports ) );
 
 			if ( null !== $value ) {

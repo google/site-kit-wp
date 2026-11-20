@@ -209,6 +209,7 @@ const TrafficOverviewPanel: FC = () => {
 							keyFactors={
 								benchmarkingResponse?.keyFactors ?? []
 							}
+							steady={ benchmarkingResponse?.steadyTraffic }
 							loaded={ ! isLoading }
 							// The driver describes the change against the
 							// previous period, and what carried it.

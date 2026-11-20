@@ -172,8 +172,7 @@ export const INSUFFICIENT_PERMISSIONS_ERROR: ErrorObject = {
 
 /**
  * The key factor cards of the design. The first card's visits changed more
- * than in the design, by more than `KEY_FACTORS_DAILY_CHANGE_THRESHOLD` a day
- * over 28 days, so traffic isn't steady and the cards show.
+ * than in the design.
  *
  * @since n.e.x.t
  */
@@ -1005,6 +1004,7 @@ export function createBenchmarkingResponse(
 		// response reads, so every day of the range has a typical range.
 		firstTrafficDate: addDays( startDate, -364 ),
 		keyFactors: KEY_FACTORS,
+		steadyTraffic: false,
 		// The design's posts, each on a day of its own, at a path made from
 		// its title.
 		contentMarkers: getPlaceholderPublishedPosts( dailyTraffic ).map(

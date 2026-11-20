@@ -33,7 +33,6 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { KEY_FACTORS_DAILY_CHANGE_THRESHOLD } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	createBenchmarkingResponse,
@@ -977,9 +976,7 @@ describe( 'TrafficOverviewPanel', () => {
 						{
 							kind: 'CHANNEL',
 							label: 'Email',
-							// The threshold a day over the selected 28 days.
-							current:
-								40 + KEY_FACTORS_DAILY_CHANGE_THRESHOLD * 28,
+							current: 180,
 							previous: 40,
 							sharePct: 61.2,
 							attributes: [],
@@ -1019,7 +1016,7 @@ describe( 'TrafficOverviewPanel', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should say that no channel changed notably when the visits of every key factor card changed by less than the threshold a day over the selected date range', async () => {
+		it( 'should say that no channel changed notably above the key factor cards, each with its share of all visits, when the benchmarking response says traffic was steady', async () => {
 			provideBenchmarkingResponse(
 				registry,
 				createResponse( {
@@ -1027,21 +1024,17 @@ describe( 'TrafficOverviewPanel', () => {
 						{
 							kind: 'CHANNEL',
 							label: 'Email',
-							// One visit short of the threshold a day over the
-							// selected 28 days.
-							current:
-								40 +
-								KEY_FACTORS_DAILY_CHANGE_THRESHOLD * 28 -
-								1,
+							current: 41,
 							previous: 40,
 							sharePct: 61.2,
 							attributes: [],
 						},
 					],
+					steadyTraffic: true,
 				} )
 			);
 
-			const { getByText, queryByRole, waitForRegistry } = renderPanel();
+			const { getByRole, getByText, waitForRegistry } = renderPanel();
 
 			await waitForRegistry();
 
@@ -1051,7 +1044,42 @@ describe( 'TrafficOverviewPanel', () => {
 				)
 			).toBeInTheDocument();
 			expect(
-				queryByRole( 'heading', { name: 'Email' } )
+				getByRole( 'heading', { name: 'Email' } )
+			).toBeInTheDocument();
+			expect( getByText( '61.2% of all visits' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should render the key factor cards, however little their visits changed, when the benchmarking response says traffic was not steady', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( {
+					keyFactors: [
+						{
+							kind: 'CHANNEL',
+							label: 'Email',
+							current: 41,
+							previous: 40,
+							sharePct: 61.2,
+							attributes: [],
+						},
+					],
+				} )
+			);
+
+			const { getByRole, queryByText, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'heading', { name: 'Email' } )
+			).toBeInTheDocument();
+			expect(
+				queryByText(
+					'No channel changed notably compared with the previous 28 days'
+				)
+			).not.toBeInTheDocument();
+			expect(
+				queryByText( '61.2% of all visits' )
 			).not.toBeInTheDocument();
 		} );
 

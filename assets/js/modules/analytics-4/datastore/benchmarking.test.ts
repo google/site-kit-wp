@@ -101,6 +101,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null, [ 118.4, 183.1 ], [ 124.3, 191.5 ] ],
 					-26,
 					[],
+					false,
 				],
 			} );
 
@@ -152,6 +153,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 						attributes: [],
 					},
 				],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 		} );
@@ -169,6 +171,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -209,6 +212,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 			expect( secondResponse ).toBe( firstResponse );
@@ -228,6 +232,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -260,6 +265,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -300,6 +306,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 		} );
@@ -317,6 +324,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -331,6 +339,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -371,6 +380,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 		} );
@@ -388,6 +398,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -402,6 +413,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -416,6 +428,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -469,6 +482,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 			expect(
@@ -487,6 +501,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 			expect(
@@ -505,6 +520,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 		} );
@@ -523,6 +539,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					],
 					firstTrafficDate: null,
 					keyFactors: [],
+					steadyTraffic: false,
 					contentMarkers: [],
 				},
 				{ startDate: '2026-08-19', endDate: '2026-09-15' }
@@ -633,6 +650,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ [ 118.4, 183.1 ] ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -688,6 +706,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -726,6 +745,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 		} );
@@ -838,6 +858,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -897,6 +918,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					],
 					firstTrafficDate: null,
 					keyFactors: [],
+					steadyTraffic: false,
 					contentMarkers: [],
 				},
 				{ startDate: '2026-08-19', endDate: '2026-09-15' }
@@ -940,6 +962,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					],
 					firstTrafficDate: null,
 					keyFactors: [],
+					steadyTraffic: false,
 					contentMarkers: [],
 				},
 				{ startDate: '2026-08-19', endDate: '2026-09-15' }
@@ -957,6 +980,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					],
 					firstTrafficDate: null,
 					keyFactors: [],
+					steadyTraffic: false,
 					contentMarkers: [],
 				},
 				{ startDate: '2026-06-18', endDate: '2026-09-15' }
@@ -978,6 +1002,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 
@@ -1006,6 +1031,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 		} );
@@ -1023,6 +1049,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -1037,6 +1064,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -1091,6 +1119,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 		} );
@@ -1108,6 +1137,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
@@ -1122,6 +1152,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					[ null ],
 					null,
 					[],
+					false,
 				],
 			} );
 
@@ -1162,6 +1193,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				],
 				firstTrafficDate: null,
 				keyFactors: [],
+				steadyTraffic: false,
 				contentMarkers: [],
 			} );
 		} );

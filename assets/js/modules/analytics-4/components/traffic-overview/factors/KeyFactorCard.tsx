@@ -35,6 +35,8 @@ import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
 	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_BODY,
 	TYPE_LABEL,
 	TYPE_TITLE,
 } from '@/js/components/Typography/constants';
@@ -44,6 +46,7 @@ import {
 	BenchmarkingKeyFactorAttribute,
 	BenchmarkingKeyFactorKind,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import { numFmt } from '@/js/util';
 import { KEY_FACTOR_ATTRIBUTE_TITLES } from './attributeTitles';
 import { getLandingPageLabel } from './getLandingPageLabel';
 import KeyFactorAttribute from './KeyFactorAttribute';
@@ -56,6 +59,11 @@ export interface KeyFactorCardProps {
 	label: string;
 	/** The change in visits, negative for a drop. */
 	change: number;
+	/**
+	 * The driver's share of the site's visits, in percent, which a card shows
+	 * when traffic was steady, since its change explains nothing then.
+	 */
+	visitsSharePct?: number;
 	/** The values inside the driver that carried its change, in the order to show them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
 	/** The site's URL, which a landing page's path is resolved against to link to the page's entity dashboard. */
@@ -108,6 +116,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 	kind,
 	label,
 	change,
+	visitsSharePct,
 	attributes,
 	referenceSiteURL,
 } ) => {
@@ -172,6 +181,23 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 				</Typography>
 				<KeyFactorChangeBadge change={ change } />
 			</div>
+			{ visitsSharePct !== undefined && (
+				<Typography
+					as="p"
+					type={ TYPE_BODY }
+					size={ SIZE_SMALL }
+					className="googlesitekit-traffic-overview__key-factor-visits-share"
+				>
+					{ sprintf(
+						/* translators: %s: the share of the site's visits that a channel brought, such as "45.2%" */
+						__( '%s of all visits', 'google-site-kit' ),
+						numFmt( visitsSharePct / 100, {
+							style: 'percent',
+							maximumFractionDigits: 1,
+						} )
+					) }
+				</Typography>
+			) }
 			{ namedAttributes.length > 0 && (
 				<div className="googlesitekit-traffic-overview__key-factor-attributes">
 					<Typography

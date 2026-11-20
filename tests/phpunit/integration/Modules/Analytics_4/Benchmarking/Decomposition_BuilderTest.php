@@ -448,6 +448,193 @@ class Decomposition_BuilderTest extends TestCase {
 	}
 
 	/**
+	 * @dataProvider data_is_steady
+	 *
+	 * @param array $visits    The site's visits, as `array( current, previous )`.
+	 * @param array $channels  The channels' visits, each as `array( label, current, previous )`.
+	 * @param bool  $is_steady Whether the period is steady.
+	 */
+	public function test_is_steady__tells_whether_no_channel_changed_notably( array $visits, array $channels, $is_steady ) {
+		$builder = new Decomposition_Builder(
+			array(
+				'current'  => $visits[0],
+				'previous' => $visits[1],
+			),
+			array_map(
+				fn( $channel ) => array(
+					'label'    => $channel[0],
+					'current'  => $channel[1],
+					'previous' => $channel[2],
+				),
+				$channels
+			)
+		);
+
+		$this->assertSame( $is_steady, $builder->is_steady(), $is_steady ? 'The period should be steady.' : 'The period should not be steady.' );
+	}
+
+	public function data_is_steady() {
+		return array(
+			'a period whose channels moved by under 1% of its visits beyond its own rate' => array(
+				array( 1004, 1000 ),
+				array(
+					array( 'Organic Search', 503, 500 ),
+					array( 'Referral', 501, 500 ),
+				),
+				true,
+			),
+			'a period whose visits held while its channels moved against each other' => array(
+				array( 1010, 1000 ),
+				array(
+					array( 'Organic Search', 600, 500 ),
+					array( 'Referral', 410, 500 ),
+				),
+				false,
+			),
+			'a period whose visits rose by over 5%' => array(
+				array( 1060, 1000 ),
+				array(
+					array( 'Organic Search', 530, 500 ),
+					array( 'Referral', 530, 500 ),
+				),
+				false,
+			),
+			'a period without channels'             => array(
+				array( 1000, 1000 ),
+				array(),
+				false,
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_closing_sessions
+	 *
+	 * @param array $visits           The site's visits, as `array( current, previous )`.
+	 * @param array $channels         The channels' visits, each as `array( label, current, previous )`.
+	 * @param int   $closing_sessions The expected visits.
+	 */
+	public function test_get_closing_sessions__returns_the_visits_the_cards_add_up_to( array $visits, array $channels, $closing_sessions ) {
+		$builder = new Decomposition_Builder(
+			array(
+				'current'  => $visits[0],
+				'previous' => $visits[1],
+			),
+			array_map(
+				fn( $channel ) => array(
+					'label'    => $channel[0],
+					'current'  => $channel[1],
+					'previous' => $channel[2],
+				),
+				$channels
+			)
+		);
+
+		$this->assertSame( $closing_sessions, $builder->get_closing_sessions(), "The cards should add up to $closing_sessions visits." );
+	}
+
+	public function data_closing_sessions() {
+		return array(
+			'the channels, when they count every visit of the compare period' => array(
+				array( 1000, 990 ),
+				array(
+					array( 'Organic Search', 503, 500 ),
+					array( 'Referral', 501, 500 ),
+				),
+				1004,
+			),
+			'the site, when the channels count fewer visits of the compare period' => array(
+				array( 1100, 1050 ),
+				array(
+					array( 'Organic Search', 503, 500 ),
+				),
+				1100,
+			),
+		);
+	}
+
+	public function test_build__sends_the_cards_of_a_steady_period_as_their_shares_of_the_site_visits() {
+		$decomposition = $this->build(
+			array( 1004, 1000 ),
+			array(
+				array( 'Organic Search', 503, 500 ),
+				array( 'Referral', 501, 500 ),
+			),
+			array(
+				$this->card(
+					'CHANNEL',
+					'Organic Search',
+					503,
+					500,
+					array(
+						$this->attribute( 'LANDING_PAGE', '/plant-garlic/', 52, 50 ),
+						$this->attribute( 'DEVICE', 'desktop', 99, 100 ),
+					)
+				),
+				$this->card( 'CHANNEL', 'Referral', 501, 500 ),
+				$this->card( 'CONTENT', '/plant-garlic/', 52, 50 ),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'opening_sessions' => 1000,
+				'closing_sessions' => 1004,
+				'residual_delta'   => 0,
+				'shape'            => 'STEADY',
+				'key_factors'      => array(
+					array(
+						'dimension'          => 'TRAFFIC_CHANNELS',
+						'entity_kind'        => 'CHANNEL',
+						'title'              => 'Organic Search',
+						'volume'             => 503,
+						'delta'              => 3,
+						'excess'             => 1.0,
+						'direction'          => 'STABLE',
+						'traffic_impact_pct' => 50.1,
+						'metric_type'        => 'VOLUME_SHARE',
+						'share_basis'        => 'VOLUME',
+						'role'               => 'PRIMARY',
+						'attributes'         => array(
+							array(
+								'kind'         => 'TARGET_PAGE',
+								'role'         => 'DECOMPOSITION',
+								'label'        => 'Target page',
+								'value'        => array( 'text' => '/plant-garlic/' ),
+								'share_of_parent_change_pct' => 66.7,
+								'entity_delta' => 2,
+							),
+							array(
+								'kind'         => 'READER_DEVICE',
+								'role'         => 'CONTEXT',
+								'label'        => 'Reader device',
+								'value'        => array( 'text' => 'desktop' ),
+								'entity_delta' => -1,
+							),
+						),
+					),
+					array(
+						'dimension'          => 'TRAFFIC_CHANNELS',
+						'entity_kind'        => 'CHANNEL',
+						'title'              => 'Referral',
+						'volume'             => 501,
+						'delta'              => 1,
+						'excess'             => -1.0,
+						'direction'          => 'STABLE',
+						'traffic_impact_pct' => 49.9,
+						'metric_type'        => 'VOLUME_SHARE',
+						'share_basis'        => 'VOLUME',
+						'role'               => 'PRIMARY',
+						'attributes'         => array(),
+					),
+				),
+			),
+			$decomposition,
+			'Each channel card of a steady period should carry its share of the site\'s visits, with its own change and its rows measured against it, and the page card should be left out.'
+		);
+	}
+
+	/**
 	 * @dataProvider data_steady_periods
 	 *
 	 * @param array $channels The channels' visits, each as `array( label, current, previous )`.

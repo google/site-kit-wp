@@ -70,7 +70,10 @@ export interface BenchmarkingKeyFactor {
 	current: number;
 	/** Visits in the range before it. */
 	previous: number;
-	/** The percentage of the site's change, in the same direction, that the card accounts for. */
+	/**
+	 * The percentage of the site's change, in the same direction, that the
+	 * card accounts for, or of the site's visits when traffic was steady.
+	 */
 	sharePct: number;
 	/** The values inside the driver that carried its change, in the order the response ranked them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
@@ -99,6 +102,12 @@ export interface DecodedBenchmarkingResponse {
 	firstTrafficDate: string | null;
 	/** The key factor cards, in the order the response ranked them. */
 	keyFactors: BenchmarkingKeyFactor[];
+	/**
+	 * Whether traffic was steady: no channel changed notably compared with the
+	 * previous period. The key factor cards are then the channels with the most
+	 * visits, each with its share of the site's visits as `sharePct`.
+	 */
+	steadyTraffic: boolean;
 	/**
 	 * The days in the date range with the posts that brought it the most visits,
 	 * oldest first. Empty while the post date custom dimension has no data.

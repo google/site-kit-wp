@@ -403,6 +403,31 @@ class Response_BuilderTest extends TestCase {
 	}
 
 	/**
+	 * Makes the fake Analytics API return rows of a steady period, on a site
+	 * with recorded traffic on every day of the compare period.
+	 *
+	 * The site has 700 visits in each period, and no channel moved by more than
+	 * two visits, so no channel changed notably.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function provide_steady_reports() {
+		$this->report_rows = array(
+			'date'                   => $this->get_daily_report_rows( '2026-07-22', '2026-09-15', fn() => 25 ),
+			self::CHANNEL_BREAKDOWNS => array(
+				array( 'Organic Search', 'desktop', 'returning', 'date_range_0', 302 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_0', 199 ),
+				array( 'Referral', 'desktop', 'returning', 'date_range_0', 121 ),
+				array( 'Email', 'desktop', 'returning', 'date_range_0', 78 ),
+				array( 'Organic Search', 'desktop', 'returning', 'date_range_1', 300 ),
+				array( 'Direct', 'desktop', 'returning', 'date_range_1', 200 ),
+				array( 'Referral', 'desktop', 'returning', 'date_range_1', 120 ),
+				array( 'Email', 'desktop', 'returning', 'date_range_1', 80 ),
+			),
+		);
+	}
+
+	/**
 	 * Gets a day for each date from one day to another, with its visits, in the
 	 * shape of the daily report's rows.
 	 *
@@ -702,7 +727,7 @@ class Response_BuilderTest extends TestCase {
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertSame(
-			array( 'visits', 'dailyTraffic', 'firstTrafficDate', 'keyFactors', 'contentMarkers' ),
+			array( 'visits', 'dailyTraffic', 'firstTrafficDate', 'keyFactors', 'steadyTraffic', 'contentMarkers' ),
 			array_keys( $response ),
 			'Without the `trafficInsights` feature, the response should have no `insightRequest`.'
 		);
@@ -1811,6 +1836,89 @@ class Response_BuilderTest extends TestCase {
 			$response['keyFactors'],
 			'The cards should be the `/plant-garlic/` page, with its channel and the visitor type of its own report, and `Direct`, whose devices and visitor types grew as much as it did.'
 		);
+	}
+
+	public function test_build__returns_the_channels_with_the_most_visits_as_the_key_factor_cards_of_a_steady_period() {
+		$this->provide_steady_reports();
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertTrue( $response['steadyTraffic'], 'A period on which no channel changed notably should be steady.' );
+		$this->assertSame(
+			array(
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Organic Search',
+					'current'    => 302,
+					'previous'   => 300,
+					'sharePct'   => 43.1,
+					'attributes' => array(),
+				),
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Direct',
+					'current'    => 199,
+					'previous'   => 200,
+					'sharePct'   => 28.4,
+					'attributes' => array(),
+				),
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Referral',
+					'current'    => 121,
+					'previous'   => 120,
+					'sharePct'   => 17.3,
+					'attributes' => array(),
+				),
+			),
+			$response['keyFactors'],
+			'The cards should be the three channels with the most visits, each with its share of the site\'s 700 visits.'
+		);
+		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should make no call for the attributes of channel cards.' );
+	}
+
+	public function test_build__returns_a_period_whose_channels_changed_notably_as_not_steady() {
+		$this->provide_key_factor_reports();
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertFalse( $response['steadyTraffic'], 'A period whose channels moved against each other should not be steady.' );
+	}
+
+	public function test_build__returns_a_period_without_key_factors_as_not_steady() {
+		$this->provide_steady_reports();
+		$this->report_rows['date'] = $this->get_daily_report_rows( '2026-07-23', '2026-09-15', fn() => 25 );
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame( array(), $response['keyFactors'], 'There should be no key factor cards while the compare period has a day before the site was measured.' );
+		$this->assertFalse( $response['steadyTraffic'], 'A period without key factors should not be steady.' );
+	}
+
+	public function test_build__sends_the_cards_of_a_steady_period_as_its_decomposition() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->provide_steady_reports();
+
+		$response      = $this->builder->build( '2026-08-19', '2026-09-15' );
+		$decomposition = $response['insightRequest']['decomposition'];
+
+		$this->assertSame( 'STEADY', $decomposition['shape'], 'The decomposition of a steady period should be `STEADY`.' );
+		$this->assertSame(
+			array_column( $response['keyFactors'], 'label' ),
+			array_column( $decomposition['key_factors'], 'title' ),
+			'The decomposition should carry the cards of the response, in their order.'
+		);
+		$this->assertSame(
+			array_column( $response['keyFactors'], 'sharePct' ),
+			array_column( $decomposition['key_factors'], 'traffic_impact_pct' ),
+			'Each card of the decomposition should carry the share of the site\'s visits its card shows.'
+		);
+		$this->assertSame(
+			array( 'VOLUME' ),
+			array_values( array_unique( array_column( $decomposition['key_factors'], 'share_basis' ) ) ),
+			'Each card\'s share should be of the site\'s visits.'
+		);
+		$this->assertSame( -2, $decomposition['residual_delta'], 'The residual should be the change of `Email`, which has no card.' );
 	}
 
 	public function test_build__asks_for_the_audience_and_the_sources_of_a_landing_page_card_in_a_call_of_their_own() {

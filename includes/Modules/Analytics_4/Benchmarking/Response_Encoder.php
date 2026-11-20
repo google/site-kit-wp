@@ -41,8 +41,9 @@ final class Response_Encoder {
 	 * @since n.e.x.t Encodes the expected range of each day and the first day with recorded traffic.
 	 * @since n.e.x.t Encodes the locale and the signed request of the generated insight when the response has them.
 	 * @since n.e.x.t Encodes the content markers.
+	 * @since n.e.x.t Encodes whether traffic was steady.
 	 *
-	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `firstTrafficDate`, `keyFactors` and `contentMarkers`. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `firstTrafficDate` is the first day with recorded traffic, as `YYYY-MM-DD`, or null when there is none. Each `contentMarkers` item has a `date`, as `YYYY-MM-DD`, and its `posts`, each with `title` and `url`. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
+	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `firstTrafficDate`, `keyFactors`, `steadyTraffic` and `contentMarkers`. `steadyTraffic` is whether no channel changed notably, when the key factor cards are the channels with the most visits. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `firstTrafficDate` is the first day with recorded traffic, as `YYYY-MM-DD`, or null when there is none. Each `contentMarkers` item has a `date`, as `YYYY-MM-DD`, and its `posts`, each with `title` and `url`. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
 	 * @return array The encoded response.
 	 */
 	public function encode( array $response ) {
@@ -121,10 +122,11 @@ final class Response_Encoder {
 		);
 
 		$encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ] = $encoded_content_markers;
+		$encoded[ Wire_Format::MEMBER_STEADY_TRAFFIC ]  = ! empty( $response['steadyTraffic'] );
 
 		// Only a response built with the `trafficInsights` feature has the
-		// insight members, so a response built without it ends with the
-		// content markers.
+		// insight members, so a response built without it ends with whether
+		// traffic was steady.
 		if ( array_key_exists( 'insightPayload', $response ) ) {
 			$encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ]  = $this->encode_optional_string( isset( $response['insightLocale'] ) ? $response['insightLocale'] : null );
 			$encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ] = $this->encode_optional_string( $response['insightPayload'] );

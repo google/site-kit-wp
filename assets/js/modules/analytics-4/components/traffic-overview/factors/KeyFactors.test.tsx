@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { KEY_FACTORS_DAILY_CHANGE_THRESHOLD } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import {
 	fireEvent,
@@ -33,8 +32,6 @@ import KeyFactors, { KeyFactorsProps } from './KeyFactors';
 
 const REFERENCE_SITE_URL = 'https://example.com';
 
-// The visits of each card below changed by more than the threshold a day over
-// 28 days, so each card shows, even on its own.
 const REFERRAL: BenchmarkingKeyFactor = {
 	kind: 'CHANNEL',
 	label: 'Referral',
@@ -97,18 +94,26 @@ const INSIGHT =
 	'Referral traffic from **substack.com** is up most, mainly to **“Ice cream is good for your health”**';
 
 /**
- * The change in visits over 28 days at which a card's change reaches the
- * threshold a day.
- */
-const THRESHOLD_CHANGE = KEY_FACTORS_DAILY_CHANGE_THRESHOLD * 28;
-
-/**
- * The cards of `REFERRAL` and `ORGANIC_SEARCH`, whose visits changed by one
- * visit each over 28 days, far below the threshold a day: traffic was steady.
+ * The cards of a steady period: the channels with the most visits, each with
+ * its share of the site's visits, whose visits changed by one visit each.
  */
 const STEADY_KEY_FACTORS: BenchmarkingKeyFactor[] = [
-	{ ...REFERRAL, current: REFERRAL.previous + 1 },
-	{ ...ORGANIC_SEARCH, current: ORGANIC_SEARCH.previous - 1 },
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Search',
+		current: 401,
+		previous: 400,
+		sharePct: 45.2,
+		attributes: [],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Direct',
+		current: 299,
+		previous: 300,
+		sharePct: 33.7,
+		attributes: [],
+	},
 ];
 
 /**
@@ -501,9 +506,114 @@ describe( 'KeyFactors', () => {
 		);
 	} );
 
-	it( 'should render "No channel changed notably…" in place of the cards when every card’s visits changed by less than the threshold a day', () => {
-		const { container, getByText, queryByRole } = renderKeyFactors( {
+	it( 'should render "No channel changed notably…" above the cards when traffic was steady, each card with its share of all visits', () => {
+		const { container, getAllByRole, getByText } = renderKeyFactors( {
 			keyFactors: STEADY_KEY_FACTORS,
+			steady: true,
+		} );
+
+		const notice = getByText(
+			'No channel changed notably compared with the previous 28 days'
+		);
+		const headings = getAllByRole( 'heading', { level: 4 } );
+
+		expect( headings.map( ( heading ) => heading.textContent ) ).toEqual( [
+			'Organic Search',
+			'Direct',
+		] );
+		expect( notice.compareDocumentPosition( headings[ 0 ] ) ).toBe(
+			Node.DOCUMENT_POSITION_FOLLOWING
+		);
+		// Each card shows its own change, and the share of the site's visits
+		// it brought, which is why it shows.
+		expect(
+			Array.from(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factor-change-badge'
+				)
+			).map( ( badge ) => badge.textContent )
+		).toEqual( [ '+1 visit', '-1 visit' ] );
+		expect(
+			Array.from(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factor-visits-share'
+				)
+			).map( ( share ) => share.textContent )
+		).toEqual( [ '45.2% of all visits', '33.7% of all visits' ] );
+		// The cards follow the notice, so the section keeps the spacing it has
+		// with cards.
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors'
+			)
+		).not.toHaveClass(
+			'googlesitekit-traffic-overview__key-factors--no-change'
+		);
+	} );
+
+	it.each( [
+		[ 'the insight', { insight: INSIGHT } ],
+		[ 'the placeholder of the insight', { insightLoading: true } ],
+	] )(
+		'should render %s between "No channel changed notably…" and the cards when traffic was steady',
+		( _, props ) => {
+			const { container, getByRole, getByText } = renderKeyFactors( {
+				keyFactors: STEADY_KEY_FACTORS,
+				steady: true,
+				...props,
+			} );
+
+			const insight = container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors-insight'
+			) as Element;
+
+			expect( insight ).toBeInTheDocument();
+			expect(
+				getByText(
+					'No channel changed notably compared with the previous 28 days'
+				).compareDocumentPosition( insight )
+			).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
+			expect(
+				insight.compareDocumentPosition(
+					getByRole( 'heading', { level: 4, name: 'Organic Search' } )
+				)
+			).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
+		}
+	);
+
+	it( 'should render the cards with their changes alone, and no "No channel changed notably…", when traffic was not steady, however little their visits changed', () => {
+		const { container, getAllByRole, queryByText } = renderKeyFactors( {
+			keyFactors: STEADY_KEY_FACTORS,
+			insight: INSIGHT,
+		} );
+
+		expect(
+			getAllByRole( 'heading', { level: 4 } ).map(
+				( heading ) => heading.textContent
+			)
+		).toEqual( [ 'Organic Search', 'Direct' ] );
+		expect(
+			queryByText(
+				'No channel changed notably compared with the previous 28 days'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors-insight'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factor-visits-share'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render "No channel changed notably…" and the insight when traffic was steady without key factors', () => {
+		const { container, getByText, queryByRole } = renderKeyFactors( {
+			keyFactors: [],
+			steady: true,
+			insight: INSIGHT,
 		} );
 
 		expect(
@@ -512,9 +622,13 @@ describe( 'KeyFactors', () => {
 			)
 		).toBeInTheDocument();
 		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors-insight'
+			)
+		).toHaveTextContent( 'Referral traffic from substack.com is up most' );
+		expect(
 			queryByRole( 'heading', { level: 4 } )
 		).not.toBeInTheDocument();
-		// The section keeps the spacing it has without cards.
 		expect(
 			container.querySelector(
 				'.googlesitekit-traffic-overview__key-factors'
@@ -524,101 +638,10 @@ describe( 'KeyFactors', () => {
 		);
 	} );
 
-	it.each( [
-		[ 'grew', THRESHOLD_CHANGE ],
-		[ 'dropped', -THRESHOLD_CHANGE ],
-	] )(
-		'should render the cards, and no "No channel changed notably…", when one card’s visits %s by the threshold a day',
-		( _, change ) => {
-			const { container, getAllByRole, queryByText } = renderKeyFactors( {
-				keyFactors: [
-					STEADY_KEY_FACTORS[ 0 ],
-					{
-						...ORGANIC_SEARCH,
-						current: ORGANIC_SEARCH.previous + change,
-					},
-				],
-			} );
-
-			expect(
-				getAllByRole( 'heading', { level: 4 } ).map(
-					( heading ) => heading.textContent
-				)
-			).toEqual( [ 'Referral', 'Organic Search' ] );
-			expect(
-				queryByText(
-					'No channel changed notably compared with the previous 28 days'
-				)
-			).not.toBeInTheDocument();
-			expect(
-				container.querySelector(
-					'.googlesitekit-traffic-overview__key-factors'
-				)
-			).not.toHaveClass(
-				'googlesitekit-traffic-overview__key-factors--no-change'
-			);
-		}
-	);
-
-	it( 'should judge a card’s change a day over the days of the selected date range', () => {
-		const keyFactors = [
-			{ ...REFERRAL, current: REFERRAL.previous + THRESHOLD_CHANGE },
-		];
-
-		const { getByRole, getByText, queryByRole, rerender } =
-			renderKeyFactors( { keyFactors } );
-
-		// Over 28 days, the change reaches the threshold a day.
-		expect(
-			getByRole( 'heading', { level: 4, name: 'Referral' } )
-		).toBeInTheDocument();
-
-		rerender(
-			<KeyFactors
-				keyFactors={ keyFactors }
-				daysInSelectedRange={ 29 }
-				referenceSiteURL={ REFERENCE_SITE_URL }
-			/>
-		);
-
-		// Spread over one more day, the same change is below it.
-		expect(
-			getByText(
-				'No channel changed notably compared with the previous 29 days'
-			)
-		).toBeInTheDocument();
-		expect(
-			queryByRole( 'heading', { level: 4 } )
-		).not.toBeInTheDocument();
-	} );
-
-	it.each( [
-		[ 'the insight', { insight: INSIGHT } ],
-		[ 'the placeholder of the insight', { insightLoading: true } ],
-	] )(
-		'should render "No channel changed notably…" in place of %s when every card’s visits changed by less than the threshold a day',
-		( _, props ) => {
-			const { container, getByText } = renderKeyFactors( {
-				keyFactors: STEADY_KEY_FACTORS,
-				...props,
-			} );
-
-			expect(
-				getByText(
-					'No channel changed notably compared with the previous 28 days'
-				)
-			).toBeInTheDocument();
-			expect(
-				container.querySelector(
-					'.googlesitekit-traffic-overview__key-factors-insight'
-				)
-			).not.toBeInTheDocument();
-		}
-	);
-
-	it( 'should render the placeholder cards, and no "No channel changed notably…", while the key factors load, though their visits changed by less than the threshold a day', () => {
+	it( 'should render the placeholder cards, and no "No channel changed notably…", while the key factors load, though traffic was steady', () => {
 		const { container, queryByText } = renderKeyFactors( {
 			keyFactors: STEADY_KEY_FACTORS,
+			steady: true,
 			loaded: false,
 		} );
 

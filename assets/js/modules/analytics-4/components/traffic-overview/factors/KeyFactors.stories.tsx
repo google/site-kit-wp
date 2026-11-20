@@ -88,16 +88,49 @@ const LONG_KEY_FACTORS: BenchmarkingKeyFactor[] = [
 ];
 
 /**
- * The cards of the design, whose visits changed by one visit each over the
- * story's 28 days, far below the threshold a day: traffic was steady.
+ * The cards of a steady period: the channels with the most visits, each with
+ * its share of the site's visits and its own small change.
  */
-const STEADY_KEY_FACTORS: BenchmarkingKeyFactor[] = KEY_FACTORS.map(
-	( keyFactor ) => ( { ...keyFactor, current: keyFactor.previous + 1 } )
-);
+const STEADY_KEY_FACTORS: BenchmarkingKeyFactor[] = [
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Search',
+		current: 2140,
+		previous: 2118,
+		sharePct: 52.3,
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/how-long-does-homemade-ice-cream-last/',
+				current: 312,
+				previous: 290,
+				sharePct: 9.6,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Direct',
+		current: 1095,
+		previous: 1110,
+		sharePct: 26.8,
+		attributes: [],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Referral',
+		current: 512,
+		previous: 506,
+		sharePct: 12.5,
+		attributes: [],
+	},
+];
 
 interface KeyFactorsStoryProps {
 	/** The key factor cards to show. */
 	keyFactors: BenchmarkingKeyFactor[];
+	/** Whether traffic was steady, when the cards show their shares of the site's visits. */
+	steady?: boolean;
 	/** Whether the key factors have arrived. */
 	loaded?: boolean;
 	/** The generated summary of the cards. */
@@ -108,6 +141,7 @@ interface KeyFactorsStoryProps {
 
 function Template( {
 	keyFactors,
+	steady,
 	loaded,
 	insight,
 	pauseAnimation = false,
@@ -127,6 +161,7 @@ function Template( {
 				<div className="googlesitekit-traffic-overview__panel">
 					<KeyFactors
 						keyFactors={ keyFactors }
+						steady={ steady }
 						loaded={ loaded }
 						insight={ insight }
 						daysInSelectedRange={ 28 }
@@ -167,15 +202,15 @@ NoNotableChange.args = {
 };
 NoNotableChange.scenario = {};
 
-// `SteadyTraffic` runs no visual check, because it renders the notice of
-// `NoNotableChange`. The notice takes the place of the summary too, so the
-// story passes one, which it leaves out.
+// On a steady period, the notice sits above the summary and the channels
+// that hold the site's traffic up, each with its share of the site's visits.
 export const SteadyTraffic = Template.bind(
 	{}
 ) as Story< KeyFactorsStoryProps >;
 SteadyTraffic.storyName = 'Steady Traffic';
 SteadyTraffic.args = {
 	keyFactors: STEADY_KEY_FACTORS,
+	steady: true,
 	insight: PLACEHOLDER_KEY_FACTORS_INSIGHT,
 };
 

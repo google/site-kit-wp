@@ -38,6 +38,7 @@ import {
 	MEMBER_INSIGHT_PAYLOAD,
 	MEMBER_KEY_FACTORS,
 	MEMBER_KEY_FACTOR_ATTRIBUTES,
+	MEMBER_STEADY_TRAFFIC,
 	MEMBER_STRINGS,
 	MEMBER_VERSION,
 	MEMBER_VISIT_TOTALS,
@@ -52,10 +53,10 @@ import {
 } from './types';
 
 /** The members of a response built without the `trafficInsights` feature. */
-const MEMBER_COUNT = 10;
+const MEMBER_COUNT = 11;
 
 /** The members of a response built with the `trafficInsights` feature, which adds the insight's locale and request. */
-const MEMBER_COUNT_WITH_INSIGHT = 12;
+const MEMBER_COUNT_WITH_INSIGHT = 13;
 
 /** A day's expected range, as `[ expectedMin, expectedMax ]`, or null on a day without one. */
 type EncodedExpectedRange = [ number, number ] | null;
@@ -370,6 +371,7 @@ function readOptionalString( value: unknown ): string | null {
  * @since n.e.x.t Decodes the expected range of each day and the first day with recorded traffic.
  * @since n.e.x.t Decodes the locale and the request of the generated insight of a response that has them.
  * @since n.e.x.t Decodes the content markers.
+ * @since n.e.x.t Decodes whether traffic was steady.
  *
  * @param {*} encoded The encoded response.
  * @return {Object|null} The decoded response, or null when it cannot be read.
@@ -432,6 +434,9 @@ export function decodeBenchmarkingResponse(
 			encodedKeyFactorAttributes,
 			strings
 		),
+		// Only `true` marks a steady period, so a member that cannot be read
+		// shows the cards as the drivers of a change, as they were sent.
+		steadyTraffic: encoded[ MEMBER_STEADY_TRAFFIC ] === true,
 		contentMarkers: decodeContentMarkers(
 			firstDate,
 			encodedContentMarkers,

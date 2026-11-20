@@ -362,6 +362,12 @@ $traffic-overview-column-gap: 42px;
 			.googlesitekit-notice__icon {
 				color: $c-surfaces-on-surface;
 			}
+
+			// On a steady period, the summary and the cards follow the notice,
+			// as far under it as the cards sit under the summary.
+			&:not(:last-child) {
+				margin-bottom: 24px;
+			}
 		}
 
 		.googlesitekit-traffic-overview__key-factors-insight {
@@ -433,6 +439,13 @@ $traffic-overview-column-gap: 42px;
 		.googlesitekit-traffic-overview__key-factor-change-badge--negative {
 			background-color: $c-utility-error-container;
 			color: $c-utility-on-error-container;
+		}
+
+		// On a steady period, a card's share of the site's visits sits under
+		// its title's row.
+		.googlesitekit-traffic-overview__key-factor-visits-share {
+			color: $c-surfaces-on-surface-variant;
+			margin: 4px 0 0;
 		}
 
 		// The design leaves 12px under the title's row and 8px above the

@@ -32,8 +32,17 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
  * The figures that describe the period and each card are computed as the
  * service's reference client computes them: the period's direction and shape,
  * each card's role, share and excess change, and each row's share of its
- * card's change. The panel shows only the changes in visits, so none of these
- * figures can disagree with what the reader sees.
+ * card's change. The panel shows only the changes in visits, and on a steady
+ * period each card's share of the site's visits, which `Key_Factors` computes
+ * from the same figures, so none of these figures can disagree with what the
+ * reader sees.
+ *
+ * A steady period, where the site's visits changed by no more than
+ * `NOTABLE_CHANGE_PERCENT` and no channel moved materially beyond the site's
+ * own rate, has no change to explain. Its cards are the channels with the most
+ * visits, each with its share of the site's visits, as
+ * `Key_Factors::build_steady()` picks them, so the text describes what holds
+ * the site's traffic up. `is_steady()` tells which cards a period takes.
  *
  * @since n.e.x.t
  * @access private
@@ -279,11 +288,44 @@ final class Decomposition_Builder {
 	}
 
 	/**
-	 * Builds the decomposition of the given key factor cards.
+	 * Checks whether the period is steady: the site's visits changed by no
+	 * more than `NOTABLE_CHANGE_PERCENT`, and no channel's excess change
+	 * reached `OFFSETTING_EXCESS_PERCENT`, so no channel changed notably.
+	 *
+	 * A steady period's cards are the channels with the most visits, as
+	 * `Key_Factors::build_steady()` picks them, rather than the drivers of a
+	 * change.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $key_factors The key factor cards, as `Key_Factors::build()` returns them, in the order the panel shows them.
+	 * @return bool True when the period is steady, false otherwise, which includes a period without channels.
+	 */
+	public function is_steady() {
+		return ! empty( $this->channels ) && 'STABLE' === $this->get_period_direction() && ! $this->has_offsetting_channel();
+	}
+
+	/**
+	 * Gets the visits of the selected period that the cards' changes add up
+	 * to, which a steady card's share of the site's visits is measured
+	 * against.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int The visits.
+	 */
+	public function get_closing_sessions() {
+		return $this->closing;
+	}
+
+	/**
+	 * Builds the decomposition of the given key factor cards.
+	 *
+	 * On a steady period, each card is a channel's share of the site's visits,
+	 * and a card of any other kind is left out.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $key_factors The key factor cards, as `Key_Factors::build()` or, on a steady period, `Key_Factors::build_steady()` returns them, in the order the panel shows them.
 	 * @return array|null The decomposition, with `opening_sessions`, `closing_sessions`, `residual_delta`, `shape` and `key_factors`, the cards in the panel's order. Null when there are no channels, since the cards' changes then add up to nothing.
 	 */
 	public function build( array $key_factors ) {
@@ -293,17 +335,18 @@ final class Decomposition_Builder {
 
 		$period_direction  = $this->get_period_direction();
 		$primary_direction = $this->get_primary_direction( $period_direction );
+		$shape             = $this->get_shape( $period_direction, $primary_direction );
 		$cards             = array();
 
 		foreach ( $key_factors as $key_factor ) {
-			$card = $this->build_card( $key_factor, $period_direction, $primary_direction );
+			$card = 'STEADY' === $shape
+				? $this->build_steady_card( $key_factor )
+				: $this->build_card( $key_factor, $period_direction, $primary_direction );
 
 			if ( null !== $card ) {
 				$cards[] = $card;
 			}
 		}
-
-		$shape = $this->get_shape( $period_direction, $primary_direction );
 
 		// The service names at least two primary cards for a diffuse change,
 		// so a diffuse change with fewer reads as a concentrated one.
@@ -400,15 +443,7 @@ final class Decomposition_Builder {
 	 */
 	private function get_shape( $period_direction, $primary_direction ) {
 		if ( 'STABLE' === $period_direction ) {
-			foreach ( $this->channels as $channel ) {
-				$excess = $this->get_excess( $channel['current'] - $channel['previous'], $channel['previous'] );
-
-				if ( abs( $excess ) / $this->denominator * 100 >= self::OFFSETTING_EXCESS_PERCENT ) {
-					return 'OFFSETTING';
-				}
-			}
-
-			return 'STEADY';
+			return $this->has_offsetting_channel() ? 'OFFSETTING' : 'STEADY';
 		}
 
 		$pool           = 0;
@@ -424,6 +459,74 @@ final class Decomposition_Builder {
 		}
 
 		return $pool > 0 && $largest_change >= self::CONCENTRATED_SHARE * $pool ? 'CONCENTRATED' : 'DIFFUSE';
+	}
+
+	/**
+	 * Checks whether a channel's excess change reaches
+	 * `OFFSETTING_EXCESS_PERCENT`, so on a steady period channels moved against
+	 * each other.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True when a channel's excess change reaches it, false otherwise.
+	 */
+	private function has_offsetting_channel() {
+		foreach ( $this->channels as $channel ) {
+			$excess = $this->get_excess( $channel['current'] - $channel['previous'], $channel['previous'] );
+
+			if ( abs( $excess ) / $this->denominator * 100 >= self::OFFSETTING_EXCESS_PERCENT ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Builds the card of a channel on a steady period: its share of the site's
+	 * visits, headlined with its own change.
+	 *
+	 * Its rows are measured against the channel's own change, as on any card.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $key_factor The key factor card, as `Key_Factors::build_steady()` returns it.
+	 * @return array|null The card, or null when the key factor is not a channel.
+	 */
+	private function build_steady_card( array $key_factor ) {
+		if ( 'CHANNEL' !== $key_factor['kind'] ) {
+			return null;
+		}
+
+		list( $dimension, $entity_kind ) = self::CARD_KINDS['CHANNEL'];
+
+		$current  = (int) $key_factor['current'];
+		$previous = (int) $key_factor['previous'];
+		$delta    = $current - $previous;
+		$excess   = self::round1( $this->get_excess( $delta, $previous ) );
+
+		$card = array(
+			'dimension'   => $dimension,
+			'entity_kind' => $entity_kind,
+			'title'       => $key_factor['label'],
+			'volume'      => $current,
+			'delta'       => $delta,
+		);
+
+		if ( 0.0 !== $excess ) {
+			$card['excess'] = $excess;
+		}
+
+		// A share of the site's visits describes no movement, so its
+		// direction is `STABLE` whichever way the channel moved.
+		$card['direction']          = 'STABLE';
+		$card['traffic_impact_pct'] = $this->closing > 0 ? self::round1( $current / $this->closing * 100 ) : 0.0;
+		$card['metric_type']        = 'VOLUME_SHARE';
+		$card['share_basis']        = 'VOLUME';
+		$card['role']               = 'PRIMARY';
+		$card['attributes']         = $this->build_rows( $key_factor, $delta );
+
+		return $card;
 	}
 
 	/**
@@ -485,16 +588,29 @@ final class Decomposition_Builder {
 		$card['metric_type']        = 'DELTA';
 		$card['share_basis']        = $share_basis;
 		$card['role']               = $role;
-		$card['attributes']         = array_values(
+		$card['attributes']         = $this->build_rows( $key_factor, $delta );
+
+		return $card;
+	}
+
+	/**
+	 * Builds the rows of a card's attributes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $key_factor The key factor card, with `attributes`.
+	 * @param int   $card_delta The card's change.
+	 * @return array List of rows, in the order of the attributes, without those the wire format has no row for.
+	 */
+	private function build_rows( array $key_factor, $card_delta ) {
+		return array_values(
 			array_filter(
 				array_map(
-					fn( $attribute ) => $this->build_row( $attribute, $delta ),
+					fn( $attribute ) => $this->build_row( $attribute, $card_delta ),
 					isset( $key_factor['attributes'] ) ? $key_factor['attributes'] : array()
 				)
 			)
 		);
-
-		return $card;
 	}
 
 	/**

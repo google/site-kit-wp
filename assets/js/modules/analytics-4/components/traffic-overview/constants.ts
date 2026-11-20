@@ -77,17 +77,6 @@ export const TRAFFIC_BREAKDOWN_EXPANDED_MAX_ROWS = 9;
  */
 export const KEY_FACTORS_MAX_CARDS = 3;
 
-/**
- * The change in visits a day, in either direction, that a key factor card's
- * change has to reach to be notable. A card's daily change is its change over
- * the selected date range divided by the range's number of days. When every
- * card's daily change is below this, traffic is steady, and the key factors
- * show that no channel changed notably in place of the cards.
- *
- * @since n.e.x.t
- */
-export const KEY_FACTORS_DAILY_CHANGE_THRESHOLD = 5;
-
 /** The most rows a column of the Recent activity tab's traffic breakdown shows. */
 export const RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS = 3;
 
