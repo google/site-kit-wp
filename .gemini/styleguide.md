@@ -72,6 +72,7 @@ Watch in particular for:
 - PHP language features newer than 7.4 — e.g. enums, `match`, named arguments, constructor property promotion, nullsafe `?->`, or 8.0+ standard-library functions (`str_contains`, `str_starts_with`, etc.).
 - WordPress functions, hooks, classes, or arguments introduced after 5.2 used without a `function_exists()`/`method_exists()` guard, a version check, or a bundled polyfill.
 - JavaScript or browser APIs that fall outside the project's supported targets without the appropriate polyfill or transpilation.
+- REST schema keywords, by the keyword rather than by the schema as a whole. On WordPress 5.2, `rest_validate_value_from_schema()` already checks `type`, `enum`, `minimum`, `maximum`, `items`, `properties` and `additionalProperties: false`, in nested properties too, so don't flag those as unchecked. It skips each later keyword with no error: `required` inside an object, `minLength`, `maxLength`, `pattern`, `minItems`, `maxItems` and `uniqueItems` came in 5.5, and `anyOf`, `oneOf`, `patternProperties`, `minProperties`, `maxProperties` and `multipleOf` came in 5.6.
 
 Automated tooling (e.g. PHPCS compatibility checks) covers some of this but does not catch everything, so call out version-range risks even when CI is green — especially indirect cases like a newer function reached through a wrapper or passed as a callback.
 
