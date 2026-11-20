@@ -41,14 +41,25 @@ import {
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
 import { getNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
 import IncompleteSetupReminderNotification from './IncompleteSetupReminderNotification';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { simulateAllIntersections } = mockIntersectionObserver();
+
+const EVENT_CATEGORY = `${ VIEW_CONTEXT_MAIN_DASHBOARD }_feature-discovery-incomplete-setup-notification`;
 
 const slug = 'newsletter-signup';
 const id = getFeatureIncompleteSetupReminderKey( slug );
@@ -91,6 +102,10 @@ describe( 'IncompleteSetupReminderNotification', () => {
 			},
 		} );
 		api.registerFeature( slug, feature );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render the matching feature copy with reminder markup', () => {
@@ -218,6 +233,87 @@ describe( 'IncompleteSetupReminderNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
+	describe( 'GA event tracking', () => {
+		it( 'should track view_notification when the reminder is viewed', () => {
+			render( <IncompleteSetupReminderNotification { ...props } />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+			// Mark the notification as viewed, as the wrapper's own observer does
+			// once it has been in view long enough, and bring the nested notice
+			// into view too.
+			act( () => {
+				registry
+					.dispatch( CORE_UI )
+					.setValue( useHasBeenViewed.getKey( id ), true );
+
+				simulateAllIntersections( true );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				'view_notification',
+				slug,
+				undefined
+			);
+		} );
+
+		it( 'should track confirm_notification when "Complete setup" is clicked', () => {
+			jest.spyOn(
+				registry.dispatch( CORE_LOCATION ),
+				'navigateTo'
+			).mockImplementation( () => {} );
+
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Complete setup' } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				'confirm_notification',
+				slug,
+				undefined
+			);
+		} );
+
+		it( 'should track dismiss_notification when "Maybe later" is clicked', async () => {
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/,
+				{ body: [ id ] }
+			);
+
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitFor( () =>
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					EVENT_CATEGORY,
+					'dismiss_notification',
+					slug,
+					undefined
+				)
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
+
 	describe( 'post-dismissal tooltip', () => {
 		const dismissItemEndpoint =
 			/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/;
@@ -259,7 +355,7 @@ describe( 'IncompleteSetupReminderNotification', () => {
 		it( 'should show the feature tooltip pointing to "Add features" on "Maybe later"', async () => {
 			const { getByRole } = render(
 				<IncompleteSetupReminderNotification { ...props } />,
-				{ registry }
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);
 
 			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
@@ -276,7 +372,11 @@ describe( 'IncompleteSetupReminderNotification', () => {
 				expect.objectContaining( {
 					isTooltipVisible: true,
 					content: feature.incompleteSetupReminder!.tooltip,
-					tooltipSlug: 'feature-discovery-incomplete-setup',
+					id,
+					gaTrackingEventArgs: {
+						category: EVENT_CATEGORY,
+						label: slug,
+					},
 					dismissLabel: 'Got it',
 					target: '.googlesitekit-add-features-button, .googlesitekit-features-menu__button',
 				} )

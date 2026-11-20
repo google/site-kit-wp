@@ -61,5 +61,9 @@ export const MODULE_SLUG_TO_FEATURE_SLUG: Record< string, string > = {
 };
 
 export const FEATURE_SETUP_ERROR_NOTIFICATION_EVENT_ID = 'feature-setup';
+
 export const FEATURE_SETUP_SUCCESS_NOTIFICATION_EVENT_ID =
 	'feature-setup-success-notification';
+
+export const INCOMPLETE_SETUP_REMINDER_NOTIFICATION_EVENT_ID =
+	'feature-discovery-incomplete-setup-notification';
