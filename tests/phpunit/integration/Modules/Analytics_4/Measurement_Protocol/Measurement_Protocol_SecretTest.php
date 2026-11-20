@@ -407,11 +407,11 @@ class Measurement_Protocol_SecretTest extends TestCase {
 			$this->measurement_protocol_secret->create(),
 			'Creating should succeed when the stream already has a "Site Kit by Google" secret.'
 		);
-		$this->assertCount( 1, $this->requests, 'Only the request that lists the secrets should be sent.' );
+		$this->assertCount( 1, $this->requests, 'No secret should be created when the stream already has a "Site Kit by Google" secret.' );
 		$this->assertSame(
 			'GET',
 			$this->requests[0]->getMethod(),
-			'No secret should be created when the stream already has a "Site Kit by Google" secret.'
+			'The one request sent should list the secrets.'
 		);
 		$this->assertSame(
 			'test-secret-value',
@@ -496,7 +496,7 @@ class Measurement_Protocol_SecretTest extends TestCase {
 		$this->assertCount( 1, $this->requests, 'No secret should be created when listing the secrets fails.' );
 	}
 
-	public function test_create__request_fails() {
+	public function test_create__create_request_fails() {
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
 			function ( Request $request ) {
@@ -552,13 +552,16 @@ class Measurement_Protocol_SecretTest extends TestCase {
 	/**
 	 * @dataProvider data_create__stream_changes
 	 *
-	 * @param string $display_name   Display name of the secret that the list request returns.
-	 * @param string $request_method Method of the request whose response returns the secret to store.
+	 * @param string   $display_name     Display name of the secret that the list request returns.
+	 * @param string   $request_method   Method of the request whose response returns the secret to store.
+	 * @param string[] $expected_methods Methods of the requests that should be sent.
 	 */
-	public function test_create__stream_changes( $display_name, $request_method ) {
+	public function test_create__stream_changes( $display_name, $request_method, $expected_methods ) {
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
 			function ( Request $request ) use ( $display_name, $request_method ) {
+				$this->requests[] = $request;
+
 				// Another web data stream gets connected while the request that returns the secret is sent.
 				if ( $request_method === $request->getMethod() ) {
 					$this->analytics->get_settings()->merge( array( 'webDataStreamID' => '222222222' ) );
@@ -588,6 +591,19 @@ class Measurement_Protocol_SecretTest extends TestCase {
 			$result->get_error_code(),
 			'The error code should be `measurement_protocol_secret_not_stored`.'
 		);
+		$this->assertSame(
+			array( 'status' => 409 ),
+			$result->get_error_data(),
+			'The error data should contain status 409, since the connected web data stream changed.'
+		);
+		$this->assertSame(
+			$expected_methods,
+			array_map(
+				fn ( Request $request ) => $request->getMethod(),
+				$this->requests
+			),
+			'The secrets should be listed, and a secret should be created only when none is named "Site Kit by Google".'
+		);
 		$this->assertOptionNotExists(
 			Measurement_Protocol_Settings::OPTION,
 			'The secret of a stream that is no longer connected should not be stored.'
@@ -596,31 +612,44 @@ class Measurement_Protocol_SecretTest extends TestCase {
 
 	public function data_create__stream_changes() {
 		return array(
-			'existing secret reused' => array( 'Site Kit by Google', 'GET' ),
-			'new secret created'     => array( 'Other secret', 'POST' ),
+			'existing secret reused' => array( 'Site Kit by Google', 'GET', array( 'GET' ) ),
+			'new secret created'     => array( 'Other secret', 'POST', array( 'GET', 'POST' ) ),
 		);
 	}
 
-	public function test_exception_to_error__body_not_json() {
-		$result = Measurement_Protocol_Secret::exception_to_error( new Google_Service_Exception( 'Bad Gateway', 502 ) );
+	/**
+	 * @dataProvider data_exception_to_error__body_not_json
+	 *
+	 * @param string $body   Response body.
+	 * @param int    $status HTTP status of the response.
+	 */
+	public function test_exception_to_error__body_not_json( $body, $status ) {
+		$result = Measurement_Protocol_Secret::exception_to_error( new Google_Service_Exception( $body, $status ) );
 
 		$this->assertSame(
 			'analytics_admin_request_failed',
 			$result->get_error_code(),
-			'The error code should be `analytics_admin_request_failed` for a response body that is not JSON.'
+			'The error code should be `analytics_admin_request_failed` for a response body that is not JSON, even with status 403.'
 		);
 		$this->assertSame(
-			'Bad Gateway',
+			$body,
 			$result->get_error_message(),
 			'The error message should be the whole response body when it is not JSON.'
 		);
 		$this->assertSame(
 			array(
-				'status' => 502,
+				'status' => $status,
 				'reason' => '',
 			),
 			$result->get_error_data(),
 			'The error data should contain the HTTP status and an empty reason when the response body is not JSON.'
+		);
+	}
+
+	public function data_exception_to_error__body_not_json() {
+		return array(
+			'502 Bad Gateway' => array( 'Bad Gateway', 502 ),
+			'403 Forbidden'   => array( 'Forbidden', 403 ),
 		);
 	}
 
