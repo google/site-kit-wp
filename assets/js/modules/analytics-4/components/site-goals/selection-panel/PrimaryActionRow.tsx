@@ -53,34 +53,34 @@ import { trackEvent } from '@/js/util';
 const FEEDBACK_OPTIONS: Record< VoteDirection, FeedbackMenuOption[] > = {
 	[ VOTE_DIRECTION_UP ]: [
 		{
-			id: SITE_GOALS_PANEL_UPVOTE_REASONS.MATTERS_MOST,
+			id: `site-goals-key-action-feedback-${ SITE_GOALS_PANEL_UPVOTE_REASONS.MATTERS_MOST }`,
 			label: __( 'It’s what matters most', 'google-site-kit' ),
 			value: SITE_GOALS_PANEL_UPVOTE_REASONS.MATTERS_MOST,
 		},
 		{
-			id: SITE_GOALS_PANEL_UPVOTE_REASONS.ONLY_SOME_MATTER,
+			id: `site-goals-key-action-feedback-${ SITE_GOALS_PANEL_UPVOTE_REASONS.ONLY_SOME_MATTER }`,
 			label: __( 'Only some of them matter', 'google-site-kit' ),
 			value: SITE_GOALS_PANEL_UPVOTE_REASONS.ONLY_SOME_MATTER,
 		},
 		{
-			id: SITE_GOALS_PANEL_UPVOTE_REASONS.OTHER_ACTIONS_MATTER,
+			id: `site-goals-key-action-feedback-${ SITE_GOALS_PANEL_UPVOTE_REASONS.OTHER_ACTIONS_MATTER }`,
 			label: __( 'Other actions matter too', 'google-site-kit' ),
 			value: SITE_GOALS_PANEL_UPVOTE_REASONS.OTHER_ACTIONS_MATTER,
 		},
 	],
 	[ VOTE_DIRECTION_DOWN ]: [
 		{
-			id: SITE_GOALS_PANEL_DOWNVOTE_REASONS.MISSING_OR_WRONG,
+			id: `site-goals-key-action-feedback-${ SITE_GOALS_PANEL_DOWNVOTE_REASONS.MISSING_OR_WRONG }`,
 			label: __( 'Some are missing or wrong', 'google-site-kit' ),
 			value: SITE_GOALS_PANEL_DOWNVOTE_REASONS.MISSING_OR_WRONG,
 		},
 		{
-			id: SITE_GOALS_PANEL_DOWNVOTE_REASONS.CALL_OR_EMAIL_INSTEAD,
+			id: `site-goals-key-action-feedback-${ SITE_GOALS_PANEL_DOWNVOTE_REASONS.CALL_OR_EMAIL_INSTEAD }`,
 			label: __( 'People call or email instead', 'google-site-kit' ),
 			value: SITE_GOALS_PANEL_DOWNVOTE_REASONS.CALL_OR_EMAIL_INSTEAD,
 		},
 		{
-			id: SITE_GOALS_PANEL_DOWNVOTE_REASONS.SOMETHING_ELSE_MATTERS_MORE,
+			id: `site-goals-key-action-feedback-${ SITE_GOALS_PANEL_DOWNVOTE_REASONS.SOMETHING_ELSE_MATTERS_MORE }`,
 			label: __( 'Something else matters more', 'google-site-kit' ),
 			value: SITE_GOALS_PANEL_DOWNVOTE_REASONS.SOMETHING_ELSE_MATTERS_MORE,
 		},
