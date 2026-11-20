@@ -128,6 +128,12 @@ Read **only** what the issue touches. Map:
 | Prompts & dismissals | `prompts-and-dismissals.md` |
 | PHPUnit integration tests | `phpunit.md` |
 
+**User-facing copy (`docs/context/`)**
+
+| If the issue involves… | Read |
+| --- | --- |
+| Any user-facing string: labels, headings, notices, help text, errors | `terminology.md` |
+
 ## Step 4 — Implement
 
 Follow the conventions you loaded in Step 3. In addition:
