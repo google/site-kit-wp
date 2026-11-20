@@ -25,3 +25,6 @@ export type VoteDirection =
 
 /** The `key` sent to the feedback endpoint for a thumbs up/down vote. */
 export const FEEDBACK_KEY_VOTE = 'vote';
+
+/** The `key` sent to the feedback endpoint for the reason chosen after a vote. */
+export const FEEDBACK_KEY_VOTE_REASON = 'vote_reason';

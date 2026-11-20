@@ -43,7 +43,6 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useViewContext from '@/js/hooks/useViewContext';
-import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
 import { TilesGroup } from '@/js/modules/analytics-4/components/common/tiles';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs, {
@@ -59,8 +58,6 @@ import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
-	SITE_GOALS_FEEDBACK_GROUP_WIDGET_LEAD_GENERATION,
-	SITE_GOALS_FEEDBACK_NAMESPACE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -79,6 +76,7 @@ import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/
 import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import SiteGoalsWidgetFeedback from '@/js/modules/analytics-4/components/site-goals/widgets/SiteGoalsWidgetFeedback';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent, untrailingslashit } from '@/js/util';
@@ -749,16 +747,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					</Fragment>
 				) }
 
-				<FeedbackPrompt
-					feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
-					feedbackGroup={
-						SITE_GOALS_FEEDBACK_GROUP_WIDGET_LEAD_GENERATION
-					}
-					gaTrackingEventArgs={ {
-						category: `${ viewContext }_site-goals-widget-survey`,
-						label: GOAL_TYPES.LEAD,
-					} }
-				/>
+				<SiteGoalsWidgetFeedback goalType={ GOAL_TYPES.LEAD } />
 			</WidgetComponent>
 		);
 	}

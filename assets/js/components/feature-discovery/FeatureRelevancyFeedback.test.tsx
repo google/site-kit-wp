@@ -150,7 +150,7 @@ describe( 'FeatureRelevancyFeedback', () => {
 		[ 'Setup seems complex', 'too_complicated' ],
 		[ 'Something else', 'something_else' ],
 	] )(
-		'should send the feature feedback for "%s"',
+		'should send the feature feedback for "%s" exactly once',
 		async ( label, reason ) => {
 			const { getByRole } = render(
 				<FeatureRelevancyFeedback slug="first" />,
@@ -171,6 +171,12 @@ describe( 'FeatureRelevancyFeedback', () => {
 					value: reason,
 				} )
 			);
+
+			const reasonCalls = sendFeedback.mock.calls.filter(
+				( [ feedback ] ) => feedback.key === 'vote_reason'
+			);
+
+			expect( reasonCalls ).toHaveLength( 1 );
 		}
 	);
 } );
