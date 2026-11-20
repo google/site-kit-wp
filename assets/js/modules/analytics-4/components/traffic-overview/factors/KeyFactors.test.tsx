@@ -638,6 +638,72 @@ describe( 'KeyFactors', () => {
 		);
 	} );
 
+	it( 'should render "Select a date range of at least 7 days…" under the heading, in place of the cards and of "No channel changed notably…", when the range is too short for the key factors', () => {
+		const { container, getByRole, getByText, queryByText } =
+			renderKeyFactors( {
+				keyFactors: [],
+				rangeTooShort: true,
+				daysInSelectedRange: 3,
+			} );
+
+		expect(
+			getByRole( 'heading', {
+				name: 'Biggest channel shifts vs. the previous 3 days',
+			} )
+		).toBeInTheDocument();
+		expect(
+			getByText(
+				'Select a date range of at least 7 days to see which channels changed the most'
+			)
+		).toBeInTheDocument();
+		expect(
+			queryByText(
+				'No channel changed notably compared with the previous 3 days'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors-cards'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors'
+			)
+		).toHaveClass(
+			'googlesitekit-traffic-overview__key-factors--no-change'
+		);
+	} );
+
+	it( 'should render no "Select a date range of at least 7 days…" when the range is long enough for the key factors', () => {
+		const { queryByText } = renderKeyFactors( { keyFactors: [] } );
+
+		expect(
+			queryByText(
+				'Select a date range of at least 7 days to see which channels changed the most'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the placeholder cards, and no "Select a date range of at least 7 days…", while the key factors load, though the range is too short', () => {
+		const { container, queryByText } = renderKeyFactors( {
+			keyFactors: [],
+			rangeTooShort: true,
+			loaded: false,
+		} );
+
+		expect(
+			queryByText(
+				'Select a date range of at least 7 days to see which channels changed the most'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelectorAll(
+				'.googlesitekit-traffic-overview__key-factor--loading'
+			)
+		).toHaveLength( 3 );
+	} );
+
 	it( 'should render the placeholder cards, and no "No channel changed notably…", while the key factors load, though traffic was steady', () => {
 		const { container, queryByText } = renderKeyFactors( {
 			keyFactors: STEADY_KEY_FACTORS,

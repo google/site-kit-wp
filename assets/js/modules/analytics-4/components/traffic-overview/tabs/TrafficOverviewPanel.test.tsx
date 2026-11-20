@@ -1464,6 +1464,69 @@ describe( 'TrafficOverviewPanel', () => {
 			).toBeInTheDocument();
 		} );
 
+		it( 'should render "Select a date range of at least 7 days…" in place of the key factor cards, between the traffic chart and the traffic breakdown, when the benchmarking response says the selected range is too short for them', async () => {
+			registry.dispatch( CORE_USER ).setDateRangeSelection( {
+				type: 'custom',
+				startDate: '2025-02-03',
+				endDate: '2025-02-05',
+			} );
+
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+			const response = createBenchmarkingResponse( startDate, endDate );
+
+			// A 3-day range has no key factors, whatever its history, and the
+			// response says it is too short for them.
+			provideBenchmarkingResponse( registry, {
+				...response,
+				availability: {
+					...response.availability,
+					rangeTooShort: true,
+					keyFactorsAvailable: false,
+					keyFactorsAvailableFrom: null,
+					insightRequestAllowed: false,
+					performanceInsightAvailable: false,
+				},
+				keyFactors: [],
+			} );
+
+			const { container, getByRole, getByText, waitForRegistry } = render(
+				<TrafficOverviewPanel />,
+				{
+					registry,
+					features: [ 'typicalTraffic' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			// Without cards, the section has the space under its notice that
+			// it has under "No channel changed notably…".
+			expect( getSectionClassNames( container ) ).toEqual( [
+				'googlesitekit-traffic-overview__summary',
+				'googlesitekit-traffic-overview__chart',
+				'googlesitekit-traffic-overview__key-factors googlesitekit-traffic-overview__key-factors--no-change',
+				'googlesitekit-traffic-overview__breakdown',
+			] );
+			expect(
+				getByRole( 'heading', {
+					name: 'Biggest channel shifts vs. the previous 3 days',
+				} )
+			).toBeInTheDocument();
+			expect(
+				getByText(
+					'Select a date range of at least 7 days to see which channels changed the most'
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors-cards'
+				)
+			).not.toBeInTheDocument();
+		} );
+
 		it.each( [
 			[ 'with', [ 'typicalTraffic', 'trafficInsights' ], true ],
 			[ 'without', [ 'typicalTraffic' ], false ],

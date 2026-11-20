@@ -25,6 +25,7 @@ import { getTypicalTrafficAvailability } from './getTypicalTrafficAvailability';
 describe( 'getTypicalTrafficAvailability', () => {
 	it( 'should show every part while the benchmarking response loads', () => {
 		expect( getTypicalTrafficAvailability( undefined ) ).toEqual( {
+			rangeTooShort: false,
 			keyFactorsAvailable: true,
 			insightRequestAllowed: true,
 			performanceInsightAvailable: true,
@@ -44,6 +45,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 				...response,
 				availability: {
 					...response.availability,
+					rangeTooShort: true,
 					keyFactorsAvailable: false,
 					insightRequestAllowed: false,
 					performanceInsightAvailable: false,
@@ -51,6 +53,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 			} )
 		).toEqual(
 			expect.objectContaining( {
+				rangeTooShort: true,
 				keyFactorsAvailable: false,
 				insightRequestAllowed: false,
 				performanceInsightAvailable: false,

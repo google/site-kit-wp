@@ -45,14 +45,20 @@ import KeyFactorCardPlaceholder from './KeyFactorCardPlaceholder';
 import KeyFactorsInsightNotice from './KeyFactorsInsightNotice';
 
 export interface KeyFactorsProps {
-	/** The key factor cards, in the order to show them. */
-	keyFactors: BenchmarkingKeyFactor[];
+	/** The key factor cards, in the order to show them. None until they arrive. */
+	keyFactors?: BenchmarkingKeyFactor[];
 	/**
 	 * Whether traffic was steady: no channel changed notably compared with the
 	 * previous period. The cards are then the channels with the most visits,
 	 * each with its share of the site's visits.
 	 */
 	steady?: boolean;
+	/**
+	 * Whether the selected date range is shorter than the key factors need, 7
+	 * days, by the rules of the Site Kit service. The section then says so in
+	 * place of the cards.
+	 */
+	rangeTooShort?: boolean;
 	/** The number of days in the selected date range, which the heading names. */
 	daysInSelectedRange: number;
 	/** Whether the key factors have arrived. */
@@ -66,8 +72,9 @@ export interface KeyFactorsProps {
 }
 
 const KeyFactors: FC< KeyFactorsProps > = ( {
-	keyFactors,
+	keyFactors = [],
 	steady = false,
+	rangeTooShort = false,
 	daysInSelectedRange,
 	loaded = true,
 	insight,
@@ -101,10 +108,15 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 	// placeholders, and it describes the change on its own where there are no
 	// cards.
 	const showInsight = insightLoading || !! insight;
+	// A range too short for the key factors has none, and no summary either,
+	// so a notice says what range they need in place of the cards. "No
+	// channel changed notably…" would describe a comparison that wasn't made.
+	const isRangeTooShort = loaded && rangeTooShort;
 	// On a steady period, the notice says so above the channels that hold the
 	// site's traffic up, and the summary that describes them. Otherwise, it
 	// takes the place of the cards when there are none and no summary.
-	const hasNoChange = isSteady || ( hasNoCards && ! showInsight );
+	const hasNoChange =
+		! isRangeTooShort && ( isSteady || ( hasNoCards && ! showInsight ) );
 
 	const tooltipContent = createInterpolateElement(
 		__(
@@ -164,6 +176,16 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 							'google-site-kit'
 						),
 						daysInSelectedRange
+					) }
+				/>
+			) }
+			{ isRangeTooShort && (
+				<Notice
+					type={ NOTICE_TYPES.INFO_CIRCLE }
+					className="googlesitekit-traffic-overview__key-factors-notice"
+					description={ __(
+						'Select a date range of at least 7 days to see which channels changed the most',
+						'google-site-kit'
 					) }
 				/>
 			) }

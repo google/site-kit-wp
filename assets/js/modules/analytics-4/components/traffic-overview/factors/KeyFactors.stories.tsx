@@ -131,6 +131,10 @@ interface KeyFactorsStoryProps {
 	keyFactors: BenchmarkingKeyFactor[];
 	/** Whether traffic was steady, when the cards show their shares of the site's visits. */
 	steady?: boolean;
+	/** Whether the selected date range is too short for the key factors. */
+	rangeTooShort?: boolean;
+	/** The number of days in the selected date range. */
+	daysInSelectedRange?: number;
 	/** Whether the key factors have arrived. */
 	loaded?: boolean;
 	/** The generated summary of the cards. */
@@ -142,6 +146,8 @@ interface KeyFactorsStoryProps {
 function Template( {
 	keyFactors,
 	steady,
+	rangeTooShort,
+	daysInSelectedRange = 28,
 	loaded,
 	insight,
 	pauseAnimation = false,
@@ -162,9 +168,10 @@ function Template( {
 					<KeyFactors
 						keyFactors={ keyFactors }
 						steady={ steady }
+						rangeTooShort={ rangeTooShort }
 						loaded={ loaded }
 						insight={ insight }
-						daysInSelectedRange={ 28 }
+						daysInSelectedRange={ daysInSelectedRange }
 						referenceSiteURL={ REFERENCE_SITE_URL }
 					/>
 				</div>
@@ -212,6 +219,18 @@ SteadyTraffic.args = {
 	keyFactors: STEADY_KEY_FACTORS,
 	steady: true,
 	insight: PLACEHOLDER_KEY_FACTORS_INSIGHT,
+};
+
+// `RangeTooShort` runs no visual check, because it only changes the notice
+// text of `NoNotableChange`.
+export const RangeTooShort = Template.bind(
+	{}
+) as Story< KeyFactorsStoryProps >;
+RangeTooShort.storyName = 'Range Too Short';
+RangeTooShort.args = {
+	keyFactors: [],
+	rangeTooShort: true,
+	daysInSelectedRange: 3,
 };
 
 export const LongLabels = Template.bind( {} ) as Story< KeyFactorsStoryProps >;

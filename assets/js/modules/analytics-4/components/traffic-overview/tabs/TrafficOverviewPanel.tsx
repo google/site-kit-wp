@@ -110,8 +110,10 @@ const TrafficOverviewPanel: FC = () => {
 	// has recorded traffic. Until then, the panel leaves out their section,
 	// whose notice would say that no channel changed notably, and asks for no
 	// insight, whose driver would describe a change against days that weren't
-	// measured.
+	// measured. A range too short for the key factors has none either, and
+	// their section says what range they need instead.
 	const {
+		rangeTooShort,
 		keyFactorsAvailable,
 		insightRequestAllowed,
 		performanceInsightAvailable,
@@ -199,21 +201,21 @@ const TrafficOverviewPanel: FC = () => {
 							/>
 						</div>
 					) }
-					{ showKeyFactors && keyFactorsAvailable && (
-						<KeyFactors
-							keyFactors={
-								benchmarkingResponse?.keyFactors ?? []
-							}
-							steady={ benchmarkingResponse?.steadyTraffic }
-							loaded={ ! isLoading }
-							// The driver describes the change against the
-							// previous period, and what carried it.
-							insight={ insight?.driver }
-							insightLoading={ insightLoading }
-							daysInSelectedRange={ daysInSelectedRange }
-							referenceSiteURL={ referenceSiteURL }
-						/>
-					) }
+					{ showKeyFactors &&
+						( keyFactorsAvailable || rangeTooShort ) && (
+							<KeyFactors
+								keyFactors={ benchmarkingResponse?.keyFactors }
+								steady={ benchmarkingResponse?.steadyTraffic }
+								rangeTooShort={ rangeTooShort }
+								loaded={ ! isLoading }
+								// The driver describes the change against the
+								// previous period, and what carried it.
+								insight={ insight?.driver }
+								insightLoading={ insightLoading }
+								daysInSelectedRange={ daysInSelectedRange }
+								referenceSiteURL={ referenceSiteURL }
+							/>
+						) }
 					<TrafficBreakdown
 						values={ breakdownValues }
 						loaded={ ! isLoading }
