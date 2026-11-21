@@ -207,6 +207,7 @@ class Setup_Test extends TestCase {
 	public function data_key_metrics_after_first_sign_in() {
 		return array(
 			'Analytics connected, Key Metrics shown'      => array( true, false ),
+			'Analytics connected, Key Metrics hidden'     => array( true, true ),
 			'Analytics not connected, Key Metrics shown'  => array( false, false ),
 			'Analytics not connected, Key Metrics hidden' => array( false, true ),
 		);
