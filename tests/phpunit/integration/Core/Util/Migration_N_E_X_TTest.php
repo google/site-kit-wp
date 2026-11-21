@@ -102,7 +102,7 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$this->assertFalse(
 			$this->options->has( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION ),
-			'Migration should delete the Key Metrics widget area hidden option when Analytics was connected before and has since been disconnected.'
+			'Migration should delete the Key Metrics widget area hidden option when Analytics was set up before and has since been disconnected.'
 		);
 	}
 
