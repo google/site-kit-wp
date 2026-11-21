@@ -1816,7 +1816,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertArrayHasKey( 'searchQueries', $received_data, 'The callback at priority 20 should run after the one at priority 5, and receive its `searchQueries` rows, even though it was added first.' );
 	}
 
-	public function test_build__returns_the_key_factor_cards_with_their_attributes() {
+	public function test_build__returns_the_key_factor_cards() {
 		$this->provide_key_factor_reports();
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
@@ -1839,19 +1839,11 @@ class Response_BuilderTest extends TestCase {
 					'current'    => 380,
 					'previous'   => 300,
 					'sharePct'   => 28.6,
-					'attributes' => array(
-						array(
-							'kind'     => 'USER_TYPE',
-							'label'    => 'returning',
-							'current'  => 380,
-							'previous' => 300,
-							'sharePct' => 100.0,
-						),
-					),
+					'attributes' => array(),
 				),
 			),
 			$response['keyFactors'],
-			'The cards should be the new `/plant-garlic/` post, whose 150 visits are 75% of the rise of `Organic Search`, and `Direct`, with the visitor type that carried its rise.'
+			'The cards should be the new `/plant-garlic/` post, whose 150 visits are 75% of the rise of `Organic Search`, and `Direct`, whose one device and one visitor type have all of its visits, so neither explains its rise.'
 		);
 	}
 

@@ -688,6 +688,185 @@ class Key_FactorsTest extends TestCase {
 		);
 	}
 
+	public function test_get_cards__lists_both_devices_of_a_channel_that_is_the_net_of_devices_that_moved_both_ways() {
+		// Direct gained 400 visits on desktop and lost 300 on mobile. Every
+		// visitor is new, so its visitor type explains nothing.
+		$key_factors = $this->build(
+			array( 1600, 1500 ),
+			array(),
+			array(
+				'channelBreakdowns' => array(
+					array(
+						'channel'  => 'Direct',
+						'device'   => 'desktop',
+						'userType' => 'new',
+						'current'  => 900,
+						'previous' => 500,
+					),
+					array(
+						'channel'  => 'Direct',
+						'device'   => 'mobile',
+						'userType' => 'new',
+						'current'  => 300,
+						'previous' => 600,
+					),
+					array(
+						'channel'  => 'Organic Search',
+						'device'   => '(not set)',
+						'userType' => '(not set)',
+						'current'  => 400,
+						'previous' => 400,
+					),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Direct' ), $this->get_card_titles( $key_factors ), 'Direct should be the only card.' );
+		$this->assertSame(
+			array(
+				array(
+					'kind'         => 'READER_DEVICE',
+					'role'         => 'CONTEXT',
+					'label'        => 'Reader device',
+					'value'        => array( 'text' => 'desktop' ),
+					'entity_delta' => 400,
+				),
+				array(
+					'kind'         => 'READER_DEVICE',
+					'role'         => 'CONTEXT',
+					'label'        => 'Reader device',
+					'value'        => array( 'text' => 'mobile' ),
+					'entity_delta' => -300,
+				),
+			),
+			$key_factors->get_decomposition()['key_factors'][0]['attributes'],
+			'Both devices should be rows with their own changes and no share, though desktop moved further than Direct.'
+		);
+		$this->assertSame(
+			array(
+				array( 'DEVICE', 'desktop', 900, 500, 0.0 ),
+				array( 'DEVICE', 'mobile', 300, 600, 0.0 ),
+			),
+			array_map(
+				fn( $attribute ) => array( $attribute['kind'], $attribute['label'], $attribute['current'], $attribute['previous'], $attribute['sharePct'] ),
+				$key_factors->get_cards()[0]['attributes']
+			),
+			'The panel should show both devices.'
+		);
+	}
+
+	public function test_get_cards__lists_a_device_that_moved_a_little_further_than_its_channel_as_all_of_its_change() {
+		// Organic Search lost 200 visits on desktop and gained 5 on mobile, too
+		// few to count, so desktop carried all of its drop of 195.
+		$key_factors = $this->build(
+			array( 705, 900 ),
+			array(),
+			array(
+				'channelBreakdowns' => array(
+					array(
+						'channel'  => 'Organic Search',
+						'device'   => 'desktop',
+						'userType' => 'new',
+						'current'  => 100,
+						'previous' => 300,
+					),
+					array(
+						'channel'  => 'Organic Search',
+						'device'   => 'mobile',
+						'userType' => 'new',
+						'current'  => 105,
+						'previous' => 100,
+					),
+					array(
+						'channel'  => 'Direct',
+						'device'   => '(not set)',
+						'userType' => '(not set)',
+						'current'  => 500,
+						'previous' => 500,
+					),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Organic Search' ), $this->get_card_titles( $key_factors ), 'Organic Search should be the only card.' );
+		$this->assertSame(
+			array(
+				array(
+					'kind'                       => 'READER_DEVICE',
+					'role'                       => 'DECOMPOSITION',
+					'label'                      => 'Reader device',
+					'value'                      => array( 'text' => 'desktop' ),
+					'share_of_parent_change_pct' => 100.0,
+					'entity_delta'               => -200,
+				),
+			),
+			$key_factors->get_decomposition()['key_factors'][0]['attributes'],
+			'Desktop should carry all of the change, with its own figure.'
+		);
+	}
+
+	public function test_get_cards__does_not_list_a_visitor_type_that_changed_no_more_than_its_share_of_its_channel() {
+		// New visitors have 90.8% of Referral's visits and carried 95% of its
+		// rise. Returning visitors have 54.2% of Organic Social's visits and
+		// carried 88.9% of its rise.
+		$key_factors = $this->build(
+			array( 2180, 1800 ),
+			array(),
+			array(
+				'channelBreakdowns' => array(
+					array(
+						'channel'  => 'Referral',
+						'device'   => '(not set)',
+						'userType' => 'new',
+						'current'  => 1090,
+						'previous' => 900,
+					),
+					array(
+						'channel'  => 'Referral',
+						'device'   => '(not set)',
+						'userType' => 'returning',
+						'current'  => 110,
+						'previous' => 100,
+					),
+					array(
+						'channel'  => 'Organic Social',
+						'device'   => '(not set)',
+						'userType' => 'new',
+						'current'  => 220,
+						'previous' => 200,
+					),
+					array(
+						'channel'  => 'Organic Social',
+						'device'   => '(not set)',
+						'userType' => 'returning',
+						'current'  => 260,
+						'previous' => 100,
+					),
+					array(
+						'channel'  => 'Direct',
+						'device'   => '(not set)',
+						'userType' => '(not set)',
+						'current'  => 500,
+						'previous' => 500,
+					),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral', 'CHANNEL Organic Social' ), $this->get_card_titles( $key_factors ), 'Both channels that rose should be cards.' );
+		$this->assertSame(
+			array(
+				array(),
+				array( array( 'USER_TYPE', 'returning', 88.9 ) ),
+			),
+			array_map(
+				fn( $card ) => array_map( fn( $attribute ) => array( $attribute['kind'], $attribute['label'], $attribute['sharePct'] ), $card['attributes'] ),
+				$key_factors->get_cards()
+			),
+			'Referral should not list its new visitors, who only show where its visitors already were. Organic Social should list its returning visitors.'
+		);
+	}
+
 	public function test_get_cards__lists_the_assistant_of_ai_assistant_without_making_it_the_card() {
 		$key_factors = $this->build(
 			array( 1100, 1000 ),

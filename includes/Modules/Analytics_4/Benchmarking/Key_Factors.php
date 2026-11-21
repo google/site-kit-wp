@@ -176,13 +176,18 @@ final class Key_Factors {
 	const HOMEPAGE_MARGIN_PERCENT = 10;
 
 	/**
-	 * How many percentage points a device's share of its channel's change must
-	 * differ from its share of the channel's visits to be a row. A 95% mobile
-	 * site sees about 95% of any change on mobile.
+	 * How many percentage points a device's or a visitor type's share of its
+	 * channel's change must differ from its share of the channel's visits to be
+	 * a row. A 95% mobile site sees about 95% of any change on mobile, and a
+	 * site whose visitors are 98% new sees about 98% of any change in new
+	 * visitors.
+	 *
+	 * The service's §5.9 applies it to devices only. The plugin applies it to
+	 * visitor types as well, for the same reason.
 	 *
 	 * @since n.e.x.t
 	 */
-	const DEVICE_MARGIN_PERCENT = 10;
+	const BREAKDOWN_MARGIN_PERCENT = 10;
 
 	/**
 	 * The share of the paid channels' gross movement a paid channel needs to
@@ -1673,7 +1678,9 @@ final class Key_Factors {
 	 * - Its fillers: the device for `Direct`, and the device and the visitor
 	 *   type for any other channel.
 	 * A slot or a filler is left out when a row of its kind is listed already.
-	 * The candidates are then kept by `keep_consistent_rows()`.
+	 * A device or a visitor type whose channel is the net of two of them that
+	 * moved both ways lists both, as `get_slot_rows()` explains. The candidates
+	 * are then kept by `keep_consistent_rows()`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -1723,10 +1730,10 @@ final class Key_Factors {
 					continue;
 				}
 
-				$row = $this->get_slot_row( $kind, $reduction, $delta );
+				$rows = $this->get_slot_rows( $kind, $reduction, $delta );
 
-				if ( null !== $row ) {
-					$candidates[]   = $row;
+				if ( ! empty( $rows ) ) {
+					array_push( $candidates, ...$rows );
 					$listed_kinds[] = $kind;
 				}
 			}
@@ -1846,55 +1853,66 @@ final class Key_Factors {
 	}
 
 	/**
-	 * Gets the row of a slot or a filler of a channel's card.
+	 * Gets the rows of a slot or a filler of a channel's card.
 	 *
-	 * The row needs a change moving with the channel, by `minimum_delta` and
-	 * by `ROW_SHARE` of the channel's change. A device or a visitor type is no
-	 * larger than its channel. The homepage of `Direct` needs
-	 * `HOMEPAGE_SHARE` of its change, and a share of it
+	 * A page row needs a change moving with the channel, by `minimum_delta`
+	 * and by `ROW_SHARE` of the channel's change. The homepage of `Direct`
+	 * needs `HOMEPAGE_SHARE` of its change, and a share of it
 	 * `HOMEPAGE_MARGIN_PERCENT` points above its share of `Direct`'s visits.
+	 *
+	 * A device or a visitor type gives the rows `get_breakdown_split()` finds:
+	 * the one that carried the channel's change, or the two sides of a net,
+	 * each with its own change and no share. One that moved a little further
+	 * than its channel, within `NET_SLACK`, carried all of its change.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string $kind      The row kind, such as `TARGET_PAGE`.
 	 * @param array  $reduction The channel's reduction, as `get_reduction()` returns it.
 	 * @param int    $delta     The channel's change.
-	 * @return array|null The row, or null.
+	 * @return array List of rows: none, one, or the two sides of a net.
 	 */
-	private function get_slot_row( $kind, array $reduction, $delta ) {
+	private function get_slot_rows( $kind, array $reduction, $delta ) {
 		switch ( $kind ) {
 			case 'HOMEPAGE':
 				$homepage = $reduction['homepage'];
 
 				if ( null === $homepage || $homepage['delta'] * $delta <= 0 || abs( $homepage['delta'] ) < $this->minimum_delta ) {
-					return null;
+					return array();
 				}
 
 				$share = abs( $homepage['delta'] ) / abs( $delta );
 
 				if ( $share < self::HOMEPAGE_SHARE || $share * 100 < $homepage['share_pct'] + self::HOMEPAGE_MARGIN_PERCENT ) {
-					return null;
+					return array();
 				}
 
-				return $this->build_row( 'HOMEPAGE', 'Homepage', null, 'LANDING_PAGE', $homepage, $delta );
+				return array( $this->build_row( 'HOMEPAGE', 'Homepage', null, 'LANDING_PAGE', $homepage, $delta ) );
 			case 'TARGET_PAGE':
 				$page = $reduction['page'];
 
 				if ( null === $page || $page['delta'] * $delta <= 0 || ! $this->is_above_row_floors( $page['delta'], $delta ) ) {
-					return null;
+					return array();
 				}
 
-				return $this->build_row( 'TARGET_PAGE', 'Target page', $page['title'], 'LANDING_PAGE', $page, $delta );
+				return array( $this->build_row( 'TARGET_PAGE', 'Target page', $page['title'], 'LANDING_PAGE', $page, $delta ) );
 			default:
-				$value = 'VISITOR_TYPE' === $kind ? $reduction['visitor_type'] : $reduction['device'];
+				$split = 'VISITOR_TYPE' === $kind ? $reduction['visitor_type'] : $reduction['device'];
 
-				if ( null === $value || $value['delta'] * $delta <= 0 || ! $this->is_above_row_floors( $value['delta'], $delta ) || abs( $value['delta'] ) > abs( $delta ) ) {
-					return null;
+				if ( null === $split ) {
+					return array();
 				}
 
-				return 'VISITOR_TYPE' === $kind
-					? $this->build_row( 'VISITOR_TYPE', 'Visitor type', $value['title'], 'USER_TYPE', $value, $delta )
-					: $this->build_row( 'READER_DEVICE', 'Reader device', $value['title'], 'DEVICE', $value, $delta );
+				list( $label, $attribute_kind ) = 'VISITOR_TYPE' === $kind
+					? array( 'Visitor type', 'USER_TYPE' )
+					: array( 'Reader device', 'DEVICE' );
+
+				return array_map(
+					// The two sides of a net keep their own changes. A single
+					// row carried all of the change at most.
+					fn( $value ) => $this->build_row( $kind, $label, $value['title'], $attribute_kind, $value, $delta, ! $split['is_net'] ),
+					$split['values']
+				);
 		}
 	}
 
@@ -1908,6 +1926,10 @@ final class Key_Factors {
 	 * a row that moved further than the card because the card's other parts
 	 * moved the other way, which never reads as more than all of its change.
 	 *
+	 * A capped row that moved further than the card, which only a device or a
+	 * visitor type within `NET_SLACK` is, carried all of its change instead:
+	 * what the card's other values moved the other way is too small to count.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string      $kind           The row kind, such as `TARGET_PAGE`.
@@ -1916,10 +1938,12 @@ final class Key_Factors {
 	 * @param string      $attribute_kind The kind of the card's attribute, such as `LANDING_PAGE`.
 	 * @param array       $value          The value, with `current`, `previous` and `delta`.
 	 * @param int         $card_delta     The card's change.
+	 * @param bool        $capped         Optional. Whether the row's share is all of the card's change when it moved further than the card. Default false.
 	 * @return array The row, with `cut`, `delta`, `share`, `wire` and `attribute`.
 	 */
-	private function build_row( $kind, $label, $text, $attribute_kind, array $value, $card_delta ) {
+	private function build_row( $kind, $label, $text, $attribute_kind, array $value, $card_delta, $capped = false ) {
 		$delta         = $value['delta'];
+		$measured      = $capped ? min( abs( $delta ), abs( $card_delta ) ) : abs( $delta );
 		$share_percent = 0.0;
 		$wire          = array(
 			'kind'  => $kind,
@@ -1931,8 +1955,8 @@ final class Key_Factors {
 			$wire['value'] = array( 'text' => $text );
 		}
 
-		if ( $delta * $card_delta > 0 && abs( $delta ) <= abs( $card_delta ) ) {
-			$share_percent = self::round1( abs( $delta ) / abs( $card_delta ) * 100 );
+		if ( $delta * $card_delta > 0 && $measured <= abs( $card_delta ) ) {
+			$share_percent = self::round1( $measured / abs( $card_delta ) * 100 );
 
 			if ( $share_percent >= self::DECOMPOSITION_ROW_SHARE_PERCENT ) {
 				$wire['role'] = 'DECOMPOSITION';
@@ -2024,17 +2048,15 @@ final class Key_Factors {
 	 * device and the visitor type that carried its change, and for `Direct`,
 	 * its homepage.
 	 *
-	 * Each is the value that moved most with the channel, whose change is from
-	 * `ROW_SHARE` to `NET_SLACK` times the channel's. Only the largest is
-	 * tried: a smaller value never takes its place. A device whose share of the
-	 * change is within `DEVICE_MARGIN_PERCENT` points of its share of the
-	 * channel's visits only shows where the channel's visitors already were,
-	 * so it is left out.
+	 * The page is the one that moved most with the channel, whose change is
+	 * from `ROW_SHARE` to `NET_SLACK` times the channel's. Only the largest is
+	 * tried: a smaller page never takes its place. The device and the visitor
+	 * type are found by `get_breakdown_split()`.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $channel The channel.
-	 * @return array The values, keyed by `page`, `homepage`, `device` and `visitor_type`, each with `title`, `current`, `previous` and `delta`, or null. The homepage also has `share_pct`, its share of `Direct`'s visits.
+	 * @return array The values, keyed by `page` and `homepage`, each with `title`, `current`, `previous` and `delta`, or null, and by `device` and `visitor_type`, each a split as `get_breakdown_split()` returns it, or null. The homepage also has `share_pct`, its share of `Direct`'s visits.
 	 */
 	private function get_reduction( array $channel ) {
 		if ( isset( $this->reductions[ $channel['key'] ] ) ) {
@@ -2081,23 +2103,11 @@ final class Key_Factors {
 			}
 		}
 
-		$device = $this->get_reduced_value( $devices, $channel['delta'] );
-
-		if ( null !== $device ) {
-			$channel_visits = array_sum( array_column( $devices, 'current' ) );
-			$change_share   = $device['delta'] / $channel['delta'] * 100;
-			$visits_share   = $channel_visits > 0 ? $device['current'] / $channel_visits * 100 : 0;
-
-			if ( abs( $change_share - $visits_share ) <= self::DEVICE_MARGIN_PERCENT ) {
-				$device = null;
-			}
-		}
-
 		$this->reductions[ $channel['key'] ] = array(
 			'page'         => $this->get_reduced_value( $pages, $channel['delta'] ),
 			'homepage'     => self::DIRECT_CHANNEL === $channel['key'] ? $this->get_homepage_value( $homepage_pages, $channel ) : null,
-			'device'       => $device,
-			'visitor_type' => $this->get_reduced_value( $visitor_types, $channel['delta'] ),
+			'device'       => $this->get_breakdown_split( $devices, $channel['delta'] ),
+			'visitor_type' => $this->get_breakdown_split( $visitor_types, $channel['delta'] ),
 		);
 
 		return $this->reductions[ $channel['key'] ];
@@ -2149,17 +2159,7 @@ final class Key_Factors {
 	 * @return array|null The value, or null.
 	 */
 	private function get_reduced_value( array $values, $delta ) {
-		$largest = null;
-
-		foreach ( $values as $value ) {
-			if ( $value['delta'] * $delta <= 0 ) {
-				continue;
-			}
-
-			if ( null === $largest || abs( $value['delta'] ) > abs( $largest['delta'] ) || ( abs( $value['delta'] ) === abs( $largest['delta'] ) && strcmp( $value['title'], $largest['title'] ) < 0 ) ) {
-				$largest = $value;
-			}
-		}
+		$largest = self::get_largest_moving( $values, $delta );
 
 		if ( null === $largest ) {
 			return null;
@@ -2168,6 +2168,106 @@ final class Key_Factors {
 		$share = abs( $largest['delta'] ) / abs( $delta );
 
 		return $share >= self::ROW_SHARE && $share <= self::NET_SLACK ? $largest : null;
+	}
+
+	/**
+	 * Gets the rows a channel's devices or visitor types give its card.
+	 *
+	 * They follow the rules of a channel's parts (§5.10 step 8b), where the
+	 * service drops any device or visitor type that moved further than its
+	 * channel, which leaves a card without the rows that explain it:
+	 * - The channel is the net of two values that moved both ways when the
+	 *   value that moved most with it moved further than it, and either the
+	 *   value that moved most against it clears the row floors, or the first
+	 *   moved more than `NET_SLACK` times the channel. Both sides are rows,
+	 *   the first when it clears `minimum_delta` and the second when it
+	 *   counts, each with its own change. `Direct` +1,280 lists desktop +1,643
+	 *   and mobile −362.
+	 * - Otherwise, the value that moved most with the channel is the row when
+	 *   it clears the row floors. One that moved a little further than the
+	 *   channel, within `NET_SLACK`, carried all of its change: what moved
+	 *   the other way is too small to count. A row whose share of the change
+	 *   is within `BREAKDOWN_MARGIN_PERCENT` points of its share of the
+	 *   channel's visits only shows where the channel's visitors already were,
+	 *   so it is left out. Only the largest is tried: a smaller value never
+	 *   takes its place.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $values The channel's devices or visitor types, each with `key`, `title`, `current`, `previous` and `delta`.
+	 * @param int   $delta  The channel's change.
+	 * @return array|null The split, with `is_net`, whether the channel is a net, and `values`, the values that are rows, or null when none is.
+	 */
+	private function get_breakdown_split( array $values, $delta ) {
+		$same = 0 !== $delta ? self::get_largest_moving( $values, $delta ) : null;
+
+		if ( null === $same ) {
+			return null;
+		}
+
+		$opposite = self::get_largest_moving( $values, -$delta );
+		$ratio    = abs( $same['delta'] ) / abs( $delta );
+		$counted  = null !== $opposite && $this->is_above_row_floors( $opposite['delta'], $delta );
+
+		if ( $ratio > 1 && ( $counted || $ratio > self::NET_SLACK ) ) {
+			$sides = array();
+
+			if ( abs( $same['delta'] ) >= $this->minimum_delta ) {
+				$sides[] = $same;
+			}
+
+			if ( $counted ) {
+				$sides[] = $opposite;
+			}
+
+			return empty( $sides ) ? null : array(
+				'is_net' => true,
+				'values' => $sides,
+			);
+		}
+
+		if ( ! $this->is_above_row_floors( $same['delta'], $delta ) ) {
+			return null;
+		}
+
+		$visits       = array_sum( array_column( $values, 'current' ) );
+		$change_share = min( 1, $ratio ) * 100;
+		$visits_share = $visits > 0 ? $same['current'] / $visits * 100 : 0;
+
+		if ( abs( $change_share - $visits_share ) <= self::BREAKDOWN_MARGIN_PERCENT ) {
+			return null;
+		}
+
+		return array(
+			'is_net' => false,
+			'values' => array( $same ),
+		);
+	}
+
+	/**
+	 * Gets the value that moved most in a direction, the first by title on a
+	 * tie.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $values    The values, each with `title` and `delta`.
+	 * @param int   $direction A change in the direction, whose sign alone counts.
+	 * @return array|null The value, or null when none moved that way.
+	 */
+	private static function get_largest_moving( array $values, $direction ) {
+		$largest = null;
+
+		foreach ( $values as $value ) {
+			if ( $value['delta'] * $direction <= 0 ) {
+				continue;
+			}
+
+			if ( null === $largest || abs( $value['delta'] ) > abs( $largest['delta'] ) || ( abs( $value['delta'] ) === abs( $largest['delta'] ) && strcmp( $value['title'], $largest['title'] ) < 0 ) ) {
+				$largest = $value;
+			}
+		}
+
+		return $largest;
 	}
 
 	/**
