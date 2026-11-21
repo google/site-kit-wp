@@ -35,9 +35,10 @@ class Report_Data_BuilderTest extends TestCase {
 
 	/**
 	 * Rows the fake Search Console API returns, keyed by the identifier of the
-	 * report, `current` or `previous`.
+	 * report, such as `current` or `previous-totals`.
 	 *
-	 * Each row lists its query, its clicks, and its average position.
+	 * Each row lists its keys, the query of a query report, then its clicks
+	 * and its average position.
 	 *
 	 * @var array
 	 */
@@ -86,9 +87,9 @@ class Report_Data_BuilderTest extends TestCase {
 
 							$rows = array_map(
 								fn( $row ) => array(
-									'keys'     => array( $row[0] ),
-									'clicks'   => $row[1],
-									'position' => $row[2],
+									'keys'     => array_slice( $row, 0, -2 ),
+									'clicks'   => $row[ count( $row ) - 2 ],
+									'position' => $row[ count( $row ) - 1 ],
 								),
 								$this->report_rows[ $identifier ] ?? array()
 							);
@@ -140,7 +141,26 @@ class Report_Data_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build_search_query_rows__pairs_each_query_across_the_two_periods() {
+	/**
+	 * Builds the rows for the period of every test.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The rows, keyed by contextual data key.
+	 */
+	private function build_rows() {
+		return $this->builder->build_rows(
+			array(
+				'start_date'         => '2026-08-19',
+				'end_date'           => '2026-09-15',
+				'compare_start_date' => '2026-07-22',
+				'compare_end_date'   => '2026-08-18',
+				'row_limit'          => 50,
+			)
+		);
+	}
+
+	public function test_build_rows__pairs_each_query_across_the_two_periods() {
 		$this->report_rows = array(
 			'current'  => array(
 				array( 'plant garlic', 300, 3.4 ),
@@ -152,67 +172,66 @@ class Report_Data_BuilderTest extends TestCase {
 			),
 		);
 
-		$rows = $this->builder->build_search_query_rows(
-			array(
-				'start_date'         => '2026-08-19',
-				'end_date'           => '2026-09-15',
-				'compare_start_date' => '2026-07-22',
-				'compare_end_date'   => '2026-08-18',
-				'row_limit'          => 50,
-			)
-		);
-
 		$this->assertSame(
 			array(
-				array(
-					'label'            => 'plant garlic',
-					'current'          => 300,
-					'previous'         => 210,
-					'positionCurrent'  => 3.4,
-					'positionPrevious' => 4.8,
-				),
-				array(
-					'label'            => 'raised beds',
-					'current'          => 280,
-					'previous'         => 200,
-					'positionCurrent'  => 5.0,
-					'positionPrevious' => 5.5,
+				'searchQueries' => array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 300,
+						'previous'         => 210,
+						'positionCurrent'  => 3.4,
+						'positionPrevious' => 4.8,
+					),
+					array(
+						'label'            => 'raised beds',
+						'current'          => 280,
+						'previous'         => 200,
+						'positionCurrent'  => 5.0,
+						'positionPrevious' => 5.5,
+					),
 				),
 			),
-			$rows,
+			$this->build_rows(),
 			'Each query should have its clicks and its average position in the selected and the compare period.'
 		);
 	}
 
-	public function test_build_search_query_rows__asks_for_the_queries_of_each_period_with_the_row_limit() {
-		$this->builder->build_search_query_rows(
-			array(
-				'start_date'         => '2026-08-19',
-				'end_date'           => '2026-09-15',
-				'compare_start_date' => '2026-07-22',
-				'compare_end_date'   => '2026-08-18',
-				'row_limit'          => 50,
-			)
-		);
+	public function test_build_rows__asks_for_the_queries_and_the_site_clicks_of_each_period() {
+		$this->build_rows();
 
 		// Each part of the batch body has its JSON request on one line.
 		preg_match_all( '/^\{.*\}$/m', $this->batch_request_body, $request_bodies );
 
+		$requests = array();
+
+		$requests[] = array(
+			'dimensions' => array( 'query' ),
+			'endDate'    => '2026-09-15',
+			'rowLimit'   => 50,
+			'startDate'  => '2026-08-19',
+		);
+		$requests[] = array(
+			'dimensions' => array( 'query' ),
+			'endDate'    => '2026-08-18',
+			'rowLimit'   => 50,
+			'startDate'  => '2026-07-22',
+		);
+
+		// The report of the site's clicks has no dimensions, so its one row
+		// counts every query. The datapoint's default row limit applies.
+		$requests[] = array(
+			'endDate'   => '2026-09-15',
+			'rowLimit'  => 1000,
+			'startDate' => '2026-08-19',
+		);
+		$requests[] = array(
+			'endDate'   => '2026-08-18',
+			'rowLimit'  => 1000,
+			'startDate' => '2026-07-22',
+		);
+
 		$this->assertSame(
-			array(
-				array(
-					'dimensions' => array( 'query' ),
-					'endDate'    => '2026-09-15',
-					'rowLimit'   => 50,
-					'startDate'  => '2026-08-19',
-				),
-				array(
-					'dimensions' => array( 'query' ),
-					'endDate'    => '2026-08-18',
-					'rowLimit'   => 50,
-					'startDate'  => '2026-07-22',
-				),
-			),
+			$requests,
 			array_map(
 				fn( $request_body ) => array_intersect_key(
 					json_decode( $request_body, true ),
@@ -220,11 +239,91 @@ class Report_Data_BuilderTest extends TestCase {
 				),
 				$request_bodies[0]
 			),
-			'The batch call should ask for the queries of the selected period, then of the compare period, each limited to 50 rows.'
+			'The batch call should ask for the queries of the selected period and then of the compare period, each limited to 50 rows, and then for the site\'s clicks in each period.'
 		);
 	}
 
-	public function test_build_search_query_rows__lists_0_clicks_and_no_position_for_a_query_missing_from_a_period() {
+	public function test_build_rows__lists_the_site_clicks_of_each_period() {
+		$this->report_rows = array(
+			'current'         => array(
+				array( 'plant garlic', 300, 3.4 ),
+			),
+			'previous'        => array(
+				array( 'plant garlic', 210, 4.8 ),
+			),
+			'current-totals'  => array(
+				array( 1250, 8.1 ),
+			),
+			'previous-totals' => array(
+				array( 980, 8.6 ),
+			),
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'current'  => 1250,
+					'previous' => 980,
+				),
+			),
+			$this->build_rows()['searchClicks'],
+			'`searchClicks` should have one row with the site\'s clicks in the selected and the compare period, over every query rather than the queries listed.'
+		);
+	}
+
+	public function test_build_rows__lists_0_site_clicks_for_a_period_without_a_click() {
+		$this->report_rows = array(
+			'previous-totals' => array(
+				array( 980, 8.6 ),
+			),
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'current'  => 0,
+					'previous' => 980,
+				),
+			),
+			$this->build_rows()['searchClicks'],
+			'A period whose report has no row should have 0 clicks.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_refused_site_clicks_reports
+	 *
+	 * @param string $refused_report_identifier The identifier of the report Search Console refuses.
+	 */
+	public function test_build_rows__returns_no_site_clicks_when_the_report_of_either_period_fails( $refused_report_identifier ) {
+		$this->report_rows = array(
+			'current'         => array(
+				array( 'plant garlic', 300, 3.4 ),
+			),
+			'previous'        => array(
+				array( 'plant garlic', 210, 4.8 ),
+			),
+			'current-totals'  => array(
+				array( 1250, 8.1 ),
+			),
+			'previous-totals' => array(
+				array( 980, 8.6 ),
+			),
+		);
+
+		$this->refused_report_identifier = $refused_report_identifier;
+
+		$this->assertSame( array( 'searchQueries' ), array_keys( $this->build_rows() ), "There should be no `searchClicks` when the `{$refused_report_identifier}` report fails, rather than a row with `0` clicks in it." );
+	}
+
+	public function data_refused_site_clicks_reports() {
+		return array(
+			'the selected period' => array( 'current-totals' ),
+			'the compare period'  => array( 'previous-totals' ),
+		);
+	}
+
+	public function test_build_rows__lists_0_clicks_and_no_position_for_a_query_missing_from_a_period() {
 		$this->report_rows = array(
 			'current'  => array(
 				array( 'compost bin', 40, 9.2 ),
@@ -232,16 +331,6 @@ class Report_Data_BuilderTest extends TestCase {
 			'previous' => array(
 				array( 'seed trays', 25, 8.1 ),
 			),
-		);
-
-		$rows = $this->builder->build_search_query_rows(
-			array(
-				'start_date'         => '2026-08-19',
-				'end_date'           => '2026-09-15',
-				'compare_start_date' => '2026-07-22',
-				'compare_end_date'   => '2026-08-18',
-				'row_limit'          => 50,
-			)
 		);
 
 		$this->assertSame(
@@ -261,12 +350,12 @@ class Report_Data_BuilderTest extends TestCase {
 					'positionPrevious' => 8.1,
 				),
 			),
-			$rows,
+			$this->build_rows()['searchQueries'],
 			'A query reported in one period only should have `0` clicks and a `null` average position in the other.'
 		);
 	}
 
-	public function test_build_search_query_rows__returns_no_rows_when_the_batch_call_fails() {
+	public function test_build_rows__returns_no_rows_when_the_batch_call_fails() {
 		$this->report_rows = array(
 			'current'  => array(
 				array( 'plant garlic', 300, 3.4 ),
@@ -278,20 +367,15 @@ class Report_Data_BuilderTest extends TestCase {
 
 		$this->is_batch_call_refused = true;
 
-		$rows = $this->builder->build_search_query_rows(
-			array(
-				'start_date'         => '2026-08-19',
-				'end_date'           => '2026-09-15',
-				'compare_start_date' => '2026-07-22',
-				'compare_end_date'   => '2026-08-18',
-				'row_limit'          => 50,
-			)
-		);
-
-		$this->assertSame( array(), $rows, 'There should be no rows when Search Console refuses the batch call.' );
+		$this->assertSame( array(), $this->build_rows(), 'There should be no rows when Search Console refuses the batch call.' );
 	}
 
-	public function test_build_search_query_rows__returns_no_rows_when_the_report_of_the_compare_period_fails() {
+	/**
+	 * @dataProvider data_refused_query_reports
+	 *
+	 * @param string $refused_report_identifier The identifier of the report Search Console refuses.
+	 */
+	public function test_build_rows__returns_no_query_rows_when_the_query_report_of_either_period_fails( $refused_report_identifier ) {
 		$this->report_rows = array(
 			'current'  => array(
 				array( 'plant garlic', 300, 3.4 ),
@@ -301,57 +385,19 @@ class Report_Data_BuilderTest extends TestCase {
 			),
 		);
 
-		$this->refused_report_identifier = 'previous';
+		$this->refused_report_identifier = $refused_report_identifier;
 
-		$rows = $this->builder->build_search_query_rows(
-			array(
-				'start_date'         => '2026-08-19',
-				'end_date'           => '2026-09-15',
-				'compare_start_date' => '2026-07-22',
-				'compare_end_date'   => '2026-08-18',
-				'row_limit'          => 50,
-			)
-		);
-
-		$this->assertSame( array(), $rows, 'There should be no rows when the report of the compare period fails, rather than rows with `0` clicks in it.' );
+		$this->assertSame( array(), $this->build_rows(), "There should be no query rows when the `{$refused_report_identifier}` report fails, rather than rows with `0` clicks in it." );
 	}
 
-	public function test_build_search_query_rows__returns_no_rows_when_the_report_of_the_selected_period_fails() {
-		$this->report_rows = array(
-			'current'  => array(
-				array( 'plant garlic', 300, 3.4 ),
-			),
-			'previous' => array(
-				array( 'plant garlic', 210, 4.8 ),
-			),
+	public function data_refused_query_reports() {
+		return array(
+			'the selected period' => array( 'current' ),
+			'the compare period'  => array( 'previous' ),
 		);
-
-		$this->refused_report_identifier = 'current';
-
-		$rows = $this->builder->build_search_query_rows(
-			array(
-				'start_date'         => '2026-08-19',
-				'end_date'           => '2026-09-15',
-				'compare_start_date' => '2026-07-22',
-				'compare_end_date'   => '2026-08-18',
-				'row_limit'          => 50,
-			)
-		);
-
-		$this->assertSame( array(), $rows, 'There should be no rows when the report of the selected period fails, rather than rows with `0` clicks in it.' );
 	}
 
-	public function test_build_search_query_rows__returns_no_rows_when_neither_report_has_rows() {
-		$rows = $this->builder->build_search_query_rows(
-			array(
-				'start_date'         => '2026-08-19',
-				'end_date'           => '2026-09-15',
-				'compare_start_date' => '2026-07-22',
-				'compare_end_date'   => '2026-08-18',
-				'row_limit'          => 50,
-			)
-		);
-
-		$this->assertSame( array(), $rows, 'There should be no rows when neither report has a row.' );
+	public function test_build_rows__returns_no_rows_when_no_report_has_rows() {
+		$this->assertSame( array(), $this->build_rows(), 'There should be no rows when no report has a row.' );
 	}
 }

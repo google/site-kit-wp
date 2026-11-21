@@ -397,23 +397,18 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 * what tells whether there is anything to report.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Also adds the `searchClicks` row.
 	 *
-	 * @param array $contextual_data The rows of the benchmarking response, keyed by `contextualData` key.
+	 * @param array $contextual_data The rows of the benchmarking response, keyed by contextual data key.
 	 * @param array $args            The period the rows are for, with `start_date`, `end_date`, `compare_start_date`, `compare_end_date`, and `row_limit`.
-	 * @return array The contextual data, with the `searchQueries` rows when Search Console reported any.
+	 * @return array The contextual data, with the `searchQueries` and `searchClicks` rows that Search Console reported.
 	 */
 	private function add_search_query_rows( array $contextual_data, array $args ) {
 		if ( empty( $this->get_property_id() ) ) {
 			return $contextual_data;
 		}
 
-		$rows = ( new Report_Data_Builder( $this ) )->build_search_query_rows( $args );
-
-		if ( ! empty( $rows ) ) {
-			$contextual_data['searchQueries'] = $rows;
-		}
-
-		return $contextual_data;
+		return array_merge( $contextual_data, ( new Report_Data_Builder( $this ) )->build_rows( $args ) );
 	}
 
 	/**

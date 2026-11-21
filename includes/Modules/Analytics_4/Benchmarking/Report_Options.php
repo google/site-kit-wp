@@ -24,22 +24,26 @@ use Google\Site_Kit\Modules\Analytics_4;
 class Report_Options {
 
 	/**
-	 * The maximum number of days in the selected period, the longest preset of
-	 * `DateRangeSelector`.
+	 * The most rows a dimension report asks for.
 	 *
-	 * The `core/user` store accepts a longer `custom` date range, which only
-	 * `DateRangePicker` can set, and `Get_Benchmarking_Data` refuses it.
-	 *
-	 * @since 1.192.0
-	 */
-	const MAXIMUM_PERIOD_DAYS = 90;
-
-	/**
-	 * The most rows a dimension report asks Analytics for in each of its periods.
+	 * A row that the report cuts off in one period counts as a row without
+	 * visits in that period, and so as a row that changed by all of its
+	 * visits. The limit is far above the number of rows the response and the
+	 * insight request keep, so that the rows they keep are not cut off in
+	 * either period.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Raised from 50 to 500.
 	 */
-	const REPORT_ROW_LIMIT = 50;
+	const REPORT_ROW_LIMIT = 500;
+
+	/**
+	 * How far back, in days, last year's periods sit: 52 whole weeks, so each
+	 * starts on the same weekday as the period it mirrors.
+	 *
+	 * @since n.e.x.t
+	 */
+	const LAST_YEAR_OFFSET_DAYS = 364;
 
 	/**
 	 * First day of the selected period, as `YYYY-MM-DD`.
@@ -71,6 +75,17 @@ class Report_Options {
 	}
 
 	/**
+	 * Gets the number of days in the selected period, both ends included.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int The number of days.
+	 */
+	public function get_period_days() {
+		return $this->create_date( $this->start_date )->diff( $this->create_date( $this->end_date ) )->days + 1;
+	}
+
+	/**
 	 * Gets the compare period, which has as many days as the selected period
 	 * and ends the day before the selected period starts.
 	 *
@@ -80,7 +95,7 @@ class Report_Options {
 	 */
 	public function get_compare_range() {
 		$start_date = $this->create_date( $this->start_date );
-		$days       = $start_date->diff( $this->create_date( $this->end_date ) )->days + 1;
+		$days       = $this->get_period_days();
 
 		return array(
 			'startDate' => $start_date->modify( "-{$days} days" )->format( 'Y-m-d' ),
@@ -89,23 +104,44 @@ class Report_Options {
 	}
 
 	/**
-	 * Gets the options of the report that counts visitors by day, from the
-	 * compare period's first day to the selected period's last day.
+	 * Gets the options of the report that counts visits by day, from the first
+	 * day the band or last year's periods read to the selected period's last
+	 * day.
 	 *
-	 * `Response_Builder::build()` adds up the visitors of each period from this
-	 * report, and returns the days of the selected period alone as `dailyTraffic`.
+	 * A visit is a session. The traffic line, the period totals and the
+	 * expected range all come from this report, so they all count visits.
+	 *
+	 * The report covers the selected period, the compare period, and the same
+	 * two periods 52 weeks earlier, which the insight request sends as last
+	 * year's visits, from `LAST_YEAR_OFFSET_DAYS` days before the compare
+	 * period's first day. It also covers the reference of the band's first day,
+	 * which `Period_Baseline` fits on the up to 365 days that end 28 days
+	 * before that day, from `Period_Baseline::BAND_LOOKBACK_DAYS` days before
+	 * the selected period's first day. That makes `max( d + 392, 364 + 2d )`
+	 * days for a `d`-day period: 420 for 28 days, the first reach for a period
+	 * of up to 28 days and the second for a longer one.
+	 * `Response_Builder::build()` adds up the visits of each period from this
+	 * report, and returns the days of the selected period alone as
+	 * `dailyTraffic`.
 	 *
 	 * @since 1.190.0
 	 * @since 1.192.0 The report starts on the first day of the compare period, in place of the first of the 395 days that end on the last day of the selected period.
+	 * @since n.e.x.t The report counts `sessions` in place of `totalUsers`, and starts on the first day of last year's compare period or of the band's reference, whichever is earlier.
 	 *
 	 * @return array Report request options array.
 	 */
 	public function get_daily_series_options() {
+		$compare_range   = $this->get_compare_range();
+		$offset_days     = self::LAST_YEAR_OFFSET_DAYS;
+		$lookback_days   = Period_Baseline::BAND_LOOKBACK_DAYS;
+		$last_year_start = $this->create_date( $compare_range['startDate'] )->modify( "-{$offset_days} days" );
+		$band_start      = $this->create_date( $this->start_date )->modify( "-{$lookback_days} days" );
+
 		return array(
-			'startDate'  => $this->get_compare_range()['startDate'],
+			'startDate'  => min( $last_year_start, $band_start )->format( 'Y-m-d' ),
 			'endDate'    => $this->end_date,
 			'metrics'    => array(
-				array( 'name' => 'totalUsers' ),
+				array( 'name' => 'sessions' ),
 			),
 			'dimensions' => array(
 				array( 'name' => 'date' ),
@@ -119,74 +155,69 @@ class Report_Options {
 	}
 
 	/**
-	 * Gets the options of the report that counts visitors by channel.
+	 * Gets the options of the report that counts visits by channel, device and
+	 * visitor type.
 	 *
-	 * @since 1.190.0
+	 * The key factor cards take the channels, the site's totals, and the device
+	 * and visitor type rows of a channel card from it.
 	 *
-	 * @return array Report request options array.
-	 */
-	public function get_channels_options() {
-		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping' ) );
-	}
-
-	/**
-	 * Gets the options of the report that counts visitors by device category.
-	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @return array Report request options array.
 	 */
-	public function get_devices_options() {
-		return $this->get_dimension_options( array( 'deviceCategory' ) );
+	public function get_channel_breakdowns_options() {
+		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'deviceCategory', 'newVsReturning' ) );
 	}
 
 	/**
-	 * Gets the options of the report that counts new and returning visitors.
+	 * Gets the options of the report that counts visits by channel and source.
 	 *
-	 * @since 1.190.0
+	 * The key factor cards take each channel's referring sites, platforms,
+	 * assistants and source campaigns from it.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array Report request options array.
 	 */
-	public function get_visitor_mix_options() {
-		return $this->get_dimension_options(
-			array( 'newVsReturning' ),
-			array(
-				// Analytics reports `(not set)` for a visitor that is neither new nor returning.
-				'newVsReturning' => array(
-					'filterType'    => 'emptyFilter',
-					'notExpression' => true,
-				),
-			)
-		);
+	public function get_channel_sources_options() {
+		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'sessionSource' ) );
 	}
 
 	/**
-	 * Gets the options of the report that counts visitors by referring source.
+	 * Gets the options of the report that counts visits by channel and landing
+	 * page.
 	 *
-	 * @since 1.190.0
+	 * The key factor cards take each channel's landing pages, and `Direct`'s
+	 * homepage, from it.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array Report request options array.
 	 */
-	public function get_referrers_options() {
-		return $this->get_dimension_options(
-			array( 'sessionSource' ),
-			array(
-				// Analytics reports `(direct)` for a visitor that no site referred.
-				'sessionSource' => array(
-					'filterType'    => 'stringFilter',
-					'matchType'     => 'EXACT',
-					'value'         => '(direct)',
-					'notExpression' => true,
-				),
-			)
-		);
+	public function get_channel_pages_options() {
+		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'landingPage' ) );
 	}
 
 	/**
-	 * Gets the options of the report that counts visitors by post, with each
+	 * Gets the options of the report that counts visits by channel and
+	 * campaign.
+	 *
+	 * The key factor cards take each channel's campaigns from it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Report request options array.
+	 */
+	public function get_channel_campaigns_options() {
+		return $this->get_dimension_options( array( 'sessionDefaultChannelGrouping', 'sessionCampaignName' ) );
+	}
+
+	/**
+	 * Gets the options of the report that counts visits by post, with each
 	 * post's title and publication date.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Counts visits in place of visitors.
 	 *
 	 * @return array Report request options array.
 	 */
@@ -206,36 +237,19 @@ class Report_Options {
 	}
 
 	/**
-	 * Gets the options of the report that counts visitors by post category.
-	 *
-	 * @since 1.190.0
-	 *
-	 * @return array Report request options array.
-	 */
-	public function get_categories_options() {
-		$categories_dimension = Analytics_4::CUSTOM_EVENT_PREFIX . Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES;
-
-		return $this->get_dimension_options(
-			array( $categories_dimension ),
-			array(
-				// Analytics reports `(not set)` for a page with no category, such
-				// as the home page.
-				$categories_dimension => array(
-					'filterType'    => 'emptyFilter',
-					'notExpression' => true,
-				),
-			)
-		);
-	}
-
-	/**
-	 * Gets the options of a report that counts visitors by one or more
+	 * Gets the options of a report that counts visits by one or more
 	 * dimensions, for the selected period and the compare period in one request.
 	 *
-	 * @since 1.190.0
+	 * A visit is a session, as in the daily series. A session has exactly one
+	 * channel, device, visitor type, source, landing page and campaign, so the
+	 * rows of a report add up to the period totals, and the rows of a breakdown
+	 * add up to the channel, page, source or campaign they break down.
 	 *
-	 * @param array $dimension_names   The dimensions to count visitors by, such as `array( 'deviceCategory' )`.
-	 * @param array $dimension_filters Optional. The dimension filters, keyed by dimension name. Default empty array.
+	 * @since 1.190.0
+	 * @since n.e.x.t The report counts `sessions` in place of `totalUsers`.
+	 *
+	 * @param array $dimension_names   The dimensions to count visits by, such as `array( 'deviceCategory' )`.
+	 * @param array $dimension_filters Optional. The dimension filters, keyed by dimension name. A list of values keeps the visits with any of them. Default empty array.
 	 * @return array Report request options array.
 	 */
 	private function get_dimension_options( array $dimension_names, array $dimension_filters = array() ) {
@@ -247,7 +261,7 @@ class Report_Options {
 			'compareStartDate' => $compare_range['startDate'],
 			'compareEndDate'   => $compare_range['endDate'],
 			'metrics'          => array(
-				array( 'name' => 'totalUsers' ),
+				array( 'name' => 'sessions' ),
 			),
 			'dimensions'       => array_map(
 				fn( $dimension_name ) => array( 'name' => $dimension_name ),
@@ -255,7 +269,7 @@ class Report_Options {
 			),
 			'orderby'          => array(
 				array(
-					'metric' => array( 'metricName' => 'totalUsers' ),
+					'metric' => array( 'metricName' => 'sessions' ),
 					'desc'   => true,
 				),
 			),

@@ -144,6 +144,25 @@ describe( 'useTrafficReport', () => {
 		expect( result.current.report ).toBeUndefined();
 	} );
 
+	it( 'does not request a report, but still builds its args, when `isEnabled` is `false`', async () => {
+		const { result, waitForRegistry } = renderHook(
+			() => useTrafficReport( graphReportOptions, { isEnabled: false } ),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+		expect( result.current.report ).toBeUndefined();
+		expect( result.current.args ).toEqual( {
+			startDate: '2025-01-09',
+			endDate: '2025-02-05',
+			metrics: [ { name: 'totalUsers' } ],
+			dimensions: [ 'date' ],
+			reportID: 'test-graph-report',
+		} );
+	} );
+
 	it( 'does not request a report when the widget is out of view', async () => {
 		const { waitForRegistry } = renderHook(
 			() => useTrafficReport( graphReportOptions ),

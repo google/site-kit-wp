@@ -298,6 +298,7 @@ class Google_Proxy {
 	 * @since 1.27.0
 	 * @since 1.192.0 Added the `method` argument.
 	 * @since n.e.x.t The error of a failed response carries the response's `code` as `reason`, and its `Retry-After` header as `retryAfter`, when it has them.
+	 * @since n.e.x.t Added the `return_retry_after` argument, which adds the `Retry-After` header of a successful response to the response as `retryAfter`.
 	 *
 	 * @param string      $uri Endpoint to send the request to.
 	 * @param Credentials $credentials Credentials instance.
@@ -376,6 +377,14 @@ class Google_Proxy {
 			);
 		}
 
+		if ( ! empty( $args['return_retry_after'] ) && is_array( $body ) ) {
+			$retry_after = $this->get_retry_after( $response );
+
+			if ( null !== $retry_after ) {
+				$body['retryAfter'] = $retry_after;
+			}
+		}
+
 		return $body;
 	}
 
@@ -415,12 +424,30 @@ class Google_Proxy {
 			}
 		}
 
-		$retry_after = wp_remote_retrieve_header( $response, 'retry-after' );
-		if ( is_numeric( $retry_after ) ) {
-			$error_data['retryAfter'] = (int) $retry_after;
+		$retry_after = $this->get_retry_after( $response );
+		if ( null !== $retry_after ) {
+			$error_data['retryAfter'] = $retry_after;
 		}
 
 		return new WP_Error( $error_code, $message, $error_data );
+	}
+
+	/**
+	 * Gets the `Retry-After` header of a response: the time, in seconds, the
+	 * service asks the client to wait before its next request.
+	 *
+	 * Only a number of seconds is read, which is what the service sends. An
+	 * HTTP date, which the header can also hold, is ignored.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $response The response.
+	 * @return int|null The seconds, or null when the response has no numeric `Retry-After` header.
+	 */
+	private function get_retry_after( $response ) {
+		$retry_after = wp_remote_retrieve_header( $response, 'retry-after' );
+
+		return is_numeric( $retry_after ) ? (int) $retry_after : null;
 	}
 
 	/**
@@ -836,22 +863,33 @@ class Google_Proxy {
 	/**
 	 * Sends a benchmarking insight request to the proxy.
 	 *
+	 * The request names the plugin release in its `User-Agent` header, so the
+	 * service can tie each request to the release that computed it. The
+	 * service answers with the operation it started or joined together with a
+	 * `Retry-After` header, the seconds to wait before the first read of the
+	 * operation, which the answer carries as `retryAfter`.
+	 *
 	 * @since 1.192.0
+	 * @since n.e.x.t Sends the application name as the `User-Agent` header, and returns the `Retry-After` header of the response as `retryAfter`.
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
 	 * @param array       $payload      Benchmarking insight request payload.
 	 * @param string      $language_tag Language tag for the generated insight, such as `de-DE`.
-	 * @return array|WP_Error Operation, or generated insight when the proxy returns it from its cache, or WP_Error on failure.
+	 * @return array|WP_Error Operation, or generated insight when the proxy returns it from its cache, with the response's `Retry-After` header as `retryAfter` when it has one, or WP_Error on failure.
 	 */
 	public function send_benchmarking_insight_request( Credentials $credentials, $access_token, array $payload, $language_tag ) {
 		return $this->request(
 			add_query_arg( 'hl', $language_tag, self::BENCHMARKING_INSIGHT_URI ),
 			$credentials,
 			array(
-				'access_token' => $access_token,
-				'json_request' => true,
-				'body'         => array_merge( $payload, array( 'async' => true ) ),
+				'access_token'       => $access_token,
+				'json_request'       => true,
+				'return_retry_after' => true,
+				'headers'            => array(
+					'User-Agent' => self::get_application_name(),
+				),
+				'body'               => array_merge( $payload, array( 'async' => true ) ),
 			)
 		);
 	}
@@ -860,7 +898,10 @@ class Google_Proxy {
 	 * Sends a conversion insight request to the proxy.
 	 *
 	 * The request names the plugin release in its `User-Agent` header, so the
-	 * service can tie each request to the release that computed it.
+	 * service can tie each request to the release that computed it. The
+	 * service answers with the operation it started or joined together with a
+	 * `Retry-After` header, the seconds to wait before the first read of the
+	 * operation, which the answer carries as `retryAfter`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -868,19 +909,20 @@ class Google_Proxy {
 	 * @param string      $access_token Access token.
 	 * @param array       $payload      Conversion insight request payload.
 	 * @param string      $language_tag Language tag for the generated insight, such as `de-DE`.
-	 * @return array|WP_Error Operation, or generated insight when the proxy returns it from its cache, or WP_Error on failure.
+	 * @return array|WP_Error Operation, or generated insight when the proxy returns it from its cache, with the response's `Retry-After` header as `retryAfter` when it has one, or WP_Error on failure.
 	 */
 	public function send_conversion_insight_request( Credentials $credentials, $access_token, array $payload, $language_tag ) {
 		return $this->request(
 			add_query_arg( 'hl', $language_tag, self::CONVERSION_INSIGHT_URI ),
 			$credentials,
 			array(
-				'access_token' => $access_token,
-				'json_request' => true,
-				'headers'      => array(
+				'access_token'       => $access_token,
+				'json_request'       => true,
+				'return_retry_after' => true,
+				'headers'            => array(
 					'User-Agent' => self::get_application_name(),
 				),
-				'body'         => array_merge( $payload, array( 'async' => true ) ),
+				'body'               => array_merge( $payload, array( 'async' => true ) ),
 			)
 		);
 	}
@@ -888,21 +930,26 @@ class Google_Proxy {
 	/**
 	 * Gets an AI operation from the proxy.
 	 *
+	 * The service answers a read of an operation that still runs with a
+	 * `Retry-After` header, the seconds to wait before the next read, which
+	 * the answer carries as `retryAfter`.
+	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Renamed from `get_benchmarking_insight_operation()`.
+	 * @since n.e.x.t Renamed from `get_benchmarking_insight_operation()`, and returns the `Retry-After` header of the response as `retryAfter`.
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
 	 * @param string      $operation_id Operation ID.
-	 * @return array|WP_Error Operation, or WP_Error on failure.
+	 * @return array|WP_Error Operation, with the response's `Retry-After` header as `retryAfter` when it has one, or WP_Error on failure.
 	 */
 	public function get_ai_operation( Credentials $credentials, $access_token, $operation_id ) {
 		return $this->request(
 			sprintf( self::AI_OPERATION_URI, rawurlencode( $operation_id ) ),
 			$credentials,
 			array(
-				'access_token' => $access_token,
-				'method'       => 'GET',
+				'access_token'       => $access_token,
+				'method'             => 'GET',
+				'return_retry_after' => true,
 			)
 		);
 	}

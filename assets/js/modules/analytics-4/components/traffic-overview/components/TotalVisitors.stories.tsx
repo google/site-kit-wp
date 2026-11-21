@@ -20,47 +20,43 @@
  * Internal dependencies
  */
 import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { BenchmarkingVisits } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
 import TotalVisitors from './TotalVisitors';
 
 interface TotalVisitorsStoryProps {
-	/** Visitors over the selected range. */
-	currentValue: number;
-	/** Visitors over the range before it. */
-	previousValue: number;
+	/** Visits over the selected range and over the range before it. */
+	totalVisits: BenchmarkingVisits;
+	/** Unique visitors over the selected range. */
+	uniqueVisitors: number;
 }
 
 /**
- * Builds a totals report holding the selected range then the range before it.
+ * Builds a totals report whose selected range holds the unique visitors.
  *
- * The values are strings, the way the API returns them.
+ * The value is a string, the way the API returns it.
  *
  * @since 1.188.0
+ * @since n.e.x.t Takes the unique visitors of the selected range only.
  *
- * @param {number} currentValue  Visitors over the selected range.
- * @param {number} previousValue Visitors over the range before it.
+ * @param {number} uniqueVisitors Unique visitors over the selected range.
  * @return {Object} The totals report.
  */
-function createTotalsReport(
-	currentValue: number,
-	previousValue: number
-): Report {
+function createTotalsReport( uniqueVisitors: number ): Report {
 	return {
-		totals: [
-			{ metricValues: [ { value: String( currentValue ) } ] },
-			{ metricValues: [ { value: String( previousValue ) } ] },
-		],
+		totals: [ { metricValues: [ { value: String( uniqueVisitors ) } ] } ],
 	};
 }
 
-function Template( { currentValue, previousValue }: TotalVisitorsStoryProps ) {
+function Template( { totalVisits, uniqueVisitors }: TotalVisitorsStoryProps ) {
 	// The section's styles are scoped to the widget and the panel, so the
 	// story renders inside both.
 	return (
 		<div className="googlesitekit-widget--analyticsTrafficOverview">
 			<div className="googlesitekit-traffic-overview__panel">
 				<TotalVisitors
-					report={ createTotalsReport( currentValue, previousValue ) }
+					report={ createTotalsReport( uniqueVisitors ) }
+					totalVisits={ totalVisits }
 				/>
 			</div>
 		</div>
@@ -70,29 +66,29 @@ function Template( { currentValue, previousValue }: TotalVisitorsStoryProps ) {
 export const Rise = Template.bind( {} ) as Story< TotalVisitorsStoryProps >;
 Rise.storyName = 'Rise';
 Rise.args = {
-	currentValue: 1200,
-	previousValue: 1000,
+	totalVisits: { current: 1200, previous: 1000 },
+	uniqueVisitors: 234,
 };
 Rise.scenario = {};
 
 export const Fall = Template.bind( {} ) as Story< TotalVisitorsStoryProps >;
 Fall.storyName = 'Fall';
 Fall.args = {
-	currentValue: 1000,
-	previousValue: 1200,
+	totalVisits: { current: 1000, previous: 1200 },
+	uniqueVisitors: 234,
 };
 Fall.scenario = {};
 
 export const NoChange = Template.bind( {} ) as Story< TotalVisitorsStoryProps >;
 NoChange.storyName = 'No Change';
 NoChange.args = {
-	currentValue: 1000,
-	previousValue: 1000,
+	totalVisits: { current: 1000, previous: 1000 },
+	uniqueVisitors: 234,
 };
 NoChange.scenario = {};
 
 /**
- * The comparison range has no visitors, so there is no change to report and
+ * The comparison range has no visits, so there is no change to report and
  * the badge and its label both drop out.
  */
 export const MissingPreviousFigure = Template.bind(
@@ -100,8 +96,8 @@ export const MissingPreviousFigure = Template.bind(
 ) as Story< TotalVisitorsStoryProps >;
 MissingPreviousFigure.storyName = 'Missing Previous Figure';
 MissingPreviousFigure.args = {
-	currentValue: 1000,
-	previousValue: 0,
+	totalVisits: { current: 1000, previous: 0 },
+	uniqueVisitors: 234,
 };
 MissingPreviousFigure.scenario = {};
 

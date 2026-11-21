@@ -26,7 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { createTestRegistry } from '@tests/js/utils';
-import { provideBenchmarkingData } from '.';
+import { availabilityWithoutTraffic, provideBenchmarkingData } from '.';
 
 describe( 'provideBenchmarkingData', () => {
 	let registry: WPDataRegistry;
@@ -61,8 +61,19 @@ describe( 'provideBenchmarkingData', () => {
 			{ startDate: '2026-08-19', endDate: '2026-09-15' },
 			{
 				visits: { current: 0, previous: 0 },
-				dailyTraffic: [ { date: '2025-08-18', visits: 0 } ],
+				dailyTraffic: [
+					{
+						date: '2025-08-18',
+						visits: 0,
+						expectedMin: null,
+						expectedMax: null,
+					},
+				],
+				availability: availabilityWithoutTraffic,
+				bandReferenceDays: null,
 				keyFactors: [],
+				steadyTraffic: false,
+				contentMarkers: [],
 			}
 		);
 
@@ -72,8 +83,19 @@ describe( 'provideBenchmarkingData', () => {
 				.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 		).toEqual( {
 			visits: { current: 0, previous: 0 },
-			dailyTraffic: [ { date: '2025-08-18', visits: 0 } ],
+			dailyTraffic: [
+				{
+					date: '2025-08-18',
+					visits: 0,
+					expectedMin: null,
+					expectedMax: null,
+				},
+			],
+			availability: availabilityWithoutTraffic,
+			bandReferenceDays: null,
 			keyFactors: [],
+			steadyTraffic: false,
+			contentMarkers: [],
 		} );
 	} );
 

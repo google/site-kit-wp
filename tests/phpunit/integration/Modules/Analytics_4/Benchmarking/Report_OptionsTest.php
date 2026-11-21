@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Benchmarking;
 
+use DateTimeImmutable;
+use DateTimeZone;
+use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Period_Baseline;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Report_Options;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -68,13 +71,19 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_daily_series_options__counts_visitors_by_day_from_the_first_day_of_the_compare_period_to_the_end_date() {
+	public function test_get_period_days__counts_both_ends_of_the_period() {
+		$this->assertSame( 28, $this->report_options->get_period_days(), 'The period from `2026-08-19` to `2026-09-15` should have 28 days.' );
+		$this->assertSame( 1, ( new Report_Options( '2026-09-15', '2026-09-15' ) )->get_period_days(), 'A period of a single day should have 1 day.' );
+		$this->assertSame( 90, ( new Report_Options( '2026-06-18', '2026-09-15' ) )->get_period_days(), 'The period from `2026-06-18` to `2026-09-15` should have 90 days.' );
+	}
+
+	public function test_get_daily_series_options__counts_sessions_by_day_from_364_days_before_the_compare_period_to_the_end_date() {
 		$this->assertSame(
 			array(
-				'startDate'  => '2026-07-22',
+				'startDate'  => '2025-07-23',
 				'endDate'    => '2026-09-15',
 				'metrics'    => array(
-					array( 'name' => 'totalUsers' ),
+					array( 'name' => 'sessions' ),
 				),
 				'dimensions' => array(
 					array( 'name' => 'date' ),
@@ -86,7 +95,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_daily_series_options(),
-			'The `get_daily_series_options()` method should ask for `totalUsers` by `date`, oldest first, from `2026-07-22` to `2026-09-15`.'
+			'The `get_daily_series_options()` method should ask for `sessions` by `date`, oldest first, from `2025-07-23`, 364 days before the compare period starts on `2026-07-22`, to `2026-09-15`.'
 		);
 	}
 
@@ -94,28 +103,65 @@ class Report_OptionsTest extends TestCase {
 	 * @dataProvider data_period_lengths
 	 *
 	 * @param string $start_date        The first day of a period that ends on `2026-09-15`.
-	 * @param string $series_start_date The first day of the period's compare period.
+	 * @param string $series_start_date The first day the band of the period or last year's periods read.
 	 */
-	public function test_get_daily_series_options__starts_on_the_first_day_of_the_compare_period( $start_date, $series_start_date ) {
-		$options = ( new Report_Options( $start_date, '2026-09-15' ) )->get_daily_series_options();
+	public function test_get_daily_series_options__starts_on_the_first_day_the_band_or_last_years_periods_read( $start_date, $series_start_date ) {
+		$report_options = new Report_Options( $start_date, '2026-09-15' );
+		$options        = $report_options->get_daily_series_options();
 
-		$this->assertSame( $series_start_date, $options['startDate'], "The daily series of the period from `$start_date` to `2026-09-15` should start on `$series_start_date`, the first day of its compare period." );
+		$this->assertSame( $series_start_date, $options['startDate'], "The daily series of the period from `$start_date` to `2026-09-15` should start on `$series_start_date`." );
+		$this->assertSame( '2026-09-15', $options['endDate'], "The daily series of the period from `$start_date` to `2026-09-15` should end on the period's last day." );
+	}
+
+	/**
+	 * @dataProvider data_period_lengths
+	 *
+	 * @param string $start_date The first day of a period that ends on `2026-09-15`.
+	 */
+	public function test_get_daily_series_options__covers_last_years_periods_and_the_reference_of_the_band( $start_date ) {
+		$report_options  = new Report_Options( $start_date, '2026-09-15' );
+		$utc             = new DateTimeZone( 'UTC' );
+		$series_start    = new DateTimeImmutable( $report_options->get_daily_series_options()['startDate'], $utc );
+		$compare_start   = new DateTimeImmutable( $report_options->get_compare_range()['startDate'], $utc );
+		$period_start    = new DateTimeImmutable( $start_date, $utc );
+		$last_year_start = $compare_start->modify( '-' . Report_Options::LAST_YEAR_OFFSET_DAYS . ' days' );
+		$band_start      = $period_start->modify( '-' . Period_Baseline::BAND_LOOKBACK_DAYS . ' days' );
+
+		// Last year's previous period, the earlier of last year's two windows,
+		// starts 364 days before the compare period does. The fit of the
+		// period's first day reads the 365 days that end 28 days before it.
+		$this->assertLessThanOrEqual( $last_year_start->getTimestamp(), $series_start->getTimestamp(), "The daily series of the period from `$start_date` should cover last year's previous period." );
+		$this->assertLessThanOrEqual( $band_start->getTimestamp(), $series_start->getTimestamp(), "The daily series of the period from `$start_date` should cover the reference of the band of the period's first day." );
+		$this->assertSame(
+			min( $last_year_start, $band_start )->format( 'Y-m-d' ),
+			$series_start->format( 'Y-m-d' ),
+			"The daily series of the period from `$start_date` should start on the earlier of the two days, and no earlier."
+		);
 	}
 
 	public function data_period_lengths() {
 		return array(
-			'7 days'  => array( '2026-09-09', '2026-09-02' ),
-			'90 days' => array( '2026-06-18', '2026-03-20' ),
+			// Up to 28 days, the band of the period's first day reaches back
+			// further than last year's periods; from 28 days on, they do.
+			'1 day'    => array( '2026-09-15', '2025-08-19' ),
+			'7 days'   => array( '2026-09-09', '2025-08-13' ),
+			'14 days'  => array( '2026-09-02', '2025-08-06' ),
+			'28 days'  => array( '2026-08-19', '2025-07-23' ),
+			'90 days'  => array( '2026-06-18', '2025-03-21' ),
+			// The longest period the service writes an insight for, and a
+			// longer one, which the date picker allows.
+			'364 days' => array( '2025-09-17', '2023-09-20' ),
+			'426 days' => array( '2025-07-17', '2023-05-19' ),
 		);
 	}
 
 	/**
-	 * @dataProvider data_dimension_options
+	 * @dataProvider data_breakdown_options
 	 *
-	 * @param string $method    The method that returns the report options.
-	 * @param string $dimension The dimension the report counts visitors by.
+	 * @param string $method     The method that returns the report options.
+	 * @param array  $dimensions The dimensions the report counts sessions by.
 	 */
-	public function test_get_dimension_options__counts_visitors_by_the_dimension_in_the_selected_period_and_the_compare_period( $method, $dimension ) {
+	public function test_get_breakdown_options__counts_sessions_by_the_channel_and_a_dimension_in_the_selected_period_and_the_compare_period( $method, array $dimensions ) {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -123,32 +169,35 @@ class Report_OptionsTest extends TestCase {
 				'compareStartDate' => '2026-07-22',
 				'compareEndDate'   => '2026-08-18',
 				'metrics'          => array(
-					array( 'name' => 'totalUsers' ),
+					array( 'name' => 'sessions' ),
 				),
-				'dimensions'       => array(
-					array( 'name' => $dimension ),
+				'dimensions'       => array_map(
+					fn( $dimension ) => array( 'name' => $dimension ),
+					$dimensions
 				),
 				'orderby'          => array(
 					array(
-						'metric' => array( 'metricName' => 'totalUsers' ),
+						'metric' => array( 'metricName' => 'sessions' ),
 						'desc'   => true,
 					),
 				),
-				'limit'            => 50,
+				'limit'            => 500,
 			),
 			$this->report_options->$method(),
-			"The `{$method}()` method should ask for up to 50 rows of `totalUsers` by `{$dimension}`, in the selected period and the compare period."
+			sprintf( 'The `%s()` method should ask for up to 500 rows of `sessions` by `%s`, in the selected period and the compare period, with no filter.', $method, implode( '`, `', $dimensions ) )
 		);
 	}
 
-	public function data_dimension_options() {
+	public function data_breakdown_options() {
 		return array(
-			'channels' => array( 'get_channels_options', 'sessionDefaultChannelGrouping' ),
-			'devices'  => array( 'get_devices_options', 'deviceCategory' ),
+			'channel breakdowns' => array( 'get_channel_breakdowns_options', array( 'sessionDefaultChannelGrouping', 'deviceCategory', 'newVsReturning' ) ),
+			'channel sources'    => array( 'get_channel_sources_options', array( 'sessionDefaultChannelGrouping', 'sessionSource' ) ),
+			'channel pages'      => array( 'get_channel_pages_options', array( 'sessionDefaultChannelGrouping', 'landingPage' ) ),
+			'channel campaigns'  => array( 'get_channel_campaigns_options', array( 'sessionDefaultChannelGrouping', 'sessionCampaignName' ) ),
 		);
 	}
 
-	public function test_get_visitor_mix_options__counts_new_and_returning_visitors_in_the_selected_period_and_the_compare_period() {
+	public function test_get_content_options__counts_sessions_by_post_with_a_post_date_in_the_selected_period_and_the_compare_period() {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -156,73 +205,7 @@ class Report_OptionsTest extends TestCase {
 				'compareStartDate' => '2026-07-22',
 				'compareEndDate'   => '2026-08-18',
 				'metrics'          => array(
-					array( 'name' => 'totalUsers' ),
-				),
-				'dimensions'       => array(
-					array( 'name' => 'newVsReturning' ),
-				),
-				'orderby'          => array(
-					array(
-						'metric' => array( 'metricName' => 'totalUsers' ),
-						'desc'   => true,
-					),
-				),
-				'limit'            => 50,
-				'dimensionFilters' => array(
-					'newVsReturning' => array(
-						'filterType'    => 'emptyFilter',
-						'notExpression' => true,
-					),
-				),
-			),
-			$this->report_options->get_visitor_mix_options(),
-			'The `get_visitor_mix_options()` method should ask for up to 50 rows of `totalUsers` by `newVsReturning`, in the selected period and the compare period, excluding the rows that are neither new nor returning.'
-		);
-	}
-
-	public function test_get_referrers_options__counts_visitors_by_referring_source_in_the_selected_period_and_the_compare_period() {
-		$this->assertSame(
-			array(
-				'startDate'        => '2026-08-19',
-				'endDate'          => '2026-09-15',
-				'compareStartDate' => '2026-07-22',
-				'compareEndDate'   => '2026-08-18',
-				'metrics'          => array(
-					array( 'name' => 'totalUsers' ),
-				),
-				'dimensions'       => array(
-					array( 'name' => 'sessionSource' ),
-				),
-				'orderby'          => array(
-					array(
-						'metric' => array( 'metricName' => 'totalUsers' ),
-						'desc'   => true,
-					),
-				),
-				'limit'            => 50,
-				'dimensionFilters' => array(
-					'sessionSource' => array(
-						'filterType'    => 'stringFilter',
-						'matchType'     => 'EXACT',
-						'value'         => '(direct)',
-						'notExpression' => true,
-					),
-				),
-			),
-			$this->report_options->get_referrers_options(),
-			'The `get_referrers_options()` method should ask for up to 50 rows of `totalUsers` by `sessionSource`, in the selected period and the compare period, excluding the `(direct)` row.'
-		);
-	}
-
-	public function test_get_content_options__counts_visitors_by_post_with_a_post_date_in_the_selected_period_and_the_compare_period() {
-		$this->assertSame(
-			array(
-				'startDate'        => '2026-08-19',
-				'endDate'          => '2026-09-15',
-				'compareStartDate' => '2026-07-22',
-				'compareEndDate'   => '2026-08-18',
-				'metrics'          => array(
-					array( 'name' => 'totalUsers' ),
+					array( 'name' => 'sessions' ),
 				),
 				'dimensions'       => array(
 					array( 'name' => 'pagePath' ),
@@ -231,11 +214,11 @@ class Report_OptionsTest extends TestCase {
 				),
 				'orderby'          => array(
 					array(
-						'metric' => array( 'metricName' => 'totalUsers' ),
+						'metric' => array( 'metricName' => 'sessions' ),
 						'desc'   => true,
 					),
 				),
-				'limit'            => 50,
+				'limit'            => 500,
 				'dimensionFilters' => array(
 					'customEvent:googlesitekit_post_date' => array(
 						'filterType'    => 'emptyFilter',
@@ -244,39 +227,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_content_options(),
-			'The `get_content_options()` method should ask for up to 50 rows of `totalUsers` by `pagePath`, `pageTitle`, and `customEvent:googlesitekit_post_date`, in the selected period and the compare period, excluding the rows with no post date.'
-		);
-	}
-
-	public function test_get_categories_options__counts_visitors_by_post_category_in_the_selected_period_and_the_compare_period() {
-		$this->assertSame(
-			array(
-				'startDate'        => '2026-08-19',
-				'endDate'          => '2026-09-15',
-				'compareStartDate' => '2026-07-22',
-				'compareEndDate'   => '2026-08-18',
-				'metrics'          => array(
-					array( 'name' => 'totalUsers' ),
-				),
-				'dimensions'       => array(
-					array( 'name' => 'customEvent:googlesitekit_post_categories' ),
-				),
-				'orderby'          => array(
-					array(
-						'metric' => array( 'metricName' => 'totalUsers' ),
-						'desc'   => true,
-					),
-				),
-				'limit'            => 50,
-				'dimensionFilters' => array(
-					'customEvent:googlesitekit_post_categories' => array(
-						'filterType'    => 'emptyFilter',
-						'notExpression' => true,
-					),
-				),
-			),
-			$this->report_options->get_categories_options(),
-			'The `get_categories_options()` method should ask for up to 50 rows of `totalUsers` by `customEvent:googlesitekit_post_categories`, in the selected period and the compare period, excluding the rows with no category.'
+			'The `get_content_options()` method should ask for up to 500 rows of `sessions` by `pagePath`, `pageTitle`, and `customEvent:googlesitekit_post_date`, in the selected period and the compare period, excluding the rows with no post date.'
 		);
 	}
 }

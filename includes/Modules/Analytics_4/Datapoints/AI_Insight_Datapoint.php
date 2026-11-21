@@ -33,6 +33,9 @@ use WP_Error;
  * receives the Google client the request runs with, and its access token
  * authenticates the call to the service.
  *
+ * What differs between insights is what the service writes for them, so the
+ * datapoints of an insight read it with that insight's `AI_Insight_Reader`.
+ *
  * @since n.e.x.t
  * @access private
  * @ignore
@@ -50,41 +53,75 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	const PASSED_ERROR_STATUSES = array( 400, 403, 404, 409, 429, 503 );
 
 	/**
-	 * The code of the error for a service response the datapoint can't read.
-	 * Each subclass names its own insight in it.
+	 * Callback that returns the Google_Proxy instance.
 	 *
 	 * @since n.e.x.t
+	 * @var callable
 	 */
-	const INVALID_RESPONSE_ERROR_CODE = 'invalid_ai_insight_response';
+	private $google_proxy;
 
 	/**
-	 * Google_Proxy instance.
+	 * Callback that returns the Credentials instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Google_Proxy
+	 * @var callable
 	 */
-	protected $google_proxy;
+	private $credentials;
 
 	/**
-	 * Credentials instance.
+	 * The reader of the insight the datapoint reaches the service for.
 	 *
 	 * @since n.e.x.t
-	 * @var Credentials
+	 * @var AI_Insight_Reader
 	 */
-	protected $credentials;
+	private $insight_reader;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` to reach the service with.
+	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` callbacks that return what reaches the service, and the `insight_reader` of the insight.
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 
-		$this->google_proxy = $definition['google_proxy'];
-		$this->credentials  = $definition['credentials'];
+		$this->google_proxy   = $definition['google_proxy'];
+		$this->credentials    = $definition['credentials'];
+		$this->insight_reader = $definition['insight_reader'];
+	}
+
+	/**
+	 * Gets the Google_Proxy instance to reach the service with.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Proxy The Google_Proxy instance.
+	 */
+	protected function get_google_proxy() {
+		return call_user_func( $this->google_proxy );
+	}
+
+	/**
+	 * Gets the credentials to reach the service with.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Credentials The Credentials instance.
+	 */
+	protected function get_credentials() {
+		return call_user_func( $this->credentials );
+	}
+
+	/**
+	 * Gets the reader of the insight the datapoint reaches the service for.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return AI_Insight_Reader The AI_Insight_Reader instance.
+	 */
+	protected function get_insight_reader() {
+		return $this->insight_reader;
 	}
 
 	/**
@@ -197,53 +234,25 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	}
 
 	/**
-	 * Gets the error the datapoint answers with when it can't read the
-	 * service's response, such as one with neither an operation nor an
-	 * insight in it, or an insight without a text.
+	 * Adds the time the service asks the browser to wait to an answer that
+	 * points at a running operation.
+	 *
+	 * The service sends a `Retry-After` header with an operation it started
+	 * or joined, and with every read of an operation that still runs: the
+	 * seconds to wait before the next read. `Google_Proxy` returns it as
+	 * `retryAfter`, and the answer keeps that name, as an error does.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return WP_Error The error, with the `INVALID_RESPONSE_ERROR_CODE` of the datapoint and status 500.
+	 * @param array $answer   The answer of the datapoint.
+	 * @param array $response The service's response, as `Google_Proxy` returns it.
+	 * @return array The answer, with `retryAfter` when the service's response has it.
 	 */
-	protected function get_invalid_response_error() {
-		return new WP_Error(
-			static::INVALID_RESPONSE_ERROR_CODE,
-			__( 'Site Kit received a generated insight it can’t read.', 'google-site-kit' ),
-			array( 'status' => 500 )
-		);
-	}
-
-	/**
-	 * Gets the error the datapoint answers with for a failed operation.
-	 *
-	 * The service fails an operation with code 503 when an instance shutdown
-	 * interrupted it, or when its instance died, and asking for the insight
-	 * again then starts a new generation. Any other failure is a failed
-	 * generation, which is a 500.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param mixed  $operation_error The operation's `error`, with `code`, `message` and `status`.
-	 * @param string $error_code      The code of the error, which names the insight that failed.
-	 * @return WP_Error The error, with status 503 or 500, and the operation's `status` as `reason`.
-	 */
-	protected function get_failed_operation_error( $operation_error, $error_code ) {
-		$operation_error = is_array( $operation_error ) ? $operation_error : array();
-
-		$data = array(
-			'status' => isset( $operation_error['code'] ) && 503 === (int) $operation_error['code'] ? 503 : 500,
-		);
-
-		if ( ! empty( $operation_error['status'] ) && is_string( $operation_error['status'] ) ) {
-			$data['reason'] = $operation_error['status'];
+	protected function with_retry_after( array $answer, array $response ) {
+		if ( isset( $response['retryAfter'] ) && is_int( $response['retryAfter'] ) ) {
+			$answer['retryAfter'] = $response['retryAfter'];
 		}
 
-		return new WP_Error(
-			$error_code,
-			! empty( $operation_error['message'] ) && is_string( $operation_error['message'] )
-				? $operation_error['message']
-				: __( 'The insight could not be generated.', 'google-site-kit' ),
-			$data
-		);
+		return $answer;
 	}
 }

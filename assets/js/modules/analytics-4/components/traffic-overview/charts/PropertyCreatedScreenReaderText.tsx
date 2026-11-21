@@ -1,5 +1,5 @@
 /**
- * Traffic Overview charts' screen reader text for the property's creation day.
+ * Traffic Overview chart's screen reader text for the property's creation day.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *

@@ -41,9 +41,19 @@ class Report_Data_Builder {
 	}
 
 	/**
-	 * Builds the search query rows for the period the benchmarking response is for.
+	 * Builds the search query rows for the period the benchmarking response is
+	 * for, in one batch call.
 	 *
-	 * @since 1.190.0
+	 * Without both periods every query would look new or gone, so a key whose
+	 * report fails in either period is left out.
+	 *
+	 * The site's clicks are left out when neither period has one, since Search
+	 * Console reports no row both for a period without clicks and for a
+	 * property without data, and the insight request never sends a `0` for
+	 * missing data.
+	 *
+	 * @since n.e.x.t
+	 * @since n.e.x.t Also returns the site's clicks in each period, as `searchClicks`.
 	 *
 	 * @param array $args {
 	 *     The period the rows are for, as the `googlesitekit_benchmarking_contextual_data` filter passes it.
@@ -54,9 +64,14 @@ class Report_Data_Builder {
 	 *     @type string $compare_end_date   The end date of the compare period, as `YYYY-MM-DD`.
 	 *     @type int    $row_limit          The most rows each report returns.
 	 * }
-	 * @return array List of rows, one per query, each with `label`, `current`, `previous`, `positionCurrent`, and `positionPrevious`. Empty when a report fails or neither report has rows.
+	 * @return array {
+	 *     The rows, keyed by contextual data key, without a key whose reports failed or have no rows.
+	 *
+	 *     @type array $searchQueries List of rows, one per query, each with `label`, `current`, `previous`, `positionCurrent`, and `positionPrevious`.
+	 *     @type array $searchClicks  List of one row, with the site's clicks over every query as `current` and `previous`.
+	 * }
 	 */
-	public function build_search_query_rows( array $args ) {
+	public function build_rows( array $args ) {
 		$report_options = new Report_Options(
 			$args['start_date'],
 			$args['end_date'],
@@ -68,16 +83,78 @@ class Report_Data_Builder {
 		$reports = $this->search_console->set_data(
 			'searchanalytics-batch',
 			array(
-				'requests' => $report_options->get_search_query_requests(),
+				'requests' => array_merge(
+					$report_options->get_search_query_requests(),
+					$report_options->get_search_clicks_requests()
+				),
 			)
 		);
 
-		// Without both periods every query would look new or gone, so a failed
-		// report leaves out the search queries altogether.
-		if ( is_wp_error( $reports ) || is_wp_error( $reports['current'] ) || is_wp_error( $reports['previous'] ) ) {
+		if ( is_wp_error( $reports ) ) {
 			return array();
 		}
 
+		$rows = array(
+			'searchQueries' => $this->has_both_periods( $reports, '' ) ? $this->build_search_query_rows( $reports ) : array(),
+			'searchClicks'  => $this->has_both_periods( $reports, '-totals' ) ? $this->build_search_clicks_rows( $reports ) : array(),
+		);
+
+		return array_filter( $rows );
+	}
+
+	/**
+	 * Builds the row of the site's clicks in each period.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $reports The reports of the batch call, keyed by identifier.
+	 * @return array List of one row with `current` and `previous`, or an empty list when neither period has a click.
+	 */
+	private function build_search_clicks_rows( array $reports ) {
+		$clicks = array();
+
+		foreach ( array( 'current', 'previous' ) as $period ) {
+			$clicks[ $period ] = array_sum(
+				array_map(
+					fn( $report_row ) => (int) $report_row->getClicks(),
+					$reports[ "{$period}-totals" ]
+				)
+			);
+		}
+
+		return 0 === $clicks['current'] && 0 === $clicks['previous'] ? array() : array( $clicks );
+	}
+
+	/**
+	 * Checks whether the reports of both periods for one breakdown succeeded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $reports The reports of the batch call, keyed by identifier.
+	 * @param string $suffix  The suffix of the report's identifiers, such as `-totals`, or an empty string for the queries.
+	 * @return bool True when both reports have rows to read, otherwise false.
+	 */
+	private function has_both_periods( array $reports, $suffix ) {
+		foreach ( array( 'current', 'previous' ) as $period ) {
+			if ( ! isset( $reports[ $period . $suffix ] ) || is_wp_error( $reports[ $period . $suffix ] ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Builds the rows of the queries, each with its clicks and its average
+	 * position in both periods.
+	 *
+	 * @since 1.190.0
+	 * @since n.e.x.t Takes the reports of the batch call.
+	 *
+	 * @param array $reports The reports of the batch call, keyed by identifier.
+	 * @return array List of rows, one per query, each with `label`, `current`, `previous`, `positionCurrent`, and `positionPrevious`.
+	 */
+	private function build_search_query_rows( array $reports ) {
 		$rows = array();
 
 		foreach ( array(

@@ -980,6 +980,108 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( 429, $response->get_error_data()['status'], 'The benchmarking insight error should have status 429.' );
 	}
 
+	public function test_send_benchmarking_insight_request__sends_the_application_name_as_the_user_agent() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/benchmarking?hl=de_DE' ), array( 'operation_id' => 'operation-123' ) );
+
+		$this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de_DE' );
+
+		$this->assertSame( Google_Proxy::get_application_name(), $this->request_args['headers']['User-Agent'], 'The benchmarking insight request should name the plugin release in its `User-Agent` header.' );
+		$this->assertSame( 'Bearer abcd', $this->request_args['headers']['Authorization'], 'The `User-Agent` header should be sent beside the `Authorization` header.' );
+	}
+
+	/**
+	 * @dataProvider data_error_response_data
+	 *
+	 * @param int   $response_code       The status of the response.
+	 * @param array $response_data       The body of the response.
+	 * @param array $response_headers    The headers of the response.
+	 * @param array $expected_error_data The data the error should carry.
+	 */
+	public function test_send_benchmarking_insight_request__error_response_carries_the_reason_and_the_retry_after( $response_code, array $response_data, array $response_headers, array $expected_error_data ) {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/benchmarking?hl=de_DE' ), $response_data, $response_code, $response_headers );
+
+		$response = $this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de_DE' );
+
+		$this->assertWPError( $response, "A $response_code response to the benchmarking insight request should return a WP_Error." );
+		$this->assertSame( $expected_error_data, $response->get_error_data(), 'The error should carry the status, the `code` of the response as `reason` when it is a non-empty string, and a numeric `Retry-After` header as `retryAfter`.' );
+	}
+
+	public function data_error_response_data() {
+		return array(
+			'a reason and a Retry-After'         => array(
+				429,
+				array(
+					'error' => 'Too many requests.',
+					'code'  => 'RATE_LIMITED',
+				),
+				array( 'retry-after' => '120' ),
+				array(
+					'status'     => 429,
+					'reason'     => 'RATE_LIMITED',
+					'retryAfter' => 120,
+				),
+			),
+			'neither a reason nor a Retry-After' => array(
+				400,
+				array( 'error' => 'Bad request.' ),
+				array(),
+				array( 'status' => 400 ),
+			),
+			'a code that is not a string'        => array(
+				400,
+				array( 'code' => 400 ),
+				array(),
+				array( 'status' => 400 ),
+			),
+			'an empty code'                      => array(
+				400,
+				array( 'code' => '' ),
+				array(),
+				array( 'status' => 400 ),
+			),
+			'a Retry-After that is an HTTP date' => array(
+				503,
+				array(),
+				array( 'retry-after' => 'Wed, 16 Sep 2026 07:28:00 GMT' ),
+				array( 'status' => 503 ),
+			),
+			'a Retry-After of 0'                 => array(
+				503,
+				array( 'code' => 'UNAVAILABLE' ),
+				array( 'retry-after' => '0' ),
+				array(
+					'status'     => 503,
+					'reason'     => 'UNAVAILABLE',
+					'retryAfter' => 0,
+				),
+			),
+		);
+	}
+
+	public function test_send_benchmarking_insight_request__error_response_keeps_the_error_code_beside_the_reason() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/benchmarking?hl=de_DE' ),
+			array(
+				'error'      => 'The request is not valid.',
+				'error_code' => 'invalid_request',
+				'code'       => 'INVALID_ARGUMENT',
+			),
+			400
+		);
+
+		$response = $this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de_DE' );
+
+		$this->assertSame( 'invalid_request', $response->get_error_code(), 'The error should keep the `error_code` of the response as its code.' );
+		$this->assertSame( 'The request is not valid.', $response->get_error_message(), 'The error should keep the `error` of the response as its message.' );
+		$this->assertSame( 'INVALID_ARGUMENT', $response->get_error_data()['reason'], 'The error should carry the `code` of the response as `reason`.' );
+	}
+
 	public function test_send_conversion_insight_request() {
 		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
 
@@ -1112,58 +1214,6 @@ class Google_ProxyTest extends TestCase {
 		$this->assertSame( $expected_error_data, $response->get_error_data(), 'The error should carry the status, the `code` of the response as `reason` when it is a non-empty string, and a numeric `Retry-After` header as `retryAfter`.' );
 	}
 
-	public function data_error_response_data() {
-		return array(
-			'a reason and a Retry-After'         => array(
-				429,
-				array(
-					'error' => 'Too many requests.',
-					'code'  => 'RATE_LIMITED',
-				),
-				array( 'retry-after' => '120' ),
-				array(
-					'status'     => 429,
-					'reason'     => 'RATE_LIMITED',
-					'retryAfter' => 120,
-				),
-			),
-			'neither a reason nor a Retry-After' => array(
-				400,
-				array( 'error' => 'Bad request.' ),
-				array(),
-				array( 'status' => 400 ),
-			),
-			'a code that is not a string'        => array(
-				400,
-				array( 'code' => 400 ),
-				array(),
-				array( 'status' => 400 ),
-			),
-			'an empty code'                      => array(
-				400,
-				array( 'code' => '' ),
-				array(),
-				array( 'status' => 400 ),
-			),
-			'a Retry-After that is an HTTP date' => array(
-				503,
-				array(),
-				array( 'retry-after' => 'Wed, 16 Sep 2026 07:28:00 GMT' ),
-				array( 'status' => 503 ),
-			),
-			'a Retry-After of 0'                 => array(
-				503,
-				array( 'code' => 'UNAVAILABLE' ),
-				array( 'retry-after' => '0' ),
-				array(
-					'status'     => 503,
-					'reason'     => 'UNAVAILABLE',
-					'retryAfter' => 0,
-				),
-			),
-		);
-	}
-
 	public function test_get_ai_operation() {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
@@ -1227,6 +1277,140 @@ class Google_ProxyTest extends TestCase {
 
 		$this->assertWPError( $response, 'A 404 response to the AI operation request should return a WP_Error.' );
 		$this->assertEquals( 404, $response->get_error_data()['status'], 'The AI operation error should have status 404.' );
+	}
+
+	public function test_get_ai_operation__error_response_carries_the_reason_and_the_retry_after() {
+		list ( $credentials, $site_id ) = $this->get_credentials();
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id ),
+			array(
+				'error' => 'The service is shutting down.',
+				'code'  => 'UNAVAILABLE',
+			),
+			503,
+			array( 'retry-after' => '30' )
+		);
+
+		$response = $this->google_proxy->get_ai_operation( $credentials, 'dcba', 'operation-123' );
+
+		$this->assertWPError( $response, 'A 503 response to the AI operation request should return a WP_Error.' );
+		$this->assertSame(
+			array(
+				'status'     => 503,
+				'reason'     => 'UNAVAILABLE',
+				'retryAfter' => 30,
+			),
+			$response->get_error_data(),
+			'The AI operation error should carry the status, the `code` of the response as `reason`, and its `Retry-After` header as `retryAfter`.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_successful_response_retry_after
+	 *
+	 * @param array $response_headers The headers of the response.
+	 * @param array $expected_fields  The fields the answer should have besides the body of the response.
+	 */
+	public function test_send_benchmarking_insight_request__returns_the_retry_after_of_the_response( array $response_headers, array $expected_fields ) {
+		list ( $credentials ) = $this->get_credentials();
+
+		$body = array( 'operation_id' => 'operation-123' );
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/benchmarking?hl=de_DE' ), $body, 200, $response_headers );
+
+		$response = $this->google_proxy->send_benchmarking_insight_request( $credentials, 'abcd', array(), 'de_DE' );
+
+		$this->assertSame( array_merge( $body, $expected_fields ), $response, 'The answer should be the body of the response, with a numeric `Retry-After` header as `retryAfter`.' );
+	}
+
+	/**
+	 * @dataProvider data_successful_response_retry_after
+	 *
+	 * @param array $response_headers The headers of the response.
+	 * @param array $expected_fields  The fields the answer should have besides the body of the response.
+	 */
+	public function test_send_conversion_insight_request__returns_the_retry_after_of_the_response( array $response_headers, array $expected_fields ) {
+		list ( $credentials ) = $this->get_credentials();
+
+		$body = array( 'operation_id' => 'YhMZgdgne7B3vkpA7VTLJa' );
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/conversion-insights?hl=de-DE' ), $body, 200, $response_headers );
+
+		$response = $this->google_proxy->send_conversion_insight_request( $credentials, 'abcd', array(), 'de-DE' );
+
+		$this->assertSame( array_merge( $body, $expected_fields ), $response, 'The answer should be the body of the response, with a numeric `Retry-After` header as `retryAfter`.' );
+	}
+
+	/**
+	 * @dataProvider data_successful_response_retry_after
+	 *
+	 * @param array $response_headers The headers of the response.
+	 * @param array $expected_fields  The fields the answer should have besides the body of the response.
+	 */
+	public function test_get_ai_operation__returns_the_retry_after_of_the_response( array $response_headers, array $expected_fields ) {
+		list ( $credentials, $site_id ) = $this->get_credentials();
+
+		$body = array(
+			'done'  => false,
+			'state' => 'RUNNING',
+		);
+
+		$this->mock_http_request(
+			$this->google_proxy->url( '/v1/ai/operations/operation-123' ) . '?site_id=' . rawurlencode( $site_id ),
+			$body,
+			200,
+			$response_headers
+		);
+
+		$response = $this->google_proxy->get_ai_operation( $credentials, 'dcba', 'operation-123' );
+
+		$this->assertSame( array_merge( $body, $expected_fields ), $response, 'The answer should be the operation, with a numeric `Retry-After` header as `retryAfter`.' );
+	}
+
+	public function data_successful_response_retry_after() {
+		return array(
+			'a Retry-After'                      => array(
+				array( 'retry-after' => '2' ),
+				array( 'retryAfter' => 2 ),
+			),
+			'a Retry-After of 0'                 => array(
+				array( 'retry-after' => '0' ),
+				array( 'retryAfter' => 0 ),
+			),
+			'no Retry-After'                     => array(
+				array(),
+				array(),
+			),
+			'a Retry-After that is an HTTP date' => array(
+				array( 'retry-after' => 'Wed, 16 Sep 2026 07:28:00 GMT' ),
+				array(),
+			),
+		);
+	}
+
+	public function test_send_feedback__returns_no_retry_after() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_request(
+			$this->google_proxy->url( Google_Proxy::FEEDBACK_URI ),
+			array( 'success' => true ),
+			200,
+			array( 'retry-after' => '2' )
+		);
+
+		$response = $this->google_proxy->send_feedback(
+			$credentials,
+			'abcd',
+			array(
+				'namespace' => 'feature_hub',
+				'group'     => 'feature_relevancy_analytics-4',
+				'key'       => 'vote',
+				'value'     => 'up',
+			)
+		);
+
+		$this->assertSame( array( 'success' => true ), $response, 'Only the AI requests should add the `Retry-After` header of a successful response to the answer.' );
 	}
 
 	/**

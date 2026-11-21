@@ -34,6 +34,8 @@ final class Wire_Format {
 	 *
 	 * @since 1.189.0
 	 * @since 1.191.0 Renamed the constants of members `3` and `4` from visitors to visits, and replaced members `5` and `6` with the key factor cards and their attributes.
+	 * @since n.e.x.t Added members `7` and `8`, the expected range of each day and which parts of the typical traffic view show.
+	 * @since n.e.x.t Added member `9`, the content markers, member `10`, whether traffic was steady, member `11`, the days of traffic the band is fitted on, and members `12` and `13`, the locale of the generated insight and its signed request. Only a response built with the `trafficInsights` feature carries members `12` and `13`.
 	 */
 	const MEMBER_VERSION               = 0;
 	const MEMBER_STRINGS               = 1;
@@ -42,12 +44,36 @@ final class Wire_Format {
 	const MEMBER_VISIT_TOTALS          = 4;
 	const MEMBER_KEY_FACTORS           = 5;
 	const MEMBER_KEY_FACTOR_ATTRIBUTES = 6;
+	const MEMBER_DAILY_EXPECTED_RANGES = 7;
+	const MEMBER_AVAILABILITY          = 8;
+	const MEMBER_CONTENT_MARKERS       = 9;
+	const MEMBER_STEADY_TRAFFIC        = 10;
+	const MEMBER_BAND_REFERENCE_DAYS   = 11;
+	const MEMBER_INSIGHT_LOCALE        = 12;
+	const MEMBER_INSIGHT_PAYLOAD       = 13;
+
+	/**
+	 * The fields of the availability member, by position, in the order
+	 * `Typical_Traffic_Availability::get()` returns them. Each `*_FROM` field
+	 * is a day, which travels as its offset from the first plotted day.
+	 *
+	 * @since n.e.x.t
+	 */
+	const AVAILABILITY_RANGE_TOO_SHORT               = 0;
+	const AVAILABILITY_BAND_AVAILABLE                = 1;
+	const AVAILABILITY_BAND_AVAILABLE_FROM           = 2;
+	const AVAILABILITY_KEY_FACTORS_AVAILABLE         = 3;
+	const AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM    = 4;
+	const AVAILABILITY_INSIGHT_REQUEST_ALLOWED       = 5;
+	const AVAILABILITY_PERFORMANCE_INSIGHT_AVAILABLE = 6;
+	const AVAILABILITY_LAST_YEAR_AVAILABLE           = 7;
 
 	/**
 	 * The position each driver kind of a key factor card travels as. A kind is
 	 * only ever added at the end, so a position never changes meaning.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Added `CHANNEL_GROUP`, the paid channels as one group. No card is a `SEARCH_KEYWORD` any more, but its position keeps its meaning.
 	 */
 	const KEY_FACTOR_KINDS = array(
 		'CHANNEL'        => 0,
@@ -55,6 +81,7 @@ final class Wire_Format {
 		'SEARCH_KEYWORD' => 2,
 		'REFERRING_SITE' => 3,
 		'CAMPAIGN'       => 4,
+		'CHANNEL_GROUP'  => 5,
 	);
 
 	/**
@@ -62,6 +89,7 @@ final class Wire_Format {
 	 * kind is only ever added at the end, so a position never changes meaning.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Added `ASSISTANT`, the AI assistant behind an `AI Assistant` card.
 	 */
 	const KEY_FACTOR_ATTRIBUTE_KINDS = array(
 		'TRAFFIC_CHANNEL' => 0,
@@ -72,41 +100,22 @@ final class Wire_Format {
 		'CAMPAIGN'        => 5,
 		'DEVICE'          => 6,
 		'USER_TYPE'       => 7,
-	);
-
-	/**
-	 * The dimension codes `Response_Builder` ranks, in the order it lists two
-	 * dimensions with the same sum of row scores. The encoded response doesn't
-	 * carry them.
-	 */
-	const DIMENSION_INDEXES = array(
-		'CHANNELS'       => 0,
-		'DEVICES'        => 1,
-		'VISITOR_MIX'    => 2,
-		'REFERRERS'      => 3,
-		'SEARCH_QUERIES' => 4,
-		'CONTENT'        => 5,
-		'CATEGORIES'     => 6,
-	);
-
-	/**
-	 * The `contextualData` key of each dimension code.
-	 */
-	const CONTEXTUAL_DATA_KEYS = array(
-		'CHANNELS'       => 'channels',
-		'DEVICES'        => 'devices',
-		'VISITOR_MIX'    => 'visitorMix',
-		'REFERRERS'      => 'referrers',
-		'SEARCH_QUERIES' => 'searchQueries',
-		'CONTENT'        => 'content',
-		'CATEGORIES'     => 'categories',
+		'ASSISTANT'       => 8,
 	);
 
 	/**
 	 * The decimal places a share of the site's change keeps. Every other number
-	 * the format carries is an integer.
+	 * the format carries is an integer, except the bounds of the expected range.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Names the bounds of the expected range as the other numbers with decimals.
 	 */
 	const SHARE_DECIMAL_PLACES = 1;
+
+	/**
+	 * The decimal places each bound of a day's expected range keeps.
+	 *
+	 * @since n.e.x.t
+	 */
+	const EXPECTED_RANGE_DECIMAL_PLACES = 1;
 }

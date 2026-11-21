@@ -24,37 +24,45 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { createBreakdownValues } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { Story } from '@/js/types/Story';
 import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import TrafficBreakdown from './TrafficBreakdown';
 
-const CHANNELS = createBreakdownReport( [
+const CHANNELS = createBreakdownValues( [
 	[ 'Direct', 1200 ],
 	[ 'Organic Search', 900 ],
 	[ 'Organic Social', 700 ],
 	[ 'Referral', 400 ],
 ] );
-const LOCATIONS = createBreakdownReport( [
+const LOCATIONS = createBreakdownValues( [
 	[ 'Singapore', 1100 ],
 	[ 'Brazil', 800 ],
 	[ 'China', 600 ],
 	[ 'United States', 400 ],
 ] );
-const DEVICES = createBreakdownReport( [
+const DEVICES = createBreakdownValues( [
 	[ 'desktop', 1800 ],
 	[ 'mobile', 900 ],
 	[ 'tablet', 400 ],
 ] );
 
 interface TrafficBreakdownStoryProps {
-	/** One report per column, keyed by the column's `id`. */
-	reports: Record< string, Report | undefined >;
+	/** The values of each column, keyed by the column's `id`. */
+	values: Record< string, TrafficBreakdownValue[] | undefined >;
+	/** Whether the values have arrived. */
+	loaded?: boolean;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
 }
 
-function Template( { reports }: TrafficBreakdownStoryProps ) {
+function Template( {
+	values,
+	loaded,
+	gatheringData,
+}: TrafficBreakdownStoryProps ) {
 	// The section's styles are scoped to the widget and the panel, so the
 	// story renders inside both.
 	return (
@@ -63,7 +71,11 @@ function Template( { reports }: TrafficBreakdownStoryProps ) {
 		>
 			<div className="googlesitekit-widget--analyticsTrafficOverview">
 				<div className="googlesitekit-traffic-overview__panel">
-					<TrafficBreakdown reports={ reports } />
+					<TrafficBreakdown
+						values={ values }
+						loaded={ loaded }
+						gatheringData={ gatheringData }
+					/>
 				</div>
 			</div>
 		</WithRegistrySetup>
@@ -75,7 +87,7 @@ export const ThreeColumns = Template.bind(
 ) as Story< TrafficBreakdownStoryProps >;
 ThreeColumns.storyName = 'Three Columns';
 ThreeColumns.args = {
-	reports: {
+	values: {
 		channels: CHANNELS,
 		locations: LOCATIONS,
 		devices: DEVICES,
@@ -89,8 +101,8 @@ export const WithOthers = Template.bind(
 ) as Story< TrafficBreakdownStoryProps >;
 WithOthers.storyName = 'With Others Row';
 WithOthers.args = {
-	reports: {
-		channels: createBreakdownReport( [
+	values: {
+		channels: createBreakdownValues( [
 			[ 'Direct', 1200 ],
 			[ 'Organic Search', 900 ],
 			[ 'Organic Social', 700 ],
@@ -113,8 +125,8 @@ export const LongTail = Template.bind(
 ) as Story< TrafficBreakdownStoryProps >;
 LongTail.storyName = 'Long Tail';
 LongTail.args = {
-	reports: {
-		channels: createBreakdownReport( [
+	values: {
+		channels: createBreakdownValues( [
 			[ 'Direct', 4630 ],
 			[ 'Organic Search', 3040 ],
 			[ 'Organic Social', 1560 ],
@@ -122,12 +134,12 @@ LongTail.args = {
 			[ 'Paid Search', 25 ],
 			[ 'Email', 15 ],
 		] ),
-		locations: createBreakdownReport( [
+		locations: createBreakdownValues( [
 			[ 'Singapore', 334 ],
 			[ 'Brazil', 333 ],
 			[ 'China', 333 ],
 		] ),
-		devices: createBreakdownReport( [
+		devices: createBreakdownValues( [
 			[ 'desktop', 505 ],
 			[ 'mobile', 305 ],
 			[ 'tablet', 190 ],
@@ -142,9 +154,9 @@ export const EmptyColumn = Template.bind(
 ) as Story< TrafficBreakdownStoryProps >;
 EmptyColumn.storyName = 'Empty Column';
 EmptyColumn.args = {
-	reports: {
+	values: {
 		channels: CHANNELS,
-		locations: createBreakdownReport( [] ),
+		locations: createBreakdownValues( [] ),
 		devices: DEVICES,
 	},
 };
@@ -156,14 +168,14 @@ export const LongestNames = Template.bind(
 ) as Story< TrafficBreakdownStoryProps >;
 LongestNames.storyName = 'Longest Names';
 LongestNames.args = {
-	reports: {
-		channels: createBreakdownReport( [
+	values: {
+		channels: createBreakdownValues( [
 			[ 'Cross-network', 1200 ],
 			[ 'Organic Shopping', 900 ],
 			[ 'Mobile Push Notifications', 700 ],
 			[ 'Organic Video', 400 ],
 		] ),
-		locations: createBreakdownReport( [
+		locations: createBreakdownValues( [
 			[ 'South Georgia & South Sandwich Islands', 1100 ],
 			[ 'United States Minor Outlying Islands', 800 ],
 			[ 'Bonaire, Sint Eustatius and Saba', 600 ],
@@ -173,6 +185,75 @@ LongestNames.args = {
 	},
 };
 LongestNames.scenario = {};
+
+/**
+ * After "Show more" is clicked, a column shows up to nine rows, and the ninth
+ * adds up the rest as "Others".
+ */
+export const Expanded = Template.bind(
+	{}
+) as Story< TrafficBreakdownStoryProps >;
+Expanded.storyName = 'Expanded';
+Expanded.args = {
+	values: {
+		channels: createBreakdownValues( [
+			[ 'Direct', 3200 ],
+			[ 'Organic Search', 1600 ],
+			[ 'Referral', 1200 ],
+			[ 'Display', 1100 ],
+			[ 'Organic Video', 1000 ],
+			[ 'Organic Social', 900 ],
+			[ 'Paid Search', 500 ],
+			[ 'Email', 300 ],
+			[ 'Unassigned', 200 ],
+		] ),
+		locations: createBreakdownValues( [
+			[ 'Singapore', 4200 ],
+			[ 'Brazil', 2200 ],
+			[ 'China', 900 ],
+			[ 'United States', 800 ],
+			[ 'United Kingdom', 700 ],
+			[ 'France', 500 ],
+			[ 'Spain', 300 ],
+			[ 'Italy', 200 ],
+			[ 'Germany', 150 ],
+			[ 'Japan', 50 ],
+		] ),
+		devices: DEVICES,
+	},
+};
+Expanded.scenario = {
+	clickSelector: '.googlesitekit-traffic-overview__breakdown-toggle',
+	postInteractionWait: 200,
+};
+
+export const Loading = Template.bind(
+	{}
+) as Story< TrafficBreakdownStoryProps >;
+Loading.storyName = 'Loading';
+Loading.args = {
+	values: {
+		channels: CHANNELS,
+		locations: LOCATIONS,
+		devices: DEVICES,
+	},
+	loaded: false,
+};
+
+/** Every column says it is still collecting data, and nothing expands. */
+export const GatheringData = Template.bind(
+	{}
+) as Story< TrafficBreakdownStoryProps >;
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	values: {
+		channels: CHANNELS,
+		locations: LOCATIONS,
+		devices: DEVICES,
+	},
+	gatheringData: true,
+};
+GatheringData.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/TrafficBreakdown',

@@ -162,6 +162,35 @@ class Create_Conversion_InsightTest extends TestCase {
 		);
 	}
 
+	public function test_rest_endpoint__answers_with_the_wait_the_service_asks_for_before_the_first_read() {
+		$this->enable_conversion_insights();
+		$this->answer_service_with(
+			200,
+			array(
+				'operation_id'   => 'YhMZgdgne7B3vkpA7VTLJa',
+				'interaction_id' => '01M4B0KB2E2VWF72GMV1X4BE08',
+				'model_version'  => 'model-1',
+			),
+			array( 'retry-after' => '2' )
+		);
+
+		$response = $this->request(
+			array(
+				'goalType' => 'lead',
+				'endDate'  => '2026-09-15',
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'operationID' => 'YhMZgdgne7B3vkpA7VTLJa',
+				'retryAfter'  => 2,
+			),
+			$response->get_data(),
+			'The response should carry the `Retry-After` of the service, in seconds, as `retryAfter`.'
+		);
+	}
+
 	public function test_rest_endpoint__answers_with_the_insight_the_service_had_in_its_cache() {
 		$this->enable_conversion_insights();
 		$this->answer_service_with(

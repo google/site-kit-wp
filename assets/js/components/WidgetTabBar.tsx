@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ComponentType, FC, SVGAttributes } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -39,8 +39,6 @@ export interface WidgetTab {
 	id: string;
 	/** The text the tab shows. */
 	label: string;
-	/** An icon the tab shows before its label. It is hidden from assistive technology. */
-	Icon?: ComponentType< SVGAttributes< SVGElement > >;
 	/** Whether the tab shows a "Beta" badge after its label. */
 	isBeta?: boolean;
 }
@@ -88,14 +86,6 @@ const WidgetTabBar: FC< WidgetTabBarProps > = ( {
 						className="mdc-tab--min-width"
 						focusOnActivate={ false }
 					>
-						{ tab.Icon && (
-							<tab.Icon
-								className="googlesitekit-widget-tab-bar__tab-icon"
-								width={ 18 }
-								height={ 18 }
-								aria-hidden="true"
-							/>
-						) }
 						<span className="mdc-tab__text-label">
 							{ tab.label }
 						</span>

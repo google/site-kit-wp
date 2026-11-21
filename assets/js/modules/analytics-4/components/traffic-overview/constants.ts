@@ -28,12 +28,6 @@ import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util/dates';
 export const TRAFFIC_OVERVIEW_TAB_ID = 'googlesitekit-traffic-overview-tab';
 
 /**
- * The DOM `id` of the Typical Traffic tab. The panel points its
- * `aria-labelledby` at this `id`, so the tab names the panel.
- */
-export const TYPICAL_TRAFFIC_TAB_ID = 'googlesitekit-typical-traffic-tab';
-
-/**
  * The DOM `id` of the Recent activity tab. The Recent activity panel points
  * its `aria-labelledby` at the tab's `id`, so the tab names the panel.
  */
@@ -66,6 +60,22 @@ export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
 
 /** The most rows a breakdown column shows, counting the trailing "Others" row. */
 export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;
+
+/**
+ * The most rows a breakdown column shows after "Show more" is clicked,
+ * counting the trailing "Others" row.
+ *
+ * @since n.e.x.t
+ */
+export const TRAFFIC_BREAKDOWN_EXPANDED_MAX_ROWS = 9;
+
+/**
+ * The most key factor cards the benchmarking response gives, and so the
+ * number of placeholder cards the key factors show while they load.
+ *
+ * @since n.e.x.t
+ */
+export const KEY_FACTORS_MAX_CARDS = 3;
 
 /** The most rows a column of the Recent activity tab's traffic breakdown shows. */
 export const RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS = 3;

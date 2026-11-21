@@ -17,20 +17,29 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ReactNode } from 'react';
+
+/**
  * Returns the `GoogleChart` module with its component replaced by a spy, for
  * `jest.mock()`.
  *
  * Google Charts loads from the web and draws nothing under Jest. The spy
- * renders an empty chart container and keeps the props of each render, so a
- * test reads what the chart received.
+ * renders a chart container with the chart's children, the elements a chart
+ * draws over itself, and keeps the props of each render, so a test reads what
+ * the chart received.
  *
  * @since 1.192.0
+ * @since n.e.x.t Renders the chart's children.
  *
  * @return {Object} The `GoogleChart` module, with a `jest.fn()` as its default export.
  */
 export function mockGoogleChartModule() {
 	return {
 		__esModule: true,
-		default: jest.fn( () => <div className="googlesitekit-chart" /> ),
+		default: jest.fn( ( { children }: { children?: ReactNode } ) => (
+			<div className="googlesitekit-chart">{ children }</div>
+		) ),
 	};
 }

@@ -34,30 +34,45 @@ import {
 export interface TrafficBreakdownRowProps {
 	/** The dimension value, rendered exactly as GA4 returned it. */
 	label: string;
+	/** The row's share of the column's total, as a `0`–`1` fraction, which fills its bar. */
+	percentage: number;
 	/** The row's share, already formatted, such as `27%` or `<1%`. */
 	formattedPercentage: string;
 }
 
 const TrafficBreakdownRow: FC< TrafficBreakdownRowProps > = ( {
 	label,
+	percentage,
 	formattedPercentage,
 } ) => {
 	return (
 		<div className="googlesitekit-traffic-overview__breakdown-row">
-			<Typography
-				type={ TYPE_LABEL }
-				size={ SIZE_MEDIUM }
-				className="googlesitekit-traffic-overview__breakdown-row-label"
+			<div className="googlesitekit-traffic-overview__breakdown-row-text">
+				<Typography
+					type={ TYPE_LABEL }
+					size={ SIZE_MEDIUM }
+					className="googlesitekit-traffic-overview__breakdown-row-label"
+				>
+					{ label }
+				</Typography>
+				<Typography
+					type={ TYPE_BODY }
+					size={ SIZE_MEDIUM }
+					className="googlesitekit-traffic-overview__breakdown-row-percentage"
+				>
+					{ formattedPercentage }
+				</Typography>
+			</div>
+			{ /* The bar repeats the share the row already reads out. */ }
+			<div
+				className="googlesitekit-traffic-overview__breakdown-row-bar"
+				aria-hidden="true"
 			>
-				{ label }
-			</Typography>
-			<Typography
-				type={ TYPE_BODY }
-				size={ SIZE_MEDIUM }
-				className="googlesitekit-traffic-overview__breakdown-row-percentage"
-			>
-				{ formattedPercentage }
-			</Typography>
+				<div
+					className="googlesitekit-traffic-overview__breakdown-row-bar-fill"
+					style={ { width: `${ percentage * 100 }%` } }
+				/>
+			</div>
 		</div>
 	);
 };

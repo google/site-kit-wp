@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Insight_Payload;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Wire_Format;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
@@ -222,30 +223,37 @@ class Get_Benchmarking_DataTest extends TestCase {
 		);
 		$this->share_modules_with_editors( $shared_module_slugs );
 
-		// The site doubles, from 200 visitors in the compare period to 400 in
-		// the selected one, while each row grows from 200 to 240. That change is
-		// big enough to count and far from the site's, so no row is left out.
+		// The site doubles, from 200 visits in the compare period to 400 in the
+		// selected one, while each row grows from 200 to 240.
 		$this->report_rows = array(
-			'date'                          => array(
+			'date'                                        => array(
 				array( '20260801', 200 ),
 				array( '20260901', 400 ),
 			),
-			'sessionDefaultChannelGrouping' => array(
-				array( 'Organic Search', 'date_range_0', 240 ),
-				array( 'Organic Search', 'date_range_1', 200 ),
+			'sessionDefaultChannelGrouping,deviceCategory,newVsReturning' => array(
+				array( 'Organic Search', 'mobile', 'new', 'date_range_0', 240 ),
+				array( 'Organic Search', 'mobile', 'new', 'date_range_1', 200 ),
 			),
-			'deviceCategory'                => array(
-				array( 'mobile', 'date_range_0', 240 ),
-				array( 'mobile', 'date_range_1', 200 ),
+			'sessionDefaultChannelGrouping,sessionSource' => array(
+				array( 'Referral', 'a.example.com', 'date_range_0', 240 ),
+				array( 'Referral', 'a.example.com', 'date_range_1', 200 ),
 			),
-			'newVsReturning'                => array(
-				array( 'new', 'date_range_0', 240 ),
-				array( 'new', 'date_range_1', 200 ),
-			),
-			'sessionSource'                 => array(
-				array( 'a.example.com', 'date_range_0', 240 ),
-				array( 'a.example.com', 'date_range_1', 200 ),
-			),
+		);
+	}
+
+	/**
+	 * Makes the site's first recorded visits fall on `2026-07-22`, the first
+	 * day of the compare period, so every day of it has recorded traffic: the
+	 * key factor cards show, and with them the insight is requested.
+	 *
+	 * The visit totals of the two periods stay 200 and 400.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function provide_traffic_from_the_first_day_of_the_compare_period() {
+		$this->report_rows['date'] = array(
+			array( '20260722', 200 ),
+			array( '20260901', 400 ),
 		);
 	}
 
@@ -306,11 +314,11 @@ class Get_Benchmarking_DataTest extends TestCase {
 	}
 
 	/**
-	 * Records the `contextualData` keys the builder has rows for, after the
+	 * Records the contextual data keys the builder has rows for, after the
 	 * Search Console module adds its search query rows.
 	 *
 	 * The encoded response doesn't carry these rows, so the test reads them
-	 * here, before they are ranked.
+	 * here.
 	 *
 	 * @since 1.191.0
 	 */
@@ -357,13 +365,29 @@ class Get_Benchmarking_DataTest extends TestCase {
 				),
 				'dailyTraffic' => array(
 					array(
-						'date'   => '2026-08-19',
-						'visits' => 40,
+						'date'        => '2026-08-19',
+						'visits'      => 40,
+						'expectedMin' => null,
+						'expectedMax' => null,
 					),
 					array(
-						'date'   => '2026-08-20',
-						'visits' => 55,
+						'date'        => '2026-08-20',
+						'visits'      => 55,
+						'expectedMin' => 31.4,
+						'expectedMax' => 62.8,
 					),
+				),
+				// The period gets its band 3 days after its first day, and had
+				// its key factor cards from 26 days before it.
+				'availability' => array(
+					'range_too_short'               => false,
+					'band_available'                => false,
+					'band_available_from'           => '2026-08-22',
+					'key_factors_available'         => true,
+					'key_factors_available_from'    => '2026-07-24',
+					'insight_request_allowed'       => true,
+					'performance_insight_available' => false,
+					'last_year_available'           => false,
 				),
 				'keyFactors'   => array(
 					array(
@@ -396,16 +420,228 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( array( 'Organic Search' ), $data[ Wire_Format::MEMBER_STRINGS ], 'The response should carry the card label in its string table.' );
 		$this->assertSame( array( array( 0, 0, 700, 600, 58.3 ) ), $data[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry the `CHANNEL` card as a list of its kind, label, counts and share.' );
 		$this->assertSame( array( array() ), $data[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry one empty list of attributes for the card.' );
+		$this->assertSame( array( null, array( 31.4, 62.8 ) ), $data[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'The response should carry the expected range of each day, and null for the day without one.' );
+		$this->assertSame( array( false, false, 3, true, -26, true, false, false ), $data[ Wire_Format::MEMBER_AVAILABILITY ], 'The response should carry which parts of the typical traffic view show, with each day as its offset from the first plotted day.' );
+		$this->assertCount( 12, $data, 'Without the `trafficInsights` feature, the response should have its twelve members and no insight members.' );
 	}
 
-	public function test_rest_endpoint__is_not_registered_without_the_feature_flag() {
-		// The module never defines the datapoint, so no report can run.
-		$this->assertNotContains( 'benchmarking-data', $this->analytics->get_datapoints(), 'The datapoint should not be defined with the feature flag off.' );
+	/**
+	 * Gets a request as `Insight_Request_Builder::build()` returns it.
+	 *
+	 * @return array The request.
+	 */
+	private function get_insight_request() {
+		return array(
+			'end_date'       => self::END_DATE,
+			'days_in_period' => 28,
+			'visits'         => array(
+				'current_period'  => 1200,
+				'previous_period' => 1000,
+			),
+			'history_days'   => 53,
+		);
+	}
+
+	public function test_rest_endpoint__answers_with_the_locale_and_the_payload_of_the_insight_request() {
+		update_user_meta( $this->admin_id, 'locale', 'de_DE' );
+		$this->enable_feature( 'trafficInsights' );
+		$this->enable_datapoint(
+			array(
+				'visits'         => array(
+					'current'  => 1200,
+					'previous' => 1000,
+				),
+				'dailyTraffic'   => array(),
+				'keyFactors'     => array(),
+				'insightRequest' => $this->get_insight_request(),
+			)
+		);
+
+		$data = $this->request()->get_data();
+
+		$this->assertCount( 14, $data, 'With an insight request, the response should have fourteen members.' );
+		$this->assertSame( get_user_locale(), $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the current user.' );
+		$this->assertSame( 'de_DE', $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale the user chose, as WordPress names it.' );
+		$this->assertSame(
+			array(
+				'request' => $this->get_insight_request(),
+				'locale'  => 'de_DE',
+			),
+			Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $this->admin_id ),
+			'Member 13 should be the payload of the insight request and the locale, signed for the current user.'
+		);
+		$this->assertNull(
+			Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $this->factory()->user->create() ),
+			'The payload should not decode for another user.'
+		);
+	}
+
+	public function test_rest_endpoint__answers_with_a_null_payload_when_there_is_no_insight_to_request() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->enable_datapoint(
+			array(
+				'visits'         => array(
+					'current'  => 0,
+					'previous' => 0,
+				),
+				'dailyTraffic'   => array(),
+				'keyFactors'     => array(),
+				'insightRequest' => null,
+			)
+		);
+
+		$data = $this->request()->get_data();
+
+		$this->assertCount( 14, $data, 'With the `trafficInsights` feature, the response should have fourteen members even without an insight request.' );
+		$this->assertSame( get_user_locale(), $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the current user.' );
+		$this->assertNull( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 13 should be null when there is no insight to request.' );
+	}
+
+	public function test_rest_endpoint__signs_the_insight_request_built_from_the_reports() {
+		update_user_meta( $this->admin_id, 'locale', 'de_DE_formal' );
+		$this->set_up_shared_dashboard( array() );
+		$this->enable_feature( 'trafficInsights' );
+		$this->switch_to_user( $this->admin_id );
+		$this->provide_traffic_from_the_first_day_of_the_compare_period();
 
 		$response = $this->request();
+		$data     = $response->get_data();
 
-		$this->assertSame( 400, $response->get_status(), 'A request should answer 400 with the feature flag off.' );
-		$this->assertSame( 'invalid_datapoint', $response->get_data()['code'], 'The error code should name the unknown datapoint.' );
+		$this->assertSame( 200, $response->get_status(), 'The request should answer 200.' );
+		$this->assertSame( 'de_DE_formal', $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the administrator.' );
+
+		$pair = fn( $current, $previous ) => array(
+			'current'  => $current,
+			'previous' => $previous,
+		);
+
+		// The 56 days up to the end date are too little history for an
+		// expected range or for last year's visits. Search Console adds the
+		// `plant garlic` row, and the site's clicks, which its fake API
+		// reports as those of `plant garlic`. The key factor card is the one
+		// channel, `Organic Search`, with the `plant garlic` keyword, whose
+		// clicks moved as the site's did. Its one device and its one visitor
+		// type have all of its visits, so neither explains its rise.
+		$this->assertSame(
+			array(
+				'request' => array(
+					'end_date'        => self::END_DATE,
+					'days_in_period'  => 28,
+					'visits'          => array(
+						'current_period'  => 400,
+						'previous_period' => 200,
+					),
+					'history_days'    => 56,
+					'contextual_data' => array(
+						'traffic_channel_surges' => array(
+							array(
+								'channel'  => 'Organic Search',
+								'sessions' => $pair( 240, 200 ),
+							),
+						),
+						'device_shifts'          => array(
+							array(
+								'device'   => 'mobile',
+								'sessions' => $pair( 240, 200 ),
+							),
+						),
+						'user_mix_shifts'        => array(
+							array(
+								'segment'  => 'new',
+								'sessions' => $pair( 240, 200 ),
+							),
+						),
+						'referrers'              => array(
+							array(
+								'referrer' => 'a.example.com',
+								'sessions' => $pair( 240, 200 ),
+							),
+						),
+						'search_query_shifts'    => array(
+							array(
+								'query'    => 'plant garlic',
+								'clicks'   => $pair( 300, 210 ),
+								'position' => $pair( 3.4, 4.8 ),
+							),
+						),
+						'channel_breakdowns'     => array(
+							array(
+								'channel'  => 'Organic Search',
+								'device'   => 'mobile',
+								'segment'  => 'new',
+								'sessions' => $pair( 240, 200 ),
+							),
+						),
+						'search_clicks'          => $pair( 300, 210 ),
+					),
+					'decomposition'   => array(
+						'opening_sessions' => 200,
+						'closing_sessions' => 240,
+						'residual_delta'   => 0,
+						'shape'            => 'CONCENTRATED',
+						'key_factors'      => array(
+							array(
+								'dimension'          => 'TRAFFIC_CHANNELS',
+								'entity_kind'        => 'CHANNEL',
+								'title'              => 'Organic Search',
+								'volume'             => 240,
+								'delta'              => 40,
+								'is_large_share'     => true,
+								'direction'          => 'UP',
+								// JSON writes a whole float without its
+								// decimal point.
+								'traffic_impact_pct' => 100,
+								'metric_type'        => 'DELTA',
+								'share_basis'        => 'GROSS_CHANGE',
+								'role'               => 'PRIMARY',
+								'attributes'         => array(
+									array(
+										'kind'         => 'SOURCE_TYPE',
+										'role'         => 'CONTEXT',
+										'label'        => 'Search keyword',
+										'value'        => array( 'text' => 'plant garlic' ),
+										'entity_delta' => 90,
+										'share_of_search_clicks_pct' => 30,
+									),
+								),
+							),
+						),
+					),
+				),
+				'locale'  => 'de_DE_formal',
+			),
+			Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $this->admin_id ),
+			'Member 13 should be the signed insight request, built from the daily series and from every row of the reports.'
+		);
+	}
+
+	public function test_rest_endpoint__answers_with_a_null_payload_for_a_period_shorter_than_7_days() {
+		$this->set_up_shared_dashboard( array() );
+		$this->enable_feature( 'trafficInsights' );
+		$this->switch_to_user( $this->admin_id );
+
+		$data = $this->request(
+			array(
+				'startDate' => '2026-09-10',
+				'endDate'   => self::END_DATE,
+			)
+		)->get_data();
+
+		$this->assertCount( 14, $data, 'With the `trafficInsights` feature, the response should have fourteen members.' );
+		$this->assertNull( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'A 6-day period should get no insight payload.' );
+	}
+
+	public function test_rest_endpoint__answers_with_a_null_payload_when_neither_period_has_a_visit() {
+		$this->set_up_shared_dashboard( array() );
+		$this->enable_feature( 'trafficInsights' );
+		$this->switch_to_user( $this->admin_id );
+
+		$this->report_rows['date'] = array();
+
+		$data = $this->request()->get_data();
+
+		$this->assertSame( array( 0, 0 ), $data[ Wire_Format::MEMBER_VISIT_TOTALS ], 'Neither period should have a visit.' );
+		$this->assertNull( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Two periods without a visit should get no insight payload.' );
 	}
 
 	/**
@@ -579,34 +815,36 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( array( array( self::START_DATE, self::START_DATE ) ), $builder->calls, 'The builder should be called with the single day.' );
 	}
 
-	public function test_rest_endpoint__accepts_a_period_of_90_days() {
+	/**
+	 * @dataProvider data_long_periods
+	 *
+	 * @param string $start_date The first day of a period that ends on `2026-09-15`.
+	 * @param int    $days       The number of days in the period.
+	 */
+	public function test_rest_endpoint__accepts_a_long_period( $start_date, $days ) {
 		$builder = $this->enable_datapoint();
 
 		$response = $this->request(
 			array(
-				'startDate' => '2026-06-18',
+				'startDate' => $start_date,
 				'endDate'   => '2026-09-15',
 			)
 		);
 
-		$this->assertSame( 200, $response->get_status(), 'A request for the 90 days from `2026-06-18` to `2026-09-15` should answer 200.' );
-		$this->assertSame( array( array( '2026-06-18', '2026-09-15' ) ), $builder->calls, 'The `build()` method should be called with `2026-06-18` and `2026-09-15`, the first and the last day of the 90 days.' );
+		$this->assertSame( 200, $response->get_status(), "A request for the $days days from `$start_date` to `2026-09-15` should answer 200." );
+		$this->assertSame( array( array( $start_date, '2026-09-15' ) ), $builder->calls, "The `build()` method should be called with `$start_date` and `2026-09-15`, the first and the last day of the $days days." );
 	}
 
-	public function test_rest_endpoint__refuses_a_period_of_91_days() {
-		$builder = $this->enable_datapoint();
-
-		$response = $this->request(
-			array(
-				'startDate' => '2026-06-17',
-				'endDate'   => '2026-09-15',
-			)
+	public function data_long_periods() {
+		return array(
+			// The longest preset date range, and one day more.
+			'90 days'  => array( '2026-06-18', 90 ),
+			'91 days'  => array( '2026-06-17', 91 ),
+			// The longest period the service writes an insight for, and a
+			// longer one, which the date picker allows.
+			'364 days' => array( '2025-09-17', 364 ),
+			'426 days' => array( '2025-07-17', 426 ),
 		);
-
-		$this->assertSame( 400, $response->get_status(), 'A request for the 91 days from `2026-06-17` to `2026-09-15` should answer 400.' );
-		$this->assertSame( 'invalid_param', $response->get_data()['code'], 'The error code should be `invalid_param` for a period of 91 days.' );
-		$this->assertStringContainsString( '90 days', $response->get_data()['message'], 'The error message should name the longest period the datapoint accepts, 90 days.' );
-		$this->assertSame( array(), $builder->calls, 'No report should run for a period of 91 days.' );
 	}
 
 	public function test_rest_endpoint__answers_the_same_for_any_other_parameter() {
@@ -661,12 +899,12 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( 200, $reader_response->get_status(), 'A view-only reader should get the benchmarking data.' );
 		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->google_api_authorizations['analyticsdata.googleapis.com'], 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
 		$this->assertEquals( $owner_response->get_data(), $reader_response->get_data(), 'The reader should get the response the owner gets.' );
-		$this->assertSame( array( 'channels', 'devices', 'visitorMix', 'referrers', 'searchQueries' ), $this->contextual_data_keys, 'The builder should have the channels, devices, visitor mix, referrers, and search queries for the reader.' );
-		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry no key factor cards, since the builder returns no cards.' );
-		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry no key factor attributes, since the builder returns no cards.' );
+		$this->assertSame( array( 'channelBreakdowns', 'channelSources', 'channelPages', 'channelCampaigns', 'searchQueries', 'searchClicks' ), $this->contextual_data_keys, 'The builder should have the four channel breakdowns, the search queries and the site\'s search clicks, for the reader.' );
+		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry no key factor cards, since the compare period starts before the first day with traffic.' );
+		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry no key factor attributes, since it carries no cards.' );
 	}
 
-	public function test_rest_endpoint__builds_every_dimension_except_the_search_queries_for_a_view_only_reader_without_search_console_shared() {
+	public function test_rest_endpoint__builds_every_breakdown_except_the_search_queries_for_a_view_only_reader_without_search_console_shared() {
 		$this->set_up_shared_dashboard( array( Analytics_4::MODULE_SLUG ) );
 		$this->switch_to_user( $this->create_view_only_reader() );
 		$this->record_contextual_data_keys();
@@ -674,7 +912,28 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$response = $this->request();
 
 		$this->assertSame( 200, $response->get_status(), 'A reader without Search Console shared should get the benchmarking data.' );
-		$this->assertSame( array( 'channels', 'devices', 'visitorMix', 'referrers' ), $this->contextual_data_keys, 'The builder should have the channels, devices, visitor mix, and referrers for the reader, without the search queries.' );
+		$this->assertSame( array( 'channelBreakdowns', 'channelSources', 'channelPages', 'channelCampaigns' ), $this->contextual_data_keys, 'The builder should have the four channel breakdowns for the reader, without the search queries.' );
+	}
+
+	public function test_rest_endpoint__signs_the_insight_payload_of_a_view_only_reader_for_the_reader() {
+		$this->set_up_shared_dashboard( array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG ) );
+		$this->enable_feature( 'trafficInsights' );
+
+		$reader_id = $this->create_view_only_reader();
+		update_user_meta( $reader_id, 'locale', 'fr_FR' );
+		$this->switch_to_user( $reader_id );
+		$this->provide_traffic_from_the_first_day_of_the_compare_period();
+
+		$response = $this->request();
+		$data     = $response->get_data();
+		$payload  = Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $reader_id );
+
+		$this->assertSame( 200, $response->get_status(), 'A view-only reader should get the benchmarking data.' );
+		$this->assertSame( 'fr_FR', $data[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the reader rather than of the owner.' );
+		$this->assertNotNull( $payload, 'Member 13 should be signed for the reader, who sends it back to ask for the insight.' );
+		$this->assertSame( 'fr_FR', $payload['locale'], 'The payload should ask for the insight in the locale of the reader.' );
+		$this->assertSame( 400, $payload['request']['visits']['current_period'], 'The payload should hold the request built from the reports the reader reads with the owner\'s account.' );
+		$this->assertNull( Insight_Payload::decode( $data[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], $this->admin_id ), 'The payload of the reader should not decode for the owner.' );
 	}
 
 	public function test_rest_endpoint__refuses_an_administrator_who_is_not_authenticated() {

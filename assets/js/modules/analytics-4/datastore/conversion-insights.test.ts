@@ -497,12 +497,10 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 		} );
 
 		it.each( [ 409, 503 ] )(
-			'should submit again five seconds after the service answers a submit with a %d',
+			'should submit again after the `retryAfter` the service answers a submit with a %d with',
 			async ( status ) => {
 				fetchMock.postOnce(
 					insightEndpoint,
-					// The store waits five seconds whatever `retryAfter`
-					// the service sends.
 					errorResponse( status, { retryAfter: 1 } )
 				);
 				fetchMock.postOnce( insightEndpoint, {
@@ -513,7 +511,7 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getConversionInsight( 'lead', '', '2026-11-01' );
 
-				await jest.advanceTimersByTimeAsync( 4999 );
+				await jest.advanceTimersByTimeAsync( 999 );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
 
@@ -539,6 +537,160 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 				).toBeUndefined();
 			}
 		);
+
+		it.each( [ 409, 503 ] )(
+			'should submit again five seconds after the service answers a submit with a %d without a `retryAfter`',
+			async ( status ) => {
+				fetchMock.postOnce( insightEndpoint, errorResponse( status ) );
+				fetchMock.postOnce( insightEndpoint, {
+					body: { insight: conversionInsight },
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionInsight( 'lead', '', '2026-11-01' );
+
+				await jest.advanceTimersByTimeAsync( 4999 );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
+
+				await jest.advanceTimersByTimeAsync( 1 );
+
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).toHaveFetchedTimes( 2, insightEndpoint );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConversionInsight( 'lead', '', '2026-11-01' )
+				).toEqual( conversionInsight );
+			}
+		);
+
+		it( 'should not submit again when the `retryAfter` of a 409 ends after its deadline', async () => {
+			const refusal = errorResponse( 409, {
+				reason: 'GENERATION_IN_PROGRESS',
+				retryAfter: 60,
+			} );
+
+			fetchMock.post( insightEndpoint, refusal );
+
+			expect( await resolveInsight() ).toBeNull();
+			expect( console ).toHaveErrored();
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
+			expect( getInsightError() ).toEqual( refusal.body );
+		} );
+
+		it( 'should read the operation after the `retryAfter` of the submit, and then after the `retryAfter` of each read', async () => {
+			fetchMock.postOnce( insightEndpoint, {
+				body: { operationID: 'operation-1', retryAfter: 3 },
+			} );
+			fetchMock.getOnce( insightEndpoint, {
+				body: { done: false, state: 'RUNNING', retryAfter: 1 },
+			} );
+			fetchMock.getOnce( insightEndpoint, {
+				body: {
+					done: true,
+					state: 'SUCCEEDED',
+					insight: conversionInsight,
+				},
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getConversionInsight( 'lead', '', '2026-11-01' );
+
+			await jest.advanceTimersByTimeAsync( 0 );
+			await jest.advanceTimersByTimeAsync( 2999 );
+
+			expect( fetchMock ).not.toHaveFetched( insightEndpoint, {
+				method: 'GET',
+			} );
+
+			await jest.advanceTimersByTimeAsync( 1 );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'GET',
+			} );
+
+			await jest.advanceTimersByTimeAsync( 999 );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'GET',
+			} );
+
+			await jest.advanceTimersByTimeAsync( 1 );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2, insightEndpoint, {
+				method: 'GET',
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionInsight( 'lead', '', '2026-11-01' )
+			).toEqual( conversionInsight );
+		} );
+
+		it.each( [
+			[ 'a second for a `retryAfter` of 0', 0, 1000 ],
+			[ 'two seconds for a negative `retryAfter`', -1, 2000 ],
+			[
+				'two seconds for a `retryAfter` that is not a number',
+				'1',
+				2000,
+			],
+		] )(
+			'should read the operation after %s',
+			async ( _, retryAfter, expectedDelay ) => {
+				fetchMock.postOnce( insightEndpoint, {
+					body: { operationID: 'operation-1', retryAfter },
+				} );
+				fetchMock.getOnce( insightEndpoint, {
+					body: {
+						done: true,
+						state: 'SUCCEEDED',
+						insight: conversionInsight,
+					},
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionInsight( 'lead', '', '2026-11-01' );
+
+				await jest.advanceTimersByTimeAsync( 0 );
+				await jest.advanceTimersByTimeAsync( expectedDelay - 1 );
+
+				expect( fetchMock ).not.toHaveFetched( insightEndpoint, {
+					method: 'GET',
+				} );
+
+				await jest.advanceTimersByTimeAsync( 1 );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+					method: 'GET',
+				} );
+			}
+		);
+
+		it( 'should stop waiting, and keep the operation, when the `retryAfter` of a read ends after its deadline', async () => {
+			fetchMock.postOnce( insightEndpoint, {
+				body: { operationID: 'operation-1' },
+			} );
+			fetchMock.getOnce( insightEndpoint, {
+				body: { done: false, state: 'RUNNING', retryAfter: 60 },
+			} );
+
+			expect( await resolveInsight() ).toBeNull();
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'GET',
+			} );
+			expect( getInsightError() ).toMatchObject( {
+				code: 'conversion_insight_timeout',
+			} );
+			expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				cacheHit: true,
+				value: { operationID: 'operation-1' },
+			} );
+		} );
 
 		it.each( [
 			[ 'has expired', 404, 'request_failed' ],

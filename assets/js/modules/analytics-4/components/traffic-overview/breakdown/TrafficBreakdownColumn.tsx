@@ -25,13 +25,18 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import PreviewBlock from '@/js/components/PreviewBlock';
 import Typography from '@/js/components/Typography';
-import { SIZE_MEDIUM, TYPE_BODY } from '@/js/components/Typography/constants';
+import {
+	SIZE_LARGE,
+	SIZE_MEDIUM,
+	TYPE_BODY,
+} from '@/js/components/Typography/constants';
 import { TileZeroDataMessage } from '@/js/modules/analytics-4/components/common/tiles';
 import { TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { TrafficBreakdownRow as BreakdownRow } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
@@ -42,10 +47,12 @@ export interface TrafficBreakdownColumnProps {
 	id: string;
 	/** The column's heading, which also names it for a screen reader. */
 	heading: string;
-	/** The rows to render, empty when no value in the report has visitors. */
+	/** The rows to render, empty when no value has visits. */
 	rows: BreakdownRow[];
-	/** Whether the column's report has arrived. */
+	/** Whether the column's values have arrived. */
 	loaded?: boolean;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
 }
 
 const TrafficBreakdownColumn: FC< TrafficBreakdownColumnProps > = ( {
@@ -53,6 +60,7 @@ const TrafficBreakdownColumn: FC< TrafficBreakdownColumnProps > = ( {
 	heading,
 	rows,
 	loaded = true,
+	gatheringData = false,
 } ) => {
 	// `useInstanceId` is typed as `string | number`, so it is read as a string
 	// the way `TextField` does.
@@ -61,6 +69,10 @@ const TrafficBreakdownColumn: FC< TrafficBreakdownColumnProps > = ( {
 		'googlesitekit-traffic-overview__breakdown-column-heading'
 	);
 	const headingID = `${ instanceID }`;
+
+	// A property still gathering data has no figures to show, whatever rows
+	// the column gets.
+	const showRows = loaded && ! gatheringData;
 
 	return (
 		<section
@@ -81,28 +93,43 @@ const TrafficBreakdownColumn: FC< TrafficBreakdownColumnProps > = ( {
 					{ Array.from( {
 						length: TRAFFIC_BREAKDOWN_MAX_ROWS,
 					} ).map( ( _, index ) => (
+						// Each placeholder is as tall as a row: its 20px line
+						// of text, the 3px gap, and the 4px slot of its bar.
 						<PreviewBlock
 							key={ index }
 							width="100%"
-							height="20px"
+							height="27px"
 						/>
 					) ) }
 				</div>
 			) }
-			{ loaded && rows.length === 0 && (
+			{ loaded && gatheringData && (
+				<Typography
+					as="p"
+					type={ TYPE_BODY }
+					size={ SIZE_LARGE }
+					className="googlesitekit-traffic-overview__breakdown-column-gathering-data"
+				>
+					{ __( 'We’re still collecting data', 'google-site-kit' ) }
+				</Typography>
+			) }
+			{ showRows && rows.length === 0 && (
 				<TileZeroDataMessage metricLabel="visitors" />
 			) }
-			{ loaded &&
+			{ showRows &&
 				rows.length > 0 &&
 				// Keyed by position: nothing here reorders, and a dimension
 				// value of "Others" would otherwise collide with the folded row.
-				rows.map( ( { label, formattedPercentage }, index ) => (
-					<TrafficBreakdownRow
-						key={ index }
-						label={ label }
-						formattedPercentage={ formattedPercentage }
-					/>
-				) ) }
+				rows.map(
+					( { label, percentage, formattedPercentage }, index ) => (
+						<TrafficBreakdownRow
+							key={ index }
+							label={ label }
+							percentage={ percentage }
+							formattedPercentage={ formattedPercentage }
+						/>
+					)
+				) }
 		</section>
 	);
 };

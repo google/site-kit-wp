@@ -30,7 +30,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements Schema_Aware_Datapoint {
+class Create_Conversion_Insight extends AI_Insight_Datapoint implements Schema_Aware_Datapoint {
 
 	/**
 	 * The longest tab the datapoint accepts. Analytics keeps at most 500
@@ -63,7 +63,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` to reach the service with, and the Analytics `module` that runs the reports.
+	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` callbacks that return what reaches the service, the `insight_reader` of the insight, and the Analytics `module` that runs the reports.
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
@@ -106,7 +106,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable Closure that asks the service for the insight. It returns the ID of the operation that generates the insight as `operationID`, the insight as `insight` when the service had one in its cache, `insight` as null when there is no insight to write, or an error.
+	 * @return callable Closure that asks the service for the insight. It returns the ID of the operation that generates the insight as `operationID`, with the seconds to wait before its first read as `retryAfter` when the service sent them; the insight as `insight` when the service had one in its cache; `insight` as null when there is no insight to write; or an error.
 	 * @throws Invalid_Param_Exception Thrown when `tab` is longer than 500 characters, or `endDate` isn't a real day.
 	 */
 	public function create_request( Data_Request $data_request ) {
@@ -141,8 +141,8 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 				return $access_token;
 			}
 
-			$response = $this->google_proxy->send_conversion_insight_request(
-				$this->credentials,
+			$response = $this->get_google_proxy()->send_conversion_insight_request(
+				$this->get_credentials(),
 				$access_token,
 				array( 'events' => array( $entry ) ),
 				get_user_locale()
@@ -156,16 +156,16 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 			// wrote one for the same entry before, and with the operation that
 			// writes it otherwise.
 			if ( ! empty( $response['operation_id'] ) && is_string( $response['operation_id'] ) ) {
-				return array( 'operationID' => $response['operation_id'] );
+				return $this->with_retry_after( array( 'operationID' => $response['operation_id'] ), $response );
 			}
 
 			if ( isset( $response['scenario'] ) ) {
-				$insight = $this->get_insight( $response );
+				$insight = $this->get_insight_reader()->read( $response );
 
 				return is_wp_error( $insight ) ? $insight : array( 'insight' => $insight );
 			}
 
-			return $this->get_invalid_response_error();
+			return $this->get_insight_reader()->get_invalid_response_error();
 		};
 	}
 
