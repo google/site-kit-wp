@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
+use Google\Site_Kit\Core\Modules\Disconnected_Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -32,6 +33,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		// only on the values it creates and stores.
 		$this->options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
 		$this->options->delete( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION );
+		$this->options->delete( Disconnected_Modules::OPTION );
 
 		remove_all_filters( 'googlesitekit_is_module_connected' );
 	}
@@ -86,6 +88,36 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertTrue(
 			$this->options->get( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION ),
 			'Migration should keep the Key Metrics widget area hidden option when Analytics is not connected.'
+		);
+	}
+
+	public function test_migrate__deletes_the_option_when_analytics_was_disconnected() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->set_analytics_connected( false );
+		( new Disconnected_Modules( $this->options ) )->add( Analytics_4::MODULE_SLUG );
+		$this->options->set( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION, true );
+
+		$migration->migrate();
+
+		$this->assertFalse(
+			$this->options->has( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION ),
+			'Migration should delete the Key Metrics widget area hidden option when Analytics was connected before and has since been disconnected.'
+		);
+	}
+
+	public function test_migrate__keeps_the_option_when_only_another_module_was_disconnected() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->set_analytics_connected( false );
+		( new Disconnected_Modules( $this->options ) )->add( 'adsense' );
+		$this->options->set( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION, true );
+
+		$migration->migrate();
+
+		$this->assertTrue(
+			$this->options->get( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION ),
+			'Migration should keep the Key Metrics widget area hidden option when Analytics has never been disconnected.'
 		);
 	}
 

@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
+use Google\Site_Kit\Core\Modules\Disconnected_Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4;
 
@@ -20,7 +21,8 @@ use Google\Site_Kit\Modules\Analytics_4;
  *
  * Earlier versions hid Key Metrics for the whole site every time an admin
  * started a Google sign-in, even when Analytics was already connected. This
- * migration shows Key Metrics again on sites where Analytics is connected.
+ * migration shows Key Metrics again on sites where Analytics is connected, or
+ * was connected before and has since been disconnected.
  *
  * @since n.e.x.t
  * @access private
@@ -98,12 +100,21 @@ class Migration_N_E_X_T {
 
 	/**
 	 * Deletes the Key Metrics widget area hidden setting when Analytics is
-	 * connected.
+	 * connected, or was connected before and has since been disconnected.
+	 *
+	 * The setting is kept only on sites set up without Analytics that have
+	 * never connected it, which is the case it is meant for.
 	 *
 	 * @since n.e.x.t
 	 */
 	protected function migrate_key_metrics_setup_is_widget_area_hidden() {
-		if ( ! apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG ) ) {
+		$is_analytics_connected = apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
+
+		// Since 1.172.0, disconnecting a module records it in this setting.
+		$disconnected_modules       = ( new Disconnected_Modules( $this->options ) )->get();
+		$was_analytics_disconnected = is_array( $disconnected_modules ) && isset( $disconnected_modules[ Analytics_4::MODULE_SLUG ] );
+
+		if ( ! $is_analytics_connected && ! $was_analytics_disconnected ) {
 			return;
 		}
 
