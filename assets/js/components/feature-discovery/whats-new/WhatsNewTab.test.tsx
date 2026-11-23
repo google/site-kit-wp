@@ -33,10 +33,12 @@ import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_SETUP_TYPES,
+	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION,
@@ -47,7 +49,10 @@ import {
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { WEEK_IN_SECONDS } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	freezeFetch,
@@ -57,6 +62,9 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import WhatsNewTab from './WhatsNewTab';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const TEST_INITIAL_VERSION = '1.186.0';
 const TEST_OLDER_VERSION = '1.186.0';
@@ -568,5 +576,139 @@ describe( 'WhatsNewTab', () => {
 			container.querySelector( EMPTY_STATE_SELECTOR )
 		).toBeInTheDocument();
 		expect( queryByText( 'Feedback unavailable' ) ).not.toBeInTheDocument();
+	} );
+
+	describe( 'with a feature set up from the tab', () => {
+		const CONNECTED_KEY = 'unread-newer-connected';
+		const SET_UP_TITLE = 'Success! Unread newer feature is set up';
+
+		beforeEach( () => {
+			fetchMock.postOnce( TIMERS_ENDPOINT, { body: {}, status: 200 } );
+
+			provideFeatures( registry, [
+				{
+					...TEST_FEATURES[ 3 ],
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						ctaLabel: 'Set up now',
+						isEnabled: ( select ) =>
+							select( CORE_UI ).getValue( CONNECTED_KEY ) ===
+							true,
+					},
+					successNotice: { title: SET_UP_TITLE },
+				},
+				TEST_FEATURES[ 2 ],
+			] );
+		} );
+
+		it( 'should keep the feature listed while it is connected and its success notice shows', async () => {
+			const { container, getByText, waitForRegistry } = render(
+				<WhatsNewTab />,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			act( () => {
+				registry.dispatch( CORE_UI ).setValues( {
+					[ CONNECTED_KEY ]: true,
+					[ SUCCEEDED_FEATURES_UI_KEY ]: [ 'unread-newer' ],
+				} );
+			} );
+
+			expect( getByText( SET_UP_TITLE ) ).toBeInTheDocument();
+			expect( getListedTitles( container ) ).toEqual( [
+				'Unread older feature',
+			] );
+		} );
+
+		it( 'should drop the feature once it is connected and its success notice is dismissed', async () => {
+			const { container, getByRole, queryByText, waitForRegistry } =
+				render( <WhatsNewTab />, {
+					registry,
+					viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+				} );
+
+			await waitForRegistry();
+
+			act( () => {
+				registry.dispatch( CORE_UI ).setValues( {
+					[ CONNECTED_KEY ]: true,
+					[ SUCCEEDED_FEATURES_UI_KEY ]: [ 'unread-newer' ],
+				} );
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+			expect( queryByText( SET_UP_TITLE ) ).not.toBeInTheDocument();
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-feature-success-notice'
+				)
+			).toHaveLength( 0 );
+			expect( getListedTitles( container ) ).toEqual( [
+				'Unread older feature',
+			] );
+		} );
+	} );
+
+	describe( 'GA event tracking', () => {
+		const { simulateAllIntersections } = mockIntersectionObserver();
+
+		const expectedCategory = `${ VIEW_CONTEXT_FEATURE_DISCOVERY }_whats-new`;
+
+		beforeEach( () => {
+			global.history.replaceState( {}, '', '/' );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockClear();
+		} );
+
+		it( 'should track the view_empty_state event once the empty state is in view', async () => {
+			const { waitForRegistry } = render(
+				<HashRouter>
+					<WhatsNewTab />
+				</HashRouter>,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				expectedCategory,
+				'view_empty_state'
+			);
+
+			act( () => {
+				simulateAllIntersections( true );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expectedCategory,
+				'view_empty_state'
+			);
+		} );
+
+		it( 'should track the click_explore_features event when Explore features is clicked', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<HashRouter>
+					<WhatsNewTab />
+				</HashRouter>,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Explore features' } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expectedCategory,
+				'click_explore_features'
+			);
+			expect( global.location.hash ).toBe( '#/all-services' );
+		} );
 	} );
 } );

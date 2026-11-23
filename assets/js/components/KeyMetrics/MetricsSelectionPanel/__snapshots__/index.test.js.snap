@@ -28,6 +28,7 @@ exports[`MetricsSelectionPanel Header should render correctly 1`] = `
           <button
             aria-label="Close"
             class="googlesitekit-cta-link googlesitekit-selection-panel-header__close googlesitekit-cta-link--link-button"
+            type="button"
           >
             <span
               class="googlesitekit-cta-link__contents"

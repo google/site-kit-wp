@@ -112,20 +112,18 @@ Notifications can be controlled by feature flags using the `featureFlag` propert
 }
 ```
 
-The notification system automatically checks feature flags when determining which notifications to show:
+When a notification depends on more than one feature, pass an array of flags. The notification is only shown when all of them are enabled:
 
 ```javascript
-// From shouldNotificationBeAddedToQueue.js
-if (
-    notification?.featureFlag &&
-    ! isFeatureEnabled(
-        notification.featureFlag,
-        _enabledFeatureFlags ? new Set( _enabledFeatureFlags ) : undefined
-    )
-) {
-    return false;
+// In notification registration
+{
+    Component: ExpressSetupCTABannerSurvey,
+    featureFlag: [ 'rrmExpressSetup', 'rrmSurveyCTA' ],
+    // other notification properties...
 }
 ```
+
+The notification system checks these flags in `shouldNotificationBeAddedToQueue()` when deciding which notifications to queue, so `checkRequirements` doesn't need to check them again.
 
 ## Implementation Guidelines
 

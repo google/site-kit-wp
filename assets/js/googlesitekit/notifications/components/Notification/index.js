@@ -39,6 +39,7 @@ export default function Notification( {
 	gaTrackingEventArgs,
 	children,
 	onView,
+	maxViewedDates = 3,
 } ) {
 	const ref = useRef();
 	const viewed = useHasBeenViewed( id );
@@ -69,8 +70,8 @@ export default function Notification( {
 			setIsViewedOnce( true );
 		}
 
-		// If the notification has been viewed on 3 distinct days, dismiss it permanently for the next view.
-		if ( viewedDates?.length >= 3 ) {
+		// Dismiss for the next view once the limit is reached. Zero disables the limit.
+		if ( maxViewedDates > 0 && viewedDates?.length >= maxViewedDates ) {
 			dismissNotification( id, { skipHidingFromQueue: true } );
 		}
 	}, [
@@ -80,6 +81,7 @@ export default function Notification( {
 		gaTrackingEventArgs,
 		onView,
 		viewedDates,
+		maxViewedDates,
 		dismissNotification,
 		id,
 	] );
@@ -111,4 +113,5 @@ Notification.propTypes = {
 	} ),
 	children: PropTypes.node,
 	onView: PropTypes.func,
+	maxViewedDates: PropTypes.number,
 };

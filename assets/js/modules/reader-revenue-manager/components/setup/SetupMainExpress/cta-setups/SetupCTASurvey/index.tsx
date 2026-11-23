@@ -39,6 +39,7 @@ import {
 	setupCompleteStep,
 	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
+import ExpressSetupFallback from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupFallback';
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
 import {
@@ -49,8 +50,10 @@ import PublisherCenterLink from '@/js/modules/reader-revenue-manager/components/
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import ViewOnSiteCTA from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ViewOnSiteCTA';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import useSurveyCustomDimensions from './hooks/useSurveyCustomDimensions';
 import { surveyCTAStep } from './StepSurveyCTA';
 import { surveyQuestionsStep } from './StepSurveyQuestions';
+import SurveyCustomDimensionsError from './SurveyCustomDimensionsError';
 
 const STEPS: SetupStep[] = [
 	publicationSetupStep,
@@ -62,9 +65,12 @@ const STEPS: SetupStep[] = [
 ];
 
 const SetupCTASurvey: FC = () => {
-	useExpressSetupScopes();
+	const hasRequiredScopes = useExpressSetupScopes();
+	const customDimensionsState = useSurveyCustomDimensions(
+		hasRequiredScopes === true
+	);
 
-	const { currentStep, advance } = useSetupFlow(
+	const { currentStep, goBack, goForward } = useSetupFlow(
 		STEPS,
 		EXPRESS_SETUP_CTAS.SURVEY
 	);
@@ -86,6 +92,12 @@ const SetupCTASurvey: FC = () => {
 				'To set up a survey using Reader Revenue Manager, you will need to add URLs to your publication’s policies.',
 				'google-site-kit'
 			),
+		},
+		[ surveyQuestionsStep.slug ]: {
+			onGoBack: goBack,
+		},
+		[ surveyCTAStep.slug ]: {
+			onGoBack: goBack,
 		},
 		[ existingCTAStep.slug ]: {
 			title: __(
@@ -126,6 +138,37 @@ const SetupCTASurvey: FC = () => {
 		},
 	};
 
+	const errorTitle = __(
+		'We couldn’t set up your survey',
+		'google-site-kit'
+	);
+
+	if ( customDimensionsState.status === 'failed' ) {
+		return (
+			<ExpressSetupFallback
+				showErrors={ false }
+				errorTitle={ errorTitle }
+			>
+				<SurveyCustomDimensionsError
+					error={ customDimensionsState.error }
+				/>
+			</ExpressSetupFallback>
+		);
+	}
+
+	// The setup is shown only once the survey custom dimensions exist.
+	if (
+		hasRequiredScopes !== true ||
+		customDimensionsState.status === 'pending'
+	) {
+		return (
+			<ExpressSetupFallback
+				showErrors={ false }
+				errorTitle={ errorTitle }
+			/>
+		);
+	}
+
 	const StepComponent = currentStep?.Component;
 
 	// Steps outside the sequence, like the existing CTA step, have no place in
@@ -148,7 +191,7 @@ const SetupCTASurvey: FC = () => {
 			{ StepComponent ? (
 				<StepComponent
 					{ ...stepProps[ currentStep.slug ] }
-					onComplete={ advance }
+					onComplete={ goForward }
 				/>
 			) : null }
 		</ExpressSetupLayout>

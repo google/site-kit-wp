@@ -35,7 +35,6 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
@@ -46,6 +45,7 @@ import {
 	ExpressSetupStepHeadline,
 	PublicationSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
+import ExpressSetupStepActions from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupStepActions';
 import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
@@ -58,13 +58,17 @@ import { languageCodeFormat, regionCodeFormat } from '@/js/util/i18n';
 interface ConnectPublicationProps {
 	description?: string;
 	onComplete: () => void;
+	onGoBack?: () => void;
 }
 
 const ConnectPublication: FC< ConnectPublicationProps > = ( {
 	description,
 	onComplete,
+	onGoBack,
 } ) => {
 	const trackEvent = useExpressSetupTrackEvent();
+
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
 
 	const { findMatchedPublication, selectPublication, submitChanges } =
 		useDispatch( MODULES_READER_REVENUE_MANAGER );
@@ -96,13 +100,13 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 		}
 	);
 
-	const canSubmitChanges = useSelect(
+	const canSubmitChanges: boolean = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).canSubmitChanges(),
 		[]
 	);
 
-	const hasResolvedSettings = useSelect(
+	const hasResolvedSettings: boolean = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
 				'getSettings'
@@ -110,7 +114,7 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 		[]
 	);
 
-	const isDoingSubmitChanges = useSelect(
+	const isDoingSubmitChanges: boolean = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges(),
 		[]
@@ -141,8 +145,6 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 		? regionCodeFormat( publication.regionCode )
 		: __( 'Unknown', 'google-site-kit' );
 
-	const [ isConnecting, setIsConnecting ] = useState( false );
-
 	const onSubmit = useCallback(
 		async ( event ) => {
 			event.preventDefault();
@@ -151,12 +153,12 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 				return;
 			}
 
-			setIsConnecting( true );
+			setIsSubmitting( true );
 
 			const { error } = await submitChanges();
 
 			if ( error ) {
-				setIsConnecting( false );
+				setIsSubmitting( false );
 
 				return;
 			}
@@ -167,6 +169,8 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 		},
 		[ onComplete, publication, submitChanges ]
 	);
+
+	const isBusy = isDoingSubmitChanges || isSubmitting;
 
 	// Automatically pre-select a publication.
 	useEffect( () => {
@@ -247,14 +251,15 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 					) : null }
 				</div>
 			</div>
-			{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
-			<SpinnerButton
-				disabled={ ! canSubmitChanges || isConnecting }
-				isSaving={ isDoingSubmitChanges || isConnecting }
-				type="submit"
-			>
-				{ __( 'Connect existing publication', 'google-site-kit' ) }
-			</SpinnerButton>
+			<ExpressSetupStepActions
+				canGoForward={ canSubmitChanges }
+				isBusy={ isBusy }
+				label={ __(
+					'Connect existing publication',
+					'google-site-kit'
+				) }
+				onGoBack={ onGoBack }
+			/>
 		</form>
 	);
 };

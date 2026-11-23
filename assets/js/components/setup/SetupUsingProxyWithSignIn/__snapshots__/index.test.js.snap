@@ -325,7 +325,7 @@ exports[`SetupUsingProxyWithSignIn should have only the initial stub segment in 
                 class="googlesitekit-start-setup-wrap"
               >
                 <a
-                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                   href="https://sitekit.withgoogle.com/site-management/setup/"
                   role="button"
                   target="_self"
@@ -635,7 +635,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                 class="googlesitekit-start-setup-wrap"
               >
                 <a
-                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                   href="https://sitekit.withgoogle.com/site-management/setup/"
                   role="button"
                   target="_self"
@@ -945,7 +945,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Analytics checkbox when
                 class="googlesitekit-start-setup-wrap"
               >
                 <a
-                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                   href="https://sitekit.withgoogle.com/site-management/setup/"
                   role="button"
                   target="_self"
@@ -1335,7 +1335,7 @@ exports[`SetupUsingProxyWithSignIn should render the progress indicator 1`] = `
                 class="googlesitekit-start-setup-wrap"
               >
                 <a
-                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                   href="https://sitekit.withgoogle.com/site-management/setup/"
                   role="button"
                   target="_self"
@@ -1725,7 +1725,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page correctly 1`] = 
                 class="googlesitekit-start-setup-wrap"
               >
                 <a
-                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                   href="https://sitekit.withgoogle.com/site-management/setup/"
                   role="button"
                   target="_self"
@@ -2115,7 +2115,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page with the Analyti
                 class="googlesitekit-start-setup-wrap"
               >
                 <a
-                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                   href="https://sitekit.withgoogle.com/site-management/setup/"
                   role="button"
                   target="_self"
@@ -2505,7 +2505,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                 class="googlesitekit-start-setup-wrap"
               >
                 <a
-                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                   href="https://sitekit.withgoogle.com/site-management/setup/"
                   role="button"
                   target="_self"

@@ -96,9 +96,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --only-upgrade ca-certificates
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
 
-      - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # ratchet:shivammathur/setup-php@v2
         with:
           php-version: '8.5'
         env:
@@ -108,7 +108,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # ratchet:actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -118,14 +118,14 @@ jobs:
         run: composer install --no-interaction --no-progress --no-dev
 
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # ratchet:actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
 
       - name: Cache Playwright browsers
         id: playwright-cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # ratchet:actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('tests/playwright/package.json') }}
@@ -174,10 +174,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --only-upgrade ca-certificates
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
 
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # ratchet:actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -194,7 +194,7 @@ jobs:
           path: plugin/google-site-kit
 
       - name: Restore Playwright browsers cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache/restore@v5
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # ratchet:actions/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('tests/playwright/package.json') }}
@@ -263,7 +263,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
 
       - name: Download artifact URLs
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
@@ -303,7 +303,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --only-upgrade ca-certificates
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/remove-gcs-path
         with:

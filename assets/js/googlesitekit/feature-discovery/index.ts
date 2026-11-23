@@ -25,7 +25,9 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
-import { isFeatureEnabled } from '@/js/features';
+import IncompleteSetupReminderNotification from '@/js/components/feature-discovery/IncompleteSetupReminderNotification';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { requireCapability } from '@/js/googlesitekit/data-requirements';
 import {
 	CORE_FEATURE_DISCOVERY,
 	actions,
@@ -34,7 +36,14 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery';
 import type { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { asyncRequireAll } from '@/js/util/async';
 
 export { actions, registerStore, selectors };
 
@@ -77,38 +86,46 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 		 * @return {Object} Feature registration action result.
 		 */
 		registerFeature: ( slug: string, settings: FeatureSettings ) => {
-			return dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+			const result = dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
 				slug,
 				settings
 			);
-		},
 
-		/**
-		 * Removes the dismissed-item mark for a feature's incomplete setup reminder.
-		 *
-		 * @since 1.191.0
-		 *
-		 * @param {string} slug Feature's slug.
-		 * @return {Promise<void>} Promise that resolves once the reminder has been reset.
-		 */
-		resetIncompleteSetupReminder: async ( slug: string ) => {
-			if ( ! isFeatureEnabled( 'featureDiscoveryHub' ) ) {
-				return;
+			const { incompleteSetupReminder } = settings;
+
+			if ( incompleteSetupReminder ) {
+				const notificationID =
+					getFeatureIncompleteSetupReminderKey( slug );
+
+				dispatch( CORE_NOTIFICATIONS ).registerNotification(
+					notificationID,
+					{
+						Component: IncompleteSetupReminderNotification,
+						priority: PRIORITY.REMINDER,
+						areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+						groupID: NOTIFICATION_GROUPS.DEFAULT,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						isDismissible: true,
+						featureFlag: 'featureDiscoveryHub',
+						checkRequirements: asyncRequireAll(
+							requireCapability( PERMISSION_MANAGE_OPTIONS ),
+							async ( data: Registry ) => {
+								await incompleteSetupReminder.resolveRequirements(
+									data
+								);
+
+								return (
+									data
+										.select( CORE_FEATURE_DISCOVERY )
+										.isFeatureInProgress( slug ) === true
+								);
+							}
+						),
+					}
+				);
 			}
 
-			const dataRegistry = registry as unknown as Registry;
-			await dataRegistry.resolveSelect( CORE_USER ).getDismissedItems();
-
-			const key = getFeatureIncompleteSetupReminderKey( slug );
-			const dismissed = dataRegistry
-				.select( CORE_USER )
-				.isItemDismissed( key );
-
-			if ( dismissed !== true ) {
-				return;
-			}
-
-			await dispatch( CORE_USER ).removeDismissedItems( key );
+			return result;
 		},
 	};
 

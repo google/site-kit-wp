@@ -72,9 +72,12 @@ import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	type ErrorObject,
 } from '@/js/util/errors';
-import kmwWidgetScreenshotURL from '@/svg/graphics/kmw-widget.svg?path';
-import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
-import visitorGroupsScreenshotURL from '@/svg/graphics/visitor-groups.svg?path';
+import analyticsAudiencesScreenshotURL from '@/svg/screenshots/analytics-4-audiences.svg?path';
+import analyticsContentScreenshotURL from '@/svg/screenshots/analytics-4-content.svg?path';
+import analyticsDashboardOverviewScreenshotURL from '@/svg/screenshots/analytics-4-dashboard-overview.svg?path';
+import enhancedMeasurementScreenshotURL from '@/svg/screenshots/analytics-4-enhanced-measurement-settings.svg?path';
+import keyMetricsScreenshotURL from '@/svg/screenshots/analytics-4-key-metrics.svg?path';
+import analyticsSiteGoalsScreenshotURL from '@/svg/screenshots/analytics-4-site-goals.svg?path';
 
 const ENHANCED_MEASUREMENT_FEATURE_SLUG = 'enhanced-measurement';
 
@@ -293,13 +296,40 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: analyticsDashboardOverviewScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
+						'Screenshot of the Site Kit dashboard showing key metrics such as returning visitors and top traffic sources, a chart of total visitors over time, and a breakdown of visitors by channel, location and device',
 						'google-site-kit'
 					),
-					width: 292,
-					height: 210,
+					width: 620,
+					height: 728,
+				},
+				{
+					src: analyticsSiteGoalsScreenshotURL,
+					alt: __(
+						'Screenshot of the site goals section of the Site Kit dashboard showing lead generation performance, including the form completion rate, engagement rate, and the traffic channels that complete the most forms',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 494,
+				},
+				{
+					src: analyticsContentScreenshotURL,
+					alt: __(
+						'Screenshot of the content section of the Site Kit dashboard showing the top search queries for the site with their clicks and impressions, and the top pages with their pageviews, sessions and engagement',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 788,
+				},
+				{
+					src: analyticsAudiencesScreenshotURL,
+					alt: __(
+						'Screenshot of visitor group tiles on the Site Kit dashboard comparing new and returning visitors by visits, pages per visit, pageviews, top cities and top content',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 390,
 				},
 			],
 		},
@@ -414,13 +444,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: kmwWidgetScreenshotURL,
+					src: keyMetricsScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
+						'Screenshot of the key metrics section of the Site Kit dashboard with tiles for metrics such as returning visitors, top traffic source, top performing keywords and sales engagement rate',
 						'google-site-kit'
 					),
 					width: 620,
-					height: 540,
+					height: 267,
 				},
 			],
 		},
@@ -534,13 +564,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: enhancedMeasurementScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
+						'Screenshot of the Analytics settings in Site Kit, where enhanced measurement is enabled in the improve your measurement section to measure interactions such as file downloads, form completions and video views',
 						'google-site-kit'
 					),
-					width: 292,
-					height: 210,
+					width: 620,
+					height: 742,
 				},
 			],
 		},
@@ -656,13 +686,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: visitorGroupsScreenshotURL,
+					src: analyticsAudiencesScreenshotURL,
 					alt: __(
-						'Visitor groups screenshot showing audiences tiles',
+						'Screenshot of visitor group tiles on the Site Kit dashboard comparing new and returning visitors by visits, pages per visit, pageviews, top cities and top content',
 						'google-site-kit'
 					),
 					width: 620,
-					height: 382,
+					height: 390,
 				},
 			],
 		},

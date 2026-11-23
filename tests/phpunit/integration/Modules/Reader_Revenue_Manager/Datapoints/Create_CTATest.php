@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_CTA;
 use Google\Site_Kit\Tests\TestCase;
@@ -104,25 +103,6 @@ class Create_CTATest extends TestCase {
 		);
 	}
 
-	public function test_create_request__falls_back_to_saved_settings() {
-		$this->module->get_settings()->merge(
-			array(
-				'organizationID' => 'saved-organization',
-				'publicationID'  => 'saved-publication',
-			)
-		);
-
-		$data = $this->get_valid_data();
-		unset( $data['organizationID'], $data['publicationID'] );
-
-		$request = $this->datapoint->create_request( $this->get_data_request( $data ) );
-
-		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/saved-organization/publications/saved-publication/ctas',
-			(string) $request->getUri(),
-			'The request should fall back to the saved organization and publication IDs.'
-		);
-	}
 
 	public function test_create_request__omits_display_name_when_absent() {
 		$request = $this->datapoint->create_request( $this->get_data_request( $this->get_valid_data() ) );
@@ -179,29 +159,65 @@ class Create_CTATest extends TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider data_missing_settings
-	 *
-	 * @param array  $settings Settings to save before the request.
-	 * @param string $missing  Name of the setting expected to be reported as missing.
-	 */
-	public function test_create_request__requires_settings( $settings, $missing ) {
-		$this->module->get_settings()->merge( $settings );
+	public function test_create_request__serializes_survey_config() {
+		$this->enable_feature( 'rrmSurveyCTA' );
 
-		$data = $this->get_valid_data();
-		unset( $data['organizationID'], $data['publicationID'] );
+		$survey_config = array(
+			'customMessage' => 'Help us learn more about you',
+			'questions'     => array(
+				array(
+					'customQuestion' => array(
+						'displayText'   => 'Which section do you read most?',
+						'categoryLabel' => 'Favorite section',
+						'answerChoices' => array(
+							array( 'displayText' => 'News' ),
+							array( 'displayText' => 'Sport' ),
+						),
+					),
+				),
+				array(
+					'presetQuestion' => array(
+						'questionId' => 3,
+						'answerIds'  => array( 12, 10 ),
+					),
+				),
+			),
+		);
 
-		$this->expectException( Missing_Required_Setting_Exception::class );
-		$this->expectExceptionMessage( "Required setting is missing: {$missing}." );
+		$data         = $this->get_valid_data();
+		$data['data'] = array(
+			'type'   => 'SURVEY',
+			'state'  => 'DRAFT',
+			'config' => $survey_config,
+		);
 
-		$this->datapoint->create_request( $this->get_data_request( $data ) );
+		$request = $this->datapoint->create_request( $this->get_data_request( $data ) );
+
+		$this->assertJsonStringEqualsJsonString(
+			wp_json_encode(
+				array(
+					'state'        => 'DRAFT',
+					'surveyConfig' => $survey_config,
+					'type'         => 'SURVEY',
+				)
+			),
+			(string) $request->getBody(),
+			'The request body should hold the survey text and the questions in the order they were given.'
+		);
 	}
 
-	public function data_missing_settings() {
-		return array(
-			'no settings saved'    => array( array(), 'organizationID' ),
-			'only organization ID' => array( array( 'organizationID' => 'organization-1' ), 'publicationID' ),
+	public function test_create_request__rejects_survey_when_feature_flag_disabled() {
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( 'Invalid parameter: data.type.' );
+
+		$data         = $this->get_valid_data();
+		$data['data'] = array(
+			'type'   => 'SURVEY',
+			'state'  => 'DRAFT',
+			'config' => array( 'questions' => array() ),
 		);
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
 	}
 
 	/**
@@ -286,6 +302,45 @@ class Create_CTATest extends TestCase {
 				),
 				'config',
 			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_missing_publication_params
+	 *
+	 * @param string $missing Name of the identifier left out of the request.
+	 */
+	public function test_create_request__requires_the_publication_params( $missing ) {
+		$data = $this->get_valid_data();
+
+		unset( $data[ $missing ] );
+
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( "Request parameter is empty: {$missing}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	/**
+	 * @dataProvider data_missing_publication_params
+	 *
+	 * @param string $invalid Name of the identifier given a non-string value.
+	 */
+	public function test_create_request__rejects_a_non_string_publication_param( $invalid ) {
+		$data = $this->get_valid_data();
+
+		$data[ $invalid ] = array( 'not-a-string' );
+
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( "Invalid parameter: {$invalid}." );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function data_missing_publication_params() {
+		return array(
+			'organizationID' => array( 'organizationID' ),
+			'publicationID'  => array( 'publicationID' ),
 		);
 	}
 

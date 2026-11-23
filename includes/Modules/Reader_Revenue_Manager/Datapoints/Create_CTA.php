@@ -15,9 +15,10 @@ use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA\CTA_Type_Handler_Interface;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA\Newsletter_Signup_CTA_Type_Handler;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA\Survey_CTA_Type_Handler;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
 
 /**
@@ -29,55 +30,23 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
  */
 class Create_CTA extends Datapoint implements Executable_Datapoint {
 
-	/**
-	 * Reader Revenue Manager settings.
-	 *
-	 * @since 1.187.0
-	 * @var \Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings
-	 */
-	private $settings;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.187.0
-	 *
-	 * @param array $definition Definition fields.
-	 */
-	public function __construct( array $definition ) {
-		parent::__construct( $definition );
-
-		$this->settings = $definition['settings'];
-	}
+	use Publication_Params_Trait;
 
 	/**
 	 * Creates a request object.
 	 *
 	 * @since 1.187.0
 	 * @since 1.189.0 Added support for the CTA `state` property.
+	 * @since n.e.x.t Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
-	 * @throws Missing_Required_Param_Exception   Thrown if a required parameter is missing or empty.
-	 * @throws Missing_Required_Setting_Exception Thrown if a fallback setting is missing.
-	 * @throws Invalid_Param_Exception            Thrown if a parameter is invalid.
+	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
+	 * @throws Invalid_Param_Exception          Thrown if a parameter is invalid.
 	 */
 	public function create_request( Data_Request $data_request ) {
 		if ( empty( $data_request->data['data'] ) ) {
 			throw new Missing_Required_Param_Exception( 'data' );
-		}
-
-		$settings = $this->settings->get();
-
-		$organization_id = $data_request['organizationID'] ?? $settings['organizationID'];
-		$publication_id  = $data_request['publicationID'] ?? $settings['publicationID'];
-
-		if ( empty( $organization_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'organizationID' );
-		}
-
-		if ( empty( $publication_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'publicationID' );
 		}
 
 		$cta_data = $data_request['data'];
@@ -121,11 +90,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 			$cta->setDisplayName( $cta_data['displayName'] );
 		}
 
-		$parent = sprintf(
-			'organizations/%s/publications/%s',
-			$organization_id,
-			$publication_id
-		);
+		$parent = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications_ctas->create( $parent, $cta );
 	}
@@ -134,6 +99,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	 * Gets the supported CTA type handlers, keyed by CTA type.
 	 *
 	 * @since 1.187.0
+	 * @since n.e.x.t Added the survey CTA type handler, when the `rrmSurveyCTA` feature flag is enabled.
 	 *
 	 * @return CTA_Type_Handler_Interface[] CTA type handlers.
 	 */
@@ -144,6 +110,10 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 			new Newsletter_Signup_CTA_Type_Handler(),
 			// Register additional CTA type handlers here as they are added.
 		);
+
+		if ( Feature_Flags::enabled( 'rrmSurveyCTA' ) ) {
+			$type_handlers[] = new Survey_CTA_Type_Handler();
+		}
 
 		foreach ( $type_handlers as $handler ) {
 			$handlers[ $handler->get_type() ] = $handler;

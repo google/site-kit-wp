@@ -41,8 +41,11 @@ describe( 'ActionButton', () => {
 		expect( button.tagName ).toBe( 'BUTTON' );
 		expect( button ).toHaveAttribute( 'type', 'button' );
 
-		expect( button ).toHaveClass(
-			'googlesitekit-action-button__button',
+		expect( button ).toHaveClass( 'googlesitekit-action-button__button' );
+		expect( button ).not.toHaveClass( 'extra-class' );
+
+		expect( button.parentElement ).toHaveClass(
+			'googlesitekit-action-button',
 			'extra-class'
 		);
 

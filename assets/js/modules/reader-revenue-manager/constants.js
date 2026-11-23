@@ -37,12 +37,16 @@ export const CTA_TYPE_LABELS = {
 		'Newsletter sign-up form',
 		'google-site-kit'
 	),
+	[ EXPRESS_SETUP_CTAS.SURVEY ]: __( 'Survey', 'google-site-kit' ),
 };
 
 export const RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG =
 	'rrm-product-id-open-access-notice';
 export const RRM_PRODUCT_ID_INFO_NOTICE_SLUG = 'rrm-product-id-info-notice';
 export const RRM_SETUP_NOTIFICATION_ID = 'rrm-setup-notification';
+export const RRM_EXPRESS_SETUP_NOTIFICATION_IDS = {
+	[ EXPRESS_SETUP_CTAS.SURVEY ]: 'rrm-express-setup-notification_survey',
+};
 export const RRM_EXPRESS_SETUP_TRAFFIC_CTA_WIDGET_SLUG =
 	'rrmExpressSetupTrafficCTA';
 export const RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY =

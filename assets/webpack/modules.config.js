@@ -112,8 +112,8 @@ module.exports = function ( mode, rules, ANALYZE ) {
 			// Old Modules
 			'googlesitekit-activation': './js/googlesitekit-activation.tsx',
 			'googlesitekit-adminbar': './js/googlesitekit-adminbar.tsx',
-			'googlesitekit-admin-pointers-tracking':
-				'./js/googlesitekit-admin-pointers-tracking.ts',
+			'googlesitekit-admin-pointers':
+				'./js/googlesitekit-admin-pointers.ts',
 			'googlesitekit-settings': './js/googlesitekit-settings.tsx',
 			'googlesitekit-main-dashboard':
 				'./js/googlesitekit-main-dashboard.tsx',
@@ -169,6 +169,10 @@ module.exports = function ( mode, rules, ANALYZE ) {
 				emitError: true,
 				emitWarning: true,
 				failOnError: true,
+				// Enforced by `npm run lint:js` instead, since its `packageDir` resolves from the working directory and the build runs from `assets/`.
+				overrideConfig: {
+					rules: { 'import/no-extraneous-dependencies': 'off' },
+				},
 			} ),
 			// Warn if any of the disallowed PDF dependencies are bundled into the
 			// main `googlesitekit-vendor` chunk.

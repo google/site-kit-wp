@@ -100,6 +100,38 @@ class CTATest extends TestCase {
 		);
 	}
 
+	public function test_synchronize__stores_survey_ctas() {
+		$this->synchronization->synchronize(
+			array(
+				$this->create_cta( 'organizations/1/publications/1/ctas/9d2418415-ab3a', 'NEWSLETTER_SIGNUP', 'ACTIVE', 'Weekly newsletter' ),
+				$this->create_cta( 'organizations/1/publications/1/ctas/5c3027196-gh6d', 'SURVEY', 'ACTIVE', 'Reader survey' ),
+				$this->create_cta( 'organizations/1/publications/1/ctas/4b9016285-ij7e', 'SURVEY', 'DRAFT' ),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'9d2418415-ab3a' => array(
+					'type'        => 'newsletter-signup',
+					'state'       => 'ACTIVE',
+					'displayName' => 'Weekly newsletter',
+				),
+				'5c3027196-gh6d' => array(
+					'type'        => 'survey',
+					'state'       => 'ACTIVE',
+					'displayName' => 'Reader survey',
+				),
+				'4b9016285-ij7e' => array(
+					'type'        => 'survey',
+					'state'       => 'DRAFT',
+					'displayName' => '',
+				),
+			),
+			$this->settings->get()['configuredCTAs'],
+			'Survey CTAs should be stored with the survey type slug, alongside newsletter sign-up CTAs.'
+		);
+	}
+
 	public function test_synchronize__updates_renamed_cta() {
 		$cta_name = 'organizations/1/publications/1/ctas/9d2418415-ab3a';
 
@@ -124,13 +156,14 @@ class CTATest extends TestCase {
 		);
 		$original_schedule = wp_next_scheduled( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
 
+		$before = time();
 		$this->synchronization->synchronize( array() );
 
 		$new_schedule = wp_next_scheduled( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
 
 		$this->assertNotFalse( $new_schedule, 'Cron should remain scheduled.' );
 		$this->assertNotSame( $original_schedule, $new_schedule, 'Cron should be rescheduled.' );
-		$this->assertGreaterThanOrEqual( time() + HOUR_IN_SECONDS - 1, $new_schedule, 'Cron should run approximately one hour from now.' );
+		$this->assertGreaterThanOrEqual( $before + HOUR_IN_SECONDS, $new_schedule, 'Cron should run approximately one hour from now.' );
 	}
 
 	private function create_cta( $name = '', $type = '', $state = 'ACTIVE', $display_name = null ) {

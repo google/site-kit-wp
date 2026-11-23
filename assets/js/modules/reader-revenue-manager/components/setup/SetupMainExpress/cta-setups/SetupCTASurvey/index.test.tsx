@@ -20,10 +20,14 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	SURVEY_CUSTOM_DIMENSIONS,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
@@ -87,6 +91,15 @@ const STEP_CONTENT = {
 	'setup-complete': 'Your survey is published!',
 };
 
+const PROPERTY_ID = '123456';
+
+const createCustomDimensionEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+);
+
+const dashboardURL =
+	'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard';
+
 // Has accepted the terms of service and set both policy URLs.
 const completePublication = publications[ 3 ] as Publication;
 
@@ -104,17 +117,20 @@ const publicationWithoutTerms = publications[ 2 ] as Publication;
  * @return {void}
  */
 function connectPublication( registry: Registry, publication: Publication ) {
-	registry
-		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		.setPublicationID( publication.publicationId );
-
 	providePublications( registry, [ publication ] );
 
-	// CTAs are keyed by the publication ID, so receive them after setting it.
+	const params = {
+		/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+		organizationID: publication.organizationId,
+		publicationID: publication.publicationId,
+		/* eslint-enable sitekit/acronym-case */
+	};
+
+	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( params );
+
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [], params: {} } );
+		.receiveGetPublicationCTAs( [], params );
 }
 
 describe( 'SetupCTASurvey', () => {
@@ -150,6 +166,188 @@ describe( 'SetupCTASurvey', () => {
 		providePublications( registry, [] );
 
 		provideSiteInfo( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: PROPERTY_ID,
+			availableCustomDimensions: [],
+		} );
+
+		// The setup is shown once the survey custom dimensions exist.
+		providePropertyDimensions( SURVEY_CUSTOM_DIMENSIONS );
+	} );
+
+	function providePropertyDimensions( dimensions: string[] ) {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( dimensions, {
+				propertyID: PROPERTY_ID,
+			} );
+	}
+
+	function expectOnlyProgressBar( container: Element ) {
+		expect(
+			container.querySelector( '.mdc-linear-progress' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-stepper' )
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-rrm-express-setup__error' )
+		).not.toBeInTheDocument();
+	}
+
+	describe( 'survey custom dimensions', () => {
+		beforeEach( () => {
+			global.location.href =
+				'http://example.com/?cta=survey&step=connect-publication';
+		} );
+
+		it( 'should show only a progress bar while a required scope is missing', () => {
+			provideUserAuthentication( registry, { grantedScopes: [] } );
+
+			const { container } = render( <SetupCTASurvey />, { registry } );
+
+			expectOnlyProgressBar( container );
+			expect( fetchMock ).not.toHaveFetched(
+				createCustomDimensionEndpoint
+			);
+		} );
+
+		it( 'should show only a progress bar while the survey dimensions are created', async () => {
+			providePropertyDimensions( [] );
+
+			// Holds the creation open, so the progress bar stays.
+			fetchMock.post(
+				createCustomDimensionEndpoint,
+				new Promise( () => {} )
+			);
+
+			const { container, waitForRegistry } = render( <SetupCTASurvey />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched( createCustomDimensionEndpoint );
+			expectOnlyProgressBar( container );
+		} );
+
+		it( 'should show the stepper and the first step once all the survey dimensions exist', async () => {
+			providePropertyDimensions( [] );
+
+			fetchMock.post(
+				createCustomDimensionEndpoint,
+				( _url: string, { body }: { body: string } ) => ( {
+					body: JSON.parse( body ).data.customDimension,
+					status: 200,
+				} )
+			);
+
+			const { container, getByText } = render( <SetupCTASurvey />, {
+				registry,
+			} );
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'connect-publication' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( fetchMock ).toHaveFetchedTimes(
+				SURVEY_CUSTOM_DIMENSIONS.length,
+				createCustomDimensionEndpoint
+			);
+			expect(
+				container.querySelector( '.googlesitekit-stepper' )
+			).toBeInTheDocument();
+		} );
+
+		it.each( [
+			[
+				'an insufficient permissions error',
+				{
+					code: 403,
+					message: 'The caller does not have permission',
+					data: { status: 403, reason: 'insufficientPermissions' },
+				},
+				'We were unable to configure your Google Analytics account settings for your survey due to insufficient permissions',
+			],
+			[
+				'any other error',
+				{
+					code: 500,
+					message: 'Internal error',
+					data: { status: 500, reason: 'internalError' },
+				},
+				/Internal error/,
+			],
+		] )(
+			'should show the error screen for %s, with a button that returns to the dashboard',
+			async ( _, error, noticeText ) => {
+				providePropertyDimensions( [] );
+
+				fetchMock.post( createCustomDimensionEndpoint, {
+					body: error,
+					status: error.data.status,
+				} );
+
+				const { container, getByRole, getByText } = render(
+					<SetupCTASurvey />,
+					{ registry }
+				);
+
+				await waitFor( () => {
+					expect(
+						getByText( 'We couldn’t set up your survey' )
+					).toBeInTheDocument();
+				} );
+
+				expect( console ).toHaveErrored();
+				expect( getByText( noticeText ) ).toBeInTheDocument();
+				expect(
+					container.querySelector( '.googlesitekit-stepper' )
+				).not.toBeInTheDocument();
+				expect(
+					container.querySelector( '.mdc-linear-progress' )
+				).not.toBeInTheDocument();
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Return to dashboard' } )
+				);
+
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					dashboardURL
+				);
+			}
+		);
+
+		it( 'should link to the troubleshooting page for an insufficient permissions error', async () => {
+			providePropertyDimensions( [] );
+
+			fetchMock.post( createCustomDimensionEndpoint, {
+				body: {
+					code: 403,
+					message: 'The caller does not have permission',
+					data: { status: 403, reason: 'insufficientPermissions' },
+				},
+				status: 403,
+			} );
+
+			const { getByRole } = render( <SetupCTASurvey />, { registry } );
+
+			await waitFor( () => {
+				expect(
+					getByRole( 'link', { name: /get help/ } )
+				).toHaveAttribute(
+					'href',
+					expect.stringContaining(
+						'error_id=analytics-4_insufficient_permissions'
+					)
+				);
+			} );
+
+			expect( console ).toHaveErrored();
+		} );
 	} );
 
 	it( 'renders its steps in order, with the survey steps before setup complete', async () => {
@@ -262,6 +460,123 @@ describe( 'SetupCTASurvey', () => {
 
 			await waitFor( () => {
 				expect( getByText( expectedContent ) ).toBeInTheDocument();
+			} );
+		} );
+	} );
+
+	describe( 'back navigation', () => {
+		const publicationEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication'
+		);
+
+		it.each( [
+			[ 'connect-publication', false ],
+			[ 'terms-of-service', false ],
+			[ 'publication-policies', false ],
+			[ 'survey-questions', true ],
+			[ 'survey-cta', true ],
+			[ 'setup-complete', false ],
+		] )(
+			'on the %s step, shows a back action: %s',
+			async ( step, hasBack ) => {
+				global.location.href = `http://example.com/?cta=survey&step=${ step }`;
+
+				if ( step === 'terms-of-service' ) {
+					connectPublication( registry, publicationWithoutTerms );
+				} else if ( step !== 'connect-publication' ) {
+					connectPublication( registry, completePublication );
+				}
+
+				const { getByText, queryByRole } = render( <SetupCTASurvey />, {
+					registry,
+				} );
+
+				await waitFor( () => {
+					expect(
+						getByText(
+							STEP_CONTENT[ step as keyof typeof STEP_CONTENT ]
+						)
+					).toBeInTheDocument();
+				} );
+
+				if ( hasBack ) {
+					expect(
+						queryByRole( 'button', { name: 'Back' } )
+					).toBeInTheDocument();
+				} else {
+					expect(
+						queryByRole( 'button', { name: 'Back' } )
+					).not.toBeInTheDocument();
+				}
+			}
+		);
+
+		it( 'opens the survey questions step from the survey CTA step', async () => {
+			global.location.href =
+				'http://example.com/?cta=survey&step=survey-cta';
+
+			connectPublication( registry, completePublication );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupCTASurvey />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: 'Back' } ) );
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'survey-questions' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( global.location.href ).toContain( 'step=survey-questions' );
+		} );
+
+		it( 'opens the publication policies step with the saved URLs from the survey questions step, and moves on without updating the unchanged publication', async () => {
+			global.location.href =
+				'http://example.com/?cta=survey&step=survey-questions';
+
+			connectPublication( registry, completePublication );
+
+			const { getByLabelText, getByRole, getByText, waitForRegistry } =
+				render( <SetupCTASurvey />, { registry } );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: 'Back' } ) );
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'publication-policies' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( global.location.href ).toContain(
+				'step=publication-policies'
+			);
+
+			expect( getByLabelText( 'Terms of service' ) ).toHaveValue(
+				completePublication.publicationTosUrl // eslint-disable-line sitekit/acronym-case
+			);
+			expect( getByLabelText( 'Privacy policy' ) ).toHaveValue(
+				completePublication.publicationPrivacyPolicyUrl // eslint-disable-line sitekit/acronym-case
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Submit policies' } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'survey-questions' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( fetchMock ).not.toHaveFetched( publicationEndpoint, {
+				method: 'POST',
 			} );
 		} );
 	} );

@@ -25,39 +25,49 @@ import { useHistory } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import FeatureListItem from '@/js/components/feature-discovery/FeatureListItem';
 import Notifications from '@/js/components/notifications/Notifications';
-import Typography from '@/js/components/Typography';
 import {
-	SIZE_MEDIUM,
-	SIZE_SMALL,
-	TYPE_HEADLINE,
-} from '@/js/components/Typography/constants';
-import P from '@/js/components/Typography/P';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+	CORE_FEATURE_DISCOVERY,
+	SUCCEEDED_FEATURES_UI_KEY,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
-import whatsNewEmptyURL from '@/svg/graphics/whats-new-empty.svg?path';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import WhatsNewEmptyState from './WhatsNewEmptyState';
+
+const WhatsNewEmptyStateWithIntersectionObserver =
+	withIntersectionObserver( WhatsNewEmptyState );
 
 const WhatsNewTab: FC = () => {
 	const history = useHistory();
+	const viewContext = useViewContext();
 
-	function onClickEmpty() {
-		history.push( '/all-services' );
-	}
+	const trackEventCategory = `${ viewContext }_whats-new`;
+
+	const onInView = useCallback( () => {
+		trackEvent( trackEventCategory, 'view_empty_state' );
+	}, [ trackEventCategory ] );
+
+	const onClickEmpty = useCallback( () => {
+		trackEvent( trackEventCategory, 'click_explore_features' );
+		history.push( ALL_SERVICES_TAB_PATH );
+	}, [ history, trackEventCategory ] );
 
 	// The list is held in state so that marking its features seen, which
 	// changes how they sort, doesn't reorder the list under the user.
@@ -70,14 +80,33 @@ const WhatsNewTab: FC = () => {
 	);
 
 	const visibleFeatures = useSelect(
-		( select: Select ) =>
-			features?.filter( ( feature ) => {
+		( select: Select ) => {
+			const succeededFeatures: string[] =
+				select( CORE_UI ).getValue( SUCCEEDED_FEATURES_UI_KEY ) || [];
+
+			return features?.filter( ( feature ) => {
 				const key = getFeatureDismissalKey( feature.slug );
+
+				if (
+					select( CORE_USER ).isItemDismissed( key ) ||
+					select( CORE_USER ).isDismissingItem( key )
+				) {
+					return false;
+				}
+
+				// A feature set up from this tab is kept only while its
+				// success notice shows, and drops out once it is dismissed.
+				const isConnected = select(
+					CORE_FEATURE_DISCOVERY
+				).isFeatureConnected( feature.slug );
+
 				return (
-					! select( CORE_USER ).isItemDismissed( key ) &&
-					! select( CORE_USER ).isDismissingItem( key )
+					isConnected === false ||
+					( isConnected === true &&
+						succeededFeatures.includes( feature.slug ) )
 				);
-			} ),
+			} );
+		},
 		[ features ]
 	);
 
@@ -114,41 +143,10 @@ const WhatsNewTab: FC = () => {
 				/>
 			</div>
 			{ visibleFeatures.length === 0 ? (
-				<div className="googlesitekit-whats-new__empty-state">
-					<img
-						src={ whatsNewEmptyURL }
-						alt=""
-						width={ 189 }
-						height={ 193 }
-					/>
-
-					<Typography
-						as="h2"
-						className="googlesitekit-whats-new__empty-state-heading"
-						size={ SIZE_SMALL }
-						type={ TYPE_HEADLINE }
-					>
-						{ __( 'You’re up to date!', 'google-site-kit' ) }
-					</Typography>
-
-					<P
-						className="googlesitekit-whats-new__empty-state-description"
-						size={ SIZE_MEDIUM }
-					>
-						{ __(
-							'There are no new feature announcements right now, but you can explore other features that will help you grow your site',
-							'google-site-kit'
-						) }
-					</P>
-
-					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-					<Button
-						className="googlesitekit-whats-new__empty-state-button"
-						onClick={ onClickEmpty }
-					>
-						{ __( 'Explore features', 'google-site-kit' ) }
-					</Button>
-				</div>
+				<WhatsNewEmptyStateWithIntersectionObserver
+					onClickEmpty={ onClickEmpty }
+					onInView={ onInView }
+				/>
 			) : (
 				visibleFeatures.map( ( feature ) => (
 					<FeatureListItem

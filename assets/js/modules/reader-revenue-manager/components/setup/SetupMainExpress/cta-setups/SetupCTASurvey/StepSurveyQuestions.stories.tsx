@@ -27,7 +27,9 @@ import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import StepSurveyQuestions from './StepSurveyQuestions';
 
 function Template() {
-	return <StepSurveyQuestions onComplete={ () => {} } />;
+	return (
+		<StepSurveyQuestions onComplete={ () => {} } onGoBack={ () => {} } />
+	);
 }
 
 export const Default = Template.bind( {} ) as Story;

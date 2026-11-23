@@ -22,12 +22,14 @@
 		--googlesitekit-feature-details-panel-padding-s: 8px;
 		--googlesitekit-feature-details-panel-padding-m: 16px;
 		--googlesitekit-feature-details-panel-padding-l: 24px;
+		--googlesitekit-feature-details-panel-image-gap: 16px;
 
 		display: flex;
 		flex-direction: column;
 		overflow-y: auto;
 
 		@media ( min-width: $bp-tablet ) {
+			--googlesitekit-feature-details-panel-image-gap: 30px;
 			--googlesitekit-feature-details-panel-padding-m: 24px;
 			--googlesitekit-feature-details-panel-padding-l: 42px;
 
@@ -82,12 +84,15 @@
 
 	.googlesitekit-feature-details-panel__images {
 		background: $c-surfaces-surface-2;
-		padding: var(--googlesitekit-feature-details-panel-padding-m);
+		display: grid;
+		gap: var(--googlesitekit-feature-details-panel-image-gap);
+		justify-items: center;
+		padding: var(--googlesitekit-feature-details-panel-image-gap);
 
 		img {
 			block-size: auto;
 			display: block;
-			inline-size: 100%;
+			max-inline-size: 100%;
 		}
 	}
 

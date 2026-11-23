@@ -24,6 +24,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MODULE_SETUP,
 } from '@/js/googlesitekit/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
@@ -151,10 +152,14 @@ function connectPublication( registry: Registry, publication: Publication ) {
 
 	providePublications( registry, [ publication ] );
 
-	// CTAs are keyed by the publication ID, so receive them after setting it.
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		.receiveGetCTAs( { ctas: [], params: {} } );
+		.receiveGetPublicationCTAs( [], {
+			/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+			organizationID: publication.organizationId,
+			publicationID: publication.publicationId,
+			/* eslint-enable sitekit/acronym-case */
+		} );
 }
 
 /**
@@ -187,6 +192,11 @@ describe( 'SetupCTANewsletterSignup', () => {
 	/* eslint-disable sitekit/acronym-case */
 	const readyOrganizationID = readyPublication.organizationId;
 	const readyPublicationID = readyPublication.publicationId;
+
+	const PUBLICATION_PARAMS = {
+		organizationID: readyOrganizationID,
+		publicationID: readyPublicationID,
+	};
 	/* eslint-enable sitekit/acronym-case */
 
 	const preExistingCTA = {
@@ -224,8 +234,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 		provideUserInfo( registry );
 
 		const settings = {
-			organizationID: readyOrganizationID,
-			publicationID: readyPublicationID,
+			...PUBLICATION_PARAMS,
 			snippetMode,
 			postTypes,
 		};
@@ -238,7 +247,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas, params: {} } );
+			.receiveGetPublicationCTAs( ctas, PUBLICATION_PARAMS );
 
 		return settings;
 	}
@@ -589,18 +598,23 @@ describe( 'SetupCTANewsletterSignup', () => {
 		}
 
 		/**
-		 * Resolves the settings with the given publication ID.
+		 * Resolves the settings with the given publication connected.
 		 *
 		 * @since 1.191.0
 		 * @private
 		 *
-		 * @param {string} publicationID Publication ID.
+		 * @param {Object} [publication] Optional. Publication to connect; omit to leave the settings empty.
 		 * @return {void}
 		 */
-		function provideSettings( publicationID: string ) {
+		function provideSettings( publication?: Publication ) {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( { publicationID } );
+				.receiveGetSettings( {
+					/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+					publicationID: publication?.publicationId ?? '',
+					organizationID: publication?.organizationId ?? '',
+					/* eslint-enable sitekit/acronym-case */
+				} );
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -647,8 +661,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show only a progress bar while the connected publication is loading', () => {
 			setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			provideSettings( publicationWithoutTerms.publicationId );
+			provideSettings( publicationWithoutTerms );
 			freezeFetch( publicationEndpoint );
 			// Don't let the CTAs resolve after the test has finished.
 			fetchMock.get( ctasEndpoint, () => new Promise( () => {} ), {
@@ -664,7 +677,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show only a progress bar while the granted scopes are loading', () => {
 			setupRegistry();
-			provideSettings( '' );
+			provideSettings();
 
 			const { container } = render( <SetupCTANewsletterSignup />, {
 				registry,
@@ -675,7 +688,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show only a progress bar while a required scope is missing, when no publication is connected', () => {
 			setupRegistry( { grantedScopes: [] } );
-			provideSettings( '' );
+			provideSettings();
 
 			const { container } = render( <SetupCTANewsletterSignup />, {
 				registry,
@@ -686,8 +699,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show only a progress bar while a required scope is missing, when the publication request has failed', async () => {
 			setupRegistry( { grantedScopes: [] } );
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			provideSettings( publicationWithoutTerms.publicationId );
+			provideSettings( publicationWithoutTerms );
 
 			fetchMock.getOnce( publicationEndpoint, {
 				body: {
@@ -726,9 +738,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 			[
 				'connected publication',
 				publicationEndpoint,
-				() =>
-					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-					provideSettings( publicationWithoutTerms.publicationId ),
+				() => provideSettings( publicationWithoutTerms ),
 				publicationWithoutTerms,
 				'.googlesitekit-stepper__step--active',
 			],
@@ -810,7 +820,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should show the stepper and the step once the scopes are granted and the step has resolved', async () => {
 			setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
-			provideSettings( '' );
+			provideSettings();
 
 			const { container, waitForRegistry } = render(
 				<SetupCTANewsletterSignup />,
@@ -1209,6 +1219,73 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 				openSpy.mockRestore();
 			} );
+		} );
+	} );
+
+	describe( 'resetting the incomplete setup reminder', () => {
+		let resetReminder: jest.SpyInstance;
+
+		beforeEach( () => {
+			resetReminder = jest
+				.spyOn(
+					registry.dispatch( CORE_FEATURE_DISCOVERY ),
+					'resetIncompleteSetupReminder'
+				)
+				.mockResolvedValue( undefined );
+		} );
+
+		afterEach( () => {
+			resetReminder.mockRestore();
+		} );
+
+		it.each( Object.entries( STEP_CONTENT ) )(
+			'should reset only for an incomplete step: %s',
+			async ( step, content ) => {
+				global.location.href = `http://example.com/?cta=newsletter-signup&step=${ step }`;
+
+				if ( step === 'terms-of-service' ) {
+					connectPublication( registry, publicationWithoutTerms );
+				} else if ( step !== 'connect-publication' ) {
+					connectPublication( registry, completePublication );
+				}
+
+				const { findByText } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				expect( await findByText( content ) ).toBeInTheDocument();
+
+				if ( step === 'setup-complete' ) {
+					expect( resetReminder ).not.toHaveBeenCalled();
+				} else {
+					expect( resetReminder ).toHaveBeenCalledWith(
+						'newsletter-signup'
+					);
+				}
+			}
+		);
+
+		it( 'should not reset before the initial step resolves', () => {
+			global.location.href = 'http://example.com/?cta=newsletter-signup';
+			registry = createTestRegistry() as Registry;
+
+			resetReminder.mockRestore();
+
+			resetReminder = jest
+				.spyOn(
+					registry.dispatch( CORE_FEATURE_DISCOVERY ),
+					'resetIncompleteSetupReminder'
+				)
+				.mockResolvedValue( undefined );
+
+			freezeFetch(
+				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
+			);
+			freezeFetch( settingsEndpoint );
+
+			render( <SetupCTANewsletterSignup />, { registry } );
+
+			expect( resetReminder ).not.toHaveBeenCalled();
 		} );
 	} );
 

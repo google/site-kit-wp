@@ -54,9 +54,10 @@ class Get_Enhanced_Measurement_Settings extends Datapoint implements Executable_
 			);
 		}
 
-		$name = Analytics_4::normalize_property_id(
-			$data_request->data['propertyID']
-		) . '/dataStreams/' . $data_request->data['webDataStreamID'] . '/enhancedMeasurementSettings';
+		$name = Analytics_4::get_web_data_stream_name(
+			$data_request->data['propertyID'],
+			$data_request->data['webDataStreamID']
+		) . '/enhancedMeasurementSettings';
 
 		return $this->get_service()
 			->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase

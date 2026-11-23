@@ -177,6 +177,10 @@ final class Screens {
 					#adminmenu .toplevel_page_googlesitekit-dashboard.wp-has-current-submenu img {
 						opacity: 1;
 					}
+					/* WordPress places its own menu icons 7px from the top of the icon box. */
+					#adminmenu .toplevel_page_googlesitekit-dashboard div.wp-menu-image.svg {
+						background-position: center 7px;
+					}
 				</style>
 				<?php
 			}
@@ -225,11 +229,17 @@ final class Screens {
 	 * Gets the Screen instance for a given hook suffix.
 	 *
 	 * @since 1.11.0
+	 * @since n.e.x.t Returns null for an empty hook suffix.
 	 *
-	 * @param string $hook_suffix The hook suffix associated with the screen to retrieve.
+	 * @param string|null $hook_suffix The hook suffix associated with the screen to retrieve.
 	 * @return Screen|null Screen instance if available, otherwise null;
 	 */
 	public function get_screen( $hook_suffix ) {
+		// `$hook_suffix` is null outside admin screens, and PHP 8.5 deprecates null as an array key.
+		if ( empty( $hook_suffix ) ) {
+			return null;
+		}
+
 		return isset( $this->screens[ $hook_suffix ] ) ? $this->screens[ $hook_suffix ] : null;
 	}
 

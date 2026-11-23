@@ -24,6 +24,7 @@ import { isFeatureEnabled } from '@/js/features';
  * its feature flags, groupID, viewContext, etc.
  *
  * @since 1.155.0
+ * @since n.e.x.t Added support for multiple feature flag requirements.
  *
  * @param {Object}  notification                Notification object.
  * @param {Object}  params                      Parameters.
@@ -37,14 +38,22 @@ export function shouldNotificationBeAddedToQueue(
 	notification,
 	{ groupID, viewContext, isDismissed, _enabledFeatureFlags } = {}
 ) {
-	if (
-		notification?.featureFlag &&
-		! isFeatureEnabled(
-			notification.featureFlag,
-			_enabledFeatureFlags ? new Set( _enabledFeatureFlags ) : undefined
-		)
-	) {
-		return false;
+	if ( notification?.featureFlag ) {
+		const featureFlags = Array.isArray( notification.featureFlag )
+			? notification.featureFlag
+			: [ notification.featureFlag ];
+
+		const enabledFeatures = _enabledFeatureFlags
+			? new Set( _enabledFeatureFlags )
+			: undefined;
+
+		const isEveryFeatureEnabled = featureFlags.every( ( featureFlag ) =>
+			isFeatureEnabled( featureFlag, enabledFeatures )
+		);
+
+		if ( ! isEveryFeatureEnabled ) {
+			return false;
+		}
 	}
 
 	if ( notification.groupID !== groupID ) {

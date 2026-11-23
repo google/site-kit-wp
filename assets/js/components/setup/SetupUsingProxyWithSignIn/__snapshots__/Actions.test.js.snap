@@ -75,7 +75,7 @@ exports[`Actions should render correctly 1`] = `
     class="googlesitekit-start-setup-wrap"
   >
     <a
-      class="mdc-button googlesitekit-start-setup mdc-button--raised"
+      class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
       href="https://example.com/test-proxy-setup"
       role="button"
       target="_self"
@@ -202,7 +202,7 @@ exports[`Actions should render the reset button when the site is resettable 1`] 
     class="googlesitekit-start-setup-wrap"
   >
     <a
-      class="mdc-button googlesitekit-start-setup mdc-button--raised"
+      class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
       href="https://example.com/test-proxy-setup"
       role="button"
       target="_self"
@@ -336,7 +336,7 @@ exports[`Actions view-only button should render the button for a second admin wh
     class="googlesitekit-start-setup-wrap"
   >
     <a
-      class="mdc-button googlesitekit-start-setup mdc-button--raised"
+      class="mdc-button googlesitekit-start-setup googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
       href="https://example.com/test-proxy-setup"
       role="button"
       target="_self"

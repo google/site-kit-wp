@@ -37,6 +37,7 @@ const LatestPostTile: FC< LatestPostTileProps > = ( { title, children } ) => {
 			baseClassName="googlesitekit-table-tile"
 			className="googlesitekit-traffic-overview__latest-post-tile"
 			title={ title }
+			titleAs="h4"
 		>
 			{ children }
 		</TileShell>

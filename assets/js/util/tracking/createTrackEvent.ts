@@ -72,12 +72,13 @@ export default function createTrackEvent(
 				resolve();
 			}
 			const failTimeout = setTimeout( failCallback, 1000 );
-			// eslint-disable-next-line camelcase
+			// eslint-disable-next-line camelcase -- gtag reads the callback from the `event_callback` field.
 			function event_callback() {
 				clearTimeout( failTimeout );
 				resolve();
 			}
 
+			// eslint-disable-next-line camelcase -- gtag reads the callback from the `event_callback` field.
 			dataLayerPush( 'event', action, { ...eventData, event_callback } );
 
 			// If the client-side opt-out is present, the event_callback will never be called

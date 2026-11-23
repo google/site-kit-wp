@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util/dates';
+import { WEEK_IN_SECONDS } from '@/js/util/dates';
 
 /**
  * The DOM `id` of the Traffic Overview tab. The panel points its
@@ -109,17 +109,6 @@ export const RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED =
 	'view_fresh_data_recent_activity_opened_and_interacted';
 
 /**
- * The timer that starts when the Recent activity tab first shows on the
- * user's dashboard.
- *
- * @since 1.192.0
- */
-export const RECENT_ACTIVITY_TAB_AVAILABLE_TIMER: ExpirableItemTimer = {
-	slug: 'fresh-data-recent-activity-tab-available',
-	expiresInSeconds: 2 * WEEK_IN_SECONDS,
-};
-
-/**
  * The timer that starts when the user first opens the Recent activity tab.
  *
  * @since 1.192.0
@@ -156,21 +145,3 @@ export const TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG =
  * @since 1.192.0
  */
 export const RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT = 3;
-
-/**
- * How long, in seconds, the "tab available" timer can have left for the zero
- * interaction survey to show, so it shows 10 to 14 days after the tab became
- * available.
- *
- * @since 1.192.0
- */
-export const RECENT_ACTIVITY_ZERO_INTERACTION_MAX_SECONDS_LEFT =
-	4 * DAY_IN_SECONDS;
-
-/**
- * The most days since the latest post was published for the zero interaction
- * survey to show.
- *
- * @since 1.192.0
- */
-export const RECENT_ACTIVITY_ZERO_INTERACTION_MAX_POST_AGE_DAYS = 7;

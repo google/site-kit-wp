@@ -51,6 +51,13 @@ import StepTermsOfService from './StepTermsOfService';
 
 const TEST_PUBLICATION: Publication = publications[ 3 ];
 
+const PUBLICATION_PARAMS = {
+	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+	organizationID: TEST_PUBLICATION.organizationId,
+	publicationID: TEST_PUBLICATION.publicationId,
+	/* eslint-enable sitekit/acronym-case */
+};
+
 function provideTermsOfService( registry: Registry ) {
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -236,6 +243,7 @@ describe( 'StepTermsOfService', () => {
 		expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 			body: {
 				data: {
+					...PUBLICATION_PARAMS,
 					data: {
 						publicationType: PUBLICATION_TYPES.NON_PROFIT,
 						rrmProduct: {
