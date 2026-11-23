@@ -53,6 +53,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 	let registry;
 	let container;
 	let getByRole;
+	let queryByRole;
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
@@ -76,6 +77,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 
 		container = renderResult.container;
 		getByRole = renderResult.getByRole;
+		queryByRole = renderResult.queryByRole;
 	} );
 
 	afterEach( async () => {
@@ -259,6 +261,15 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				'adBlockingRecovery_adsense-abr',
 				'setup_create_message'
 			);
+		} );
+
+		it( 'should label the footer link `Cancel` before `Create message` is clicked', () => {
+			expect(
+				getByRole( 'button', { name: 'Cancel' } )
+			).toBeInTheDocument();
+			expect(
+				queryByRole( 'button', { name: 'Exit setup' } )
+			).not.toBeInTheDocument();
 		} );
 
 		it( 'should render the `Final (My message is ready)` step when `Create message` button is clicked', async () => {
@@ -720,14 +731,22 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 		} );
 
-		it( 'should return to AdSense settings page when `Cancel` button is clicked', async () => {
+		it( 'should not render a `Cancel` link', () => {
+			expect(
+				queryByRole( 'button', { name: 'Cancel' } )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should return to AdSense settings page when `Exit setup` button is clicked', async () => {
 			const adSenseSettingsURL = registry
 				.select( CORE_SITE )
 				.getModuleSettingsURL( MODULE_SLUG_ADSENSE );
 
 			// eslint-disable-next-line require-await
 			await act( async () => {
-				fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
+				fireEvent.click(
+					getByRole( 'button', { name: 'Exit setup' } )
+				);
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

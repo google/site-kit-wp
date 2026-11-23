@@ -176,6 +176,32 @@ describe( 'FeatureDetailPanel', () => {
 		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
 	} );
 
+	it( 'should label its CTA with the feature-specific label rather than the card label', () => {
+		provideFeatures( registry, [
+			{
+				slug: 'setup-flow-feature',
+				title: 'Setup flow feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up the feature',
+				},
+			},
+		] );
+
+		setFeature( 'setup-flow-feature' );
+
+		const { getByRole } = render( <FeatureDetailPanel />, { registry } );
+
+		const dialog = within( getByRole( 'dialog' ) );
+
+		expect(
+			dialog.getByRole( 'button', { name: 'Set up the feature' } )
+		).toBeInTheDocument();
+		expect(
+			dialog.queryByRole( 'button', { name: 'Set up now' } )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'should clear the feature slug when the sheet closes', () => {
 		setFeature( 'first' );
 

@@ -36,7 +36,6 @@ import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/
 import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
-	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/factors/placeholderKeyFactors';
@@ -56,7 +55,6 @@ import {
 	LATEST_POST,
 	createBenchmarkingResponse,
 	createBreakdownReport,
-	getExpiryFromNow,
 	getRecentTrafficBreakdownReportOptions,
 	provideBenchmarkingResponse,
 	provideFreshMetricsReports,
@@ -272,15 +270,8 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	provideLatestPostKeywordReport( registry );
 	provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
 	// The Recent activity survey triggers read the expirable items and the
-	// dismissed prompts. The "tab available" timer is running already, so
-	// the story doesn't start it.
-	provideRecentActivitySurveyState( registry, {
-		expirableItems: {
-			[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: getExpiryFromNow(
-				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.expiresInSeconds
-			),
-		},
-	} );
+	// dismissed prompts.
+	provideRecentActivitySurveyState( registry );
 }
 
 interface TrafficOverviewWidgetStoryProps {

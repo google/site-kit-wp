@@ -34,7 +34,6 @@ import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	RECENT_ACTIVITY_INTERACTION_TIMER,
-	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
 	RECENT_ACTIVITY_TAB_OPENED_TIMER,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
@@ -1040,27 +1039,6 @@ describe( 'TrafficOverviewWidget', () => {
 			} );
 		} );
 
-		it( 'should start the "tab available" timer when the widget shows the Recent activity tab', async () => {
-			const { waitForRegistry } = renderWidget();
-
-			await waitForRegistry();
-
-			expect( requestedTimerSlugs() ).toEqual( [
-				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
-			] );
-		} );
-
-		it( 'should not start the "tab available" timer when the widget does not show the Recent activity tab', async () => {
-			const { waitForRegistry } = renderWidget(
-				[],
-				VIEW_CONTEXT_ENTITY_DASHBOARD
-			);
-
-			await waitForRegistry();
-
-			expect( requestedTimerSlugs() ).toEqual( [] );
-		} );
-
 		it( 'should start the "tab opened" timer, and record no interaction, when the user selects the Recent activity tab for the first time', async () => {
 			const { waitForRegistry } = renderWidget();
 
@@ -1071,7 +1049,6 @@ describe( 'TrafficOverviewWidget', () => {
 			await waitForRegistry();
 			await waitFor( () =>
 				expect( requestedTimerSlugs() ).toEqual( [
-					RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
 					RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
 				] )
 			);
@@ -1104,27 +1081,18 @@ describe( 'TrafficOverviewWidget', () => {
 			await waitForRegistry();
 
 			expect( requestedTimerSlugs() ).toEqual( [
-				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
 				RECENT_ACTIVITY_TAB_OPENED_TIMER.slug,
 			] );
 		} );
 
 		it( 'should record an interaction when the user opens the tab in a later page load', async () => {
 			// The user opened the tab in an earlier page load.
-			const tabOpenedTimer = {
-				[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]:
-					getExpiryFromNow( DAY_IN_SECONDS ),
-			};
 			provideRecentActivitySurveyState( registry, {
-				expirableItems: tabOpenedTimer,
+				expirableItems: {
+					[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]:
+						getExpiryFromNow( DAY_IN_SECONDS ),
+				},
 			} );
-			// The response to a timer request has all the user's expirable
-			// items, so the "tab available" timer keeps the "tab opened" one.
-			fetchMock.post(
-				setExpirableItemTimersEndpoint,
-				{ body: tabOpenedTimer, status: 200 },
-				{ overwriteRoutes: true }
-			);
 
 			const { waitForRegistry } = renderWidget();
 
@@ -1135,7 +1103,6 @@ describe( 'TrafficOverviewWidget', () => {
 			await waitForRegistry();
 			await waitFor( () =>
 				expect( requestedTimerSlugs() ).toEqual( [
-					RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
 					RECENT_ACTIVITY_INTERACTION_TIMER.slug,
 				] )
 			);
@@ -1149,12 +1116,31 @@ describe( 'TrafficOverviewWidget', () => {
 			clickTab( 'Traffic overview' );
 			await waitForRegistry();
 
-			expect( requestedTimerSlugs() ).toEqual( [
-				RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
-			] );
+			expect( requestedTimerSlugs() ).toEqual( [] );
 		} );
 
-		it( 'should not start the timers, count the visit or trigger a survey when Analytics is not connected', async () => {
+		it( 'should count the visit once the card has been in view on the main dashboard', async () => {
+			const { container, waitForRegistry } = renderWidget();
+
+			await waitForRegistry();
+
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
+
+			act( () => {
+				simulateIntersection(
+					container.querySelector(
+						'.googlesitekit-widget--analyticsTrafficOverview'
+					) as Element,
+					true
+				);
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, dismissPromptEndpoint );
+		} );
+
+		it( 'should not count the visit or trigger a survey when Analytics is not connected', async () => {
 			// A new registry, without the expirable items and the dismissed
 			// prompts that the outer `beforeEach()` stores, so the survey
 			// triggers would have to request them.
@@ -1205,14 +1191,11 @@ describe( 'TrafficOverviewWidget', () => {
 			).toBeInTheDocument();
 
 			expect( fetchMock ).not.toHaveFetched( expirableItemsEndpoint );
-			expect( fetchMock ).not.toHaveFetched(
-				setExpirableItemTimersEndpoint
-			);
 			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
 			expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 		} );
 
-		it( 'should not start the timers, count the visit or request the latest post for a view-only user', async () => {
+		it( 'should not count the visit or request the latest post for a view-only user', async () => {
 			const { container, waitForRegistry } = renderWidget(
 				[],
 				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
@@ -1235,11 +1218,30 @@ describe( 'TrafficOverviewWidget', () => {
 				screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
 			).toBeInTheDocument();
 
-			expect( fetchMock ).not.toHaveFetched(
-				setExpirableItemTimersEndpoint
-			);
 			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
 			expect( fetchMock ).not.toHaveFetched( postsEndpoint );
+		} );
+
+		it( 'should not count the visit on the entity dashboard', async () => {
+			const { container, waitForRegistry } = renderWidget(
+				[],
+				VIEW_CONTEXT_ENTITY_DASHBOARD
+			);
+
+			await waitForRegistry();
+
+			act( () => {
+				simulateIntersection(
+					container.querySelector(
+						'.googlesitekit-widget--analyticsTrafficOverview'
+					) as Element,
+					true
+				);
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
 		} );
 	} );
 } );

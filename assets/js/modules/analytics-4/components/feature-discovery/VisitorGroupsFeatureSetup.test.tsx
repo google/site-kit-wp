@@ -135,9 +135,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 				{ registry, viewContext }
 			);
 
-			fireEvent.click(
-				getByRole( 'button', { name: 'Enable visitor groups' } )
-			);
+			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -162,6 +160,20 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 		} );
 	} );
 
+	it( 'shows the card CTA label instead of the feature’s own CTA label', () => {
+		const { getByRole, queryByRole } = render(
+			<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up now' } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Enable visitor groups' } )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'triggers the setup survey and enables the groups when the card CTA is clicked', () => {
 		const triggerSurvey = jest
 			.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
@@ -172,9 +184,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 			{ registry }
 		);
 
-		fireEvent.click(
-			getByRole( 'button', { name: 'Enable visitor groups' } )
-		);
+		fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
 
 		expect( triggerSurvey ).toHaveBeenCalledWith(
 			getFeatureSetupSurveyTriggerID( SLUG )
@@ -193,9 +203,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 			{ registry }
 		);
 
-		expect(
-			getByRole( 'button', { name: /Enable visitor groups/ } )
-		).toBeDisabled();
+		expect( getByRole( 'button', { name: /Set up now/ } ) ).toBeDisabled();
 	} );
 
 	it( 'returns the user to the hub and records the setup before the OAuth navigation', async () => {
@@ -276,7 +284,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 			getByText( 'Visitor groups setup failed' )
 		).toBeInTheDocument();
 		expect(
-			queryByRole( 'button', { name: 'Enable visitor groups' } )
+			queryByRole( 'button', { name: 'Set up now' } )
 		).not.toBeInTheDocument();
 
 		hookState.apiErrors = [];
@@ -291,7 +299,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 		} );
 
 		expect(
-			getByRole( 'button', { name: 'Enable visitor groups' } )
+			getByRole( 'button', { name: 'Set up now' } )
 		).toBeInTheDocument();
 	} );
 
@@ -397,7 +405,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 				queryByText( 'Creating visitor groups failed' )
 			).not.toBeInTheDocument();
 			expect(
-				getByRole( 'button', { name: 'Enable visitor groups' } )
+				getByRole( 'button', { name: 'Set up now' } )
 			).toBeInTheDocument();
 			expect(
 				registry
