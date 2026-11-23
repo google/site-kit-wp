@@ -14,6 +14,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use WP_Error;
@@ -27,6 +28,7 @@ use WPDieException;
 class Setup_Test extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use ModulesHelperTrait;
 
 	public function set_up() {
 		parent::set_up();
@@ -240,14 +242,9 @@ class Setup_Test extends TestCase {
 		}
 
 		remove_all_filters( 'googlesitekit_is_module_connected' );
-		add_filter(
-			'googlesitekit_is_module_connected',
-			function ( $connected, $slug ) use ( $is_analytics_connected ) {
-				return Analytics_4::MODULE_SLUG === $slug ? $is_analytics_connected : $connected;
-			},
-			10,
-			2
-		);
+		if ( $is_analytics_connected ) {
+			$this->force_connect_modules( Analytics_4::MODULE_SLUG );
+		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_SETUP_START );
 

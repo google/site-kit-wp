@@ -16,9 +16,12 @@ use Google\Site_Kit\Core\Modules\Disconnected_Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
 
 class Migration_N_E_X_TTest extends TestCase {
+
+	use ModulesHelperTrait;
 
 	protected Context $context;
 	protected Options $options;
@@ -66,7 +69,7 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__deletes_the_option_when_analytics_is_connected() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->set_analytics_connected( true );
+		$this->force_connect_modules( Analytics_4::MODULE_SLUG );
 		$this->options->set( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION, true );
 
 		$migration->migrate();
@@ -80,7 +83,6 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__keeps_the_option_when_analytics_is_not_connected() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->set_analytics_connected( false );
 		$this->options->set( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION, true );
 
 		$migration->migrate();
@@ -94,7 +96,6 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__deletes_the_option_when_analytics_was_disconnected() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->set_analytics_connected( false );
 		( new Disconnected_Modules( $this->options ) )->add( Analytics_4::MODULE_SLUG );
 		$this->options->set( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION, true );
 
@@ -109,7 +110,6 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__keeps_the_option_when_only_another_module_was_disconnected() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->set_analytics_connected( false );
 		( new Disconnected_Modules( $this->options ) )->add( 'adsense' );
 		$this->options->set( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION, true );
 
@@ -139,7 +139,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		$migration = $this->get_new_migration_instance();
 
 		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, $migration::DB_VERSION );
-		$this->set_analytics_connected( true );
+		$this->force_connect_modules( Analytics_4::MODULE_SLUG );
 		$this->options->set( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION, true );
 
 		$migration->migrate();
@@ -147,22 +147,6 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertTrue(
 			$this->options->get( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION ),
 			'Migration should leave the option alone when the database version already matches its target.'
-		);
-	}
-
-	/**
-	 * Sets whether the `googlesitekit_is_module_connected` filter reports Analytics as connected.
-	 *
-	 * @param bool $is_connected Whether Analytics is connected.
-	 */
-	protected function set_analytics_connected( $is_connected ) {
-		add_filter(
-			'googlesitekit_is_module_connected',
-			function ( $connected, $slug ) use ( $is_connected ) {
-				return Analytics_4::MODULE_SLUG === $slug ? $is_connected : $connected;
-			},
-			10,
-			2
 		);
 	}
 }
