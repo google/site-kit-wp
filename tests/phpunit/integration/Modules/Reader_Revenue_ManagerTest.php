@@ -406,6 +406,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'terms-of-service',
 				'user-settings',
 				'ctas',
+				'cta',
 				'create-cta',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
