@@ -107,7 +107,7 @@ class GA_SessionTest extends TestCase {
 	 * @param string $ga_session Value of the session cookie.
 	 */
 	public function test_from_values__returns_null_for_unreadable_cookie( $ga, $ga_session ) {
-		// No last hit is too old for this timeout, so `null` means an unreadable value.
+		// No last hit is past this timeout, so `null` means an unreadable value.
 		$timeout = PHP_INT_MAX;
 
 		$this->assertNull(
@@ -148,6 +148,37 @@ class GA_SessionTest extends TestCase {
 		$this->assertNull(
 			GA_Session::from_values( 'GA1.1.1234567890.1700000000', $this->get_session_cookie( 1700000600 - 1801 ), 'G-ABC123', 1700000600 ),
 			'No session should be returned for a last hit 1801 seconds ago.'
+		);
+	}
+
+	public function test_from_values__applies_session_timeout_to_later_last_hit() {
+		$this->assertInstanceOf(
+			GA_Session::class,
+			GA_Session::from_values( 'GA1.1.1234567890.1700000000', $this->get_session_cookie( 1700000600 + 1800 ), 'G-ABC123', 1700000600 ),
+			'A session should be returned for a last hit 1800 seconds after `$now`.'
+		);
+		$this->assertNull(
+			GA_Session::from_values( 'GA1.1.1234567890.1700000000', $this->get_session_cookie( 1700000600 + 1801 ), 'G-ABC123', 1700000600 ),
+			'No session should be returned for a last hit 1801 seconds after `$now`.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_session_cookies_with_last_hit_far_after_now
+	 *
+	 * @param string $ga_session Value of the session cookie.
+	 */
+	public function test_from_values__returns_null_for_last_hit_far_after_now( $ga_session ) {
+		$this->assertNull(
+			GA_Session::from_values( 'GA1.1.1234567890.1700000000', $ga_session, 'G-ABC123', 1700000600 ),
+			'No session should be returned for a last hit far after `$now`.'
+		);
+	}
+
+	public function data_session_cookies_with_last_hit_far_after_now() {
+		return array(
+			'last hit in milliseconds'         => array( 'GS2.1.s1700000000$t1700000500000' ),
+			'last hit too long for an integer' => array( 'GS2.1.s1700000000$t99999999999999999999' ),
 		);
 	}
 

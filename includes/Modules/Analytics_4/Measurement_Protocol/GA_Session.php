@@ -25,7 +25,7 @@ use Google\Site_Kit\Core\Util\Input;
 final class GA_Session {
 
 	/**
-	 * Seconds after the last hit that a session counts as current.
+	 * Most seconds between the last hit and the current time for a session to count as current.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -124,8 +124,8 @@ final class GA_Session {
 	 * @param string   $ga_session     Value of the session cookie, in the GS1 or GS2 format.
 	 * @param string   $measurement_id Measurement ID.
 	 * @param int|null $now            Optional. Unix time to compare the last hit with. Default is the current time.
-	 * @param int      $timeout        Optional. Seconds after the last hit that the session counts as current.
-	 * @return GA_Session|null Session, or null when the measurement ID is invalid, a cookie cannot be read or the session timed out.
+	 * @param int      $timeout        Optional. Most seconds between the last hit and `$now` for the session to count as current.
+	 * @return GA_Session|null Session, or null when the measurement ID is invalid, a cookie cannot be read or the last hit is more than `$timeout` from `$now`.
 	 */
 	public static function from_values( string $ga, string $ga_session, string $measurement_id, ?int $now = null, int $timeout = self::DEFAULT_SESSION_TIMEOUT ) {
 		if ( '' === self::get_container_id( $measurement_id ) ) {
@@ -142,7 +142,7 @@ final class GA_Session {
 			return null;
 		}
 
-		if ( ( $now ?? time() ) - (int) $last_hit > $timeout ) {
+		if ( abs( ( $now ?? time() ) - (int) $last_hit ) > $timeout ) {
 			return null;
 		}
 
@@ -156,7 +156,7 @@ final class GA_Session {
 	 *
 	 * @param Input  $input          Input instance.
 	 * @param string $measurement_id Measurement ID.
-	 * @return GA_Session|null Session, or null when the measurement ID is invalid, a cookie is missing or cannot be read, or the session timed out.
+	 * @return GA_Session|null Session, or null for an invalid measurement ID, a missing or unreadable cookie, or a last hit more than the timeout from the current time.
 	 */
 	public static function from_input( Input $input, string $measurement_id ) {
 		$default_cookie_names = array(
@@ -195,7 +195,7 @@ final class GA_Session {
 		}
 
 		/**
-		 * Filters how many seconds after the visitor's last Google Analytics activity their session counts as current.
+		 * Filters the most seconds between the visitor's last Google Analytics activity and the current time for their session to count as current.
 		 *
 		 * A result that is not a positive integer is ignored.
 		 *
