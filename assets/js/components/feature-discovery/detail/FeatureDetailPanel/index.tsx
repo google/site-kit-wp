@@ -35,6 +35,8 @@ import SideSheet from '@/js/components/SideSheet';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import PanelContent from './PanelContent';
 
 export interface FeatureDetailPanelProps {
@@ -54,11 +56,28 @@ const FeatureDetailPanel: FC< FeatureDetailPanelProps > = ( {
 			: null;
 	}, [] );
 
+	const viewContext = useViewContext();
+
 	const { setValue } = useDispatch( CORE_UI );
 
-	const onClose = useCallback( () => {
+	// Closes the panel without tracking, such as after a setup has completed.
+	const clearFeature = useCallback( () => {
 		setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, false );
 	}, [ setValue ] );
+
+	const onClose = useCallback( () => {
+		// `SideSheet` calls `closeSheet` for every click outside it, even
+		// while it is closed.
+		if ( feature ) {
+			trackEvent(
+				`${ viewContext }_feature-detail-panel`,
+				'close_panel',
+				feature.slug
+			);
+		}
+
+		clearFeature();
+	}, [ clearFeature, feature, viewContext ] );
 
 	return (
 		<SideSheet
@@ -71,6 +90,7 @@ const FeatureDetailPanel: FC< FeatureDetailPanelProps > = ( {
 					feature={ feature }
 					initialActiveIndex={ initialActiveIndex }
 					onClose={ onClose }
+					onSetupComplete={ clearFeature }
 				/>
 			) }
 		</SideSheet>

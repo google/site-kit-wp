@@ -62,6 +62,8 @@ import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureRelevancyFeedbackGroup } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import CloseIcon from '@/svg/icons/close.svg';
 import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from './constants';
 
@@ -82,6 +84,9 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	hideUnreadDot = false,
 	ctaButton,
 } ) => {
+	const viewContext = useViewContext();
+	const gaEventCategory = `${ viewContext }_feature-card`;
+
 	const [ showUnreadDot, setShowUnreadDot ] = useState( false );
 	const [ isFeedbackMenuOpen, setIsFeedbackMenuOpen ] = useState( false );
 	const dismissButtonRef = useRef< HTMLButtonElement >( null );
@@ -171,14 +176,19 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	);
 
 	const onClickDismiss = useCallback( () => {
+		if ( ! isFeedbackMenuOpen ) {
+			trackEvent( gaEventCategory, 'open_dismiss_menu', slug );
+		}
+
 		setIsFeedbackMenuOpen( ( isOpen ) => ! isOpen );
-	}, [] );
+	}, [ gaEventCategory, isFeedbackMenuOpen, slug ] );
 
 	const onClickReadMore = useCallback( () => {
+		trackEvent( gaEventCategory, 'click_read_more', slug );
 		triggerInteractionSurvey();
 
 		setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, slug );
-	}, [ setValue, slug, triggerInteractionSurvey ] );
+	}, [ gaEventCategory, setValue, slug, triggerInteractionSurvey ] );
 
 	useEffect( () => {
 		if ( isFeatureUnread ) {
@@ -291,7 +301,11 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 
 						<div className="googlesitekit-feature-card__actions">
 							{ ctaButton ?? (
-								<FeatureCTA slug={ slug } isTertiary />
+								<FeatureCTA
+									gaEventCategory={ gaEventCategory }
+									slug={ slug }
+									isFeatureCardCTA
+								/>
 							) }
 							{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 							<Button onClick={ onClickReadMore }>

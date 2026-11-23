@@ -22,11 +22,6 @@
 import invariant from 'invariant';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { Select, createRegistrySelector } from 'googlesitekit-data';
@@ -34,8 +29,9 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
-	FEATURE_CATEGORIES,
+	FEATURE_CATEGORY_CHIP_LABELS,
 	FEATURE_CATEGORY_ORDER,
+	FEATURE_CATEGORY_TITLES,
 	SUCCEEDED_FEATURES_UI_KEY,
 } from './constants';
 import type {
@@ -95,72 +91,10 @@ export const selectors = {
 	 * @return {Array.<Object>} Categories, each with its `slug` and `title`.
 	 */
 	getFeatureCategories(): FeatureCategory[] {
-		const titles = {
-			[ FEATURE_CATEGORIES.AUDIENCE ]: __(
-				'Get to know your audience',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.ENGAGEMENT ]: __(
-				'Engage your visitors',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.MONETIZATION ]: __(
-				'Earn money from your content',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.TRAFFIC ]: __(
-				'Drive traffic to your site',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.PRIVACY ]: __(
-				'Manage privacy',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.PERFORMANCE ]: __(
-				'Improve your site speed and experience',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.PRODUCTIVITY ]: __(
-				'Collaborate and save time',
-				'google-site-kit'
-			),
-		};
-
-		const chipLabels = {
-			[ FEATURE_CATEGORIES.AUDIENCE ]: __(
-				'Know your audience',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.ENGAGEMENT ]: __(
-				'Engage your visitors',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.MONETIZATION ]: __(
-				'Monetize',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.TRAFFIC ]: __(
-				'Drive traffic',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.PRIVACY ]: __(
-				'Manage privacy',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.PERFORMANCE ]: __(
-				'Improve site speed',
-				'google-site-kit'
-			),
-			[ FEATURE_CATEGORIES.PRODUCTIVITY ]: __(
-				'Collaborate',
-				'google-site-kit'
-			),
-		};
-
 		return FEATURE_CATEGORY_ORDER.map( ( slug ) => ( {
 			slug,
-			title: titles[ slug ],
-			chipLabel: chipLabels[ slug ],
+			title: FEATURE_CATEGORY_TITLES[ slug ],
+			chipLabel: FEATURE_CATEGORY_CHIP_LABELS[ slug ],
 		} ) );
 	},
 

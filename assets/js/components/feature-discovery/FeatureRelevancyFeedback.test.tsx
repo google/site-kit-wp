@@ -20,11 +20,9 @@
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
+import { FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/components/feature-discovery/constants';
 import { VoteDirection } from '@/js/components/feedback/constants';
-import {
-	CORE_FEATURE_DISCOVERY,
-	FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
-} from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import {
 	CORE_USER,
 	SURVEY_TRIGGER_MAX_TTL,
@@ -205,7 +203,7 @@ describe( 'FeatureRelevancyFeedback', () => {
 			);
 
 			expect( triggerSurvey ).toHaveBeenCalledWith(
-				FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+				FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
 				{ ttl: SURVEY_TRIGGER_MAX_TTL }
 			);
 		}

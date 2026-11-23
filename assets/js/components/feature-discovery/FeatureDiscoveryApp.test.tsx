@@ -27,10 +27,10 @@ import { HashRouter } from 'react-router-dom';
 import { Select, useSelect } from 'googlesitekit-data';
 import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { FDH_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/components/feature-discovery/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
-	FEATURE_HUB_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID,
 	FEATURE_SETUP_TYPES,
 	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
@@ -41,6 +41,7 @@ import {
 	SURVEY_TRIGGER_MAX_TTL,
 } from '@/js/googlesitekit/datastore/user/constants';
 import * as pendingSetupModule from '@/js/googlesitekit/feature-discovery/pending-setup';
+import * as tracking from '@/js/util/tracking';
 import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
@@ -54,6 +55,9 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import FeatureDiscoveryApp from './FeatureDiscoveryApp';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const consumePendingSetupSpy = jest.spyOn(
 	pendingSetupModule,
@@ -129,6 +133,7 @@ function provideHeader( registry: ReturnType< typeof createTestRegistry > ) {
 describe( 'FeatureDiscoveryApp', () => {
 	afterEach( () => {
 		global.history.replaceState( {}, '', '/' );
+		mockTrackEvent.mockClear();
 	} );
 
 	async function renderApp(
@@ -169,8 +174,7 @@ describe( 'FeatureDiscoveryApp', () => {
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 				body: {
 					data: {
-						triggerID:
-							FEATURE_HUB_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID,
+						triggerID: FDH_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID,
 						ttl: SURVEY_TRIGGER_MAX_TTL,
 					},
 				},
@@ -183,7 +187,7 @@ describe( 'FeatureDiscoveryApp', () => {
 			registry
 				.dispatch( CORE_USER )
 				.receiveGetSurveyTimeouts( [
-					FEATURE_HUB_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID,
+					FDH_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID,
 				] );
 		} );
 
@@ -268,6 +272,26 @@ describe( 'FeatureDiscoveryApp', () => {
 		expect( global.history.length ).toBe( historyLength );
 		expect( global.location.hash ).toBe( '#/whats-new' );
 	} );
+
+	it.each( [
+		[ '/whats-new', 'All services and features', 'all-services' ],
+		[ '/all-services', 'What’s new?', 'whats-new' ],
+	] )(
+		'should track the tab_select event when selecting a tab from %s',
+		async ( pathname, tabName, eventLabel ) => {
+			const { getByRole, waitForRegistry } = await renderApp( pathname );
+
+			fireEvent.click( getByRole( 'tab', { name: tabName } ) );
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_FEATURE_DISCOVERY }_navigation`,
+				'tab_select',
+				eventLabel
+			);
+		}
+	);
 
 	it( 'should mount the PDF export root', async () => {
 		const { getByText } = await renderApp();

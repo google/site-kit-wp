@@ -30,13 +30,13 @@ import {
 	secondAudienceFeature,
 	setupModuleFeature,
 } from '@/js/components/feature-discovery/__fixtures__/all-services';
-import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
+import {
+	ALL_SERVICES_TAB_PATH,
+	FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+} from '@/js/components/feature-discovery/constants';
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
-import {
-	CORE_FEATURE_DISCOVERY,
-	FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
-} from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
@@ -341,7 +341,7 @@ describe( 'AllServicesTab', () => {
 
 			expect( triggerSurvey ).toHaveBeenCalledTimes( 1 );
 			expect( triggerSurvey ).toHaveBeenCalledWith(
-				FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+				FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
 				{ ttl: SURVEY_TRIGGER_MAX_TTL }
 			);
 		} );

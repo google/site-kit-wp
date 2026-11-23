@@ -35,7 +35,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SpinnerButton, TextField } from 'googlesitekit-components';
+import { TextField } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
@@ -45,6 +45,7 @@ import ProgressBar from '@/js/googlesitekit/components-gm2/ProgressBar';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
+import ExpressSetupStepActions from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupStepActions';
 import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
 	SetupStep,
@@ -78,10 +79,11 @@ interface StepPublicationPoliciesProps extends SetupStepProps {
 const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 	description,
 	onComplete,
+	onGoBack,
 } ) => {
 	const trackEvent = useExpressSetupTrackEvent();
 
-	const [ isSaving, setIsSaving ] = useState( false );
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
 
 	const defaultDescription = __(
 		'To use Reader Revenue Manager, you will need to add links to your publication’s policies.',
@@ -112,17 +114,14 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 
 	const { updatePublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
-	const defaultPrivacyPolicyURL = useSelect(
-		( select: Select ) => select( CORE_SITE ).getPrivacyPolicyURL(),
+	const defaultPrivacyPolicyURL: string = useSelect(
+		( select: Select ) => select( CORE_SITE ).getPrivacyPolicyURL() || '',
 		[]
 	);
 
 	const hasResolvedPublication: boolean = useSelect(
 		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
-				'getPublication',
-				[]
-			),
+			select( MODULES_READER_REVENUE_MANAGER ).hasResolvedPublication(),
 		[]
 	);
 
@@ -144,14 +143,10 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 			PUBLICATION_POLICIES_FORM.TERMS_OF_SERVICE_URL
 		);
 
-	const isTermsOfServiceURLValid =
-		termsOfServiceURL && isValidPolicyURL( termsOfServiceURL );
+	const isTermsOfServiceURLValid = isValidPolicyURL( termsOfServiceURL );
+	const isPrivacyPolicyURLValid = isValidPolicyURL( privacyPolicyURL );
 
-	const isPrivacyPolicyURLValid =
-		privacyPolicyURL && isValidPolicyURL( privacyPolicyURL );
-
-	const isDisabled =
-		isSaving || ! isPrivacyPolicyURLValid || ! isTermsOfServiceURLValid;
+	const canSubmit = isPrivacyPolicyURLValid && isTermsOfServiceURLValid;
 
 	const onSubmit = useCallback(
 		async ( event ) => {
@@ -161,7 +156,18 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 				return;
 			}
 
-			setIsSaving( true );
+			/* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
+			const hasChanged =
+				termsOfServiceURL !== publication.publicationTosUrl ||
+				privacyPolicyURL !== publication.publicationPrivacyPolicyUrl;
+			/* eslint-enable sitekit/acronym-case */
+
+			if ( ! hasChanged ) {
+				onComplete();
+				return;
+			}
+
+			setIsSubmitting( true );
 
 			const { error } = await updatePublication( {
 				/* eslint-disable sitekit/acronym-case */
@@ -173,7 +179,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 			} );
 
 			if ( error ) {
-				setIsSaving( false );
+				setIsSubmitting( false );
 				return;
 			}
 
@@ -302,10 +308,12 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 					</div>
 				</div>
 
-				{ /* @ts-expect-error `SpinnerButton` component is not yet typed. */ }
-				<SpinnerButton disabled={ isDisabled } isSaving={ isSaving }>
-					{ __( 'Submit policies', 'google-site-kit' ) }
-				</SpinnerButton>
+				<ExpressSetupStepActions
+					canGoForward={ canSubmit }
+					isBusy={ isSubmitting }
+					label={ __( 'Submit policies', 'google-site-kit' ) }
+					onGoBack={ onGoBack }
+				/>
 			</form>
 		</div>
 	);

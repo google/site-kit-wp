@@ -72,9 +72,25 @@ export const Loading = Template.bind( {} ) as Story;
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry ) => {
+		const publication = publications[ 0 ];
+
+		const params = {
+			/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+			organizationID: publication.organizationId,
+			publicationID: publication.publicationId,
+			/* eslint-enable sitekit/acronym-case */
+		};
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.startResolution( 'getPublication', [] );
+			.setSettings( params );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.startResolution( 'getPublicationByID', [
+				params.organizationID,
+				params.publicationID,
+			] );
 	},
 };
 Loading.scenario = {};

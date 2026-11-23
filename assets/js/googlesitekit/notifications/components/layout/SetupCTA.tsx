@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { ComponentProps, FC, MouseEvent } from 'react';
 
 /**
  * WordPress dependencies
@@ -32,15 +32,48 @@ import { Fragment } from '@wordpress/element';
  */
 import { ProgressBar } from 'googlesitekit-components';
 import { useDispatch } from 'googlesitekit-data';
-import Banner from '@/js/components/Banner';
-import CTAButton from '@/js/components/Banner/CTAButton';
-import DismissButton from '@/js/components/Banner/DismissButton';
-import LearnMoreLink from '@/js/components/Banner/LearnMoreLink';
+import Banner, { BannerProps } from '@/js/components/Banner';
+import { CTAButtonProps } from '@/js/components/Banner/CTAButton';
+import { DismissButtonProps } from '@/js/components/Banner/DismissButton';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { Cell, Grid, Row } from '@/js/material-components';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
-export default function SetupCTA( {
+type ButtonEvent = MouseEvent< HTMLAnchorElement | HTMLButtonElement >;
+
+interface SetupCTADismissOptions {
+	expiresInSeconds?: number;
+	skipHidingFromQueue?: boolean;
+}
+
+type SetupCTABannerProps = Omit< BannerProps, 'ctaButton' | 'dismissButton' >;
+
+type SetupCTAButtonProps = CTAButtonProps & {
+	dismissOnClick?: boolean;
+	dismissOptions?: SetupCTADismissOptions;
+};
+
+type SetupCTADismissButtonProps = DismissButtonProps & {
+	dismissOptions?: SetupCTADismissOptions;
+};
+
+type SetupCTAProgressBarProps = Omit<
+	ComponentProps< typeof ProgressBar >,
+	'className'
+>;
+
+interface SetupCTAOwnProps {
+	ctaButton?: SetupCTAButtonProps;
+	dismissButton?: SetupCTADismissButtonProps;
+	gaTrackingEventArgs?: GATrackingEventArgs;
+	notificationID: string;
+	waitingProgress?: SetupCTAProgressBarProps;
+}
+
+type SetupCTAProps = SetupCTAOwnProps & SetupCTABannerProps;
+
+const SetupCTA: FC< SetupCTAProps > = ( {
 	notificationID,
 	title,
 	description,
@@ -54,7 +87,7 @@ export default function SetupCTA( {
 	gaTrackingEventArgs,
 	waitingProgress,
 	...props
-} ) {
+} ) => {
 	const trackEvents = useNotificationEvents(
 		notificationID,
 		gaTrackingEventArgs?.category
@@ -62,8 +95,9 @@ export default function SetupCTA( {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	async function handleDismissWithTrackEvent( event ) {
+	async function handleDismissWithTrackEvent( event: ButtonEvent ) {
 		await dismissButton?.onClick?.( event );
+
 		trackEvents.dismiss(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
@@ -73,11 +107,12 @@ export default function SetupCTA( {
 		} );
 	}
 
-	async function handleCTAClickWithTrackEvent( event ) {
+	async function handleCTAClickWithTrackEvent( event: ButtonEvent ) {
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
+
 		await ctaButton?.onClick?.( event );
 
 		if ( ctaButton?.dismissOnClick ) {
@@ -87,12 +122,13 @@ export default function SetupCTA( {
 		}
 	}
 
-	async function handleLearnMoreClickWithTrackEvent( event ) {
+	async function handleLearnMoreClickWithTrackEvent() {
 		trackEvents.clickLearnMore(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
-		await learnMoreLink?.onClick?.( event );
+
+		await learnMoreLink?.onClick?.();
 	}
 
 	return (
@@ -147,28 +183,6 @@ export default function SetupCTA( {
 			</div>
 		</Fragment>
 	);
-}
-
-SetupCTA.propTypes = {
-	notificationID: PropTypes.string,
-	title: PropTypes.string,
-	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
-	errorText: PropTypes.string,
-	helpText: PropTypes.string,
-	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
-	dismissButton: PropTypes.shape( DismissButton.propTypes ),
-	ctaButton: PropTypes.shape( CTAButton.propTypes ),
-	svg: PropTypes.shape( {
-		desktop: PropTypes.elementType,
-		mobile: PropTypes.elementType,
-		tablet: PropTypes.elementType,
-		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
-	} ),
-	footer: PropTypes.node,
-	gaTrackingEventArgs: PropTypes.shape( {
-		category: PropTypes.string,
-		label: PropTypes.string,
-		value: PropTypes.number,
-	} ),
-	waitingProgress: PropTypes.shape( ProgressBar.propTypes ),
 };
+
+export default SetupCTA;

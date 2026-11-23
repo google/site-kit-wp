@@ -26,6 +26,7 @@ import { FC, useCallback } from 'react';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import FeatureCTAButton from '@/js/components/feature-discovery/FeatureCTAButton';
+import getFeatureCardCTALabel from '@/js/components/feature-discovery/getFeatureCardCTALabel';
 import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
 import {
 	CORE_FEATURE_DISCOVERY,
@@ -35,15 +36,20 @@ import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 export interface FeatureCTAProps {
-	isTertiary?: boolean;
+	gaEventCategory: string;
+	// Shows the card's generic label in the card's tertiary style, in place of
+	// the feature's own `ctaLabel`.
+	isFeatureCardCTA?: boolean;
 	onSetupComplete?: () => void;
 	slug: string;
 }
 
 const FeatureCTA: FC< FeatureCTAProps > = ( {
-	isTertiary = false,
+	gaEventCategory,
+	isFeatureCardCTA = false,
 	onSetupComplete,
 	slug,
 } ) => {
@@ -82,12 +88,24 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 		[ feature ]
 	);
 
+	const isFeatureInProgress = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).isFeatureInProgress( slug ),
+		[ slug ]
+	);
+
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { setupFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 	const triggerInteractionSurvey =
 		useFeatureDiscoveryInteractionSurveyTrigger();
 
 	const onClick = useCallback( async () => {
+		trackEvent(
+			gaEventCategory,
+			isFeatureInProgress ? 'click_resume_setup_cta' : 'click_setup_cta',
+			slug
+		);
+
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
 		triggerInteractionSurvey();
@@ -96,6 +114,8 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 
 		onSetupComplete?.();
 	}, [
+		gaEventCategory,
+		isFeatureInProgress,
 		onSetupComplete,
 		setupFeature,
 		slug,
@@ -122,10 +142,12 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 	return (
 		<FeatureCTAButton
 			isBusy={ isSetupInProgress }
-			isTertiary={ isTertiary }
+			isTertiary={ isFeatureCardCTA }
 			onClick={ onClick }
 		>
-			{ feature.setup.ctaLabel }
+			{ isFeatureCardCTA
+				? getFeatureCardCTALabel( feature )
+				: feature.setup.ctaLabel }
 		</FeatureCTAButton>
 	);
 };

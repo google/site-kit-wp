@@ -374,7 +374,7 @@ describe( 'modules/reader-revenue-manager settings', () => {
 	} );
 
 	describe( 'submitChanges', () => {
-		it( 'should invalidate getPublication when changing publication settings', async () => {
+		it( 'should request the new publication when the connected one changes', async () => {
 			const dispatch = registry.dispatch(
 				MODULES_READER_REVENUE_MANAGER
 			);
@@ -391,22 +391,36 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			dispatch.receiveGetSettings( {
 				...validSettings,
 				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				organizationID: publicationA.organizationId,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
 				publicationID: publicationA.publicationId,
 			} );
 
-			dispatch.receiveGetPublication( publicationA );
+			dispatch.receiveGetPublicationByID( publicationA, {
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				organizationID: publicationA.organizationId,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationID: publicationA.publicationId,
+			} );
 
 			select.getPublication();
 
 			await untilResolved(
 				registry,
 				MODULES_READER_REVENUE_MANAGER
-			).getPublication();
+			).getPublicationByID(
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationA.organizationId,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationA.publicationId
+			);
 
 			expect( select.getPublication() ).toEqual( publicationA );
 
 			const newSettings = {
 				...validSettings,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				organizationID: publicationB.organizationId,
 				// eslint-disable-next-line sitekit/acronym-case -- API field name.
 				publicationID: publicationB.publicationId,
 			};
@@ -423,7 +437,12 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			await untilResolved(
 				registry,
 				MODULES_READER_REVENUE_MANAGER
-			).getPublication();
+			).getPublicationByID(
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationB.organizationId,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationB.publicationId
+			);
 
 			expect( select.getPublication() ).toEqual( publicationB );
 			expect( fetchMock ).toHaveFetchedTimes( 1, publicationEndpoint );

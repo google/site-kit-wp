@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
+import { FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/components/feature-discovery/constants';
 import { Registry } from '@/js/googlesitekit-data';
-import { FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import {
 	CORE_USER,
 	SURVEY_TRIGGER_MAX_TTL,
@@ -72,7 +72,7 @@ describe( 'useFeatureDiscoveryInteractionSurveyTrigger', () => {
 				body: {
 					data: {
 						triggerID:
-							FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+							FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
 						ttl: SURVEY_TRIGGER_MAX_TTL,
 					},
 				},
@@ -106,7 +106,7 @@ describe( 'useFeatureDiscoveryInteractionSurveyTrigger', () => {
 		await waitForRegistry();
 
 		expect( triggeredIDs() ).toEqual( [
-			FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+			FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
 		] );
 	} );
 
@@ -114,7 +114,7 @@ describe( 'useFeatureDiscoveryInteractionSurveyTrigger', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetSurveyTimeouts( [
-				FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+				FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
 			] );
 
 		const { result, waitForRegistry } = renderHook(

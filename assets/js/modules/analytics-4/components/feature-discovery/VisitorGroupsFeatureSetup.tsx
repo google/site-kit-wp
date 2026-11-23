@@ -35,6 +35,7 @@ import FeatureCard, {
 	FeatureCardProps,
 } from '@/js/components/feature-discovery/FeatureCard';
 import FeatureCTAButton from '@/js/components/feature-discovery/FeatureCTAButton';
+import getFeatureCardCTALabel from '@/js/components/feature-discovery/getFeatureCardCTALabel';
 import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
@@ -45,9 +46,11 @@ import {
 	getCurrentFeatureDiscoveryTabPath,
 	setPendingSetup,
 } from '@/js/googlesitekit/feature-discovery/pending-setup';
+import useViewContext from '@/js/hooks/useViewContext';
 import AudienceSegmentationSetupErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupErrorWidget';
 import { VISITOR_GROUPS_SETUP_FAILURE_KEY } from '@/js/modules/analytics-4/datastore/constants';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
+import { trackEvent } from '@/js/util';
 import type { ErrorObject } from '@/js/util/errors';
 
 interface VisitorGroupsSetupFailure {
@@ -66,6 +69,7 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 	onSetupRequestHandled,
 	...cardProps
 } ) => {
+	const viewContext = useViewContext();
 	const handledRequestRef = useRef( false );
 	const wasSavingRef = useRef( false );
 
@@ -183,6 +187,14 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		onEnableGroups();
 	}, [ onEnableGroups, slug, triggerInteractionSurvey, triggerSurvey ] );
 
+	// Only the card's own CTA is tracked here: `handleClick` also runs when the
+	// setup is started from the detail panel.
+	const handleCardCTAClick = useCallback( () => {
+		trackEvent( `${ viewContext }_feature-card`, 'click_setup_cta', slug );
+
+		handleClick();
+	}, [ handleClick, slug, viewContext ] );
+
 	const handleRetry = useCallback( () => {
 		clearActionError( 'setupFeature', [ slug ] );
 
@@ -233,6 +245,11 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		);
 	}
 
+	// The card renders nothing without its feature, so neither does its CTA.
+	if ( ! feature ) {
+		return null;
+	}
+
 	return (
 		<FeatureCard
 			slug={ slug }
@@ -240,10 +257,10 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 			ctaButton={
 				<FeatureCTAButton
 					isBusy={ isSaving }
-					onClick={ handleClick }
+					onClick={ handleCardCTAClick }
 					isTertiary
 				>
-					{ feature?.setup?.ctaLabel }
+					{ getFeatureCardCTALabel( feature ) }
 				</FeatureCTAButton>
 			}
 		/>

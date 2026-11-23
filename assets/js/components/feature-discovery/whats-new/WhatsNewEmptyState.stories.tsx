@@ -1,7 +1,7 @@
 /**
- * ChipMultiSelect component.
+ * WhatsNewEmptyState Component Stories.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,23 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
-import { Provider } from './ChipMultiSelectContext';
+import { Story } from '@/js/types/Story';
+import WhatsNewEmptyState from './WhatsNewEmptyState';
 
-export default function ChipMultiSelect( {
-	children,
-	onToggleChip = () => {},
-} ) {
+function Template() {
 	return (
-		<Provider value={ { onToggleChip } }>
-			<div className="googlesitekit-chip-multi-select">{ children }</div>
-		</Provider>
+		<div className="googlesitekit-whats-new">
+			<WhatsNewEmptyState onClickEmpty={ () => {} } />
+		</div>
 	);
 }
 
-ChipMultiSelect.propTypes = {
-	children: PropTypes.node.isRequired,
-	onToggleChip: PropTypes.func,
+export const Default = Template.bind( {} ) as Story;
+Default.storyName = 'Default';
+
+export default {
+	title: 'Components/Feature Discovery/WhatsNewEmptyState',
+	component: WhatsNewEmptyState,
 };

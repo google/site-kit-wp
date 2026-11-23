@@ -1,7 +1,7 @@
 /**
- * ChipCheckmark component.
+ * AdminScreenTooltip exports.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,8 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import CheckMark from '@/svg/icons/check-2.svg';
-
-export function ChipCheckmark() {
-	return (
-		<div className="mdc-chip__checkmark">
-			<CheckMark className="mdc-chip__checkmark-svg" />
-		</div>
-	);
-}
+export * from './AdminScreenTooltip';
+export * from './hooks/useHideTooltip';
+export * from './hooks/useShowTooltip';
+export * from './hooks/useTooltipSettings';
+export * from './types';

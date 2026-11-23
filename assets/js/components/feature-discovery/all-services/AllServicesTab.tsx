@@ -78,20 +78,21 @@ const AllServicesTab: FC = () => {
 			return;
 		}
 
-		if ( selectedCategories.includes( categorySlug ) ) {
-			setSelectedCategories(
-				selectedCategories.filter(
-					( category ) => category !== categorySlug
-				)
-			);
-			return;
+		if ( ! selectedCategories.includes( categorySlug ) ) {
+			// Only selecting a category counts as an interaction, so
+			// deselecting one does not.
+			triggerInteractionSurvey();
 		}
 
-		// Only selecting a category counts as an interaction, so deselecting
-		// one does not.
-		triggerInteractionSurvey();
+		setSelectedCategories( ( currentSelection ) => {
+			if ( currentSelection.includes( categorySlug ) ) {
+				return currentSelection.filter(
+					( category ) => category !== categorySlug
+				);
+			}
 
-		setSelectedCategories( [ ...selectedCategories, categorySlug ] );
+			return [ ...currentSelection, categorySlug ];
+		} );
 	}
 
 	return (

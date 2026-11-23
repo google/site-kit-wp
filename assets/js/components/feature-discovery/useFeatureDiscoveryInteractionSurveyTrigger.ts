@@ -25,7 +25,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/components/feature-discovery/constants';
 import {
 	CORE_USER,
 	SURVEY_TRIGGER_MAX_TTL,
@@ -47,7 +47,7 @@ export default function useFeatureDiscoveryInteractionSurveyTrigger(): () => voi
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	return useCallback( () => {
-		triggerSurvey( FEATURE_HUB_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID, {
+		triggerSurvey( FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID, {
 			ttl: SURVEY_TRIGGER_MAX_TTL,
 		} );
 	}, [ triggerSurvey ] );
