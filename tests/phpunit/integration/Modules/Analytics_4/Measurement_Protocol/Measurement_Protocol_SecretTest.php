@@ -494,6 +494,11 @@ class Measurement_Protocol_SecretTest extends TestCase {
 			'The error of the list request should be returned.'
 		);
 		$this->assertCount( 1, $this->requests, 'No secret should be created when listing the secrets fails.' );
+		$this->assertSame(
+			'GET',
+			$this->requests[0]->getMethod(),
+			'The one request sent should list the secrets.'
+		);
 	}
 
 	public function test_create__create_request_fails() {
@@ -554,17 +559,18 @@ class Measurement_Protocol_SecretTest extends TestCase {
 	 *
 	 * @param string   $display_name     Display name of the secret that the list request returns.
 	 * @param string   $request_method   Method of the request whose response returns the secret to store.
+	 * @param array    $changed_settings Settings that change while that request is sent.
 	 * @param string[] $expected_methods Methods of the requests that should be sent.
 	 */
-	public function test_create__stream_changes( $display_name, $request_method, $expected_methods ) {
+	public function test_create__stream_changes( $display_name, $request_method, $changed_settings, $expected_methods ) {
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
-			function ( Request $request ) use ( $display_name, $request_method ) {
+			function ( Request $request ) use ( $display_name, $request_method, $changed_settings ) {
 				$this->requests[] = $request;
 
-				// Another web data stream gets connected while the request that returns the secret is sent.
+				// Another property or web data stream gets connected while the request that returns the secret is sent.
 				if ( $request_method === $request->getMethod() ) {
-					$this->analytics->get_settings()->merge( array( 'webDataStreamID' => '222222222' ) );
+					$this->analytics->get_settings()->merge( $changed_settings );
 				}
 
 				$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
@@ -585,7 +591,7 @@ class Measurement_Protocol_SecretTest extends TestCase {
 
 		$result = $this->measurement_protocol_secret->create();
 
-		$this->assertWPError( $result, 'Creating should return a WP_Error when the secret belongs to a stream that is no longer connected.' );
+		$this->assertWPError( $result, 'Creating should return a WP_Error when the secret belongs to a property or stream that is no longer connected.' );
 		$this->assertSame(
 			'measurement_protocol_secret_not_stored',
 			$result->get_error_code(),
@@ -594,7 +600,7 @@ class Measurement_Protocol_SecretTest extends TestCase {
 		$this->assertSame(
 			array( 'status' => 409 ),
 			$result->get_error_data(),
-			'The error data should contain status 409, since the connected web data stream changed.'
+			'The error data should contain status 409, since the connected property or web data stream changed.'
 		);
 		$this->assertSame(
 			$expected_methods,
@@ -606,14 +612,16 @@ class Measurement_Protocol_SecretTest extends TestCase {
 		);
 		$this->assertOptionNotExists(
 			Measurement_Protocol_Settings::OPTION,
-			'The secret of a stream that is no longer connected should not be stored.'
+			'The secret of a property or stream that is no longer connected should not be stored.'
 		);
 	}
 
 	public function data_create__stream_changes() {
 		return array(
-			'existing secret reused' => array( 'Site Kit by Google', 'GET', array( 'GET' ) ),
-			'new secret created'     => array( 'Other secret', 'POST', array( 'GET', 'POST' ) ),
+			'stream changes, existing secret reused'   => array( 'Site Kit by Google', 'GET', array( 'webDataStreamID' => '222222222' ), array( 'GET' ) ),
+			'stream changes, new secret created'       => array( 'Other secret', 'POST', array( 'webDataStreamID' => '222222222' ), array( 'GET', 'POST' ) ),
+			'property changes, existing secret reused' => array( 'Site Kit by Google', 'GET', array( 'propertyID' => '111111111' ), array( 'GET' ) ),
+			'property changes, new secret created'     => array( 'Other secret', 'POST', array( 'propertyID' => '111111111' ), array( 'GET', 'POST' ) ),
 		);
 	}
 
