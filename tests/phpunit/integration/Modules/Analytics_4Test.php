@@ -3576,6 +3576,7 @@ class Analytics_4Test extends TestCase {
 
 	public function test_acknowledge_user_data_collection() {
 		$this->enable_feature( 'serverSideEvents' );
+		$this->analytics->get_settings()->merge( array( 'propertyID' => '123456789' ) );
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
 			function ( Request $request ) {
@@ -3758,25 +3759,31 @@ class Analytics_4Test extends TestCase {
 
 	public function data_server_side_events_datapoints__invalid_params() {
 		return array(
-			'acknowledgement without propertyID' => array(
+			'acknowledgement without propertyID'   => array(
 				'acknowledge-user-data-collection',
 				array(),
 				'missing_required_param',
 				'Request parameter is empty: propertyID.',
 			),
-			'secret without propertyID'          => array(
+			'acknowledgement for another property' => array(
+				'acknowledge-user-data-collection',
+				array( 'propertyID' => '111111111' ),
+				'rest_invalid_param',
+				'Invalid parameter: propertyID.',
+			),
+			'secret without propertyID'            => array(
 				'create-measurement-protocol-secret',
 				array( 'webDataStreamID' => '987654321' ),
 				'missing_required_param',
 				'Request parameter is empty: propertyID.',
 			),
-			'secret without webDataStreamID'     => array(
+			'secret without webDataStreamID'       => array(
 				'create-measurement-protocol-secret',
 				array( 'propertyID' => '123456789' ),
 				'missing_required_param',
 				'Request parameter is empty: webDataStreamID.',
 			),
-			'secret for another property'        => array(
+			'secret for another property'          => array(
 				'create-measurement-protocol-secret',
 				array(
 					'propertyID'      => '111111111',
@@ -3785,7 +3792,7 @@ class Analytics_4Test extends TestCase {
 				'rest_invalid_param',
 				'Invalid parameter: propertyID.',
 			),
-			'secret for another web data stream' => array(
+			'secret for another web data stream'   => array(
 				'create-measurement-protocol-secret',
 				array(
 					'propertyID'      => '123456789',
