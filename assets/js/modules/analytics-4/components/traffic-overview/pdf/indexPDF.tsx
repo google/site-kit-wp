@@ -25,7 +25,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -41,8 +41,6 @@ import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import { numFmt } from '@/js/util';
 import { TrafficBreakdownRow, TrafficOverviewPDFData } from './getPDFData';
-import TrafficOverviewKeyFactorsPDF from './TrafficOverviewKeyFactorsPDF';
-import TrafficOverviewNoticePDF from './TrafficOverviewNoticePDF';
 
 const styles = createPDFStyles( {
 	heading: {
@@ -77,13 +75,6 @@ const styles = createPDFStyles( {
 	},
 	emptyMessage: {
 		marginTop: 12,
-	},
-	summaryNotice: {
-		marginBottom: 16,
-	},
-	disclosure: {
-		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-		marginTop: 16,
 	},
 } );
 
@@ -132,55 +123,47 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 	}
 
 	const {
-		totalVisits,
-		uniqueVisitors,
-		dailyTraffic,
-		typicalTraffic,
+		totalsReport,
+		graphReport,
 		channelBreakdown,
 		locationBreakdown,
 		deviceBreakdown,
 	} = trafficData;
 
-	// No previous visits print no change, as on the dashboard.
+	const [ current, previous ] = totalsReport?.totals || [];
+	const currentValue = Number( current?.metricValues?.[ 0 ]?.value ) || 0;
+	const previousValue = Number( previous?.metricValues?.[ 0 ]?.value ) || 0;
+
 	const { change, changeType } = getPDFTileChange(
-		totalVisits.previous || 0,
-		totalVisits.current
+		previousValue,
+		currentValue
 	);
 
-	const dayCount = dailyTraffic.length;
+	const graphRowCount = graphReport?.rows?.length || 0;
 	const comparisonLabel =
-		dayCount > 0
+		graphRowCount > 0
 			? sprintf(
 					/* translators: %d: number of days in the comparison period */
-					_n(
-						'Vs. prev. %d day',
-						'Vs. prev. %d days',
-						dayCount,
-						'google-site-kit'
-					),
-					dayCount
+					__( 'Vs. prev. %d days', 'google-site-kit' ),
+					graphRowCount
 			  )
 			: undefined;
 
-	// The analysis compares the visits with their typical range, so it prints
-	// only where the chart draws the band, and the band's waiting text in its
-	// place, as on the dashboard.
-	const summaryNotice =
-		typicalTraffic?.analysis || typicalTraffic?.bandNotice;
-	const hasGeneratedText =
-		!! typicalTraffic?.analysis || !! typicalTraffic?.driver;
+	const formattedValue = numFmt( currentValue || 0 );
 
 	const lineChartImage = trafficChartImages?.lineChart;
 
-	const breakdownRowsByID: Record< string, TrafficBreakdownRow[] > = {
+	const breakdownRowsByID: Record< string, TrafficBreakdownRow[] | null > = {
 		channels: channelBreakdown,
 		locations: locationBreakdown,
 		// The dashboard's devices column capitalizes GA4's lowercase device
 		// names, so the PDF prints them the same way.
-		devices: deviceBreakdown.map( ( row ) => ( {
-			...row,
-			label: capitalizeWords( row.label ),
-		} ) ),
+		devices:
+			deviceBreakdown &&
+			deviceBreakdown.map( ( row ) => ( {
+				...row,
+				label: capitalizeWords( row.label ),
+			} ) ),
 	};
 
 	return (
@@ -189,43 +172,24 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 				{ __( 'Your site traffic over time', 'google-site-kit' ) }
 			</PDFTypography>
 			<PDFCard>
-				{ !! summaryNotice && (
-					<TrafficOverviewNoticePDF
-						text={ summaryNotice }
-						style={ styles.summaryNotice }
-					/>
-				) }
 				<PDFMetricTile
-					title={ __( 'Total visits', 'google-site-kit' ) }
-					value={ numFmt( totalVisits.current ) }
-					subtitle={ sprintf(
-						/* translators: %s: the number of people who visited the site, counting each person once, such as "1.2K" */
-						_n(
-							'%s unique visitor',
-							'%s unique visitors',
-							uniqueVisitors,
-							'google-site-kit'
-						),
-						numFmt( uniqueVisitors )
-					) }
+					title={ __( 'All visitors', 'google-site-kit' ) }
+					value={ formattedValue }
 					change={ change }
 					changeType={ changeType }
-					changeLabel={ change ? comparisonLabel : undefined }
+					changeLabel={ comparisonLabel }
 				/>
 				{ lineChartImage && (
 					<Image src={ lineChartImage } style={ styles.chart } />
 				) }
 			</PDFCard>
-			{ typicalTraffic && (
-				<TrafficOverviewKeyFactorsPDF { ...typicalTraffic } />
-			) }
 			<View style={ styles.breakdowns }>
 				{ TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, heading } ) => {
 					const rows = breakdownRowsByID[ id ];
 
 					return (
 						<View key={ id } style={ styles.breakdownCard }>
-							{ rows.length > 0 ? (
+							{ rows && rows.length > 0 ? (
 								<PDFMetricTileTable
 									title={ heading }
 									rows={ toTableRows( rows ) }
@@ -255,14 +219,6 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 					);
 				} ) }
 			</View>
-			{ hasGeneratedText && (
-				<PDFTypography size="small" style={ styles.disclosure }>
-					{ __(
-						'Some insights in this report are created using AI and may contain mistakes.',
-						'google-site-kit'
-					) }
-				</PDFTypography>
-			) }
 		</View>
 	);
 };

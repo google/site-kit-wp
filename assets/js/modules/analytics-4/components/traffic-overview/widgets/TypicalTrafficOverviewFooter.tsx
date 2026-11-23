@@ -1,5 +1,5 @@
 /**
- * Traffic Overview footer.
+ * Typical Traffic Overview footer.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -40,7 +40,7 @@ import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traf
 import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
 import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
 
-const TrafficOverviewFooter: FC = () => {
+const TypicalTrafficOverviewFooter: FC = () => {
 	const { isAvailable: hasKeyFactors, isShown: showKeyFactors } =
 		useKeyFactorsVisibility();
 	const trafficInsightsEnabled = useFeature( 'trafficInsights' );
@@ -88,4 +88,4 @@ const TrafficOverviewFooter: FC = () => {
 	);
 };
 
-export default TrafficOverviewFooter;
+export default TypicalTrafficOverviewFooter;

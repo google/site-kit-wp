@@ -182,7 +182,7 @@ function Template( {
 					{ 'googlesitekit-vrt-animation-paused': pauseAnimation }
 				) }
 			>
-				<div className="googlesitekit-traffic-overview__panel">
+				<div className="googlesitekit-traffic-overview__panel googlesitekit-traffic-overview__panel--typical-traffic">
 					<KeyFactors
 						keyFactors={ keyFactors }
 						steady={ steady }

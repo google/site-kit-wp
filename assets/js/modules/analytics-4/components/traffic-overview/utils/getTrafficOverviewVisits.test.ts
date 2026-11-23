@@ -19,8 +19,6 @@
 /**
  * Internal dependencies
  */
-import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
-import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import { createBenchmarkingResponse } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { getTrafficOverviewVisits } from './getTrafficOverviewVisits';
@@ -59,24 +57,9 @@ describe( 'getTrafficOverviewVisits', () => {
 		],
 	};
 
-	it( 'should return the placeholder visits when the panel reads no benchmarking response', () => {
-		expect(
-			getTrafficOverviewVisits( {
-				readsBenchmarkingResponse: false,
-				benchmarkingFailed: false,
-				startDate,
-				endDate,
-			} )
-		).toEqual( {
-			dailyTraffic: getPlaceholderDailyTraffic( startDate, endDate ),
-			totalVisits: PLACEHOLDER_TOTAL_VISITS,
-		} );
-	} );
-
 	it( 'should return the visits of the benchmarking response, with the typical range of each day', () => {
 		expect(
 			getTrafficOverviewVisits( {
-				readsBenchmarkingResponse: true,
 				benchmarkingResponse,
 				benchmarkingFailed: false,
 				dailyVisitsReport,
@@ -92,7 +75,6 @@ describe( 'getTrafficOverviewVisits', () => {
 	it( 'should return no visits while the benchmarking response loads', () => {
 		expect(
 			getTrafficOverviewVisits( {
-				readsBenchmarkingResponse: true,
 				benchmarkingFailed: false,
 				startDate,
 				endDate,
@@ -103,7 +85,6 @@ describe( 'getTrafficOverviewVisits', () => {
 	it( 'should return the visits of the daily visits report, with no typical range, when the benchmarking request fails', () => {
 		expect(
 			getTrafficOverviewVisits( {
-				readsBenchmarkingResponse: true,
 				benchmarkingFailed: true,
 				dailyVisitsReport,
 				startDate,

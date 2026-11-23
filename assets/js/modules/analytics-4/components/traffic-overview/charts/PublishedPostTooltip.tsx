@@ -50,7 +50,7 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { getLocale } from '@/js/util';
 import ChartTooltipCaret from '@/svg/icons/chart-tooltip-caret.svg';
-import { PublishedPost } from './getTrafficChartData';
+import { PublishedPost } from './getTypicalTrafficChartData';
 
 export interface PublishedPostTooltipDay {
 	/** The day the posts were published. */

@@ -22,9 +22,9 @@
 import { BenchmarkingVisits } from '@/js/modules/analytics-4/utils/benchmarking/types';
 
 /**
- * The visits the Traffic Overview panel shows as its total visits until it
- * reads them from the benchmarking response. They make the figure and the
- * change of the design: 1.2K, up 12.1% on the range before.
+ * The total visits of the design, for the stories and tests of the Typical
+ * Traffic Overview panel. They make the figure and the change of the design:
+ * 1.2K, up 12.1% on the range before.
  *
  * @since n.e.x.t
  */

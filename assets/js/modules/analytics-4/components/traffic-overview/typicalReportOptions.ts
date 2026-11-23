@@ -1,0 +1,165 @@
+/**
+ * Typical Traffic Overview report options.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import type { BreakdownReportDescriptor } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import type { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+
+const DAILY_VISITS_REPORT_ID =
+	'analytics-4_dashboard-all-traffic-widget-ga4_widget_dailyVisitsArgs';
+
+// A visit is a GA4 session.
+const SESSIONS_METRIC: ReportOptions[ 'metrics' ] = [ { name: 'sessions' } ];
+
+/**
+ * The report-options fragment for the report of visits on each day of the
+ * selected range. The Typical Traffic Overview panel reads it on the entity
+ * dashboard, and on the main dashboard when the benchmarking request fails. A
+ * visit is a GA4 session, and the report's totals hold the visits over the
+ * whole range.
+ *
+ * The fragment has no `startDate`, `endDate`, or `url`. `useTrafficReport`
+ * adds them.
+ *
+ * @since n.e.x.t
+ */
+export const DAILY_VISITS_REPORT_OPTIONS: Pick<
+	ReportOptions,
+	'metrics' | 'dimensions' | 'reportID'
+> = {
+	metrics: SESSIONS_METRIC,
+	dimensions: [ 'date' ],
+	reportID: DAILY_VISITS_REPORT_ID,
+};
+
+/**
+ * Builds the report-options fragment for one breakdown dimension of the
+ * Typical Traffic Overview panel. The report counts the visits of each value
+ * of the dimension over the selected range, most first.
+ *
+ * The fragment holds no dates, so it stays the same for every date range.
+ * `getTypicalBreakdownReportArgs` and `useTrafficReport` add the dates and the
+ * entity URL.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} options               Options.
+ * @param {string} options.dimensionName GA4 dimension to group the report by.
+ * @param {string} options.reportID      Report ID for this breakdown.
+ * @return {Object} Report-options fragment.
+ */
+export function getTypicalBreakdownReportOptions( {
+	dimensionName,
+	reportID,
+}: BreakdownReportDescriptor ): Pick<
+	ReportOptions,
+	'metrics' | 'dimensions' | 'orderby' | 'reportID'
+> {
+	return {
+		metrics: SESSIONS_METRIC,
+		dimensions: [ dimensionName ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'sessions',
+				},
+				desc: true,
+			},
+		],
+		reportID,
+	};
+}
+
+/**
+ * Builds the complete GA4 `getReport` args for the report of visits on each
+ * day of the selected range. They equal the args `useTrafficReport` builds
+ * from `DAILY_VISITS_REPORT_OPTIONS`, so the PDF export reads the report the
+ * dashboard has loaded.
+ *
+ * With the range before the selected one, the report's totals hold the visits
+ * of both ranges.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} options                    Options.
+ * @param {string} options.startDate          Report start date.
+ * @param {string} options.endDate            Report end date.
+ * @param {string} [options.compareStartDate] Optional. The first day of the range to compare with.
+ * @param {string} [options.compareEndDate]   Optional. The last day of the range to compare with.
+ * @param {string} [options.url]              Entity URL filter, if any.
+ * @return {Object} GA4 getReport args.
+ */
+export function getDailyVisitsReportArgs( {
+	startDate,
+	endDate,
+	compareStartDate,
+	compareEndDate,
+	url,
+}: Pick<
+	ReportOptions,
+	'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate' | 'url'
+> ): ReportOptions {
+	const args: ReportOptions = {
+		startDate,
+		endDate,
+		...DAILY_VISITS_REPORT_OPTIONS,
+	};
+	if ( compareStartDate && compareEndDate ) {
+		args.compareStartDate = compareStartDate;
+		args.compareEndDate = compareEndDate;
+	}
+	if ( url ) {
+		args.url = url;
+	}
+	return args;
+}
+
+/**
+ * Builds the complete GA4 `getReport` args for one breakdown dimension of the
+ * Typical Traffic Overview panel.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} options               Options.
+ * @param {string} options.dimensionName GA4 dimension to break down by.
+ * @param {string} options.reportID      Report ID for this breakdown.
+ * @param {string} options.startDate     Report start date.
+ * @param {string} options.endDate       Report end date.
+ * @param {string} [options.url]         Entity URL filter, if any.
+ * @return {Object} GA4 getReport args.
+ */
+export function getTypicalBreakdownReportArgs( {
+	dimensionName,
+	reportID,
+	startDate,
+	endDate,
+	url,
+}: BreakdownReportDescriptor &
+	Pick< ReportOptions, 'startDate' | 'endDate' | 'url' > ): ReportOptions {
+	const args: ReportOptions = {
+		startDate,
+		endDate,
+		...getTypicalBreakdownReportOptions( { dimensionName, reportID } ),
+	};
+	if ( url ) {
+		args.url = url;
+	}
+	return args;
+}

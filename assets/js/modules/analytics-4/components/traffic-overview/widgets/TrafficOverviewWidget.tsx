@@ -39,6 +39,7 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '@/js/hooks/useDashboardType';
+import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
@@ -49,13 +50,15 @@ import {
 import { useRecentActivitySurveyTriggers } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentActivitySurveyTriggers';
 import { useRecordRecentActivityTabOpen } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityTabOpen';
 import RecentActivityFooter from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityFooter';
-import EntityTrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/EntityTrafficOverviewPanel';
+import EntityTypicalTrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/EntityTypicalTrafficOverviewPanel';
 import RecentActivityPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/RecentActivityPanel';
 import TrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TrafficOverviewPanel';
+import TypicalTrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficOverviewPanel';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import TrafficOverviewFooter from './TrafficOverviewFooter';
+import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
+import TypicalTrafficOverviewFooter from './TypicalTrafficOverviewFooter';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -85,6 +88,7 @@ const TrafficOverviewWidget = forwardRef<
 
 	const viewContext = useViewContext();
 	const dashboardType = useDashboardType();
+	const typicalTrafficEnabled = useFeature( 'typicalTraffic' );
 
 	const isAnalyticsConnected = useSelect(
 		( select: Select ) =>
@@ -144,18 +148,30 @@ const TrafficOverviewWidget = forwardRef<
 
 	const tabs: TrafficOverviewTabDescriptor[] = [];
 
-	// The Traffic overview tab shows Analytics reports only. The entity
-	// dashboard shows one page, so its panel leaves out what describes the
-	// whole site.
+	// Without the `typicalTraffic` feature, the Traffic overview tab shows the
+	// same Analytics reports on every dashboard, and links to their source.
+	// With it, the tab adds the typical traffic view, which describes the whole
+	// site, so the entity dashboard, which shows one page, has a panel that
+	// leaves it out.
+	let TrafficOverviewPanelComponent: ComponentType = TrafficOverviewPanel;
+	let TrafficOverviewFooterComponent: ComponentType =
+		TrafficOverviewSourceLink;
+
+	if ( typicalTrafficEnabled ) {
+		TrafficOverviewPanelComponent =
+			dashboardType === DASHBOARD_TYPE_ENTITY
+				? EntityTypicalTrafficOverviewPanel
+				: TypicalTrafficOverviewPanel;
+		TrafficOverviewFooterComponent = TypicalTrafficOverviewFooter;
+	}
+
+	// The Traffic overview tab shows Analytics reports only.
 	if ( isAnalyticsConnected ) {
 		tabs.push( {
 			id: TRAFFIC_OVERVIEW_TAB_ID,
 			label: __( 'Traffic overview', 'google-site-kit' ),
-			PanelComponent:
-				dashboardType === DASHBOARD_TYPE_ENTITY
-					? EntityTrafficOverviewPanel
-					: TrafficOverviewPanel,
-			FooterComponent: TrafficOverviewFooter,
+			PanelComponent: TrafficOverviewPanelComponent,
+			FooterComponent: TrafficOverviewFooterComponent,
 		} );
 	}
 

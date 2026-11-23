@@ -32,7 +32,7 @@ import { getQueryArg } from '@wordpress/url';
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+import { TYPICAL_TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/typicalColumns';
 import {
 	getPlaceholderDailyTraffic,
 	getPlaceholderPublishedPosts,
@@ -70,8 +70,11 @@ import {
 	getComparisonDateRange,
 	getDateDimensionValues,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
-import { getBreakdownReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import {
+	getDailyVisitsReportArgs,
+	getTypicalBreakdownReportArgs,
+} from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
@@ -83,6 +86,7 @@ import {
 import {
 	BenchmarkingDailyTrafficRow,
 	BenchmarkingKeyFactor,
+	BenchmarkingVisits,
 	DecodedBenchmarkingResponse,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
@@ -456,8 +460,8 @@ export function createBreakdownReport(
 }
 
 /**
- * Builds the values of a traffic breakdown column from label and visits
- * pairs, in the order given.
+ * Builds the values of a breakdown column of the Typical Traffic Overview
+ * panel from label and visits pairs, in the order given.
  *
  * @since n.e.x.t
  *
@@ -471,8 +475,8 @@ export function createBreakdownValues(
 }
 
 /**
- * The visits of each column of the Traffic Overview breakdown, keyed by the
- * column's `id`, each as `[ label, visits ]` pairs ordered by visits, most
+ * The visits of each column of the Typical Traffic Overview breakdown, keyed
+ * by the column's `id`, each as `[ label, visits ]` pairs ordered by visits, most
  * first. The device names are lowercase, the way GA4 writes them.
  *
  * @since n.e.x.t
@@ -501,16 +505,16 @@ export const TRAFFIC_BREAKDOWN_PAIRS: Record<
 };
 
 /**
- * Builds the arguments the Traffic Overview panel passes to `getReport` for
- * the channels, locations, and devices reports of its breakdown, over the
- * selected date range and for the current entity URL.
+ * Builds the arguments the Typical Traffic Overview panel passes to
+ * `getReport` for the channels, locations, and devices reports of its
+ * breakdown, over the selected date range and for the current entity URL.
  *
  * @since n.e.x.t
  *
  * @param {Object} registry The registry with the selected date range and the entity URL.
  * @return {Object} The arguments of each report, keyed by the column's `id`.
  */
-export function getTrafficBreakdownReportArgs(
+export function getTypicalTrafficBreakdownReportArgs(
 	registry: WPDataRegistry
 ): Record< string, ReportOptions > {
 	const { startDate, endDate } = registry
@@ -519,22 +523,24 @@ export function getTrafficBreakdownReportArgs(
 	const url = registry.select( CORE_SITE ).getCurrentEntityURL() || undefined;
 
 	return Object.fromEntries(
-		TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, dimensionName, reportID } ) => [
-			id,
-			getBreakdownReportArgs( {
-				dimensionName,
-				reportID,
-				startDate,
-				endDate,
-				url,
-			} ),
-		] )
+		TYPICAL_TRAFFIC_BREAKDOWN_COLUMNS.map(
+			( { id, dimensionName, reportID } ) => [
+				id,
+				getTypicalBreakdownReportArgs( {
+					dimensionName,
+					reportID,
+					startDate,
+					endDate,
+					url,
+				} ),
+			]
+		)
 	);
 }
 
 /**
- * Puts the channels, locations, and devices reports of the Traffic Overview
- * breakdown in the store, over the selected date range and for the current
+ * Puts the channels, locations, and devices reports of the Typical Traffic
+ * Overview breakdown in the store, over the selected date range and for the current
  * entity URL, so the breakdown renders without sending a request for them.
  *
  * @since n.e.x.t
@@ -543,14 +549,14 @@ export function getTrafficBreakdownReportArgs(
  * @param {Object} [pairsByColumn] Optional. The `[ label, visits ]` pairs of each column, keyed by the column's `id`. A column left out gets no report. Default `TRAFFIC_BREAKDOWN_PAIRS`.
  * @return {void}
  */
-export function provideTrafficBreakdownReports(
+export function provideTypicalTrafficBreakdownReports(
 	registry: WPDataRegistry,
 	pairsByColumn: Record<
 		string,
 		Array< [ string, number ] >
 	> = TRAFFIC_BREAKDOWN_PAIRS
 ) {
-	const argsByColumn = getTrafficBreakdownReportArgs( registry );
+	const argsByColumn = getTypicalTrafficBreakdownReportArgs( registry );
 
 	Object.entries( pairsByColumn ).forEach( ( [ id, pairs ] ) => {
 		registry
@@ -559,6 +565,86 @@ export function provideTrafficBreakdownReports(
 				options: argsByColumn[ id ],
 			} );
 	} );
+}
+
+/**
+ * Builds the arguments the Typical Traffic Overview panel passes to
+ * `getReport` for the report of visits on each day of the selected range,
+ * against the range before it, and for the current entity URL.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry with the selected date range and the entity URL.
+ * @return {Object} The daily visits report's arguments.
+ */
+export function getTypicalTrafficDailyVisitsReportArgs(
+	registry: WPDataRegistry
+): ReportOptions {
+	const { startDate, endDate, compareStartDate, compareEndDate } = registry
+		.select( CORE_USER )
+		.getDateRangeDates( { compare: true } );
+	const url = registry.select( CORE_SITE ).getCurrentEntityURL() || undefined;
+
+	return getDailyVisitsReportArgs( {
+		startDate,
+		endDate,
+		compareStartDate,
+		compareEndDate,
+		url,
+	} );
+}
+
+/**
+ * Puts the report of visits on each day of the selected range, against the
+ * range before it, in the store, for the current entity URL, so the Typical
+ * Traffic Overview panel draws and adds up the visits without a request.
+ *
+ * The report's rows hold the visits on each day, and its totals the visits
+ * over the selected range, then over the range before it. By default, they
+ * are the design's.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        registry      The registry with the selected date range and the entity URL.
+ * @param {Array.<Array>} [days]        Optional. Each day of the selected range as `[ YYYYMMDD, visits ]`. Default is the visits the design plots on each day.
+ * @param {Object}        [totalVisits] Optional. The visits over the selected range and over the range before it. Default is the design's.
+ * @return {void}
+ */
+export function provideTypicalTrafficDailyVisitsReport(
+	registry: WPDataRegistry,
+	days?: Array< [ string, number ] >,
+	totalVisits: BenchmarkingVisits = PLACEHOLDER_TOTAL_VISITS
+) {
+	const { startDate, endDate } = registry
+		.select( CORE_USER )
+		.getDateRangeDates();
+	const options = getTypicalTrafficDailyVisitsReportArgs( registry );
+
+	const rows =
+		days ??
+		getPlaceholderDailyTraffic( startDate, endDate ).map(
+			( { date, visits } ): [ string, number ] => [
+				date.replace( /-/g, '' ),
+				visits,
+			]
+		);
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: rows.map( ( [ date, visits ] ) => ( {
+				dimensionValues: [ { value: date }, { value: 'date_range_0' } ],
+				metricValues: [ { value: `${ visits }` } ],
+			} ) ),
+			totals: [
+				{ metricValues: [ { value: `${ totalVisits.current }` } ] },
+				{ metricValues: [ { value: `${ totalVisits.previous }` } ] },
+			],
+		},
+		{ options }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ options ] );
 }
 
 /**

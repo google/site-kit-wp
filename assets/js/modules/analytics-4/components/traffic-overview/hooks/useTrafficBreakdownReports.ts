@@ -24,20 +24,23 @@ import { useMemo } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
-import { getBreakdownReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { TYPICAL_TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/typicalColumns';
+import { getTypicalBreakdownReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
 import { getBreakdownValuesFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownValuesFromReport';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { useTrafficReport } from './useTrafficReport';
 
 const [ CHANNELS_COLUMN, LOCATIONS_COLUMN, DEVICES_COLUMN ] =
-	TRAFFIC_BREAKDOWN_COLUMNS;
+	TYPICAL_TRAFFIC_BREAKDOWN_COLUMNS;
 
 // Built once, so each report keeps the same options from render to render.
-const CHANNELS_REPORT_OPTIONS = getBreakdownReportOptions( CHANNELS_COLUMN );
-const LOCATIONS_REPORT_OPTIONS = getBreakdownReportOptions( LOCATIONS_COLUMN );
-const DEVICES_REPORT_OPTIONS = getBreakdownReportOptions( DEVICES_COLUMN );
+const CHANNELS_REPORT_OPTIONS =
+	getTypicalBreakdownReportOptions( CHANNELS_COLUMN );
+const LOCATIONS_REPORT_OPTIONS =
+	getTypicalBreakdownReportOptions( LOCATIONS_COLUMN );
+const DEVICES_REPORT_OPTIONS =
+	getTypicalBreakdownReportOptions( DEVICES_COLUMN );
 
 export interface TrafficBreakdownReports {
 	/**
@@ -56,9 +59,9 @@ export interface TrafficBreakdownReports {
 }
 
 /**
- * Resolves the three GA4 reports of the Traffic Overview breakdown. Each
- * report counts the visits of each value of its column's dimension over the
- * selected range.
+ * Resolves the three GA4 reports of the Typical Traffic Overview breakdown.
+ * Each report counts the visits of each value of its column's dimension over
+ * the selected range.
  *
  * `useTrafficReport` adds the selected date range to each report, and the
  * entity URL on an entity dashboard, so the breakdown covers the page alone

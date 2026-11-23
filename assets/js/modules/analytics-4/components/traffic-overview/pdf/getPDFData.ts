@@ -34,39 +34,23 @@ import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI, {
 	getVisualization,
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
-import { isFeatureEnabled } from '@/js/features';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
-import { TRAFFIC_CHART_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/charts/trafficChartOptions';
 import {
 	getBreakdownReportArgs,
-	getDailyVisitsReportArgs,
+	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	TrafficBreakdownRow,
 	getBreakdownRows,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
-import { getBreakdownValuesFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownValuesFromReport';
-import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
-import { getTrafficOverviewVisits } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTrafficOverviewVisits';
-import { hasTypicalTrafficRange } from '@/js/modules/analytics-4/components/traffic-overview/utils/hasTypicalTrafficRange';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
-import {
-	BenchmarkingDailyTrafficRow,
-	BenchmarkingInsight,
-	DecodedBenchmarkingResponse,
-} from '@/js/modules/analytics-4/utils/benchmarking/types';
-import { getDayCount, stringToDate } from '@/js/util';
-import {
-	TrafficOverviewTypicalTrafficPDFData,
-	getTypicalTrafficPDFData,
-} from './getTypicalTrafficPDFData';
+import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
 
 export type { TrafficBreakdownRow };
 
@@ -84,9 +68,6 @@ const LINE_CHART_HEIGHT = 133;
  * line stays sharp in the PDF.
  */
 const LINE_CHART_SCALE_FACTOR = 2;
-
-/** A column of the typical traffic range: a bound of the band behind the line. */
-const TYPICAL_TRAFFIC_RANGE_COLUMN = { type: 'number', role: 'interval' };
 
 export interface GetPDFDataParams {
 	/** WordPress data registry. */
@@ -111,97 +92,77 @@ export interface GetPDFDataParams {
 }
 
 export interface TrafficOverviewPDFData {
-	/** The figures, the daily traffic, the typical traffic view and the breakdown rows, or `null` when the export is canceled. */
+	/** Loaded reports and breakdown rows, or `null` when the export is canceled. */
 	data: {
-		/** The visits over the range, and over the range before it. A previous total of zero prints no change. */
-		totalVisits: {
-			/** The visits over the range. */
-			current: number;
-			/** The visits over the range before it. */
-			previous?: number;
-		};
-		/** The unique visitors over the range, from the totals report. Zero when its request fails. */
-		uniqueVisitors: number;
-		/** The visits on each day of the range, oldest first, which the line chart is drawn from, with each day's typical range where the chart draws the band. A day without visits reads zero. */
-		dailyTraffic: BenchmarkingDailyTrafficRow[];
-		/** The parts of the typical traffic view, where the dashboard shows them: on the main dashboard, with the `typicalTraffic` feature and the benchmarking response. */
-		typicalTraffic?: TrafficOverviewTypicalTrafficPDFData;
-		/** Ranked rows for the channels breakdown, empty when no channel has visits. */
-		channelBreakdown: TrafficBreakdownRow[];
-		/** Ranked rows for the locations breakdown, empty when no location has visits. */
-		locationBreakdown: TrafficBreakdownRow[];
-		/** Ranked rows for the devices breakdown, empty when no device has visits. */
-		deviceBreakdown: TrafficBreakdownRow[];
+		/** GA4 totals report with the current and comparison range totals. */
+		totalsReport: Report;
+		/** GA4 report with one row per day, which the line chart is drawn from. */
+		graphReport: Report;
+		/** Ranked rows for the channels breakdown, or `null` on a missing report. */
+		channelBreakdown: TrafficBreakdownRow[] | null;
+		/** Ranked rows for the locations breakdown, or `null` on a missing report. */
+		locationBreakdown: TrafficBreakdownRow[] | null;
+		/** Ranked rows for the devices breakdown, or `null` on a missing report. */
+		deviceBreakdown: TrafficBreakdownRow[] | null;
 	} | null;
 	/** Rendered chart images as JPEG data URIs. */
 	chartImages?: {
-		/** The visits line chart image. */
+		/** The All visitors line chart image. */
 		lineChart: string;
 	};
 }
 
 interface LineChartPoint {
-	/** The day the point covers. */
+	/** Day the point covers, parsed from the row's date dimension. */
 	date: Date;
-	/** The visits on that day. */
+	/** Total users on that day, `0` when the row has no value. */
 	value: number;
-	/** The bounds of the day's typical range, where the day has one. */
-	typicalRange?: {
-		/** The lower bound. */
-		min: number;
-		/** The upper bound. */
-		max: number;
-	};
-}
-
-interface LineChartParts {
-	/** Whether the chart draws the typical traffic range behind the line. */
-	hasBand: boolean;
 }
 
 /**
- * Turns the daily traffic into the line chart's points.
+ * Reduces the date-dimension graph report into parsed chart points.
+ *
+ * Rows whose date fails to parse are dropped, matching the dashboard's
+ * tolerance for malformed dimension values.
  *
  * @since 1.189.0
- * @since n.e.x.t Changed the `graphReport` parameter to `dailyTraffic`, and added the typical range of each day.
  *
- * @param {Array<Object>} dailyTraffic The visits on each day, oldest first.
- * @return {Array<Object>} Points of `{ date, value, typicalRange }`, in the same order.
+ * @param {Object} graphReport Date-dimension GA4 report.
+ * @return {Array<Object>} Points of `{ date, value }`, ordered as returned.
  */
-function getLineChartPoints(
-	dailyTraffic: BenchmarkingDailyTrafficRow[]
-): LineChartPoint[] {
-	return dailyTraffic.map(
-		( { date, visits, expectedMin, expectedMax } ) => ( {
-			date: stringToDate( date ),
-			value: visits,
-			typicalRange:
-				expectedMin !== null && expectedMax !== null
-					? { min: expectedMin, max: expectedMax }
-					: undefined,
-		} )
+function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
+	return ( graphReport?.rows || [] ).reduce< LineChartPoint[] >(
+		( points, row ) => {
+			const dateString = row.dimensionValues?.[ 0 ]?.value;
+			const date = dateString
+				? parseDimensionStringToDate( dateString )
+				: false;
+
+			if ( date instanceof Date ) {
+				points.push( {
+					date,
+					value: Number( row.metricValues?.[ 0 ]?.value ) || 0,
+				} );
+			}
+
+			return points;
+		},
+		[]
 	);
 }
 
 /**
- * Builds the Google Charts `DataTable` for the visits line chart.
+ * Builds the Google Charts `DataTable` for the All Visitors line chart.
  *
- * The table has the "Day" and "Visits" columns of the dashboard chart's table,
- * which `getTrafficChartData()` builds, and the two interval columns of the
- * typical traffic range when the chart draws the band.
+ * The table has the same columns as the dashboard chart's table, which
+ * `getTrafficChartData()` builds.
  *
  * @since 1.189.0
- * @since n.e.x.t Names the second column "Visits" in place of "Users", and adds the columns of the typical traffic range.
  *
- * @param {Array<Object>} points          Parsed chart points.
- * @param {Object}        options         The chart's parts.
- * @param {boolean}       options.hasBand Whether the chart draws the typical traffic range.
+ * @param {Array<Object>} points Parsed chart points.
  * @return {Object} A `google.visualization.DataTable` instance.
  */
-function buildLineChartDataTable(
-	points: LineChartPoint[],
-	{ hasBand }: LineChartParts
-): object {
+function buildLineChartDataTable( points: LineChartPoint[] ): object {
 	const visualization = getVisualization();
 	if ( ! visualization?.DataTable ) {
 		throw new Error(
@@ -211,25 +172,8 @@ function buildLineChartDataTable(
 
 	const dataTable = new visualization.DataTable();
 	dataTable.addColumn( 'date', __( 'Day', 'google-site-kit' ) );
-	dataTable.addColumn( 'number', __( 'Visits', 'google-site-kit' ) );
-
-	if ( hasBand ) {
-		dataTable.addColumn( TYPICAL_TRAFFIC_RANGE_COLUMN );
-		dataTable.addColumn( TYPICAL_TRAFFIC_RANGE_COLUMN );
-	}
-
-	dataTable.addRows(
-		points.map( ( { date, value, typicalRange } ) =>
-			hasBand
-				? [
-						date,
-						value,
-						typicalRange?.min ?? null,
-						typicalRange?.max ?? null,
-				  ]
-				: [ date, value ]
-		)
-	);
+	dataTable.addColumn( 'number', __( 'Users', 'google-site-kit' ) );
+	dataTable.addRows( points.map( ( { date, value } ) => [ date, value ] ) );
 
 	return dataTable;
 }
@@ -238,23 +182,15 @@ function buildLineChartDataTable(
  * Builds Google Charts options matching the Traffic Overview card's line chart.
  *
  * @since 1.189.0
- * @since n.e.x.t Draws the typical traffic range as the dashboard's chart does, and fits the value axis to it.
  *
- * @param {Array<Object>} points          Parsed chart points.
- * @param {Object}        options         The chart's parts.
- * @param {boolean}       options.hasBand Whether the chart draws the typical traffic range.
+ * @param {Array<Object>} points Parsed chart points.
  * @return {Object} Google Charts options object.
  */
-function getLineChartOptions(
-	points: LineChartPoint[],
-	{ hasBand }: LineChartParts
-): object {
+function getLineChartOptions( points: LineChartPoint[] ): object {
 	const fontSize = 14;
 	const chartAreaLeft = 8;
-	// The band can reach above the busiest day, so the axis fits it too.
 	const maxValue = points.reduce(
-		( highest, { value, typicalRange } ) =>
-			Math.max( highest, value, hasBand ? typicalRange?.max ?? 0 : 0 ),
+		( highest, { value } ) => Math.max( highest, value ),
 		0
 	);
 	const valueAxisGutter = getValueAxisGutter( maxValue, fontSize );
@@ -322,110 +258,22 @@ function getLineChartOptions(
 				targetAxisIndex: 1,
 			},
 		},
-		// The band behind the line, in the dashboard chart's color and opacity.
-		...( hasBand ? { intervals: TRAFFIC_CHART_OPTIONS.intervals } : {} ),
 		focusTarget: 'category',
 	};
 }
 
 /**
- * Gets the generated insight the dashboard already has for the date range.
+ * Loads the GA4 reports and the line chart image for the Traffic Overview PDF
+ * section.
  *
- * Reading the insight before the dashboard has asked for it would ask the
- * Site Kit service to write one, and the export never waits for a
- * generation, so the PDF prints the insight only once its request has
- * finished.
- *
- * @since n.e.x.t
- *
- * @param {Object} registry  WordPress data registry.
- * @param {string} startDate The first day of the date range.
- * @param {string} endDate   The last day of the date range.
- * @return {(Object|null)} The insight, or null when the dashboard has none.
- */
-function getLoadedInsight(
-	registry: GetPDFDataParams[ 'registry' ],
-	startDate: string,
-	endDate: string
-): BenchmarkingInsight | null {
-	const { hasFinishedResolution, getBenchmarkingInsight } =
-		registry.select( MODULES_ANALYTICS_4 );
-
-	if (
-		! isFeatureEnabled( 'trafficInsights' ) ||
-		! hasFinishedResolution( 'getBenchmarkingInsight', [
-			startDate,
-			endDate,
-		] )
-	) {
-		return null;
-	}
-
-	return getBenchmarkingInsight( startDate, endDate ) ?? null;
-}
-
-/**
- * Gets the parts of the typical traffic view the PDF prints, where the
- * dashboard shows them.
- *
- * The dashboard leaves the key factors out while the property gathers data,
- * so the PDF does too. The check reads the state only once the dashboard has
- * resolved it, so the export sends no request for it.
- *
- * @since n.e.x.t
- *
- * @param {Object} registry             WordPress data registry.
- * @param {Object} benchmarkingResponse The benchmarking response for the date range.
- * @param {Object} dates                The date range.
- * @param {string} dates.startDate      The first day of the date range.
- * @param {string} dates.endDate        The last day of the date range.
- * @return {(Object|undefined)} The parts of the typical traffic view, or `undefined` while the property gathers data.
- */
-function getTypicalTraffic(
-	registry: GetPDFDataParams[ 'registry' ],
-	benchmarkingResponse: DecodedBenchmarkingResponse,
-	{ startDate, endDate }: { startDate: string; endDate: string }
-): TrafficOverviewTypicalTrafficPDFData | undefined {
-	const { hasFinishedResolution, isGatheringData } =
-		registry.select( MODULES_ANALYTICS_4 );
-
-	if ( hasFinishedResolution( 'isGatheringData' ) && isGatheringData() ) {
-		return undefined;
-	}
-
-	return getTypicalTrafficPDFData( {
-		benchmarkingResponse,
-		insight: getLoadedInsight( registry, startDate, endDate ),
-		referenceDate: registry.select( CORE_USER ).getReferenceDate(),
-		referenceSiteURL:
-			registry.select( CORE_SITE ).getReferenceSiteURL() || undefined,
-		daysInRange: getDayCount( startDate, endDate ),
-	} );
-}
-
-/**
- * Loads the figures, the typical traffic view and the line chart image for
- * the Traffic Overview PDF section.
- *
- * Where the dashboard reads its figures from the benchmarking response, on
- * the main dashboard with the `typicalTraffic` feature, the PDF reads the
- * response too, so it prints the dashboard's visits, band, key factors and
- * the generated insight the dashboard already has. Otherwise, or when the
- * benchmarking request fails, the visits come from the daily visits report
- * over the range and the range before it, as on the dashboard. The unique
- * visitors come from the totals report, and the three breakdowns from their
- * reports, with the entity URL on an entity dashboard. The run stops early
- * when the signal is aborted. Then it draws the line chart of the visits on
- * each day as a JPEG data URI for the PDF. The daily traffic and the rows of
- * each breakdown are shaped with the same helpers the dashboard uses, so the
- * printed figures always match.
- *
- * A report that fails reads as a report without rows, so the rest of the
- * section still prints.
+ * Fetches the totals, graph, and three breakdown reports (channels, locations,
+ * and devices) at the same time, and stops early when the signal is aborted.
+ * Then it draws the line chart as a JPEG data URI for the PDF. Each breakdown's
+ * rows are shaped with the same `getBreakdownRows()` the dashboard's columns
+ * use, so the printed rows always match. A breakdown whose report failed gives
+ * `null` rows, and the other breakdowns still render.
  *
  * @since 1.189.0
- * @since n.e.x.t Draws the line chart from the daily visits report, and shapes the breakdown rows from the visits of each value.
- * @since n.e.x.t Prints the visits in place of the unique visitors, from the benchmarking response where the dashboard reads it, with the band, the key factors and the generated insight.
  *
  * @param {Object}      params          Loader parameters.
  * @param {Object}      params.registry WordPress data registry.
@@ -446,11 +294,6 @@ export default async function getPDFData( {
 
 	const url = registry.select( CORE_SITE ).getCurrentEntityURL() || undefined;
 
-	// The dashboard reads its figures from the benchmarking response only on
-	// the main dashboard, with the `typicalTraffic` feature.
-	const readsBenchmarkingResponse =
-		isFeatureEnabled( 'typicalTraffic' ) && ! url;
-
 	const totalsArgs = getTotalsReportArgs( {
 		startDate,
 		endDate,
@@ -459,17 +302,14 @@ export default async function getPDFData( {
 		url,
 	} );
 
-	// The range before the selected one gives the visits the change compares
-	// with, as on the main dashboard.
-	const dailyVisitsArgs = getDailyVisitsReportArgs( {
+	const graphArgs = getGraphReportArgs( {
 		startDate,
 		endDate,
-		compareStartDate,
-		compareEndDate,
 		url,
 	} );
 
-	// In the order of `TRAFFIC_BREAKDOWN_COLUMNS`: channels, locations, devices.
+	// Breakdown reports use the selected range only, since there's no
+	// comparison range for a row to pair against.
 	const breakdownArgsList = TRAFFIC_BREAKDOWN_COLUMNS.map(
 		( { dimensionName, reportID } ) =>
 			getBreakdownReportArgs( {
@@ -489,39 +329,29 @@ export default async function getPDFData( {
 	// loaded stays in state, so a successful earlier run adds no extra
 	// request.
 	const { invalidateResolution } = registry.dispatch( MODULES_ANALYTICS_4 );
-	[ totalsArgs, dailyVisitsArgs, ...breakdownArgsList ].forEach( ( args ) =>
+	invalidateResolution( 'getReport', [ totalsArgs, { signal } ] );
+	invalidateResolution( 'getReport', [ graphArgs, { signal } ] );
+	breakdownArgsList.forEach( ( args ) =>
 		invalidateResolution( 'getReport', [ args, { signal } ] )
 	);
 
-	// A report that fails resolves to `undefined`, which reads as no rows.
-	function resolveReport(
-		args: ReportOptions
-	): Promise< Report | undefined > {
-		return registry
-			.resolveSelect( MODULES_ANALYTICS_4 )
-			.getReport( args, { signal } );
-	}
-
-	const reportsRequest = Promise.all(
-		[ totalsArgs, ...breakdownArgsList ].map( resolveReport )
-	);
-
-	// A failed request leaves no response, as on the dashboard.
-	const benchmarkingResponse: DecodedBenchmarkingResponse | undefined =
-		readsBenchmarkingResponse
-			? await registry
+	const [ totalsReport, graphReport, ...breakdownReports ] =
+		await Promise.all( [
+			registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getReport( totalsArgs, { signal } ),
+			registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getReport( graphArgs, { signal } ),
+			// A breakdown report that fails is caught here, so the rest of
+			// the widget still renders and that breakdown's rows are `null`.
+			...breakdownArgsList.map( ( args ) =>
+				registry
 					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getBenchmarkingData( startDate, endDate )
-			: undefined;
-
-	// Without the benchmarking response, the visits come from the daily visits
-	// report. With it, the PDF asks for no report the dashboard didn't.
-	const dailyVisitsReport = benchmarkingResponse
-		? undefined
-		: await resolveReport( dailyVisitsArgs );
-
-	const [ totalsReport, channelsReport, locationsReport, devicesReport ] =
-		await reportsRequest;
+					.getReport( args, { signal } )
+					.catch( () => null )
+			),
+		] );
 
 	if ( signal.aborted ) {
 		return { data: null };
@@ -534,24 +364,12 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
-	const { dailyTraffic = [], totalVisits = { current: 0 } } =
-		getTrafficOverviewVisits( {
-			readsBenchmarkingResponse: true,
-			benchmarkingResponse,
-			benchmarkingFailed: ! benchmarkingResponse,
-			dailyVisitsReport,
-			startDate,
-			endDate,
-		} );
-
-	// The band covers every day of the range or none of them.
-	const hasBand = hasTypicalTrafficRange( dailyTraffic );
-	const points = getLineChartPoints( dailyTraffic );
+	const points = getLineChartPoints( graphReport );
 
 	const lineChart = await renderGoogleChartToDataURI( {
 		chartType: 'LineChart',
-		dataTable: buildLineChartDataTable( points, { hasBand } ),
-		options: getLineChartOptions( points, { hasBand } ),
+		dataTable: buildLineChartDataTable( points ),
+		options: getLineChartOptions( points ),
 		width: LINE_CHART_WIDTH,
 		height: LINE_CHART_HEIGHT,
 		scaleFactor: LINE_CHART_SCALE_FACTOR,
@@ -562,27 +380,18 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
+	const [ channelBreakdown, locationBreakdown, deviceBreakdown ] =
+		breakdownReports.map( ( report ) =>
+			report ? getBreakdownRows( report ) : null
+		);
+
 	return {
 		data: {
-			totalVisits,
-			// The report's totals hold the selected range first.
-			uniqueVisitors: getMetricValue( totalsReport?.totals?.[ 0 ] ),
-			dailyTraffic,
-			typicalTraffic: benchmarkingResponse
-				? getTypicalTraffic( registry, benchmarkingResponse, {
-						startDate,
-						endDate,
-				  } )
-				: undefined,
-			channelBreakdown: getBreakdownRows(
-				getBreakdownValuesFromReport( channelsReport )
-			),
-			locationBreakdown: getBreakdownRows(
-				getBreakdownValuesFromReport( locationsReport )
-			),
-			deviceBreakdown: getBreakdownRows(
-				getBreakdownValuesFromReport( devicesReport )
-			),
+			totalsReport,
+			graphReport,
+			channelBreakdown,
+			locationBreakdown,
+			deviceBreakdown,
 		},
 		chartImages: {
 			lineChart,

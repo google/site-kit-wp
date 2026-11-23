@@ -20,11 +20,9 @@
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import {
-	DAILY_VISITS_REPORT_OPTIONS,
-	getTotalsReportOptions,
-} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { getTotalsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { DAILY_VISITS_REPORT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { useTrafficBreakdownReports } from './useTrafficBreakdownReports';
@@ -59,8 +57,8 @@ export interface EntityTrafficReports {
 }
 
 /**
- * Resolves the GA4 reports the Traffic Overview panel needs on the entity
- * dashboard.
+ * Resolves the GA4 reports the Typical Traffic Overview panel needs on the
+ * entity dashboard.
  *
  * The benchmarking response covers the whole site, so the entity dashboard,
  * which shows one page, reads the page's visits from GA4 reports instead.

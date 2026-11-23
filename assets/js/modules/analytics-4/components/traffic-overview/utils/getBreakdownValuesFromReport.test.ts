@@ -39,7 +39,7 @@ describe( 'getBreakdownValuesFromReport', () => {
 		] );
 	} );
 
-	it( 'should keep a row with no visits, so `getBreakdownRows()` decides what to leave out', () => {
+	it( 'should keep a row with no visits, so `getTypicalBreakdownRows()` decides what to leave out', () => {
 		expect(
 			getBreakdownValuesFromReport(
 				createBreakdownReport( [

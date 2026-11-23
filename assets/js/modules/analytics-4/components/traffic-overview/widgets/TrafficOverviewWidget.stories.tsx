@@ -33,6 +33,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
@@ -45,7 +46,8 @@ import {
 	getSiteVisitorsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
-	getDailyVisitsReportArgs,
+	getBreakdownReportArgs,
+	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
@@ -65,8 +67,10 @@ import {
 	provideRecentActivitySurveyState,
 	provideRecentTrafficBreakdownReports,
 	provideSiteVisitorsReport,
-	provideTrafficBreakdownReports,
+	provideTypicalTrafficBreakdownReports,
+	provideTypicalTrafficDailyVisitsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { getDailyVisitsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	benchmarkingInsight,
@@ -93,11 +97,10 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 )( TrafficOverviewWidget );
 
 /**
- * Connects Analytics, gives Search Console a property and sets a fixed date
- * range, so `MainDashboard` and `EntityDashboard` start from the same state.
+ * Connects Analytics and sets a fixed date range, so `MainDashboard` and
+ * `EntityDashboard` start from the same state.
  *
  * @since 1.188.0
- * @since n.e.x.t Gives Search Console a property too.
  *
  * @param {Object} registry The registry to set up.
  * @return {void}
@@ -123,64 +126,119 @@ function commonSetup( registry: WPDataRegistry ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( false );
-	// When the Traffic overview tab has the key factors, its footer links to
-	// Search Console, and the link needs the Search Console property.
-	registry
-		.dispatch( MODULES_SEARCH_CONSOLE )
-		.setPropertyID( 'https://example.com/' );
 }
 
 /**
- * Builds the arguments the panel passes to `getReport` for the totals report.
+ * Builds the five argument sets the panel passes to `getReport`, in this order:
+ *
+ * 1. totals
+ * 2. graph
+ * 3. channels
+ * 4. locations
+ * 5. devices.
  *
  * @since 1.188.0
- * @since n.e.x.t Renamed from `getTrafficOverviewReportArgs()`, and builds the totals report's arguments alone.
  *
  * @param {Object} registry The registry the date range and the entity URL come from.
- * @return {Object} The totals report's arguments.
+ * @return {Array<Object>} The five argument sets.
  */
-function getTotalsArgs( registry: WPDataRegistry ): ReportOptions {
+function getTrafficOverviewReportArgs(
+	registry: WPDataRegistry
+): ReportOptions[] {
 	const { startDate, endDate, compareStartDate, compareEndDate } = registry
 		.select( CORE_USER )
 		.getDateRangeDates( { compare: true } );
 
 	const entityURL = registry.select( CORE_SITE ).getCurrentEntityURL();
 
-	return getTotalsReportArgs( {
+	const sharedReportOptions = {
 		startDate,
 		endDate,
-		compareStartDate,
-		compareEndDate,
 		...( entityURL ? { url: entityURL } : {} ),
-	} );
+	};
+
+	return [
+		getTotalsReportArgs( {
+			...sharedReportOptions,
+			compareStartDate,
+			compareEndDate,
+		} ),
+		getGraphReportArgs( sharedReportOptions ),
+		...TRAFFIC_BREAKDOWN_COLUMNS.map( ( { dimensionName, reportID } ) =>
+			getBreakdownReportArgs( {
+				...sharedReportOptions,
+				dimensionName,
+				reportID,
+			} )
+		),
+	];
 }
 
 /**
- * Puts the Traffic Overview widget's totals report and its three breakdown
- * reports in the store, so a story renders without sending a report request.
+ * Puts the Traffic Overview widget's five reports in the store, so a story
+ * renders without sending a report request.
  *
  * @since 1.189.0
- * @since n.e.x.t Puts the totals report and the three breakdown reports in the store.
  *
  * @param {Object} registry The registry to put the reports in.
  * @return {void}
  */
 function provideTrafficOverviewReports( registry: WPDataRegistry ) {
-	provideAnalytics4MockReport( registry, getTotalsArgs( registry ) );
-	provideTrafficBreakdownReports( registry );
+	getTrafficOverviewReportArgs( registry ).forEach( ( options ) =>
+		provideAnalytics4MockReport( registry, options )
+	);
 }
 
 /**
- * Puts the reports the Traffic Overview panel reads on the entity dashboard in
- * the store, for the current entity URL, so a story renders without sending a
- * report request.
+ * Sets up the registry as `commonSetup()` does, and gives Search Console a
+ * property. With the `typicalTraffic` feature, the Traffic overview tab's
+ * footer links to Search Console when the tab shows the key factors, and the
+ * link needs the property.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to set up.
+ * @return {void}
+ */
+function typicalTrafficSetup( registry: WPDataRegistry ) {
+	commonSetup( registry );
+	registry
+		.dispatch( MODULES_SEARCH_CONSOLE )
+		.setPropertyID( 'https://example.com/' );
+}
+
+/**
+ * Puts the reports the Typical Traffic Overview panel reads on the main
+ * dashboard in the store, so a story renders without sending a report
+ * request.
+ *
+ * The daily visits report has the design's figures. The panel reads them only
+ * when the benchmarking request fails.
  *
  * @since n.e.x.t
  *
  * @param {Object} registry The registry to put the reports in.
  * @return {void}
  */
-function provideEntityTrafficReports( registry: WPDataRegistry ) {
+function provideTypicalTrafficOverviewReports( registry: WPDataRegistry ) {
+	const [ totalsArgs ] = getTrafficOverviewReportArgs( registry );
+
+	provideAnalytics4MockReport( registry, totalsArgs );
+	provideTypicalTrafficDailyVisitsReport( registry );
+	provideTypicalTrafficBreakdownReports( registry );
+}
+
+/**
+ * Puts the reports the Typical Traffic Overview panel reads on the entity
+ * dashboard in the store, for the current entity URL, so a story renders
+ * without sending a report request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the reports in.
+ * @return {void}
+ */
+function provideEntityTypicalTrafficReports( registry: WPDataRegistry ) {
 	const { startDate, endDate } = registry
 		.select( CORE_USER )
 		.getDateRangeDates();
@@ -194,7 +252,7 @@ function provideEntityTrafficReports( registry: WPDataRegistry ) {
 		registry,
 		getDailyVisitsReportArgs( { startDate, endDate, url } )
 	);
-	provideTrafficBreakdownReports( registry );
+	provideTypicalTrafficBreakdownReports( registry );
 }
 
 /**
@@ -314,8 +372,8 @@ export const TypicalTraffic = Template.bind(
 TypicalTraffic.storyName = 'Typical Traffic (typicalTraffic enabled)';
 TypicalTraffic.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		provideTrafficOverviewReports( registry );
+		typicalTrafficSetup( registry );
+		provideTypicalTrafficOverviewReports( registry );
 		// With the `typicalTraffic` feature, the Traffic overview tab reads the
 		// benchmarking response.
 		provideBenchmarkingResponse( registry );
@@ -364,8 +422,8 @@ TypicalTrafficShortHistory.storyName =
 	'Typical Traffic, Short History (typicalTraffic enabled)';
 TypicalTrafficShortHistory.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		provideTrafficOverviewReports( registry );
+		typicalTrafficSetup( registry );
+		provideTypicalTrafficOverviewReports( registry );
 
 		const { startDate, endDate } = registry
 			.select( CORE_USER )
@@ -406,6 +464,12 @@ TypicalTrafficShortHistory.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
+/**
+ * This story sets no `scenario`, so it runs no visual check. A current entity
+ * URL changes only the report requests and the footer link's address, and
+ * `useTrafficOverviewReports.test.ts` and `TrafficOverviewSourceLink.test.tsx`
+ * already cover both.
+ */
 export const EntityDashboard = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
@@ -417,16 +481,33 @@ EntityDashboard.args = {
 		provideSiteInfo( registry, {
 			currentEntityURL: 'https://example.com/about/',
 		} );
-		provideEntityTrafficReports( registry );
+		provideTrafficOverviewReports( registry );
 	},
 };
-// The panel reads no benchmarking response on the entity dashboard, so the
-// `typicalTraffic` feature shows that it leaves out the typical traffic range,
-// the published posts, and the key factors.
-EntityDashboard.parameters = {
+
+export const TypicalTrafficEntityDashboard = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+TypicalTrafficEntityDashboard.storyName =
+	'Typical Traffic, Entity Dashboard (typicalTraffic enabled)';
+TypicalTrafficEntityDashboard.args = {
+	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		typicalTrafficSetup( registry );
+		provideSiteInfo( registry, {
+			currentEntityURL: 'https://example.com/about/',
+		} );
+		provideEntityTypicalTrafficReports( registry );
+	},
+};
+// With the `typicalTraffic` feature, the entity dashboard, which shows one
+// page, has a panel of its own. It reads no benchmarking response, so it
+// leaves out the typical traffic range, the published posts, and the key
+// factors.
+TypicalTrafficEntityDashboard.parameters = {
 	features: [ 'typicalTraffic' ],
 };
-EntityDashboard.scenario = {
+TypicalTrafficEntityDashboard.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
@@ -437,10 +518,11 @@ Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
-		provideTrafficBreakdownReports( registry );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [ getTotalsArgs( registry ) ] );
+		getTrafficOverviewReportArgs( registry ).forEach( ( options ) =>
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ options ] )
+		);
 	},
 };
 
@@ -467,6 +549,9 @@ ZeroData.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 
+		const [ totalsArgs, ...remainingArgs ] =
+			getTrafficOverviewReportArgs( registry );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				totals: [
@@ -474,13 +559,15 @@ ZeroData.args = {
 					{ metricValues: [ { value: '0' } ] },
 				],
 			},
-			{ options: getTotalsArgs( registry ) }
+			{ options: totalsArgs }
 		);
-		provideTrafficBreakdownReports( registry, {
-			channels: [],
-			locations: [],
-			devices: [],
-		} );
+		// A report with no rows is what the API returns for a range with no
+		// traffic.
+		remainingArgs.forEach( ( options ) =>
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( {}, { options } )
+		);
 	},
 };
 
@@ -491,23 +578,22 @@ ReportFailure.storyName = 'Report Failure';
 ReportFailure.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
-		provideTrafficBreakdownReports( registry );
 
-		const totalsArgs = getTotalsArgs( registry );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
-			{
-				code: 'test_error',
-				message:
-					'Request contains an invalid argument. Learn more about the Analytics Data API.',
-				data: { status: 400, reason: 'badRequest' },
-			},
-			'getReport',
-			[ totalsArgs ]
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ totalsArgs ] );
+		getTrafficOverviewReportArgs( registry ).forEach( ( options ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+				{
+					code: 'test_error',
+					message:
+						'Request contains an invalid argument. Learn more about the Analytics Data API.',
+					data: { status: 400, reason: 'badRequest' },
+				},
+				'getReport',
+				[ options ]
+			);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ options ] );
+		} );
 	},
 };
 
@@ -518,19 +604,14 @@ TypicalTrafficFailure.storyName =
 	'Typical Traffic, Benchmarking Failure (typicalTraffic enabled)';
 TypicalTrafficFailure.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		provideTrafficOverviewReports( registry );
-
-		const { startDate, endDate, compareStartDate, compareEndDate } =
-			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
-
+		typicalTrafficSetup( registry );
 		// When the benchmarking request fails, the panel draws and adds up
 		// the visits of the daily visits report, against the range before.
-		provideAnalytics4MockReport( registry, {
-			...getDailyVisitsReportArgs( { startDate, endDate } ),
-			compareStartDate,
-			compareEndDate,
-		} );
+		provideTypicalTrafficOverviewReports( registry );
+
+		const { startDate, endDate } = registry
+			.select( CORE_USER )
+			.getDateRangeDates();
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

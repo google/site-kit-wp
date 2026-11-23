@@ -1,5 +1,5 @@
 /**
- * Traffic Overview panel for the entity dashboard tests.
+ * Typical Traffic Overview panel for the entity dashboard tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -36,7 +36,7 @@ import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	getSectionClassNames,
-	provideTrafficBreakdownReports,
+	provideTypicalTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -54,9 +54,9 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 } from '@tests/js/utils';
-import EntityTrafficOverviewPanel from './EntityTrafficOverviewPanel';
+import EntityTypicalTrafficOverviewPanel from './EntityTypicalTrafficOverviewPanel';
 
-describe( 'EntityTrafficOverviewPanel', () => {
+describe( 'EntityTypicalTrafficOverviewPanel', () => {
 	let registry: WPDataRegistry;
 
 	const reportEndpoint = new RegExp(
@@ -161,7 +161,7 @@ describe( 'EntityTrafficOverviewPanel', () => {
 	function provideReports() {
 		provideAnalytics4MockReport( registry, getTotalsArgs() );
 		provideAnalytics4MockReport( registry, getDailyVisitsArgs() );
-		provideTrafficBreakdownReports( registry );
+		provideTypicalTrafficBreakdownReports( registry );
 	}
 
 	/**
@@ -173,7 +173,7 @@ describe( 'EntityTrafficOverviewPanel', () => {
 	 * @return {Object} The render result.
 	 */
 	function renderPanel( options = {} ) {
-		return render( <EntityTrafficOverviewPanel />, {
+		return render( <EntityTypicalTrafficOverviewPanel />, {
 			registry,
 			viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 			...options,
@@ -358,7 +358,7 @@ describe( 'EntityTrafficOverviewPanel', () => {
 
 	it( "should show the page's visits of each breakdown report as shares in its column of the traffic breakdown", async () => {
 		provideReports();
-		provideTrafficBreakdownReports( registry, {
+		provideTypicalTrafficBreakdownReports( registry, {
 			channels: [
 				[ 'Organic Search', 30 ],
 				[ 'Direct', 10 ],
@@ -411,7 +411,7 @@ describe( 'EntityTrafficOverviewPanel', () => {
 
 	it( 'should say that the page has no visitors in a column whose breakdown report has no rows', async () => {
 		provideReports();
-		provideTrafficBreakdownReports( registry, { locations: [] } );
+		provideTypicalTrafficBreakdownReports( registry, { locations: [] } );
 
 		const { getByRole, waitForRegistry } = renderPanel();
 
@@ -490,7 +490,7 @@ describe( 'EntityTrafficOverviewPanel', () => {
 		const dailyVisitsArgs = getDailyVisitsArgs();
 
 		provideAnalytics4MockReport( registry, getTotalsArgs() );
-		provideTrafficBreakdownReports( registry );
+		provideTypicalTrafficBreakdownReports( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test_error',

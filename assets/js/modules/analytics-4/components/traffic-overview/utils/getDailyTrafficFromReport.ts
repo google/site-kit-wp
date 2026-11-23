@@ -27,7 +27,7 @@ import { getMetricValue } from './getMetricValue';
 
 /**
  * Gets the visits on each day of the selected range from the daily visits
- * report, in the shape the Traffic Overview chart plots.
+ * report, in the shape the Typical Traffic Overview chart plots.
  *
  * The report leaves out a day without visits, so that day reads zero. No day
  * has a typical range.

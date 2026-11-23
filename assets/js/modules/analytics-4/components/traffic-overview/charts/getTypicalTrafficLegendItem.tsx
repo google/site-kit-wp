@@ -26,8 +26,8 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
-import { ChartLegendItem } from './ChartLegend';
-import { TYPICAL_TRAFFIC_RANGE_COLOR } from './trafficChartOptions';
+import { TypicalChartLegendItem } from './TypicalChartLegend';
+import { TYPICAL_TRAFFIC_RANGE_COLOR } from './typicalTrafficChartOptions';
 
 interface TypicalTrafficRangeHistory {
 	/** The number of days of traffic the band of the range's last day is fitted on. */
@@ -97,8 +97,8 @@ function getTypicalTrafficRangeInfo(
 export function getTypicalTrafficLegendItem( {
 	referenceDays,
 	lastYearAvailable = false,
-}: TypicalTrafficRangeHistory ): ChartLegendItem {
-	const item: ChartLegendItem = {
+}: TypicalTrafficRangeHistory ): TypicalChartLegendItem {
+	const item: TypicalChartLegendItem = {
 		label: __( 'Typical traffic range', 'google-site-kit' ),
 		color: TYPICAL_TRAFFIC_RANGE_COLOR,
 		swatch: 'area',

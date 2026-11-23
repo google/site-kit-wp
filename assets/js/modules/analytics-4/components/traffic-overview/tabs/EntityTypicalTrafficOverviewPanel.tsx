@@ -1,5 +1,5 @@
 /**
- * Traffic Overview panel for the entity dashboard.
+ * Typical Traffic Overview panel for the entity dashboard.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -36,9 +36,9 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
-import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
-import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
-import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
+import TypicalTrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TypicalTrafficBreakdown';
+import TypicalTrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart';
+import TypicalTotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTotalVisitors';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useEntityTrafficReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useEntityTrafficReports';
 import { getDailyTrafficFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getDailyTrafficFromReport';
@@ -46,7 +46,7 @@ import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-over
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
-const EntityTrafficOverviewPanel: FC = () => {
+const EntityTypicalTrafficOverviewPanel: FC = () => {
 	const { totalsReport, dailyVisitsReport, breakdownValues, loaded, errors } =
 		useEntityTrafficReports();
 
@@ -71,7 +71,7 @@ const EntityTrafficOverviewPanel: FC = () => {
 
 	return (
 		<div
-			className="googlesitekit-traffic-overview__panel"
+			className="googlesitekit-traffic-overview__panel googlesitekit-traffic-overview__panel--typical-traffic"
 			role="tabpanel"
 			aria-labelledby={ TRAFFIC_OVERVIEW_TAB_ID }
 		>
@@ -92,7 +92,7 @@ const EntityTrafficOverviewPanel: FC = () => {
 						>
 							{ __( 'Traffic over time', 'google-site-kit' ) }
 						</Typography>
-						<TotalVisitors
+						<TypicalTotalVisitors
 							report={ totalsReport }
 							// The panel reads no visits over the range before,
 							// so the figures show no change.
@@ -105,7 +105,7 @@ const EntityTrafficOverviewPanel: FC = () => {
 							gatheringData={ isGatheringData }
 						/>
 					</div>
-					<TrafficChart
+					<TypicalTrafficChart
 						dailyTraffic={ getDailyTrafficFromReport(
 							dailyVisitsReport,
 							startDate,
@@ -114,7 +114,7 @@ const EntityTrafficOverviewPanel: FC = () => {
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
 					/>
-					<TrafficBreakdown
+					<TypicalTrafficBreakdown
 						values={ breakdownValues }
 						loaded={ ! isLoading }
 						gatheringData={ isGatheringData }
@@ -125,4 +125,4 @@ const EntityTrafficOverviewPanel: FC = () => {
 	);
 };
 
-export default EntityTrafficOverviewPanel;
+export default EntityTypicalTrafficOverviewPanel;

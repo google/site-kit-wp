@@ -1,5 +1,5 @@
 /**
- * Traffic Overview footer tests.
+ * Typical Traffic Overview footer tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -50,12 +50,12 @@ import {
 	provideUserCapabilities,
 	provideUserInfo,
 } from '@tests/js/utils';
-import TrafficOverviewFooter from './TrafficOverviewFooter';
+import TypicalTrafficOverviewFooter from './TypicalTrafficOverviewFooter';
 
 const DISCLOSURE =
 	'Some insights on this page are created using AI and may contain mistakes. Learn more';
 
-describe( 'TrafficOverviewFooter', () => {
+describe( 'TypicalTrafficOverviewFooter', () => {
 	let registry: WPDataRegistry;
 
 	beforeEach( () => {
@@ -90,7 +90,7 @@ describe( 'TrafficOverviewFooter', () => {
 
 	it( 'should render only "Source: Analytics" when the `typicalTraffic` feature flag is off', async () => {
 		const { container, waitForRegistry } = render(
-			<TrafficOverviewFooter />,
+			<TypicalTrafficOverviewFooter />,
 			{
 				registry,
 				features: [ 'trafficInsights' ],
@@ -105,7 +105,7 @@ describe( 'TrafficOverviewFooter', () => {
 
 	it( 'should render only "Source: Analytics" on the entity dashboard, which shows no key factors', async () => {
 		const { container, waitForRegistry } = render(
-			<TrafficOverviewFooter />,
+			<TypicalTrafficOverviewFooter />,
 			{
 				registry,
 				features: [ 'typicalTraffic', 'trafficInsights' ],
@@ -120,7 +120,7 @@ describe( 'TrafficOverviewFooter', () => {
 
 	it( 'should render "Sources: Analytics Search Console", with each source linking to its report for the selected range, and no AI disclosure, when the `typicalTraffic` feature flag is enabled', async () => {
 		const { container, waitForRegistry } = render(
-			<TrafficOverviewFooter />,
+			<TypicalTrafficOverviewFooter />,
 			{
 				registry,
 				features: [ 'typicalTraffic' ],
@@ -168,7 +168,7 @@ describe( 'TrafficOverviewFooter', () => {
 		);
 
 		const { container, waitForRegistry } = render(
-			<TrafficOverviewFooter />,
+			<TypicalTrafficOverviewFooter />,
 			{
 				registry,
 				features: [ 'typicalTraffic', 'trafficInsights' ],
@@ -200,7 +200,7 @@ describe( 'TrafficOverviewFooter', () => {
 		);
 
 		const { container, waitForRegistry } = render(
-			<TrafficOverviewFooter />,
+			<TypicalTrafficOverviewFooter />,
 			{
 				registry,
 				features: [ 'typicalTraffic', 'trafficInsights' ],
@@ -219,7 +219,7 @@ describe( 'TrafficOverviewFooter', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 
 		const { container, waitForRegistry } = render(
-			<TrafficOverviewFooter />,
+			<TypicalTrafficOverviewFooter />,
 			{
 				registry,
 				features: [ 'typicalTraffic', 'trafficInsights' ],
@@ -247,7 +247,7 @@ describe( 'TrafficOverviewFooter', () => {
 		);
 
 		const { container, waitForRegistry } = render(
-			<TrafficOverviewFooter />,
+			<TypicalTrafficOverviewFooter />,
 			{
 				registry,
 				features: [ 'typicalTraffic', 'trafficInsights' ],

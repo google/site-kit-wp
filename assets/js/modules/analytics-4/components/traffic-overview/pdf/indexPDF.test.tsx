@@ -25,30 +25,34 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
-import {
-	flattenPDFStyle,
-	renderPDFText,
-} from '@/js/components/pdf-export/test-utils';
-import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
-import { createBreakdownValues } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { renderPDFText } from '@/js/components/pdf-export/test-utils';
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
-import { TrafficOverviewTypicalTrafficPDFData } from './getTypicalTrafficPDFData';
 import TrafficOverviewPDF from './indexPDF';
 
 const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
 
 function buildReports( {
-	currentVisits,
-	previousVisits,
+	currentUsers,
+	previousUsers,
+	rowCount,
 }: {
-	currentVisits: number;
-	previousVisits: number;
+	currentUsers: string;
+	previousUsers: string;
+	rowCount: number;
 } ) {
 	return {
-		totalVisits: { current: currentVisits, previous: previousVisits },
-		uniqueVisitors: 870,
-		// 28 days, which the "Vs. prev. 28 days" label counts.
-		dailyTraffic: getPlaceholderDailyTraffic( '2025-01-08', '2025-02-04' ),
+		totalsReport: {
+			totals: [
+				{ metricValues: [ { value: currentUsers } ] },
+				{ metricValues: [ { value: previousUsers } ] },
+			],
+		},
+		graphReport: {
+			rows: Array.from( { length: rowCount }, () => ( {
+				metricValues: [ { value: '1' } ],
+			} ) ),
+		},
 		channelBreakdown: [
 			{
 				label: 'Organic Search',
@@ -77,25 +81,12 @@ function renderTree( props: ComponentProps< typeof TrafficOverviewPDF > ) {
 	return renderer.toJSON();
 }
 
-/** The reports most tests render against; only the sign-change test varies `previousVisits`. */
+/** The reports most tests render against; only the sign-change test varies `previousUsers`. */
 const DEFAULT_REPORTS = buildReports( {
-	currentVisits: 1234,
-	previousVisits: 1000,
+	currentUsers: '1234',
+	previousUsers: '1000',
+	rowCount: 28,
 } );
-
-/** A typical traffic view with every part, and the generated insight. */
-const TYPICAL_TRAFFIC: TrafficOverviewTypicalTrafficPDFData = {
-	daysInRange: 28,
-	analysis:
-		'Over the last 28 days, your site had **1,234** visits, about 12% above what is usual for it.',
-	bandNotice: null,
-	driver: 'Visits rose 12% (+134 visits), led by **Referral** (+365 visits).',
-	keyFactorsNotice: null,
-	keyFactors: [
-		{ name: 'Referral', change: 365 },
-		{ name: 'Organic Search', change: -21 },
-	],
-};
 
 describe( 'Traffic Overview PDF', () => {
 	it( 'renders nothing when data is null', () => {
@@ -106,7 +97,7 @@ describe( 'Traffic Overview PDF', () => {
 		expect( renderTree( {} ) ).toBeNull();
 	} );
 
-	it( 'renders the heading and the Total visits tile with its value, change, unique visitors and line chart', () => {
+	it( 'renders the heading and the All visitors tile with its value, change, and line chart', () => {
 		const json = JSON.stringify(
 			renderTree( {
 				data: DEFAULT_REPORTS,
@@ -115,45 +106,26 @@ describe( 'Traffic Overview PDF', () => {
 		);
 
 		expect( json ).toContain( 'Your site traffic over time' );
-		expect( json ).toContain( 'Total visits' );
-		expect( json ).not.toContain( 'All visitors' );
+		expect( json ).toContain( 'All visitors' );
 		// `numFmt` shortens large totals, the same as the dashboard widget.
 		expect( json ).toContain( '1.2K' );
 		expect( json ).toContain( '+23.4%' );
 		expect( json ).toContain( 'Vs. prev. 28 days' );
-		expect( json ).toContain( '870 unique visitors' );
 		expect( json ).toContain( LINE_CHART_DATA_URI );
 	} );
 
-	it( 'names a single day and a single unique visitor in the singular', () => {
-		const texts = renderPDFText(
-			<TrafficOverviewPDF
-				data={ {
-					...DEFAULT_REPORTS,
-					uniqueVisitors: 1,
-					dailyTraffic: getPlaceholderDailyTraffic(
-						'2025-02-04',
-						'2025-02-04'
-					),
-				} }
-			/>
-		);
-
-		expect( texts ).toContain( 'Vs. prev. 1 day' );
-		expect( texts ).toContain( '1 unique visitor' );
-	} );
-
-	it( 'renders the Total visits tile without a chart when the chart image is missing', () => {
+	it( 'renders the All visitors tile without a chart when the chart image is missing', () => {
 		const json = JSON.stringify( renderTree( { data: DEFAULT_REPORTS } ) );
 
-		expect( json ).toContain( 'Total visits' );
+		expect( json ).toContain( 'All visitors' );
 		expect( json ).not.toContain( 'data:image' );
 	} );
 
-	it( 'prints no change badge, and no comparison label on its own, when the previous value is 0', () => {
+	it( 'prints no change badge when the previous value is 0', () => {
 		const data = buildReports( {
-			currentVisits: 1234,
-			previousVisits: 0,
+			currentUsers: '1234',
+			previousUsers: '0',
+			rowCount: 28,
 		} );
 
 		const json = JSON.stringify(
@@ -166,7 +138,6 @@ describe( 'Traffic Overview PDF', () => {
 		// Neither the positive nor the negative badge fill renders.
 		expect( json ).not.toContain( '#d8ffc0' );
 		expect( json ).not.toContain( '#ffded3' );
-		expect( json ).not.toContain( 'Vs. prev.' );
 	} );
 
 	it( 'renders the three ranked tiles, in order, with their headings and rows', () => {
@@ -177,9 +148,9 @@ describe( 'Traffic Overview PDF', () => {
 			} )
 		);
 
-		const channelsIndex = json.indexOf( 'Visits by channels' );
-		const locationsIndex = json.indexOf( 'Visits by locations' );
-		const devicesIndex = json.indexOf( 'Visits by devices' );
+		const channelsIndex = json.indexOf( 'Visitors by channels' );
+		const locationsIndex = json.indexOf( 'Visitors by locations' );
+		const devicesIndex = json.indexOf( 'Visitors by devices' );
 
 		expect( channelsIndex ).toBeGreaterThan( -1 );
 		expect( locationsIndex ).toBeGreaterThan( channelsIndex );
@@ -199,7 +170,7 @@ describe( 'Traffic Overview PDF', () => {
 		const data = {
 			...DEFAULT_REPORTS,
 			channelBreakdown: getBreakdownRows(
-				createBreakdownValues( [
+				createBreakdownReport( [
 					[ 'Direct', 4630 ],
 					[ 'Organic Search', 3040 ],
 					[ 'Organic Social', 1560 ],
@@ -211,7 +182,7 @@ describe( 'Traffic Overview PDF', () => {
 		};
 
 		const texts = renderPDFText( <TrafficOverviewPDF data={ data } /> );
-		const channelsIndex = texts.indexOf( 'Visits by channels' );
+		const channelsIndex = texts.indexOf( 'Visitors by channels' );
 
 		// The rows are shaped by the same `getBreakdownRows()` the dashboard
 		// columns use, and each label is followed by its share.
@@ -236,13 +207,13 @@ describe( 'Traffic Overview PDF', () => {
 		const data = {
 			...DEFAULT_REPORTS,
 			channelBreakdown: getBreakdownRows(
-				createBreakdownValues( [
+				createBreakdownReport( [
 					[ 'Direct', 90 ],
 					[ '(not set)', 10 ],
 				] )
 			),
 			deviceBreakdown: getBreakdownRows(
-				createBreakdownValues( [
+				createBreakdownReport( [
 					[ 'desktop', 60 ],
 					[ 'smart tv', 30 ],
 					[ '(not set)', 10 ],
@@ -251,8 +222,8 @@ describe( 'Traffic Overview PDF', () => {
 		};
 
 		const texts = renderPDFText( <TrafficOverviewPDF data={ data } /> );
-		const channelsIndex = texts.indexOf( 'Visits by channels' );
-		const devicesIndex = texts.indexOf( 'Visits by devices' );
+		const channelsIndex = texts.indexOf( 'Visitors by channels' );
+		const devicesIndex = texts.indexOf( 'Visitors by devices' );
 
 		expect( texts.slice( channelsIndex + 1, channelsIndex + 5 ) ).toEqual( [
 			'Direct',
@@ -278,7 +249,7 @@ describe( 'Traffic Overview PDF', () => {
 			} )
 		);
 
-		// The Total visits change is the only badge fill in the tree.
+		// The All visitors change is the only badge fill in the tree.
 		const badgeCount = json.split( '#d8ffc0' ).length - 1;
 		expect( badgeCount ).toBe( 1 );
 	} );
@@ -293,199 +264,32 @@ describe( 'Traffic Overview PDF', () => {
 			} )
 		);
 
-		expect( json ).toContain( 'Visits by channels' );
+		expect( json ).toContain( 'Visitors by channels' );
 		expect( json ).toContain(
 			'No data to display: your site hasn’t received any visitors yet'
 		);
 		expect( json ).not.toContain( 'Organic Search' );
 
-		expect( json ).toContain( 'Visits by locations' );
+		expect( json ).toContain( 'Visitors by locations' );
 		expect( json ).toContain( 'Singapore' );
-		expect( json ).toContain( 'Visits by devices' );
+		expect( json ).toContain( 'Visitors by devices' );
 		expect( json ).toContain( 'Desktop' );
 	} );
-	it( 'prints neither the typical traffic view nor the AI disclosure without them', () => {
-		const texts = renderPDFText(
-			<TrafficOverviewPDF data={ DEFAULT_REPORTS } />
+
+	it( 'prints a breakdown’s empty state when its rows are null', () => {
+		const data = { ...DEFAULT_REPORTS, locationBreakdown: null };
+
+		const json = JSON.stringify(
+			renderTree( {
+				data,
+				chartImages: { lineChart: LINE_CHART_DATA_URI },
+			} )
 		);
 
-		expect(
-			texts.some( ( text ) =>
-				text.startsWith( 'Biggest traffic shifts' )
-			)
-		).toBe( false );
-		expect( texts.join( ' ' ) ).not.toContain( 'created using AI' );
-	} );
-
-	describe( 'with the typical traffic view', () => {
-		it( 'prints the analysis above the visits, with the names it highlights in the medium weight', () => {
-			const texts = renderPDFText(
-				<TrafficOverviewPDF
-					data={ {
-						...DEFAULT_REPORTS,
-						typicalTraffic: TYPICAL_TRAFFIC,
-					} }
-				/>
-			);
-
-			const analysisIndex = texts.indexOf(
-				'Over the last 28 days, your site had '
-			);
-
-			expect( analysisIndex ).toBeGreaterThan( -1 );
-			expect( texts[ analysisIndex + 1 ] ).toBe( '1,234' );
-			expect( analysisIndex ).toBeLessThan(
-				texts.indexOf( 'Total visits' )
-			);
-
-			const tree = TestRenderer.create(
-				<TrafficOverviewPDF
-					data={ {
-						...DEFAULT_REPORTS,
-						typicalTraffic: TYPICAL_TRAFFIC,
-					} }
-				/>
-			);
-			const highlight = tree.root.find(
-				( node ) =>
-					typeof node.type === 'string' &&
-					node.children.length === 1 &&
-					node.children[ 0 ] === '1,234'
-			);
-
-			expect( flattenPDFStyle( highlight.props.style ) ).toMatchObject( {
-				fontWeight: 500,
-			} );
-			expect( JSON.stringify( tree.toJSON() ) ).not.toContain( '**' );
-		} );
-
-		it( 'prints the band’s waiting text in place of the analysis', () => {
-			const texts = renderPDFText(
-				<TrafficOverviewPDF
-					data={ {
-						...DEFAULT_REPORTS,
-						typicalTraffic: {
-							...TYPICAL_TRAFFIC,
-							analysis: null,
-							bandNotice:
-								'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.',
-						},
-					} }
-				/>
-			);
-
-			expect( texts ).toContain(
-				'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.'
-			);
-		} );
-
-		it( 'prints the key factors’ heading, the driver, then each card with its change in visits, after the chart and before the breakdowns', () => {
-			const texts = renderPDFText(
-				<TrafficOverviewPDF
-					data={ {
-						...DEFAULT_REPORTS,
-						typicalTraffic: TYPICAL_TRAFFIC,
-					} }
-				/>
-			);
-
-			const headingIndex = texts.indexOf(
-				'Biggest traffic shifts vs. the previous 28 days'
-			);
-
-			expect( headingIndex ).toBeGreaterThan(
-				texts.indexOf( 'Total visits' )
-			);
-			expect( texts.slice( headingIndex + 1 ) ).toEqual(
-				expect.arrayContaining( [ 'Referral', '+365 visits' ] )
-			);
-			expect(
-				texts.slice(
-					headingIndex,
-					texts.indexOf( 'Visits by channels' )
-				)
-			).toEqual( [
-				'Biggest traffic shifts vs. the previous 28 days',
-				'Visits rose 12% (+134 visits), led by ',
-				'Referral',
-				' (+365 visits).',
-				'Referral',
-				'+365 visits',
-				'Organic Search',
-				'-21 visits',
-			] );
-		} );
-
-		it( 'prints the notice in place of the cards, and each card’s share of the visits on a steady period', () => {
-			const texts = renderPDFText(
-				<TrafficOverviewPDF
-					data={ {
-						...DEFAULT_REPORTS,
-						typicalTraffic: {
-							...TYPICAL_TRAFFIC,
-							driver: null,
-							keyFactorsNotice:
-								'No channel changed notably compared with the previous 28 days',
-							keyFactors: [
-								{
-									name: 'Organic Search',
-									change: 4,
-									visitsSharePct: 52.4,
-								},
-							],
-						},
-					} }
-				/>
-			);
-
-			const headingIndex = texts.indexOf(
-				'Biggest traffic shifts vs. the previous 28 days'
-			);
-
-			expect(
-				texts.slice(
-					headingIndex,
-					texts.indexOf( 'Visits by channels' )
-				)
-			).toEqual( [
-				'Biggest traffic shifts vs. the previous 28 days',
-				'No channel changed notably compared with the previous 28 days',
-				'Organic Search',
-				'+4 visits',
-				'52.4% of all visits',
-			] );
-		} );
-
-		it( 'prints the AI disclosure at the end while it prints a generated insight', () => {
-			const texts = renderPDFText(
-				<TrafficOverviewPDF
-					data={ {
-						...DEFAULT_REPORTS,
-						typicalTraffic: TYPICAL_TRAFFIC,
-					} }
-				/>
-			);
-
-			expect( texts[ texts.length - 1 ] ).toBe(
-				'Some insights in this report are created using AI and may contain mistakes.'
-			);
-		} );
-
-		it( 'prints no AI disclosure without a generated insight', () => {
-			const texts = renderPDFText(
-				<TrafficOverviewPDF
-					data={ {
-						...DEFAULT_REPORTS,
-						typicalTraffic: {
-							...TYPICAL_TRAFFIC,
-							analysis: null,
-							driver: null,
-						},
-					} }
-				/>
-			);
-
-			expect( texts.join( ' ' ) ).not.toContain( 'created using AI' );
-		} );
+		expect( json ).toContain( 'Visitors by locations' );
+		expect( json ).toContain(
+			'No data to display: your site hasn’t received any visitors yet'
+		);
+		expect( json ).not.toContain( 'Singapore' );
 	} );
 } );

@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import { Report } from '@/js/modules/analytics-4/datastore/types';
-import { TrafficBreakdownValue } from './getBreakdownRows';
 import { getMetricValue } from './getMetricValue';
+import { TrafficBreakdownValue } from './getTypicalBreakdownRows';
 
 /**
  * Gets the values of a breakdown column from its GA4 report, in the shape the
- * Traffic Overview breakdown reads.
+ * Typical Traffic Overview breakdown reads.
  *
  * The report orders its rows by visits, most first, so the values keep the
  * report's order. Each label is the dimension value exactly as GA4 returned

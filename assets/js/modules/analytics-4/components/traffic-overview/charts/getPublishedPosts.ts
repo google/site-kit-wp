@@ -21,7 +21,7 @@
  */
 import { BenchmarkingContentMarker } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getFullURL } from '@/js/util';
-import { PublishedPost } from './getTrafficChartData';
+import { PublishedPost } from './getTypicalTrafficChartData';
 
 /**
  * Lists the posts of the benchmarking response's content markers, as the

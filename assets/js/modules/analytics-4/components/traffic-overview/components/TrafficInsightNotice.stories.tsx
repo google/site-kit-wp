@@ -30,7 +30,7 @@ function Template( { text }: TrafficInsightNoticeProps ) {
 	// renders inside both.
 	return (
 		<div className="googlesitekit-widget--analyticsTrafficOverview">
-			<div className="googlesitekit-traffic-overview__panel">
+			<div className="googlesitekit-traffic-overview__panel googlesitekit-traffic-overview__panel--typical-traffic">
 				<TrafficInsightNotice text={ text } />
 			</div>
 		</div>

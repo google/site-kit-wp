@@ -36,7 +36,7 @@ import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util
 import {
 	TRAFFIC_BREAKDOWN_PAIRS,
 	createBreakdownValues,
-	provideTrafficBreakdownReports,
+	provideTypicalTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -200,7 +200,7 @@ describe( 'useEntityTrafficReports', () => {
 	it( "should return the visits of each breakdown report as its column's values, keyed by the column's id", async () => {
 		provideAnalytics4MockReport( registry, totalsArgs );
 		provideAnalytics4MockReport( registry, dailyVisitsArgs );
-		provideTrafficBreakdownReports( registry );
+		provideTypicalTrafficBreakdownReports( registry );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useEntityTrafficReports(),
@@ -222,7 +222,7 @@ describe( 'useEntityTrafficReports', () => {
 		// The store holds every report but the daily visits report, so the
 		// hook sends one request, and `freezeFetch` holds it.
 		provideAnalytics4MockReport( registry, totalsArgs );
-		provideTrafficBreakdownReports( registry );
+		provideTypicalTrafficBreakdownReports( registry );
 		freezeFetch( reportEndpoint );
 
 		const { result, waitForRegistry } = renderHook(

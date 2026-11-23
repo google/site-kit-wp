@@ -37,9 +37,10 @@ import {
 	RECENT_ACTIVITY_TAB_OPENED_TIMER,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	getExpiryFromNow,
+	getSectionClassNames,
 	provideBenchmarkingResponse,
 	provideFreshMetricsReports,
 	provideRecentActivitySurveyState,
@@ -89,6 +90,10 @@ describe( 'TrafficOverviewWidget', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
+	const benchmarkingEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+	);
+
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
 
 	const expirableItemsEndpoint = new RegExp(
@@ -132,12 +137,6 @@ describe( 'TrafficOverviewWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
-		// The Recent activity footer, and the Traffic overview footer when the
-		// tab has the key factors, link to a Search Console report, which needs
-		// the Search Console property.
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.setPropertyID( 'https://example.com/' );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 		provideRecentActivitySurveyState( registry );
 		fetchMock.post( setExpirableItemTimersEndpoint, {
@@ -227,7 +226,7 @@ describe( 'TrafficOverviewWidget', () => {
 		);
 	} );
 
-	it( 'should render the tab bar and the "Source: Analytics" footer while the report loads', async () => {
+	it( 'renders the tab bar and the "Source: Analytics" footer while the five reports load', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -251,27 +250,23 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'renders the tab bar and the "Source: Analytics" footer when a report fails', async () => {
-		const { startDate, endDate, compareStartDate, compareEndDate } =
-			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
-		const totalsReportArgs = getTotalsReportArgs( {
-			startDate,
-			endDate,
-			compareStartDate,
-			compareEndDate,
-		} );
+		const { startDate, endDate } = registry
+			.select( CORE_USER )
+			.getDateRangeDates();
+		const graphReportArgs = getGraphReportArgs( { startDate, endDate } );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test_error',
-				message: 'The total visitors report failed.',
+				message: 'The daily visitors report failed.',
 				data: { status: 500, reason: 'backendError' },
 			},
 			'getReport',
-			[ totalsReportArgs ]
+			[ graphReportArgs ]
 		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ totalsReportArgs ] );
+			.finishResolution( 'getReport', [ graphReportArgs ] );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
@@ -284,7 +279,7 @@ describe( 'TrafficOverviewWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			screen.getByText( 'The total visitors report failed.' )
+			screen.getByText( 'The daily visitors report failed.' )
 		).toBeInTheDocument();
 		expect(
 			screen.getByRole( 'tab', { name: 'Traffic overview' } )
@@ -309,7 +304,7 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'should send the report requests when the widget scrolls into view', async () => {
+	it( 'sends the five report requests when the widget scrolls into view', async () => {
 		const { setInView, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -323,11 +318,10 @@ describe( 'TrafficOverviewWidget', () => {
 
 		act( () => setInView!( true ) );
 
-		// The requests do not start on the render that brings the widget
-		// into view, so this check waits for them: one for the totals report,
-		// and one for each of the three breakdown reports.
+		// The five requests do not all start on the render that brings the
+		// widget into view, so this check waits for the count to reach five.
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes( 4, reportEndpoint )
+			expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint )
 		);
 	} );
 
@@ -351,6 +345,9 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should render the Recent activity panel and the "Sources: Analytics Search Console" footer when the user selects the "Recent activity" tab', async () => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
 		provideFreshMetricsReports( registry, {
 			totalVisitors: 157,
 			searchPerformance: { clicks: 72, impressions: 8000 },
@@ -477,11 +474,12 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic overview' );
 	} );
 
-	it( 'should head the visitor figures of the "Traffic overview" panel with "Traffic over time" on the entity dashboard', async () => {
+	it( 'should head the visitor figures of the "Traffic overview" panel with "Traffic over time" on the entity dashboard when the `typicalTraffic` feature flag is enabled', async () => {
 		const { waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
+				features: [ 'typicalTraffic' ],
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 			}
 		);
@@ -495,11 +493,44 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not head the visitor figures of the "Traffic overview" panel with "Traffic over time" on the main dashboard', async () => {
+	it( 'should render the "Traffic overview" panel of the main dashboard, with no "Traffic over time" heading, on the entity dashboard when the `typicalTraffic` feature flag is disabled', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			within(
+				screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
+			).queryByRole( 'heading', { name: 'Traffic over time' } )
+		).not.toBeInTheDocument();
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__total-visitors',
+			'googlesitekit-traffic-overview__chart',
+			'googlesitekit-traffic-overview__breakdown',
+		] );
+		expect(
+			container.querySelector( '.googlesitekit-widget__footer' )
+		).toHaveTextContent( 'Source: Analytics' );
+	} );
+
+	it( 'should not head the visitor figures of the "Traffic overview" panel with "Traffic over time" on the main dashboard when the `typicalTraffic` feature flag is enabled', async () => {
+		// With the key factors, the footer links to Search Console too.
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
+		provideBenchmarkingResponse( registry );
+
 		const { waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
+				features: [ 'typicalTraffic' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -703,10 +734,60 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
+	it( 'should render the visitor figures, the chart, and the breakdown of the Analytics reports in the "Traffic overview" panel, and send no benchmarking request, when the `typicalTraffic` feature flag is disabled', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__total-visitors',
+			'googlesitekit-traffic-overview__chart',
+			'googlesitekit-traffic-overview__breakdown',
+		] );
+		expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint );
+		expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
+	} );
+
+	it( 'should render the key factors of the benchmarking response in the "Traffic overview" panel when the `typicalTraffic` feature flag is enabled', async () => {
+		// With the key factors, the footer links to Search Console too.
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
+		provideBenchmarkingResponse( registry );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__summary',
+			'googlesitekit-traffic-overview__chart',
+			'googlesitekit-traffic-overview__key-factors',
+			'googlesitekit-traffic-overview__breakdown',
+		] );
+	} );
+
 	it( 'should render the AI disclosure and the "Sources: Analytics Search Console" footer on the Traffic overview tab when the `typicalTraffic` and `trafficInsights` feature flags are enabled', async () => {
 		// With the `typicalTraffic` feature, the panel reads the benchmarking
 		// response, and with the `trafficInsights` feature, the insight
-		// generated from it, which the footer discloses.
+		// generated from it, which the footer discloses. The key factors'
+		// search keywords come from Search Console, which the footer names.
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
 		provideBenchmarkingResponse( registry );
 		provideBenchmarkingInsight(
 			registry,
@@ -778,6 +859,9 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should not track `view_widget` again when the user selects another tab', async () => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
 		provideFreshMetricsReports( registry, {
 			totalVisitors: 157,
 			searchPerformance: { clicks: 72, impressions: 8000 },
@@ -901,6 +985,9 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should track `change_tab` labeled `googlesitekit-recent-activity-tab` when the user selects the Recent activity tab', async () => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
 		provideFreshMetricsReports( registry, {
 			totalVisitors: 157,
 			searchPerformance: { clicks: 72, impressions: 8000 },
@@ -1025,6 +1112,9 @@ describe( 'TrafficOverviewWidget', () => {
 		}
 
 		beforeEach( () => {
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.setPropertyID( 'https://example.com/' );
 			provideFreshMetricsReports( registry, {
 				totalVisitors: 157,
 				searchPerformance: { clicks: 72, impressions: 8000 },

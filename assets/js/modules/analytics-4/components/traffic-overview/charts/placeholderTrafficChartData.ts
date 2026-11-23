@@ -21,7 +21,7 @@
  */
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getDateString, stringToDate } from '@/js/util';
-import { PublishedPost } from './getTrafficChartData';
+import { PublishedPost } from './getTypicalTrafficChartData';
 
 /**
  * The visits the design plots for each of its 28 days, oldest first. They
@@ -44,8 +44,8 @@ const PLACEHOLDER_POSTS = [
 ];
 
 /**
- * Gets the visits the Traffic Overview chart plots where the panel reads no
- * benchmarking response.
+ * Gets the visits the design plots, for the stories and tests of the Typical
+ * Traffic Overview chart.
  *
  * The design's 28 days of visits stretch or shrink to cover the range, so the
  * line keeps the design's shape over a range of any length. No day has a
@@ -98,8 +98,8 @@ export function getPlaceholderDailyTraffic(
 }
 
 /**
- * Gets the posts the Traffic Overview chart marks until it reads the posts
- * the site published.
+ * Gets the posts the design marks, for the stories and tests of the Typical
+ * Traffic Overview chart.
  *
  * @since n.e.x.t
  *

@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -104,6 +105,7 @@ import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/compon
 import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import getTrafficOverviewPDFData from '@/js/modules/analytics-4/components/traffic-overview/pdf/getPDFData';
+import getTypicalTrafficOverviewPDFData from '@/js/modules/analytics-4/components/traffic-overview/pdf/getTypicalTrafficOverviewPDFData';
 import { TrafficOverviewWidget } from '@/js/modules/analytics-4/components/traffic-overview/widgets';
 import {
 	EngagedTrafficSourceWidget,
@@ -174,6 +176,17 @@ const TrafficOverviewPDF = lazyWithPreload( () =>
 );
 
 /**
+ * Lazy-loaded PDF component for the Traffic Overview widget, with the
+ * `typicalTraffic` feature.
+ */
+const TypicalTrafficOverviewPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/traffic-overview/pdf/TypicalTrafficOverviewPDF'
+	)
+);
+
+/**
  * Lazy-loaded PDF component for the Top content over time widget.
  */
 const ModulePopularPagesWidgetGA4PDF = lazyWithPreload( () =>
@@ -229,6 +242,10 @@ function isSiteGoalsWidgetActive( goalType ) {
 }
 
 export function registerWidgets( widgets ) {
+	// With the `typicalTraffic` feature, the Traffic overview tab shows the
+	// typical traffic view, so the PDF section prints it too.
+	const typicalTrafficEnabled = isFeatureEnabled( 'typicalTraffic' );
+
 	// Register Analytics 4 Widgets.
 	widgets.registerWidget(
 		TRAFFIC_OVERVIEW_WIDGET_SLUG,
@@ -239,8 +256,12 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			pdf: {
-				Component: TrafficOverviewPDF,
-				getData: getTrafficOverviewPDFData,
+				Component: typicalTrafficEnabled
+					? TypicalTrafficOverviewPDF
+					: TrafficOverviewPDF,
+				getData: typicalTrafficEnabled
+					? getTypicalTrafficOverviewPDFData
+					: getTrafficOverviewPDFData,
 				label: __( 'Site traffic over time', 'google-site-kit' ),
 			},
 		},
