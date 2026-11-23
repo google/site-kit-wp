@@ -26,6 +26,7 @@ import { FC, useCallback } from 'react';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import FeatureCTAButton from '@/js/components/feature-discovery/FeatureCTAButton';
+import getFeatureCardCTALabel from '@/js/components/feature-discovery/getFeatureCardCTALabel';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_SETUP_TYPES,
@@ -38,14 +39,16 @@ import { trackEvent } from '@/js/util';
 
 export interface FeatureCTAProps {
 	gaEventCategory: string;
-	isTertiary?: boolean;
+	// Shows the card's generic label in the card's tertiary style, in place of
+	// the feature's own `ctaLabel`.
+	isFeatureCardCTA?: boolean;
 	onSetupComplete?: () => void;
 	slug: string;
 }
 
 const FeatureCTA: FC< FeatureCTAProps > = ( {
 	gaEventCategory,
-	isTertiary = false,
+	isFeatureCardCTA = false,
 	onSetupComplete,
 	slug,
 } ) => {
@@ -134,10 +137,12 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 	return (
 		<FeatureCTAButton
 			isBusy={ isSetupInProgress }
-			isTertiary={ isTertiary }
+			isTertiary={ isFeatureCardCTA }
 			onClick={ onClick }
 		>
-			{ feature.setup.ctaLabel }
+			{ isFeatureCardCTA
+				? getFeatureCardCTALabel( feature )
+				: feature.setup.ctaLabel }
 		</FeatureCTAButton>
 	);
 };

@@ -304,7 +304,7 @@ describe( 'FeatureListItem', () => {
 					title: 'Visitor groups',
 					setup: {
 						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-						ctaLabel: 'Set up now',
+						ctaLabel: 'Enable visitor groups',
 						SetupComponent,
 					},
 				},
@@ -330,7 +330,7 @@ describe( 'FeatureListItem', () => {
 			expect( await findByText( 'Bespoke setup' ) ).toBeInTheDocument();
 		} );
 
-		it( 'should show the card with a busy CTA while the setup component loads', async () => {
+		it( 'should show the card with a busy CTA labelled for the card while the setup component loads', async () => {
 			let resolveComponent!: ( module: {
 				default: () => JSX.Element;
 			} ) => void;
@@ -343,13 +343,16 @@ describe( 'FeatureListItem', () => {
 				)
 			);
 
-			const { findByRole, findByText, getByRole } = render(
+			const { findByRole, findByText, getByRole, queryByRole } = render(
 				<FeatureListItem slug="test-feature" hideUnreadDot />,
 				{ registry }
 			);
 
 			const cta = await findByRole( 'button', { name: 'Set up now' } );
 			expect( cta ).toBeDisabled();
+			expect(
+				queryByRole( 'button', { name: 'Enable visitor groups' } )
+			).not.toBeInTheDocument();
 
 			resolveComponent( { default: () => <div>Bespoke setup</div> } );
 

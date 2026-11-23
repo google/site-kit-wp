@@ -32,9 +32,9 @@ import { startTimerOnce } from '@/js/modules/analytics-4/components/traffic-over
  * Gets a callback that records a meaningful interaction with the Recent
  * activity tab.
  *
- * The callback starts the "meaningful interaction" timer, which decides when
- * the Recent activity survey for users who interacted with the tab shows. It
- * starts the timer at the first interaction only.
+ * The callback starts the "meaningful interaction" timer at the first
+ * interaction only. The Recent activity survey triggers check whether the user
+ * has this timer to know that the user interacted with the tab.
  *
  * @since 1.192.0
  *
