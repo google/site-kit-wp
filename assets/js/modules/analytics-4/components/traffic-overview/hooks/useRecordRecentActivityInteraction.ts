@@ -26,7 +26,7 @@ import { useCallback } from '@wordpress/element';
  */
 import { Registry, useRegistry } from 'googlesitekit-data';
 import { RECENT_ACTIVITY_INTERACTION_TIMER } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { startTimerOnce } from '@/js/modules/analytics-4/components/traffic-overview/utils/startTimerOnce';
+import { startTimerOnce } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 
 /**
  * Gets a callback that records a meaningful interaction with the Recent

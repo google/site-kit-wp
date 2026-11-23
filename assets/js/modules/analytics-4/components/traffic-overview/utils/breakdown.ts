@@ -1,5 +1,5 @@
 /**
- * Traffic Overview breakdown row shaping.
+ * Traffic Overview breakdown utilities.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -30,8 +30,9 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
+import { getMetricCount, getMetricValue } from './report';
 
 export interface TrafficBreakdownRow {
 	/** The dimension value, exactly as GA4 returned it. */
@@ -42,18 +43,11 @@ export interface TrafficBreakdownRow {
 	formattedPercentage: string;
 }
 
-/**
- * Reads the count of a metric in a report row, such as its visitors.
- *
- * @since 1.188.0
- * @since 1.191.0 Renamed from `getVisitors()`, exported, and takes an optional row and the index of the metric to read.
- *
- * @param {Object} [row]         Optional. A report row.
- * @param {number} [metricIndex] Optional. The index of the metric in the row's metric values. Default `0`.
- * @return {number} The count, or `0` when the row has no value for the metric or the value isn't a number.
- */
-export function getMetricCount( row?: ReportRow, metricIndex = 0 ): number {
-	return parseInt( row?.metricValues?.[ metricIndex ]?.value ?? '', 10 ) || 0;
+export interface TrafficBreakdownValue {
+	/** The dimension value, such as `Organic Search`. */
+	label: string;
+	/** The visits the value had. */
+	visits: number;
 }
 
 /**
@@ -187,6 +181,86 @@ export function getBreakdownRows( report?: Report ): TrafficBreakdownRow[] {
 	return shapedRows.map( ( { label, visitors }, index ) => ( {
 		label,
 		percentage: visitors / total,
+		formattedPercentage: formatRoundedShare(
+			wholePercentages[ index ],
+			100
+		),
+	} ) );
+}
+
+/**
+ * Gets the values of a breakdown column from its GA4 report, in the shape the
+ * Typical Traffic Overview breakdown reads.
+ *
+ * The report orders its rows by visits, most first, so the values keep the
+ * report's order. Each label is the dimension value exactly as GA4 returned
+ * it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} [report] Optional. The breakdown report, `undefined` until the request has finished.
+ * @return {Array.<Object>} The column's values, in the report's order, or an empty array without a report.
+ */
+export function getBreakdownValuesFromReport(
+	report?: Report
+): TrafficBreakdownValue[] {
+	return ( report?.rows ?? [] ).map( ( row ) => ( {
+		label: row.dimensionValues?.[ 0 ]?.value ?? '',
+		visits: getMetricValue( row ),
+	} ) );
+}
+
+/**
+ * Shapes the values of a breakdown column into the rows the column renders.
+ *
+ * The values cover the selected range only and arrive ordered by visits, so
+ * the rows are taken as they come. Values with no visits are left out first.
+ * When more than `maxRows` values have visits, the top values fill
+ * every row except the last, and an "Others" row adds up the rest. The
+ * displayed shares add up to exactly 100%, only a lone value shows 100%, and a
+ * row with visits that gets no whole percent is displayed as `<1%` rather
+ * than `0%`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Object>} [values]  Optional. The column's values, ordered by visits, most first.
+ * @param {number}        [maxRows] Optional. The most rows to return, counting the trailing "Others" row. Default `TRAFFIC_BREAKDOWN_MAX_ROWS`.
+ * @return {Array<Object>} The rows to render, empty when no value has visits.
+ */
+export function getTypicalBreakdownRows(
+	values: TrafficBreakdownValue[] = [],
+	maxRows = TRAFFIC_BREAKDOWN_MAX_ROWS
+): TrafficBreakdownRow[] {
+	// Values with no visits are left out before the cap, so none of them takes
+	// a row.
+	const valueRows = values.filter( ( { visits } ) => visits > 0 );
+
+	if ( ! valueRows.length ) {
+		return [];
+	}
+
+	// One slot is kept for the trailing "Others" row.
+	const shapedRows =
+		valueRows.length <= maxRows
+			? valueRows
+			: [
+					...valueRows.slice( 0, maxRows - 1 ),
+					{
+						label: __( 'Others', 'google-site-kit' ),
+						visits: sumBy(
+							valueRows.slice( maxRows - 1 ),
+							'visits'
+						),
+					},
+			  ];
+
+	const visitCounts = shapedRows.map( ( { visits } ) => visits );
+	const total = sum( visitCounts );
+	const wholePercentages = getRoundedShares( visitCounts, 100 );
+
+	return shapedRows.map( ( { label, visits }, index ) => ( {
+		label,
+		percentage: visits / total,
 		formattedPercentage: formatRoundedShare(
 			wholePercentages[ index ],
 			100

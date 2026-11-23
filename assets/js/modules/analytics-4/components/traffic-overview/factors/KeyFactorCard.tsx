@@ -43,8 +43,10 @@ import {
 } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useKeyFactorLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorLinkClick';
-import { formatVisitsShare } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatVisitsShare';
-import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils/getPageURL';
+import {
+	formatVisitsShare,
+	getPageURL,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import {
 	BenchmarkingKeyFactorAttribute,
 	BenchmarkingKeyFactorKind,

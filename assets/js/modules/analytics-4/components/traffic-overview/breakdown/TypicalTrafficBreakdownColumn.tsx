@@ -39,7 +39,7 @@ import {
 } from '@/js/components/Typography/constants';
 import { TileZeroDataMessage } from '@/js/modules/analytics-4/components/common/tiles';
 import { TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { TrafficBreakdownRow as BreakdownRow } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { TrafficBreakdownRow as BreakdownRow } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import TypicalTrafficBreakdownRow from './TypicalTrafficBreakdownRow';
 
 export interface TypicalTrafficBreakdownColumnProps {

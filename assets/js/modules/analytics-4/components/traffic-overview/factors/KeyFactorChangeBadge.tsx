@@ -27,7 +27,7 @@ import { FC } from 'react';
  */
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_LABEL } from '@/js/components/Typography/constants';
-import { formatVisitsChange } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatVisitsChange';
+import { formatVisitsChange } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 
 export interface KeyFactorChangeBadgeProps {
 	/** The change in visits, negative for a drop. */

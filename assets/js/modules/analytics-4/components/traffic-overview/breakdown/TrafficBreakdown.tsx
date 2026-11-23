@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
-import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import TrafficBreakdownColumn from './TrafficBreakdownColumn';
 

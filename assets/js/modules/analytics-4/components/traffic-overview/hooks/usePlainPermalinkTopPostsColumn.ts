@@ -38,7 +38,7 @@ import {
 	getTopChannelsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
-import { getMetricCount } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { getMetricCount } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { PlainPermalinkTopPosts } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ErrorObject } from '@/js/util/errors';

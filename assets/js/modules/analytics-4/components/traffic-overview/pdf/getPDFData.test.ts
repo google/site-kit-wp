@@ -41,7 +41,7 @@ import {
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,

@@ -31,8 +31,10 @@ import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
 import PDFChangeBadge from '@/js/components/pdf-export/shared-react-pdf-components/PDFChangeBadge';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
-import { formatVisitsChange } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatVisitsChange';
-import { formatVisitsShare } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatVisitsShare';
+import {
+	formatVisitsChange,
+	formatVisitsShare,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { TrafficOverviewPDFKeyFactor } from './getTypicalTrafficPDFData';
 
 const styles = createPDFStyles( {

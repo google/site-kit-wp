@@ -44,12 +44,14 @@ import {
 	getDailyVisitsReportArgs,
 	getTypicalBreakdownReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
-import { TrafficBreakdownRow } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
-import { getBreakdownValuesFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownValuesFromReport';
-import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
-import { getTrafficOverviewVisits } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTrafficOverviewVisits';
-import { getTypicalBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
-import { hasTypicalTrafficRange } from '@/js/modules/analytics-4/components/traffic-overview/utils/hasTypicalTrafficRange';
+import {
+	TrafficBreakdownRow,
+	getBreakdownValuesFromReport,
+	getMetricValue,
+	getTrafficOverviewVisits,
+	getTypicalBreakdownRows,
+	hasTypicalTrafficRange,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,

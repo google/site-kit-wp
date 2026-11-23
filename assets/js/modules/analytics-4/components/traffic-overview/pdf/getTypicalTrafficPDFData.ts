@@ -20,9 +20,11 @@
  * Internal dependencies
  */
 import { getKeyFactorName } from '@/js/modules/analytics-4/components/traffic-overview/factors/getKeyFactorName';
-import { getKeyFactorsNoticeText } from '@/js/modules/analytics-4/components/traffic-overview/utils/getKeyFactorsNoticeText';
-import { getTypicalTrafficAvailability } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalTrafficAvailability';
-import { getTypicalTrafficRangeWaitingText } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalTrafficRangeWaitingText';
+import {
+	getKeyFactorsNoticeText,
+	getTypicalTrafficAvailability,
+	getTypicalTrafficRangeWaitingText,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import {
 	BenchmarkingInsight,
 	BenchmarkingKeyFactor,

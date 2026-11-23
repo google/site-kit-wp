@@ -28,7 +28,7 @@ import { Select, useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getTypicalTrafficRangeWaitingText } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalTrafficRangeWaitingText';
+import { getTypicalTrafficRangeWaitingText } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 
 export interface TypicalTrafficRangeNoticeProps {
 	/** Whether every day of the selected date range has its typical traffic range, so the chart draws the band and the notice has nothing to say. */

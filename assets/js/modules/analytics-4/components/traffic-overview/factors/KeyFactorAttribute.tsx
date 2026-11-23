@@ -32,8 +32,10 @@ import {
 	TYPE_LABEL,
 } from '@/js/components/Typography/constants';
 import { KeyFactorLinkClickHandler } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorLinkClick';
-import { formatClicksChange } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatClicksChange';
-import { formatVisitsChange } from '@/js/modules/analytics-4/components/traffic-overview/utils/formatVisitsChange';
+import {
+	formatClicksChange,
+	formatVisitsChange,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 
 export interface KeyFactorAttributeProps {
 	/** The title of the attribute's kind, such as "Landing page". */

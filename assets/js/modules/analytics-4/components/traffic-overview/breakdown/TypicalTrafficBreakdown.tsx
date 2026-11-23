@@ -39,7 +39,7 @@ import { TRAFFIC_BREAKDOWN_EXPANDED_MAX_ROWS } from '@/js/modules/analytics-4/co
 import {
 	TrafficBreakdownValue,
 	getTypicalBreakdownRows,
-} from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import TypicalTrafficBreakdownColumn from './TypicalTrafficBreakdownColumn';
 
 export interface TypicalTrafficBreakdownProps {

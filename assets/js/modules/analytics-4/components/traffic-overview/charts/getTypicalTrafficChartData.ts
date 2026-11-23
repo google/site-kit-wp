@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { hasTypicalTrafficRange as hasTypicalTrafficRangeOnEveryDay } from '@/js/modules/analytics-4/components/traffic-overview/utils/hasTypicalTrafficRange';
+import { hasTypicalTrafficRange as hasTypicalTrafficRangeOnEveryDay } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { DAY_IN_SECONDS, getLocale, stringToDate } from '@/js/util';
 import { PUBLISHED_POST_POINT_STYLE } from './typicalTrafficChartOptions';

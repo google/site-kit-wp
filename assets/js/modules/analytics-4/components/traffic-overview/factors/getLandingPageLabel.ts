@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils/getPageURL';
+import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { untrailingslashit } from '@/js/util/sanitize';
 
 /**

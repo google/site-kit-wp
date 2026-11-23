@@ -74,7 +74,7 @@ import {
 	getDailyVisitsReportArgs,
 	getTypicalBreakdownReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
-import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';

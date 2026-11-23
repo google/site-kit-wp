@@ -27,7 +27,7 @@ import TestRenderer from 'react-test-renderer';
  */
 import { renderPDFText } from '@/js/components/pdf-export/test-utils';
 import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import TrafficOverviewPDF from './indexPDF';
 
 const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';

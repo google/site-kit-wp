@@ -31,7 +31,7 @@ import {
 } from '@/js/components/pdf-export/test-utils';
 import { getPlaceholderDailyTraffic } from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import { createBreakdownValues } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { getTypicalBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
+import { getTypicalBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { TrafficOverviewTypicalTrafficPDFData } from './getTypicalTrafficPDFData';
 import TypicalTrafficOverviewPDF from './TypicalTrafficOverviewPDF';
 

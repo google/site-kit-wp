@@ -40,7 +40,7 @@ import {
 	RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT,
 	TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { selectZeroInteractionTrigger } from '@/js/modules/analytics-4/components/traffic-overview/utils/selectZeroInteractionTrigger';
+import { selectZeroInteractionTrigger } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { DAY_IN_SECONDS } from '@/js/util/dates';
 
 interface RecentActivitySurveyTriggersOptions {

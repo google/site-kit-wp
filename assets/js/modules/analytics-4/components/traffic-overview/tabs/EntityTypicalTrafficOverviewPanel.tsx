@@ -41,8 +41,10 @@ import TypicalTrafficChart from '@/js/modules/analytics-4/components/traffic-ove
 import TypicalTotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTotalVisitors';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useEntityTrafficReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useEntityTrafficReports';
-import { getDailyTrafficFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getDailyTrafficFromReport';
-import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
+import {
+	getDailyTrafficFromReport,
+	getMetricValue,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 

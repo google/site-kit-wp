@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useReportState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportState';
-import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
+import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';

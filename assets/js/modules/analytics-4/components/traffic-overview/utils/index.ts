@@ -1,5 +1,5 @@
 /**
- * Traffic Overview `formatVisitsShare` utility tests.
+ * Traffic Overview utilities.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,17 +16,8 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { formatVisitsShare } from './formatVisitsShare';
-
-describe( 'formatVisitsShare', () => {
-	it.each( [
-		[ 45.2, '45.2% of all visits' ],
-		[ 45.26, '45.3% of all visits' ],
-		[ 50, '50% of all visits' ],
-	] )( 'should write a share of %d as "%s"', ( visitsSharePct, text ) => {
-		expect( formatVisitsShare( visitsSharePct ) ).toBe( text );
-	} );
-} );
+export * from './breakdown';
+export * from './key-factors';
+export * from './report';
+export * from './survey';
+export * from './typical-traffic';

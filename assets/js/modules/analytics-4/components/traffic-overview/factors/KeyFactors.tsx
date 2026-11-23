@@ -41,7 +41,7 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { KEY_FACTORS_MAX_CARDS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { getKeyFactorsNoticeText } from '@/js/modules/analytics-4/components/traffic-overview/utils/getKeyFactorsNoticeText';
+import { getKeyFactorsNoticeText } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import KeyFactorCard from './KeyFactorCard';
 import KeyFactorCardPlaceholder from './KeyFactorCardPlaceholder';

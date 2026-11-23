@@ -1,5 +1,5 @@
 /**
- * Traffic Overview `startTimerOnce` utility.
+ * Traffic Overview Recent activity survey utilities.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,9 +19,16 @@
 /**
  * Internal dependencies
  */
-import { Registry } from 'googlesitekit-data';
+import { Registry, Select } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ExpirableItemTimer } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	ExpirableItemTimer,
+	LATEST_POST_RECENT_CONTENT_OPTIONS,
+	RECENT_ACTIVITY_SURVEY_TRIGGER_ZERO_INTERACTION,
+	RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT,
+	TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 // The calls to `startTimerOnce()` still running, by registry and timer slug.
 const pendingStarts = new WeakMap< Registry, Map< string, Promise< void > > >();
@@ -89,4 +96,43 @@ export function startTimerOnce(
 	registryStarts.set( timer.slug, start );
 
 	return start;
+}
+
+/**
+ * Selects the zero interaction trigger, for a user who never opened the
+ * Recent activity tab.
+ *
+ * @since 1.192.0
+ * @since n.e.x.t No longer reads the age of the latest post or the time since the Recent activity tab became available.
+ *
+ * @param {Function} select The data store select function.
+ * @return {(string|null|undefined)} The trigger ID, `undefined` when the user doesn't meet its criteria, or `null` while the data loads.
+ */
+export function selectZeroInteractionTrigger(
+	select: Select
+): string | null | undefined {
+	const latestPost = select( MODULES_ANALYTICS_4 ).getRecentContent(
+		LATEST_POST_RECENT_CONTENT_OPTIONS
+	);
+
+	if ( latestPost === undefined ) {
+		return null;
+	}
+
+	// The survey is for users with at least one published post.
+	if ( ! latestPost.length ) {
+		return undefined;
+	}
+
+	const { getDismissedPrompts, getPromptDismissCount } = select( CORE_USER );
+
+	// `getPromptDismissCount()` has no resolver of its own.
+	if ( getDismissedPrompts() === undefined ) {
+		return null;
+	}
+
+	return getPromptDismissCount( TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ) >=
+		RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT
+		? RECENT_ACTIVITY_SURVEY_TRIGGER_ZERO_INTERACTION
+		: undefined;
 }

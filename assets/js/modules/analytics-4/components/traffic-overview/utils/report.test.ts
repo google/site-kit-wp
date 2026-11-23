@@ -1,5 +1,5 @@
 /**
- * Traffic Overview `getPageURL` utility tests.
+ * Traffic Overview report utility tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,7 +19,36 @@
 /**
  * Internal dependencies
  */
-import { getPageURL } from './getPageURL';
+import { getMetricValue, getPageURL } from './report';
+
+describe( 'getMetricValue', () => {
+	it( 'should return the first metric of the row as a number by default', () => {
+		expect(
+			getMetricValue( {
+				metricValues: [ { value: '76.5' }, { value: '18' } ],
+			} )
+		).toBe( 76.5 );
+	} );
+
+	it( 'should return the metric at the given index', () => {
+		expect(
+			getMetricValue(
+				{ metricValues: [ { value: '76.5' }, { value: '18' } ] },
+				1
+			)
+		).toBe( 18 );
+	} );
+
+	it( 'should return 0 for a row that has not loaded or has no such metric', () => {
+		expect( getMetricValue( undefined ) ).toBe( 0 );
+		expect(
+			getMetricValue(
+				{ metricValues: [ { value: '76.5' }, { value: '18' } ] },
+				2
+			)
+		).toBe( 0 );
+	} );
+} );
 
 describe( 'getPageURL', () => {
 	it( 'should return the URL of the page on the site', () => {

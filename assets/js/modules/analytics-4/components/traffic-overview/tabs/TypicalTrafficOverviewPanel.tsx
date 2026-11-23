@@ -46,8 +46,10 @@ import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/fac
 import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
 import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
 import { useTypicalTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficOverviewReports';
-import { getTrafficOverviewVisits } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTrafficOverviewVisits';
-import { getTypicalTrafficAvailability } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalTrafficAvailability';
+import {
+	getTrafficOverviewVisits,
+	getTypicalTrafficAvailability,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 

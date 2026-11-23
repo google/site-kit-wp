@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { useReportState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportState';
-import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
+import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,

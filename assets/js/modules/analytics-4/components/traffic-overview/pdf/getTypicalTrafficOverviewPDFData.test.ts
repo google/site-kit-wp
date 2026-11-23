@@ -50,7 +50,7 @@ import {
 	getDailyVisitsReportArgs,
 	getTypicalBreakdownReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
-import { getTypicalBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
+import { getTypicalBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import {
 	benchmarkingInsight,
 	provideBenchmarkingData,

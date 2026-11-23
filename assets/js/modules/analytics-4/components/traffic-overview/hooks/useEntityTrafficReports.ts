@@ -22,7 +22,7 @@
 import { Select, useSelect } from 'googlesitekit-data';
 import { getTotalsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { DAILY_VISITS_REPORT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
-import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { useTrafficBreakdownReports } from './useTrafficBreakdownReports';

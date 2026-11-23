@@ -25,7 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { createBreakdownValues } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
+import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { Story } from '@/js/types/Story';
 import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';

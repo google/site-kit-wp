@@ -26,8 +26,10 @@ import { useMemo } from '@wordpress/element';
  */
 import { TYPICAL_TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/typicalColumns';
 import { getTypicalBreakdownReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
-import { getBreakdownValuesFromReport } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownValuesFromReport';
-import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getTypicalBreakdownRows';
+import {
+	TrafficBreakdownValue,
+	getBreakdownValuesFromReport,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { useTrafficReport } from './useTrafficReport';
 

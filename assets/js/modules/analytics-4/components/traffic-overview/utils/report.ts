@@ -1,5 +1,5 @@
 /**
- * Traffic Overview `getPageURL` utility.
+ * Traffic Overview report utilities.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -15,6 +15,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Internal dependencies
+ */
+import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
+
+/**
+ * Reads a row's metric value.
+ *
+ * The API returns metric values as strings.
+ *
+ * @since 1.191.0
+ *
+ * @param {Object} [row]   A report row, which is `undefined` while the report loads.
+ * @param {number} [index] The index of the metric in the row. Defaults to the first metric.
+ * @return {number} The metric value, or `0` when it is missing or not a number.
+ */
+export function getMetricValue( row?: ReportRow, index = 0 ): number {
+	return Number( row?.metricValues?.[ index ]?.value ) || 0;
+}
+
+/**
+ * Reads the count of a metric in a report row, such as its visitors.
+ *
+ * @since 1.188.0
+ * @since 1.191.0 Renamed from `getVisitors()`, exported, and takes an optional row and the index of the metric to read.
+ *
+ * @param {Object} [row]         Optional. A report row.
+ * @param {number} [metricIndex] Optional. The index of the metric in the row's metric values. Default `0`.
+ * @return {number} The count, or `0` when the row has no value for the metric or the value isn't a number.
+ */
+export function getMetricCount( row?: ReportRow, metricIndex = 0 ): number {
+	return parseInt( row?.metricValues?.[ metricIndex ]?.value ?? '', 10 ) || 0;
+}
 
 /**
  * Gets the URL of a page on the site from the page path in an Analytics report.
