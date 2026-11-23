@@ -128,14 +128,14 @@ describe( 'FeatureCTA', () => {
 		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should apply the tertiary button style when isTertiary is set', () => {
+	it( 'should apply the tertiary button style when isFeatureCardCTA is set', () => {
 		provideFeatures( registry, [ { slug: 'test-feature' } ] );
 
 		const { getByRole } = render(
 			<FeatureCTA
 				gaEventCategory="test_category"
 				slug="test-feature"
-				isTertiary
+				isFeatureCardCTA
 			/>,
 			{ registry }
 		);
@@ -143,6 +143,60 @@ describe( 'FeatureCTA', () => {
 		expect( getByRole( 'button', { name: 'Set up now' } ) ).toHaveClass(
 			'mdc-button--tertiary'
 		);
+	} );
+
+	it( 'should show the card label instead of the feature’s CTA label when isFeatureCardCTA is set', () => {
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up Analytics',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCTA
+				gaEventCategory="test_category"
+				slug="test-feature"
+				isFeatureCardCTA
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up now' } )
+		).toBeInTheDocument();
+
+		expect(
+			queryByRole( 'button', { name: 'Set up Analytics' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should show the feature’s CTA label when isFeatureCardCTA is not set', () => {
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up Analytics',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCTA gaEventCategory="test_category" slug="test-feature" />,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up Analytics' } )
+		).toBeInTheDocument();
+
+		expect(
+			queryByRole( 'button', { name: 'Set up now' } )
+		).not.toBeInTheDocument();
 	} );
 
 	describe( 'event tracking', () => {
@@ -560,7 +614,7 @@ describe( 'FeatureCTA', () => {
 				<FeatureCTA
 					gaEventCategory="test_category"
 					slug="test-feature"
-					isTertiary
+					isFeatureCardCTA
 				/>
 				<FeatureCTA
 					gaEventCategory="test_category"
