@@ -32,6 +32,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { enabledFeatures } from '@/js/features';
 import {
 	createTestRegistry,
+	freezeFetch,
 	muteFetch,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -46,6 +47,9 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 
 	const ctasEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+	);
+	const ctaEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/cta\\b'
 	);
 	const createCTAEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/create-cta'
@@ -881,6 +885,298 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 
 				// Both publications' CTAs are already loaded.
 				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+			} );
+		} );
+
+		describe( 'getCTA', () => {
+			const ctaID = '9d2418415-ab3a';
+			const surveyCTAID = '5c3027196-gh6d';
+
+			it( 'should fetch the CTA of the connected publication', async () => {
+				fetchMock.getOnce( ctaEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( ctaID )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					params.organizationID,
+					params.publicationID,
+					ctaID
+				);
+
+				expect( fetchMock ).toHaveFetched( ctaEndpoint, {
+					query: { ...params, ctaID },
+				} );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( ctaID )
+				).toEqual( cta );
+			} );
+
+			it( 'should return a survey CTA with its configuration when the rrmSurveyCTA feature flag is enabled', async () => {
+				enabledFeatures.add( 'rrmSurveyCTA' );
+
+				fetchMock.getOnce( ctaEndpoint, {
+					body: surveyCTA,
+					status: 200,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCTA( surveyCTAID );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					params.organizationID,
+					params.publicationID,
+					surveyCTAID
+				);
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( surveyCTAID )
+				).toEqual( surveyCTA );
+			} );
+
+			it( 'should return `null` when the CTA does not exist', async () => {
+				fetchMock.getOnce( ctaEndpoint, {
+					body: {
+						code: 404,
+						message: 'Requested entity was not found.',
+						data: { status: 404, reason: 'notFound' },
+					},
+					status: 404,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCTA( ctaID );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					params.organizationID,
+					params.publicationID,
+					ctaID
+				);
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( ctaID )
+				).toBeNull();
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getErrorForSelector( 'getPublicationCTA', [
+							params.organizationID,
+							params.publicationID,
+							ctaID,
+						] )
+				).toBeUndefined();
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should associate a CTA fetch error with the request identifiers', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( ctaEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCTA( ctaID );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					params.organizationID,
+					params.publicationID,
+					ctaID
+				);
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( ctaID )
+				).toBeUndefined();
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getErrorForSelector( 'getPublicationCTA', [
+							params.organizationID,
+							params.publicationID,
+							ctaID,
+						] )
+				).toMatchObject( response );
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should request each CTA only once', async () => {
+				fetchMock.getOnce( ctaEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCTA( ctaID );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					params.organizationID,
+					params.publicationID,
+					ctaID
+				);
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCTA( ctaID );
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1, ctaEndpoint );
+			} );
+
+			it( 'should not fetch a CTA already loaded by getCTAs()', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs( [ cta ], params );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( ctaID )
+				).toEqual( cta );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					params.organizationID,
+					params.publicationID,
+					ctaID
+				);
+
+				expect( fetchMock ).not.toHaveFetched( ctaEndpoint );
+			} );
+
+			it( 'should not fetch the CTA before the settings have loaded', async () => {
+				registry = createTestRegistry();
+
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( ctaID )
+				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).not.toHaveFetched( ctaEndpoint );
+			} );
+
+			it( 'should not fetch the CTA when no publication is saved', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setPublicationID( '' );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( ctaID )
+				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).not.toHaveFetched( ctaEndpoint );
+			} );
+
+			it( 'should return the CTA of the newly connected publication after the publication changes', async () => {
+				const otherCTAID = '8j8152411-cd4b';
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs( [ cta ], params );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setSettings( otherParams );
+
+				// The previous publication's CTA is not returned for the new one.
+				muteFetch( ctaEndpoint );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( ctaID )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					otherParams.organizationID,
+					otherParams.publicationID,
+					ctaID
+				);
+
+				expect( fetchMock ).toHaveFetched( ctaEndpoint, {
+					query: { ...otherParams, ctaID },
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs( [ otherCTA ], otherParams );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( otherCTAID )
+				).toEqual( otherCTA );
+			} );
+
+			it.each( [
+				[ 'missing', undefined ],
+				[ 'empty', '' ],
+			] )( 'should throw when the ctaID is %s', ( _label, invalidID ) => {
+				expect( () =>
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( invalidID )
+				).toThrow(
+					'ctaID is required and must be a non-empty string.'
+				);
 			} );
 		} );
 	} );
