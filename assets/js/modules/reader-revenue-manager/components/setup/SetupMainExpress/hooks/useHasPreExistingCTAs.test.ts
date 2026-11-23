@@ -34,8 +34,15 @@ import {
 } from '@tests/js/test-utils';
 import useHasPreExistingCTAs from './useHasPreExistingCTAs';
 
-// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+const ORGANIZATION_ID = publications[ 0 ].organizationId;
 const PUBLICATION_ID = publications[ 0 ].publicationId;
+/* eslint-enable sitekit/acronym-case */
+
+const PUBLICATION_PARAMS = {
+	organizationID: ORGANIZATION_ID,
+	publicationID: PUBLICATION_ID,
+};
 
 describe( 'useHasPreExistingCTAs', () => {
 	let registry: WPDataRegistry;
@@ -72,10 +79,9 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns false when there are no configured CTAs', () => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [],
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationCTAs( [], PUBLICATION_PARAMS );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,
@@ -85,10 +91,9 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns false when there is only the CTA just created in this setup flow', () => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [ cta ],
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationCTAs( [ cta ], PUBLICATION_PARAMS );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,
@@ -98,10 +103,9 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns true when there is more than one configured CTA', () => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
-			ctas: [ cta, otherCTA ],
-			params: { publicationID: PUBLICATION_ID },
-		} );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationCTAs( [ cta, otherCTA ], PUBLICATION_PARAMS );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,

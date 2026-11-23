@@ -297,6 +297,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.27.0
 	 * @since 1.192.0 Added the `method` argument.
+	 * @since n.e.x.t The error of a failed response carries the response's `code` as `reason`, and its `Retry-After` header as `retryAfter`, when it has them.
 	 *
 	 * @param string      $uri Endpoint to send the request to.
 	 * @param Credentials $credentials Credentials instance.
@@ -360,20 +361,7 @@ class Google_Proxy {
 		$body = wp_remote_retrieve_body( $response );
 		$body = json_decode( $body, true );
 		if ( $code < 200 || 299 < $code ) {
-			$message    = '';
-			$error_code = 'request_failed';
-
-			if ( is_array( $body ) ) {
-				if ( ! empty( $body['error'] ) ) {
-					$message = $body['error'];
-				}
-
-				if ( ! empty( $body['error_code'] ) ) {
-					$error_code = $body['error_code'];
-				}
-			}
-
-			return new WP_Error( $error_code, $message, array( 'status' => $code ) );
+			return $this->get_response_error( $response, $code, $body );
 		}
 
 		if ( ! empty( $args['return'] ) && 'response' === $args['return'] ) {
@@ -389,6 +377,50 @@ class Google_Proxy {
 		}
 
 		return $body;
+	}
+
+	/**
+	 * Gets the error of a response with a status other than 2xx.
+	 *
+	 * The error has the response's `error` as its message and its `error_code`
+	 * as its code, or `request_failed` without one. Its data has the status,
+	 * and also the response's `code` as `reason` and its `Retry-After` header
+	 * as `retryAfter` when the response has them: the service's newer
+	 * endpoints name an error with a machine-readable `code`, which a client
+	 * matches on rather than on the message.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array      $response The response.
+	 * @param int        $code     The response's status.
+	 * @param mixed|null $body     The response's decoded body.
+	 * @return WP_Error The error.
+	 */
+	private function get_response_error( $response, $code, $body ) {
+		$message    = '';
+		$error_code = 'request_failed';
+		$error_data = array( 'status' => $code );
+
+		if ( is_array( $body ) ) {
+			if ( ! empty( $body['error'] ) ) {
+				$message = $body['error'];
+			}
+
+			if ( ! empty( $body['error_code'] ) ) {
+				$error_code = $body['error_code'];
+			}
+
+			if ( ! empty( $body['code'] ) && is_string( $body['code'] ) ) {
+				$error_data['reason'] = $body['code'];
+			}
+		}
+
+		$retry_after = wp_remote_retrieve_header( $response, 'retry-after' );
+		if ( is_numeric( $retry_after ) ) {
+			$error_data['retryAfter'] = (int) $retry_after;
+		}
+
+		return new WP_Error( $error_code, $message, $error_data );
 	}
 
 	/**
@@ -565,6 +597,7 @@ class Google_Proxy {
 	 * Sends site fields to the proxy.
 	 *
 	 * @since 1.68.0
+	 * @since 1.192.0 Includes the `state` value that the proxy returns on every `oauth2callback` redirect.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
@@ -583,6 +616,8 @@ class Google_Proxy {
 					$this->get_metadata_fields(),
 					array(
 						'scope' => implode( ' ', $this->required_scopes ),
+						// Binds the authorization the proxy starts to the current user, like `OAuth_Client::get_authentication_url()`.
+						'state' => wp_create_nonce( OAuth_Client::STATE_NONCE_ACTION ),
 					)
 				),
 			)
@@ -824,6 +859,9 @@ class Google_Proxy {
 	/**
 	 * Sends a conversion insight request to the proxy.
 	 *
+	 * The request names the plugin release in its `User-Agent` header, so the
+	 * service can tie each request to the release that computed it.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param Credentials $credentials  Credentials instance.
@@ -839,6 +877,9 @@ class Google_Proxy {
 			array(
 				'access_token' => $access_token,
 				'json_request' => true,
+				'headers'      => array(
+					'User-Agent' => self::get_application_name(),
+				),
 				'body'         => array_merge( $payload, array( 'async' => true ) ),
 			)
 		);

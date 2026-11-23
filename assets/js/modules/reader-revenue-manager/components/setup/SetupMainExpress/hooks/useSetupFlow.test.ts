@@ -28,6 +28,8 @@ import {
 	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import { signupFormStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/StepSignupForm';
+import { surveyCTAStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/StepSurveyCTA';
+import { surveyQuestionsStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/StepSurveyQuestions';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
@@ -47,8 +49,15 @@ import {
 } from '@tests/js/test-utils';
 import useSetupFlow, { findBlockingStep, resolveStep } from './useSetupFlow';
 
-// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+const ORGANIZATION_ID = publications[ 0 ].organizationId;
 const PUBLICATION_ID = publications[ 0 ].publicationId;
+/* eslint-enable sitekit/acronym-case */
+
+const PUBLICATION_PARAMS = {
+	organizationID: ORGANIZATION_ID,
+	publicationID: PUBLICATION_ID,
+};
 
 const settingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
@@ -135,8 +144,10 @@ function provideConnectedPublication(
 	publication?: Publication
 ) {
 	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+		organizationID: publication ? publication.organizationId : '',
 		publicationID: publication ? publication.publicationId : '',
+		/* eslint-enable sitekit/acronym-case */
 	} );
 
 	registry
@@ -425,11 +436,6 @@ describe( 'useSetupFlow', () => {
 
 			expect( result.current.currentStep ).toBeUndefined();
 			expect( global.location.href ).toContain( 'step=setup-complete' );
-
-			// Prevent another request from being made to the publication endpoint.
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.finishResolution( 'getPublication', [ {} ] );
 		} );
 
 		it( 'should not return the existing CTA step while the connected publication is loading', () => {
@@ -446,15 +452,15 @@ describe( 'useSetupFlow', () => {
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetCTAs( {
-					ctas: [
+				.receiveGetPublicationCTAs(
+					[
 						{
 							name: `organizations/ABCD1234/publications/${ PUBLICATION_ID }/ctas/1`,
 							type: CTA_TYPES.NEWSLETTER_SIGNUP,
 						},
 					],
-					params: { publicationID: PUBLICATION_ID },
-				} );
+					PUBLICATION_PARAMS
+				);
 
 			const { result } = renderHook(
 				() =>
@@ -466,11 +472,6 @@ describe( 'useSetupFlow', () => {
 			);
 
 			expect( result.current.currentStep ).toBeUndefined();
-
-			// Prevent another request from being made to the publication endpoint.
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.finishResolution( 'getPublication', [ {} ] );
 		} );
 
 		it( 'should not open a step before the settings have loaded', () => {
@@ -530,10 +531,6 @@ describe( 'useSetupFlow', () => {
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
 					.setPublicationID( publications[ 1 ].publicationId );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.invalidateResolutionForStoreSelector( 'getPublication' );
 			} );
 
 			expect(
@@ -553,7 +550,7 @@ describe( 'useSetupFlow', () => {
 
 			const { result } = renderUseSetupFlow();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe(
 				publicationPoliciesStep
@@ -567,7 +564,7 @@ describe( 'useSetupFlow', () => {
 
 			const { result } = renderUseSetupFlow();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( termsOfServiceStep );
 		} );
@@ -581,7 +578,7 @@ describe( 'useSetupFlow', () => {
 
 			// Captured before the terms are accepted, as a step's `onComplete`
 			// handler would be.
-			const { advance } = result.current;
+			const { goForward } = result.current;
 
 			actHook( () => {
 				providePublications( registry, [
@@ -590,7 +587,7 @@ describe( 'useSetupFlow', () => {
 						rrmProduct: publicationWithTerms.rrmProduct,
 					},
 				] );
-				advance();
+				goForward();
 			} );
 
 			expect( result.current.currentStep ).toBe(
@@ -605,7 +602,7 @@ describe( 'useSetupFlow', () => {
 
 			const { result } = renderUseSetupFlow();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( setupCompleteStep );
 		} );
@@ -617,7 +614,7 @@ describe( 'useSetupFlow', () => {
 
 			const { result } = renderUseSetupFlow( NEWSLETTER_FLOW );
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( signupFormStep );
 		} );
@@ -641,13 +638,126 @@ describe( 'useSetupFlow', () => {
 
 			expect( result.current.currentStep ).toBe( firstCTAStep );
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( secondCTAStep );
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( setupCompleteStep );
+		} );
+	} );
+
+	describe( 'going back', () => {
+		const SURVEY_FLOW: SetupStep[] = [
+			publicationSetupStep,
+			termsOfServiceStep,
+			publicationPoliciesStep,
+			surveyQuestionsStep,
+			surveyCTAStep,
+			setupCompleteStep,
+		];
+
+		it( 'should open the survey questions step from the survey CTA step', () => {
+			global.location.href = 'http://example.com/?step=survey-cta';
+
+			provideConnectedPublication( registry, publicationWithPolicies );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			actHook( () => result.current.goBack() );
+
+			expect( result.current.currentStep ).toBe( surveyQuestionsStep );
+			expect( global.location.href ).toBe(
+				'http://example.com/?step=survey-questions'
+			);
+		} );
+
+		it( 'should open the publication policies step from the survey questions step, although it is complete', () => {
+			global.location.href = 'http://example.com/?step=survey-questions';
+
+			provideConnectedPublication( registry, publicationWithPolicies );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			actHook( () => result.current.goBack() );
+
+			expect( result.current.currentStep ).toBe(
+				publicationPoliciesStep
+			);
+
+			expect( global.location.href ).toBe(
+				'http://example.com/?step=publication-policies'
+			);
+		} );
+
+		it( 'should move forward again from the step it went back to', () => {
+			global.location.href = 'http://example.com/?step=survey-questions';
+
+			provideConnectedPublication( registry, publicationWithPolicies );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			actHook( () => result.current.goBack() );
+			actHook( () => result.current.goForward() );
+
+			expect( result.current.currentStep ).toBe( surveyQuestionsStep );
+		} );
+
+		it( 'should not change the step on the first step of the flow', () => {
+			global.location.href =
+				'http://example.com/?step=connect-publication';
+
+			provideConnectedPublication( registry );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			actHook( () => result.current.goBack() );
+
+			expect( result.current.currentStep ).toBe( publicationSetupStep );
+		} );
+
+		it.each( [
+			[ 'default', DEFAULT_FLOW, setupCompleteStep ],
+			[ 'newsletter sign-up', NEWSLETTER_FLOW, signupFormStep ],
+		] )(
+			'should leave the %s flow advancing as before',
+			( _name, steps, expectedStep ) => {
+				global.location.href =
+					'http://example.com/?step=publication-policies';
+
+				provideConnectedPublication(
+					registry,
+					publicationWithPolicies
+				);
+
+				const { result } = renderUseSetupFlow( steps );
+
+				actHook( () => result.current.goForward() );
+
+				expect( result.current.currentStep ).toBe( expectedStep );
+			}
+		);
+
+		it( 'should clear errors on going back', () => {
+			global.location.href = 'http://example.com/?step=survey-cta';
+
+			provideConnectedPublication( registry, publicationWithPolicies );
+
+			const { result } = renderUseSetupFlow( SURVEY_FLOW );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setErrorForSelector(
+					{ code: 'test_error', message: 'Error.', data: {} },
+					'getPublications'
+				);
+
+			actHook( () => result.current.goBack() );
+
+			expect(
+				registry.select( MODULES_READER_REVENUE_MANAGER ).getErrors()
+			).toEqual( [] );
 		} );
 	} );
 
@@ -666,10 +776,7 @@ describe( 'useSetupFlow', () => {
 		function provideCTAs( ctas: { name: string; type: string }[] ) {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetCTAs( {
-					ctas,
-					params: { publicationID: PUBLICATION_ID },
-				} );
+				.receiveGetPublicationCTAs( ctas, PUBLICATION_PARAMS );
 		}
 
 		const newsletterCTA = {
@@ -758,7 +865,7 @@ describe( 'useSetupFlow', () => {
 				{ registry }
 			);
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( existingCTAStep );
 
@@ -825,7 +932,7 @@ describe( 'useSetupFlow', () => {
 
 			provideErrors();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe(
 				publicationPoliciesStep
@@ -837,7 +944,12 @@ describe( 'useSetupFlow', () => {
 			actHook( () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setErrorForSelector( selectorError, 'getPublication' );
+					.setErrorForSelector( selectorError, 'getPublicationByID', [
+						/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+						publicationWithTerms.organizationId,
+						publicationWithTerms.publicationId,
+						/* eslint-enable sitekit/acronym-case */
+					] );
 			} );
 
 			expect( getErrors() ).toEqual( [ selectorError ] );
@@ -852,7 +964,7 @@ describe( 'useSetupFlow', () => {
 
 			rerender();
 
-			actHook( () => result.current.advance() );
+			actHook( () => result.current.goForward() );
 
 			expect( result.current.currentStep ).toBe( setupCompleteStep );
 			expect( getErrors() ).toEqual( [ selectorError, actionError ] );

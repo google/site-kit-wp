@@ -300,7 +300,7 @@ describe( 'UserSettingsSelectionPanel', () => {
 		await waitFor( () =>
 			expect(
 				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
-			).toMatchObject( { isTooltipVisible: false } )
+			).toBeUndefined()
 		);
 	} );
 

@@ -34,7 +34,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Checkbox, SpinnerButton, TextField } from 'googlesitekit-components';
+import { Checkbox, TextField } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
@@ -54,6 +54,7 @@ import {
 	ExpressSetupStepRegionSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
 import { CREATE_PUBLICATION_EVENT_LABEL } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
+import ExpressSetupStepActions from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupStepActions';
 import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
@@ -66,15 +67,17 @@ import {
 interface CreatePublicationProps {
 	description?: string;
 	onComplete: () => void;
+	onGoBack?: () => void;
 }
 
 const CreatePublication: FC< CreatePublicationProps > = ( {
 	description,
 	onComplete,
+	onGoBack,
 } ) => {
 	const trackEvent = useExpressSetupTrackEvent();
 
-	const [ isBusy, setIsBusy ] = useState( false );
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
 
 	const defaultDescription = __(
 		'To use Reader Revenue Manager, you will need to create a publication.',
@@ -145,13 +148,13 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 		SHOW_PUBLICATION_CREATE
 	);
 
-	const isDoingSubmitChanges: boolean | undefined = useSelect(
+	const isDoingSubmitChanges: boolean = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges(),
 		[]
 	);
 
-	const isFetchingCreatePublication: boolean | undefined = useSelect(
+	const isFetchingCreatePublication: boolean = useSelect(
 		( select: Select ) =>
 			select(
 				MODULES_READER_REVENUE_MANAGER
@@ -177,7 +180,7 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 		async ( event ) => {
 			event.preventDefault();
 
-			setIsBusy( true );
+			setIsSubmitting( true );
 
 			const { response, error } = await createPublication( {
 				displayName,
@@ -186,7 +189,7 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 			} );
 
 			if ( error ) {
-				setIsBusy( false );
+				setIsSubmitting( false );
 				return;
 			}
 
@@ -197,7 +200,7 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 			if ( submitChangesError ) {
 				resetPublications();
 				setShowPublicationCreate( false );
-				setIsBusy( false );
+				setIsSubmitting( false );
 				return;
 			}
 
@@ -216,12 +219,15 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 		]
 	);
 
-	const isValid = certifyRegion && displayName && languageCode && regionCode;
+	const canGoForward = !! (
+		certifyRegion &&
+		displayName &&
+		languageCode &&
+		regionCode
+	);
 
-	const isSaving =
-		isDoingSubmitChanges || isFetchingCreatePublication || isBusy;
-
-	const isDisabled = isSaving || ! isValid;
+	const isBusy =
+		isDoingSubmitChanges || isFetchingCreatePublication || isSubmitting;
 
 	useEffect( () => {
 		if ( siteName && displayName === undefined ) {
@@ -305,14 +311,12 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 					</Typography>
 				</Checkbox>
 			</div>
-			{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
-			<SpinnerButton
-				disabled={ isDisabled }
-				isSaving={ isSaving }
-				type="submit"
-			>
-				{ __( 'Create publication', 'google-site-kit' ) }
-			</SpinnerButton>
+			<ExpressSetupStepActions
+				canGoForward={ canGoForward }
+				isBusy={ isBusy }
+				label={ __( 'Create publication', 'google-site-kit' ) }
+				onGoBack={ onGoBack }
+			/>
 		</form>
 	);
 };

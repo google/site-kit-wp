@@ -1,7 +1,7 @@
 /**
- * ChipMultiSelect context for React components.
+ * `useHideTooltip` hook.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,25 @@
 /**
  * WordPress dependencies
  */
-import { createContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
-const ChipMultiSelectContext = createContext( {} );
+/**
+ * Internal dependencies
+ */
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
-export const { Consumer, Provider } = ChipMultiSelectContext;
+/**
+ * Returns a callback that hides the admin screen tooltip.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Function} Callback that hides the tooltip.
+ */
+export function useHideTooltip() {
+	const { setValue } = useDispatch( CORE_UI );
 
-export default ChipMultiSelectContext;
+	return useCallback( () => {
+		setValue( 'admin-screen-tooltip', undefined );
+	}, [ setValue ] );
+}

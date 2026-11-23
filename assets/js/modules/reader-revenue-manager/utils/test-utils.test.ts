@@ -75,7 +75,12 @@ describe( 'test utilities', () => {
 			expect(
 				registry
 					.select( MODULES_READER_REVENUE_MANAGER )
-					.hasFinishedResolution( 'getPublication' )
+					.hasFinishedResolution( 'getPublicationByID', [
+						// eslint-disable-next-line sitekit/acronym-case
+						TEST_PUBLICATION.organizationId,
+						// eslint-disable-next-line sitekit/acronym-case
+						TEST_PUBLICATION.publicationId,
+					] )
 			).toBe( true );
 
 			expect(

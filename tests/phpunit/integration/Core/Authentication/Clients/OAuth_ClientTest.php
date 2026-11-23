@@ -415,9 +415,41 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( Verification_Evidence::META, $params['verification_evidence'], 'Authentication request should report the stored verification token.' );
 	}
 
+	public function data_connection_types() {
+		return array(
+			'site credentials'  => array(
+				static function ( self $test ) {
+					$test->fake_site_connection();
+				},
+			),
+			'proxy credentials' => array(
+				static function ( self $test ) {
+					$test->fake_proxy_site_connection();
+				},
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_connection_types
+	 *
+	 * @param callable $fake_connection Fakes the site connection for the given test case.
+	 */
+	public function test_get_authentication_url__adds_state( callable $fake_connection ) {
+		$fake_connection( $this );
+		wp_set_current_user( $this->factory()->user->create() );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+
+		wp_parse_str( parse_url( $client->get_authentication_url(), PHP_URL_QUERY ), $params );
+
+		$this->assertArrayHasKey( 'state', $params, 'Authentication request should include a `state` value.' );
+		$this->assertNotFalse( wp_verify_nonce( $params['state'], OAuth_Client::STATE_NONCE_ACTION ), 'The `state` value should verify for the current user.' );
+	}
+
 	public function test_authorize_user() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
+		$this->use_valid_state();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options = new User_Options( $context );
 
@@ -473,6 +505,7 @@ class OAuth_ClientTest extends TestCase {
 	public function test_authorize_user__with_show_search_console() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
+		$this->use_valid_state();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options = new User_Options( $context );
 		$client       = new OAuth_Client( $context, null, $user_options );
@@ -512,6 +545,7 @@ class OAuth_ClientTest extends TestCase {
 	public function test_authorize_user__with_redirect_url_notification() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
+		$this->use_valid_state();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options = new User_Options( $context );
 		$client       = new OAuth_Client( $context, null, $user_options );
@@ -536,6 +570,7 @@ class OAuth_ClientTest extends TestCase {
 	public function test_authorize_user__default_redirect_url_notification_initial_setup() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
+		$this->use_valid_state();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options = new User_Options( $context );
 		$client       = new OAuth_Client( $context, null, $user_options );
@@ -558,6 +593,7 @@ class OAuth_ClientTest extends TestCase {
 	public function test_authorize_user__default_redirect_url_notification_existing_user() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
+		$this->use_valid_state();
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options    = new User_Options( $context );
 		$client          = new OAuth_Client( $context, null, $user_options );
@@ -673,6 +709,7 @@ class OAuth_ClientTest extends TestCase {
 	public function test_authorize_user__transient_storage_prevents_duplicate_setups() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
+		$this->use_valid_state();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options = new User_Options( $context );
 		$transients   = new Transients( $context );
@@ -769,6 +806,81 @@ class OAuth_ClientTest extends TestCase {
 			// Verify the stored URL is used for the redirect.
 			$this->assertEquals( $stored_redirect, $redirect2->get_location(), 'Duplicate auth attempt should reuse cached redirect.' );
 		}
+	}
+
+	public function data_invalid_state() {
+		$query_args = array(
+			'no state'           => array( 'code' => 'test-code' ),
+			'empty state'        => array(
+				'code'  => 'test-code',
+				'state' => '',
+			),
+			'wrong state'        => array(
+				'code'  => 'test-code',
+				'state' => 'not-a-nonce',
+			),
+			'error and no state' => array( 'error' => 'access_denied' ),
+		);
+
+		$data = array();
+		foreach ( $this->data_connection_types() as $connection_name => list( $fake_connection ) ) {
+			foreach ( $query_args as $query_name => $args ) {
+				$data[ "$connection_name, $query_name" ] = array( $fake_connection, $args );
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * @dataProvider data_invalid_state
+	 *
+	 * @param callable $fake_connection Fakes the site connection for the given test case.
+	 * @param array    $query_args      Query arguments of the `oauth2callback` request.
+	 */
+	public function test_authorize_user__rejects_invalid_state( callable $fake_connection, $query_args ) {
+		$fake_connection( $this );
+		wp_set_current_user( $this->factory()->user->create() );
+		$_GET = $query_args;
+
+		$this->assert_authorize_user_rejects_state();
+	}
+
+	/**
+	 * @dataProvider data_connection_types
+	 *
+	 * @param callable $fake_connection Fakes the site connection for the given test case.
+	 */
+	public function test_authorize_user__rejects_state_of_another_user( callable $fake_connection ) {
+		$fake_connection( $this );
+		wp_set_current_user( $this->factory()->user->create() );
+		$this->use_valid_state();
+		$_GET['code'] = 'test-code';
+
+		wp_set_current_user( $this->factory()->user->create() );
+
+		$this->assert_authorize_user_rejects_state();
+	}
+
+	public function test_authorize_user__accepts_valid_state_for_proxy_credentials() {
+		$this->fake_proxy_site_connection();
+		wp_set_current_user( $this->factory()->user->create() );
+		$this->use_valid_state();
+		$_GET['code'] = 'test-code';
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+		$this->mock_google_client( $client );
+
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected a `RedirectException` to be thrown.' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertNotEquals( 'invalid_state', $user_options->get( OAuth_Client::OPTION_ERROR_CODE ), 'Authorization through the proxy should accept a valid `state` value.' );
+		}
+
+		$this->assertEquals( 'test-access-token', $client->get_access_token(), 'Authorization through the proxy should store the access token.' );
 	}
 
 	public function test_refresh_profile_data() {
@@ -919,6 +1031,7 @@ class OAuth_ClientTest extends TestCase {
 	private function get_authorize_user_redirect_location( $stored_redirect_url = '' ) {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
+		$this->use_valid_state();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options = new User_Options( $context );
 		$client       = new OAuth_Client( $context, null, $user_options );
@@ -936,6 +1049,37 @@ class OAuth_ClientTest extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			return $redirect->get_location();
 		}
+	}
+
+	/**
+	 * Adds the `state` value which the authorization request gives the current user.
+	 */
+	private function use_valid_state() {
+		$_GET['state'] = wp_create_nonce( OAuth_Client::STATE_NONCE_ACTION );
+	}
+
+	/**
+	 * Asserts that the current `oauth2callback` request is rejected for its `state` value.
+	 */
+	private function assert_authorize_user_rejects_state() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+
+		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+		$google_client_mock->expects( $this->never() )->method( 'fetchAccessTokenWithAuthCode' );
+		$this->force_set_property( $client, 'google_client', $google_client_mock );
+
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected a `RedirectException` to be thrown.' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals( admin_url( 'admin.php?page=googlesitekit-splash' ), $redirect->get_location(), 'A rejected callback should redirect to the error URL.' );
+		}
+
+		$this->assertEquals( 'invalid_state', $user_options->get( OAuth_Client::OPTION_ERROR_CODE ), 'A rejected callback should store the `invalid_state` error.' );
+		$this->assertEmpty( $client->get_access_token(), 'A rejected callback should store no access token.' );
 	}
 
 	private function mock_google_client( $client ) {

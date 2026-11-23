@@ -22,6 +22,7 @@
 import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModuleRegistrations,
@@ -48,16 +49,57 @@ describe( 'StepSurveyQuestions', () => {
 		provideModuleRegistrations( registry, moduleData );
 	} );
 
-	it( 'calls the complete callback on form submission', () => {
+	it( 'renders a back action that calls the back callback', () => {
+		const onGoBack = jest.fn();
 		const onComplete = jest.fn();
 
 		const { getByRole } = render(
-			<StepSurveyQuestions onComplete={ onComplete } />,
+			<StepSurveyQuestions
+				onComplete={ onComplete }
+				onGoBack={ onGoBack }
+			/>,
 			{ registry }
 		);
 
-		fireEvent.click( getByRole( 'button', { name: 'Continue' } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Back' } ) );
 
-		expect( onComplete ).toHaveBeenCalledTimes( 1 );
+		expect( onGoBack ).toHaveBeenCalledTimes( 1 );
+		expect( onComplete ).not.toHaveBeenCalled();
+	} );
+
+	describe( 'submitting the step', () => {
+		beforeEach( () => {
+			jest.useFakeTimers();
+		} );
+
+		afterEach( () => {
+			jest.useRealTimers();
+		} );
+
+		it( 'disables both actions while the submission is in progress', async () => {
+			const { getByRole } = render(
+				<StepSurveyQuestions
+					onComplete={ () => {} }
+					onGoBack={ () => {} }
+				/>,
+				{ registry }
+			);
+
+			const backButton = getByRole( 'button', { name: 'Back' } );
+			const nextButton = getByRole( 'button', { name: 'Next' } );
+
+			expect( backButton ).toBeEnabled();
+			expect( nextButton ).toBeEnabled();
+
+			fireEvent.click( nextButton );
+
+			expect( backButton ).toBeDisabled();
+			expect( nextButton ).toBeDisabled();
+
+			// Let the pending submission settle before the test ends.
+			await act( async () => {
+				await jest.runAllTimersAsync();
+			} );
+		} );
 	} );
 } );

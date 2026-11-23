@@ -20,26 +20,46 @@
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
+import { AdminScreenTooltip } from '@/js/components/AdminScreenTooltip';
+import { FEATURE_DISCOVERY_CALLOUT_NOTIFICATION } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
+	INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFeatureDiscovery } from '@/js/googlesitekit/feature-discovery';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { getNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
+import { getNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
 import IncompleteSetupReminderNotification from './IncompleteSetupReminderNotification';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { simulateAllIntersections } = mockIntersectionObserver();
+
+const EVENT_CATEGORY = `${ VIEW_CONTEXT_MAIN_DASHBOARD }_feature-discovery-incomplete-setup-notification`;
 
 const slug = 'newsletter-signup';
 const id = getFeatureIncompleteSetupReminderKey( slug );
@@ -59,7 +79,8 @@ const feature: FeatureSettings = {
 		title: 'Almost there! Finish your newsletter sign-up form',
 		description:
 			'Complete setup to make it live and start building a list of your most interested visitors',
-		tooltip: '',
+		tooltip:
+			'You can always complete your sign-up form setup from the “Add features” page',
 		resolveRequirements: () => Promise.resolve(),
 	},
 };
@@ -70,6 +91,7 @@ describe( 'IncompleteSetupReminderNotification', () => {
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 		const api = createFeatureDiscovery( registry );
 		api.registerFeature( 'other-feature', {
@@ -80,6 +102,10 @@ describe( 'IncompleteSetupReminderNotification', () => {
 			},
 		} );
 		api.registerFeature( slug, feature );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render the matching feature copy with reminder markup', () => {
@@ -195,6 +221,8 @@ describe( 'IncompleteSetupReminderNotification', () => {
 		],
 	] )( 'should render nothing without a %s', ( _, settings ) => {
 		registry = createTestRegistry() as Registry;
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry
 			.dispatch( CORE_FEATURE_DISCOVERY )
 			.registerFeature( slug, { ...feature, ...settings } );
@@ -203,5 +231,256 @@ describe( 'IncompleteSetupReminderNotification', () => {
 			{ registry }
 		);
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	describe( 'GA event tracking', () => {
+		it( 'should track view_notification when the reminder is viewed', () => {
+			render( <IncompleteSetupReminderNotification { ...props } />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+			// Mark the notification as viewed, as the wrapper's own observer does
+			// once it has been in view long enough, and bring the nested notice
+			// into view too.
+			act( () => {
+				registry
+					.dispatch( CORE_UI )
+					.setValue( useHasBeenViewed.getKey( id ), true );
+
+				simulateAllIntersections( true );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				'view_notification',
+				slug,
+				undefined
+			);
+		} );
+
+		it( 'should track confirm_notification when "Complete setup" is clicked', () => {
+			jest.spyOn(
+				registry.dispatch( CORE_LOCATION ),
+				'navigateTo'
+			).mockImplementation( () => {} );
+
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Complete setup' } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				'confirm_notification',
+				slug,
+				undefined
+			);
+		} );
+
+		it( 'should track dismiss_notification when "Maybe later" is clicked', async () => {
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/,
+				{ body: [ id ] }
+			);
+
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitFor( () =>
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					EVENT_CATEGORY,
+					'dismiss_notification',
+					slug,
+					undefined
+				)
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
+
+	describe( 'post-dismissal tooltip', () => {
+		const dismissItemEndpoint =
+			/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/;
+
+		function getQueuedSetupCTAIDs() {
+			return (
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.SETUP_CTAS
+					) || []
+			).map(
+				( { id: notificationID }: { id: string } ) => notificationID
+			);
+		}
+
+		beforeEach( async () => {
+			fetchMock.postOnce( dismissItemEndpoint, { body: [ id ] } );
+
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification( FEATURE_DISCOVERY_CALLOUT_NOTIFICATION, {
+					Component: () => null,
+					areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+					groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+
+			await registry
+				.resolveSelect( CORE_NOTIFICATIONS )
+				.getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.SETUP_CTAS
+				);
+		} );
+
+		it( 'should show the feature tooltip pointing to "Add features" on "Maybe later"', async () => {
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitFor( () =>
+				expect(
+					registry.select( CORE_USER ).isItemDismissed( id )
+				).toBe( true )
+			);
+
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toEqual(
+				expect.objectContaining( {
+					isTooltipVisible: true,
+					content: feature.incompleteSetupReminder!.tooltip,
+					id,
+					gaTrackingEventArgs: {
+						category: EVENT_CATEGORY,
+						label: slug,
+					},
+					dismissLabel: 'Got it',
+					target: '.googlesitekit-add-features-button, .googlesitekit-features-menu__button',
+				} )
+			);
+		} );
+
+		it( 'should persist the one-time tooltip dismissal when the tooltip is closed', async () => {
+			const { getByRole, findByRole } = render(
+				<div className="googlesitekit-plugin">
+					<button className="googlesitekit-add-features-button">
+						Add features
+					</button>
+					<IncompleteSetupReminderNotification { ...props } />
+					<AdminScreenTooltip />
+				</div>,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitFor( () =>
+				expect(
+					registry.select( CORE_USER ).isItemDismissed( id )
+				).toBe( true )
+			);
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [ id, INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG ],
+			} );
+
+			fireEvent.click( await findByRole( 'button', { name: 'Got it' } ) );
+
+			await waitFor( () =>
+				expect(
+					registry
+						.select( CORE_USER )
+						.isItemDismissed(
+							INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG
+						)
+				).toBe( true )
+			);
+
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toBeUndefined();
+		} );
+
+		it( 'should remove the "Add features" callout from the queue when the tooltip is shown', async () => {
+			expect( getQueuedSetupCTAIDs() ).toContain(
+				FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+			);
+
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitFor( () =>
+				expect(
+					registry.select( CORE_USER ).isItemDismissed( id )
+				).toBe( true )
+			);
+
+			expect( getQueuedSetupCTAIDs() ).not.toContain(
+				FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+			);
+			// The callout's own dismissal is not persisted.
+			expect(
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.isNotificationDismissed(
+						FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+					)
+			).toBe( false );
+		} );
+
+		it( 'should not show the tooltip or remove the callout from the queue once the tooltip has been dismissed', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					INCOMPLETE_SETUP_TOOLTIP_DISMISSED_ITEM_SLUG,
+				] );
+
+			const { getByRole } = render(
+				<IncompleteSetupReminderNotification { ...props } />,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitFor( () =>
+				expect(
+					registry.select( CORE_USER ).isItemDismissed( id )
+				).toBe( true )
+			);
+
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toBeUndefined();
+			expect( getQueuedSetupCTAIDs() ).toContain(
+				FEATURE_DISCOVERY_CALLOUT_NOTIFICATION
+			);
+		} );
 	} );
 } );

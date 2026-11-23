@@ -24,12 +24,14 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
+import useFeatureDiscoveryNotOpenedSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryNotOpenedSurveyTrigger';
 import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
 import useExpressSetupDashboardSurveyTriggers from '@/js/modules/reader-revenue-manager/hooks/useExpressSetupDashboardSurveyTriggers';
 
 const DashboardMainEffectComponent: FC = () => {
 	useOpenEmailReportingSelectionPanelEffect();
 	useExpressSetupDashboardSurveyTriggers();
+	useFeatureDiscoveryNotOpenedSurveyTrigger();
 
 	return null;
 };
