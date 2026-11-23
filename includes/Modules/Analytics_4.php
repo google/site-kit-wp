@@ -1179,6 +1179,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		if ( Feature_Flags::enabled( 'serverSideEvents' ) ) {
 			$this->datapoints['POST:acknowledge-user-data-collection'] = new Acknowledge_User_Data_Collection(
 				array(
+					'settings'               => $this->get_settings(),
 					'service'                => function () {
 						return $this->get_service( 'analyticsadmin' );
 					},
