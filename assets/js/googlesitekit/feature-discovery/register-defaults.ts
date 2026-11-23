@@ -339,7 +339,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		detail: {
 			description: {
 				whatIs: __(
-					'In just a couple of clicks, you can export a snapshot of the Site Kit dashboard, selecting what you wish to be included, into a PDF document. By generating PDF reports, you can easily share, print, or review how you site is performing, similar to how it appears on the Site Kit dashboard.',
+					'In just a couple of clicks, you can export a snapshot of the Site Kit dashboard, selecting what you wish to be included, into a PDF document. By generating PDF reports, you can easily share, print, or review how your site is performing, similar to how it appears on the Site Kit dashboard.',
 					'google-site-kit'
 				),
 				whyUseHeading: __( 'Why use PDF reports?', 'google-site-kit' ),
