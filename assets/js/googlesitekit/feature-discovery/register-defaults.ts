@@ -397,7 +397,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: pdfReportFullScreenshotURL,
 					alt: __(
-						"Screenshot of a Site Kit PDF report showing the site's performance for a date range, with key metrics followed by charts of traffic over time, visitors by channel, location, and device, and search traffic",
+						"Screenshot of a Site Kit PDF report showing the site's performance for a date range, with key metrics followed by charts of traffic over time, visitors by channel, visitors by location, visitors by device, and search traffic",
 						'google-site-kit'
 					),
 					width: 620,
