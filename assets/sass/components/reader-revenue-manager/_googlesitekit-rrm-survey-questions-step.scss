@@ -1,0 +1,68 @@
+/**
+ * Survey questions step styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-rrm-survey-questions-step__columns {
+		display: grid;
+		gap: $grid-gap-desktop;
+		grid-template-columns: minmax(0, 1fr);
+
+		@media (min-width: $bp-desktop) {
+			align-items: start;
+			gap: 48px;
+			grid-template-columns: minmax(0, 1fr) 320px;
+		}
+	}
+
+	.googlesitekit-rrm-survey-questions-step__questions {
+		display: grid;
+		gap: $grid-gap-desktop;
+	}
+
+	.googlesitekit-rrm-survey-questions-step__group-header {
+		align-items: center;
+		border-block-end: 1px solid $c-utility-divider;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 16px;
+		justify-content: space-between;
+		padding-block-end: 12px;
+	}
+
+	.googlesitekit-rrm-survey-questions-step__group-title {
+		margin: 0;
+	}
+
+	.googlesitekit-rrm-survey-questions-step__create {
+		display: inline-flex;
+
+		.mdc-button {
+			margin: 0;
+		}
+	}
+
+	// Keep the selected questions in view while the questions scroll.
+	@media (min-width: $bp-desktop) {
+
+		.googlesitekit-rrm-survey-questions-step .googlesitekit-rrm-selected-questions-pane {
+			position: sticky;
+			top: calc(var(--googlesitekit-rrm-express-setup-admin-bar-height, 0px) + var(--googlesitekit-rrm-express-setup-header-height, 0px) + #{$grid-gap-desktop});
+		}
+	}
+}

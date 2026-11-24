@@ -88,4 +88,23 @@ describe( 'ExpressSetupStepActions', () => {
 		expect( getByRole( 'button', { name: 'Back' } ) ).toBeEnabled();
 		expect( getByRole( 'button', { name: 'Next' } ) ).toBeDisabled();
 	} );
+
+	it( 'adds the sticky modifier class only when sticky', () => {
+		const { container, rerender } = render(
+			<ExpressSetupStepActions isBusy={ false } label="Next" />
+		);
+
+		expect( container.firstElementChild ).not.toHaveClass(
+			'googlesitekit-rrm-express-setup-step-actions--sticky'
+		);
+
+		rerender(
+			<ExpressSetupStepActions isBusy={ false } label="Next" isSticky />
+		);
+
+		expect( container.firstElementChild ).toHaveClass(
+			'googlesitekit-rrm-express-setup-step-actions',
+			'googlesitekit-rrm-express-setup-step-actions--sticky'
+		);
+	} );
 } );

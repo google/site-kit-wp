@@ -23,7 +23,10 @@ import { Registry } from '@/js/googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import {
+	publications,
+	surveyQuestionCatalog,
+} from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	SURVEY_CUSTOM_DIMENSIONS,
@@ -86,7 +89,7 @@ const STEP_CONTENT = {
 		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
 	'publication-policies':
 		'To set up a survey using Reader Revenue Manager, you will need to add URLs to your publication’s policies.',
-	'survey-questions': 'Survey questions placeholder',
+	'survey-questions': 'Select up to 3 questions for your survey',
 	'survey-cta': 'Survey CTA placeholder',
 	'setup-complete': 'Your survey is published!',
 };
@@ -131,6 +134,13 @@ function connectPublication( registry: Registry, publication: Publication ) {
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
 		.receiveGetPublicationCTAs( [], params );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetPublicationSurveyQuestionCatalog(
+			surveyQuestionCatalog,
+			params
+		);
 }
 
 describe( 'SetupCTASurvey', () => {

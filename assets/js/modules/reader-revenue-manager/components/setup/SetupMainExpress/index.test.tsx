@@ -22,7 +22,10 @@
 import { Registry } from '@/js/googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import {
+	publications,
+	surveyQuestionCatalog,
+} from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	SURVEY_CUSTOM_DIMENSIONS,
@@ -160,6 +163,13 @@ describe( 'SetupMainExpress', () => {
 			.receiveGetPublicationCTAs( [], params );
 
 		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationSurveyQuestionCatalog(
+				surveyQuestionCatalog,
+				params
+			);
+
+		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetCustomDimensions( SURVEY_CUSTOM_DIMENSIONS, {
 				propertyID,
@@ -173,7 +183,7 @@ describe( 'SetupMainExpress', () => {
 		await waitForRegistry();
 
 		expect(
-			getByText( 'Survey questions placeholder' )
+			getByText( 'Select up to 3 questions for your survey' )
 		).toBeInTheDocument();
 	} );
 
@@ -190,7 +200,7 @@ describe( 'SetupMainExpress', () => {
 
 		expect( getByText( /Let's get started/ ) ).toBeInTheDocument();
 		expect(
-			queryByText( 'Survey questions placeholder' )
+			queryByText( 'Select up to 3 questions for your survey' )
 		).not.toBeInTheDocument();
 		expect( fetchMock ).not.toHaveFetched( customDimensionsEndpoint );
 	} );

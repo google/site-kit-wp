@@ -18,3 +18,4 @@
 
 export { default as publications } from './publications.json';
 export { default as termsOfService } from './terms-of-service';
+export { default as surveyQuestionCatalog } from './survey-question-catalog';

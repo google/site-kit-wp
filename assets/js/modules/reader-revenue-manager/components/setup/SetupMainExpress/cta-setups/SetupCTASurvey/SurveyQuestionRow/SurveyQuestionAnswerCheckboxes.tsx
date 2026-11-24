@@ -76,9 +76,10 @@ const SurveyQuestionAnswerCheckboxes: FC<
 
 	return (
 		<fieldset { ...props } className={ classNames }>
-			{ answers.map( ( { id, label } ) => (
+			{ answers.map( ( { disabled, id, label } ) => (
 				<Checkbox
 					checked={ value.includes( id ) }
+					disabled={ disabled }
 					id={ `${ instanceID }-${ id }` }
 					key={ id }
 					name={ `${ instanceID }[]` }
