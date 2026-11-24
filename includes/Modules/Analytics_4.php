@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Matchers;
@@ -107,6 +108,7 @@ use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Secret;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Server_Events_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Plain_Permalink_Top_Posts;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
@@ -115,6 +117,7 @@ use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
+use Google\Site_Kit\Modules\Analytics_4\Tracking_Exclusions;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
@@ -281,6 +284,24 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $measurement_protocol_secret;
 
 	/**
+	 * Tracking_Exclusions instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Tracking_Exclusions
+	 */
+	protected $tracking_exclusions;
+
+	/**
+	 * Server_Events_Guard instance, or null while the `serverSideEvents` feature flag is off.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Server_Events_Guard|null
+	 */
+	protected $server_events_guard;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -315,6 +336,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return $this->get_service( 'analyticsadmin' );
 			}
 		);
+		$this->tracking_exclusions               = new Tracking_Exclusions( $this->get_settings() );
 	}
 
 	/**
@@ -323,7 +345,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.30.0
 	 * @since 1.101.0 Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
 	 * @since 1.190.0 The `googlesitekit_proxy_setup_mode` callback no longer overrides a mode that is already set.
-	 * @since n.e.x.t Registers the Measurement Protocol secret setting, which the settings change callback deletes when the property, web data stream or measurement ID changes.
+	 * @since n.e.x.t Registers the Measurement Protocol secret setting, which the settings change callback deletes when the property, web data stream or measurement ID changes. With the `serverSideEvents` feature flag, registers `Server_Events_Guard` too.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -361,6 +383,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->site_goals_site_settings->register();
 		$this->advanced_data_breakdowns_settings->register();
 		$this->measurement_protocol_settings->register();
+
+		if ( Feature_Flags::enabled( 'serverSideEvents' ) ) {
+			$this->server_events_guard = new Server_Events_Guard(
+				$this->context,
+				$this,
+				new Conversion_Tracking_Settings( $this->options ),
+				$this->measurement_protocol_secret,
+				$this->tracking_exclusions
+			);
+			$this->server_events_guard->register();
+		}
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
@@ -690,6 +723,28 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	public function get_measurement_protocol_secret() {
 		return $this->measurement_protocol_secret;
+	}
+
+	/**
+	 * Gets the Tracking_Exclusions instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Tracking_Exclusions Tracking_Exclusions instance.
+	 */
+	public function get_tracking_exclusions() {
+		return $this->tracking_exclusions;
+	}
+
+	/**
+	 * Gets the Server_Events_Guard instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Server_Events_Guard|null Server_Events_Guard instance, or null while the `serverSideEvents` feature flag is off.
+	 */
+	public function get_server_events_guard() {
+		return $this->server_events_guard;
 	}
 
 	/**
@@ -1309,7 +1364,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$account_id  = $settings['accountID'];
 		$property_id = $settings['propertyID'];
 
-		if ( ! $this->is_tracking_disabled() ) {
+		if ( ! $this->get_tracking_exclusions()->is_disabled() ) {
 			return;
 		}
 
@@ -1330,37 +1385,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 <!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 	<?php
 		endif;
-	}
-
-	/**
-	 * Checks whether or not tracking snippet should be contextually disabled for this request.
-	 *
-	 * @since 1.1.0
-	 * @since 1.121.0 Migrated here from the Analytics (UA) class.
-	 *
-	 * @return bool
-	 */
-	protected function is_tracking_disabled() {
-		$settings = $this->get_settings()->get();
-
-		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
-		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
-			return false;
-		}
-
-		$disable_logged_in_users  = in_array( 'loggedinUsers', $settings['trackingDisabled'], true ) && is_user_logged_in();
-		$disable_content_creators = in_array( 'contentCreators', $settings['trackingDisabled'], true ) && current_user_can( 'edit_posts' );
-
-		$disabled = $disable_logged_in_users || $disable_content_creators;
-
-		/**
-		 * Filters whether or not the Analytics tracking snippet is output for the current request.
-		 *
-		 * @since 1.1.0
-		 *
-		 * @param bool $disabled Whether to disable tracking or not.
-		 */
-		return (bool) apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
 	}
 
 	/**
@@ -2136,15 +2160,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	}
 
 	/**
-	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
-	 *
-	 * If the Analytics-4 module is enabled, and the snippet is enabled, then the option to exclude
-	 * the option to exclude certain users from tracking should be displayed.
+	 * Lets the `trackingDisabled` setting turn tracking off whenever the `useSnippet` setting is on.
 	 *
 	 * @since 1.101.0
 	 *
-	 * @param bool $allowed Whether to allow tracking exclusion.
-	 * @return bool Filtered value.
+	 * @param bool $allowed Whether the `trackingDisabled` setting can turn tracking off.
+	 * @return bool True when the `useSnippet` setting is on, otherwise `$allowed`.
 	 */
 	private function filter_analytics_allow_tracking_disabled( $allowed ) {
 		if ( $allowed ) {
