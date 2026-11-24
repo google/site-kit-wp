@@ -256,7 +256,7 @@ describe( 'LatestPostPerformance', () => {
 
 		// `Tooltip` opens only when the icon matches `:focus-visible`, which
 		// needs real focus, so a focus event alone does not open it.
-		act( () => infoIcon.focus() ); // eslint-disable-line sitekit/acronym-case
+		act( () => infoIcon.focus() );
 
 		const tooltip = await findByRole( 'tooltip' );
 
