@@ -29,7 +29,7 @@ import { TileShell } from '@/js/modules/analytics-4/components/common/tiles';
 interface LatestPostTileProps {
 	/** The tile's title, e.g. `Visitor breakdown`. */
 	title: string;
-	/** Tooltip content shown in an info icon next to the title. */
+	/** The content of the info tooltip next to the title. */
 	infoTooltip?: ReactNode;
 }
 
