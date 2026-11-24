@@ -25,7 +25,6 @@ import { ENTER, ESCAPE, SPACE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	act,
 	createTestRegistry,
@@ -68,11 +67,6 @@ describe( 'UserMenu', () => {
 		beforeEach( () => {
 			provideUserInfo( registry );
 			provideSiteInfo( registry );
-			registry
-				.dispatch( CORE_USER )
-				.receiveDisconnectURL(
-					'http://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=12345'
-				);
 			container = render( <UserMenu />, { registry } ).container;
 			fireEvent.click(
 				container.querySelector(
@@ -163,9 +157,11 @@ describe( 'UserMenu', () => {
 				expect( localStorage.clear ).toHaveBeenCalled();
 				expect( sessionStorage.clear ).toHaveBeenCalled();
 
-				expect( locationAssignMock ).toHaveBeenCalledTimes( 1 );
+				await waitFor( () => {
+					expect( locationAssignMock ).toHaveBeenCalledTimes( 1 );
+				} );
 				expect( locationAssignMock ).toHaveBeenCalledWith(
-					'http://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=12345'
+					'http://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=abc123'
 				);
 			} );
 		} );
