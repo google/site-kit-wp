@@ -373,12 +373,18 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
+	 * @since n.e.x.t Sends each item's price after coupons, the discount on one unit, and the coupon codes.
 	 *
 	 * @param WC_Order $order An instance of the WooCommerce Order object.
 	 *
 	 * @return array
 	 */
 	public function get_formatted_order( $order ) {
+		// WooCommerce stores order lines without tax. Add the tax back when the
+		// store enters its prices with tax, so item prices include tax as the
+		// entered prices do.
+		$prices_include_tax = $order->get_prices_include_tax();
+
 		$order_data = array(
 			'id'          => $order->get_id(),
 			'affiliation' => get_bloginfo( 'name' ),
@@ -389,7 +395,7 @@ class WooCommerce extends Conversion_Events_Provider {
 				'total_price'    => $this->get_formatted_price( $order->get_total() ),
 			),
 			'items'       => array_map(
-				function ( $item ) {
+				function ( $item ) use ( $order, $prices_include_tax ) {
 					// If the product is not a valid WC_Product instance, return early.
 					if (
 						! $item instanceof WC_Order_Item_Product
@@ -398,19 +404,31 @@ class WooCommerce extends Conversion_Events_Provider {
 						return $item;
 					}
 
-					$formatted_product = $this->get_formatted_product( $item->get_product() );
-
-					return array_merge(
-						$formatted_product,
+					$price                 = $this->get_formatted_price( $order->get_item_total( $item, $prices_include_tax, false ) );
+					$price_before_discount = $this->get_formatted_price( $order->get_item_subtotal( $item, $prices_include_tax, false ) );
+					$formatted_item        = array_merge(
+						$this->get_formatted_product( $item->get_product() ),
 						array(
-							'quantity'                    => $item->get_quantity(),
-							'price_after_coupon_discount' => $this->get_formatted_price( $item->get_total() ),
+							'quantity' => $item->get_quantity(),
+							'price'    => $price,
 						)
 					);
+
+					if ( $price_before_discount > $price ) {
+						$formatted_item['discount'] = $price_before_discount - $price;
+					}
+
+					return $formatted_item;
 				},
 				array_values( $order->get_items() ),
 			),
 		);
+
+		$coupon_codes = $order->get_coupon_codes();
+
+		if ( ! empty( $coupon_codes ) ) {
+			$order_data['coupon'] = implode( ',', $coupon_codes );
+		}
 
 		if ( Feature_Flags::enabled( 'gtagUserData' ) && $order instanceof WC_Order ) {
 			$user_data = $this->extract_user_data_from_order( $order );

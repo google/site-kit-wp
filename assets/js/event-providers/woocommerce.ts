@@ -23,6 +23,7 @@
 		id?: number;
 		name?: string;
 		price?: string;
+		discount?: number;
 		variation?: string;
 		quantity?: number;
 		categories?: Array< { name: string } >;
@@ -38,6 +39,7 @@
 		};
 		/* eslint-enable camelcase */
 		items?: WcProduct[];
+		coupon?: string;
 		// eslint-disable-next-line camelcase
 		user_data?: unknown;
 	};
@@ -73,7 +75,7 @@
 	}
 
 	if ( purchase && canTrackPurchase ) {
-		const { id, totals, items, user_data: userData } = purchase;
+		const { id, totals, items, coupon, user_data: userData } = purchase;
 
 		const eventData = formatEventData(
 			totals.total_price,
@@ -83,6 +85,10 @@
 			totals.shipping_total ?? null,
 			totals.tax_total ?? null
 		);
+
+		if ( coupon ) {
+			eventData.coupon = coupon;
+		}
 
 		// User data is already normalized from WooCommerce.php.
 		if ( global._googlesitekit?.gtagUserData && userData ) {
@@ -204,16 +210,13 @@
 			formattedData.transaction_id = transactionID;
 		}
 
-		// Shipping can be 0, if only check if shipping is not empty value
-		// this will be omitted.
+		// Shipping and tax can be `0`, which a truthiness check would leave out.
 		if ( typeof shipping === 'number' ) {
-			formattedData.shipping = shipping;
+			formattedData.shipping = formatPrice( shipping );
 		}
 
-		// Tax can be 0, if only check if shipping is not empty value
-		// this will be omitted.
 		if ( typeof tax === 'number' ) {
-			formattedData.tax = tax;
+			formattedData.tax = formatPrice( tax );
 		}
 
 		if ( Array.isArray( products ) ) {
@@ -230,13 +233,18 @@
 	function formatProductData(
 		product: WcProduct
 	): Record< string, unknown > {
-		const { id, name, price, variation, quantity, categories } = product;
+		const { id, name, price, discount, variation, quantity, categories } =
+			product;
 
 		const mappedItem: Record< string, unknown > = {
 			item_id: id,
 			item_name: name,
 			price: formatPrice( price ),
 		};
+
+		if ( discount ) {
+			mappedItem.discount = formatPrice( discount );
+		}
 
 		if ( quantity ) {
 			mappedItem.quantity = quantity;
@@ -263,15 +271,16 @@
 	}
 
 	/**
-	 * Returns the price of a product formatted with decimal places if necessary.
+	 * Returns an amount, such as a product price, shipping or tax, formatted with decimal places if necessary.
 	 *
 	 * @since 1.158.0
 	 * @since 1.187.0 Reads the store's decimal places from the page data.
+	 * @since n.e.x.t Accepts the price as a number too.
 	 *
-	 * @param {number} price The price in minor units, such as 4999 for 49.99.
-	 * @return {number} The price of the product with decimals.
+	 * @param {string|number} price The price in minor units, such as 4999 for 49.99.
+	 * @return {number} The amount with decimals.
 	 */
-	function formatPrice( price: string | undefined ): number {
-		return parseInt( price ?? '', 10 ) / 10 ** currencyMinorUnit;
+	function formatPrice( price: string | number | undefined ): number {
+		return parseInt( String( price ?? '' ), 10 ) / 10 ** currencyMinorUnit;
 	}
 } )( global.jQuery );
