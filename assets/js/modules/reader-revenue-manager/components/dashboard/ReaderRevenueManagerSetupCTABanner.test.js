@@ -50,6 +50,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -79,6 +80,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
 
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
@@ -311,6 +313,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		const registryWithoutFlag = createTestRegistry();
 
 		provideUserAuthentication( registryWithoutFlag );
+		provideUserCapabilities( registryWithoutFlag );
 		provideSiteInfo( registryWithoutFlag );
 
 		registryWithoutFlag
