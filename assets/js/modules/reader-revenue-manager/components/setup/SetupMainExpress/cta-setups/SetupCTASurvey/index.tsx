@@ -70,7 +70,7 @@ const SetupCTASurvey: FC = () => {
 		hasRequiredScopes === true
 	);
 
-	const { currentStep, advance } = useSetupFlow(
+	const { currentStep, goBack, goForward } = useSetupFlow(
 		STEPS,
 		EXPRESS_SETUP_CTAS.SURVEY
 	);
@@ -92,6 +92,12 @@ const SetupCTASurvey: FC = () => {
 				'To set up a survey using Reader Revenue Manager, you will need to add URLs to your publication’s policies.',
 				'google-site-kit'
 			),
+		},
+		[ surveyQuestionsStep.slug ]: {
+			onGoBack: goBack,
+		},
+		[ surveyCTAStep.slug ]: {
+			onGoBack: goBack,
 		},
 		[ existingCTAStep.slug ]: {
 			title: __(
@@ -185,7 +191,7 @@ const SetupCTASurvey: FC = () => {
 			{ StepComponent ? (
 				<StepComponent
 					{ ...stepProps[ currentStep.slug ] }
-					onComplete={ advance }
+					onComplete={ goForward }
 				/>
 			) : null }
 		</ExpressSetupLayout>

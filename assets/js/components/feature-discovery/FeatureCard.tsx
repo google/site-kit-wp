@@ -38,6 +38,7 @@ import Badge from '@/js/components/Badge';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
 import FeatureCTA from '@/js/components/feature-discovery/FeatureCTA';
 import FeatureServiceIdentity from '@/js/components/feature-discovery/FeatureServiceIdentity';
+import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
 import FeedbackMenu, {
 	FeedbackMenuOption,
 } from '@/js/components/feedback/FeedbackMenu';
@@ -61,6 +62,8 @@ import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureRelevancyFeedbackGroup } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import CloseIcon from '@/svg/icons/close.svg';
 import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from './constants';
 
@@ -81,6 +84,9 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	hideUnreadDot = false,
 	ctaButton,
 } ) => {
+	const viewContext = useViewContext();
+	const gaEventCategory = `${ viewContext }_feature-card`;
+
 	const [ showUnreadDot, setShowUnreadDot ] = useState( false );
 	const [ isFeedbackMenuOpen, setIsFeedbackMenuOpen ] = useState( false );
 	const dismissButtonRef = useRef< HTMLButtonElement >( null );
@@ -92,6 +98,8 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	const { dismissFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 	const { setValue } = useDispatch( CORE_UI );
 	const { sendFeedback } = useDispatch( CORE_USER );
+	const triggerInteractionSurvey =
+		useFeatureDiscoveryInteractionSurveyTrigger();
 
 	const feedbackOptions = useMemo< FeedbackMenuOption[] >(
 		() => [
@@ -140,9 +148,13 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 					key: FEATURE_RELEVANCY_FEEDBACK_KEYS.DISMISS_REASON,
 					value,
 				} );
+
+				// Only a dismissal with a reason counts as an interaction, so
+				// "Just hide this suggestion", which has no value, does not.
+				triggerInteractionSurvey();
 			}
 		},
-		[ dismissFeature, sendFeedback, slug ]
+		[ dismissFeature, sendFeedback, slug, triggerInteractionSurvey ]
 	);
 
 	const isFeatureNew = useSelect(
@@ -164,12 +176,19 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	);
 
 	const onClickDismiss = useCallback( () => {
+		if ( ! isFeedbackMenuOpen ) {
+			trackEvent( gaEventCategory, 'open_dismiss_menu', slug );
+		}
+
 		setIsFeedbackMenuOpen( ( isOpen ) => ! isOpen );
-	}, [] );
+	}, [ gaEventCategory, isFeedbackMenuOpen, slug ] );
 
 	const onClickReadMore = useCallback( () => {
+		trackEvent( gaEventCategory, 'click_read_more', slug );
+		triggerInteractionSurvey();
+
 		setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, slug );
-	}, [ setValue, slug ] );
+	}, [ gaEventCategory, setValue, slug, triggerInteractionSurvey ] );
 
 	useEffect( () => {
 		if ( isFeatureUnread ) {
@@ -282,7 +301,11 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 
 						<div className="googlesitekit-feature-card__actions">
 							{ ctaButton ?? (
-								<FeatureCTA slug={ slug } isTertiary />
+								<FeatureCTA
+									gaEventCategory={ gaEventCategory }
+									slug={ slug }
+									isFeatureCardCTA
+								/>
 							) }
 							{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 							<Button onClick={ onClickReadMore }>

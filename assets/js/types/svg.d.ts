@@ -21,7 +21,7 @@ declare module '*.svg' {
 }
 
 declare module '*.svg?url' {
-	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
+	const content: string;
 	export default content;
 }
 

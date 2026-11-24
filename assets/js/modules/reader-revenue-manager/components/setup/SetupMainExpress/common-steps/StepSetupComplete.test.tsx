@@ -147,14 +147,14 @@ describe( 'StepSetupComplete', () => {
 		expect( getByText( 'View on your site' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should complete the step and navigate to the Site Kit dashboard from the Return to Dashboard button', async () => {
+	it( 'should complete the step and navigate to the Site Kit dashboard from the Return to dashboard button', async () => {
 		const { getByRole } = render(
 			<StepSetupComplete onComplete={ onComplete } />,
 			{ registry }
 		);
 
 		fireEvent.click(
-			getByRole( 'button', { name: /Return to Dashboard/i } )
+			getByRole( 'button', { name: /Return to dashboard/i } )
 		);
 
 		expect( onComplete ).toHaveBeenCalledTimes( 1 );
@@ -181,7 +181,7 @@ describe( 'StepSetupComplete', () => {
 		);
 
 		fireEvent.click(
-			getByRole( 'button', { name: /Return to Dashboard/i } )
+			getByRole( 'button', { name: /Return to dashboard/i } )
 		);
 
 		await act( () => Promise.resolve() );
@@ -223,7 +223,7 @@ describe( 'StepSetupComplete', () => {
 			);
 
 			expect(
-				queryByRole( 'button', { name: /Return to Dashboard/i } )
+				queryByRole( 'button', { name: /Return to dashboard/i } )
 			).not.toBeInTheDocument();
 
 			await waitFor( () =>
@@ -241,7 +241,7 @@ describe( 'StepSetupComplete', () => {
 			);
 
 			fireEvent.click(
-				getByRole( 'button', { name: /Return to Dashboard/i } )
+				getByRole( 'button', { name: /Return to dashboard/i } )
 			);
 
 			await waitFor( () =>

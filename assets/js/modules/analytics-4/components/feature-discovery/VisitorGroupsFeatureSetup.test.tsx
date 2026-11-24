@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/components/feature-discovery/constants';
 import { Registry } from '@/js/googlesitekit-data';
 import { getItem } from '@/js/googlesitekit/api/cache';
 import {
@@ -28,13 +29,17 @@ import {
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
 	getCurrentFeatureDiscoveryTabPath,
 } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { VISITOR_GROUPS_SETUP_FAILURE_KEY } from '@/js/modules/analytics-4/datastore/constants';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -63,6 +68,7 @@ interface HookOptions {
 
 describe( 'VisitorGroupsFeatureSetup', () => {
 	let registry: Registry;
+	let mockTrackEvent: jest.SpyInstance;
 	let onEnableGroups: jest.Mock;
 	let hookState: {
 		apiErrors: unknown[];
@@ -74,6 +80,9 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+		mockTrackEvent = jest
+			.spyOn( tracking, 'trackEvent' )
+			.mockImplementation( () => Promise.resolve() );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
@@ -114,7 +123,62 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 		jest.restoreAllMocks();
 	} );
 
-	it( 'triggers the setup survey and enables the groups when the card CTA is clicked', () => {
+	describe( 'event tracking', () => {
+		const viewContext = 'testViewContext';
+
+		beforeEach( () => {
+			jest.spyOn(
+				registry.dispatch( CORE_USER ),
+				'triggerSurvey'
+			).mockResolvedValue( undefined );
+		} );
+
+		it( 'should track click_setup_cta when the card CTA is clicked', () => {
+			const { getByRole } = render(
+				<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
+				{ registry, viewContext }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ viewContext }_feature-card`,
+				'click_setup_cta',
+				SLUG
+			);
+		} );
+
+		it( 'should not track from the card when the setup is requested from the detail panel', () => {
+			render(
+				<VisitorGroupsFeatureSetup
+					slug={ SLUG }
+					hideUnreadDot
+					isSetupRequested
+				/>,
+				{ registry, viewContext }
+			);
+
+			expect( onEnableGroups ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+		} );
+	} );
+
+	it( 'shows the card CTA label instead of the feature’s own CTA label', () => {
+		const { getByRole, queryByRole } = render(
+			<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up now' } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Enable visitor groups' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'triggers the setup and hub interaction surveys and enables the groups when the card CTA is clicked', () => {
 		const triggerSurvey = jest
 			.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
 			.mockResolvedValue( undefined );
@@ -124,12 +188,14 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 			{ registry }
 		);
 
-		fireEvent.click(
-			getByRole( 'button', { name: 'Enable visitor groups' } )
-		);
+		fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
 
 		expect( triggerSurvey ).toHaveBeenCalledWith(
 			getFeatureSetupSurveyTriggerID( SLUG )
+		);
+		expect( triggerSurvey ).toHaveBeenCalledWith(
+			FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+			{ ttl: SURVEY_TRIGGER_MAX_TTL }
 		);
 		expect( onEnableGroups ).toHaveBeenCalledTimes( 1 );
 		expect( triggerSurvey.mock.invocationCallOrder[ 0 ] ).toBeLessThan(
@@ -145,9 +211,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 			{ registry }
 		);
 
-		expect(
-			getByRole( 'button', { name: /Enable visitor groups/ } )
-		).toBeDisabled();
+		expect( getByRole( 'button', { name: /Set up now/ } ) ).toBeDisabled();
 	} );
 
 	it( 'returns the user to the hub and records the setup before the OAuth navigation', async () => {
@@ -228,7 +292,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 			getByText( 'Visitor groups setup failed' )
 		).toBeInTheDocument();
 		expect(
-			queryByRole( 'button', { name: 'Enable visitor groups' } )
+			queryByRole( 'button', { name: 'Set up now' } )
 		).not.toBeInTheDocument();
 
 		hookState.apiErrors = [];
@@ -243,7 +307,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 		} );
 
 		expect(
-			getByRole( 'button', { name: 'Enable visitor groups' } )
+			getByRole( 'button', { name: 'Set up now' } )
 		).toBeInTheDocument();
 	} );
 
@@ -349,7 +413,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 				queryByText( 'Creating visitor groups failed' )
 			).not.toBeInTheDocument();
 			expect(
-				getByRole( 'button', { name: 'Enable visitor groups' } )
+				getByRole( 'button', { name: 'Set up now' } )
 			).toBeInTheDocument();
 			expect(
 				registry

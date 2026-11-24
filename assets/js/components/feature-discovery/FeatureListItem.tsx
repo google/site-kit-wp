@@ -42,6 +42,7 @@ import FeatureCard, { FeatureCardProps } from './FeatureCard';
 import FeatureCTAButton from './FeatureCTAButton';
 import FeatureSetupErrorNotice from './FeatureSetupErrorNotice';
 import FeatureSuccessNotice from './FeatureSuccessNotice';
+import getFeatureCardCTALabel from './getFeatureCardCTALabel';
 
 const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
 	const [ isRetrying, setIsRetrying ] = useState( false );
@@ -134,7 +135,7 @@ const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
 	// how its setup errors are reported.
 	const SetupComponent = feature?.setup?.SetupComponent;
 
-	if ( SetupComponent ) {
+	if ( feature && SetupComponent ) {
 		return (
 			<div className="googlesitekit-feature-list-item">
 				<Suspense
@@ -144,7 +145,7 @@ const FeatureListItem: FC< FeatureCardProps > = ( { slug, ...props } ) => {
 							{ ...props }
 							ctaButton={
 								<FeatureCTAButton isBusy isTertiary>
-									{ feature?.setup?.ctaLabel }
+									{ getFeatureCardCTALabel( feature ) }
 								</FeatureCTAButton>
 							}
 						/>

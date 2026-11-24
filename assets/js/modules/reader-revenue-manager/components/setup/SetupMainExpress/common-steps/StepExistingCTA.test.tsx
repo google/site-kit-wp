@@ -149,7 +149,7 @@ describe( 'StepExistingCTA', () => {
 		);
 
 		fireEvent.click(
-			getByRole( 'button', { name: 'Return to Dashboard' } )
+			getByRole( 'button', { name: 'Return to dashboard' } )
 		);
 
 		expect( onComplete ).toHaveBeenCalledTimes( 1 );

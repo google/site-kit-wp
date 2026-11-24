@@ -454,9 +454,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$datapoints['POST:publication'] = new Update_Publication(
 				array(
-					'scopes'   => array( self::MANAGE_SCOPE ),
-					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
-					'settings' => $settings,
+					'scopes'  => array( self::MANAGE_SCOPE ),
+					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
 				)
 			);
 
@@ -489,9 +488,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$datapoints['POST:create-cta'] = new Create_CTA(
 				array(
-					'scopes'   => array( self::MANAGE_SCOPE ),
-					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
-					'settings' => $settings,
+					'scopes'  => array( self::MANAGE_SCOPE ),
+					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
 				)
 			);
 		}

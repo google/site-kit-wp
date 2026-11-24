@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Encoder;
@@ -33,17 +34,6 @@ use WP_Error;
  * @ignore
  */
 class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Datapoint, Permission_Aware_Datapoint {
-
-	/**
-	 * The shape a date parameter has to arrive in.
-	 *
-	 * The end is anchored with `\z` rather than `$`, which would also accept a
-	 * date carrying a trailing newline.
-	 *
-	 * @since 1.190.0
-	 * @var string
-	 */
-	const DATE_PATTERN = '/\A(\d{4})-(\d{2})-(\d{2})\z/';
 
 	/**
 	 * Response builder instance.
@@ -94,7 +84,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 			'startDate' => $start_date,
 			'endDate'   => $end_date,
 		) as $name => $value ) {
-			if ( ! $this->is_valid_date( $value ) ) {
+			if ( ! Date::is_valid_date( $value ) ) {
 				return $this->invalid_param_error(
 					sprintf(
 						/* translators: %s: Request parameter name */
@@ -136,27 +126,6 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 
 			return ( new Response_Encoder() )->encode( $response );
 		};
-	}
-
-	/**
-	 * Checks whether a date parameter names a real day, written as `YYYY-MM-DD`.
-	 *
-	 * The parts are checked with `checkdate()` as well as with the pattern, so
-	 * `2026-13-45` is rejected rather than rolled forward into another month.
-	 *
-	 * @since 1.190.0
-	 *
-	 * @param mixed $value The date parameter, as it arrived.
-	 * @return bool True when the value names a real day, false otherwise.
-	 */
-	private function is_valid_date( $value ) {
-		if ( ! is_string( $value ) || ! preg_match( self::DATE_PATTERN, $value, $matches ) ) {
-			return false;
-		}
-
-		list( , $year, $month, $day ) = $matches;
-
-		return checkdate( (int) $month, (int) $day, (int) $year );
 	}
 
 	/**

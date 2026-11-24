@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import {
+	FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+} from '@/js/components/feature-discovery/constants';
 import { Registry, Select } from '@/js/googlesitekit-data';
 import {
 	CORE_FEATURE_DISCOVERY,
@@ -29,9 +32,13 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as tracking from '@/js/util/tracking';
 import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -45,8 +52,15 @@ import {
 } from '@tests/js/test-utils';
 import FeatureCTA from './FeatureCTA';
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'FeatureCTA', () => {
 	let registry: Registry;
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
@@ -71,9 +85,12 @@ describe( 'FeatureCTA', () => {
 			},
 		] );
 
-		const { getByRole } = render( <FeatureCTA slug="test-feature" />, {
-			registry,
-		} );
+		const { getByRole } = render(
+			<FeatureCTA gaEventCategory="test_category" slug="test-feature" />,
+			{
+				registry,
+			}
+		);
 
 		expect(
 			getByRole( 'button', { name: 'Try it now' } )
@@ -81,9 +98,15 @@ describe( 'FeatureCTA', () => {
 	} );
 
 	it( 'should render nothing for a feature that is not registered', () => {
-		const { queryByRole } = render( <FeatureCTA slug="absent-feature" />, {
-			registry,
-		} );
+		const { queryByRole } = render(
+			<FeatureCTA
+				gaEventCategory="test_category"
+				slug="absent-feature"
+			/>,
+			{
+				registry,
+			}
+		);
 
 		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
 	} );
@@ -101,24 +124,161 @@ describe( 'FeatureCTA', () => {
 				setup: { type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE },
 			} );
 
-		const { queryByRole } = render( <FeatureCTA slug="test-feature" />, {
-			registry,
-		} );
+		const { queryByRole } = render(
+			<FeatureCTA gaEventCategory="test_category" slug="test-feature" />,
+			{
+				registry,
+			}
+		);
 
 		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should apply the tertiary button style when isTertiary is set', () => {
+	it( 'should apply the tertiary button style when isFeatureCardCTA is set', () => {
 		provideFeatures( registry, [ { slug: 'test-feature' } ] );
 
 		const { getByRole } = render(
-			<FeatureCTA slug="test-feature" isTertiary />,
+			<FeatureCTA
+				gaEventCategory="test_category"
+				slug="test-feature"
+				isFeatureCardCTA
+			/>,
 			{ registry }
 		);
 
 		expect( getByRole( 'button', { name: 'Set up now' } ) ).toHaveClass(
 			'mdc-button--tertiary'
 		);
+	} );
+
+	it( 'should show the card label instead of the feature’s CTA label when isFeatureCardCTA is set', () => {
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up Analytics',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCTA
+				gaEventCategory="test_category"
+				slug="test-feature"
+				isFeatureCardCTA
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up now' } )
+		).toBeInTheDocument();
+
+		expect(
+			queryByRole( 'button', { name: 'Set up Analytics' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should show the feature’s CTA label when isFeatureCardCTA is not set', () => {
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up Analytics',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCTA gaEventCategory="test_category" slug="test-feature" />,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up Analytics' } )
+		).toBeInTheDocument();
+
+		expect(
+			queryByRole( 'button', { name: 'Set up now' } )
+		).not.toBeInTheDocument();
+	} );
+
+	describe( 'event tracking', () => {
+		it( 'should track click_setup_cta with the given category and the feature slug', async () => {
+			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						activate: jest.fn().mockResolvedValue( {} ),
+					},
+				},
+			] );
+
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
+				{ registry }
+			);
+
+			const button = getByRole( 'button', { name: 'Set up now' } );
+
+			fireEvent.click( button );
+
+			// Let the setup finish so that no update lands after the test.
+			await waitFor( () => expect( button ).not.toBeDisabled() );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'test_category',
+				'click_setup_cta',
+				'test-feature'
+			);
+		} );
+
+		it( 'should track click_resume_setup_cta when the feature is in progress', async () => {
+			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: {
+						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+						activate: jest.fn().mockResolvedValue( {} ),
+						isEnabled: () => false,
+						isInProgress: () => true,
+					},
+				},
+			] );
+
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
+				{ registry }
+			);
+
+			const button = getByRole( 'button', { name: 'Set up now' } );
+
+			fireEvent.click( button );
+
+			// Let the setup finish so that no update lands after the test.
+			await waitFor( () => expect( button ).not.toBeDisabled() );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'test_category',
+				'click_resume_setup_cta',
+				'test-feature'
+			);
+		} );
 	} );
 
 	describe( 'availability', () => {
@@ -143,9 +303,12 @@ describe( 'FeatureCTA', () => {
 				.dispatch( CORE_MODULES )
 				.receiveCheckRequirementsSuccess( MODULE_SLUG_ANALYTICS_4 );
 
-			const { getByRole } = render( <FeatureCTA slug="analytics" />, {
-				registry,
-			} );
+			const { getByRole } = render(
+				<FeatureCTA gaEventCategory="test_category" slug="analytics" />,
+				{
+					registry,
+				}
+			);
 
 			expect(
 				getByRole( 'button', { name: 'Set up Analytics' } )
@@ -163,9 +326,12 @@ describe( 'FeatureCTA', () => {
 					data: { inactiveModules: [ 'Analytics' ] },
 				} );
 
-			const { queryByRole } = render( <FeatureCTA slug="analytics" />, {
-				registry,
-			} );
+			const { queryByRole } = render(
+				<FeatureCTA gaEventCategory="test_category" slug="analytics" />,
+				{
+					registry,
+				}
+			);
 
 			expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
 		} );
@@ -174,9 +340,12 @@ describe( 'FeatureCTA', () => {
 			provideSetupFlowFeature();
 
 			// No `receiveCheckRequirements*`, so `canActivateModule` is `undefined`.
-			const { queryByRole } = render( <FeatureCTA slug="analytics" />, {
-				registry,
-			} );
+			const { queryByRole } = render(
+				<FeatureCTA gaEventCategory="test_category" slug="analytics" />,
+				{
+					registry,
+				}
+			);
 
 			expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
 		} );
@@ -190,7 +359,10 @@ describe( 'FeatureCTA', () => {
 			] );
 
 			const { queryByRole } = render(
-				<FeatureCTA slug="test-feature" />,
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
 				{
 					registry,
 				}
@@ -210,9 +382,15 @@ describe( 'FeatureCTA', () => {
 				},
 			] );
 
-			const { getByRole } = render( <FeatureCTA slug="key-metrics" />, {
-				registry,
-			} );
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="key-metrics"
+				/>,
+				{
+					registry,
+				}
+			);
 
 			expect(
 				getByRole( 'button', { name: 'Set up Key metrics' } )
@@ -231,7 +409,10 @@ describe( 'FeatureCTA', () => {
 			] );
 
 			const { queryByRole } = render(
-				<FeatureCTA slug="test-feature" />,
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
 				{
 					registry,
 				}
@@ -248,9 +429,15 @@ describe( 'FeatureCTA', () => {
 				},
 			] );
 
-			const { getByRole } = render( <FeatureCTA slug="test-feature" />, {
-				registry,
-			} );
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
+				{
+					registry,
+				}
+			);
 
 			expect(
 				getByRole( 'button', { name: 'Set up now' } )
@@ -277,9 +464,15 @@ describe( 'FeatureCTA', () => {
 				body: {},
 			} );
 
-			const { getByRole } = render( <FeatureCTA slug="test-feature" />, {
-				registry,
-			} );
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
+				{
+					registry,
+				}
+			);
 
 			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
 
@@ -294,15 +487,50 @@ describe( 'FeatureCTA', () => {
 			);
 		} );
 
+		it( 'should send the hub interaction survey trigger', async () => {
+			fetchMock.post( surveyTriggerEndpoint, {
+				status: 200,
+				body: {},
+			} );
+
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: {
+							triggerID:
+								FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+							ttl: SURVEY_TRIGGER_MAX_TTL,
+						},
+					},
+				} )
+			);
+		} );
+
 		it( 'should show the in-progress state while the setup it is waiting on runs', async () => {
 			fetchMock.post( surveyTriggerEndpoint, {
 				status: 200,
 				body: {},
 			} );
 
-			const { getByRole } = render( <FeatureCTA slug="test-feature" />, {
-				registry,
-			} );
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
+				{
+					registry,
+				}
+			);
 
 			const button = getByRole( 'button', { name: 'Set up now' } );
 
@@ -330,6 +558,7 @@ describe( 'FeatureCTA', () => {
 
 			const { getByRole } = render(
 				<FeatureCTA
+					gaEventCategory="test_category"
 					slug="test-feature"
 					onSetupComplete={ onSetupComplete }
 				/>,
@@ -365,9 +594,12 @@ describe( 'FeatureCTA', () => {
 
 		fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 
-		const { getByRole } = render( <FeatureCTA slug="test-feature" />, {
-			registry,
-		} );
+		const { getByRole } = render(
+			<FeatureCTA gaEventCategory="test_category" slug="test-feature" />,
+			{
+				registry,
+			}
+		);
 
 		const button = getByRole( 'button', { name: 'Set up now' } );
 
@@ -410,9 +642,19 @@ describe( 'FeatureCTA', () => {
 
 		const { getAllByRole } = render(
 			<div>
-				<FeatureCTA slug="test-feature" />
-				<FeatureCTA slug="test-feature" isTertiary />
-				<FeatureCTA slug="other-feature" />
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+					isFeatureCardCTA
+				/>
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="other-feature"
+				/>
 			</div>,
 			{ registry }
 		);
@@ -471,6 +713,7 @@ describe( 'FeatureCTA', () => {
 
 			const { getByRole } = render(
 				<FeatureCTA
+					gaEventCategory="test_category"
 					slug="test-feature"
 					onSetupComplete={ onSetupComplete }
 				/>,
