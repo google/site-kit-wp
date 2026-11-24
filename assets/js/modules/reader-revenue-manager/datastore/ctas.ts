@@ -183,9 +183,7 @@ const fetchGetPublicationCTAsStore = createFetchStore( {
 		) => {
 			state.ctas[ publicationID ] = ctas;
 
-			state.ctasByID[ publicationID ] = {
-				...state.ctasByID[ publicationID ],
-			};
+			state.ctasByID[ publicationID ] ??= {};
 
 			ctas.forEach( ( cta ) => {
 				const ctaID = getCTAID( cta.name );
@@ -242,10 +240,8 @@ const fetchGetPublicationCTAStore = createFetchStore( {
 			cta: CTA | null,
 			{ publicationID, ctaID }: GetCTAParams
 		) => {
-			state.ctasByID[ publicationID ] = {
-				...state.ctasByID[ publicationID ],
-				[ ctaID ]: cta,
-			};
+			state.ctasByID[ publicationID ] ??= {};
+			state.ctasByID[ publicationID ][ ctaID ] = cta;
 		}
 	),
 	argsToParams: (
