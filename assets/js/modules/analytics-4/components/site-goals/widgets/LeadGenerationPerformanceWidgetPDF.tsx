@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { LeadGenerationPerformancePDFData } from './getLeadGenerationPerformancePDFData';
 import SiteGoalsSectionPDF from './pdf/SiteGoalsSectionPDF';
@@ -55,6 +56,7 @@ const LeadGenerationPerformanceWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 			totalLabel={ __( 'Total form completions', 'google-site-kit' ) }
 			totalSubtitle={ getLeadEventsSubtitle( leadEvents ) }
 			dateRangeLength={ dateRangeLength }
+			goalType={ GOAL_TYPES.LEAD }
 		/>
 	);
 };

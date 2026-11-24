@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
  * Internal dependencies
  */
 import { renderPDFText } from '@/js/components/pdf-export/test-utils';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	AGGREGATED_GROUP_ID,
 	SiteGoalsPDFGroup,
@@ -51,6 +52,7 @@ function buildSiteGoalsPDFGroup(
 		rate: { current: 0.5, previous: 0.4 },
 		engagementRate: { current: 0.75, previous: 0.7 },
 		sessions: { current: 1000, previous: 900 },
+		engagementSessions: { current: 200, previous: 150 },
 	};
 }
 
@@ -71,6 +73,7 @@ function buildSiteGoalsSection( groups: SiteGoalsPDFGroup[] ) {
 			totalLabel="Total sales"
 			totalSubtitle="“purchase” events"
 			dateRangeLength={ 28 }
+			goalType={ GOAL_TYPES.ECOMMERCE }
 		/>
 	);
 }
@@ -119,6 +122,29 @@ describe( 'SiteGoalsSectionPDF', () => {
 			text.filter( ( entry ) => entry === 'Online store performance' )
 				.length
 		).toBe( 1 );
+	} );
+
+	it( 'should name the plugin sessions under the engagement rate of a plugin group only', () => {
+		const pluginText = renderPDFText(
+			buildSiteGoalsSection( [
+				buildSiteGoalsPDFGroup( 'woocommerce', 'WooCommerce' ),
+			] )
+		);
+		const aggregatedText = renderPDFText(
+			buildSiteGoalsSection( [
+				buildSiteGoalsPDFGroup(
+					AGGREGATED_GROUP_ID,
+					'Online store performance'
+				),
+			] )
+		);
+
+		expect( pluginText ).toContain( 'of 200 sessions with this plugin' );
+		// The group for the whole site keeps the total sessions.
+		expect( aggregatedText ).toContain( 'of 200 total sessions' );
+		expect( aggregatedText ).not.toContain(
+			'of 200 sessions with this plugin'
+		);
 	} );
 
 	it( 'renders nothing when there is no breakdown group', () => {

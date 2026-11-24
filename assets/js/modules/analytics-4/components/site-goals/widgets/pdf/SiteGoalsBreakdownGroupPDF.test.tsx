@@ -29,6 +29,7 @@ import {
 	renderJSON,
 	renderPDFText,
 } from '@/js/components/pdf-export/test-utils';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { numFmt } from '@/js/util';
 import { OTHER_SOURCES_GROUP_ID } from './shapeSiteGoalsPDFData';
@@ -134,6 +135,40 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		expect( siteSessionsIndex ).toBeGreaterThan( rateIndex );
 		expect( siteSessionsIndex ).toBeLessThan( engagementIndex );
 		expect( groupSessionsIndex ).toBeGreaterThan( engagementIndex );
+	} );
+
+	it( 'should name the plugin sessions under the engagement tile of a plugin group', () => {
+		const text = renderBreakdownGroupText( {
+			group: FULL_GROUP,
+			rateLabel: 'Sales rate',
+			totalLabel: 'Total sales',
+			breakdownType: GOAL_TYPES.ECOMMERCE,
+		} );
+
+		// The rate still shows the site's total sessions.
+		expect( text ).toContain(
+			`of ${ numFmt( FULL_GROUP.sessions.current ) } total sessions`
+		);
+		expect( text ).toContain(
+			`of ${ numFmt(
+				FULL_GROUP.engagementSessions.current
+			) } sessions with this plugin`
+		);
+	} );
+
+	it( 'should name the form sessions under the engagement tile of a form group', () => {
+		const text = renderBreakdownGroupText( {
+			group: FULL_GROUP,
+			rateLabel: 'Form completion rate',
+			totalLabel: 'Total form completions',
+			breakdownType: GOAL_TYPES.LEAD,
+		} );
+
+		expect( text ).toContain(
+			`of ${ numFmt(
+				FULL_GROUP.engagementSessions.current
+			) } sessions with this form`
+		);
 	} );
 
 	it( 'renders the rate tile with a green background when the rate rises and a red one when it falls', () => {

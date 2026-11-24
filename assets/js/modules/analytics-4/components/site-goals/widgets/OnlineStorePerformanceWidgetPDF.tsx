@@ -30,6 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { OnlineStorePerformancePDFData } from './getOnlineStorePerformancePDFData';
 import SiteGoalsSectionPDF from './pdf/SiteGoalsSectionPDF';
 
@@ -66,6 +67,7 @@ const OnlineStorePerformanceWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 				primaryEvent
 			) }
 			dateRangeLength={ dateRangeLength }
+			goalType={ GOAL_TYPES.ECOMMERCE }
 		/>
 	);
 };
