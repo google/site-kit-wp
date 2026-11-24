@@ -32,7 +32,7 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { Button, Menu } from 'googlesitekit-components';
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
 import { MenuItem, MenuSection } from '@/js/components/HeaderMenu';
 import ModalDialog from '@/js/components/ModalDialog';
 import Portal from '@/js/components/Portal';
@@ -61,9 +61,6 @@ export default function UserMenu() {
 	const userFullName = useSelect( ( select ) =>
 		select( CORE_USER ).getFullName()
 	);
-	const disconnectURL = useSelect( ( select ) =>
-		select( CORE_USER ).getDisconnectURL()
-	);
 	const [ isAutoCreatingCustomDimensionsForAudience ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'isAutoCreatingCustomDimensionsForAudience'
@@ -74,6 +71,7 @@ export default function UserMenu() {
 	const menuWrapperRef = useRef();
 	const menuButtonRef = useRef();
 	const viewContext = useViewContext();
+	const registry = useRegistry();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
@@ -145,9 +143,13 @@ export default function UserMenu() {
 			'disconnect_user'
 		);
 
+		const disconnectURL = await registry
+			.resolveSelect( CORE_USER )
+			.getDisconnectURL();
+
 		// The disconnect action signs the user out and opens the splash screen, where they can sign in again.
 		navigateTo( disconnectURL );
-	}, [ disconnectURL, navigateTo, viewContext ] );
+	}, [ registry, navigateTo, viewContext ] );
 
 	if ( ! userEmail ) {
 		return null;
