@@ -298,7 +298,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: analyticsDashboardOverviewScreenshotURL,
 					alt: __(
-						'Screenshot of the Site Kit dashboard showing key metrics such as returning visitors and top traffic sources, a chart of total visitors over time, and a breakdown of visitors by channel, location and device',
+						'Screenshot of the Site Kit dashboard showing key metrics such as returning visitors and top traffic sources, a chart of total visitors over time, and a breakdown of visitors by channel, location, and device',
 						'google-site-kit'
 					),
 					width: 620,
@@ -316,7 +316,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: analyticsContentScreenshotURL,
 					alt: __(
-						'Screenshot of the content section of the Site Kit dashboard showing the top search queries for the site with their clicks and impressions, and the top pages with their pageviews, sessions and engagement',
+						'Screenshot of the content section of the Site Kit dashboard showing the top search queries for the site with their clicks and impressions, and the top pages with their pageviews, sessions, and engagement',
 						'google-site-kit'
 					),
 					width: 620,
@@ -325,7 +325,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: analyticsAudiencesScreenshotURL,
 					alt: __(
-						'Screenshot of visitor group tiles on the Site Kit dashboard comparing new and returning visitors by visits, pages per visit, pageviews, top cities and top content',
+						'Screenshot of visitor group tiles on the Site Kit dashboard comparing new and returning visitors by visits, pages per visit, pageviews, top cities, and top content',
 						'google-site-kit'
 					),
 					width: 620,
@@ -446,7 +446,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: keyMetricsScreenshotURL,
 					alt: __(
-						'Screenshot of the key metrics section of the Site Kit dashboard with tiles for metrics such as returning visitors, top traffic source, top performing keywords and sales engagement rate',
+						'Screenshot of the key metrics section of the Site Kit dashboard with tiles for metrics such as returning visitors, top traffic source, top performing keywords, and sales engagement rate',
 						'google-site-kit'
 					),
 					width: 620,
@@ -493,7 +493,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		detail: {
 			description: {
 				whatIs: __(
-					'Enhanced Measurement is a feature in Analytics that automatically tracks common user interactions on your website. Such user interactions include page views, scrolling events, clicking outbound links, viewing internal search results, form submissions, video plays and file downloads. Previously, capturing these measurements would require specific configuration for each event defining tags, triggers, and variables inside Google Tag Manager.',
+					'Enhanced Measurement is a feature in Analytics that automatically tracks common user interactions on your website. Such user interactions include page views, scrolling events, clicking outbound links, viewing internal search results, form submissions, video plays, and file downloads. Previously, capturing these measurements would require specific configuration for each event defining tags, triggers, and variables inside Google Tag Manager.',
 					'google-site-kit'
 				),
 				whyUseHeading: __(
@@ -566,7 +566,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: enhancedMeasurementScreenshotURL,
 					alt: __(
-						'Screenshot of the Analytics settings in Site Kit, where enhanced measurement is enabled in the improve your measurement section to measure interactions such as file downloads, form completions and video views',
+						'Screenshot of the Analytics settings in Site Kit, where enhanced measurement is enabled in the improve your measurement section to measure interactions such as file downloads, form completions, and video views',
 						'google-site-kit'
 					),
 					width: 620,
@@ -602,7 +602,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		name: __( 'Visitor groups', 'google-site-kit' ),
 		title: __( 'Learn about your visitor groups', 'google-site-kit' ),
 		shortDescription: __(
-			'Segment your visitors into categories that help you understand site behaviour for demographcs of subsets of visitors that you define',
+			'Segment your visitors into categories that help you understand site behavior for demographics of subsets of visitors that you define',
 			'google-site-kit'
 		),
 		detail: {
@@ -688,7 +688,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: analyticsAudiencesScreenshotURL,
 					alt: __(
-						'Screenshot of visitor group tiles on the Site Kit dashboard comparing new and returning visitors by visits, pages per visit, pageviews, top cities and top content',
+						'Screenshot of visitor group tiles on the Site Kit dashboard comparing new and returning visitors by visits, pages per visit, pageviews, top cities, and top content',
 						'google-site-kit'
 					),
 					width: 620,

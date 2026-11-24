@@ -440,7 +440,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			{
 				title: 'Success! Your Reader Revenue Manager account is set up',
 				description:
-					'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions and contributions.',
+					'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions, and contributions.',
 				ctaText: 'Get started',
 			},
 		],
