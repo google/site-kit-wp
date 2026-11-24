@@ -111,11 +111,11 @@ const selectors = {
 	),
 
 	/**
-	 * Returns the publisher center overview URL.
+	 * Returns the Publisher Center overview URL.
 	 *
 	 * @since 1.189.0
 	 *
-	 * @return {string} Publisher center overview URL.
+	 * @return {string} Publisher Center overview URL.
 	 */
 	getPublisherCenterOverviewURL: createRegistrySelector( ( select ) => () => {
 		const publicationID = select(

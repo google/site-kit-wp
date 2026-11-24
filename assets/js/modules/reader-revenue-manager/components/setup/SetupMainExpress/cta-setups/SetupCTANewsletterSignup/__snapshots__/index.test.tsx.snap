@@ -194,7 +194,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                     >
                       Because you already have other CTAs active, this new form will be displayed last. You can reorder your CTAs at any time in the 
                       <a
-                        aria-label="Publisher center (opens in a new tab)"
+                        aria-label="Publisher Center (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Foverview%3Fpublication%3DQRSTUVWX%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
                         rel="noopener noreferrer"
@@ -203,7 +203,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
-                          Publisher center
+                          Publisher Center
                         </span>
                         <span
                           class="googlesitekit-icon-wrapper"
@@ -261,7 +261,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                     >
                       You can edit the content of the CTA any time in 
                       <a
-                        aria-label="Publisher center (opens in a new tab)"
+                        aria-label="Publisher Center (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DQRSTUVWX%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
                         rel="noopener noreferrer"
@@ -270,7 +270,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
-                          Publisher center
+                          Publisher Center
                         </span>
                         <span
                           class="googlesitekit-icon-wrapper"
@@ -327,7 +327,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 <span
                   class="mdc-button__label"
                 >
-                  Return to Dashboard
+                  Return to dashboard
                 </span>
               </button>
             </div>
@@ -567,7 +567,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                     >
                       You can edit the content of the CTA any time in 
                       <a
-                        aria-label="Publisher center (opens in a new tab)"
+                        aria-label="Publisher Center (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DQRSTUVWX%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
                         rel="noopener noreferrer"
@@ -576,7 +576,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
-                          Publisher center
+                          Publisher Center
                         </span>
                         <span
                           class="googlesitekit-icon-wrapper"
@@ -633,7 +633,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 <span
                   class="mdc-button__label"
                 >
-                  Return to Dashboard
+                  Return to dashboard
                 </span>
               </button>
               <button

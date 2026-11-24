@@ -127,7 +127,7 @@ const StepExistingCTA: FC< StepExistingCTAProps > = ( {
 			<div className="googlesitekit-rrm-express-setup-complete__actions">
 				{ /* @ts-expect-error `Button` component is not yet typed. */ }
 				<Button onClick={ onReturnClick }>
-					{ __( 'Return to Dashboard', 'google-site-kit' ) }
+					{ __( 'Return to dashboard', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</div>
