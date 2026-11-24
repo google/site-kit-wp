@@ -273,6 +273,11 @@ describe( 'LatestPostPerformance', () => {
 			'https://sitekit.withgoogle.com/support/?doc=visitor-group-insights'
 		);
 		expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
+		expect(
+			tooltip.querySelector(
+				'.googlesitekit-traffic-overview__latest-post-tooltip'
+			)
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render the info icon in the visitor breakdown tile while the visitors report loads', async () => {
