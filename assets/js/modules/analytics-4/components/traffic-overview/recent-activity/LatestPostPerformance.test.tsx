@@ -235,7 +235,7 @@ describe( 'LatestPostPerformance', () => {
 
 		expect(
 			getByRole( 'button', {
-				name: /Visitors can sometimes be counted as both "new" and "returning,"/,
+				name: /Visitors can sometimes be counted as both “new” and “returning,”/,
 			} )
 		).toBeInTheDocument();
 	} );
@@ -251,7 +251,7 @@ describe( 'LatestPostPerformance', () => {
 		await waitForRegistry();
 
 		const infoIcon = getByRole( 'button', {
-			name: /Visitors can sometimes be counted as both "new" and "returning,"/,
+			name: /Visitors can sometimes be counted as both “new” and “returning,”/,
 		} );
 
 		// `Tooltip` opens only when the icon matches `:focus-visible`, which
@@ -261,7 +261,7 @@ describe( 'LatestPostPerformance', () => {
 		const tooltip = await findByRole( 'tooltip' );
 
 		expect( tooltip ).toHaveTextContent(
-			'Visitors can sometimes be counted as both "new" and "returning," so these totals may not add up. Learn more'
+			'Visitors can sometimes be counted as both “new” and “returning,” so these totals may not add up. Learn more'
 		);
 
 		const learnMoreLink = within( tooltip ).getByRole( 'link', {

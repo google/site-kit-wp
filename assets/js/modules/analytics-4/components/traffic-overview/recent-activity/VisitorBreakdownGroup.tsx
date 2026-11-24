@@ -99,7 +99,7 @@ const VisitorBreakdownGroup: FC< VisitorBreakdownGroupProps > = ( {
 			title={ __( 'Visitor breakdown', 'google-site-kit' ) }
 			infoTooltip={ createInterpolateElement(
 				__(
-					'Visitors can sometimes be counted as both "new" and "returning," so these totals may not add up. <a>Learn more</a>',
+					'Visitors can sometimes be counted as both “new” and “returning,” so these totals may not add up. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{
