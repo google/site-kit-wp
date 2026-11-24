@@ -239,6 +239,8 @@ describe( 'FeatureCTA', () => {
 				'click_setup_cta',
 				'test-feature'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 
 		it( 'should track click_resume_setup_cta when the feature is in progress', async () => {
@@ -277,6 +279,8 @@ describe( 'FeatureCTA', () => {
 				'click_resume_setup_cta',
 				'test-feature'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 	} );
 

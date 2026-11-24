@@ -35,7 +35,10 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
-import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
+import {
+	surveyTriggerEndpoint,
+	waitForSurveyTrigger,
+} from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -43,6 +46,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -527,6 +531,7 @@ describe( 'FeatureCard', () => {
 			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
 			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 			provideFeatures( registry, [
@@ -557,6 +562,8 @@ describe( 'FeatureCard', () => {
 				'click_setup_cta',
 				'test-feature'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 
 		it( 'should track click_read_more', () => {

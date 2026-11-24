@@ -42,7 +42,10 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
-import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
+import {
+	surveyTriggerEndpoint,
+	waitForSurveyTrigger,
+} from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -592,6 +595,7 @@ describe( 'FeatureDetailPanel', () => {
 		it( 'should track the CTA and nothing on close after the setup completes', async () => {
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
 			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
@@ -625,11 +629,14 @@ describe( 'FeatureDetailPanel', () => {
 				'click_setup_cta',
 				'background'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 
 		it( 'should track click_resume_setup_cta for a feature in progress', async () => {
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
 			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
@@ -665,6 +672,8 @@ describe( 'FeatureDetailPanel', () => {
 				'click_resume_setup_cta',
 				'resumable'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 	} );
 } );
