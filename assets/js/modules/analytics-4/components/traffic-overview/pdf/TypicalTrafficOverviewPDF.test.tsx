@@ -438,7 +438,7 @@ describe( 'Typical Traffic Overview PDF', () => {
 								{
 									name: 'Organic Search',
 									change: 4,
-									visitsSharePct: 52.4,
+									shareText: '52.4% of all visits',
 								},
 							],
 						},

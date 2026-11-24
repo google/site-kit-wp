@@ -90,20 +90,25 @@ class Response_EncoderTest extends TestCase {
 					'current'    => 96,
 					'previous'   => 31,
 					'sharePct'   => 21.4,
+					'shareBasis' => 'GROSS_CHANGE',
 					'attributes' => array(
 						array(
-							'kind'     => 'LANDING_PAGE',
-							'label'    => '/how-to-plant-garlic/',
-							'current'  => 58,
-							'previous' => 12,
-							'sharePct' => 15.1,
+							'kind'      => 'LANDING_PAGE',
+							'label'     => '/how-to-plant-garlic/',
+							'current'   => 58,
+							'previous'  => 12,
+							'sharePct'  => 15.1,
+							'oversized' => false,
 						),
+						// Mobile gained 71 visits, more than Facebook's 65,
+						// so it has no share.
 						array(
-							'kind'     => 'DEVICE',
-							'label'    => 'mobile',
-							'current'  => 71,
-							'previous' => 20,
-							'sharePct' => 16.8,
+							'kind'      => 'DEVICE',
+							'label'     => 'mobile',
+							'current'   => 71,
+							'previous'  => 0,
+							'sharePct'  => 0.0,
+							'oversized' => true,
 						),
 					),
 				),
@@ -113,16 +118,21 @@ class Response_EncoderTest extends TestCase {
 					'current'    => 210,
 					'previous'   => 222,
 					'sharePct'   => 40.3,
+					'shareBasis' => 'NET_CHANGE',
 					'attributes' => array(),
 				),
+				// The post carried 49 of the 389 visits `Organic Social` gained.
 				array(
-					'kind'       => 'CONTENT',
-					'label'      => '/how-to-plant-garlic/',
-					'url'        => '/how-to-plant-garlic/',
-					'current'    => 64,
-					'previous'   => 15,
-					'sharePct'   => 12.6,
-					'attributes' => array(
+					'kind'                => 'CONTENT',
+					'label'               => '/how-to-plant-garlic/',
+					'url'                 => '/how-to-plant-garlic/',
+					'current'             => 64,
+					'previous'            => 15,
+					'sharePct'            => 12.6,
+					'shareBasis'          => 'PARENT_CHANNEL',
+					'parentChannel'       => 'Organic Social',
+					'parentChannelChange' => 389,
+					'attributes'          => array(
 						array(
 							'kind'     => 'TRAFFIC_CHANNEL',
 							'label'    => 'Organic Social',
@@ -220,6 +230,149 @@ class Response_EncoderTest extends TestCase {
 			'A post\'s card should carry its path as a sixth position, through the string table, and another card should keep five.'
 		);
 		$this->assertSame( array( 'How to plant garlic', '/how-to-plant-garlic/', 'Direct' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'The path should be in the string table.' );
+	}
+
+	public function test_encode__writes_the_basis_of_a_cards_share_after_its_path_and_null_for_a_card_without_a_path() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array_map(
+					fn( $share_basis ) => array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Direct',
+						'current'    => 500,
+						'previous'   => 480,
+						'sharePct'   => 12.5,
+						'shareBasis' => $share_basis,
+						'attributes' => array(),
+					),
+					array( 'GROSS_CHANGE', 'NET_CHANGE', 'SITE_TRAFFIC', 'VOLUME', 'PARENT_CHANNEL' )
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 0, 0, 500, 480, 12.5, null, 0 ),
+				array( 0, 0, 500, 480, 12.5, null, 1 ),
+				array( 0, 0, 500, 480, 12.5, null, 2 ),
+				array( 0, 0, 500, 480, 12.5, null, 3 ),
+				array( 0, 0, 500, 480, 12.5, null, 4 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'Each basis should travel as its position, `GROSS_CHANGE` 0, `NET_CHANGE` 1, `SITE_TRAFFIC` 2, `VOLUME` 3 and `PARENT_CHANNEL` 4, after a null in place of the path a channel\'s card has none of.'
+		);
+	}
+
+	public function test_encode__writes_the_channel_a_card_on_parent_channel_took_the_place_of_after_its_basis() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'                => 'REFERRING_SITE',
+						'label'               => 'news.example',
+						'current'             => 220,
+						'previous'            => 0,
+						'sharePct'            => 73.3,
+						'shareBasis'          => 'PARENT_CHANNEL',
+						'parentChannel'       => 'Referral',
+						'parentChannelChange' => 300,
+						'attributes'          => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( array( 3, 0, 220, 0, 73.3, null, 4, 1, 300 ) ),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'The channel should travel through the string table, followed by its change.'
+		);
+		$this->assertSame( array( 'news.example', 'Referral' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'The channel should be in the string table.' );
+	}
+
+	public function test_encode__leaves_out_the_channel_of_a_card_on_another_basis_and_a_basis_the_format_does_not_list() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'                => 'CHANNEL',
+						'label'               => 'Referral',
+						'current'             => 800,
+						'previous'            => 500,
+						'sharePct'            => 100.0,
+						'shareBasis'          => 'GROSS_CHANGE',
+						'parentChannel'       => 'Direct',
+						'parentChannelChange' => 40,
+						'attributes'          => array(),
+					),
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Email',
+						'current'    => 80,
+						'previous'   => 50,
+						'sharePct'   => 10.0,
+						'shareBasis' => 'CLICKS',
+						'attributes' => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 0, 0, 800, 500, 100, null, 0 ),
+				array( 0, 1, 80, 50, 10 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'A channel should travel only with a share of its change, and a basis the format does not list should be left out with the null before it.'
+		);
+		$this->assertSame( array( 'Referral', 'Email' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'A channel left out should add nothing to the string table.' );
+	}
+
+	public function test_encode__marks_an_oversized_attribute_after_its_share_and_leaves_the_mark_out_otherwise() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Direct',
+						'current'    => 3280,
+						'previous'   => 2000,
+						'sharePct'   => 64.5,
+						'shareBasis' => 'GROSS_CHANGE',
+						'attributes' => array(
+							array(
+								'kind'      => 'DEVICE',
+								'label'     => 'desktop',
+								'current'   => 2643,
+								'previous'  => 1000,
+								'sharePct'  => 0.0,
+								'oversized' => true,
+							),
+							array(
+								'kind'      => 'DEVICE',
+								'label'     => 'mobile',
+								'current'   => 638,
+								'previous'  => 1000,
+								'sharePct'  => 0.0,
+								'oversized' => false,
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					array( 6, 1, 2643, 1000, 0, true ),
+					array( 6, 2, 638, 1000, 0 ),
+				),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ],
+			'Only the attribute that moved further than its card should carry `true` after its share.'
+		);
 	}
 
 	public function test_encode__skips_a_card_or_an_attribute_without_a_kind_the_format_lists() {

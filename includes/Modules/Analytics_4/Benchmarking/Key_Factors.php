@@ -521,7 +521,7 @@ final class Key_Factors {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array List of cards, in the order to show them. Each has `kind`, `CHANNEL`, `CHANNEL_GROUP`, `CONTENT`, `REFERRING_SITE` or `CAMPAIGN`, `label`, `current`, `previous`, `sharePct`, the card's share as the decomposition carries it, of the site's visits on a steady period, and `attributes`, its rows. Each attribute has `kind`, `label`, `current`, `previous` and `sharePct`, the row's share as the decomposition carries it, or `0` without one. A search keyword's attribute counts clicks.
+	 * @return array List of cards, in the order to show them. Each has `kind`, `CHANNEL`, `CHANNEL_GROUP`, `CONTENT`, `REFERRING_SITE` or `CAMPAIGN`, `label`, `current`, `previous`, `sharePct`, the card's share as the decomposition carries it, of the site's visits on a steady period, `shareBasis`, what that share is of, as the decomposition's `share_basis`, and `attributes`, its rows. A card that took its channel's place, whose basis is `PARENT_CHANNEL`, also has `parentChannel`, the channel's title, and `parentChannelChange`, the channel's change. Each attribute has `kind`, `label`, `current`, `previous`, `sharePct`, the row's share as the decomposition carries it, or `0` without one, and `oversized`, whether the row moved further than its card the same way, so it has no share and is more than the card's change. A search keyword's attribute counts clicks.
 	 */
 	public function get_cards() {
 		return array_column( $this->get_result()['cards'], 'key_factor' );
@@ -1226,13 +1226,7 @@ final class Key_Factors {
 
 			$rows[] = array(
 				'wire'      => $wire,
-				'attribute' => array(
-					'kind'     => 'TRAFFIC_CHANNEL',
-					'label'    => $member['title'],
-					'current'  => $member['current'],
-					'previous' => $member['previous'],
-					'sharePct' => $share_percent,
-				),
+				'attribute' => self::get_attribute( 'TRAFFIC_CHANNEL', $member['title'], $member['current'], $member['previous'], $share_percent ),
 			);
 		}
 
@@ -1357,6 +1351,7 @@ final class Key_Factors {
 					'current'    => $channel['current'],
 					'previous'   => $channel['previous'],
 					'sharePct'   => $share_percent,
+					'shareBasis' => 'VOLUME',
 					'attributes' => array_column( $rows, 'attribute' ),
 				),
 			);
@@ -1930,6 +1925,10 @@ final class Key_Factors {
 	 * visitor type within `NET_SLACK` is, carried all of its change instead:
 	 * what the card's other values moved the other way is too small to count.
 	 *
+	 * The panel's attribute marks a row that moved further than the card, the
+	 * same way, and isn't capped as `oversized`, so the panel can say it is
+	 * more than the card's net change rather than show a bare larger number.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string      $kind           The row kind, such as `TARGET_PAGE`.
@@ -1944,6 +1943,7 @@ final class Key_Factors {
 	private function build_row( $kind, $label, $text, $attribute_kind, array $value, $card_delta, $capped = false ) {
 		$delta         = $value['delta'];
 		$measured      = $capped ? min( abs( $delta ), abs( $card_delta ) ) : abs( $delta );
+		$oversized     = $delta * $card_delta > 0 && $measured > abs( $card_delta );
 		$share_percent = 0.0;
 		$wire          = array(
 			'kind'  => $kind,
@@ -1955,7 +1955,7 @@ final class Key_Factors {
 			$wire['value'] = array( 'text' => $text );
 		}
 
-		if ( $delta * $card_delta > 0 && $measured <= abs( $card_delta ) ) {
+		if ( $delta * $card_delta > 0 && ! $oversized ) {
 			$share_percent = self::round1( $measured / abs( $card_delta ) * 100 );
 
 			if ( $share_percent >= self::DECOMPOSITION_ROW_SHARE_PERCENT ) {
@@ -1976,7 +1976,7 @@ final class Key_Factors {
 			'wire'      => $wire,
 			// The homepage row names no page, so the panel names the site's
 			// own homepage.
-			'attribute' => self::get_attribute( $attribute_kind, null === $text ? $this->home_path : $text, $value['current'], $value['previous'], $share_percent ),
+			'attribute' => self::get_attribute( $attribute_kind, null === $text ? $this->home_path : $text, $value['current'], $value['previous'], $share_percent, $oversized ),
 		);
 	}
 
@@ -2311,7 +2311,7 @@ final class Key_Factors {
 	 * @param array  $share    The card's share, with `share_basis` and `traffic_impact_pct`, and `parent_channel` and `parent_channel_delta` on `PARENT_CHANNEL`.
 	 * @param array  $rows     The card's rows, each with `wire` and `attribute`.
 	 * @param string $url      Optional. The path of a post's card, which the panel links its title to. Default null.
-	 * @return array The card, with `key_factor` and `wire`. A post's `key_factor` also has its path as `url`.
+	 * @return array The card, with `key_factor` and `wire`. The `key_factor` has the share's basis as `shareBasis`, and on `PARENT_CHANNEL` the channel's title and change as `parentChannel` and `parentChannelChange`. A post's `key_factor` also has its path as `url`.
 	 */
 	private function build_card( $kind, $title, $current, $previous, $role, array $share, array $rows, $url = null ) {
 		list( $dimension, $entity_kind ) = self::CARD_KINDS[ $kind ];
@@ -2360,8 +2360,17 @@ final class Key_Factors {
 			'current'    => $current,
 			'previous'   => $previous,
 			'sharePct'   => $share['traffic_impact_pct'],
-			'attributes' => array_column( $rows, 'attribute' ),
+			'shareBasis' => $share['share_basis'],
 		);
+
+		// A card that took its channel's place names the channel its share is
+		// of, so the panel can say where the card's change came from.
+		if ( isset( $share['parent_channel'] ) ) {
+			$key_factor['parentChannel']       = $share['parent_channel'];
+			$key_factor['parentChannelChange'] = $share['parent_channel_delta'];
+		}
+
+		$key_factor['attributes'] = array_column( $rows, 'attribute' );
 
 		if ( null !== $url ) {
 			$key_factor['url'] = $url;
@@ -2588,15 +2597,17 @@ final class Key_Factors {
 	 * @param int    $current   The visits, or clicks, of the selected period.
 	 * @param int    $previous  The visits, or clicks, of the previous period.
 	 * @param float  $share_pct The row's share, or `0`.
+	 * @param bool   $oversized Optional. Whether the row moved further than its card the same way, so it has no share. Default false.
 	 * @return array The attribute.
 	 */
-	private static function get_attribute( $kind, $label, $current, $previous, $share_pct ) {
+	private static function get_attribute( $kind, $label, $current, $previous, $share_pct, $oversized = false ) {
 		return array(
-			'kind'     => $kind,
-			'label'    => $label,
-			'current'  => (int) $current,
-			'previous' => (int) $previous,
-			'sharePct' => $share_pct,
+			'kind'      => $kind,
+			'label'     => $label,
+			'current'   => (int) $current,
+			'previous'  => (int) $previous,
+			'sharePct'  => $share_pct,
+			'oversized' => $oversized,
 		);
 	}
 

@@ -44,7 +44,7 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useKeyFactorLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorLinkClick';
 import {
-	formatVisitsShare,
+	getKeyFactorAttributeShareText,
 	getPageURL,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import {
@@ -65,10 +65,13 @@ export interface KeyFactorCardProps {
 	/** The change in visits, negative for a drop. */
 	change: number;
 	/**
-	 * The driver's share of the site's visits, in percent, which a card shows
-	 * when traffic was steady, since its change explains nothing then.
+	 * What the card's change is a share of, under its title, as
+	 * `getKeyFactorShareText()` gives it: its share of the site's visits when
+	 * traffic was steady, since its change explains nothing then, or its share
+	 * of the change of the channel whose place it took. Null when the card
+	 * shows its change alone.
 	 */
-	visitsSharePct?: number;
+	shareText?: string | null;
 	/** The values inside the driver that carried its change, in the order to show them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
 	/** The post's path on a `CONTENT` card, which its title links to. */
@@ -123,7 +126,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 	kind,
 	label,
 	change,
-	visitsSharePct,
+	shareText,
 	attributes,
 	url,
 	referenceSiteURL,
@@ -211,14 +214,14 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 				</Typography>
 				<KeyFactorChangeBadge change={ change } />
 			</div>
-			{ visitsSharePct !== undefined && (
+			{ shareText && (
 				<Typography
 					as="p"
 					type={ TYPE_BODY }
 					size={ SIZE_SMALL }
-					className="googlesitekit-traffic-overview__key-factor-visits-share"
+					className="googlesitekit-traffic-overview__key-factor-share"
 				>
-					{ formatVisitsShare( visitsSharePct ) }
+					{ shareText }
 				</Typography>
 			) }
 			{ namedAttributes.length > 0 && (
@@ -260,6 +263,10 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 										? 'clicks'
 										: 'visits'
 								}
+								shareText={ getKeyFactorAttributeShareText(
+									kind,
+									attribute
+								) }
 								href={ attributeHrefs[ index ] }
 								onLinkClick={ handleLinkClick }
 							/>

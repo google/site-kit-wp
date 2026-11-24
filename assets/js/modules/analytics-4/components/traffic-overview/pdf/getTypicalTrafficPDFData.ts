@@ -21,6 +21,7 @@
  */
 import { getKeyFactorName } from '@/js/modules/analytics-4/components/traffic-overview/factors/getKeyFactorName';
 import {
+	getKeyFactorShareText,
 	getKeyFactorsNoticeText,
 	getTypicalTrafficAvailability,
 	getTypicalTrafficRangeWaitingText,
@@ -37,8 +38,13 @@ export interface TrafficOverviewPDFKeyFactor {
 	name: string;
 	/** The change in visits, negative for a drop. */
 	change: number;
-	/** The share of the site's visits, in percent, which a card shows on a steady period. */
-	visitsSharePct?: number;
+	/**
+	 * What the card's change is a share of, as the dashboard's card shows it
+	 * under its title: its share of the site's visits on a steady period, or
+	 * its share of the change of the channel whose place it took. Null when
+	 * the card shows its change alone.
+	 */
+	shareText?: string | null;
 }
 
 /** The parts of the typical traffic view the PDF prints. */
@@ -118,12 +124,16 @@ export function getTypicalTrafficPDFData( {
 			): keyFactor is BenchmarkingKeyFactor & { label: string } =>
 				!! keyFactor.label
 		)
-		.map( ( { kind, label, current, previous, sharePct } ) => ( {
-			name: getKeyFactorName( kind, label, referenceSiteURL ),
-			change: current - previous,
-			// On a steady period, a card's share is of the site's visits,
-			// which is why it shows.
-			visitsSharePct: steadyTraffic ? sharePct : undefined,
+		.map( ( keyFactor ) => ( {
+			name: getKeyFactorName(
+				keyFactor.kind,
+				keyFactor.label,
+				referenceSiteURL
+			),
+			change: keyFactor.current - keyFactor.previous,
+			shareText: getKeyFactorShareText( keyFactor, {
+				steady: steadyTraffic,
+			} ),
 		} ) );
 
 	const requestedInsight = insightRequestAllowed ? insight : null;

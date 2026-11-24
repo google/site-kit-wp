@@ -578,9 +578,9 @@ $traffic-overview-column-gap: 42px;
 			color: $c-utility-on-error-container;
 		}
 
-		// On a steady period, a card's share of the site's visits sits under
-		// its title's row.
-		.googlesitekit-traffic-overview__key-factor-visits-share {
+		// What a card's change is a share of, such as its share of the site's
+		// visits on a steady period, sits under its title's row.
+		.googlesitekit-traffic-overview__key-factor-share {
 			color: $c-surfaces-on-surface-variant;
 			margin: 4px 0 0;
 		}
@@ -635,6 +635,13 @@ $traffic-overview-column-gap: 42px;
 			color: $c-surfaces-on-surface;
 			flex-shrink: 0;
 			white-space: nowrap;
+		}
+
+		// What an attribute's change is a share of sits under its value and
+		// change, in the color of its title.
+		.googlesitekit-traffic-overview__key-factor-attribute-share {
+			color: $c-surfaces-on-surface-variant;
+			margin: 0;
 		}
 
 		// A placeholder card takes the classes of a card for its layout, so

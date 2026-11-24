@@ -41,7 +41,10 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { KEY_FACTORS_MAX_CARDS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { getKeyFactorsNoticeText } from '@/js/modules/analytics-4/components/traffic-overview/utils';
+import {
+	getKeyFactorShareText,
+	getKeyFactorsNoticeText,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import KeyFactorCard from './KeyFactorCard';
 import KeyFactorCardPlaceholder from './KeyFactorCardPlaceholder';
@@ -214,37 +217,22 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 			) }
 			{ showCards && (
 				<div className="googlesitekit-traffic-overview__key-factors-cards">
-					{ cards.map(
-						(
-							{
-								kind,
-								label,
-								current,
-								previous,
-								sharePct,
-								attributes,
-								url,
-							},
-							index
-						) => (
-							<KeyFactorCard
-								// Keyed by position: nothing here reorders, and
-								// two kinds of driver can share a name.
-								key={ index }
-								kind={ kind }
-								label={ label }
-								change={ current - previous }
-								// On a steady period, a card's share is of the
-								// site's visits, which is why it shows.
-								visitsSharePct={
-									isSteady ? sharePct : undefined
-								}
-								attributes={ attributes }
-								url={ url }
-								referenceSiteURL={ referenceSiteURL }
-							/>
-						)
-					) }
+					{ cards.map( ( keyFactor, index ) => (
+						<KeyFactorCard
+							// Keyed by position: nothing here reorders, and
+							// two kinds of driver can share a name.
+							key={ index }
+							kind={ keyFactor.kind }
+							label={ keyFactor.label }
+							change={ keyFactor.current - keyFactor.previous }
+							shareText={ getKeyFactorShareText( keyFactor, {
+								steady: isSteady,
+							} ) }
+							attributes={ keyFactor.attributes }
+							url={ keyFactor.url }
+							referenceSiteURL={ referenceSiteURL }
+						/>
+					) ) }
 				</div>
 			) }
 		</section>

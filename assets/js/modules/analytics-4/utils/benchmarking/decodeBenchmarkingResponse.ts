@@ -38,6 +38,12 @@ import {
 	BENCHMARKING_FORMAT_VERSION,
 	BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
 	BENCHMARKING_KEY_FACTOR_KINDS,
+	BENCHMARKING_KEY_FACTOR_SHARE_BASES,
+	KEY_FACTOR_ATTRIBUTE_OVERSIZED,
+	KEY_FACTOR_CARD_PARENT_CHANNEL,
+	KEY_FACTOR_CARD_PARENT_CHANNEL_CHANGE,
+	KEY_FACTOR_CARD_SHARE_BASIS,
+	KEY_FACTOR_CARD_URL,
 	MEMBER_AVAILABILITY,
 	MEMBER_BAND_REFERENCE_DAYS,
 	MEMBER_CONTENT_MARKERS,
@@ -60,6 +66,7 @@ import {
 	BenchmarkingDailyTrafficRow,
 	BenchmarkingKeyFactor,
 	BenchmarkingKeyFactorAttribute,
+	BenchmarkingKeyFactorParentChannel,
 	DecodedBenchmarkingResponse,
 } from './types';
 
@@ -234,15 +241,34 @@ function decodeAvailability(
 }
 
 /**
- * Decodes a key factor card or one of its attributes, which travel in the same
- * layout.
+ * Reads a value that travels as its position in a list, such as a kind.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*}     index  The value's position.
+ * @param {Array} values The values in the order they travel as.
+ * @return {string|undefined} The value, or `undefined` when the position is not a whole number in the list.
+ */
+function readListed< Value extends string >(
+	index: unknown,
+	values: readonly Value[]
+): Value | undefined {
+	// Only a whole number is a position in `values`. A name such as `length`
+	// would read a property of the array instead.
+	return Number.isInteger( index ) ? values[ index as number ] : undefined;
+}
+
+/**
+ * Decodes the fields a key factor card and its attributes share, which travel
+ * first, in the same layout.
  *
  * @since 1.191.0
+ * @since n.e.x.t Decodes the shared fields alone, and reads the kind through `readListed()`.
  *
  * @param {*}     row     The encoded card or attribute.
  * @param {Array} kinds   The kinds in the order they travel as, from `BENCHMARKING_KEY_FACTOR_KINDS` or `BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS`.
  * @param {Array} strings The response's string table.
- * @return {Object|null} The decoded card or attribute, or null when it is not a list, is shorter than its layout, or its kind is not in `kinds`.
+ * @return {Object|null} The decoded fields, or null when the row is not a list, is shorter than its layout, or its kind is not in `kinds`.
  */
 function decodeKeyFactorRow< Kind extends string >(
 	row: unknown,
@@ -256,9 +282,7 @@ function decodeKeyFactorRow< Kind extends string >(
 	}
 
 	const [ kindIndex, label, current, previous, sharePct ] = row;
-	// Only a whole number is a position in `kinds`. A name such as `length`
-	// would read a property of the array instead.
-	const kind = Number.isInteger( kindIndex ) ? kinds[ kindIndex ] : undefined;
+	const kind = readListed( kindIndex, kinds );
 
 	if ( ! kind ) {
 		return null;
@@ -274,10 +298,67 @@ function decodeKeyFactorRow< Kind extends string >(
 }
 
 /**
+ * Decodes the channel a card on `PARENT_CHANNEL` took the place of: its name,
+ * through the string table, and its change.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array} card    The encoded card.
+ * @param {Array} strings The response's string table.
+ * @return {Object|null} The channel, with `label` and `change`, or null when either cannot be read.
+ */
+function decodeParentChannel(
+	card: unknown[],
+	strings: string[]
+): BenchmarkingKeyFactorParentChannel | null {
+	const label = readString( strings, card[ KEY_FACTOR_CARD_PARENT_CHANNEL ] );
+	const change = card[ KEY_FACTOR_CARD_PARENT_CHANNEL_CHANGE ];
+
+	return label !== null && Number.isInteger( change )
+		? { label, change: change as number }
+		: null;
+}
+
+/**
+ * Decodes an attribute of a key factor card.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*}     attribute The encoded attribute.
+ * @param {Array} strings   The response's string table.
+ * @return {Object|null} The decoded attribute, with `oversized` only when it moved further than its card, or null when it cannot be read.
+ */
+function decodeKeyFactorAttribute(
+	attribute: unknown,
+	strings: string[]
+): BenchmarkingKeyFactorAttribute | null {
+	const decoded = decodeKeyFactorRow(
+		attribute,
+		BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
+		strings
+	);
+
+	if ( ! decoded ) {
+		return null;
+	}
+
+	// Only `true` marks an oversized attribute, so a field that cannot be read
+	// shows the attribute with its share, as an attribute without one.
+	return ( attribute as unknown[] )[ KEY_FACTOR_ATTRIBUTE_OVERSIZED ] === true
+		? { ...decoded, oversized: true }
+		: decoded;
+}
+
+/**
  * Decodes the key factor cards, each with the attributes at its own position.
+ *
+ * A card's fields after its share, and an attribute's, are only as many as
+ * the encoder wrote, so a field that is missing or cannot be read is left out
+ * of the decoded card, rather than making the card unusable.
  *
  * @since 1.191.0
  * @since n.e.x.t Reads the path of a post's card.
+ * @since n.e.x.t Reads the basis of a card's share, the channel a card on `PARENT_CHANNEL` took the place of, and whether an attribute moved further than its card.
  *
  * @param {Array} cards      The encoded cards, in rank order.
  * @param {Array} attributes One list of encoded attributes per card, in the same order.
@@ -305,23 +386,31 @@ function decodeKeyFactors(
 			? cardAttributes
 			: [];
 
-		// A post's card carries its path after its share. `decodeKeyFactorRow`
-		// returns a card only for a list.
+		// `decodeKeyFactorRow` returns a card only for a list.
+		const row = card as unknown[];
+		// A post's card carries its path after its share.
 		const url =
 			keyFactor.kind === 'CONTENT'
-				? readString( strings, ( card as unknown[] )[ 5 ] )
+				? readString( strings, row[ KEY_FACTOR_CARD_URL ] )
+				: null;
+		const shareBasis = readListed(
+			row[ KEY_FACTOR_CARD_SHARE_BASIS ],
+			BENCHMARKING_KEY_FACTOR_SHARE_BASES
+		);
+		// Only a share of a channel's change names the channel.
+		const parentChannel =
+			shareBasis === 'PARENT_CHANNEL'
+				? decodeParentChannel( row, strings )
 				: null;
 
 		return {
 			...keyFactor,
 			...( url ? { url } : {} ),
+			...( shareBasis ? { shareBasis } : {} ),
+			...( parentChannel ? { parentChannel } : {} ),
 			attributes: attributeRows.flatMap(
 				( attribute ) =>
-					decodeKeyFactorRow(
-						attribute,
-						BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
-						strings
-					) ?? []
+					decodeKeyFactorAttribute( attribute, strings ) ?? []
 			),
 		};
 	} );
@@ -477,6 +566,7 @@ function readBandReferenceDays( value: unknown ): number | null {
  * @since n.e.x.t Decodes the content markers.
  * @since n.e.x.t Decodes whether traffic was steady.
  * @since n.e.x.t Decodes the number of days of traffic the band is fitted on.
+ * @since n.e.x.t Decodes the basis of each card's share, the channel a card on `PARENT_CHANNEL` took the place of, and whether an attribute moved further than its card.
  *
  * @param {*} encoded The encoded response.
  * @return {Object|null} The decoded response, or null when it cannot be read.

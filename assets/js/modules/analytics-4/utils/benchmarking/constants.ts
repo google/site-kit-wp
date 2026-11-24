@@ -96,3 +96,34 @@ export const BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS = [
 	'USER_TYPE',
 	'ASSISTANT',
 ] as const;
+
+/**
+ * The bases of a key factor card's share, what the share is of, in the order
+ * they travel as. A basis's position in this list is the index the encoded
+ * response carries. A basis is only ever added at the end, so a position never
+ * changes meaning.
+ */
+export const BENCHMARKING_KEY_FACTOR_SHARE_BASES = [
+	'GROSS_CHANGE',
+	'NET_CHANGE',
+	'SITE_TRAFFIC',
+	'VOLUME',
+	'PARENT_CHANNEL',
+] as const;
+
+/**
+ * The positions of a key factor card's fields after the five it shares with
+ * its attributes, `[ kind, label, current, previous, sharePct ]`. The encoder
+ * leaves out the trailing fields that have no value.
+ */
+export const KEY_FACTOR_CARD_URL = 5;
+export const KEY_FACTOR_CARD_SHARE_BASIS = 6;
+export const KEY_FACTOR_CARD_PARENT_CHANNEL = 7;
+export const KEY_FACTOR_CARD_PARENT_CHANNEL_CHANGE = 8;
+
+/**
+ * The position of an attribute's field after the five it shares with its card:
+ * `true` when the attribute moved further than its card, the same way. The
+ * encoder leaves it out otherwise.
+ */
+export const KEY_FACTOR_ATTRIBUTE_OVERSIZED = 5;

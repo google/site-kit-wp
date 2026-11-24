@@ -149,6 +149,28 @@ function renderKeyFactors( props: Partial< KeyFactorsProps > = {} ) {
 	);
 }
 
+/**
+ * Reads the attributes of a card: the title of each, then its value and change,
+ * then what its change is a share of, when it says.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Element} card The card's element.
+ * @return {Array} One list of texts per attribute, in order.
+ */
+function getAttributeTexts( card: Element ) {
+	// The testing library gives `dt` and `dd` no role, so they are read by tag.
+	return Array.from(
+		card.querySelectorAll(
+			'.googlesitekit-traffic-overview__key-factor-attribute'
+		)
+	).map( ( attribute ) =>
+		Array.from( attribute.querySelectorAll( 'dt, dd' ) ).map(
+			( term ) => term.textContent
+		)
+	);
+}
+
 describe( 'KeyFactors', () => {
 	it.each( [
 		[ 28, 'Biggest traffic shifts vs. the previous 28 days' ],
@@ -325,6 +347,155 @@ describe( 'KeyFactors', () => {
 		).toBe( 'healthy ice cream types-3 clicks' );
 	} );
 
+	it( 'should say under each attribute what share of its card’s change it carried', () => {
+		const { getByRole } = renderKeyFactors();
+
+		expect(
+			getAttributeTexts( getByRole( 'region', { name: 'Referral' } ) )
+		).toEqual( [
+			[
+				'Landing page',
+				'/ice-cream-is-good-for-your-health/+16 visits',
+				'12.9% of the change',
+			],
+			[
+				'Referring site',
+				'facebook.com+32 visits',
+				'25.8% of the change',
+			],
+		] );
+	} );
+
+	it( 'should say that an attribute that moved further than its card is more than the channel’s net change, and give the side that moved the other way its change alone', () => {
+		// Direct gained 1,280 visits: 1,643 on desktop, less the 362 it lost
+		// on mobile.
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					kind: 'CHANNEL',
+					label: 'Direct',
+					current: 3280,
+					previous: 2000,
+					sharePct: 64.5,
+					shareBasis: 'GROSS_CHANGE',
+					attributes: [
+						{
+							kind: 'DEVICE',
+							label: 'desktop',
+							current: 2643,
+							previous: 1000,
+							sharePct: 0,
+							oversized: true,
+						},
+						{
+							kind: 'DEVICE',
+							label: 'mobile',
+							current: 638,
+							previous: 1000,
+							sharePct: 0,
+						},
+					],
+				},
+			],
+		} );
+
+		expect(
+			getAttributeTexts( getByRole( 'region', { name: 'Direct' } ) )
+		).toEqual( [
+			[
+				'Device',
+				'desktop+1,643 visits',
+				'More than the channel’s net change',
+			],
+			[ 'Device', 'mobile-362 visits' ],
+		] );
+	} );
+
+	it( 'should say that an attribute carried all of its card’s change from a share of 99.5%', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					kind: 'CHANNEL',
+					label: 'Organic Search',
+					current: 705,
+					previous: 900,
+					sharePct: 100,
+					attributes: [
+						{
+							kind: 'DEVICE',
+							label: 'desktop',
+							current: 100,
+							previous: 300,
+							sharePct: 100,
+						},
+					],
+				},
+			],
+		} );
+
+		expect(
+			getAttributeTexts(
+				getByRole( 'region', { name: 'Organic Search' } )
+			)
+		).toEqual( [
+			[ 'Device', 'desktop-200 visits', 'All of the change' ],
+		] );
+	} );
+
+	it( 'should say what share of the site’s search clicks a search keyword’s change is', () => {
+		const { getByRole } = renderKeyFactors();
+
+		expect(
+			getAttributeTexts(
+				getByRole( 'region', { name: 'Organic Search' } )
+			)
+		).toEqual( [
+			[
+				'Search keyword',
+				'healthy ice cream types-3 clicks',
+				'A change equal to 14.3% of the site’s search clicks',
+			],
+		] );
+	} );
+
+	it( 'should name the channel a card took the place of under its title, with the card’s share of the channel’s change', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					kind: 'REFERRING_SITE',
+					label: 'news.example',
+					current: 220,
+					previous: 0,
+					sharePct: 73.3,
+					shareBasis: 'PARENT_CHANNEL',
+					parentChannel: { label: 'Referral', change: 300 },
+					attributes: [],
+				},
+			],
+		} );
+
+		const card = getByRole( 'region', { name: 'news.example' } );
+
+		expect(
+			card.querySelector(
+				'.googlesitekit-traffic-overview__key-factor-share'
+			)?.textContent
+		).toBe( '73.3% of Referral’s +300 visits' );
+		expect( within( card ).getByText( '+220 visits' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should show no share under the title of a card that took no channel’s place, when traffic was not steady', () => {
+		const { container } = renderKeyFactors( {
+			keyFactors: [ { ...REFERRAL, shareBasis: 'GROSS_CHANGE' } ],
+		} );
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factor-share'
+			)
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'should name the card of the paid channels as one group "Paid traffic", with a row for each of its channels', () => {
 		const { getByRole } = renderKeyFactors( {
 			keyFactors: [
@@ -371,6 +542,20 @@ describe( 'KeyFactors', () => {
 		).toEqual( [
 			[ 'Traffic channel', 'Paid Search+200 visits' ],
 			[ 'Traffic channel', 'Paid Social-100 visits' ],
+		] );
+		// Each channel's share is of the paid channels' movement both ways,
+		// not of the group's net change.
+		expect( getAttributeTexts( paidTraffic ) ).toEqual( [
+			[
+				'Traffic channel',
+				'Paid Search+200 visits',
+				'65.6% of paid traffic’s movement',
+			],
+			[
+				'Traffic channel',
+				'Paid Social-100 visits',
+				'32.8% of paid traffic’s movement',
+			],
 		] );
 	} );
 
@@ -641,7 +826,7 @@ describe( 'KeyFactors', () => {
 		expect(
 			Array.from(
 				container.querySelectorAll(
-					'.googlesitekit-traffic-overview__key-factor-visits-share'
+					'.googlesitekit-traffic-overview__key-factor-share'
 				)
 			).map( ( share ) => share.textContent )
 		).toEqual( [ '45.2% of all visits', '33.7% of all visits' ] );
@@ -709,7 +894,7 @@ describe( 'KeyFactors', () => {
 		).toBeInTheDocument();
 		expect(
 			container.querySelector(
-				'.googlesitekit-traffic-overview__key-factor-visits-share'
+				'.googlesitekit-traffic-overview__key-factor-share'
 			)
 		).not.toBeInTheDocument();
 	} );

@@ -104,6 +104,33 @@ final class Wire_Format {
 	);
 
 	/**
+	 * The position each basis of a key factor card's share travels as: what
+	 * the share is of, as the decomposition's `share_basis` names it. A basis
+	 * is only ever added at the end, so a position never changes meaning.
+	 *
+	 * @since n.e.x.t
+	 */
+	const KEY_FACTOR_SHARE_BASES = array(
+		'GROSS_CHANGE'   => 0,
+		'NET_CHANGE'     => 1,
+		'SITE_TRAFFIC'   => 2,
+		'VOLUME'         => 3,
+		'PARENT_CHANNEL' => 4,
+	);
+
+	/**
+	 * The fields every key factor card and attribute travels with, in the
+	 * order `[ kind, label, current, previous, sharePct ]`. A card can follow
+	 * them with `[ url, shareBasis, parentChannel, parentChannelChange ]`, and
+	 * an attribute with `[ oversized ]`. These trailing fields are left out
+	 * from the last one that has a value, so a browser that reads none of
+	 * them reads the row as it did before.
+	 *
+	 * @since n.e.x.t
+	 */
+	const KEY_FACTOR_ROW_FIELD_COUNT = 5;
+
+	/**
 	 * The decimal places a share of the site's change keeps. Every other number
 	 * the format carries is an integer, except the bounds of the expected range.
 	 *

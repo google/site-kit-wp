@@ -952,28 +952,28 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 					{
 						name: 'Referral',
 						change: 365,
-						visitsSharePct: undefined,
+						shareText: null,
 					},
 					{
 						name: 'Organic Video',
 						change: 48,
-						visitsSharePct: undefined,
+						shareText: null,
 					},
 					{
 						name: 'Organic Search',
 						change: -21,
-						visitsSharePct: undefined,
+						shareText: null,
 					},
 					{
 						name: 'Paid traffic',
 						change: 20,
-						visitsSharePct: undefined,
+						shareText: null,
 					},
 					// A card without a name is left out.
 					{
 						name: 'Homepage',
 						change: -20,
-						visitsSharePct: undefined,
+						shareText: null,
 					},
 				],
 			} );
@@ -993,9 +993,44 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 			);
 			expect(
 				result.data?.typicalTraffic?.keyFactors.map(
-					( { visitsSharePct } ) => visitsSharePct
+					( { shareText } ) => shareText
 				)
-			).toEqual( [ 52.4, 38.7, 100 ] );
+			).toEqual( [
+				'52.4% of all visits',
+				'38.7% of all visits',
+				'100% of all visits',
+			] );
+		} );
+
+		it( 'should give a card that took its channel’s place its share of the channel’s change, as the dashboard shows it', async () => {
+			provideResponse( {
+				keyFactors: [
+					{
+						kind: 'REFERRING_SITE',
+						label: 'news.example',
+						current: 220,
+						previous: 0,
+						sharePct: 73.3,
+						shareBasis: 'PARENT_CHANNEL',
+						parentChannel: { label: 'Referral', change: 300 },
+						attributes: [],
+					},
+				],
+			} );
+
+			const result = await getTypicalTrafficOverviewPDFData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			expect( result.data?.typicalTraffic?.keyFactors ).toEqual( [
+				{
+					name: 'news.example',
+					change: 220,
+					shareText: '73.3% of Referral’s +300 visits',
+				},
+			] );
 		} );
 
 		it( 'should say when the band and the key factors will show while the history is too short for them', async () => {

@@ -890,6 +890,110 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			).toBeInTheDocument();
 		} );
 
+		it( 'should render the shares of the benchmarking response’s key factor cards and their attributes, so a card that took its channel’s place names the channel, and an attribute larger than its card says why', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( {
+					keyFactors: [
+						// The referring site carried 220 of the 300 visits
+						// Referral gained, so it took Referral's card.
+						{
+							kind: 'REFERRING_SITE',
+							label: 'news.example',
+							current: 220,
+							previous: 0,
+							sharePct: 73.3,
+							shareBasis: 'PARENT_CHANNEL',
+							parentChannel: { label: 'Referral', change: 300 },
+							attributes: [],
+						},
+						// Direct gained 1,280 visits: 1,643 on desktop, less
+						// the 362 it lost on mobile.
+						{
+							kind: 'CHANNEL',
+							label: 'Direct',
+							current: 3280,
+							previous: 2000,
+							sharePct: 64.5,
+							shareBasis: 'GROSS_CHANGE',
+							attributes: [
+								{
+									kind: 'DEVICE',
+									label: 'desktop',
+									current: 2643,
+									previous: 1000,
+									sharePct: 0,
+									oversized: true,
+								},
+								{
+									kind: 'DEVICE',
+									label: 'mobile',
+									current: 638,
+									previous: 1000,
+									sharePct: 0,
+								},
+							],
+						},
+						{
+							kind: 'CHANNEL',
+							label: 'Email',
+							current: 180,
+							previous: 40,
+							sharePct: 20.1,
+							shareBasis: 'GROSS_CHANGE',
+							attributes: [
+								{
+									kind: 'CAMPAIGN',
+									label: 'spring-sale',
+									current: 145,
+									previous: 40,
+									sharePct: 75,
+								},
+							],
+						},
+					],
+				} )
+			);
+
+			const { getByRole, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			const referringSite = getByRole( 'region', {
+				name: 'news.example',
+			} );
+
+			expect(
+				referringSite.querySelector(
+					'.googlesitekit-traffic-overview__key-factor-share'
+				)
+			).toHaveTextContent( '73.3% of Referral’s +300 visits' );
+
+			const direct = getByRole( 'region', { name: 'Direct' } );
+			const email = getByRole( 'region', { name: 'Email' } );
+
+			// A card on any other basis shows its change alone.
+			expect(
+				direct.querySelector(
+					'.googlesitekit-traffic-overview__key-factor-share'
+				)
+			).not.toBeInTheDocument();
+			// Only the attributes with a share, or larger than their card,
+			// say what their change is.
+			expect(
+				Array.from(
+					direct.querySelectorAll(
+						'.googlesitekit-traffic-overview__key-factor-attribute-share'
+					)
+				).map( ( share ) => share.textContent )
+			).toEqual( [ 'More than the channel’s net change' ] );
+			expect(
+				email.querySelector(
+					'.googlesitekit-traffic-overview__key-factor-attribute-share'
+				)
+			).toHaveTextContent( '75% of the change' );
+		} );
+
 		it( 'should say that no channel changed notably when the benchmarking response has no key factor cards', async () => {
 			provideBenchmarkingResponse(
 				registry,

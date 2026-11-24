@@ -22,6 +22,7 @@
 import {
 	BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
 	BENCHMARKING_KEY_FACTOR_KINDS,
+	BENCHMARKING_KEY_FACTOR_SHARE_BASES,
 } from './constants';
 
 export type BenchmarkingKeyFactorKind =
@@ -29,6 +30,9 @@ export type BenchmarkingKeyFactorKind =
 
 export type BenchmarkingKeyFactorAttributeKind =
 	typeof BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS[ number ];
+
+export type BenchmarkingKeyFactorShareBasis =
+	typeof BENCHMARKING_KEY_FACTOR_SHARE_BASES[ number ];
 
 export interface BenchmarkingVisits {
 	/** Visits in the date range the reader chose. */
@@ -88,6 +92,19 @@ export interface BenchmarkingKeyFactorAttribute {
 	 * `TRAFFIC_CHANNEL` of the paid group. `0` without one.
 	 */
 	sharePct: number;
+	/**
+	 * Whether the attribute moved further than its card, the same way,
+	 * because the card's other parts moved the other way. It then has no
+	 * share: it is more than the card's net change. Left out otherwise.
+	 */
+	oversized?: boolean;
+}
+
+export interface BenchmarkingKeyFactorParentChannel {
+	/** The channel's name, such as `Referral`. */
+	label: string;
+	/** The channel's change in visits, negative for a drop. */
+	change: number;
 }
 
 export interface BenchmarkingKeyFactor {
@@ -110,6 +127,17 @@ export interface BenchmarkingKeyFactor {
 	 * change for a part of a channel.
 	 */
 	sharePct: number;
+	/**
+	 * What `sharePct` is of, as the Site Kit service names it, such as
+	 * `PARENT_CHANNEL` for a part of a channel that took the channel's card.
+	 * Left out when the response carried none.
+	 */
+	shareBasis?: BenchmarkingKeyFactorShareBasis;
+	/**
+	 * The channel a card on `PARENT_CHANNEL` took the place of, whose change
+	 * `sharePct` is a share of. Left out on any other card.
+	 */
+	parentChannel?: BenchmarkingKeyFactorParentChannel;
 	/** The values inside the driver that carried its change, in the order the response ranked them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
 	/** The post's path, such as `/how-to-plant-garlic/`, on a `CONTENT` card. */

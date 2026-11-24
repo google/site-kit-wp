@@ -139,6 +139,74 @@ const STEADY_KEY_FACTORS: BenchmarkingKeyFactor[] = [
 	},
 ];
 
+/**
+ * Cards whose shares need more than a share of their card's change: a
+ * referring site that took its channel's card, a channel whose device moved
+ * further than it because its other device moved the other way, and the paid
+ * channels as one group.
+ */
+const SHARES_KEY_FACTORS: BenchmarkingKeyFactor[] = [
+	{
+		kind: 'REFERRING_SITE',
+		label: 'news.example',
+		current: 220,
+		previous: 0,
+		sharePct: 73.3,
+		shareBasis: 'PARENT_CHANNEL',
+		parentChannel: { label: 'Referral', change: 300 },
+		attributes: [],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Direct',
+		current: 3280,
+		previous: 2000,
+		sharePct: 64.5,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'DEVICE',
+				label: 'desktop',
+				current: 2643,
+				previous: 1000,
+				sharePct: 0,
+				oversized: true,
+			},
+			{
+				kind: 'DEVICE',
+				label: 'mobile',
+				current: 638,
+				previous: 1000,
+				sharePct: 0,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL_GROUP',
+		label: 'Paid traffic',
+		current: 455,
+		previous: 350,
+		sharePct: 5.3,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'TRAFFIC_CHANNEL',
+				label: 'Paid Search',
+				current: 300,
+				previous: 100,
+				sharePct: 65.6,
+			},
+			{
+				kind: 'TRAFFIC_CHANNEL',
+				label: 'Paid Social',
+				current: 100,
+				previous: 200,
+				sharePct: 32.8,
+			},
+		],
+	},
+];
+
 interface KeyFactorsStoryProps {
 	/** The key factor cards to show. */
 	keyFactors: BenchmarkingKeyFactor[];
@@ -271,6 +339,16 @@ LongLabels.args = {
 	keyFactors: LONG_KEY_FACTORS,
 };
 LongLabels.scenario = {};
+
+// A card that took its channel's place names the channel under its title, a
+// row larger than its card says it is more than the channel's net change, and
+// the paid channels' rows are shares of their movement.
+export const Shares = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
+Shares.storyName = 'Shares';
+Shares.args = {
+	keyFactors: SHARES_KEY_FACTORS,
+};
+Shares.scenario = {};
 
 export const Loading = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
 Loading.storyName = 'Loading';

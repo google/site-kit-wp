@@ -162,13 +162,15 @@ class Key_FactorsTest extends TestCase {
 					'current'    => 800,
 					'previous'   => 500,
 					'sharePct'   => 100.0,
+					'shareBasis' => 'GROSS_CHANGE',
 					'attributes' => array(
 						array(
-							'kind'     => 'LANDING_PAGE',
-							'label'    => '/post',
-							'current'  => 400,
-							'previous' => 175,
-							'sharePct' => 75.0,
+							'kind'      => 'LANDING_PAGE',
+							'label'     => '/post',
+							'current'   => 400,
+							'previous'  => 175,
+							'sharePct'  => 75.0,
+							'oversized' => false,
 						),
 					),
 				),
@@ -314,16 +316,19 @@ class Key_FactorsTest extends TestCase {
 		);
 		$this->assertSame(
 			array(
-				'kind'       => 'CONTENT',
-				'label'      => 'A new post',
-				'current'    => 260,
-				'previous'   => 0,
-				'sharePct'   => 86.7,
-				'attributes' => array(),
-				'url'        => '/new-post/',
+				'kind'                => 'CONTENT',
+				'label'               => 'A new post',
+				'current'             => 260,
+				'previous'            => 0,
+				'sharePct'            => 86.7,
+				'shareBasis'          => 'PARENT_CHANNEL',
+				'parentChannel'       => 'Referral',
+				'parentChannelChange' => 300,
+				'attributes'          => array(),
+				'url'                 => '/new-post/',
 			),
 			$key_factors->get_cards()[0],
-			'The panel should show the post\'s card, with the post\'s path for its title to link to.'
+			'The panel should show the post\'s card, with its share of Referral\'s change, and the post\'s path for its title to link to.'
 		);
 		$this->assertSame( 300 - 260, $key_factors->get_decomposition()['residual_delta'], 'What Referral moved beyond the post should fall in the residual.' );
 	}
@@ -520,11 +525,12 @@ class Key_FactorsTest extends TestCase {
 		);
 		$this->assertSame(
 			array(
-				'kind'     => 'SEARCH_KEYWORD',
-				'label'    => 'plant garlic',
-				'current'  => 300,
-				'previous' => 100,
-				'sharePct' => 8.0,
+				'kind'      => 'SEARCH_KEYWORD',
+				'label'     => 'plant garlic',
+				'current'   => 300,
+				'previous'  => 100,
+				'sharePct'  => 8.0,
+				'oversized' => false,
 			),
 			$key_factors->get_cards()[0]['attributes'][0],
 			'The panel should show the keyword\'s clicks.'
@@ -596,7 +602,17 @@ class Key_FactorsTest extends TestCase {
 			array_intersect_key( $card, array_flip( array( 'entity_kind', 'title', 'volume', 'delta', 'traffic_impact_pct', 'share_basis', 'parent_channel', 'parent_channel_delta' ) ) ),
 			'Facebook should take the card of Organic Social, with its share of the channel\'s change.'
 		);
-		$this->assertSame( 'REFERRING_SITE', $key_factors->get_cards()[0]['kind'], 'The panel should show Facebook\'s card as a referring site.' );
+		$this->assertSame(
+			array(
+				'kind'                => 'REFERRING_SITE',
+				'sharePct'            => 76.7,
+				'shareBasis'          => 'PARENT_CHANNEL',
+				'parentChannel'       => 'Organic Social',
+				'parentChannelChange' => 300,
+			),
+			array_intersect_key( $key_factors->get_cards()[0], array_flip( array( 'kind', 'sharePct', 'shareBasis', 'parentChannel', 'parentChannelChange' ) ) ),
+			'The panel should show Facebook\'s card as a referring site, with the channel its share is of, so it can name the channel.'
+		);
 	}
 
 	public function test_get_cards__lists_two_referring_sites_of_one_channel_when_neither_carried_most_of_its_change() {
@@ -686,6 +702,17 @@ class Key_FactorsTest extends TestCase {
 			$key_factors->get_decomposition()['key_factors'][0]['attributes'],
 			'Both sides should be rows with their own changes and no share.'
 		);
+		$this->assertSame(
+			array(
+				array( 'a.example.com', 0.0, true ),
+				array( 'b.example.com', 0.0, false ),
+			),
+			array_map(
+				fn( $attribute ) => array( $attribute['label'], $attribute['sharePct'], $attribute['oversized'] ),
+				$key_factors->get_cards()[0]['attributes']
+			),
+			'The panel should mark the side that moved further than Referral, the same way, as oversized, and not the side that moved against it.'
+		);
 	}
 
 	public function test_get_cards__lists_both_devices_of_a_channel_that_is_the_net_of_devices_that_moved_both_ways() {
@@ -744,14 +771,59 @@ class Key_FactorsTest extends TestCase {
 		);
 		$this->assertSame(
 			array(
-				array( 'DEVICE', 'desktop', 900, 500, 0.0 ),
-				array( 'DEVICE', 'mobile', 300, 600, 0.0 ),
+				array( 'DEVICE', 'desktop', 900, 500, 0.0, true ),
+				array( 'DEVICE', 'mobile', 300, 600, 0.0, false ),
 			),
 			array_map(
-				fn( $attribute ) => array( $attribute['kind'], $attribute['label'], $attribute['current'], $attribute['previous'], $attribute['sharePct'] ),
+				fn( $attribute ) => array( $attribute['kind'], $attribute['label'], $attribute['current'], $attribute['previous'], $attribute['sharePct'], $attribute['oversized'] ),
 				$key_factors->get_cards()[0]['attributes']
 			),
-			'The panel should show both devices.'
+			'The panel should show both devices, and mark desktop, which moved further than Direct, as oversized.'
+		);
+	}
+
+	public function test_get_cards__lists_a_page_that_moved_further_than_its_channel_with_its_own_change_and_marks_it_oversized() {
+		// `/post` gained 108 visits, more than the 100 Referral gained, since
+		// `/old-post/` lost 8.
+		$key_factors = $this->build(
+			array( 1100, 1000 ),
+			array(
+				array( 'Referral', 600, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array(
+				'channelPages' => array(
+					$this->row( 'Referral', 'page', '/post', 208, 100 ),
+					$this->row( 'Referral', 'page', '/old-post/', 392, 400 ),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'Referral should keep its card, since a page takes a card only as a new post.' );
+		$this->assertSame(
+			array(
+				array(
+					'kind'         => 'TARGET_PAGE',
+					'role'         => 'CONTEXT',
+					'label'        => 'Target page',
+					'value'        => array( 'text' => '/post' ),
+					'entity_delta' => 108,
+				),
+			),
+			$key_factors->get_decomposition()['key_factors'][0]['attributes'],
+			'The page should be context with its own change and no share, never a share above 100%.'
+		);
+		$this->assertSame(
+			array(
+				'kind'      => 'LANDING_PAGE',
+				'label'     => '/post',
+				'current'   => 208,
+				'previous'  => 100,
+				'sharePct'  => 0.0,
+				'oversized' => true,
+			),
+			$key_factors->get_cards()[0]['attributes'][0],
+			'The panel should mark the page as oversized, so it can say the page is more than the channel\'s net change.'
 		);
 	}
 
@@ -802,6 +874,11 @@ class Key_FactorsTest extends TestCase {
 			),
 			$key_factors->get_decomposition()['key_factors'][0]['attributes'],
 			'Desktop should carry all of the change, with its own figure.'
+		);
+		$this->assertSame(
+			array( 100.0, false ),
+			array( $key_factors->get_cards()[0]['attributes'][0]['sharePct'], $key_factors->get_cards()[0]['attributes'][0]['oversized'] ),
+			'The panel should show desktop as all of the change, not as more than it.'
 		);
 	}
 

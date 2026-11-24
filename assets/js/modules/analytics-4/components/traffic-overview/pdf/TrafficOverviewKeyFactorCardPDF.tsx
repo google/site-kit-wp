@@ -31,10 +31,7 @@ import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
 import PDFChangeBadge from '@/js/components/pdf-export/shared-react-pdf-components/PDFChangeBadge';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
-import {
-	formatVisitsChange,
-	formatVisitsShare,
-} from '@/js/modules/analytics-4/components/traffic-overview/utils';
+import { formatVisitsChange } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { TrafficOverviewPDFKeyFactor } from './getTypicalTrafficPDFData';
 
 const styles = createPDFStyles( {
@@ -55,23 +52,23 @@ const styles = createPDFStyles( {
 } );
 
 /**
- * Prints a key factor card: its name and its change in visits, and on a
- * steady period its share of the site's visits, as the dashboard's card shows
+ * Prints a key factor card: its name and its change in visits, and what that
+ * change is a share of when the card shows it, as the dashboard's card shows
  * them. The card leaves out the values inside the driver, which the dashboard
  * lists under the card.
  *
  * @since n.e.x.t
  *
- * @param {Object} props                  Component props.
- * @param {string} props.name             The card's name.
- * @param {number} props.change           The change in visits, negative for a drop.
- * @param {number} [props.visitsSharePct] Optional. The share of the site's visits, in percent, on a steady period.
+ * @param {Object}      props             Component props.
+ * @param {string}      props.name        The card's name.
+ * @param {number}      props.change      The change in visits, negative for a drop.
+ * @param {string|null} [props.shareText] Optional. What the change is a share of, or null.
  * @return {Element} The card.
  */
 const TrafficOverviewKeyFactorCardPDF: FC< TrafficOverviewPDFKeyFactor > = ( {
 	name,
 	change,
-	visitsSharePct,
+	shareText,
 } ) => (
 	<PDFCard style={ styles.card }>
 		<View style={ styles.header }>
@@ -84,9 +81,9 @@ const TrafficOverviewKeyFactorCardPDF: FC< TrafficOverviewPDFKeyFactor > = ( {
 				changeType={ getPDFChangeType( change ) }
 			/>
 		</View>
-		{ visitsSharePct !== undefined && (
+		{ !! shareText && (
 			<PDFTypography size="small" style={ styles.share }>
-				{ formatVisitsShare( visitsSharePct ) }
+				{ shareText }
 			</PDFTypography>
 		) }
 	</PDFCard>

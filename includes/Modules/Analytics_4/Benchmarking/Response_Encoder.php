@@ -44,6 +44,7 @@ final class Response_Encoder {
 	 * @since n.e.x.t Encodes whether traffic was steady.
 	 * @since n.e.x.t Encodes the days of traffic the band is fitted on.
 	 * @since n.e.x.t Encodes the path of a post's card.
+	 * @since n.e.x.t Encodes the basis of a card's share and the channel a card's share is of, and whether an attribute moved further than its card.
 	 *
 	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `availability`, `bandReferenceDays`, `keyFactors`, `steadyTraffic` and `contentMarkers`. `bandReferenceDays` is the number of days of traffic the band of the period's last day is fitted on, or null without a band. `steadyTraffic` is whether no channel changed notably, when the key factor cards are the channels with the most visits. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `availability` is which parts of the typical traffic view show, as `Typical_Traffic_Availability::get()` returns it. Each `contentMarkers` item has a `date`, as `YYYY-MM-DD`, and its `posts`, each with `title` and `url`. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
 	 * @return array The encoded response.
@@ -64,7 +65,7 @@ final class Response_Encoder {
 				continue;
 			}
 
-			$encoded_key_factors[] = $this->encode_key_factor_row( Wire_Format::KEY_FACTOR_KINDS[ $key_factor['kind'] ], $key_factor, $strings );
+			$encoded_key_factors[] = $this->encode_key_factor_card( $key_factor, $strings );
 
 			$encoded_attributes = array();
 			$attributes         = isset( $key_factor['attributes'] ) ? $key_factor['attributes'] : array();
@@ -74,7 +75,7 @@ final class Response_Encoder {
 					continue;
 				}
 
-				$encoded_attributes[] = $this->encode_key_factor_row( Wire_Format::KEY_FACTOR_ATTRIBUTE_KINDS[ $attribute['kind'] ], $attribute, $strings );
+				$encoded_attributes[] = $this->encode_key_factor_attribute( $attribute, $strings );
 			}
 
 			$encoded_key_factor_attributes[] = $encoded_attributes;
@@ -152,31 +153,86 @@ final class Response_Encoder {
 	}
 
 	/**
-	 * Encodes a key factor card or one of its attributes, which travel in the
-	 * same layout.
+	 * Encodes a key factor card.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $card    Card to encode, with `kind`, `label`, `current`, `previous`, `sharePct` and `shareBasis`, a post's card with its path as `url`, and a card on `PARENT_CHANNEL` with `parentChannel` and `parentChannelChange`.
+	 * @param array $strings String table, added to as strings are seen.
+	 * @return array The encoded card, as the list `[ kind, label, current, previous, sharePct, url, shareBasis, parentChannel, parentChannelChange ]`, without the trailing fields that have no value. `url` and `parentChannel` are positions in the string table, and `shareBasis` is the position its basis travels as.
+	 */
+	private function encode_key_factor_card( array $card, array &$strings ) {
+		$encoded = $this->encode_key_factor_row( Wire_Format::KEY_FACTOR_KINDS[ $card['kind'] ], $card, $strings );
+
+		$url         = isset( $card['url'] ) && is_string( $card['url'] ) && '' !== $card['url'] ? $card['url'] : null;
+		$share_basis = isset( $card['shareBasis'], Wire_Format::KEY_FACTOR_SHARE_BASES[ $card['shareBasis'] ] ) ? $card['shareBasis'] : null;
+		// Only a share of a channel's change names the channel.
+		$has_parent = 'PARENT_CHANNEL' === $share_basis && isset( $card['parentChannel'], $card['parentChannelChange'] );
+
+		$encoded[] = null === $url ? null : $this->encode_string( $url, $strings );
+		$encoded[] = null === $share_basis ? null : Wire_Format::KEY_FACTOR_SHARE_BASES[ $share_basis ];
+		$encoded[] = $has_parent ? $this->encode_string( $card['parentChannel'], $strings ) : null;
+		$encoded[] = $has_parent ? $this->encode_int( $card['parentChannelChange'] ) : null;
+
+		return $this->trim_trailing_fields( $encoded );
+	}
+
+	/**
+	 * Encodes an attribute of a key factor card.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $attribute Attribute to encode, with `kind`, `label`, `current`, `previous`, `sharePct` and `oversized`.
+	 * @param array $strings   String table, added to as strings are seen.
+	 * @return array The encoded attribute, as the list `[ kind, label, current, previous, sharePct, oversized ]`, where `oversized` is `true`, or left out when the attribute isn't oversized.
+	 */
+	private function encode_key_factor_attribute( array $attribute, array &$strings ) {
+		$encoded = $this->encode_key_factor_row( Wire_Format::KEY_FACTOR_ATTRIBUTE_KINDS[ $attribute['kind'] ], $attribute, $strings );
+
+		$encoded[] = ! empty( $attribute['oversized'] ) ? true : null;
+
+		return $this->trim_trailing_fields( $encoded );
+	}
+
+	/**
+	 * Encodes the fields a key factor card and its attributes share.
 	 *
 	 * @since 1.191.0
-	 * @since n.e.x.t Adds the path of a post's card.
+	 * @since n.e.x.t Encodes the shared fields alone. The card's and the attribute's own fields are added by `encode_key_factor_card()` and `encode_key_factor_attribute()`.
 	 *
 	 * @param int   $kind_index The position the card's or the attribute's kind travels as.
-	 * @param array $row        Card or attribute to encode, with `label`, `current`, `previous` and `sharePct`, and a post's card with its path as `url`.
+	 * @param array $row        Card or attribute to encode, with `label`, `current`, `previous` and `sharePct`.
 	 * @param array $strings    String table, added to as strings are seen.
-	 * @return array The encoded card or attribute, as the list `[ kind, label, current, previous, sharePct ]`, followed by the path for a post's card.
+	 * @return array The encoded fields, as the list `[ kind, label, current, previous, sharePct ]`.
 	 */
 	private function encode_key_factor_row( $kind_index, array $row, array &$strings ) {
-		$encoded = array(
+		return array(
 			$kind_index,
 			$this->encode_string( isset( $row['label'] ) ? $row['label'] : null, $strings ),
 			$this->encode_int( isset( $row['current'] ) ? $row['current'] : null ),
 			$this->encode_int( isset( $row['previous'] ) ? $row['previous'] : null ),
 			$this->encode_share( isset( $row['sharePct'] ) ? $row['sharePct'] : null ),
 		);
+	}
 
-		if ( isset( $row['url'] ) && is_string( $row['url'] ) && '' !== $row['url'] ) {
-			$encoded[] = $this->encode_string( $row['url'], $strings );
+	/**
+	 * Leaves out the trailing fields of an encoded card or attribute that have
+	 * no value, from the last one, so a row carries only the fields it uses.
+	 * The fields every row travels with are kept, null or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $encoded The encoded card or attribute.
+	 * @return array The encoded card or attribute, without its trailing nulls after `Wire_Format::KEY_FACTOR_ROW_FIELD_COUNT`.
+	 */
+	private function trim_trailing_fields( array $encoded ) {
+		$length = count( $encoded );
+
+		while ( $length > Wire_Format::KEY_FACTOR_ROW_FIELD_COUNT && null === $encoded[ $length - 1 ] ) {
+			--$length;
 		}
 
-		return $encoded;
+		return array_slice( $encoded, 0, $length );
 	}
 
 	/**

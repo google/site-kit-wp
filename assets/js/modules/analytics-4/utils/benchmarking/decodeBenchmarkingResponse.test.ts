@@ -75,6 +75,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					current: 96,
 					previous: 31,
 					sharePct: 21.4,
+					shareBasis: 'GROSS_CHANGE',
 					attributes: [
 						{
 							kind: 'LANDING_PAGE',
@@ -87,8 +88,9 @@ describe( 'decodeBenchmarkingResponse', () => {
 							kind: 'DEVICE',
 							label: 'mobile',
 							current: 71,
-							previous: 20,
-							sharePct: 16.8,
+							previous: 0,
+							sharePct: 0,
+							oversized: true,
 						},
 					],
 				},
@@ -98,6 +100,7 @@ describe( 'decodeBenchmarkingResponse', () => {
 					current: 210,
 					previous: 222,
 					sharePct: 40.3,
+					shareBasis: 'NET_CHANGE',
 					attributes: [],
 				},
 				{
@@ -107,6 +110,8 @@ describe( 'decodeBenchmarkingResponse', () => {
 					previous: 15,
 					sharePct: 12.6,
 					url: '/how-to-plant-garlic/',
+					shareBasis: 'PARENT_CHANNEL',
+					parentChannel: { label: 'Organic Social', change: 389 },
 					attributes: [
 						{
 							kind: 'TRAFFIC_CHANNEL',
@@ -908,6 +913,142 @@ describe( 'decodeBenchmarkingResponse', () => {
 			{ kind: 'CHANNEL', url: undefined },
 		] );
 		expect( decoded?.keyFactors[ 1 ] ).not.toHaveProperty( 'url' );
+	} );
+
+	/**
+	 * Decodes a response with the given cards and their attributes, and the
+	 * given strings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array} strings    The string table.
+	 * @param {Array} cards      The encoded cards.
+	 * @param {Array} attributes One list of encoded attributes per card.
+	 * @return {Array} The decoded cards.
+	 */
+	function decodeKeyFactors(
+		strings: string[],
+		cards: unknown[],
+		attributes: unknown[] = cards.map( () => [] )
+	) {
+		return decodeBenchmarkingResponse( [
+			1,
+			strings,
+			'2025-08-18',
+			[ 132 ],
+			[ 412, 388 ],
+			cards,
+			attributes,
+			[ null ],
+			[ false, false, null, false, null, false, false, false ],
+			[],
+			false,
+			null,
+		] )?.keyFactors;
+	}
+
+	it( 'should decode the basis of each card’s share from its position, after the path', () => {
+		const keyFactors = decodeKeyFactors(
+			[ 'Direct' ],
+			[ 0, 1, 2, 3, 4 ].map( ( basis ) => [
+				0,
+				0,
+				500,
+				480,
+				12.5,
+				null,
+				basis,
+			] )
+		);
+
+		expect( keyFactors?.map( ( { shareBasis } ) => shareBasis ) ).toEqual( [
+			'GROSS_CHANGE',
+			'NET_CHANGE',
+			'SITE_TRAFFIC',
+			'VOLUME',
+			'PARENT_CHANNEL',
+		] );
+	} );
+
+	it.each( [
+		[ 'it carries none', [ 0, 0, 500, 480, 12.5 ] ],
+		[ 'its index is unknown', [ 0, 0, 500, 480, 12.5, null, 9 ] ],
+		[
+			'its index is not a number',
+			[ 0, 0, 500, 480, 12.5, null, 'length' ],
+		],
+	] )(
+		'should decode a card without a basis when %s, and keep the card',
+		( _, card ) => {
+			const keyFactors = decodeKeyFactors( [ 'Direct' ], [ card ] );
+
+			expect( keyFactors ).toHaveLength( 1 );
+			expect( keyFactors?.[ 0 ] ).not.toHaveProperty( 'shareBasis' );
+		}
+	);
+
+	it( 'should decode the channel a card on `PARENT_CHANNEL` took the place of, and of no other card', () => {
+		const keyFactors = decodeKeyFactors(
+			[ 'news.example', 'Referral' ],
+			[
+				[ 3, 0, 220, 0, 73.3, null, 4, 1, 300 ],
+				// Only a share of a channel's change names the channel.
+				[ 3, 0, 220, 0, 73.3, null, 0, 1, 300 ],
+			]
+		);
+
+		expect( keyFactors?.[ 0 ] ).toEqual( {
+			kind: 'REFERRING_SITE',
+			label: 'news.example',
+			current: 220,
+			previous: 0,
+			sharePct: 73.3,
+			shareBasis: 'PARENT_CHANNEL',
+			parentChannel: { label: 'Referral', change: 300 },
+			attributes: [],
+		} );
+		expect( keyFactors?.[ 1 ] ).not.toHaveProperty( 'parentChannel' );
+	} );
+
+	it.each( [
+		[ 'the channel is out of the string table', [ 9, 300 ] ],
+		[ 'the change is not a whole number', [ 1, '300' ] ],
+		[ 'the change is missing', [ 1 ] ],
+	] )(
+		'should decode a card on `PARENT_CHANNEL` without its channel when %s, and keep the card',
+		( _, parent ) => {
+			const keyFactors = decodeKeyFactors(
+				[ 'news.example', 'Referral' ],
+				[ [ 3, 0, 220, 0, 73.3, null, 4, ...parent ] ]
+			);
+
+			expect( keyFactors?.[ 0 ] ).toMatchObject( {
+				label: 'news.example',
+				shareBasis: 'PARENT_CHANNEL',
+			} );
+			expect( keyFactors?.[ 0 ] ).not.toHaveProperty( 'parentChannel' );
+		}
+	);
+
+	it( 'should mark only an attribute that carries `true` after its share as oversized', () => {
+		const keyFactors = decodeKeyFactors(
+			[ 'Direct', 'desktop', 'mobile' ],
+			[ [ 0, 0, 3280, 2000, 64.5, null, 0 ] ],
+			[
+				[
+					[ 6, 1, 2643, 1000, 0, true ],
+					[ 6, 2, 638, 1000, 0 ],
+					[ 6, 2, 638, 1000, 0, 1 ],
+				],
+			]
+		);
+
+		expect(
+			keyFactors?.[ 0 ].attributes.map( ( { oversized } ) => oversized )
+		).toEqual( [ true, undefined, undefined ] );
+		expect( keyFactors?.[ 0 ].attributes[ 1 ] ).not.toHaveProperty(
+			'oversized'
+		);
 	} );
 
 	describe( 'content markers', () => {

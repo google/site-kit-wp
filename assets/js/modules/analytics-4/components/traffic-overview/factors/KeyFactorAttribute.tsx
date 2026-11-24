@@ -46,6 +46,11 @@ export interface KeyFactorAttributeProps {
 	change: number;
 	/** What the change counts: visits, or a search keyword's clicks in Search Console. Default `visits`. */
 	unit?: 'visits' | 'clicks';
+	/**
+	 * What the change is a share of, such as "75% of the change", under the
+	 * change, or null when the attribute shows its change alone.
+	 */
+	shareText?: string | null;
 	/** The Site Kit page the value links to, such as a landing page's entity dashboard, or `undefined` when it is not a link. */
 	href?: string;
 	/** Called on a click on the link, with the click event and `href`. */
@@ -57,6 +62,7 @@ const KeyFactorAttribute: FC< KeyFactorAttributeProps > = ( {
 	label,
 	change,
 	unit = 'visits',
+	shareText,
 	href,
 	onLinkClick,
 } ) => (
@@ -104,6 +110,17 @@ const KeyFactorAttribute: FC< KeyFactorAttributeProps > = ( {
 					: formatVisitsChange( change ) }
 			</Typography>
 		</dd>
+		{ /* The share is a second description of the same term, so a row larger than its card says why, rather than showing a bare larger number. */ }
+		{ shareText && (
+			<Typography
+				as="dd"
+				type={ TYPE_BODY }
+				size={ SIZE_SMALL }
+				className="googlesitekit-traffic-overview__key-factor-attribute-share"
+			>
+				{ shareText }
+			</Typography>
+		) }
 	</div>
 );
 
