@@ -24,11 +24,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { ANCHOR_ID_SPEED } from '@/js/googlesitekit/constants';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import pageSpeedInsightsScreenshotURL from '@/svg/screenshots/pagespeed-insights-speed.svg?path';
@@ -126,6 +128,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			),
 			cta: {
 				label: __( 'Show me', 'google-site-kit' ),
+				getURL: ( select ) =>
+					`${ select( CORE_SITE ).getAdminURL(
+						'googlesitekit-dashboard'
+					) }#${ ANCHOR_ID_SPEED }`,
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},

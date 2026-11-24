@@ -56,6 +56,7 @@ import {
 } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
 import EnhancedMeasurementSetupEffect from '@/js/modules/analytics-4/components/feature-discovery/EnhancedMeasurementSetupEffect';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -703,6 +704,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			),
 			cta: {
 				label: __( 'Show me', 'google-site-kit' ),
+				getURL: ( select ) =>
+					select( CORE_SITE ).getAdminURL(
+						'googlesitekit-dashboard',
+						{
+							widgetArea:
+								AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+						}
+					),
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
