@@ -25,6 +25,7 @@ import { ENTER, ESCAPE, SPACE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	act,
 	createTestRegistry,
@@ -67,6 +68,11 @@ describe( 'UserMenu', () => {
 		beforeEach( () => {
 			provideUserInfo( registry );
 			provideSiteInfo( registry );
+			registry
+				.dispatch( CORE_USER )
+				.receiveDisconnectURL(
+					'http://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=12345'
+				);
 			container = render( <UserMenu />, { registry } ).container;
 			fireEvent.click(
 				container.querySelector(
@@ -140,7 +146,7 @@ describe( 'UserMenu', () => {
 				);
 			} );
 
-			it( 'should redirect user to Site Kit splash screen and clear storage', async () => {
+			it( 'should clear storage and send the user to the `googlesitekit_disconnect` action when "Disconnect" is confirmed', async () => {
 				fireEvent.click(
 					document.querySelector(
 						'.mdc-dialog--open .mdc-button--danger'
@@ -157,14 +163,10 @@ describe( 'UserMenu', () => {
 				expect( localStorage.clear ).toHaveBeenCalled();
 				expect( sessionStorage.clear ).toHaveBeenCalled();
 
-				expect( locationAssignMock ).toHaveBeenCalled();
-
-				const url = new URL( locationAssignMock.mock.calls[ 0 ][ 0 ] );
-				expect( url.pathname ).toBe( '/wp-admin/admin.php' );
-				expect( url.href ).toMatchQueryParameters( {
-					page: 'googlesitekit-splash',
-					googlesitekit_context: 'revoked',
-				} );
+				expect( locationAssignMock ).toHaveBeenCalledTimes( 1 );
+				expect( locationAssignMock ).toHaveBeenCalledWith(
+					'http://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=12345'
+				);
 			} );
 		} );
 
