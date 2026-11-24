@@ -505,9 +505,10 @@ class Insight_Request_Builder {
 	 * `MAX_CHANNEL_CAMPAIGNS` that moved most.
 	 *
 	 * Analytics names the visits of no campaign with a placeholder, such as
-	 * `(organic)` or `(not set)`, which no card can name, and an ID or a
-	 * personal label is no name a card shows either, so neither takes a
-	 * campaign's place. See `Source_Classifier::get_campaign_title()`.
+	 * `(organic)` or `(not set)`, which no card can name, and an ID, a
+	 * personal label or a sensitive name is no name a card shows either, so
+	 * none takes a campaign's place. See
+	 * `Source_Classifier::get_campaign_title()`.
 	 *
 	 * @since n.e.x.t
 	 *

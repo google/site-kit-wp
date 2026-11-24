@@ -42,8 +42,11 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
  *   period, as in the service, so a site whose property has no post date
  *   dimension has no page cards.
  * - The plugin has no click ID parameters, since it reports landing pages
- *   without their query strings, and no screen for sensitive names, which the
- *   service applies to the cards it receives.
+ *   without their query strings.
+ *
+ * As in the service, a search keyword, source, campaign or post title that
+ * `Content_Screen` hides is no part of a channel, so no card or row names it,
+ * and the next part can take its place.
  *
  * @since n.e.x.t
  * @access private
@@ -1424,7 +1427,7 @@ final class Key_Factors {
 			foreach ( $this->get_rows( 'searchQueries' ) as $row ) {
 				$query = trim( (string) $row['label'] );
 
-				if ( '' === $query ) {
+				if ( '' === $query || Content_Screen::is_hidden( $query ) ) {
 					continue;
 				}
 
@@ -2117,7 +2120,9 @@ final class Key_Factors {
 	 * Gets the post published in the period at a landing page's address,
 	 * among the posts the insight request lists as recent content: the
 	 * `Insight_Request_Builder::MAX_RECENT_CONTENT` with the most visits in the
-	 * period, other than the homepage.
+	 * period, other than the homepage. A post whose title `Content_Screen`
+	 * hides is left out, though it keeps its place among them, as in the
+	 * service, which screens the request's list.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -2140,7 +2145,7 @@ final class Key_Factors {
 		$page_key = Page_Classifier::get_page_key( $path );
 
 		foreach ( array_slice( $posts, 0, Insight_Request_Builder::MAX_RECENT_CONTENT ) as $post ) {
-			if ( Page_Classifier::get_page_key( $post['url'] ) === $page_key && $this->page_classifier->is_displayable( $post['url'] ) ) {
+			if ( Page_Classifier::get_page_key( $post['url'] ) === $page_key && $this->page_classifier->is_displayable( $post['url'] ) && ! Content_Screen::is_hidden( $post['title'] ) ) {
 				return $post;
 			}
 		}

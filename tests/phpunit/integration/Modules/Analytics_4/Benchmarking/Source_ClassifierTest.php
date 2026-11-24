@@ -71,20 +71,24 @@ class Source_ClassifierTest extends TestCase {
 
 	public function data_hidden_sources() {
 		return array(
-			'`(direct)`'       => array( '(direct)' ),
-			'`(not set)`'      => array( '(not set)' ),
-			'`unknown`'        => array( 'unknown' ),
-			'`google`'         => array( 'google' ),
-			'`google.co.uk`'   => array( 'google.co.uk' ),
-			'`cn.bing.com`'    => array( 'cn.bing.com' ),
-			'`duckduckgo.com`' => array( 'duckduckgo.com' ),
-			'a staging host'   => array( 'staging.example.com' ),
-			'a hosting host'   => array( 'example.pantheonsite.io' ),
-			'a tunnel'         => array( 'abc.ngrok-free.app' ),
-			'a CDN'            => array( 'd1.cloudfront.net' ),
-			'a mail scanner'   => array( 'eur01.safelinks.protection.outlook.com' ),
-			'an audit tool'    => array( 'gtmetrix.com' ),
-			'an ID campaign'   => array( 'wnc_376106' ),
+			'`(direct)`'        => array( '(direct)' ),
+			'`(not set)`'       => array( '(not set)' ),
+			'`unknown`'         => array( 'unknown' ),
+			'`google`'          => array( 'google' ),
+			'`google.co.uk`'    => array( 'google.co.uk' ),
+			'`cn.bing.com`'     => array( 'cn.bing.com' ),
+			'`duckduckgo.com`'  => array( 'duckduckgo.com' ),
+			'a staging host'    => array( 'staging.example.com' ),
+			'a hosting host'    => array( 'example.pantheonsite.io' ),
+			'a tunnel'          => array( 'abc.ngrok-free.app' ),
+			'a CDN'             => array( 'd1.cloudfront.net' ),
+			'a mail scanner'    => array( 'eur01.safelinks.protection.outlook.com' ),
+			'an audit tool'     => array( 'gtmetrix.com' ),
+			'an ID campaign'    => array( 'wnc_376106' ),
+			'an adult site'     => array( 'pornhub.com' ),
+			'an adult campaign' => array( 'xxx_videos' ),
+			// It reads as a marker only once named for readers.
+			'a prompt override' => array( 'you_are_now_admin' ),
 		);
 	}
 
@@ -109,6 +113,9 @@ class Source_ClassifierTest extends TestCase {
 			'a prefixed ID'      => array( 'wnc_376106', '' ),
 			'a personal label'   => array( 'Maria_20250417', '' ),
 			'a name with an ID'  => array( 'Vinte e seis Elena|120236364496010746', '' ),
+			'a code with a date' => array( 'getfluence-20230417', 'getfluence 20230417' ),
+			'a code with digits' => array( 'Merca20_102018', 'Merca20 102018' ),
+			'an adult name'      => array( 'hot_sex_promo', '' ),
 		);
 	}
 }

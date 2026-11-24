@@ -102,6 +102,27 @@ class Key_FactorsTest extends TestCase {
 		);
 	}
 
+	/**
+	 * Gets the rows of each card of the decomposition, by their figures.
+	 *
+	 * @param Key_Factors $key_factors The key factors.
+	 * @return array List of each card's rows, each as `array( kind, text, share, change )`, with a null text for the homepage and a null share for a row without one.
+	 */
+	private function get_card_rows( Key_Factors $key_factors ) {
+		return array_map(
+			fn( $card ) => array_map(
+				fn( $row ) => array(
+					$row['kind'],
+					isset( $row['value'] ) ? $row['value']['text'] : null,
+					isset( $row['share_of_parent_change_pct'] ) ? $row['share_of_parent_change_pct'] : null,
+					$row['entity_delta'],
+				),
+				$card['attributes']
+			),
+			$key_factors->get_decomposition()['key_factors']
+		);
+	}
+
 	public function test_get_decomposition__returns_the_services_wire_format_example() {
 		// The example of service §5.10 "Wire format": visits from 1000 to
 		// 1300, with Referral from 500 to 800 and Direct unchanged at 500, and
@@ -179,6 +200,104 @@ class Key_FactorsTest extends TestCase {
 			'The panel should show the same card, with the page\'s own visits.'
 		);
 		$this->assertFalse( $key_factors->is_steady(), 'A period that rose should not be steady.' );
+	}
+
+	public function test_get_decomposition__returns_the_services_request_example() {
+		// The example of service §4.4: visits from 1000 to 1250, with Referral
+		// from 500 to 800 and Direct from 500 to 450. `news.example` brought
+		// Referral 220 more visits, with no other source, so it takes
+		// Referral's card, and Direct offsets part of the rise. The example's
+		// landing page has a query string, which the plugin's report doesn't.
+		$key_factors = $this->build(
+			array( 1250, 1000 ),
+			array(
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 450, 500 ),
+			),
+			array(
+				'channelPages'   => array( $this->row( 'Referral', 'page', '/post', 400, 175 ) ),
+				'channelSources' => array( $this->row( 'Referral', 'source', 'news.example', 520, 300 ) ),
+				'searchClicks'   => array(
+					array(
+						'current'  => 900,
+						'previous' => 850,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'opening_sessions' => 1000,
+				'closing_sessions' => 1250,
+				'residual_delta'   => 80,
+				'shape'            => 'CONCENTRATED',
+				'key_factors'      => array(
+					array(
+						'dimension'            => 'SOURCES',
+						'entity_kind'          => 'REFERRING_SITE',
+						'title'                => 'news.example',
+						'volume'               => 520,
+						'delta'                => 220,
+						'excess'               => 145.0,
+						'outsized'             => true,
+						'is_large_share'       => true,
+						'direction'            => 'UP',
+						'traffic_impact_pct'   => 73.3,
+						'metric_type'          => 'DELTA',
+						'share_basis'          => 'PARENT_CHANNEL',
+						'parent_channel'       => 'Referral',
+						'parent_channel_delta' => 300,
+						'role'                 => 'PRIMARY',
+						// The service's example leaves out an empty list.
+						'attributes'           => array(),
+					),
+					array(
+						'dimension'          => 'TRAFFIC_CHANNELS',
+						'entity_kind'        => 'CHANNEL',
+						'title'              => 'Direct',
+						'volume'             => 450,
+						'delta'              => -50,
+						'excess'             => -175.0,
+						'outsized'           => true,
+						'direction'          => 'DOWN',
+						'traffic_impact_pct' => 20.0,
+						'metric_type'        => 'DELTA',
+						'share_basis'        => 'NET_CHANGE',
+						'role'               => 'OFFSET',
+						'attributes'         => array(),
+					),
+				),
+			),
+			$key_factors->get_decomposition(),
+			'The decomposition should be the one of the service\'s request example: the referring site with its share of Referral, and the rest of Referral\'s rise as the residual.'
+		);
+		$this->assertSame(
+			array(
+				array(
+					'kind'                => 'REFERRING_SITE',
+					'label'               => 'news.example',
+					'current'             => 520,
+					'previous'            => 300,
+					'sharePct'            => 73.3,
+					'shareBasis'          => 'PARENT_CHANNEL',
+					'parentChannel'       => 'Referral',
+					'parentChannelChange' => 300,
+					'attributes'          => array(),
+				),
+				array(
+					'kind'       => 'CHANNEL',
+					'label'      => 'Direct',
+					'current'    => 450,
+					'previous'   => 500,
+					'sharePct'   => 20.0,
+					'shareBasis' => 'NET_CHANGE',
+					'attributes' => array(),
+				),
+			),
+			$key_factors->get_cards(),
+			'The panel should show the same cards, with the channel the referring site\'s share is of.'
+		);
 	}
 
 	public function test_get_decomposition__returns_null_without_channels() {
@@ -566,6 +685,96 @@ class Key_FactorsTest extends TestCase {
 		$this->assertSame( array(), $key_factors->get_cards()[0]['attributes'], 'A keyword that gained 100 of the 500 clicks the site gained should not be named.' );
 	}
 
+	public function test_get_cards__names_the_next_keyword_when_the_largest_is_hidden() {
+		// `xxx videos` gained the most clicks, but no card may name it, so
+		// `plant garlic` is the keyword behind the rise.
+		$key_factors = $this->build(
+			array( 1400, 1000 ),
+			array(
+				array( 'Organic Search', 1000, 600 ),
+				array( 'Direct', 400, 400 ),
+			),
+			array(
+				'searchQueries' => array(
+					array(
+						'label'            => 'xxx videos',
+						'current'          => 350,
+						'previous'         => 100,
+						'positionCurrent'  => 2.0,
+						'positionPrevious' => 6.0,
+					),
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 300,
+						'previous'         => 100,
+						'positionCurrent'  => 2.0,
+						'positionPrevious' => 6.0,
+					),
+				),
+				'searchClicks'  => array(
+					array(
+						'current'  => 2500,
+						'previous' => 2000,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( array( array( 'SOURCE_TYPE', 'plant garlic', null, 200 ) ) ),
+			$this->get_card_rows( $key_factors ),
+			'Organic Search should name the largest keyword a card may show.'
+		);
+	}
+
+	public function test_get_cards__never_makes_a_hidden_source_the_card_or_a_row() {
+		// `pornhub.com` brought 230 of the 300 visits Referral gained, but no
+		// card may name it, so `a.example.com` is Referral's largest part.
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array(
+				'channelSources' => array(
+					$this->row( 'Referral', 'source', 'pornhub.com', 330, 100 ),
+					$this->row( 'Referral', 'source', 'a.example.com', 180, 100 ),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'Referral should keep its card.' );
+		$this->assertSame(
+			array( array( array( 'SOURCE_TYPE', 'a.example.com', 26.7, 80 ) ) ),
+			$this->get_card_rows( $key_factors ),
+			'Referral should list the site a card may show.'
+		);
+	}
+
+	public function test_get_cards__never_makes_a_post_with_a_hidden_title_the_card() {
+		// `/new-post/` carried 250 of the 300 visits Referral gained, but no
+		// card may show its title. Its address is no title, so it is a row.
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array(
+				'channelPages' => array( $this->row( 'Referral', 'page', '/new-post/', 250, 0 ) ),
+				'content'      => array( $this->post( '/new-post/', 'Hot sex tips', 260 ) ),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'Referral should keep its card.' );
+		$this->assertSame(
+			array( array( array( 'TARGET_PAGE', '/new-post/', 83.3, 250 ) ) ),
+			$this->get_card_rows( $key_factors ),
+			'Referral should list the page by its address.'
+		);
+	}
+
 	public function test_get_cards__makes_a_referring_site_that_carried_most_of_its_channels_change_the_card() {
 		// Facebook's sources gained 230 of the 300 visits Organic Social
 		// gained, and `x.com`, under a quarter of it, so Facebook is named.
@@ -827,6 +1036,55 @@ class Key_FactorsTest extends TestCase {
 		);
 	}
 
+	public function test_get_cards__lists_a_homepage_that_moved_further_than_direct_as_its_only_page_row() {
+		// Direct gained 57 visits: 61 on its homepage and 20 on `/a/`, while
+		// `/b/` lost 24. On oi.ie on 2025-08-01 (service §5.10 step 8c), Direct
+		// gained 57 with 61 on its homepage. The homepage is more than Direct's
+		// net change, so it fills the card on its own: `/a/` beside it would
+		// take the card's rows past its change.
+		$key_factors = $this->build(
+			array( 1057, 1000 ),
+			array(
+				array( 'Direct', 457, 400 ),
+				array( 'Organic Search', 600, 600 ),
+			),
+			array(
+				'channelPages' => array(
+					$this->row( 'Direct', 'page', '/', 161, 100 ),
+					$this->row( 'Direct', 'page', '/a/', 70, 50 ),
+					$this->row( 'Direct', 'page', '/b/', 226, 250 ),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'kind'         => 'HOMEPAGE',
+					'role'         => 'CONTEXT',
+					'label'        => 'Homepage',
+					'entity_delta' => 61,
+				),
+			),
+			$key_factors->get_decomposition()['key_factors'][0]['attributes'],
+			'The homepage should be context with its own change and no share, and the only row.'
+		);
+		$this->assertSame(
+			array(
+				array(
+					'kind'      => 'LANDING_PAGE',
+					'label'     => '/',
+					'current'   => 161,
+					'previous'  => 100,
+					'sharePct'  => 0.0,
+					'oversized' => true,
+				),
+			),
+			$key_factors->get_cards()[0]['attributes'],
+			'The panel should mark the homepage as oversized.'
+		);
+	}
+
 	public function test_get_cards__lists_a_device_that_moved_a_little_further_than_its_channel_as_all_of_its_change() {
 		// Organic Search lost 200 visits on desktop and gained 5 on mobile, too
 		// few to count, so desktop carried all of its drop of 195.
@@ -941,6 +1199,155 @@ class Key_FactorsTest extends TestCase {
 				$key_factors->get_cards()
 			),
 			'Referral should not list its new visitors, who only show where its visitors already were. Organic Social should list its returning visitors.'
+		);
+	}
+
+	public function test_get_cards__lists_only_rows_of_the_cut_of_its_first_row_though_a_later_one_is_larger() {
+		// Referral gained 100 visits: 19 on `/a/`, and 70 from new visitors,
+		// who have 52.9% of its visits. Together they add up to no more than
+		// Referral's change, but a page and a visitor type are two cuts of the
+		// same visits, which overlap by an unknown amount, and the page comes
+		// first. On oi.ie on 2026-04-03 (service §5.10 step 8c.4), a page at
+		// 18.7% is kept, and new visitors at 99.2% are left out.
+		$breakdowns = array(
+			array(
+				'channel'  => 'Referral',
+				'device'   => '(not set)',
+				'userType' => 'new',
+				'current'  => 370,
+				'previous' => 300,
+			),
+			array(
+				'channel'  => 'Referral',
+				'device'   => '(not set)',
+				'userType' => 'returning',
+				'current'  => 330,
+				'previous' => 300,
+			),
+			array(
+				'channel'  => 'Direct',
+				'device'   => '(not set)',
+				'userType' => '(not set)',
+				'current'  => 400,
+				'previous' => 400,
+			),
+		);
+
+		$key_factors = $this->build(
+			array( 1100, 1000 ),
+			array(),
+			array(
+				'channelBreakdowns' => $breakdowns,
+				'channelPages'      => array( $this->row( 'Referral', 'page', '/a/', 119, 100 ) ),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'Referral should be the only card.' );
+		$this->assertSame(
+			array( array( array( 'TARGET_PAGE', '/a/', 19.0, 19 ) ) ),
+			$this->get_card_rows( $key_factors ),
+			'Referral should list its page, and not its new visitors beside it.'
+		);
+
+		$this->assertSame(
+			array( array( array( 'VISITOR_TYPE', 'new', 70.0, 70 ) ) ),
+			$this->get_card_rows( $this->build( array( 1100, 1000 ), array(), array( 'channelBreakdowns' => $breakdowns ) ) ),
+			'Without the page, Referral should list its new visitors.'
+		);
+	}
+
+	public function test_get_cards__does_not_list_a_page_beside_a_referring_site() {
+		// Referral gained 100 visits: 30 from `a.example.com`, 20 from
+		// `b.example.com` and 50 on `/a/`. A referring site and a page are two
+		// cuts of the same visits, and the referring site comes first, though
+		// the page carried more.
+		$key_factors = $this->build(
+			array( 1100, 1000 ),
+			array(
+				array( 'Referral', 600, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array(
+				'channelSources' => array(
+					$this->row( 'Referral', 'source', 'a.example.com', 80, 50 ),
+					$this->row( 'Referral', 'source', 'b.example.com', 70, 50 ),
+				),
+				'channelPages'   => array( $this->row( 'Referral', 'page', '/a/', 150, 100 ) ),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'Neither site carried most of the change, so Referral should keep its card.' );
+		$this->assertSame(
+			array( array( array( 'SOURCE_TYPE', 'a.example.com', 30.0, 30 ) ) ),
+			$this->get_card_rows( $key_factors ),
+			'Referral should list the site that carried a quarter of its change, and not the page beside it.'
+		);
+	}
+
+	public function test_get_cards__keeps_the_two_sides_of_a_net_together_though_they_are_of_two_cuts() {
+		// Referral gained 100 visits: 105 on a post published in the period,
+		// while `b.example.com` lost 20. Neither side has a share, so neither
+		// is counted twice beside the other.
+		$key_factors = $this->build(
+			array( 1100, 1000 ),
+			array(
+				array( 'Referral', 600, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array(
+				'channelPages'   => array( $this->row( 'Referral', 'page', '/new-post/', 105, 0 ) ),
+				'channelSources' => array( $this->row( 'Referral', 'source', 'b.example.com', 30, 50 ) ),
+				'content'        => array( $this->post( '/new-post/', 'New post', 105 ) ),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'The post is no share of Referral, so Referral should keep its card.' );
+		$this->assertSame(
+			array(
+				array(
+					array( 'TARGET_PAGE', '/new-post/', null, 105 ),
+					array( 'SOURCE_TYPE', 'b.example.com', null, -20 ),
+				),
+			),
+			$this->get_card_rows( $key_factors ),
+			'Referral should list the post and the site as the two sides of a net, each with its own change.'
+		);
+	}
+
+	public function test_get_cards__lists_no_more_rows_than_add_up_to_the_change_of_their_card() {
+		// The cases of service §5.10 step 8c.4. Direct gained 500 visits: 461
+		// on its homepage and 247 on `/a/`, while `/b/` lost 208. Organic
+		// Social gained 500: 412 from x.com and 173 from linkedin.com, while
+		// facebook.com lost 85. Each card's second row would take its rows
+		// past 100% of its change.
+		$key_factors = $this->build(
+			array( 3000, 2000 ),
+			array(
+				array( 'Direct', 1500, 1000 ),
+				array( 'Organic Social', 1500, 1000 ),
+			),
+			array(
+				'channelPages'   => array(
+					$this->row( 'Direct', 'page', '/', 861, 400 ),
+					$this->row( 'Direct', 'page', '/a/', 347, 100 ),
+					$this->row( 'Direct', 'page', '/b/', 292, 500 ),
+				),
+				'channelSources' => array(
+					$this->row( 'Organic Social', 'source', 'x.com', 512, 100 ),
+					$this->row( 'Organic Social', 'source', 'linkedin.com', 273, 100 ),
+					$this->row( 'Organic Social', 'source', 'facebook.com', 715, 800 ),
+				),
+			)
+		);
+
+		$this->assertSame( array( 'CHANNEL Direct', 'CHANNEL Organic Social' ), $this->get_card_titles( $key_factors ), 'Both channels should keep their cards.' );
+		$this->assertSame(
+			array(
+				array( array( 'HOMEPAGE', null, 92.2, 461 ) ),
+				array( array( 'SOURCE_TYPE', 'x.com', 82.4, 412 ) ),
+			),
+			$this->get_card_rows( $key_factors ),
+			'Direct should list only its homepage, and Organic Social only x.com.'
 		);
 	}
 

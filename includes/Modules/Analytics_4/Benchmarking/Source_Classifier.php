@@ -20,10 +20,8 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
  * names them, so a card and the insight's text name a platform the same way:
  * `m.facebook.com` and `fb` are both `Facebook`, `t.co` is `x.com`, and so on.
  * A source shaped like a campaign name is a campaign, named for readers.
- *
- * The service also screens names for sensitive content in many languages. The
- * plugin doesn't port that screen: the service applies it to the cards it
- * receives, and leaves out what it can't narrate.
+ * A source or a campaign name that `Content_Screen` hides is left out, the
+ * way the service leaves it out of the insight.
  *
  * @since n.e.x.t
  * @access private
@@ -128,7 +126,7 @@ final class Source_Classifier {
 		$source = trim( (string) $source );
 		$name   = strtolower( $source );
 
-		if ( Insight_Request_Builder::is_placeholder( $source ) || 'unknown' === $name ) {
+		if ( Insight_Request_Builder::is_placeholder( $source ) || 'unknown' === $name || Content_Screen::is_hidden( $source ) ) {
 			return null;
 		}
 
@@ -167,11 +165,13 @@ final class Source_Classifier {
 	 * empty string when no card may show it.
 	 *
 	 * Analytics names the visits of no campaign with a placeholder, such as
-	 * `(organic)`, which names no campaign. A name made of digits, or with a
-	 * long run of them, is an ID or a personal label rather than a name a
-	 * reader would recognise: `20103244`, `wnc_376106` and `Maria_20250417`
-	 * are left out, and `Summer 2024` is kept. A name of one word is named for
-	 * readers, and a name with spaces is kept as typed.
+	 * `(organic)`, which names no campaign. An ID or a first name tagged with
+	 * one is no name a reader would recognise, or one they shouldn't see:
+	 * `20103244`, `wnc_376106` and `Maria_20250417` are left out, and
+	 * `Summer 2024` and `getfluence-20230417` are kept. A name
+	 * `Content_Screen` hides, before or after it is named for readers, is
+	 * left out too. A name of one word is named for readers, and a name with
+	 * spaces is kept as typed.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -181,10 +181,26 @@ final class Source_Classifier {
 	public static function get_campaign_title( $campaign ) {
 		$campaign = trim( self::truncate( trim( (string) $campaign ) ) );
 
-		if ( Insight_Request_Builder::is_placeholder( $campaign ) || self::is_opaque_label( $campaign ) ) {
+		if ( Insight_Request_Builder::is_placeholder( $campaign ) || Content_Screen::is_opaque_or_personal_label( $campaign ) || Content_Screen::is_hidden( $campaign ) ) {
 			return '';
 		}
 
+		$title = self::get_readable_campaign_name( $campaign );
+
+		return Content_Screen::is_hidden( $title ) ? '' : $title;
+	}
+
+	/**
+	 * Gets a campaign name as a reader would read it. A name of one word has
+	 * its underscores and hyphens replaced, and a name with spaces is kept as
+	 * typed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $campaign The campaign name.
+	 * @return string The name for readers.
+	 */
+	private static function get_readable_campaign_name( $campaign ) {
 		if ( preg_match( '/\s/', $campaign ) ) {
 			return $campaign;
 		}
@@ -261,19 +277,6 @@ final class Source_Classifier {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Tells whether a campaign name is an ID or a personal label: it has no
-	 * letter, or a run of five digits or more.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $campaign The campaign name.
-	 * @return bool True when it is.
-	 */
-	private static function is_opaque_label( $campaign ) {
-		return ! preg_match( '/\p{L}/u', $campaign ) || preg_match( '/\d{5,}/', $campaign );
 	}
 
 	/**
