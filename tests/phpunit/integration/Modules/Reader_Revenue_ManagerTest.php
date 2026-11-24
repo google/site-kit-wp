@@ -434,6 +434,19 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
+	public function test_get_datapoints__with_survey_cta_flag_only() {
+		$this->enable_feature( 'rrmSurveyCTA' );
+
+		$this->assertEqualSets(
+			array(
+				'publications',
+				'sync-publication-onboarding-state',
+			),
+			$this->reader_revenue_manager->get_datapoints(),
+			'Reader Revenue Manager module should not include the survey question catalog datapoint without the express setup flag, which sets up its service.'
+		);
+	}
+
 
 	public function test_sync_publication_onboarding_state_onboarding_state_unchanged() {
 		// Set the Search Console option.

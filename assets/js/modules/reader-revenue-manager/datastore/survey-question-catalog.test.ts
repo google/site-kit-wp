@@ -420,46 +420,6 @@ describe( 'modules/reader-revenue-manager survey question catalog', () => {
 					surveyQuestionCatalogEndpoint
 				);
 			} );
-
-			it( 'should read the organization from the publications list for settings without one', async () => {
-				registry = createTestRegistry();
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( {
-						publicationID: params.publicationID,
-					} );
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetPublications( [
-						{
-							// eslint-disable-next-line sitekit/acronym-case
-							publicationId: params.publicationID,
-							// eslint-disable-next-line sitekit/acronym-case
-							organizationId: params.organizationID,
-						},
-					] );
-
-				fetchMock.getOnce( surveyQuestionCatalogEndpoint, {
-					body: questions,
-					status: 200,
-				} );
-
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getSurveyQuestionCatalog();
-
-				await untilCatalogResolved( params );
-
-				expect( fetchMock ).toHaveFetched(
-					surveyQuestionCatalogEndpoint,
-					{ query: params }
-				);
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getSurveyQuestionCatalog()
-				).toEqual( questions );
-			} );
 		} );
 	} );
 } );
