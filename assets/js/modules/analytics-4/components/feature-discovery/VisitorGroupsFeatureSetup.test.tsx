@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/components/feature-discovery/constants';
 import { Registry } from '@/js/googlesitekit-data';
 import { getItem } from '@/js/googlesitekit/api/cache';
 import {
@@ -28,7 +29,10 @@ import {
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
 	getCurrentFeatureDiscoveryTabPath,
@@ -174,7 +178,7 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'triggers the setup survey and enables the groups when the card CTA is clicked', () => {
+	it( 'triggers the setup and hub interaction surveys and enables the groups when the card CTA is clicked', () => {
 		const triggerSurvey = jest
 			.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
 			.mockResolvedValue( undefined );
@@ -188,6 +192,10 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 
 		expect( triggerSurvey ).toHaveBeenCalledWith(
 			getFeatureSetupSurveyTriggerID( SLUG )
+		);
+		expect( triggerSurvey ).toHaveBeenCalledWith(
+			FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+			{ ttl: SURVEY_TRIGGER_MAX_TTL }
 		);
 		expect( onEnableGroups ).toHaveBeenCalledTimes( 1 );
 		expect( triggerSurvey.mock.invocationCallOrder[ 0 ] ).toBeLessThan(

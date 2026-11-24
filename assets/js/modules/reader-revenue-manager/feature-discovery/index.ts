@@ -66,17 +66,17 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		name: __( 'Reader Revenue Manager', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		title: __(
-			'Open up new revenue opportunities while growing, retaining and engaging your audience',
+			'Open up new revenue opportunities while growing, retaining, and engaging your audience',
 			'google-site-kit'
 		),
 		shortDescription: __(
-			'Add easy-to-implement subscription and contribution prompts to your site, or non-monetized prompts such as newsletter signups, surveys, subscriptions and more.',
+			'Add easy-to-implement subscription and contribution prompts to your site, or non-monetized prompts such as newsletter sign-ups, surveys, subscriptions, and more.',
 			'google-site-kit'
 		),
 		detail: {
 			description: {
 				whatIs: __(
-					'Reader Revenue Manager helps publishers without an existing membership model incorporate a subscription or contribution model into their desktop and mobile web pages. You can use Reader Revenue Manager to help increase reader engagement and retention through features like newsletter sign-up, surveys and reader registrations.',
+					'Reader Revenue Manager helps publishers without an existing membership model incorporate a subscription or contribution model into their desktop and mobile web pages. You can use Reader Revenue Manager to help increase reader engagement and retention through features like newsletter sign-up, surveys, and reader registrations.',
 					'google-site-kit'
 				),
 				whyUseHeading: __(
@@ -319,7 +319,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						src: newsletterSignUpFormSetupScreenshotURL,
 						alt: __(
-							'Screenshot of the Reader Revenue Manager sign-up form setup in Site Kit, with fields for the form name, header and body text, options for collecting names and consent, and a preview of how the form will look',
+							'Screenshot of the Reader Revenue Manager sign-up form setup in Site Kit, with fields for the form name, header, and body text, options for collecting names and consent, and a preview of how the form will look',
 							'google-site-kit'
 						),
 						width: 620,
@@ -342,11 +342,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					'google-site-kit'
 				),
 				description: __(
-					'You can always update your sign-up form settings in Publisher center',
+					'You can always update your sign-up form settings in Publisher Center',
 					'google-site-kit'
 				),
 				cta: {
-					label: __( 'Go to Publisher center', 'google-site-kit' ),
+					label: __( 'Go to Publisher Center', 'google-site-kit' ),
 					getURL: ( select ) =>
 						select( CORE_MODULES ).getDetailsLinkURL(
 							MODULE_SLUG_READER_REVENUE_MANAGER

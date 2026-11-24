@@ -36,6 +36,7 @@ import FeatureCard, {
 } from '@/js/components/feature-discovery/FeatureCard';
 import FeatureCTAButton from '@/js/components/feature-discovery/FeatureCTAButton';
 import getFeatureCardCTALabel from '@/js/components/feature-discovery/getFeatureCardCTALabel';
+import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
@@ -113,6 +114,8 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		) => void;
 	};
 	const { triggerSurvey } = useDispatch( CORE_USER );
+	const triggerInteractionSurvey =
+		useFeatureDiscoveryInteractionSurveyTrigger();
 
 	// Restores the tab the user set out from once they return from granting
 	// permissions.
@@ -179,9 +182,10 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 	const handleClick = useCallback( () => {
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
+		triggerInteractionSurvey();
 
 		onEnableGroups();
-	}, [ onEnableGroups, slug, triggerSurvey ] );
+	}, [ onEnableGroups, slug, triggerInteractionSurvey, triggerSurvey ] );
 
 	// Only the card's own CTA is tracked here: `handleClick` also runs when the
 	// setup is started from the detail panel.

@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import {
+	FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+} from '@/js/components/feature-discovery/constants';
 import { Registry, Select } from '@/js/googlesitekit-data';
 import {
 	CORE_FEATURE_DISCOVERY,
@@ -29,7 +32,10 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
@@ -475,6 +481,35 @@ describe( 'FeatureCTA', () => {
 					body: {
 						data: {
 							triggerID: 'setup:feature_setup_test-feature',
+						},
+					},
+				} )
+			);
+		} );
+
+		it( 'should send the hub interaction survey trigger', async () => {
+			fetchMock.post( surveyTriggerEndpoint, {
+				status: 200,
+				body: {},
+			} );
+
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: {
+							triggerID:
+								FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+							ttl: SURVEY_TRIGGER_MAX_TTL,
 						},
 					},
 				} )

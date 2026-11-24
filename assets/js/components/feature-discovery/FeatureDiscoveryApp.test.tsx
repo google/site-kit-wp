@@ -27,6 +27,7 @@ import { HashRouter } from 'react-router-dom';
 import { Select, useSelect } from 'googlesitekit-data';
 import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { FDH_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/components/feature-discovery/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
@@ -35,15 +36,20 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import * as pendingSetupModule from '@/js/googlesitekit/feature-discovery/pending-setup';
 import * as tracking from '@/js/util/tracking';
 import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	render,
 	waitFor,
@@ -105,7 +111,13 @@ jest.mock(
 
 function provideHeader( registry: ReturnType< typeof createTestRegistry > ) {
 	provideModules( registry );
+	provideSiteInfo( registry );
 	provideUserAuthentication( registry );
+
+	// The hub sends survey triggers when it opens and when the user interacts
+	// with it.
+	registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+	fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 
 	registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
 	registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -153,6 +165,33 @@ describe( 'FeatureDiscoveryApp', () => {
 		const { container } = await renderApp();
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should send the hub opened survey trigger when the hub opens', async () => {
+		await renderApp();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID: FDH_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID,
+						ttl: SURVEY_TRIGGER_MAX_TTL,
+					},
+				},
+			} )
+		);
+	} );
+
+	it( 'should not send the hub opened survey trigger when it has already been sent', async () => {
+		await renderApp( '/whats-new', ( registry ) => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetSurveyTimeouts( [
+					FDH_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID,
+				] );
+		} );
+
+		expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 	} );
 
 	it( 'should activate the correct tab for /all-services', async () => {

@@ -31,6 +31,10 @@ PHP (`docs/context/php/`):
 - `asset-management.md`, `admin-features.md`, `prompts-and-dismissals.md` — assets, admin, and prompts.
 - `phpunit.md` — PHP test conventions.
 
+User-facing copy (`docs/context/`):
+
+- `terminology.md` — capitalization of product names, feature names, and other terms; American English spelling; the Oxford comma.
+
 If a suggestion would contradict one of these docs, do not make it.
 
 ## Avoid speculative runtime guards
@@ -57,10 +61,17 @@ When the same issue appears in multiple locations, post a single consolidated co
 In that comment, explicitly list **every** affected location as a `path:line` reference (or permalink) so each instance is individually accounted for and actionable.
 Never silently aggregate — a reader must be able to find and fix all occurrences from the one comment.
 
-## User-facing copy comes from design
+## User-facing copy
 
-Treat user-facing strings and i18n copy as authored against design (Figma) and product decisions.
-Do not suggest wording, tone, or capitalization changes to display strings.
+Treat the wording and tone of user-facing strings and i18n copy as authored against design and product decisions.
+Do not suggest wording or tone changes to display strings.
+
+Capitalization, spelling, and list punctuation are the exceptions, because designs are not consistent about them.
+`docs/context/terminology.md` is the source of truth for how terms are capitalized, and it requires American English spelling and the Oxford comma:
+
+- Flag every display string in the change that contradicts `terminology.md`, and give the correct form.
+- When the change writes a term that `terminology.md` does not list in more than one form, point it out as something to double-check. Do not present it as a required fix.
+- Do not flag strings the change does not add or edit.
 
 ## Respect the minimum supported versions
 
