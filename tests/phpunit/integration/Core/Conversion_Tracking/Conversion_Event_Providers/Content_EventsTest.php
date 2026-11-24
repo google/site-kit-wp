@@ -426,7 +426,7 @@ class Content_EventsTest extends TestCase {
 				'read_article'        => 'single blog posts',
 				'pagination_click'    => 'posts split into pages',
 				'contact_link_click'  => 'email, phone, SMS, and messaging-app links',
-				'outbound_link_click' => 'external links with rel="sponsored", rel="ugc" or rel="nofollow"',
+				'outbound_link_click' => 'external links with rel="sponsored", rel="ugc", or rel="nofollow"',
 				'video_start, video_progress, video_complete' => 'Vimeo embeds',
 			),
 			$this->content_events->get_eligible_events(),

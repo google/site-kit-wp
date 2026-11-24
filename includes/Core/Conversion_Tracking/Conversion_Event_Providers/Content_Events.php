@@ -193,7 +193,7 @@ class Content_Events extends Conversion_Events_Provider {
 				? __( 'posts split into pages, bbPress topics', 'google-site-kit' )
 				: __( 'posts split into pages', 'google-site-kit' ),
 			'contact_link_click'                          => __( 'email, phone, SMS, and messaging-app links', 'google-site-kit' ),
-			'outbound_link_click'                         => __( 'external links with rel="sponsored", rel="ugc" or rel="nofollow"', 'google-site-kit' ),
+			'outbound_link_click'                         => __( 'external links with rel="sponsored", rel="ugc", or rel="nofollow"', 'google-site-kit' ),
 			'video_start, video_progress, video_complete' => __( 'Vimeo embeds', 'google-site-kit' ),
 		);
 	}
