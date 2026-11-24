@@ -35,10 +35,14 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { Tile } from '@/js/modules/analytics-4/components/common/tiles';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { getEngagementSessionsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/engagementSessionsText';
-import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
+import {
+	NUMBER_FORMAT,
+	PERCENT_FORMAT,
+} from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { numFmt } from '@/js/util';
 
 interface DateRange {
 	startDate: string;
@@ -123,7 +127,7 @@ const EngagementRateTile: FC< EngagementRateTileProps > = ( {
 		<Tile
 			title={ __( 'Engagement rate', 'google-site-kit' ) }
 			subtitle={ getEngagementSessionsSubtitle(
-				currentSessions,
+				numFmt( currentSessions, NUMBER_FORMAT ),
 				// On a breakdown tab, the sessions are only those of that tab.
 				breakdownFilter ? goalType : undefined
 			) }

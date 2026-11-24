@@ -26,8 +26,6 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { NUMBER_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
-import { numFmt } from '@/js/util';
 
 /**
  * Builds the caption under a Site Goals engagement rate, naming the sessions
@@ -39,23 +37,24 @@ import { numFmt } from '@/js/util';
  * caption says so. This keeps it apart from the Key action rate's caption,
  * which shows the site's total sessions on every breakdown.
  *
+ * The caller formats the sessions, as the dashboard writes them in full and
+ * the PDF writes them compactly.
+ *
  * @since n.e.x.t
  *
- * @param {number}           sessions      The sessions the engagement rate is a share of.
+ * @param {string}           sessions      The formatted sessions the engagement rate is a share of.
  * @param {string|undefined} breakdownType The goal type of the plugin or form breakdown, or `undefined` without a breakdown.
  * @return {string} The caption, such as "of 1,250 total sessions" or "of 29 sessions with this plugin".
  */
 export function getEngagementSessionsSubtitle(
-	sessions: number,
+	sessions: string,
 	breakdownType?: GoalType
 ): string {
-	const formattedSessions = numFmt( sessions, NUMBER_FORMAT );
-
 	if ( breakdownType === GOAL_TYPES.ECOMMERCE ) {
 		return sprintf(
 			/* translators: %s: formatted number of sessions with an event from the selected ecommerce plugin */
 			__( 'of %s sessions with this plugin', 'google-site-kit' ),
-			formattedSessions
+			sessions
 		);
 	}
 
@@ -63,13 +62,13 @@ export function getEngagementSessionsSubtitle(
 		return sprintf(
 			/* translators: %s: formatted number of sessions with an event from the selected form */
 			__( 'of %s sessions with this form', 'google-site-kit' ),
-			formattedSessions
+			sessions
 		);
 	}
 
 	return sprintf(
 		/* translators: %s: formatted number of total sessions */
 		__( 'of %s total sessions', 'google-site-kit' ),
-		formattedSessions
+		sessions
 	);
 }
