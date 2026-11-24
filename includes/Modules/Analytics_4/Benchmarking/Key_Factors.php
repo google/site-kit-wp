@@ -524,7 +524,7 @@ final class Key_Factors {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array List of cards, in the order to show them. Each has `kind`, `CHANNEL`, `CHANNEL_GROUP`, `CONTENT`, `REFERRING_SITE` or `CAMPAIGN`, `label`, `current`, `previous`, `sharePct`, the card's share as the decomposition carries it, of the site's visits on a steady period, `shareBasis`, what that share is of, as the decomposition's `share_basis`, and `attributes`, its rows. A card that took its channel's place, whose basis is `PARENT_CHANNEL`, also has `parentChannel`, the channel's title, and `parentChannelChange`, the channel's change. Each attribute has `kind`, `label`, `current`, `previous`, `sharePct`, the row's share as the decomposition carries it, or `0` without one, and `oversized`, whether the row moved further than its card the same way, so it has no share and is more than the card's change. A search keyword's attribute counts clicks.
+	 * @return array List of cards, in the order to show them. Each has `kind`, `CHANNEL`, `CHANNEL_GROUP`, `CONTENT`, `REFERRING_SITE` or `CAMPAIGN`, `label`, `current`, `previous`, `sharePct`, the card's share as the decomposition carries it, of the site's visits on a steady period, `shareBasis`, what that share is of, as the decomposition's `share_basis`, and `attributes`, its rows. A card that took its channel's place, whose basis is `PARENT_CHANNEL`, also has `parentChannel`, the channel's title, and `parentChannelChange`, the channel's change. A channel's card without attributes has `spreadAcrossPages`, true, when its change was spread across many pages. Each attribute has `kind`, `label`, `current`, `previous`, `sharePct`, the row's share as the decomposition carries it, or `0` without one, and `oversized`, whether the row moved further than its card the same way, so it has no share and is more than the card's change. A search keyword's attribute counts clicks.
 	 */
 	public function get_cards() {
 		return array_column( $this->get_result()['cards'], 'key_factor' );
@@ -1173,6 +1173,8 @@ final class Key_Factors {
 			return $this->build_card( $child['kind'], $child['title'], $child['current'], $child['previous'], $role, $share, array(), $url );
 		}
 
+		$rows = $this->get_channel_rows( $node['channel'], $children, $split, $elevated_keys );
+
 		return $this->build_card(
 			'CHANNEL',
 			$node['title'],
@@ -1180,7 +1182,11 @@ final class Key_Factors {
 			$node['previous'],
 			$role,
 			$this->get_card_share( $delta, $role, $period_direction ),
-			$this->get_channel_rows( $node['channel'], $children, $split, $elevated_keys )
+			$rows,
+			null,
+			// A card without rows says when its change was spread across many
+			// pages, so it doesn't show its title and its change alone.
+			empty( $rows ) && $this->is_spread_across_pages( $node['channel'] )
 		);
 	}
 
@@ -2117,6 +2123,66 @@ final class Key_Factors {
 	}
 
 	/**
+	 * Tells whether a channel's change was spread across many of its landing
+	 * pages: no page that moved with the channel carried `ROW_SHARE` of its
+	 * change, the share a page needs to be a row.
+	 *
+	 * The Change drivers doc treats "no single driver" as a real answer
+	 * ("Search fell 1,300, spread across many pages"), and §5.10 has no rule
+	 * for it, so it is the plugin's own. Organic Search +169 on oi.ie, from
+	 * 3 to 30 September, rose across 233 pages, none by more than 5 visits.
+	 *
+	 * Every page counts, the homepage and the pages no card names among them,
+	 * since a page that can't be named still carried its part of the change.
+	 * The homepage's addresses count as one page. The pages that moved with
+	 * the channel must add up to at least its change, which puts more than
+	 * `1 / ROW_SHARE` of them behind it. A report cut at its row limit can
+	 * leave out the pages that carried the change, and then this says
+	 * nothing.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $channel The channel.
+	 * @return bool True when the change was spread across many pages.
+	 */
+	private function is_spread_across_pages( array $channel ) {
+		$delta = $channel['delta'];
+
+		if ( 0 === $delta ) {
+			return false;
+		}
+
+		$pages = array();
+
+		foreach ( $this->get_channel_rows_of( 'channelPages', $channel ) as $row ) {
+			$path = Page_Classifier::get_path( $row['page'] );
+			$key  = Page_Classifier::is_root( $row['page'] ) || Page_Classifier::HOMEPAGE === $this->page_classifier->classify( $path )
+				? ''
+				: Page_Classifier::get_page_key( $path );
+
+			self::add_child(
+				$pages,
+				array(
+					'key'   => $key,
+					'title' => $key,
+				),
+				$row
+			);
+		}
+
+		$moving = array_filter( $pages, fn( $page ) => $page['delta'] * $delta > 0 );
+		$moved  = array_sum( array_map( fn( $page ) => abs( $page['delta'] ), $moving ) );
+
+		if ( $moved < abs( $delta ) ) {
+			return false;
+		}
+
+		$largest = self::get_largest_moving( $moving, $delta );
+
+		return abs( $largest['delta'] ) < self::ROW_SHARE * abs( $delta );
+	}
+
+	/**
 	 * Gets the post published in the period at a landing page's address,
 	 * among the posts the insight request lists as recent content: the
 	 * `Insight_Request_Builder::MAX_RECENT_CONTENT` with the most visits in the
@@ -2316,9 +2382,10 @@ final class Key_Factors {
 	 * @param array  $share    The card's share, with `share_basis` and `traffic_impact_pct`, and `parent_channel` and `parent_channel_delta` on `PARENT_CHANNEL`.
 	 * @param array  $rows     The card's rows, each with `wire` and `attribute`.
 	 * @param string $url      Optional. The path of a post's card, which the panel links its title to. Default null.
-	 * @return array The card, with `key_factor` and `wire`. The `key_factor` has the share's basis as `shareBasis`, and on `PARENT_CHANNEL` the channel's title and change as `parentChannel` and `parentChannelChange`. A post's `key_factor` also has its path as `url`.
+	 * @param bool   $spread   Optional. Whether the card's change was spread across many pages, as `is_spread_across_pages()` tells, which the panel says in place of its rows. Default false.
+	 * @return array The card, with `key_factor` and `wire`. The `key_factor` has the share's basis as `shareBasis`, and on `PARENT_CHANNEL` the channel's title and change as `parentChannel` and `parentChannelChange`. A post's `key_factor` also has its path as `url`, and a card whose change was spread across many pages has `spreadAcrossPages`.
 	 */
-	private function build_card( $kind, $title, $current, $previous, $role, array $share, array $rows, $url = null ) {
+	private function build_card( $kind, $title, $current, $previous, $role, array $share, array $rows, $url = null, $spread = false ) {
 		list( $dimension, $entity_kind ) = self::CARD_KINDS[ $kind ];
 
 		$delta  = $current - $previous;
@@ -2379,6 +2446,12 @@ final class Key_Factors {
 
 		if ( null !== $url ) {
 			$key_factor['url'] = $url;
+		}
+
+		// The service's decomposition has no such field (§5.10), so only the
+		// panel's card has it.
+		if ( $spread ) {
+			$key_factor['spreadAcrossPages'] = true;
 		}
 
 		return array(

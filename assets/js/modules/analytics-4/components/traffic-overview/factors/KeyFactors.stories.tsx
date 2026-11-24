@@ -207,6 +207,41 @@ const SHARES_KEY_FACTORS: BenchmarkingKeyFactor[] = [
 	},
 ];
 
+/**
+ * A card whose change was spread across many pages, beside a card with the
+ * page that carried most of its change. On oi.ie, Organic Search rose across
+ * 233 pages, none of them by more than 5 visits.
+ */
+const SPREAD_KEY_FACTORS: BenchmarkingKeyFactor[] = [
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Search',
+		current: 1420,
+		previous: 1251,
+		sharePct: 71.6,
+		shareBasis: 'GROSS_CHANGE',
+		spreadAcrossPages: true,
+		attributes: [],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Referral',
+		current: 210,
+		previous: 143,
+		sharePct: 28.4,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/how-long-does-homemade-ice-cream-last/',
+				current: 80,
+				previous: 30,
+				sharePct: 74.6,
+			},
+		],
+	},
+];
+
 interface KeyFactorsStoryProps {
 	/** The key factor cards to show. */
 	keyFactors: BenchmarkingKeyFactor[];
@@ -349,6 +384,17 @@ Shares.args = {
 	keyFactors: SHARES_KEY_FACTORS,
 };
 Shares.scenario = {};
+
+// A card whose change was spread across many pages says so in place of its
+// attributes.
+export const SpreadAcrossPages = Template.bind(
+	{}
+) as Story< KeyFactorsStoryProps >;
+SpreadAcrossPages.storyName = 'Spread Across Pages';
+SpreadAcrossPages.args = {
+	keyFactors: SPREAD_KEY_FACTORS,
+};
+SpreadAcrossPages.scenario = {};
 
 export const Loading = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
 Loading.storyName = 'Loading';

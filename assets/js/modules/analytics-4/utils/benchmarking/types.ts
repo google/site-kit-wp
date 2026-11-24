@@ -140,6 +140,12 @@ export interface BenchmarkingKeyFactor {
 	 * `sharePct` is a share of. Left out on any other card.
 	 */
 	parentChannel?: BenchmarkingKeyFactorParentChannel;
+	/**
+	 * Whether the change of a channel's card without attributes was spread
+	 * across many pages, none of which carried a notable part of it. Left
+	 * out on any other card.
+	 */
+	spreadAcrossPages?: boolean;
 	/** The values inside the driver that carried its change, in the order the response ranked them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
 	/** The post's path, such as `/how-to-plant-garlic/`, on a `CONTENT` card. */

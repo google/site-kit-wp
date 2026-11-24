@@ -229,6 +229,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 								steady: isSteady,
 							} ) }
 							attributes={ keyFactor.attributes }
+							spreadAcrossPages={ keyFactor.spreadAcrossPages }
 							url={ keyFactor.url }
 							referenceSiteURL={ referenceSiteURL }
 						/>

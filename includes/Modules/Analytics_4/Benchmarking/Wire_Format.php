@@ -122,8 +122,9 @@ final class Wire_Format {
 	/**
 	 * The fields every key factor card and attribute travels with, in the
 	 * order `[ kind, label, current, previous, sharePct ]`. A card can follow
-	 * them with `[ url, shareBasis, parentChannel, parentChannelChange ]`, and
-	 * an attribute with `[ oversized ]`. These trailing fields are left out
+	 * them with
+	 * `[ url, shareBasis, parentChannel, parentChannelChange, spreadAcrossPages ]`,
+	 * and an attribute with `[ oversized ]`. These trailing fields are left out
 	 * from the last one that has a value, so a browser that reads none of
 	 * them reads the row as it did before.
 	 *

@@ -686,6 +686,41 @@ describe( 'KeyFactors', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'should say that the change of a card without attributes was spread across many pages, under "Top changes within", in place of the attributes', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{ ...REFERRAL, attributes: [], spreadAcrossPages: true },
+			],
+		} );
+
+		const card = getByRole( 'region', { name: 'Referral' } );
+
+		expect(
+			within( card ).getByText( 'Top changes within Referral' )
+		).toBeInTheDocument();
+		expect(
+			card.querySelector(
+				'.googlesitekit-traffic-overview__key-factor-spread'
+			)?.textContent
+		).toBe( 'Spread across many pages, with none standing out' );
+		expect( card.querySelector( 'dl' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should list the attributes of a card, and not say its change was spread across many pages, when it has attributes', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [ { ...REFERRAL, spreadAcrossPages: true } ],
+		} );
+
+		const card = getByRole( 'region', { name: 'Referral' } );
+
+		expect( card.querySelector( 'dl' ) ).toBeInTheDocument();
+		expect(
+			card.querySelector(
+				'.googlesitekit-traffic-overview__key-factor-spread'
+			)
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'should leave out a card and an attribute that have no name', () => {
 		const { getAllByRole, queryByText } = renderKeyFactors( {
 			keyFactors: [

@@ -645,6 +645,13 @@ $traffic-overview-column-gap: 42px;
 			margin: 0;
 		}
 
+		// A change spread across many pages takes the attributes' place, in
+		// the color of their titles.
+		.googlesitekit-traffic-overview__key-factor-spread {
+			color: $c-surfaces-on-surface-variant;
+			margin: 0;
+		}
+
 		// A placeholder card takes the classes of a card for its layout, so
 		// these margins put its blocks where the title, the badge and the
 		// attributes' heading sit.

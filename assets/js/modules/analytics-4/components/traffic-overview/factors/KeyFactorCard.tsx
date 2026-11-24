@@ -74,6 +74,12 @@ export interface KeyFactorCardProps {
 	shareText?: string | null;
 	/** The values inside the driver that carried its change, in the order to show them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
+	/**
+	 * Whether the change of a card without attributes was spread across many
+	 * pages, which the card says in their place, so it doesn't show its title
+	 * and its change alone.
+	 */
+	spreadAcrossPages?: boolean;
 	/** The post's path on a `CONTENT` card, which its title links to. */
 	url?: string;
 	/** The site's URL, which a landing page's path is resolved against to link to the page's entity dashboard. */
@@ -128,6 +134,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 	change,
 	shareText,
 	attributes,
+	spreadAcrossPages = false,
 	url,
 	referenceSiteURL,
 } ) => {
@@ -184,6 +191,10 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 
 	const name = getKeyFactorName( kind, label, referenceSiteURL );
 
+	// A change spread across many pages is a real answer, rather than a gap,
+	// so it takes the place of the attributes.
+	const showSpread = namedAttributes.length === 0 && spreadAcrossPages;
+
 	return (
 		<section
 			className="googlesitekit-traffic-overview__key-factor"
@@ -224,7 +235,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 					{ shareText }
 				</Typography>
 			) }
-			{ namedAttributes.length > 0 && (
+			{ ( namedAttributes.length > 0 || showSpread ) && (
 				<div className="googlesitekit-traffic-overview__key-factor-attributes">
 					<Typography
 						as="p"
@@ -238,40 +249,54 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 							name
 						) }
 					</Typography>
-					<dl className="googlesitekit-traffic-overview__key-factor-attribute-list">
-						{ namedAttributes.map( ( attribute, index ) => (
-							<KeyFactorAttribute
-								// Keyed by position: nothing here reorders,
-								// and two kinds can share a value.
-								key={ index }
-								title={
-									KEY_FACTOR_ATTRIBUTE_TITLES[
-										attribute.kind
-									]
-								}
-								label={ getAttributeLabel(
-									attribute,
-									referenceSiteURL
-								) }
-								change={
-									attribute.current - attribute.previous
-								}
-								// A search keyword's change counts its clicks
-								// in Search Console, which are not visits.
-								unit={
-									attribute.kind === 'SEARCH_KEYWORD'
-										? 'clicks'
-										: 'visits'
-								}
-								shareText={ getKeyFactorAttributeShareText(
-									kind,
-									attribute
-								) }
-								href={ attributeHrefs[ index ] }
-								onLinkClick={ handleLinkClick }
-							/>
-						) ) }
-					</dl>
+					{ showSpread ? (
+						<Typography
+							as="p"
+							type={ TYPE_BODY }
+							size={ SIZE_SMALL }
+							className="googlesitekit-traffic-overview__key-factor-spread"
+						>
+							{ __(
+								'Spread across many pages, with none standing out',
+								'google-site-kit'
+							) }
+						</Typography>
+					) : (
+						<dl className="googlesitekit-traffic-overview__key-factor-attribute-list">
+							{ namedAttributes.map( ( attribute, index ) => (
+								<KeyFactorAttribute
+									// Keyed by position: nothing here reorders,
+									// and two kinds can share a value.
+									key={ index }
+									title={
+										KEY_FACTOR_ATTRIBUTE_TITLES[
+											attribute.kind
+										]
+									}
+									label={ getAttributeLabel(
+										attribute,
+										referenceSiteURL
+									) }
+									change={
+										attribute.current - attribute.previous
+									}
+									// A search keyword's change counts its clicks
+									// in Search Console, which are not visits.
+									unit={
+										attribute.kind === 'SEARCH_KEYWORD'
+											? 'clicks'
+											: 'visits'
+									}
+									shareText={ getKeyFactorAttributeShareText(
+										kind,
+										attribute
+									) }
+									href={ attributeHrefs[ index ] }
+									onLinkClick={ handleLinkClick }
+								/>
+							) ) }
+						</dl>
+					) }
 				</div>
 			) }
 		</section>

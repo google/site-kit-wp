@@ -121,6 +121,7 @@ export const KEY_FACTOR_CARD_URL = 5;
 export const KEY_FACTOR_CARD_SHARE_BASIS = 6;
 export const KEY_FACTOR_CARD_PARENT_CHANNEL = 7;
 export const KEY_FACTOR_CARD_PARENT_CHANNEL_CHANGE = 8;
+export const KEY_FACTOR_CARD_SPREAD_ACROSS_PAGES = 9;
 
 /**
  * The position of an attribute's field after the five it shares with its card:

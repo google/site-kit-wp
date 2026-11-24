@@ -157,9 +157,9 @@ final class Response_Encoder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $card    Card to encode, with `kind`, `label`, `current`, `previous`, `sharePct` and `shareBasis`, a post's card with its path as `url`, and a card on `PARENT_CHANNEL` with `parentChannel` and `parentChannelChange`.
+	 * @param array $card    Card to encode, with `kind`, `label`, `current`, `previous`, `sharePct` and `shareBasis`, a post's card with its path as `url`, a card on `PARENT_CHANNEL` with `parentChannel` and `parentChannelChange`, and a card whose change was spread across many pages with `spreadAcrossPages`.
 	 * @param array $strings String table, added to as strings are seen.
-	 * @return array The encoded card, as the list `[ kind, label, current, previous, sharePct, url, shareBasis, parentChannel, parentChannelChange ]`, without the trailing fields that have no value. `url` and `parentChannel` are positions in the string table, and `shareBasis` is the position its basis travels as.
+	 * @return array The encoded card, as the list `[ kind, label, current, previous, sharePct, url, shareBasis, parentChannel, parentChannelChange, spreadAcrossPages ]`, without the trailing fields that have no value. `url` and `parentChannel` are positions in the string table, `shareBasis` is the position its basis travels as, and `spreadAcrossPages` is `true`, or left out when the change wasn't spread.
 	 */
 	private function encode_key_factor_card( array $card, array &$strings ) {
 		$encoded = $this->encode_key_factor_row( Wire_Format::KEY_FACTOR_KINDS[ $card['kind'] ], $card, $strings );
@@ -173,6 +173,7 @@ final class Response_Encoder {
 		$encoded[] = null === $share_basis ? null : Wire_Format::KEY_FACTOR_SHARE_BASES[ $share_basis ];
 		$encoded[] = $has_parent ? $this->encode_string( $card['parentChannel'], $strings ) : null;
 		$encoded[] = $has_parent ? $this->encode_int( $card['parentChannelChange'] ) : null;
+		$encoded[] = ! empty( $card['spreadAcrossPages'] ) ? true : null;
 
 		return $this->trim_trailing_fields( $encoded );
 	}

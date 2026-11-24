@@ -1107,6 +1107,30 @@ describe( 'decodeBenchmarkingResponse', () => {
 		}
 	);
 
+	it( 'should mark only a card that carries `true` after its parent channel as spread across many pages', () => {
+		const keyFactors = decodeKeyFactors(
+			[ 'Organic Search' ],
+			[
+				[ 0, 0, 1420, 1251, 71.6, null, 0, null, null, true ],
+				[ 0, 0, 1420, 1251, 71.6, null, 0 ],
+				[ 0, 0, 1420, 1251, 71.6, null, 0, null, null, 1 ],
+			]
+		);
+
+		expect( keyFactors?.[ 0 ] ).toEqual( {
+			kind: 'CHANNEL',
+			label: 'Organic Search',
+			current: 1420,
+			previous: 1251,
+			sharePct: 71.6,
+			shareBasis: 'GROSS_CHANGE',
+			spreadAcrossPages: true,
+			attributes: [],
+		} );
+		expect( keyFactors?.[ 1 ] ).not.toHaveProperty( 'spreadAcrossPages' );
+		expect( keyFactors?.[ 2 ] ).not.toHaveProperty( 'spreadAcrossPages' );
+	} );
+
 	it( 'should mark only an attribute that carries `true` after its share as oversized', () => {
 		const keyFactors = decodeKeyFactors(
 			[ 'Direct', 'desktop', 'mobile' ],

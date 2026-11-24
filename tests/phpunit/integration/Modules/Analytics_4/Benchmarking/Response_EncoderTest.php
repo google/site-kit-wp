@@ -330,6 +330,44 @@ class Response_EncoderTest extends TestCase {
 		$this->assertSame( array( 'Referral', 'Email' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'A channel left out should add nothing to the string table.' );
 	}
 
+	public function test_encode__marks_a_card_whose_change_was_spread_across_many_pages_after_its_parent_channel_and_leaves_the_mark_out_otherwise() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'              => 'CHANNEL',
+						'label'             => 'Organic Search',
+						'current'           => 1169,
+						'previous'          => 1000,
+						'sharePct'          => 100.0,
+						'shareBasis'        => 'GROSS_CHANGE',
+						'spreadAcrossPages' => true,
+						'attributes'        => array(),
+					),
+					array(
+						'kind'              => 'CHANNEL',
+						'label'             => 'Direct',
+						'current'           => 500,
+						'previous'          => 480,
+						'sharePct'          => 12.5,
+						'shareBasis'        => 'GROSS_CHANGE',
+						'spreadAcrossPages' => false,
+						'attributes'        => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 0, 0, 1169, 1000, 100, null, 0, null, null, true ),
+				array( 0, 1, 500, 480, 12.5, null, 0 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'Only the card whose change was spread across many pages should carry `true`, after nulls in place of the parent channel it has none of.'
+		);
+	}
+
 	public function test_encode__marks_an_oversized_attribute_after_its_share_and_leaves_the_mark_out_otherwise() {
 		$encoded = $this->encode_as_sent(
 			array(

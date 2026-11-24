@@ -44,6 +44,7 @@ import {
 	KEY_FACTOR_CARD_PARENT_CHANNEL,
 	KEY_FACTOR_CARD_PARENT_CHANNEL_CHANGE,
 	KEY_FACTOR_CARD_SHARE_BASIS,
+	KEY_FACTOR_CARD_SPREAD_ACROSS_PAGES,
 	KEY_FACTOR_CARD_URL,
 	MEMBER_AVAILABILITY,
 	MEMBER_BAND_REFERENCE_DAYS,
@@ -361,6 +362,7 @@ function decodeKeyFactorAttribute(
  * @since 1.191.0
  * @since n.e.x.t Reads the path of a post's card.
  * @since n.e.x.t Reads the basis of a card's share, the channel a card on `PARENT_CHANNEL` took the place of, and whether an attribute moved further than its card.
+ * @since n.e.x.t Reads whether a card's change was spread across many pages.
  *
  * @param {Array} cards      The encoded cards, in rank order.
  * @param {Array} attributes One list of encoded attributes per card, in the same order.
@@ -404,12 +406,17 @@ function decodeKeyFactors(
 			shareBasis === 'PARENT_CHANNEL'
 				? decodeParentChannel( row, strings )
 				: null;
+		// Only `true` marks a change spread across many pages, so a field
+		// that cannot be read leaves the card as one without the mark.
+		const spreadAcrossPages =
+			row[ KEY_FACTOR_CARD_SPREAD_ACROSS_PAGES ] === true;
 
 		return {
 			...keyFactor,
 			...( url ? { url } : {} ),
 			...( shareBasis ? { shareBasis } : {} ),
 			...( parentChannel ? { parentChannel } : {} ),
+			...( spreadAcrossPages ? { spreadAcrossPages } : {} ),
 			attributes: attributeRows.flatMap(
 				( attribute ) =>
 					decodeKeyFactorAttribute( attribute, strings ) ?? []

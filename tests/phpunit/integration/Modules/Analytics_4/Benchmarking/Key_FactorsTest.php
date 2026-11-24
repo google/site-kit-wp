@@ -875,6 +875,112 @@ class Key_FactorsTest extends TestCase {
 		$this->assertSame( array(), $key_factors->get_cards()[0]['attributes'], 'The site should not be a row either, under a quarter of the change.' );
 	}
 
+	/**
+	 * Gets `channelPages` rows of pages that each moved by the same number of
+	 * visits.
+	 *
+	 * @param string $channel The channel.
+	 * @param int    $count   The number of pages.
+	 * @param int    $delta   The change of each page.
+	 * @return array List of rows, of the pages `/post-1/` and on.
+	 */
+	private function pages( $channel, $count, $delta ) {
+		return array_map(
+			fn( $number ) => $this->row( $channel, 'page', "/post-$number/", 20 + $delta, 20 ),
+			range( 1, $count )
+		);
+	}
+
+	public function test_get_cards__says_when_a_channel_card_without_rows_had_its_change_spread_across_many_pages() {
+		// Referral gained 300 visits across 30 pages, 10 each, under the 30 a
+		// page needs to be a row. oi.ie's Organic Search rose 169 across 233
+		// pages, none by more than 5.
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array( 'channelPages' => $this->pages( 'Referral', 30, 10 ) )
+		);
+
+		$cards = $key_factors->get_cards();
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'Referral should be the card.' );
+		$this->assertSame( array(), $cards[0]['attributes'], 'No page should be a row.' );
+		$this->assertTrue( $cards[0]['spreadAcrossPages'], 'The card should say its change was spread across many pages.' );
+		$this->assertArrayNotHasKey( 'spread_across_pages', $key_factors->get_decomposition()['key_factors'][0], 'The service\'s decomposition should not carry it.' );
+	}
+
+	/**
+	 * @dataProvider data_changes_not_spread_across_many_pages
+	 *
+	 * @param array  $pages           The `channelPages` rows of Referral, which gained 300 visits.
+	 * @param array  $contextual_data The other rows.
+	 * @param string $message         The assertion message.
+	 */
+	public function test_get_cards__does_not_say_a_channels_change_was_spread_across_many_pages( array $pages, array $contextual_data, $message ) {
+		$key_factors = $this->build(
+			array( 1300, 1000 ),
+			array(
+				array( 'Referral', 800, 500 ),
+				array( 'Direct', 500, 500 ),
+			),
+			array_merge( array( 'channelPages' => $pages ), $contextual_data )
+		);
+
+		$cards = $key_factors->get_cards();
+
+		$this->assertSame( array( 'CHANNEL Referral' ), $this->get_card_titles( $key_factors ), 'Referral should be the card.' );
+		$this->assertArrayNotHasKey( 'spreadAcrossPages', $cards[0], $message );
+	}
+
+	public function data_changes_not_spread_across_many_pages() {
+		return array(
+			'the homepage carried most of it'          => array(
+				array_merge(
+					array( $this->row( 'Referral', 'page', '/', 170, 20 ) ),
+					$this->pages( 'Referral', 15, 10 )
+				),
+				array(),
+				'The homepage, which is never a row of Referral, carried half of the change.',
+			),
+			'the homepage carried it at two addresses' => array(
+				array_merge(
+					array(
+						$this->row( 'Referral', 'page', '/', 40, 20 ),
+						$this->row( 'Referral', 'page', '/index.php', 40, 20 ),
+					),
+					$this->pages( 'Referral', 26, 10 )
+				),
+				array(),
+				'The homepage\'s two addresses are one page, which carried 40 of the 300 visits.',
+			),
+			'a hidden page carried most of it'         => array(
+				array_merge(
+					array( $this->row( 'Referral', 'page', '/wp-login.php', 170, 20 ) ),
+					$this->pages( 'Referral', 15, 10 )
+				),
+				array(),
+				'A page no card names still carried half of the change.',
+			),
+			'the pages add up to less than the change' => array(
+				$this->pages( 'Referral', 20, 10 ),
+				array(),
+				'Pages the report left out could have carried the other 100 visits.',
+			),
+			'the card has a row'                       => array(
+				$this->pages( 'Referral', 30, 10 ),
+				array(
+					'channelSources' => array(
+						$this->row( 'Referral', 'source', 'a.example.com', 140, 40 ),
+					),
+				),
+				'A card with a row, a referring site with a third of the change, should not say it.',
+			),
+		);
+	}
+
 	public function test_get_cards__lists_both_sides_of_a_channel_that_is_the_net_of_parts_that_moved_both_ways() {
 		$key_factors = $this->build(
 			array( 1100, 1000 ),
