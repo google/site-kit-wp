@@ -1093,6 +1093,77 @@ class Google_ProxyTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider data_error_response_data
+	 *
+	 * @param int   $response_code       The status of the response.
+	 * @param array $response_data       The body of the response.
+	 * @param array $response_headers    The headers of the response.
+	 * @param array $expected_error_data The data the error should carry.
+	 */
+	public function test_send_conversion_insight_request__error_response_carries_the_reason_and_the_retry_after( $response_code, array $response_data, array $response_headers, array $expected_error_data ) {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_request( $this->google_proxy->url( '/v1/ai/conversion-insights?hl=de-DE' ), $response_data, $response_code, $response_headers );
+
+		$response = $this->google_proxy->send_conversion_insight_request( $credentials, 'abcd', array(), 'de-DE' );
+
+		$this->assertWPError( $response, "A $response_code response to the conversion insight request should return a WP_Error." );
+		$this->assertSame( $expected_error_data, $response->get_error_data(), 'The error should carry the status, the `code` of the response as `reason` when it is a non-empty string, and a numeric `Retry-After` header as `retryAfter`.' );
+	}
+
+	public function data_error_response_data() {
+		return array(
+			'a reason and a Retry-After'         => array(
+				429,
+				array(
+					'error' => 'Too many requests.',
+					'code'  => 'RATE_LIMITED',
+				),
+				array( 'retry-after' => '120' ),
+				array(
+					'status'     => 429,
+					'reason'     => 'RATE_LIMITED',
+					'retryAfter' => 120,
+				),
+			),
+			'neither a reason nor a Retry-After' => array(
+				400,
+				array( 'error' => 'Bad request.' ),
+				array(),
+				array( 'status' => 400 ),
+			),
+			'a code that is not a string'        => array(
+				400,
+				array( 'code' => 400 ),
+				array(),
+				array( 'status' => 400 ),
+			),
+			'an empty code'                      => array(
+				400,
+				array( 'code' => '' ),
+				array(),
+				array( 'status' => 400 ),
+			),
+			'a Retry-After that is an HTTP date' => array(
+				503,
+				array(),
+				array( 'retry-after' => 'Wed, 16 Sep 2026 07:28:00 GMT' ),
+				array( 'status' => 503 ),
+			),
+			'a Retry-After of 0'                 => array(
+				503,
+				array( 'code' => 'UNAVAILABLE' ),
+				array( 'retry-after' => '0' ),
+				array(
+					'status'     => 503,
+					'reason'     => 'UNAVAILABLE',
+					'retryAfter' => 0,
+				),
+			),
+		);
+	}
+
 	public function test_get_ai_operation() {
 		list ( $credentials, $site_id ) = $this->get_credentials();
 
@@ -1224,14 +1295,15 @@ class Google_ProxyTest extends TestCase {
 	 * Adds a 'pre_http_request' filter that will ensure the request for the
 	 * given URL will yield a specific response.
 	 *
-	 * @param string $request_url   Request URL to modify response for.
-	 * @param array  $response_data Response data, encoded as JSON for the body of the mocked response.
-	 * @param int    $response_code Optional. Response status code to return. Default 200.
+	 * @param string $request_url      Request URL to modify response for.
+	 * @param array  $response_data    Response data, encoded as JSON for the body of the mocked response.
+	 * @param int    $response_code    Optional. Response status code to return. Default 200.
+	 * @param array  $response_headers Optional. Response headers, keyed by their lowercase names. Default empty array.
 	 */
-	private function mock_http_request( $request_url, array $response_data, $response_code = 200 ) {
+	private function mock_http_request( $request_url, array $response_data, $response_code = 200, array $response_headers = array() ) {
 		add_filter(
 			'pre_http_request',
-			function ( $preempt, $args, $url ) use ( $request_url, $response_data, $response_code ) {
+			function ( $preempt, $args, $url ) use ( $request_url, $response_data, $response_code, $response_headers ) {
 				$this->request_url  = $url;
 				$this->request_args = $args;
 
@@ -1240,7 +1312,7 @@ class Google_ProxyTest extends TestCase {
 				}
 
 				return array(
-					'headers'       => array(),
+					'headers'       => $response_headers,
 					'body'          => json_encode( $response_data ),
 					'response'      => array(
 						'code'    => $response_code,

@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import {
+	FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+} from '@/js/components/feature-discovery/constants';
 import { Registry, Select } from '@/js/googlesitekit-data';
 import {
 	CORE_FEATURE_DISCOVERY,
@@ -29,7 +32,10 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
@@ -128,14 +134,14 @@ describe( 'FeatureCTA', () => {
 		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should apply the tertiary button style when isTertiary is set', () => {
+	it( 'should apply the tertiary button style when isFeatureCardCTA is set', () => {
 		provideFeatures( registry, [ { slug: 'test-feature' } ] );
 
 		const { getByRole } = render(
 			<FeatureCTA
 				gaEventCategory="test_category"
 				slug="test-feature"
-				isTertiary
+				isFeatureCardCTA
 			/>,
 			{ registry }
 		);
@@ -143,6 +149,60 @@ describe( 'FeatureCTA', () => {
 		expect( getByRole( 'button', { name: 'Set up now' } ) ).toHaveClass(
 			'mdc-button--tertiary'
 		);
+	} );
+
+	it( 'should show the card label instead of the feature’s CTA label when isFeatureCardCTA is set', () => {
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up Analytics',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCTA
+				gaEventCategory="test_category"
+				slug="test-feature"
+				isFeatureCardCTA
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up now' } )
+		).toBeInTheDocument();
+
+		expect(
+			queryByRole( 'button', { name: 'Set up Analytics' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should show the feature’s CTA label when isFeatureCardCTA is not set', () => {
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up Analytics',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCTA gaEventCategory="test_category" slug="test-feature" />,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up Analytics' } )
+		).toBeInTheDocument();
+
+		expect(
+			queryByRole( 'button', { name: 'Set up now' } )
+		).not.toBeInTheDocument();
 	} );
 
 	describe( 'event tracking', () => {
@@ -427,6 +487,35 @@ describe( 'FeatureCTA', () => {
 			);
 		} );
 
+		it( 'should send the hub interaction survey trigger', async () => {
+			fetchMock.post( surveyTriggerEndpoint, {
+				status: 200,
+				body: {},
+			} );
+
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: {
+							triggerID:
+								FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+							ttl: SURVEY_TRIGGER_MAX_TTL,
+						},
+					},
+				} )
+			);
+		} );
+
 		it( 'should show the in-progress state while the setup it is waiting on runs', async () => {
 			fetchMock.post( surveyTriggerEndpoint, {
 				status: 200,
@@ -560,7 +649,7 @@ describe( 'FeatureCTA', () => {
 				<FeatureCTA
 					gaEventCategory="test_category"
 					slug="test-feature"
-					isTertiary
+					isFeatureCardCTA
 				/>
 				<FeatureCTA
 					gaEventCategory="test_category"

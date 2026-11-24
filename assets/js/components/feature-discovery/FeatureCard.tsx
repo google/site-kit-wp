@@ -38,6 +38,7 @@ import Badge from '@/js/components/Badge';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
 import FeatureCTA from '@/js/components/feature-discovery/FeatureCTA';
 import FeatureServiceIdentity from '@/js/components/feature-discovery/FeatureServiceIdentity';
+import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
 import FeedbackMenu, {
 	FeedbackMenuOption,
 } from '@/js/components/feedback/FeedbackMenu';
@@ -97,6 +98,8 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	const { dismissFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 	const { setValue } = useDispatch( CORE_UI );
 	const { sendFeedback } = useDispatch( CORE_USER );
+	const triggerInteractionSurvey =
+		useFeatureDiscoveryInteractionSurveyTrigger();
 
 	const feedbackOptions = useMemo< FeedbackMenuOption[] >(
 		() => [
@@ -145,9 +148,13 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 					key: FEATURE_RELEVANCY_FEEDBACK_KEYS.DISMISS_REASON,
 					value,
 				} );
+
+				// Only a dismissal with a reason counts as an interaction, so
+				// "Just hide this suggestion", which has no value, does not.
+				triggerInteractionSurvey();
 			}
 		},
-		[ dismissFeature, sendFeedback, slug ]
+		[ dismissFeature, sendFeedback, slug, triggerInteractionSurvey ]
 	);
 
 	const isFeatureNew = useSelect(
@@ -178,9 +185,10 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 
 	const onClickReadMore = useCallback( () => {
 		trackEvent( gaEventCategory, 'click_read_more', slug );
+		triggerInteractionSurvey();
 
 		setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, slug );
-	}, [ gaEventCategory, setValue, slug ] );
+	}, [ gaEventCategory, setValue, slug, triggerInteractionSurvey ] );
 
 	useEffect( () => {
 		if ( isFeatureUnread ) {
@@ -296,7 +304,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 								<FeatureCTA
 									gaEventCategory={ gaEventCategory }
 									slug={ slug }
-									isTertiary
+									isFeatureCardCTA
 								/>
 							) }
 							{ /* @ts-expect-error - The `Button` component is not typed yet. */ }

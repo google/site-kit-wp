@@ -25,6 +25,7 @@ import { useMount } from 'react-use';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
+import { useHideTooltip } from '@/js/components/AdminScreenTooltip';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
@@ -33,11 +34,13 @@ export default function useOpenEmailReportingSelectionPanelEffect(): void {
 	const [ panel, setPanel ] = useQueryArg( 'panel' );
 	const { setValue: setUIValue } = useDispatch( CORE_UI );
 
+	const hideTooltip = useHideTooltip();
+
 	useMount( () => {
 		// If redirected from a pointer CTA or following link from email footer, open the Email Reporting selection panel.
 		if ( panel === 'email-reporting' ) {
+			hideTooltip();
 			setUIValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-			setUIValue( 'admin-screen-tooltip', { isTooltipVisible: false } );
 			setPanel( undefined );
 		}
 	} );

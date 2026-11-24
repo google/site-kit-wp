@@ -30,7 +30,10 @@ import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
@@ -46,7 +49,10 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
-import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from './constants';
+import {
+	FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+} from './constants';
 import FeatureCard from './FeatureCard';
 
 const TEST_OLD_VERSION = '1.84.0';
@@ -97,9 +103,14 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'FeatureCard', () => {
 	let registry: Registry;
+	let triggerSurvey: jest.SpyInstance;
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+
+		triggerSurvey = jest
+			.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+			.mockResolvedValue( {} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
@@ -294,7 +305,7 @@ describe( 'FeatureCard', () => {
 				...TEST_FEATURE,
 				setup: {
 					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-					ctaLabel: 'Try it now',
+					ctaLabel: 'Enable test feature',
 				},
 			},
 		] );
@@ -305,8 +316,56 @@ describe( 'FeatureCard', () => {
 
 		// How the CTA itself looks and behaves is `FeatureCTA`'s own test.
 		expect(
+			getByRole( 'button', { name: 'Set up now' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should show "Set up now" for a setup flow feature with its own CTA label', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up Analytics',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard slug="test-feature" />,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Set up now' } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Set up Analytics' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should show "Try it now" for an in-place panel feature', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+					ctaLabel: 'Open the test panel',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard slug="test-feature" />,
+			{ registry }
+		);
+
+		expect(
 			getByRole( 'button', { name: 'Try it now' } )
 		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Open the test panel' } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should render the CTA given by ctaButton in place of the default one', () => {
@@ -315,7 +374,7 @@ describe( 'FeatureCard', () => {
 				...TEST_FEATURE,
 				setup: {
 					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-					ctaLabel: 'Try it now',
+					ctaLabel: 'Enable test feature',
 				},
 			},
 		] );
@@ -332,7 +391,7 @@ describe( 'FeatureCard', () => {
 			getByRole( 'button', { name: 'Custom CTA' } )
 		).toBeInTheDocument();
 		expect(
-			queryByRole( 'button', { name: 'Try it now' } )
+			queryByRole( 'button', { name: 'Set up now' } )
 		).not.toBeInTheDocument();
 	} );
 
@@ -402,7 +461,7 @@ describe( 'FeatureCard', () => {
 		[ 'I’m already using another tool', 'already_using' ],
 		[ 'Setup seems complex', 'too_complicated' ],
 	] )(
-		'should dismiss the feature and send only the feedback chosen with "%s"',
+		'should dismiss the feature and send only the feedback and survey trigger chosen with "%s"',
 		async ( label, reason ) => {
 			provideFeatures( registry, [ TEST_FEATURE ] );
 
@@ -447,8 +506,14 @@ describe( 'FeatureCard', () => {
 					key: 'dismiss_reason',
 					value: reason,
 				} );
+
+				expect( triggerSurvey ).toHaveBeenCalledWith(
+					FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+					{ ttl: SURVEY_TRIGGER_MAX_TTL }
+				);
 			} else {
 				expect( sendFeedback ).not.toHaveBeenCalled();
+				expect( triggerSurvey ).not.toHaveBeenCalled();
 			}
 
 			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
@@ -472,6 +537,24 @@ describe( 'FeatureCard', () => {
 		).toBe( TEST_FEATURE.slug );
 	} );
 
+	it( 'should send the hub interaction survey trigger when Read more is clicked', () => {
+		provideFeatures( registry, [ TEST_FEATURE ] );
+
+		const { getByRole } = render(
+			<FeatureCard slug={ TEST_FEATURE.slug } />,
+			{ registry }
+		);
+
+		expect( triggerSurvey ).not.toHaveBeenCalled();
+
+		fireEvent.click( getByRole( 'button', { name: 'Read more' } ) );
+
+		expect( triggerSurvey ).toHaveBeenCalledWith(
+			FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+			{ ttl: SURVEY_TRIGGER_MAX_TTL }
+		);
+	} );
+
 	describe( 'event tracking', () => {
 		const viewContext = 'testViewContext';
 
@@ -486,7 +569,7 @@ describe( 'FeatureCard', () => {
 					...TEST_FEATURE,
 					setup: {
 						type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-						ctaLabel: 'Try it now',
+						ctaLabel: 'Enable test feature',
 						activate: jest.fn().mockResolvedValue( {} ),
 					},
 				},
@@ -497,7 +580,7 @@ describe( 'FeatureCard', () => {
 				viewContext,
 			} );
 
-			const button = getByRole( 'button', { name: 'Try it now' } );
+			const button = getByRole( 'button', { name: 'Set up now' } );
 
 			fireEvent.click( button );
 

@@ -33,6 +33,9 @@ import {
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import adsCampaignOverviewScreenshotURL from '@/svg/screenshots/ads-campaign-overview.svg?path';
+import adsPaxSetupScreenshotURL from '@/svg/screenshots/ads-pax-setup.svg?path';
+import adsSetupFlowInputAddedScreenshotURL from '@/svg/screenshots/ads-setup-flow-input-added.svg?path';
 
 /**
  * Registers Ads module features in the Feature Discovery catalog.
@@ -111,6 +114,35 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					),
 				],
 			},
+			screenshots: [
+				{
+					src: adsCampaignOverviewScreenshotURL,
+					alt: __(
+						'Screenshot of the Google Ads campaign overview showing a performance summary chart of clicks and impressions over the last 30 days, so you can see how your campaign is performing',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 404,
+				},
+				{
+					src: adsSetupFlowInputAddedScreenshotURL,
+					alt: __(
+						'Screenshot of the Ads setup screen in Site Kit with two options: set up a new Ads account, or connect an existing account by entering its Conversion ID',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 340,
+				},
+				{
+					src: adsPaxSetupScreenshotURL,
+					alt: __(
+						'Screenshot of the first step of creating a new Ads account in Site Kit, asking for your business name',
+						'google-site-kit'
+					),
+					width: 620,
+					height: 416,
+				},
+			],
 		},
 		successNotice: {
 			title: __( 'Success! Ads is set up', 'google-site-kit' ),

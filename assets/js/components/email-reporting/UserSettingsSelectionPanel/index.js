@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useHideTooltip } from '@/js/components/AdminScreenTooltip';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import SelectionPanel from '@/js/components/SelectionPanel';
@@ -187,12 +188,13 @@ export default function UserSettingsSelectionPanel() {
 	}, [ saveEmailReportingSettings, viewContext ] );
 
 	const onNoticeDismiss = useCallback( () => setNotice( null ), [] );
+	const hideTooltip = useHideTooltip();
 
 	useEffect( () => {
 		if ( ! previousIsOpen && isOpen ) {
-			setValue( 'admin-screen-tooltip', { isTooltipVisible: false } );
+			hideTooltip();
 		}
-	}, [ isOpen, previousIsOpen, setValue ] );
+	}, [ hideTooltip, isOpen, previousIsOpen ] );
 
 	return (
 		<SelectionPanel
