@@ -76,7 +76,7 @@ const CTASettings: FC = () => {
 	return (
 		<CTASettingsFormSection
 			note={ __(
-				'You can always change your sign-up form settings in Publisher center',
+				'You can always change your sign-up form settings in Publisher Center',
 				'google-site-kit'
 			) }
 		>
