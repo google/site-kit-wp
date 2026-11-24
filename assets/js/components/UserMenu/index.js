@@ -61,10 +61,8 @@ export default function UserMenu() {
 	const userFullName = useSelect( ( select ) =>
 		select( CORE_USER ).getFullName()
 	);
-	const postDisconnectURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
-			googlesitekit_context: 'revoked',
-		} )
+	const disconnectURL = useSelect( ( select ) =>
+		select( CORE_USER ).getDisconnectURL()
 	);
 	const [ isAutoCreatingCustomDimensionsForAudience ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -147,9 +145,9 @@ export default function UserMenu() {
 			'disconnect_user'
 		);
 
-		// Navigate back to the splash screen to reconnect.
-		navigateTo( postDisconnectURL );
-	}, [ postDisconnectURL, navigateTo, viewContext ] );
+		// The disconnect action signs the user out and opens the splash screen, where they can sign in again.
+		navigateTo( disconnectURL );
+	}, [ disconnectURL, navigateTo, viewContext ] );
 
 	if ( ! userEmail ) {
 		return null;
