@@ -45,6 +45,7 @@ export type TypicalTrafficAvailability = Pick<
 	| 'insightRequestAllowed'
 	| 'performanceInsightAvailable'
 	| 'lastYearAvailable'
+	| 'rangeTooLong'
 >;
 
 export interface TrafficOverviewVisitsOptions {
@@ -70,9 +71,9 @@ export interface TrafficOverviewVisits {
 /**
  * The parts of the typical traffic view while the benchmarking response loads:
  * every part, so each keeps its placeholder until the response says otherwise,
- * and no notice that takes the place of a part: neither the short-range notice
- * nor the days a waiting part arrives. The band's tooltip shows with the band
- * alone, so no history of last year either.
+ * and no notice that takes the place of a part: not the short-range or the
+ * long-range notice, nor the days a waiting part arrives. The band's tooltip
+ * shows with the band alone, so no history of last year either.
  */
 const AVAILABILITY_WHILE_LOADING: TypicalTrafficAvailability = {
 	rangeTooShort: false,
@@ -83,6 +84,7 @@ const AVAILABILITY_WHILE_LOADING: TypicalTrafficAvailability = {
 	insightRequestAllowed: true,
 	performanceInsightAvailable: true,
 	lastYearAvailable: false,
+	rangeTooLong: false,
 };
 
 /**
@@ -279,5 +281,42 @@ export function getTypicalTrafficRangeWaitingText(
 			'google-site-kit'
 		),
 		date
+	);
+}
+
+/**
+ * Gets the text of the notice that takes the generated insight's place when
+ * the selected date range is too long for it, if it has one.
+ *
+ * The Site Kit service writes the insight for a date range of up to 364 days,
+ * so a longer range has the band and the key factors, but no insight. The
+ * notice says what range the insight needs, as the short-range notice does
+ * for the key factors. While the key factors wait for the period before the
+ * range, there is no insight either way, and their section says when they
+ * will show, so the notice waits for them.
+ *
+ * The dashboard's panel and the PDF export show the same notice.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  availability                     Which parts of the typical traffic view the selected date range has.
+ * @param {boolean} availability.rangeTooLong        Whether the range is too long for the insight.
+ * @param {boolean} availability.keyFactorsAvailable Whether the range has the key factors.
+ * @return {string|null} The notice's text, or null when the range has no such notice.
+ */
+export function getTrafficInsightRangeText( {
+	rangeTooLong,
+	keyFactorsAvailable,
+}: Pick<
+	TypicalTrafficAvailability,
+	'rangeTooLong' | 'keyFactorsAvailable'
+> ): string | null {
+	if ( ! rangeTooLong || ! keyFactorsAvailable ) {
+		return null;
+	}
+
+	return __(
+		'Select a date range of up to 364 days to see insights about your traffic.',
+		'google-site-kit'
 	);
 }

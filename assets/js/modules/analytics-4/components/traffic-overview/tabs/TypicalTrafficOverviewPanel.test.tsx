@@ -2122,6 +2122,116 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			).toBeInTheDocument();
 		} );
 
+		it( 'should say what range the insight needs in place of its analysis, and not ask for it, when the selected range is too long for it', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+			const response = createBenchmarkingResponse( startDate, endDate );
+
+			// The Site Kit service writes the insight for a range of up to 364
+			// days, so the response of a longer range has the band and the key
+			// factors, but no request of the insight.
+			provideBenchmarkingResponse( registry, {
+				...response,
+				availability: {
+					...response.availability,
+					insightRequestAllowed: false,
+					performanceInsightAvailable: false,
+					rangeTooLong: true,
+				},
+				insightLocale: 'en_US',
+			} );
+
+			const { container, waitForRegistry } = renderPanel( {
+				features: [ 'typicalTraffic', 'trafficInsights' ],
+			} );
+
+			await waitForRegistry();
+
+			const summary = container.querySelector(
+				'.googlesitekit-traffic-overview__summary'
+			) as Element;
+
+			expect( fetchMock ).not.toHaveFetched( insightEndpoint );
+			expect(
+				Array.from( summary.children ).map(
+					( { className } ) => className
+				)
+			).toEqual( [
+				'googlesitekit-notice-container',
+				'googlesitekit-traffic-overview__total-visitors',
+			] );
+			expect(
+				summary.firstElementChild?.querySelector(
+					'.googlesitekit-traffic-overview__insight-range-notice'
+				)
+			).toHaveTextContent(
+				'Select a date range of up to 364 days to see insights about your traffic.'
+			);
+			expect(
+				container.querySelector( keyFactorsInsightSelector )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__key-factors-cards > *'
+				).length
+			).toBeGreaterThan( 0 );
+		} );
+
+		it.each( [
+			[
+				'without the trafficInsights feature',
+				[ 'typicalTraffic' ],
+				true,
+			],
+			[
+				'while the key factors wait for the period before the range',
+				[ 'typicalTraffic', 'trafficInsights' ],
+				false,
+			],
+		] )(
+			'should have no notice for a range too long for the insight %s',
+			async ( _label, features, keyFactorsAvailable ) => {
+				const { startDate, endDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates();
+				const response = createBenchmarkingResponse(
+					startDate,
+					endDate
+				);
+
+				provideBenchmarkingResponse( registry, {
+					...response,
+					availability: {
+						...response.availability,
+						keyFactorsAvailable,
+						keyFactorsAvailableFrom: '2026-02-06',
+						insightRequestAllowed: false,
+						performanceInsightAvailable: false,
+						rangeTooLong: true,
+					},
+					keyFactors: keyFactorsAvailable ? response.keyFactors : [],
+				} );
+
+				const { container, waitForRegistry } = renderPanel( {
+					features,
+				} );
+
+				await waitForRegistry();
+
+				expect(
+					container.querySelector(
+						'.googlesitekit-traffic-overview__total-visitors'
+					)
+				).toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-traffic-overview__insight-range-notice'
+					)
+				).not.toBeInTheDocument();
+			}
+		);
+
 		it( 'should ask for the insight, and render its driver but leave out its analysis, when the days of the selected range have no typical range', async () => {
 			const { startDate, endDate } = registry
 				.select( CORE_USER )

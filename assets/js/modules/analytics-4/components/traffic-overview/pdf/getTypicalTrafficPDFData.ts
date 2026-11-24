@@ -23,6 +23,7 @@ import { getKeyFactorName } from '@/js/modules/analytics-4/components/traffic-ov
 import {
 	getKeyFactorShareText,
 	getKeyFactorsNoticeText,
+	getTrafficInsightRangeText,
 	getTypicalTrafficAvailability,
 	getTypicalTrafficRangeWaitingText,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils';
@@ -55,6 +56,8 @@ export interface TrafficOverviewTypicalTrafficPDFData {
 	analysis: string | null;
 	/** The text that says when the typical traffic range will show, while the chart has no band, or null. */
 	bandNotice: string | null;
+	/** The text that says what date range the generated insight needs, in its place, when the date range is too long for it, or null. */
+	insightNotice: string | null;
 	/** The generated summary of the key factors, or null when the PDF prints none. */
 	driver: string | null;
 	/** The notice under the key factors' heading, or null when the section has none. */
@@ -74,6 +77,8 @@ export interface TypicalTrafficPDFDataOptions {
 	referenceSiteURL?: string;
 	/** The number of days in the date range. */
 	daysInRange: number;
+	/** Whether the dashboard shows the generated insights, with the `trafficInsights` feature. */
+	insightsEnabled: boolean;
 }
 
 /**
@@ -84,7 +89,9 @@ export interface TypicalTrafficPDFDataOptions {
  * benchmarking response, as `TrafficOverviewPanel` does: the analysis prints
  * only where the chart draws the band, and the band's waiting text in its
  * place. The insight prints only where the panel would ask for it, so a
- * leftover insight never describes figures the PDF doesn't print.
+ * leftover insight never describes figures the PDF doesn't print. A range too
+ * long for the insight prints the notice that takes its place, as the panel
+ * shows it.
  *
  * @since n.e.x.t
  *
@@ -94,6 +101,7 @@ export interface TypicalTrafficPDFDataOptions {
  * @param {string}      options.referenceDate        Today, as `YYYY-MM-DD`.
  * @param {string}      [options.referenceSiteURL]   Optional. The site's URL, which a landing page's path is resolved against.
  * @param {number}      options.daysInRange          The number of days in the date range.
+ * @param {boolean}     options.insightsEnabled      Whether the dashboard shows the generated insights.
  * @return {Object} The parts of the typical traffic view to print.
  */
 export function getTypicalTrafficPDFData( {
@@ -102,6 +110,7 @@ export function getTypicalTrafficPDFData( {
 	referenceDate,
 	referenceSiteURL,
 	daysInRange,
+	insightsEnabled,
 }: TypicalTrafficPDFDataOptions ): TrafficOverviewTypicalTrafficPDFData {
 	const {
 		rangeTooShort,
@@ -111,6 +120,7 @@ export function getTypicalTrafficPDFData( {
 		keyFactorsAvailableFrom,
 		insightRequestAllowed,
 		performanceInsightAvailable,
+		rangeTooLong,
 	} = getTypicalTrafficAvailability( benchmarkingResponse );
 
 	const { steadyTraffic } = benchmarkingResponse;
@@ -150,6 +160,12 @@ export function getTypicalTrafficPDFData( {
 					bandAvailableFrom,
 					referenceDate
 			  ),
+		insightNotice: insightsEnabled
+			? getTrafficInsightRangeText( {
+					rangeTooLong,
+					keyFactorsAvailable,
+			  } )
+			: null,
 		driver,
 		keyFactorsNotice: getKeyFactorsNoticeText( {
 			rangeTooShort,

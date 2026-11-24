@@ -39,6 +39,7 @@ import TypicalTrafficBreakdown from '@/js/modules/analytics-4/components/traffic
 import { getPublishedPosts } from '@/js/modules/analytics-4/components/traffic-overview/charts/getPublishedPosts';
 import TypicalTrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart';
 import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
+import TrafficInsightRangeNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightRangeNotice';
 import TrafficInsightResetNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightResetNotice';
 import TypicalTotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTotalVisitors';
 import TypicalTrafficRangeNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTrafficRangeNotice';
@@ -122,8 +123,12 @@ const TypicalTrafficOverviewPanel: FC = () => {
 	//   whose driver would describe a change against days that weren't
 	//   measured. A range too short for the key factors has none either, and
 	//   their section says what range they need instead.
+	// - The Site Kit service writes the insight for a range of up to 364
+	//   days, so the panel asks for none for a longer range, and a notice
+	//   says what range it needs in the analysis's place.
 	const {
 		rangeTooShort,
+		rangeTooLong,
 		bandAvailable,
 		bandAvailableFrom,
 		keyFactorsAvailable,
@@ -190,6 +195,14 @@ const TypicalTrafficOverviewPanel: FC = () => {
 								loading={ insightLoading }
 							/>
 						) }
+						<TrafficInsightRangeNotice
+							// In the analysis's place, for a range too long
+							// for the insight.
+							insightsShown={ showInsights }
+							rangeTooLong={ rangeTooLong }
+							keyFactorsAvailable={ keyFactorsAvailable }
+							loaded={ ! isLoading }
+						/>
 						{ showKeyFactors && (
 							// In the analysis's place, while the band waits.
 							<TypicalTrafficRangeNotice

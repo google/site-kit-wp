@@ -369,6 +369,7 @@ final class Response_Encoder {
 		$encoded[ Wire_Format::AVAILABILITY_INSIGHT_REQUEST_ALLOWED ]       = ! empty( $availability['insight_request_allowed'] );
 		$encoded[ Wire_Format::AVAILABILITY_PERFORMANCE_INSIGHT_AVAILABLE ] = ! empty( $availability['performance_insight_available'] );
 		$encoded[ Wire_Format::AVAILABILITY_LAST_YEAR_AVAILABLE ]           = ! empty( $availability['last_year_available'] );
+		$encoded[ Wire_Format::AVAILABILITY_RANGE_TOO_LONG ]                = ! empty( $availability['range_too_long'] );
 
 		return $encoded;
 	}

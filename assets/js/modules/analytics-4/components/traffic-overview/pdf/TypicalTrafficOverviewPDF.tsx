@@ -169,9 +169,12 @@ const TypicalTrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 
 	// The analysis compares the visits with their typical range, so it prints
 	// only where the chart draws the band, and the band's waiting text in its
-	// place, as on the dashboard.
+	// place, as on the dashboard. A range too long for the insight has the
+	// band, and the notice that says what range the insight needs.
 	const summaryNotice =
-		typicalTraffic?.analysis || typicalTraffic?.bandNotice;
+		typicalTraffic?.analysis ||
+		typicalTraffic?.bandNotice ||
+		typicalTraffic?.insightNotice;
 	const hasGeneratedText =
 		!! typicalTraffic?.analysis || !! typicalTraffic?.driver;
 

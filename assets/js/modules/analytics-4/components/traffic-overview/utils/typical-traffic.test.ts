@@ -23,6 +23,7 @@ import { createBenchmarkingResponse } from '@/js/modules/analytics-4/components/
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import {
 	getDailyTrafficFromReport,
+	getTrafficInsightRangeText,
 	getTrafficOverviewVisits,
 	getTypicalTrafficAvailability,
 	getTypicalTrafficRangeWaitingText,
@@ -40,6 +41,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 			insightRequestAllowed: true,
 			performanceInsightAvailable: true,
 			lastYearAvailable: false,
+			rangeTooLong: false,
 		} );
 	} );
 
@@ -64,6 +66,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 					insightRequestAllowed: false,
 					performanceInsightAvailable: false,
 					lastYearAvailable: true,
+					rangeTooLong: true,
 				},
 			} )
 		).toEqual(
@@ -76,6 +79,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 				insightRequestAllowed: false,
 				performanceInsightAvailable: false,
 				lastYearAvailable: true,
+				rangeTooLong: true,
 			} )
 		);
 	} );
@@ -401,4 +405,36 @@ describe( 'getTypicalTrafficRangeWaitingText', () => {
 			'There isn’t enough traffic history for a typical traffic range on these dates.'
 		);
 	} );
+} );
+
+describe( 'getTrafficInsightRangeText', () => {
+	it( 'should say what range the insight needs when the range is too long for it', () => {
+		expect(
+			getTrafficInsightRangeText( {
+				rangeTooLong: true,
+				keyFactorsAvailable: true,
+			} )
+		).toBe(
+			'Select a date range of up to 364 days to see insights about your traffic.'
+		);
+	} );
+
+	it.each( [
+		[ 'a range the insight is written for', false, true ],
+		[
+			'a range too long for the insight whose key factors still wait for the period before it',
+			true,
+			false,
+		],
+	] )(
+		'should have no text for %s',
+		( _label, rangeTooLong, keyFactorsAvailable ) => {
+			expect(
+				getTrafficInsightRangeText( {
+					rangeTooLong,
+					keyFactorsAvailable,
+				} )
+			).toBeNull();
+		}
+	);
 } );

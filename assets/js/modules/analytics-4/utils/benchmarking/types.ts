@@ -68,12 +68,14 @@ export interface BenchmarkingAvailability {
 	keyFactorsAvailable: boolean;
 	/** The first last day of a date range of this length with the key factors, as `YYYY-MM-DD`, or null when the site has no recorded traffic. */
 	keyFactorsAvailableFrom: string | null;
-	/** Whether the panel asks for the generated insight: with the key factors, since the insight's driver describes the change they show. */
+	/** Whether the panel asks for the generated insight: with the key factors, since the insight's driver describes the change they show, and for a date range of up to 364 days. */
 	insightRequestAllowed: boolean;
 	/** Whether the panel shows the insight's analysis, which compares the visits with the typical range: with the band and the request. */
 	performanceInsightAvailable: boolean;
 	/** Whether last year's two windows are in the site's history, so the band can mention the season. */
 	lastYearAvailable: boolean;
+	/** Whether the date range is longer than 364 days, too long for the generated insight, which the Site Kit service writes for up to 364 days. */
+	rangeTooLong: boolean;
 }
 
 export interface BenchmarkingKeyFactorAttribute {

@@ -378,6 +378,7 @@ function getTypicalTraffic(
 		referenceSiteURL:
 			registry.select( CORE_SITE ).getReferenceSiteURL() || undefined,
 		daysInRange: getDayCount( startDate, endDate ),
+		insightsEnabled: isFeatureEnabled( 'trafficInsights' ),
 	} );
 }
 

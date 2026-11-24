@@ -1099,6 +1099,7 @@ export function createBenchmarkingResponse(
 			insightRequestAllowed: true,
 			performanceInsightAvailable: true,
 			lastYearAvailable: false,
+			rangeTooLong: false,
 		},
 		// The fit of the range's last day reads every day of that year up to
 		// the 28 days that end on it, as the server counts them for a range of

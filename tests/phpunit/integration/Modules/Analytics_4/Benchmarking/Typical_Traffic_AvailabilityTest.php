@@ -46,11 +46,14 @@ class Typical_Traffic_AvailabilityTest extends TestCase {
 	 * @param array $fixture_case The case: the range's length, the days of history up to its end date, the end date, and the expected availability.
 	 */
 	public function test_get__matches_the_availability_fixture( array $fixture_case ) {
-		// The fixture leaves out a date the site has no history for.
+		// The fixture leaves out a date the site has no history for. The
+		// service's rules have no longest period, and no fixture's period is
+		// longer than 364 days.
 		$expected = array_merge(
 			array(
 				'band_available_from'        => null,
 				'key_factors_available_from' => null,
+				'range_too_long'             => false,
 			),
 			$fixture_case['expected']
 		);
@@ -105,6 +108,34 @@ class Typical_Traffic_AvailabilityTest extends TestCase {
 		$this->assertFalse( $availability['insight_request_allowed'], 'A 90-day period should get no insight request before its key factors.' );
 		$this->assertFalse( $availability['performance_insight_available'], 'A 90-day period should show no analysis without its insight request, band or not.' );
 		$this->assertSame( '2026-09-22', $availability['key_factors_available_from'], 'The key factors should be available a week later, once the history holds 180 days.' );
+	}
+
+	/**
+	 * @dataProvider data_period_lengths_around_the_longest_insight_period
+	 *
+	 * @param int  $period_days    The period's length in days.
+	 * @param bool $range_too_long Whether the period is too long for the insight.
+	 */
+	public function test_get__requests_no_insight_for_a_period_longer_than_364_days( $period_days, $range_too_long ) {
+		// History for the band and the key factor cards of the longest period.
+		$availability = Typical_Traffic_Availability::get(
+			new Period_Baseline( $this->get_daily_rows( '2026-09-15', 2 * 365 ) ),
+			'2026-09-15',
+			$period_days
+		);
+
+		$this->assertTrue( $availability['band_available'], "A $period_days-day period should have its band." );
+		$this->assertTrue( $availability['key_factors_available'], "A $period_days-day period should have its key factors." );
+		$this->assertSame( $range_too_long, $availability['range_too_long'], "A $period_days-day period should be too long for the insight only above 364 days." );
+		$this->assertSame( ! $range_too_long, $availability['insight_request_allowed'], "A $period_days-day period should get an insight request only up to 364 days." );
+		$this->assertSame( ! $range_too_long, $availability['performance_insight_available'], "A $period_days-day period should show the analysis only up to 364 days." );
+	}
+
+	public function data_period_lengths_around_the_longest_insight_period() {
+		return array(
+			'364 days' => array( 364, false ),
+			'365 days' => array( 365, true ),
+		);
 	}
 
 	public function test_get__counts_the_history_from_the_first_day_with_visits() {

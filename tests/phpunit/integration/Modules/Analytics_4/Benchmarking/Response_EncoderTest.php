@@ -81,6 +81,7 @@ class Response_EncoderTest extends TestCase {
 				'insight_request_allowed'       => true,
 				'performance_insight_available' => false,
 				'last_year_available'           => false,
+				'range_too_long'                => false,
 			),
 			'bandReferenceDays' => null,
 			'keyFactors'        => array(
@@ -679,12 +680,13 @@ class Response_EncoderTest extends TestCase {
 			'insight_request_allowed'       => false,
 			'performance_insight_available' => false,
 			'last_year_available'           => true,
+			'range_too_long'                => true,
 		);
 
 		$availability = $this->encode_as_sent( $response )[ Wire_Format::MEMBER_AVAILABILITY ];
 
 		$this->assertSame(
-			array( true, false, 7, false, 11, false, false, true ),
+			array( true, false, 7, false, 11, false, false, true, true ),
 			$availability,
 			'The availability should be encoded as its flags, and its days as their offsets from `2025-08-18`.'
 		);
@@ -692,6 +694,7 @@ class Response_EncoderTest extends TestCase {
 		$this->assertSame( 7, $availability[ Wire_Format::AVAILABILITY_BAND_AVAILABLE_FROM ], '`band_available_from` should be encoded at its position.' );
 		$this->assertSame( 11, $availability[ Wire_Format::AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ], '`key_factors_available_from` should be encoded at its position.' );
 		$this->assertTrue( $availability[ Wire_Format::AVAILABILITY_LAST_YEAR_AVAILABLE ], '`last_year_available` should be encoded at its position.' );
+		$this->assertTrue( $availability[ Wire_Format::AVAILABILITY_RANGE_TOO_LONG ], '`range_too_long` should be encoded at its position.' );
 	}
 
 	/**
@@ -738,7 +741,7 @@ class Response_EncoderTest extends TestCase {
 		unset( $response['availability'] );
 
 		$this->assertSame(
-			array( false, false, null, false, null, false, false, false ),
+			array( false, false, null, false, null, false, false, false, false ),
 			$this->encoder->encode( $response )[ Wire_Format::MEMBER_AVAILABILITY ],
 			'A response with no `availability` should encode every flag as false and every day as null.'
 		);
@@ -757,7 +760,7 @@ class Response_EncoderTest extends TestCase {
 		$this->assertCount( 12, $encoded, 'The encoded response should have twelve members.' );
 		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'An empty `dailyTraffic` should give an empty list of expected ranges.' );
 		$this->assertSame(
-			array( false, false, null, true, null, true, false, false ),
+			array( false, false, null, true, null, true, false, false, false ),
 			$encoded[ Wire_Format::MEMBER_AVAILABILITY ],
 			'With no first plotted day to count from, the days of the availability should be encoded as null, and its flags as they are.'
 		);

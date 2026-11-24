@@ -93,6 +93,7 @@ const TYPICAL_TRAFFIC: TrafficOverviewTypicalTrafficPDFData = {
 	analysis:
 		'Over the last 28 days, your site had **1,234** visits, about 12% above what is usual for it.',
 	bandNotice: null,
+	insightNotice: null,
 	driver: 'Visits rose 12% (+134 visits), led by **Referral** (+365 visits).',
 	keyFactorsNotice: null,
 	keyFactors: [
@@ -385,6 +386,29 @@ describe( 'Typical Traffic Overview PDF', () => {
 			expect( texts ).toContain(
 				'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.'
 			);
+		} );
+
+		it( 'prints the notice of a range too long for the insight in place of the analysis', () => {
+			const texts = renderPDFText(
+				<TypicalTrafficOverviewPDF
+					data={ {
+						...DEFAULT_REPORTS,
+						typicalTraffic: {
+							...TYPICAL_TRAFFIC,
+							analysis: null,
+							driver: null,
+							insightNotice:
+								'Select a date range of up to 364 days to see insights about your traffic.',
+						},
+					} }
+				/>
+			);
+
+			expect(
+				texts.indexOf(
+					'Select a date range of up to 364 days to see insights about your traffic.'
+				)
+			).toBeLessThan( texts.indexOf( 'Total visits' ) );
 		} );
 
 		it( 'prints the key factors’ heading, the driver, then each card with its change in visits, after the chart and before the breakdowns', () => {

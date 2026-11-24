@@ -946,6 +946,7 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 				daysInRange: 28,
 				analysis: null,
 				bandNotice: null,
+				insightNotice: null,
 				driver: null,
 				keyFactorsNotice: null,
 				keyFactors: [
@@ -1068,6 +1069,53 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 				keyFactors: [],
 			} );
 		} );
+
+		it.each( [
+			[
+				'say what range the insight needs, with the `trafficInsights` feature',
+				true,
+				'Select a date range of up to 364 days to see insights about your traffic.',
+			],
+			[
+				'have no notice without the `trafficInsights` feature',
+				false,
+				null,
+			],
+		] )(
+			'should %s, for a range too long for the insight',
+			async ( _label, insightsEnabled, insightNotice ) => {
+				if ( insightsEnabled ) {
+					enabledFeatures.add( 'trafficInsights' );
+				}
+
+				const response = createBenchmarkingResponse(
+					startDate,
+					endDate
+				);
+
+				provideResponse( {
+					availability: {
+						...response.availability,
+						insightRequestAllowed: false,
+						performanceInsightAvailable: false,
+						rangeTooLong: true,
+					},
+				} );
+
+				const result = await getTypicalTrafficOverviewPDFData( {
+					registry,
+					dates: DATES,
+					signal: new AbortController().signal,
+				} );
+
+				expect( result.data?.typicalTraffic ).toMatchObject( {
+					analysis: null,
+					bandNotice: null,
+					insightNotice,
+					driver: null,
+				} );
+			}
+		);
 
 		it( 'should give the generated insight the dashboard already has, with the `trafficInsights` feature', async () => {
 			enabledFeatures.add( 'trafficInsights' );

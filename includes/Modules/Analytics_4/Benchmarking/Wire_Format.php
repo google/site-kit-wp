@@ -67,6 +67,7 @@ final class Wire_Format {
 	const AVAILABILITY_INSIGHT_REQUEST_ALLOWED       = 5;
 	const AVAILABILITY_PERFORMANCE_INSIGHT_AVAILABLE = 6;
 	const AVAILABILITY_LAST_YEAR_AVAILABLE           = 7;
+	const AVAILABILITY_RANGE_TOO_LONG                = 8;
 
 	/**
 	 * The position each driver kind of a key factor card travels as. A kind is

@@ -32,6 +32,13 @@ use DateTimeZone;
  * - The insight's analysis compares the period with the band, so it shows
  *   with the band and the request.
  *
+ * One rule is the plugin's own. The service writes the insight for a period
+ * of up to 364 days, and refuses a longer one, but its rules have no longest
+ * period, since its dashboards only send periods of 7, 14, 28 or 90 days. The
+ * plugin's custom date ranges can be longer, so a period longer than 364 days
+ * is too long for the insight: it has the band and the key factor cards, but
+ * the insight isn't requested.
+ *
  * @since n.e.x.t
  * @access private
  * @ignore
@@ -59,9 +66,10 @@ class Typical_Traffic_Availability {
 	 *     @type string|null $band_available_from           The first last day of a period of this length with a band, as `YYYY-MM-DD`.
 	 *     @type bool        $key_factors_available         Whether the period is long enough for the key factor cards, and every day of the period before it is in the history.
 	 *     @type string|null $key_factors_available_from    The first last day of a period of this length whose previous period is in the history, as `YYYY-MM-DD`.
-	 *     @type bool        $insight_request_allowed       Whether the insight is requested: with the key factor cards.
+	 *     @type bool        $insight_request_allowed       Whether the insight is requested: with the key factor cards, for a period of up to 364 days.
 	 *     @type bool        $performance_insight_available Whether the insight's analysis shows: with the band and the request.
 	 *     @type bool        $last_year_available           Whether last year's two windows are in the history, so the band can mention the season.
+	 *     @type bool        $range_too_long                Whether the period is longer than 364 days, too long for the insight, which the service caps at 364 days. The service's rules don't have it.
 	 * }
 	 */
 	public static function get( Period_Baseline $period_baseline, $end_date, $period_days ) {
@@ -72,6 +80,8 @@ class Typical_Traffic_Availability {
 		$band_available      = $history_days >= $band_history_days;
 		$key_factors_history = 2 * $days;
 		$key_factors         = ! $range_too_short && $history_days >= $key_factors_history;
+		$range_too_long      = $days > Insight_Request_Builder::MAX_PERIOD_DAYS;
+		$insight_request     = $key_factors && ! $range_too_long;
 
 		$band_available_from        = null;
 		$key_factors_available_from = null;
@@ -90,9 +100,10 @@ class Typical_Traffic_Availability {
 			'band_available_from'           => $band_available_from,
 			'key_factors_available'         => $key_factors,
 			'key_factors_available_from'    => $key_factors_available_from,
-			'insight_request_allowed'       => $key_factors,
-			'performance_insight_available' => $band_available && $key_factors,
+			'insight_request_allowed'       => $insight_request,
+			'performance_insight_available' => $band_available && $insight_request,
 			'last_year_available'           => null !== $period_baseline->get_last_year_visits( $end_date, $days ),
+			'range_too_long'                => $range_too_long,
 		);
 	}
 }
