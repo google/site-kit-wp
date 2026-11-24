@@ -52,6 +52,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	renderHook,
 	waitFor,
 	waitForDefaultTimeouts,
@@ -93,6 +94,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( REFERENCE_DATE );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
 
 		fetchMock.get( surveyTimeoutsEndpoint, { status: 200, body: [] } );
@@ -288,6 +290,10 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		rerender( { isEnabled: false, hasBeenInView: true } );
 		rerender( { isEnabled: true, hasBeenInView: true } );
 		await waitForRegistry();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint )
+		);
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, dismissPromptEndpoint );
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
