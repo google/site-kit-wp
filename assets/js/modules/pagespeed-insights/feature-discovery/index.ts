@@ -111,7 +111,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: pageSpeedInsightsScreenshotURL,
 					alt: __(
-						'Screenshot of the speed section of the Site Kit dashboard showing field data from real users for Largest Contentful Paint, Cumulative Layout Shift and Interaction to Next Paint, each colored by how well the page performs',
+						'Screenshot of the speed section of the Site Kit dashboard showing field data from real users for Largest Contentful Paint, Cumulative Layout Shift, and Interaction to Next Paint, each colored by how well the page performs',
 						'google-site-kit'
 					),
 					width: 620,
