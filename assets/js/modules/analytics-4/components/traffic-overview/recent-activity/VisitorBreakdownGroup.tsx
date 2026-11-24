@@ -112,7 +112,6 @@ const VisitorBreakdownGroup: FC< VisitorBreakdownGroupProps > = ( {
 					),
 				}
 			) }
-			infoTooltipClassName="googlesitekit-traffic-overview__latest-post-tooltip"
 		>
 			{ ! loading && !! error ? (
 				<LatestPostReportError error={ error } onRetry={ retry } />

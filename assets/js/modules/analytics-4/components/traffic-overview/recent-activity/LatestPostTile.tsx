@@ -31,14 +31,11 @@ interface LatestPostTileProps {
 	title: string;
 	/** Tooltip content shown in an info icon next to the title. */
 	infoTooltip?: ReactNode;
-	/** Extra class for the tooltip's popup, e.g. to set its width. */
-	infoTooltipClassName?: string;
 }
 
 const LatestPostTile: FC< LatestPostTileProps > = ( {
 	title,
 	infoTooltip,
-	infoTooltipClassName,
 	children,
 } ) => {
 	return (
@@ -48,7 +45,7 @@ const LatestPostTile: FC< LatestPostTileProps > = ( {
 			title={ title }
 			titleAs="h4"
 			infoTooltip={ infoTooltip }
-			infoTooltipClassName={ infoTooltipClassName }
+			infoTooltipClassName="googlesitekit-traffic-overview__latest-post-tooltip"
 		>
 			{ children }
 		</TileShell>
