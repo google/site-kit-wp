@@ -2214,6 +2214,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		// 5% now against 20 of 800 sessions (2.5%) before.
 		expect( within( rateTile ).getByText( '+100%' ) ).toBeInTheDocument();
 		expect( getByText( '300' ) ).toBeInTheDocument();
+		// The engagement rate is a share of the tab's own 200 sessions.
+		expect(
+			getByText( 'of 200 sessions with this plugin' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'renders the partial data badge on each section in the tabbed view', async () => {

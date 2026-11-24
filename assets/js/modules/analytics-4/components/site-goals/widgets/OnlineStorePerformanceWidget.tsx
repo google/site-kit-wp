@@ -676,6 +676,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 							<VisitorEngagementTiles
 								dates={ dates }
 								events={ enabledSecondaryEvents }
+								goalType={ GOAL_TYPES.ECOMMERCE }
 								breakdownFilter={ breakdownFilter }
 							/>
 						</TilesGroup>

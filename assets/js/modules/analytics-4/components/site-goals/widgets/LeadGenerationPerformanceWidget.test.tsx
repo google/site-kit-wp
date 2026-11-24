@@ -2234,6 +2234,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		// 3% now against 10 of 800 sessions (1.25%) before.
 		expect( within( rateTile ).getByText( '+140%' ) ).toBeInTheDocument();
 		expect( getByText( '60' ) ).toBeInTheDocument();
+		// The engagement rate is a share of the tab's own 200 sessions.
+		expect(
+			getByText( 'of 200 sessions with this form' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'renders the partial data badge on each section in the tabbed view', async () => {
