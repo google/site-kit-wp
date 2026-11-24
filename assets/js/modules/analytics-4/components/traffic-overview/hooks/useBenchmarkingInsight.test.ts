@@ -133,6 +133,7 @@ describe( 'useBenchmarkingInsight', () => {
 		expect( result.current ).toEqual( {
 			insight: benchmarkingInsight,
 			loading: false,
+			siteNotFound: false,
 		} );
 	} );
 
@@ -149,7 +150,11 @@ describe( 'useBenchmarkingInsight', () => {
 			registry,
 		} );
 
-		expect( result.current ).toEqual( { insight: null, loading: true } );
+		expect( result.current ).toEqual( {
+			insight: null,
+			loading: true,
+			siteNotFound: false,
+		} );
 	} );
 
 	it( 'should return `true` for `loading`, and not request the insight, while the benchmarking response loads', async () => {
@@ -162,7 +167,11 @@ describe( 'useBenchmarkingInsight', () => {
 
 		await waitForRegistry();
 
-		expect( result.current ).toEqual( { insight: null, loading: true } );
+		expect( result.current ).toEqual( {
+			insight: null,
+			loading: true,
+			siteNotFound: false,
+		} );
 		expect( hasRequestedInsight() ).toBe( false );
 	} );
 
@@ -190,6 +199,7 @@ describe( 'useBenchmarkingInsight', () => {
 		expect( result.current ).toEqual( {
 			insight: benchmarkingInsight,
 			loading: false,
+			siteNotFound: false,
 		} );
 	} );
 
@@ -212,7 +222,72 @@ describe( 'useBenchmarkingInsight', () => {
 		await waitForRegistry();
 
 		expect( console ).toHaveErrored();
-		expect( result.current ).toEqual( { insight: null, loading: false } );
+		expect( result.current ).toEqual( {
+			insight: null,
+			loading: false,
+			siteNotFound: false,
+		} );
+	} );
+
+	it( 'should return `siteNotFound` when the Site Kit service has no record of the site', async () => {
+		provideBenchmarkingData( registry, dates, {
+			...decodedBenchmarkingResponse,
+			insightLocale: 'en_US',
+			insightPayload: 'signed-payload',
+		} );
+		fetchMock.postOnce( insightEndpoint, {
+			body: {
+				code: 'benchmarking_insight_error',
+				message:
+					'Unable to retrieve site connection. You may need to perform a plugin reset.',
+				data: { status: 400, reason: 'SITE_NOT_FOUND' },
+			},
+			status: 400,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useBenchmarkingInsight(),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect( result.current ).toEqual( {
+			insight: null,
+			loading: false,
+			siteNotFound: true,
+		} );
+	} );
+
+	it( 'should not return `siteNotFound` for an invalid request, which has the same status', async () => {
+		provideBenchmarkingData( registry, dates, {
+			...decodedBenchmarkingResponse,
+			insightLocale: 'en_US',
+			insightPayload: 'signed-payload',
+		} );
+		fetchMock.postOnce( insightEndpoint, {
+			body: {
+				code: 'benchmarking_insight_error',
+				message: "missing parameter: 'end_date'",
+				data: { status: 400, reason: 'INVALID_ARGUMENT' },
+			},
+			status: 400,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useBenchmarkingInsight(),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect( result.current ).toEqual( {
+			insight: null,
+			loading: false,
+			siteNotFound: false,
+		} );
 	} );
 
 	it( 'should return no insight, and not `loading`, when the request for the benchmarking response fails, and request the insight once a retry brings the response', async () => {
@@ -235,7 +310,11 @@ describe( 'useBenchmarkingInsight', () => {
 		await waitForRegistry();
 
 		expect( console ).toHaveErrored();
-		expect( result.current ).toEqual( { insight: null, loading: false } );
+		expect( result.current ).toEqual( {
+			insight: null,
+			loading: false,
+			siteNotFound: false,
+		} );
 		expect( hasRequestedInsight() ).toBe( false );
 
 		const waitForRetry = createWaitForRegistry( registry );
@@ -255,6 +334,7 @@ describe( 'useBenchmarkingInsight', () => {
 		expect( result.current ).toEqual( {
 			insight: benchmarkingInsight,
 			loading: false,
+			siteNotFound: false,
 		} );
 	} );
 
@@ -264,7 +344,11 @@ describe( 'useBenchmarkingInsight', () => {
 			{ registry }
 		);
 
-		expect( result.current ).toEqual( { insight: null, loading: false } );
+		expect( result.current ).toEqual( {
+			insight: null,
+			loading: false,
+			siteNotFound: false,
+		} );
 		expect( fetchMock ).not.toHaveFetched( benchmarkingDataEndpoint );
 		expect( fetchMock ).not.toHaveFetched( insightEndpoint );
 		expect( hasRequestedInsight() ).toBe( false );
@@ -291,8 +375,16 @@ describe( 'useBenchmarkingInsight', () => {
 			method: 'POST',
 		} );
 		expect( result.current ).toEqual( [
-			{ insight: benchmarkingInsight, loading: false },
-			{ insight: benchmarkingInsight, loading: false },
+			{
+				insight: benchmarkingInsight,
+				loading: false,
+				siteNotFound: false,
+			},
+			{
+				insight: benchmarkingInsight,
+				loading: false,
+				siteNotFound: false,
+			},
 		] );
 	} );
 
@@ -314,7 +406,11 @@ describe( 'useBenchmarkingInsight', () => {
 			await waitForDefaultTimeouts();
 		} );
 
-		expect( result.current ).toEqual( { insight: null, loading: false } );
+		expect( result.current ).toEqual( {
+			insight: null,
+			loading: false,
+			siteNotFound: false,
+		} );
 		expect( hasRequestedInsight() ).toBe( false );
 		expect( fetchMock ).not.toHaveFetched( insightEndpoint );
 	} );
@@ -327,7 +423,11 @@ describe( 'useBenchmarkingInsight', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
-		expect( result.current ).toEqual( { insight: null, loading: false } );
+		expect( result.current ).toEqual( {
+			insight: null,
+			loading: false,
+			siteNotFound: false,
+		} );
 		expect( fetchMock ).not.toHaveFetched( benchmarkingDataEndpoint );
 		expect( fetchMock ).not.toHaveFetched( insightEndpoint );
 		expect( hasRequestedInsight() ).toBe( false );
@@ -346,6 +446,7 @@ describe( 'useBenchmarkingInsight', () => {
 		expect( result.current ).toEqual( {
 			insight: benchmarkingInsight,
 			loading: false,
+			siteNotFound: false,
 		} );
 	} );
 } );

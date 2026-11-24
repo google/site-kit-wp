@@ -25,6 +25,10 @@ import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
+	AI_INSIGHT_ERROR_CODES,
+	getAIInsightErrorCode,
+} from '@/js/modules/analytics-4/datastore/utils/ai-insight';
+import {
 	BenchmarkingInsight,
 	DecodedBenchmarkingResponse,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
@@ -39,6 +43,8 @@ export interface BenchmarkingInsightResult {
 	insight: BenchmarkingInsight | null;
 	/** `true` while the hook waits for the insight. */
 	loading: boolean;
+	/** `true` when the Site Kit service has no record of the site (`SITE_NOT_FOUND`), which only a reset of Site Kit fixes. */
+	siteNotFound: boolean;
 }
 
 /**
@@ -50,7 +56,9 @@ export interface BenchmarkingInsightResult {
  * arrived, and it arrives some seconds after the figures. When the request for
  * the response fails, the hook requests the insight once a retry brings the
  * response. A failed request for the insight leaves no insight to show, rather
- * than an error: the panel shows its figures without it.
+ * than an error: the panel shows its figures without it. The one failure the
+ * hook reports is a site the Site Kit service has no record of, for which the
+ * panel offers a reset of Site Kit.
  *
  * On a view-only dashboard, the hook sends no request until the user's role
  * can view Analytics.
@@ -59,7 +67,7 @@ export interface BenchmarkingInsightResult {
  *
  * @param {Object}  [options]           Optional. The hook's options.
  * @param {boolean} [options.isEnabled] Optional. Whether the hook requests the insight. Default is `true`.
- * @return {Object} The insight, or null while there is none to show, and whether it is loading.
+ * @return {Object} The insight, or null while there is none to show, whether it is loading, and whether the service has no record of the site.
  */
 export function useBenchmarkingInsight( {
 	isEnabled = true,
@@ -113,6 +121,17 @@ export function useBenchmarkingInsight( {
 		[ hasBenchmarkingResponse, startDate, endDate ]
 	);
 
+	const insightError = useSelect(
+		( select: Select ) =>
+			hasBenchmarkingResponse
+				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+						'getBenchmarkingInsight',
+						[ startDate, endDate ]
+				  )
+				: undefined,
+		[ hasBenchmarkingResponse, startDate, endDate ]
+	);
+
 	// The insight loads after the user's capabilities and the benchmarking
 	// response, unless the user can't view Analytics or the response failed.
 	if (
@@ -120,11 +139,14 @@ export function useBenchmarkingInsight( {
 		canViewSharedAnalytics4 === false ||
 		benchmarkingError
 	) {
-		return { insight: null, loading: false };
+		return { insight: null, loading: false, siteNotFound: false };
 	}
 
 	return {
 		insight: insight ?? null,
 		loading: insight === undefined,
+		siteNotFound:
+			getAIInsightErrorCode( insightError ) ===
+			AI_INSIGHT_ERROR_CODES.SITE_NOT_FOUND,
 	};
 }

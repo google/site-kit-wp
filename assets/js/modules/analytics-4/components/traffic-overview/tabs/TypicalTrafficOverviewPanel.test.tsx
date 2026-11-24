@@ -31,6 +31,7 @@ import {
 import {
 	CORE_USER,
 	PERMISSION_READ_SHARED_MODULE_DATA,
+	PERMISSION_SETUP,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
@@ -2261,6 +2262,96 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 					'.googlesitekit-traffic-overview__key-factor'
 				).length
 			).toBeGreaterThan( 0 );
+		} );
+
+		it.each( [
+			[ 'offer a reset of Site Kit to a user who can set it up', true ],
+			[ 'offer no reset to a user who cannot set up Site Kit', false ],
+		] )(
+			'should %s when the Site Kit service has no record of the site',
+			async ( _, canSetup ) => {
+				provideUserCapabilities( registry, {
+					[ PERMISSION_SETUP ]: canSetup,
+				} );
+				provideBenchmarkingResponseWithInsightRequest();
+				fetchMock.postOnce( insightEndpoint, {
+					body: {
+						code: 'benchmarking_insight_error',
+						message:
+							'Unable to retrieve site connection. You may need to perform a plugin reset.',
+						data: { status: 400, reason: 'SITE_NOT_FOUND' },
+					},
+					status: 400,
+				} );
+
+				const { container, queryByRole, waitForRegistry } = renderPanel(
+					{
+						features: [ 'typicalTraffic', 'trafficInsights' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( console ).toHaveErrored();
+				expect(
+					container.querySelector( trafficInsightSelector )
+				).not.toBeInTheDocument();
+				expect(
+					container.querySelector( keyFactorsInsightSelector )
+				).not.toBeInTheDocument();
+
+				const notice = container.querySelector(
+					'.googlesitekit-traffic-overview__insight-reset-notice'
+				);
+
+				if ( canSetup ) {
+					expect( notice ).toHaveTextContent(
+						'The Site Kit service no longer recognizes this site.'
+					);
+					expect(
+						queryByRole( 'button', { name: 'Reset Site Kit' } )
+					).toBeInTheDocument();
+				} else {
+					expect( notice ).not.toBeInTheDocument();
+				}
+
+				// The figures and the key factor cards show either way.
+				expect(
+					container.querySelectorAll(
+						'.googlesitekit-traffic-overview__key-factor'
+					).length
+				).toBeGreaterThan( 0 );
+			}
+		);
+
+		it( 'should not offer a reset when the request for the insight fails for another reason', async () => {
+			provideUserCapabilities( registry );
+			provideBenchmarkingResponseWithInsightRequest();
+			fetchMock.postOnce( insightEndpoint, {
+				body: {
+					code: 'benchmarking_insight_error',
+					message: 'rate limit exceeded',
+					data: {
+						status: 429,
+						reason: 'RATE_LIMITED',
+						retryAfter: 60,
+					},
+				},
+				status: 429,
+			} );
+
+			const { container, waitForRegistry } = renderPanel( {
+				features: [ 'typicalTraffic', 'trafficInsights' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( console ).toHaveErrored();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__insight-reset-notice'
+				)
+			).not.toBeInTheDocument();
 		} );
 
 		it( 'should leave out the traffic insight without the trafficInsights feature', async () => {

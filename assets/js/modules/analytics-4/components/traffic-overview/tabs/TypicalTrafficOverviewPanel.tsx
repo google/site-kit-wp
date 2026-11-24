@@ -39,6 +39,7 @@ import TypicalTrafficBreakdown from '@/js/modules/analytics-4/components/traffic
 import { getPublishedPosts } from '@/js/modules/analytics-4/components/traffic-overview/charts/getPublishedPosts';
 import TypicalTrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart';
 import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
+import TrafficInsightResetNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightResetNotice';
 import TypicalTotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTotalVisitors';
 import TypicalTrafficRangeNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTrafficRangeNotice';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
@@ -134,7 +135,11 @@ const TypicalTrafficOverviewPanel: FC = () => {
 
 	// The insight arrives after the figures, since the service generates it
 	// from them. Without an insight, the panel shows its figures alone.
-	const { insight, loading: insightLoading } = useBenchmarkingInsight( {
+	const {
+		insight,
+		loading: insightLoading,
+		siteNotFound,
+	} = useBenchmarkingInsight( {
 		isEnabled: showInsights && insightRequestAllowed,
 	} );
 
@@ -168,6 +173,12 @@ const TypicalTrafficOverviewPanel: FC = () => {
 			{ errors.length === 0 && (
 				<Fragment>
 					<div className="googlesitekit-traffic-overview__summary">
+						<TrafficInsightResetNotice
+							// When the service has no record of the site,
+							// neither insight comes until Site Kit is reset
+							// and set up again.
+							siteNotFound={ siteNotFound }
+						/>
 						{ showInsights && performanceInsightAvailable && (
 							// The analysis compares the site's traffic with
 							// its typical range, so it shows only where the

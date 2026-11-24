@@ -33,7 +33,12 @@ import {
 import { conversionInsight } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '@/js/util';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
+import {
+	decodedBenchmarkingResponse,
+	provideBenchmarkingData,
+} from './__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { AI_INSIGHT_RATE_LIMIT_HOLD } from './utils/ai-insight';
 
 describe( 'modules/analytics-4 conversion-insights', () => {
 	const insightEndpoint = new RegExp(
@@ -957,7 +962,12 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 
 		it.each( [
 			[ 'a 403, for an hour', 403, undefined, HOUR_IN_SECONDS ],
-			[ 'a 429, for an hour', 429, 60, HOUR_IN_SECONDS ],
+			[
+				'a 429, for 30 minutes though its retryAfter is a minute',
+				429,
+				60,
+				AI_INSIGHT_RATE_LIMIT_HOLD,
+			],
 			[
 				'a 429, for as long as its retryAfter asks',
 				429,
@@ -998,6 +1008,54 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			}
 		);
+
+		it( 'should hold back the request for the benchmarking insight after a refusal for the quota, which the two insights share', async () => {
+			const refusal = errorResponse( 429, {
+				reason: 'DAILY_CAP',
+				retryAfter: 7200,
+			} );
+			const benchmarkingInsightEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-insight'
+			);
+			const dates = {
+				startDate: '2026-10-05',
+				endDate: '2026-11-01',
+			};
+
+			fetchMock.postOnce( insightEndpoint, refusal );
+
+			expect( await resolveInsight() ).toBeNull();
+			expect( console ).toHaveErrored();
+
+			provideBenchmarkingData( registry, dates, {
+				...decodedBenchmarkingResponse,
+				insightLocale: 'en_US',
+				insightPayload: 'signed-payload',
+			} );
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingInsight( dates.startDate, dates.endDate );
+
+			await jest.advanceTimersByTimeAsync( 0 );
+			await jest.advanceTimersByTimeAsync( 100 );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getBenchmarkingInsight( dates.startDate, dates.endDate )
+			).toBeNull();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getBenchmarkingInsight', [
+						dates.startDate,
+						dates.endDate,
+					] )
+			).toEqual( refusal.body );
+			expect( fetchMock ).not.toHaveFetched(
+				benchmarkingInsightEndpoint
+			);
+		} );
 
 		it( 'should keep no other failure, so the next load submits again', async () => {
 			fetchMock.post( insightEndpoint, errorResponse( 500 ) );

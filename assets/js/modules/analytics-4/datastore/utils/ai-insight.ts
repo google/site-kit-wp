@@ -30,9 +30,70 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { usingCache } from 'googlesitekit-api';
+// In the built plugin, `googlesitekit-api` is the `googlesitekit.api` global,
+// which has no `createCacheKey()`.
+import { createCacheKey } from '@/js/googlesitekit/api';
 import { deleteItem, getItem, setItem } from '@/js/googlesitekit/api/cache';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '@/js/util';
 import { ErrorObject } from '@/js/util/errors';
+
+/**
+ * The codes the Site Kit service answers a failed request for an insight
+ * with. The datapoints pass the code on as the error's `data.reason`: the
+ * `code` of the service's error, or the `status` of a failed operation. The
+ * code, not the message, is the service's contract, and its set is open: the
+ * store reads a code it doesn't know from the status, as
+ * `getAIInsightErrorCode()` does.
+ *
+ * @since n.e.x.t
+ */
+export const AI_INSIGHT_ERROR_CODES = {
+	/** The request is malformed (400). */
+	INVALID_ARGUMENT: 'INVALID_ARGUMENT',
+	/** Neither period has a visit, so there is nothing to describe (400). */
+	NO_DATA: 'NO_DATA',
+	/** The service has no record of the site, which only a reset of Site Kit fixes (400). */
+	SITE_NOT_FOUND: 'SITE_NOT_FOUND',
+	/** Missing or rejected authorization, or a user not on the site (403). */
+	PERMISSION_DENIED: 'PERMISSION_DENIED',
+	/** An operation that is unknown, expired, or another user's (404). */
+	NOT_FOUND: 'NOT_FOUND',
+	/** An identical request is setting up its generation (409). */
+	GENERATION_IN_PROGRESS: 'GENERATION_IN_PROGRESS',
+	/** The user's allowance of generations is spent (429). */
+	RATE_LIMITED: 'RATE_LIMITED',
+	/** The site's daily allowance of generations is spent (429). */
+	DAILY_CAP: 'DAILY_CAP',
+	/** The service has no capacity for a new generation, or an instance shutdown interrupted it (503). */
+	SERVICE_BUSY: 'SERVICE_BUSY',
+	/** The model call failed or ran out of time (500). */
+	MODEL_UNAVAILABLE: 'MODEL_UNAVAILABLE',
+	/** The model answered, but its output couldn't be used (500). */
+	MODEL_OUTPUT_INVALID: 'MODEL_OUTPUT_INVALID',
+	/** Any other failure of the service (500). */
+	INTERNAL: 'INTERNAL',
+} as const;
+
+export type AIInsightErrorCode =
+	typeof AI_INSIGHT_ERROR_CODES[ keyof typeof AI_INSIGHT_ERROR_CODES ];
+
+/**
+ * The code of an error without one the store knows, by its status, as the
+ * service itself codes an error without a code of its own.
+ *
+ * @since n.e.x.t
+ */
+const ERROR_CODES_BY_STATUS: Record< number, AIInsightErrorCode > = {
+	400: AI_INSIGHT_ERROR_CODES.INVALID_ARGUMENT,
+	401: AI_INSIGHT_ERROR_CODES.PERMISSION_DENIED,
+	403: AI_INSIGHT_ERROR_CODES.PERMISSION_DENIED,
+	404: AI_INSIGHT_ERROR_CODES.NOT_FOUND,
+	409: AI_INSIGHT_ERROR_CODES.GENERATION_IN_PROGRESS,
+	429: AI_INSIGHT_ERROR_CODES.RATE_LIMITED,
+	500: AI_INSIGHT_ERROR_CODES.INTERNAL,
+	503: AI_INSIGHT_ERROR_CODES.SERVICE_BUSY,
+};
 
 /**
  * The longest the store waits for an insight, in milliseconds.
@@ -84,23 +145,73 @@ const AI_INSIGHT_MIN_WAIT = 1000;
 export const AI_INSIGHT_OPERATION_LIFETIME = 2 * 60 * 1000;
 
 /**
- * The statuses of a refused request for an insight that the store sends
- * again after the refusal's `Retry-After`: the service was setting up an
- * identical request (409), or had no capacity for a new one (503). Neither
- * counts against the service's rate limit.
+ * The shortest time the store holds back its requests for an insight after
+ * the service refused one for the user's rate limit, in seconds.
+ *
+ * By default, the service refills a user's allowance at two generations an
+ * hour, so the next one is at most 30 minutes away. Its `Retry-After` for the rate limit is
+ * a minute, but the service charges the site's daily allowance before it
+ * checks the user's, so each refused request still spends one of the site's
+ * generations for the day, which every user of the site shares. Asking every
+ * minute could spend them all, so the store waits until a request can succeed.
  *
  * @since n.e.x.t
  */
-const RETRIED_SUBMIT_STATUSES = [ 409, 503 ];
+export const AI_INSIGHT_RATE_LIMIT_HOLD = 30 * 60;
 
 /**
- * The statuses of a failed read of an operation after which the store asks for
- * the insight again, once: the operation has expired (404), or its instance
- * stopped before it finished (503).
+ * The codes of a refused request for an insight that the store sends again
+ * after the refusal's `Retry-After`: the service was setting up an identical
+ * request, or had no capacity for a new one. Neither counts against the
+ * service's rate limit.
  *
  * @since n.e.x.t
  */
-const RESUBMITTED_OPERATION_STATUSES = [ 404, 503 ];
+const RETRIED_SUBMIT_CODES: AIInsightErrorCode[] = [
+	AI_INSIGHT_ERROR_CODES.GENERATION_IN_PROGRESS,
+	AI_INSIGHT_ERROR_CODES.SERVICE_BUSY,
+];
+
+/**
+ * The codes of a failed read of an operation after which the store asks for
+ * the insight again, once: the operation has expired, or an instance shutdown
+ * interrupted it.
+ *
+ * @since n.e.x.t
+ */
+const RESUBMITTED_OPERATION_CODES: AIInsightErrorCode[] = [
+	AI_INSIGHT_ERROR_CODES.NOT_FOUND,
+	AI_INSIGHT_ERROR_CODES.SERVICE_BUSY,
+];
+
+/**
+ * The codes of a refusal for the service's quota, which holds back every
+ * request for an insight, of any insight and any request, rather than the
+ * refused request alone: the user's allowance and the site's daily allowance
+ * count the generations of every insight.
+ *
+ * @since n.e.x.t
+ */
+const QUOTA_ERROR_CODES: AIInsightErrorCode[] = [
+	AI_INSIGHT_ERROR_CODES.RATE_LIMITED,
+	AI_INSIGHT_ERROR_CODES.DAILY_CAP,
+];
+
+/**
+ * The key of the entry that holds back the requests for every insight after a
+ * refusal for the service's quota, in the storage of the API cache.
+ *
+ * `API.set()` clears every key that starts with the name of the datapoint it
+ * wrote to, so the entry has a group of its own rather than one that starts
+ * with the name of an insight's datapoint.
+ *
+ * @since n.e.x.t
+ */
+const QUOTA_HOLD_CACHE_KEY = createCacheKey(
+	'modules',
+	MODULE_SLUG_ANALYTICS_4,
+	'generated-insight-quota-hold'
+);
 
 /**
  * The answer to a request for an insight.
@@ -295,6 +406,57 @@ function getErrorStatus( error: ErrorObject ): number | undefined {
 }
 
 /**
+ * Gets the Site Kit service's code of a failed request for an insight.
+ *
+ * The datapoints pass the service's code on as the error's `reason`. An error
+ * without a code the store knows, such as one with a code the service added
+ * later, one of the site's own request to the service, or a failed WordPress
+ * request, is read from its status, as the service codes an error without a
+ * code of its own: a 400 is `INVALID_ARGUMENT`, a 429 is `RATE_LIMITED`, a
+ * 503 is `SERVICE_BUSY`, and so on.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} [error] The error of the request.
+ * @return {(string|undefined)} The code, or `undefined` for an error with neither a code the store knows nor a status it can read, such as a network error.
+ */
+export function getAIInsightErrorCode(
+	error?: ErrorObject
+): AIInsightErrorCode | undefined {
+	const reason = error?.data?.reason;
+
+	if (
+		Object.values( AI_INSIGHT_ERROR_CODES ).includes(
+			reason as AIInsightErrorCode
+		)
+	) {
+		return reason as AIInsightErrorCode;
+	}
+
+	const status = error ? getErrorStatus( error ) : undefined;
+
+	return status === undefined ? undefined : ERROR_CODES_BY_STATUS[ status ];
+}
+
+/**
+ * Checks whether an error has one of a list of the Site Kit service's codes.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error The error of the request.
+ * @param {Array}  codes The codes.
+ * @return {boolean} Whether the code of the error, as `getAIInsightErrorCode()` reads it, is one of them.
+ */
+function hasErrorCode(
+	error: ErrorObject,
+	codes: AIInsightErrorCode[]
+): boolean {
+	const code = getAIInsightErrorCode( error );
+
+	return code !== undefined && codes.includes( code );
+}
+
+/**
  * Gets the error the store gives up with when the service returns no
  * insight it can read.
  *
@@ -350,11 +512,10 @@ function isInsightOrNull( value: unknown ): boolean {
  * every load for an insight that the service would refuse. An insight whose
  * request says otherwise passes its own `getFailureLifetime`.
  *
- * A refusal for the rate limit (429) is kept for at least an hour, in which
- * the user's own allowance accepts a request again, and for as long as the
- * service's `Retry-After` asks, such as until the daily cap resets, up to a
- * day. A refusal for permissions (403) is kept for an hour. Any other failure
- * isn't kept, so the next load asks again.
+ * A refusal for permissions (`PERMISSION_DENIED`) is kept for an hour. Any
+ * other failure isn't kept, so the next load asks again. A refusal for the
+ * service's quota holds back the requests for every insight instead, for as
+ * long as `getQuotaHoldLifetime()` says.
  *
  * @since n.e.x.t
  *
@@ -362,25 +523,103 @@ function isInsightOrNull( value: unknown ): boolean {
  * @return {(number|undefined)} The time to keep the failure, in seconds, or `undefined` when it isn't kept.
  */
 export function getFailureLifetime( error: ErrorObject ): number | undefined {
-	const status = getErrorStatus( error );
-
-	if ( status === 403 ) {
+	if (
+		getAIInsightErrorCode( error ) ===
+		AI_INSIGHT_ERROR_CODES.PERMISSION_DENIED
+	) {
 		return HOUR_IN_SECONDS;
 	}
 
-	if ( status === 429 ) {
-		const retryAfter = Number( error.data?.retryAfter );
+	return undefined;
+}
 
-		return Math.min(
-			DAY_IN_SECONDS,
-			Math.max(
-				HOUR_IN_SECONDS,
-				Number.isFinite( retryAfter ) ? retryAfter : 0
-			)
-		);
+/**
+ * Gets how long the store holds back its requests for every insight after the
+ * service refused one for its quota.
+ *
+ * - The site's daily allowance (`DAILY_CAP`) is spent until the next UTC
+ *   day, which the refusal's `Retry-After` reaches.
+ * - The user's allowance (`RATE_LIMITED`) is refused for at least
+ *   `AI_INSIGHT_RATE_LIMIT_HOLD`, and for longer when the refusal's
+ *   `Retry-After` asks for it.
+ *
+ * A refusal without a usable `Retry-After` is held for an hour, and none for
+ * longer than a day.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error The refusal.
+ * @return {number} The time to hold back the requests, in seconds.
+ */
+export function getQuotaHoldLifetime( error: ErrorObject ): number {
+	const retryAfter = error.data?.retryAfter;
+	const seconds =
+		typeof retryAfter === 'number' &&
+		Number.isFinite( retryAfter ) &&
+		retryAfter > 0
+			? Math.ceil( retryAfter )
+			: undefined;
+
+	if ( getAIInsightErrorCode( error ) === AI_INSIGHT_ERROR_CODES.DAILY_CAP ) {
+		return Math.min( DAY_IN_SECONDS, seconds ?? HOUR_IN_SECONDS );
 	}
 
-	return undefined;
+	return Math.min(
+		DAY_IN_SECONDS,
+		Math.max( AI_INSIGHT_RATE_LIMIT_HOLD, seconds ?? 0 )
+	);
+}
+
+/**
+ * Reads the refusal that holds back the requests for every insight, if one
+ * does.
+ *
+ * Every tab of the login session shares the entry, so a new tab doesn't spend
+ * another of the site's generations on a refusal.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Promise<(Object|undefined)>} The refusal, or `undefined` when no refusal holds back the requests, the entry can't be read, or the API cache is off.
+ */
+async function readQuotaHold(): Promise< ErrorObject | undefined > {
+	if ( ! usingCache() ) {
+		return undefined;
+	}
+
+	try {
+		const { cacheHit, value } = await getItem( QUOTA_HOLD_CACHE_KEY, {
+			shared: true,
+		} );
+
+		return cacheHit &&
+			isPlainObject( value ) &&
+			isPlainObject( ( value as { error?: unknown } ).error )
+			? ( value as { error: ErrorObject } ).error
+			: undefined;
+	} catch {
+		// Without the entry, the store asks the service, which refuses the
+		// request again if its quota is still spent.
+		return undefined;
+	}
+}
+
+/**
+ * Holds back the requests for every insight after a refusal for the service's
+ * quota, for as long as `getQuotaHoldLifetime()` says.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error The refusal.
+ * @return {Promise} A promise that resolves once the entry is written.
+ */
+async function writeQuotaHold( error: ErrorObject ): Promise< void > {
+	if ( usingCache() ) {
+		await setItem(
+			QUOTA_HOLD_CACHE_KEY,
+			{ error },
+			{ ttl: getQuotaHoldLifetime( error ), shared: true }
+		);
+	}
 }
 
 /**
@@ -503,6 +742,11 @@ function readCacheEntryStep< Insight >(
  * accept the request, the store asks again after the `Retry-After` of each
  * refusal, or `AI_INSIGHT_RETRY_INTERVAL` without one, until the deadline.
  *
+ * While a refusal for the service's quota holds back the requests for every
+ * insight, the store sends none and gives up with that refusal. A new refusal
+ * for the quota starts the hold. A refusal for a period without a visit
+ * (`NO_DATA`) is no insight to show, rather than an error.
+ *
  * @since n.e.x.t
  *
  * @param {Object} request  The requests and the cache entry of the insight.
@@ -513,13 +757,17 @@ async function submitInsight< Insight >(
 	request: AIInsightRequest< Insight >,
 	deadline: number
 ): Promise< SubmitStep< Insight > > {
+	const quotaRefusal = await readQuotaHold();
+
+	if ( quotaRefusal ) {
+		return { error: quotaRefusal };
+	}
+
 	let result = await request.submit();
 
 	while (
 		result.error &&
-		RETRIED_SUBMIT_STATUSES.includes(
-			getErrorStatus( result.error ) as number
-		)
+		hasErrorCode( result.error, RETRIED_SUBMIT_CODES )
 	) {
 		const delay = getRetryAfterDelay(
 			result.error.data?.retryAfter,
@@ -544,6 +792,16 @@ async function submitInsight< Insight >(
 	const { response, error } = result;
 
 	if ( error ) {
+		if (
+			getAIInsightErrorCode( error ) === AI_INSIGHT_ERROR_CODES.NO_DATA
+		) {
+			return { insight: null };
+		}
+
+		if ( hasErrorCode( error, QUOTA_ERROR_CODES ) ) {
+			await writeQuotaHold( error );
+		}
+
 		return { error };
 	}
 
@@ -605,9 +863,7 @@ async function readOperation< Insight >(
 
 	if ( error ) {
 		const status = getErrorStatus( error );
-		const isLost = RESUBMITTED_OPERATION_STATUSES.includes(
-			status as number
-		);
+		const isLost = hasErrorCode( error, RESUBMITTED_OPERATION_CODES );
 
 		// A failed generation, which includes one an instance shutdown
 		// interrupted, and a read the service refused, which includes an

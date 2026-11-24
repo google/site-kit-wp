@@ -43,10 +43,14 @@ use WP_Error;
 abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Executable_Datapoint, Permission_Aware_Datapoint {
 
 	/**
-	 * The statuses of a failed service request the browser acts on. Each of
-	 * them means one thing to the store that waits for the insight. Any other
-	 * failure, including a transport error that has no status, is a 500. A
-	 * datapoint that the service answers with fewer of them overrides the list.
+	 * The statuses of a failed service request that the datapoint passes on.
+	 * Any other failure, including a transport error that has no status, is a
+	 * 500. A datapoint that the service answers with fewer of them overrides
+	 * the list.
+	 *
+	 * The store that waits for the insight acts on the service's code, which
+	 * the error carries as `reason`, and on the status only for an error
+	 * without a code it knows, as the service's contract asks.
 	 *
 	 * @since n.e.x.t
 	 */

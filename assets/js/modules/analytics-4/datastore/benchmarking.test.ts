@@ -55,6 +55,7 @@ import {
 	AI_INSIGHT_DEADLINE,
 	AI_INSIGHT_OPERATION_LIFETIME,
 	AI_INSIGHT_POLL_INTERVAL,
+	AI_INSIGHT_RATE_LIMIT_HOLD,
 	AI_INSIGHT_RETRY_INTERVAL,
 } from './utils/ai-insight';
 
@@ -1989,7 +1990,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					'was interrupted',
 					errorResponse(
 						503,
-						{ reason: 'UNAVAILABLE' },
+						{ reason: 'SERVICE_BUSY' },
 						'benchmarking_insight_failed'
 					),
 				],
@@ -2237,42 +2238,58 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			} );
 
 			it.each( [
-				[ 'the rate limit, for an hour', 429, 60, HOUR_IN_SECONDS ],
 				[
-					'the rate limit without a Retry-After, for an hour',
-					429,
-					undefined,
+					'permissions, for an hour',
+					403,
+					'PERMISSION_DENIED',
 					HOUR_IN_SECONDS,
 				],
 				[
-					'the daily cap, until its Retry-After',
-					429,
-					7200,
-					2 * HOUR_IN_SECONDS,
-				],
-				[
-					'the daily cap, for up to a day',
-					429,
-					200000,
-					DAY_IN_SECONDS,
-				],
-				[ 'permissions, for an hour', 403, undefined, HOUR_IN_SECONDS ],
-				[
 					'an invalid request, for a day',
 					400,
-					undefined,
+					'INVALID_ARGUMENT',
 					DAY_IN_SECONDS,
 				],
 				[
-					'a failed generation, for an hour',
+					'a site the service has no record of, for a day',
+					400,
+					'SITE_NOT_FOUND',
+					DAY_IN_SECONDS,
+				],
+				[
+					'a failed model call, for an hour',
+					500,
+					'MODEL_UNAVAILABLE',
+					HOUR_IN_SECONDS,
+				],
+				[
+					'a model output that could not be used, for an hour',
+					500,
+					'MODEL_OUTPUT_INVALID',
+					HOUR_IN_SECONDS,
+				],
+				[
+					'another failure of the service, for an hour',
+					500,
+					'INTERNAL',
+					HOUR_IN_SECONDS,
+				],
+				[
+					'a 400 with a code the store does not know, by its status, for a day',
+					400,
+					'A_NEW_CODE',
+					DAY_IN_SECONDS,
+				],
+				[
+					'a 500 without a code, by its status, for an hour',
 					500,
 					undefined,
 					HOUR_IN_SECONDS,
 				],
 			] )(
 				'should keep a failure for %s, so the next load sends no request',
-				async ( _, status, retryAfter, lifetime ) => {
-					const refusal = errorResponse( status, { retryAfter } );
+				async ( _, status, reason, lifetime ) => {
+					const refusal = errorResponse( status, { reason } );
 
 					provideResponseWithPayload();
 					fetchMock.postOnce( insightEndpoint, refusal );
@@ -2306,6 +2323,231 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					} );
 				}
 			);
+
+			it.each( [
+				[
+					'the rate limit, for 30 minutes though its Retry-After is a minute',
+					'RATE_LIMITED',
+					60,
+					AI_INSIGHT_RATE_LIMIT_HOLD,
+				],
+				[
+					'the rate limit, for longer when its Retry-After asks for it',
+					'RATE_LIMITED',
+					7200,
+					2 * HOUR_IN_SECONDS,
+				],
+				[
+					'the rate limit without a Retry-After, for 30 minutes',
+					'RATE_LIMITED',
+					undefined,
+					AI_INSIGHT_RATE_LIMIT_HOLD,
+				],
+				[
+					'a 429 with a code the store does not know, as the rate limit',
+					'A_NEW_CODE',
+					60,
+					AI_INSIGHT_RATE_LIMIT_HOLD,
+				],
+				[
+					'the daily cap, until its Retry-After',
+					'DAILY_CAP',
+					7200,
+					2 * HOUR_IN_SECONDS,
+				],
+				[
+					'the daily cap, until its Retry-After, though that is under 30 minutes',
+					'DAILY_CAP',
+					600,
+					600,
+				],
+				[
+					'the daily cap without a Retry-After, for an hour',
+					'DAILY_CAP',
+					undefined,
+					HOUR_IN_SECONDS,
+				],
+				[
+					'the daily cap, for up to a day',
+					'DAILY_CAP',
+					200000,
+					DAY_IN_SECONDS,
+				],
+			] )(
+				'should hold back the requests for every insight after a refusal for %s',
+				async ( _, reason, retryAfter, lifetime ) => {
+					const refusal = errorResponse( 429, {
+						reason,
+						retryAfter,
+					} );
+
+					provideResponseWithPayload();
+					fetchMock.postOnce( insightEndpoint, refusal );
+
+					expect( await resolveInsight() ).toBeNull();
+					expect( console ).toHaveErrored();
+					expect( getInsightError() ).toEqual( refusal.body );
+
+					// The refusal isn't kept for its request alone.
+					expect(
+						await getSharedItem( getCacheKey() )
+					).toMatchObject( {
+						cacheHit: false,
+					} );
+
+					// The service's quota counts every request of the user and
+					// of the site, so the insight of another request, such as
+					// one for another date range, waits too.
+					const nextRegistry = createTestRegistry();
+					provideResponseWithPayload( nextRegistry, otherPayload );
+
+					expect( await resolveInsight( nextRegistry ) ).toBeNull();
+					expect( getInsightError( nextRegistry ) ).toEqual(
+						refusal.body
+					);
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+					// The API cache counts in whole seconds, so the checks
+					// leave a second on each side of the lifetime.
+					jest.setSystemTime( Date.now() + lifetime * 1000 - 2000 );
+
+					const heldRegistry = createTestRegistry();
+					provideResponseWithPayload( heldRegistry, otherPayload );
+
+					expect( await resolveInsight( heldRegistry ) ).toBeNull();
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+					jest.setSystemTime( Date.now() + 3000 );
+					fetchMock.postOnce( insightEndpoint, {
+						body: { insight: benchmarkingInsight },
+					} );
+
+					const laterRegistry = createTestRegistry();
+					provideResponseWithPayload( laterRegistry, otherPayload );
+
+					expect( await resolveInsight( laterRegistry ) ).toEqual(
+						benchmarkingInsight
+					);
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
+				}
+			);
+
+			it( 'should hold back the requests of every tab after a refusal for the quota', async () => {
+				const refusal = errorResponse( 429, {
+					reason: 'RATE_LIMITED',
+					retryAfter: 60,
+				} );
+
+				provideResponseWithPayload();
+				fetchMock.postOnce( insightEndpoint, refusal );
+
+				expect( await resolveInsight() ).toBeNull();
+				expect( console ).toHaveErrored();
+
+				// A new tab has a `sessionStorage` of its own, and shares
+				// `localStorage`.
+				sessionStorage.clear();
+
+				const nextRegistry = createTestRegistry();
+				provideResponseWithPayload( nextRegistry );
+
+				expect( await resolveInsight( nextRegistry ) ).toBeNull();
+				expect( getInsightError( nextRegistry ) ).toEqual(
+					refusal.body
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should send the request while the API cache is off, though a refusal for the quota holds back the requests', async () => {
+				provideResponseWithPayload();
+				fetchMock.postOnce(
+					insightEndpoint,
+					errorResponse( 429, {
+						reason: 'RATE_LIMITED',
+						retryAfter: 60,
+					} )
+				);
+
+				expect( await resolveInsight() ).toBeNull();
+				expect( console ).toHaveErrored();
+
+				fetchMock.postOnce( insightEndpoint, {
+					body: { insight: benchmarkingInsight },
+				} );
+
+				setUsingCache( false );
+
+				try {
+					const nextRegistry = createTestRegistry();
+					provideResponseWithPayload( nextRegistry );
+
+					expect( await resolveInsight( nextRegistry ) ).toEqual(
+						benchmarkingInsight
+					);
+				} finally {
+					setUsingCache( true );
+				}
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			it( 'should return null without an error, and keep it for a day, when the service has no visits to describe', async () => {
+				provideResponseWithPayload();
+				fetchMock.postOnce(
+					insightEndpoint,
+					errorResponse( 400, { reason: 'NO_DATA' } )
+				);
+
+				expect( await resolveInsight() ).toBeNull();
+				expect( console ).toHaveErrored();
+				// A period without a visit is a state of the site, not a
+				// failure.
+				expect( getInsightError() ).toBeUndefined();
+				expect( await getSharedItem( getCacheKey() ) ).toEqual( {
+					cacheHit: true,
+					value: { insight: null },
+					isError: false,
+				} );
+
+				jest.setSystemTime( Date.now() + DAY_IN_SECONDS * 1000 );
+
+				expect( await getSharedItem( getCacheKey() ) ).toMatchObject( {
+					cacheHit: false,
+				} );
+			} );
+
+			it( 'should ask again after the `retryAfter` of a 503 with a code the store does not know, by its status', async () => {
+				provideResponseWithPayload();
+				fetchMock.postOnce(
+					insightEndpoint,
+					errorResponse( 503, {
+						reason: 'A_NEW_CODE',
+						retryAfter: 1,
+					} )
+				);
+				fetchMock.postOnce( insightEndpoint, {
+					body: { insight: benchmarkingInsight },
+				} );
+
+				expect( await resolveInsight() ).toEqual( benchmarkingInsight );
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).toHaveFetchedTimes( 2, insightEndpoint );
+			} );
+
+			it( 'should not ask again after a 503 whose code says it is no refusal for capacity', async () => {
+				const failure = errorResponse( 503, {
+					reason: 'MODEL_UNAVAILABLE',
+					retryAfter: 1,
+				} );
+
+				provideResponseWithPayload();
+				fetchMock.post( insightEndpoint, failure );
+
+				expect( await resolveInsight() ).toBeNull();
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
+				expect( getInsightError() ).toEqual( failure.body );
+			} );
 
 			it( 'should keep no failure without a status, so the next load asks again', async () => {
 				provideResponseWithPayload();

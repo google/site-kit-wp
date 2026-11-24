@@ -68,6 +68,8 @@ import {
 	AIInsightOperationResponse,
 	AIInsightOutcome,
 	AIInsightSubmitResponse,
+	AI_INSIGHT_ERROR_CODES,
+	getAIInsightErrorCode,
 	getFailureLifetime,
 	resolveAIInsight,
 } from './utils/ai-insight';
@@ -198,22 +200,30 @@ function getInsightCacheKey( payload: string ): string {
  * would refuse or fail again.
  *
  * The entry is kept under the request the insight is written from, so a
- * failure is kept only for that request: new figures ask again.
+ * failure is kept only for that request: new figures ask again. The store
+ * reads the failure by the Site Kit service's code, as
+ * `getAIInsightErrorCode()` does, and a code it doesn't know by its status.
  *
- * - A refused request (400) is refused again for the same request, so it is
- *   kept for a day, as long as an insight is.
- * - A failed generation (500, which is also how the datapoints answer any
- *   other failure of the service or of the site's request to it) can succeed
- *   on a later try, but each try can cost a generation from the rate limit,
- *   which refills two an hour. It is kept for an hour, so a failure that
- *   repeats never empties the rate limit.
- * - The rate limit (429) and permissions (403) are kept as for any generated
- *   insight, by `getFailureLifetime()`.
+ * - A malformed request (`INVALID_ARGUMENT`) is refused again for the same
+ *   request, so it is kept for a day, as long as an insight is. So is a
+ *   request of a site the service has no record of (`SITE_NOT_FOUND`), which
+ *   only a reset of Site Kit fixes, and which clears the entry.
+ * - A failed generation (`MODEL_UNAVAILABLE`, `MODEL_OUTPUT_INVALID`, or
+ *   `INTERNAL`, which is also how the datapoints answer any other failure of
+ *   the service or of the site's request to it) can succeed on a later try,
+ *   but each try can cost a generation from the rate limit, which refills two
+ *   an hour. It is kept for an hour, so a failure that repeats never empties
+ *   the rate limit.
+ * - A refusal for permissions (`PERMISSION_DENIED`) is kept as for any
+ *   generated insight, by `getFailureLifetime()`.
  *
  * Any other failure isn't kept, so the next load asks again: a service too
- * busy to start the generation (503) or a generation that was interrupted,
- * neither of which costs a generation, another request that is still
- * generating the insight (409), a lost operation (404), or a network error.
+ * busy to start the generation or a generation that was interrupted
+ * (`SERVICE_BUSY`), neither of which costs a generation, another request that
+ * is still generating the insight (`GENERATION_IN_PROGRESS`), a lost
+ * operation (`NOT_FOUND`), or a network error. A refusal for the quota
+ * (`RATE_LIMITED` or `DAILY_CAP`) isn't kept here either: it holds back the
+ * requests for every insight, for as long as `getQuotaHoldLifetime()` says.
  *
  * @since n.e.x.t
  *
@@ -221,17 +231,19 @@ function getInsightCacheKey( payload: string ): string {
  * @return {(number|undefined)} The time to keep the failure, in seconds, or `undefined` when it isn't kept.
  */
 function getInsightFailureLifetime( error: ErrorObject ): number | undefined {
-	const status = error.data?.status;
+	switch ( getAIInsightErrorCode( error ) ) {
+		case AI_INSIGHT_ERROR_CODES.INVALID_ARGUMENT:
+		case AI_INSIGHT_ERROR_CODES.SITE_NOT_FOUND:
+			return DAY_IN_SECONDS;
 
-	if ( status === 400 ) {
-		return DAY_IN_SECONDS;
+		case AI_INSIGHT_ERROR_CODES.MODEL_UNAVAILABLE:
+		case AI_INSIGHT_ERROR_CODES.MODEL_OUTPUT_INVALID:
+		case AI_INSIGHT_ERROR_CODES.INTERNAL:
+			return HOUR_IN_SECONDS;
+
+		default:
+			return getFailureLifetime( error );
 	}
-
-	if ( status === 500 ) {
-		return HOUR_IN_SECONDS;
-	}
-
-	return getFailureLifetime( error );
 }
 
 const fetchGetBenchmarkingDataStore = createFetchStore( {
