@@ -41,6 +41,8 @@ export interface TileShellProps {
 	headerLabel?: string;
 	/** Tooltip content shown next to the title. */
 	infoTooltip?: ReactNode;
+	/** Extra class for the tooltip's popup, e.g. to set its width. */
+	infoTooltipClassName?: string;
 	/** Extra class for the body element. */
 	bodyClassName?: string;
 }
@@ -52,6 +54,7 @@ const TileShell: FC< TileShellProps > = ( {
 	titleAs = 'h3',
 	headerLabel,
 	infoTooltip,
+	infoTooltipClassName,
 	bodyClassName,
 	children,
 } ) => {
@@ -68,7 +71,12 @@ const TileShell: FC< TileShellProps > = ( {
 						{ title }
 					</Typography>
 
-					{ !! infoTooltip && <InfoTooltip title={ infoTooltip } /> }
+					{ !! infoTooltip && (
+						<InfoTooltip
+							title={ infoTooltip }
+							tooltipClassName={ infoTooltipClassName }
+						/>
+					) }
 
 					{ !! headerLabel && (
 						<Typography

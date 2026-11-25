@@ -38,6 +38,11 @@ export interface SetupStepProps {
 	 * for a step that leaves the page and must not navigate before then.
 	 */
 	onComplete: () => void | Promise< unknown >;
+
+	/**
+	 * Called to open the previous step in the flow's order.
+	 */
+	onGoBack?: () => void;
 }
 
 /**

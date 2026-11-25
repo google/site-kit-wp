@@ -24,17 +24,17 @@ import { FC, FormEvent } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
+import ExpressSetupStepActions from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupStepActions';
 import {
 	SetupStep,
 	SetupStepProps,
@@ -45,13 +45,26 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
-const StepSurveyCTA: FC< SetupStepProps > = ( { onComplete } ) => {
+const StepSurveyCTA: FC< SetupStepProps > = ( { onComplete, onGoBack } ) => {
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
+
+	const submitCTA = useCallback( async () => {
+		setIsSubmitting( true );
+
+		// TODO: #13742 -- Submit the CTA.
+		await new Promise( ( resolve ) => {
+			setTimeout( resolve, 2000 );
+		} );
+
+		await onComplete();
+	}, [ onComplete ] );
+
 	const onSubmit = useCallback(
-		( event: FormEvent< HTMLFormElement > ) => {
+		async ( event: FormEvent< HTMLFormElement > ) => {
 			event.preventDefault();
-			onComplete();
+			await submitCTA();
 		},
-		[ onComplete ]
+		[ submitCTA ]
 	);
 
 	return (
@@ -92,10 +105,12 @@ const StepSurveyCTA: FC< SetupStepProps > = ( { onComplete } ) => {
 						</P>
 					</div>
 				</div>
-				{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
-				<SpinnerButton type="submit">
-					{ __( 'Continue', 'google-site-kit' ) }
-				</SpinnerButton>
+
+				<ExpressSetupStepActions
+					isBusy={ isSubmitting }
+					label={ __( 'Publish to your site', 'google-site-kit' ) }
+					onGoBack={ onGoBack }
+				/>
 			</form>
 		</div>
 	);

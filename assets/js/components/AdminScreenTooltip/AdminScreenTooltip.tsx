@@ -1,5 +1,5 @@
 /**
- * AdminMenuTooltip component.
+ * AdminScreenTooltip component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,28 +19,34 @@
 /**
  * WordPress dependencies
  */
+import { useInstanceId } from '@wordpress/compose';
 import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import JoyrideTooltip from '@/js/components/JoyrideTooltip';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
+import { useHideTooltip } from './hooks/useHideTooltip';
+import { useTooltipSettings } from './hooks/useTooltipSettings';
 
 export function AdminScreenTooltip() {
-	const viewContext = useViewContext();
-	const { setValue } = useDispatch( CORE_UI );
 	const breakpoint = useBreakpoint();
+	const hideTooltip = useHideTooltip();
+	const tooltipSettings = useTooltipSettings();
+
+	const instanceID = useInstanceId(
+		AdminScreenTooltip,
+		'googlesitekit-admin-screen-tooltip'
+	) as string;
 
 	const {
+		id,
 		isTooltipVisible = false,
 		target,
 		placement,
@@ -49,36 +55,32 @@ export function AdminScreenTooltip() {
 		title,
 		content,
 		dismissLabel,
+		gaTrackingEventArgs = {},
 		gaTrackingEventLabel,
 		floaterProps,
 		isCenteredOnMobile = true,
-	} = useSelect(
-		( select ) =>
-			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
-				isTooltipVisible: false,
-			}
-	);
+		onDismiss,
+	} = tooltipSettings;
 
-	function handleViewTooltip() {
-		trackEvent(
-			`${ viewContext }_${ tooltipSlug }`,
-			'tooltip_view',
-			gaTrackingEventLabel
-		);
-	}
+	const { category, label, value } = gaTrackingEventArgs;
+
+	const eventID = id ?? tooltipSlug ?? instanceID;
+	const eventLabel = label ?? gaTrackingEventLabel;
+
+	const { dismiss, view } = useNotificationEvents( eventID, category, {
+		dismissAction: 'tooltip_dismiss',
+		viewAction: 'tooltip_view',
+	} );
+
+	const handleViewTooltip = useCallback( () => {
+		view( eventLabel, value );
+	}, [ eventLabel, value, view ] );
 
 	const handleDismissTooltip = useCallback( () => {
-		// Track dismiss event.
-		if ( tooltipSlug ) {
-			trackEvent(
-				`${ viewContext }_${ tooltipSlug }`,
-				'tooltip_dismiss',
-				gaTrackingEventLabel
-			);
-		}
-
-		setValue( 'admin-screen-tooltip', undefined );
-	}, [ setValue, tooltipSlug, viewContext, gaTrackingEventLabel ] );
+		dismiss( eventLabel, value );
+		hideTooltip();
+		onDismiss?.();
+	}, [ dismiss, eventLabel, hideTooltip, onDismiss, value ] );
 
 	if ( ! isTooltipVisible ) {
 		return null;

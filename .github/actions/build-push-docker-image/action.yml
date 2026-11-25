@@ -42,7 +42,7 @@ runs:
 
     - name: Log in to container registry
       if: inputs.push == 'true'
-      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # ratchet:docker/login-action@v4
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # ratchet:docker/login-action@v4
       with:
         registry: ghcr.io
         username: ${{ inputs.registry-username }}

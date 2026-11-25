@@ -138,7 +138,7 @@ const OnboardingComplete: FC< OnboardingCompleteProps > = ( {
 		case 'noPayment':
 			notificationContent.description = createInterpolateElement(
 				__(
-					'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions and contributions. <a>Learn more</a>',
+					'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions, and contributions. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{

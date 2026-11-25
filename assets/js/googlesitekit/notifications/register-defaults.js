@@ -32,6 +32,7 @@ import SetUpEmailReportingOverlayNotification, {
 } from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
 import {
 	ALL_SERVICES_TAB_PATH,
+	FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
 	WHATS_NEW_TAB_PATH,
 } from '@/js/components/feature-discovery/constants';
 import FeatureDiscoveryCallout, {
@@ -89,6 +90,7 @@ import {
 	requireGoogleTagGatewayEnabled,
 	requireHasRecoverableModules,
 	requireIsAuthenticated,
+	requireItemDismissed,
 	requireModuleActive,
 	requireModuleConnected,
 	requireModuleGatheringData,
@@ -755,7 +757,11 @@ export const DEFAULT_NOTIFICATIONS = {
 		featureFlag: 'featureDiscoveryHub',
 		checkRequirements: asyncRequireAll(
 			requireSetupCTAsNotHidden(),
-			requireCapability( PERMISSION_MANAGE_OPTIONS )
+			requireCapability( PERMISSION_MANAGE_OPTIONS ),
+			asyncRequire(
+				false,
+				requireItemDismissed( FEATURE_DISCOVERY_VISITED_ITEM_SLUG )
+			)
 		),
 	},
 	[ PDF_INTRODUCTION_OVERLAY_NOTIFICATION ]: {

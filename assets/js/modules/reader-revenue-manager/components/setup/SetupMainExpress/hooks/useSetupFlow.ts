@@ -97,17 +97,19 @@ export function findBlockingStep(
  * @since 1.190.0
  * @since 1.191.0 Returns no current step until the initial step resolves.
  * @since 1.192.0 Added the `ctaType` parameter and the existing CTA step.
+ * @since n.e.x.t Added the `goBack` callback.
  *
  * @param {Array.<Object>} steps     Ordered step definitions. Must be referentially stable.
  * @param {string}         [ctaType] Optional. The express setup CTA type, one of `EXPRESS_SETUP_CTAS`.
- * @return {Object} The current step definition, and a callback that advances to the next step that is not yet complete.
+ * @return {Object} The current step definition, a callback that advances to the next step that is not yet complete, and a callback that opens the previous step.
  */
 export default function useSetupFlow(
 	steps: SetupStep[],
 	ctaType?: ExpressSetupCTAType
 ): {
 	currentStep: SetupStep | undefined;
-	advance: () => void;
+	goBack: () => void;
+	goForward: () => void;
 } {
 	// `@wordpress/data` types `useRegistry()` as returning `Function`.
 	const registry = useRegistry() as unknown as Registry;
@@ -230,13 +232,36 @@ export default function useSetupFlow(
 		steps,
 	] );
 
-	// Reads the registry when called rather than a value captured at render,
-	// as steps call `onComplete` straight after saving their changes.
-	const advance = useCallback( () => {
+	const goTo = useCallback(
+		( step: SetupStep ) => {
+			// A stored error clears only when the same request runs again, so drop
+			// any errors the step being left shows, or the next step shows them.
+			const { clearActionErrors, clearSelectorErrors } =
+				registry.dispatch( MODULES_READER_REVENUE_MANAGER );
+
+			clearActionErrors();
+			clearSelectorErrors();
+
+			setStep( step.slug );
+		},
+		[ registry, setStep ]
+	);
+
+	const goBack = useCallback( () => {
+		if ( isExistingCTAsStep || currentIndex < 1 ) {
+			return;
+		}
+
+		goTo( steps[ currentIndex - 1 ] );
+	}, [ currentIndex, goTo, isExistingCTAsStep, steps ] );
+
+	const goForward = useCallback( () => {
 		if ( isExistingCTAsStep ) {
 			return;
 		}
 
+		// Reads the registry when called rather than a value captured at render,
+		// as steps call `onComplete` straight after saving their changes.
 		const nextStep = resolveStep(
 			steps,
 			registry.select as Select,
@@ -244,17 +269,9 @@ export default function useSetupFlow(
 		);
 
 		if ( nextStep ) {
-			// A stored error clears only when the same request runs again, so drop
-			// any errors the completed step left, or the next step shows them.
-			const { clearActionErrors, clearSelectorErrors } =
-				registry.dispatch( MODULES_READER_REVENUE_MANAGER );
-
-			clearActionErrors();
-			clearSelectorErrors();
-
-			setStep( nextStep.slug );
+			goTo( nextStep );
 		}
-	}, [ currentIndex, isExistingCTAsStep, registry, setStep, steps ] );
+	}, [ currentIndex, goTo, isExistingCTAsStep, registry, steps ] );
 
 	let currentStep: SetupStep | undefined;
 
@@ -271,5 +288,5 @@ export default function useSetupFlow(
 		currentStep = steps[ currentIndex ];
 	}
 
-	return { currentStep, advance };
+	return { currentStep, goBack, goForward };
 }

@@ -87,6 +87,7 @@ class SettingsTest extends SettingsTestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			get_option( Settings::OPTION ),
 			'Analytics 4 default settings should match expected values.'
@@ -441,6 +442,30 @@ class SettingsTest extends SettingsTestCase {
 			$saved_options = get_option( $options_key );
 			$this->assertEquals( 0, $saved_options[ $property ], "String numeric value in {$property} should default to 0." );
 		}
+	}
+
+	/**
+	 * @dataProvider data_measurement_protocol_secret_ids
+	 *
+	 * @param mixed  $value    Value to save.
+	 * @param string $expected Expected saved value.
+	 */
+	public function test_sanitize_measurement_protocol_secret_id( $value, $expected ) {
+		$this->settings->register();
+		$this->settings->merge( array( 'measurementProtocolSecretID' => $value ) );
+
+		$this->assertSame(
+			$expected,
+			get_option( $this->get_option_name() )['measurementProtocolSecretID'],
+			'The `measurementProtocolSecretID` setting should be saved only as a string.'
+		);
+	}
+
+	public function data_measurement_protocol_secret_ids() {
+		return array(
+			'a string' => array( 'test-secret-id', 'test-secret-id' ),
+			'a number' => array( 123, '' ),
+		);
 	}
 
 	/**

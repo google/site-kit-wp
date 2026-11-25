@@ -24,7 +24,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -36,6 +39,7 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
@@ -46,6 +50,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
+use Google\Site_Kit\Tests\Dashboard_Sharing_Trait;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
@@ -59,6 +64,8 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaKeyEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListCustomDimensionsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListKeyEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListMeasurementProtocolSecretsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaMeasurementProtocolSecret;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaAdSenseLink;
@@ -70,12 +77,14 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Query;
+use WP_REST_Request;
 use WP_User;
 
 /**
  * @group Modules
  */
 class Analytics_4Test extends TestCase {
+	use Dashboard_Sharing_Trait;
 	use Module_With_Data_Available_State_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Scopes_ContractTests;
@@ -163,6 +172,12 @@ class Analytics_4Test extends TestCase {
 		wp_set_current_user( $this->user->ID );
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( $this->options ) )->register();
+	}
+
+	public function tear_down() {
+		parent::tear_down();
+		// Leave no server behind for the next test class.
+		unset( $GLOBALS['wp_rest_server'] );
 	}
 
 	public function test_register() {
@@ -1115,6 +1130,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be initialized with account ID and default values before property provisioning.'
@@ -1148,6 +1164,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be updated with property, web data stream, and measurement IDs after successful provisioning.'
@@ -1281,6 +1298,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be initialized with account ID and default values before property provisioning with failing container lookup.'
@@ -1415,6 +1433,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be initialized with account ID and default values before property provisioning.'
@@ -1451,6 +1470,7 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt'     => 0,
 				'newConversionEventsLastUpdateAt'      => 0,
 				'freshDataIncludesWooCommerceProducts' => true,
+				'measurementProtocolSecretID'          => '',
 			),
 			$options->get( Settings::OPTION ),
 			'Analytics settings should be updated with property, web data stream, and measurement IDs after successful provisioning.'
@@ -1914,6 +1934,135 @@ class Analytics_4Test extends TestCase {
 		$this->assertNull( $settings['availableCustomDimensions'], 'Available custom dimensions should be reset to null when property ID changes' );
 	}
 
+	public function test_get_web_data_stream_name() {
+		$this->assertSame(
+			'properties/123456789/dataStreams/987654321',
+			Analytics_4::get_web_data_stream_name( '123456789', '987654321' ),
+			'The web data stream name should contain the property ID and the web data stream ID.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_web_data_stream_settings_changes
+	 *
+	 * @param array $settings_change Change to the property, web data stream or measurement ID.
+	 */
+	public function test_register__clears_measurement_protocol_secret_on_web_data_stream_change( $settings_change ) {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-A1B2C3D4E5',
+			)
+		);
+		$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+		$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/test-secret-id' );
+		$secret->setSecretValue( 'test-secret-value' );
+		$this->assertTrue(
+			$this->analytics->get_measurement_protocol_secret()->store( $secret ),
+			'The secret should be stored before the web data stream changes.'
+		);
+
+		$this->analytics->get_settings()->merge( $settings_change );
+
+		$this->assertOptionNotExists(
+			Measurement_Protocol_Settings::OPTION,
+			'The stored Measurement Protocol secret should be deleted when the connected web data stream changes.'
+		);
+		$this->assertSame(
+			'',
+			$this->analytics->get_settings()->get()['measurementProtocolSecretID'],
+			'The `measurementProtocolSecretID` setting should be emptied when the connected web data stream changes.'
+		);
+		$this->assertSame(
+			$settings_change,
+			array_intersect_key( $this->analytics->get_settings()->get(), $settings_change ),
+			'The changed property, web data stream or measurement ID should be saved after the secret is cleared.'
+		);
+	}
+
+	public function data_web_data_stream_settings_changes() {
+		return array(
+			'property ID'        => array( array( 'propertyID' => '111111111' ) ),
+			'web data stream ID' => array( array( 'webDataStreamID' => '222222222' ) ),
+			'measurement ID'     => array( array( 'measurementID' => 'G-F6G7H8I9J0' ) ),
+		);
+	}
+
+	public function test_register__keeps_measurement_protocol_secret_on_other_settings_change() {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-A1B2C3D4E5',
+			)
+		);
+		$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+		$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/test-secret-id' );
+		$secret->setSecretValue( 'test-secret-value' );
+		$this->assertTrue(
+			$this->analytics->get_measurement_protocol_secret()->store( $secret ),
+			'The secret should be stored before other settings change.'
+		);
+
+		$this->analytics->get_settings()->merge( array( 'useSnippet' => false ) );
+
+		$this->assertSame(
+			'test-secret-value',
+			$this->analytics->get_measurement_protocol_secret()->get_api_secret(),
+			'The stored Measurement Protocol secret should be kept when other settings change.'
+		);
+		$this->assertSame(
+			'test-secret-id',
+			$this->analytics->get_settings()->get()['measurementProtocolSecretID'],
+			'The `measurementProtocolSecretID` setting should be kept when other settings change.'
+		);
+	}
+
+	public function test_measurement_protocol_secret_value_not_exposed() {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-A1B2C3D4E5',
+			)
+		);
+		$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+		$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/test-secret-id' );
+		$secret->setSecretValue( 'test-secret-value' );
+		$this->analytics->get_measurement_protocol_secret()->store( $secret );
+
+		$this->assertSame(
+			'test-secret-value',
+			$this->analytics->get_measurement_protocol_secret()->get_api_secret(),
+			'The Measurement Protocol secret should be stored for this test.'
+		);
+
+		$this->register_modules_rest_routes( new Modules( $this->context, $this->options, $this->user_options, $this->authentication ) );
+		$response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/settings' ) );
+
+		$this->assertSame( 200, $response->get_status(), 'The `GET:settings` request should succeed.' );
+		$this->assertStringNotContainsString(
+			'test-secret-value',
+			wp_json_encode( $response->get_data() ),
+			'The `GET:settings` endpoint should not return the secret value.'
+		);
+		$this->assertStringNotContainsString(
+			'test-secret-value',
+			wp_json_encode( $this->analytics->get_inline_data() ),
+			'The inline module data should not contain the secret value.'
+		);
+		$this->assertStringNotContainsString(
+			'test-secret-value',
+			wp_json_encode( $this->analytics->get_debug_fields() ),
+			'The Site Health debug fields should not contain the secret value.'
+		);
+	}
+
 	public function test_only_googlesitekit_prefixed_dimensions_are_retained() {
 		// Given: Analytics 4 is registered with a mixture of valid and invalid custom dimensions.
 		$this->analytics->register();
@@ -1966,12 +2115,23 @@ class Analytics_4Test extends TestCase {
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
+		$is_stored = ( new Measurement_Protocol_Settings( new Encrypted_Options( $options ) ) )->set(
+			array(
+				'secretValue'     => 'test-secret-value',
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'secretID'        => 'test-secret-id',
+			)
+		);
+
+		$this->assertTrue( $is_stored, 'The Measurement Protocol secret should be stored before deactivation.' );
 
 		$analytics = new Analytics_4( $this->context, $options );
 		$analytics->set_data_available();
 		$analytics->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION, 'Analytics 4 settings option should be removed on deactivation' );
+		$this->assertOptionNotExists( Measurement_Protocol_Settings::OPTION, 'The stored Measurement Protocol secret should be removed on deactivation.' );
 		$this->assertFalse( $analytics->is_data_available(), 'Data availability should be reset on deactivation' );
 	}
 
@@ -2036,6 +2196,34 @@ class Analytics_4Test extends TestCase {
 			'benchmarking-data',
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should not expose the benchmarking data datapoint with typical traffic disabled'
+		);
+	}
+
+	public function test_get_datapoints__serverSideEvents() {
+		$this->enable_feature( 'serverSideEvents' );
+
+		$this->assertContains(
+			'acknowledge-user-data-collection',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should expose the user data collection acknowledgement datapoint with the `serverSideEvents` feature flag enabled.'
+		);
+		$this->assertContains(
+			'create-measurement-protocol-secret',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should expose the Measurement Protocol secret datapoint with the `serverSideEvents` feature flag enabled.'
+		);
+	}
+
+	public function test_get_datapoints__serverSideEvents_disabled() {
+		$this->assertNotContains(
+			'acknowledge-user-data-collection',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should not expose the user data collection acknowledgement datapoint with the `serverSideEvents` feature flag disabled.'
+		);
+		$this->assertNotContains(
+			'create-measurement-protocol-secret',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should not expose the Measurement Protocol secret datapoint with the `serverSideEvents` feature flag disabled.'
 		);
 	}
 
@@ -3384,6 +3572,356 @@ class Analytics_4Test extends TestCase {
 			$data->get_error_data( 'missing_required_scopes' ),
 			'Error data should contain required scopes and status 403 when Analytics edit scope is not granted for enhanced measurement settings.'
 		);
+	}
+
+	public function test_acknowledge_user_data_collection() {
+		$this->enable_feature( 'serverSideEvents' );
+		$this->analytics->get_settings()->merge( array( 'propertyID' => '123456789' ) );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				$this->request_handler_calls[] = $request;
+
+				return new FulfilledPromise( new Response( 200, array(), '{}' ) );
+			}
+		);
+		$this->analytics->register();
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		$response = $this->analytics->set_data( 'acknowledge-user-data-collection', array( 'propertyID' => '123456789' ) );
+
+		$this->assertTrue( $response, 'Acknowledging user data collection should succeed.' );
+		$this->assertCount( 1, $this->request_handler_calls, 'One request should be sent to acknowledge user data collection.' );
+		$this->assertSame(
+			'POST https://analyticsadmin.googleapis.com/v1beta/properties/123456789:acknowledgeUserDataCollection',
+			$this->request_handler_calls[0]->getMethod() . ' ' . $this->request_handler_calls[0]->getUri(),
+			'The acknowledgement should be sent for the given property.'
+		);
+		$this->assertSame(
+			array( 'acknowledgement' => 'I acknowledge that I have the necessary privacy disclosures and rights from my end users for the collection and processing of their data, including the association of such data with the visitation information Google Analytics collects from my site and/or app property.' ),
+			json_decode( (string) $this->request_handler_calls[0]->getBody(), true ),
+			'The request should contain the exact acknowledgement text that the Admin API requires.'
+		);
+	}
+
+	public function test_create_measurement_protocol_secret() {
+		$this->enable_feature( 'serverSideEvents' );
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+			)
+		);
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				$this->request_handler_calls[] = $request;
+
+				if ( 'POST' === $request->getMethod() ) {
+					$secret = new GoogleAnalyticsAdminV1betaMeasurementProtocolSecret();
+					$secret->setName( 'properties/123456789/dataStreams/987654321/measurementProtocolSecrets/new-secret-id' );
+					$secret->setDisplayName( 'Site Kit by Google' );
+					$secret->setSecretValue( 'new-secret-value' );
+
+					return new FulfilledPromise( new Response( 200, array(), wp_json_encode( $secret ) ) );
+				}
+
+				return new FulfilledPromise( new Response( 200, array(), wp_json_encode( new GoogleAnalyticsAdminV1betaListMeasurementProtocolSecretsResponse() ) ) );
+			}
+		);
+		$this->analytics->register();
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+		$modules = new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->force_set_property( $modules, 'modules', array( Analytics_4::MODULE_SLUG => $this->analytics ) );
+		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( Analytics_4::MODULE_SLUG ) );
+		$this->register_modules_rest_routes( $modules );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/create-measurement-protocol-secret' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'propertyID'      => '123456789',
+					'webDataStreamID' => '987654321',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertSame( 200, $response->get_status(), 'The `POST:create-measurement-protocol-secret` request should succeed.' );
+		$this->assertSame(
+			array( 'measurementProtocolSecretID' => 'new-secret-id' ),
+			$response->get_data(),
+			'The response should contain only the secret ID, never the secret value.'
+		);
+		$this->assertSame(
+			array( 'GET', 'POST' ),
+			array_map(
+				fn ( Request $request ) => $request->getMethod(),
+				$this->request_handler_calls
+			),
+			'The secrets should be listed, then a secret should be created.'
+		);
+		$this->assertSame(
+			'new-secret-value',
+			$this->analytics->get_measurement_protocol_secret()->get_api_secret(),
+			'The created secret should be stored.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_server_side_events_datapoints__requires_edit_scope
+	 *
+	 * @param string $datapoint        Datapoint name.
+	 * @param string $expected_message Message that asks for the edit scope.
+	 */
+	public function test_server_side_events_datapoints__requires_edit_scope( $datapoint, $expected_message ) {
+		$this->enable_feature( 'serverSideEvents' );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				$this->request_handler_calls[] = $request;
+
+				return new FulfilledPromise( new Response( 200, array(), '{}' ) );
+			}
+		);
+
+		$response = $this->analytics->set_data(
+			$datapoint,
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+			)
+		);
+
+		$this->assertWPErrorWithMessage( $expected_message, $response );
+		$this->assertSame(
+			'missing_required_scopes',
+			$response->get_error_code(),
+			'The error code should be `missing_required_scopes` when the Analytics edit scope is not granted.'
+		);
+		$this->assertSame(
+			array(
+				'status' => 403,
+				'scopes' => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+			),
+			$response->get_error_data( 'missing_required_scopes' ),
+			'The error should ask for the `analytics.edit` scope with status 403.'
+		);
+		$this->assertCount( 0, $this->request_handler_calls, 'No request should be sent without the Analytics edit scope.' );
+	}
+
+	public function data_server_side_events_datapoints__requires_edit_scope() {
+		return array(
+			'acknowledge-user-data-collection'   => array(
+				'acknowledge-user-data-collection',
+				'You’ll need to grant Site Kit permission to acknowledge user data collection for this Analytics property on your behalf.',
+			),
+			'create-measurement-protocol-secret' => array(
+				'create-measurement-protocol-secret',
+				'You’ll need to grant Site Kit permission to create a Measurement Protocol secret on your behalf.',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_server_side_events_datapoints__invalid_params
+	 *
+	 * @param string $datapoint        Datapoint name.
+	 * @param array  $data             Request data.
+	 * @param string $expected_code    Expected error code.
+	 * @param string $expected_message Expected error message.
+	 */
+	public function test_server_side_events_datapoints__invalid_params( $datapoint, $data, $expected_code, $expected_message ) {
+		$this->enable_feature( 'serverSideEvents' );
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+			)
+		);
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				$this->request_handler_calls[] = $request;
+
+				return new FulfilledPromise( new Response( 200, array(), '{}' ) );
+			}
+		);
+		$this->analytics->register();
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		$response = $this->analytics->set_data( $datapoint, $data );
+
+		$this->assertWPErrorWithMessage( $expected_message, $response );
+		$this->assertSame( $expected_code, $response->get_error_code(), "The error code should be `$expected_code`." );
+		$this->assertCount( 0, $this->request_handler_calls, 'No request should be sent with an invalid parameter.' );
+	}
+
+	public function data_server_side_events_datapoints__invalid_params() {
+		return array(
+			'acknowledgement without propertyID'   => array(
+				'acknowledge-user-data-collection',
+				array(),
+				'missing_required_param',
+				'Request parameter is empty: propertyID.',
+			),
+			'acknowledgement for another property' => array(
+				'acknowledge-user-data-collection',
+				array( 'propertyID' => '111111111' ),
+				'rest_invalid_param',
+				'Invalid parameter: propertyID.',
+			),
+			'secret without propertyID'            => array(
+				'create-measurement-protocol-secret',
+				array( 'webDataStreamID' => '987654321' ),
+				'missing_required_param',
+				'Request parameter is empty: propertyID.',
+			),
+			'secret without webDataStreamID'       => array(
+				'create-measurement-protocol-secret',
+				array( 'propertyID' => '123456789' ),
+				'missing_required_param',
+				'Request parameter is empty: webDataStreamID.',
+			),
+			'secret for another property'          => array(
+				'create-measurement-protocol-secret',
+				array(
+					'propertyID'      => '111111111',
+					'webDataStreamID' => '987654321',
+				),
+				'rest_invalid_param',
+				'Invalid parameter: propertyID.',
+			),
+			'secret for another web data stream'   => array(
+				'create-measurement-protocol-secret',
+				array(
+					'propertyID'      => '123456789',
+					'webDataStreamID' => '222222222',
+				),
+				'rest_invalid_param',
+				'Invalid parameter: webDataStreamID.',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_server_side_events_datapoints__editor_access_required
+	 *
+	 * @param string $datapoint Datapoint name.
+	 */
+	public function test_server_side_events_datapoints__editor_access_required( $datapoint ) {
+		$this->enable_feature( 'serverSideEvents' );
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+			)
+		);
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				// Google answers the request that lists the secrets, and refuses the `POST` request of each datapoint.
+				if ( 'GET' === $request->getMethod() ) {
+					return new FulfilledPromise( new Response( 200, array(), wp_json_encode( new GoogleAnalyticsAdminV1betaListMeasurementProtocolSecretsResponse() ) ) );
+				}
+
+				return new FulfilledPromise(
+					new Response(
+						403,
+						array(),
+						wp_json_encode(
+							array(
+								'error' => array(
+									'code'    => 403,
+									'message' => 'The caller does not have permission',
+									'status'  => 'PERMISSION_DENIED',
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+		$this->analytics->register();
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		$response = $this->analytics->set_data(
+			$datapoint,
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'You need Editor access to this Google Analytics property to complete this step.', $response );
+		$this->assertSame(
+			'analytics_editor_access_required',
+			$response->get_error_code(),
+			'The error code should be `analytics_editor_access_required` when Google refuses the request for lack of Editor access.'
+		);
+		$this->assertSame(
+			array(
+				'status' => 403,
+				'reason' => 'PERMISSION_DENIED',
+			),
+			$response->get_error_data(),
+			'The error data should contain the 403 status and the `PERMISSION_DENIED` reason.'
+		);
+	}
+
+	public function data_server_side_events_datapoints__editor_access_required() {
+		return array(
+			'acknowledge-user-data-collection'   => array( 'acknowledge-user-data-collection' ),
+			'create-measurement-protocol-secret' => array( 'create-measurement-protocol-secret' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_server_side_events_datapoints__editor_access_required
+	 *
+	 * @param string $datapoint Datapoint name.
+	 */
+	public function test_server_side_events_datapoints__view_only_user( $datapoint ) {
+		$this->enable_feature( 'serverSideEvents' );
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+			)
+		);
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) {
+				$this->request_handler_calls[] = $request;
+
+				return new FulfilledPromise( new Response( 200, array(), '{}' ) );
+			}
+		);
+		$this->analytics->register();
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+		$modules = new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->force_set_property( $modules, 'modules', array( Analytics_4::MODULE_SLUG => $this->analytics ) );
+		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( Analytics_4::MODULE_SLUG ) );
+		$this->register_modules_rest_routes( $modules );
+		$this->share_modules_with_editors( array( Analytics_4::MODULE_SLUG ) );
+		$reader_id = $this->create_view_only_reader();
+		$this->register_permissions_for_user( $reader_id, $modules );
+		wp_set_current_user( $reader_id );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . "/modules/analytics-4/data/$datapoint" );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'propertyID'      => '123456789',
+					'webDataStreamID' => '987654321',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertSame( 403, $response->get_status(), 'The request of a view-only user should be refused.' );
+		$this->assertSame( 'rest_forbidden', $response->get_data()['code'], 'The error code should be `rest_forbidden` for a view-only user.' );
+		$this->assertCount( 0, $this->request_handler_calls, 'No request should be sent to Google for a view-only user.' );
 	}
 
 	public function test_create_custom_dimension() {

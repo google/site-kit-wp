@@ -24,17 +24,17 @@ import { FC, FormEvent } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
+import ExpressSetupStepActions from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupStepActions';
 import {
 	SetupStep,
 	SetupStepProps,
@@ -45,13 +45,29 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
-const StepSurveyQuestions: FC< SetupStepProps > = ( { onComplete } ) => {
+const StepSurveyQuestions: FC< SetupStepProps > = ( {
+	onComplete,
+	onGoBack,
+} ) => {
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
+
+	const submitQuestions = useCallback( async () => {
+		setIsSubmitting( true );
+
+		// TODO: #13740 -- Submit the questions.
+		await new Promise( ( resolve ) => {
+			setTimeout( resolve, 2000 );
+		} );
+
+		await onComplete();
+	}, [ onComplete ] );
+
 	const onSubmit = useCallback(
-		( event: FormEvent< HTMLFormElement > ) => {
+		async ( event: FormEvent< HTMLFormElement > ) => {
 			event.preventDefault();
-			onComplete();
+			await submitQuestions();
 		},
-		[ onComplete ]
+		[ submitQuestions ]
 	);
 
 	return (
@@ -92,10 +108,12 @@ const StepSurveyQuestions: FC< SetupStepProps > = ( { onComplete } ) => {
 						</P>
 					</div>
 				</div>
-				{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
-				<SpinnerButton type="submit">
-					{ __( 'Continue', 'google-site-kit' ) }
-				</SpinnerButton>
+
+				<ExpressSetupStepActions
+					isBusy={ isSubmitting }
+					label={ __( 'Next', 'google-site-kit' ) }
+					onGoBack={ onGoBack }
+				/>
 			</form>
 		</div>
 	);

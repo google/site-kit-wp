@@ -114,3 +114,21 @@ export type Report = {
 		timeZone?: string;
 	};
 };
+
+/**
+ * The generated Site Goals insight of a widget, or of one of its tabs.
+ *
+ * @since n.e.x.t
+ */
+export type ConversionInsight = {
+	/** The ID the feedback on the insight is sent with. */
+	interactionID: string | null;
+	/** The scenario the service picked for the whole answer. */
+	scenario: string | null;
+	/** The scenario of the insight. */
+	code: string | null;
+	/** The insight. */
+	text: string;
+	/** What the site owner can do about it. */
+	actionableRecommendation: string | null;
+};

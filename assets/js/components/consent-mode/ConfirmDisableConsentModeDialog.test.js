@@ -58,7 +58,7 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 
 		expect(
 			getByText(
-				/Disabling consent mode may affect your ability in the European Economic Area, the UK and Switzerland to:/i
+				/Disabling consent mode may affect your ability in the European Economic Area, the UK, and Switzerland to:/i
 			)
 		).toBeInTheDocument();
 	} );
@@ -85,7 +85,7 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 
 		expect(
 			getByText(
-				/Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland:/i
+				/Disabling consent mode may affect your ability to track these in the European Economic Area, the UK, and Switzerland:/i
 			)
 		).toBeInTheDocument();
 

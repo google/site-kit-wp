@@ -177,6 +177,10 @@ final class Screens {
 					#adminmenu .toplevel_page_googlesitekit-dashboard.wp-has-current-submenu img {
 						opacity: 1;
 					}
+					/* WordPress places its own menu icons 7px from the top of the icon box. */
+					#adminmenu .toplevel_page_googlesitekit-dashboard div.wp-menu-image.svg {
+						background-position: center 7px;
+					}
 				</style>
 				<?php
 			}

@@ -206,7 +206,7 @@ describe( 'StepTermsOfService', () => {
 			).toBeChecked();
 			expect(
 				getByRole( 'checkbox', {
-					name: 'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
+					name: 'Yes, send me customized help, performance suggestions, and product updates for Reader Revenue Manager',
 				} )
 			).toBeChecked();
 		} );
@@ -230,7 +230,7 @@ describe( 'StepTermsOfService', () => {
 
 		fireEvent.click(
 			getByRole( 'checkbox', {
-				name: 'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
+				name: 'Yes, send me customized help, performance suggestions, and product updates for Reader Revenue Manager',
 			} )
 		);
 
