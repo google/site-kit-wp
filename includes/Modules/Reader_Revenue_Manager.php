@@ -41,6 +41,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
