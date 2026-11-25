@@ -106,26 +106,27 @@ export function toCustomQuestion(
 /**
  * Gets the question text of a survey form entry.
  *
+ * A predefined question that the catalog does not have has no text. Such
+ * entries can reach a render before they are removed from the form.
+ *
  * @since n.e.x.t
  *
  * @param  entry   Survey form entry.
  * @param  catalog Survey question catalog.
- * @return {string} Question text; an empty string if it is not known.
+ * @return {(string|undefined)} Question text; `undefined` if it is not known.
  */
 export function getQuestionText(
 	entry: IdentifiedSurveyQuestion,
 	catalog: CatalogQuestion[] = []
-): string {
+): string | undefined {
 	const { customQuestion, presetQuestion } = entry.question;
 
 	if ( customQuestion ) {
-		return customQuestion.displayText || '';
+		return customQuestion.displayText;
 	}
 
-	return (
-		catalog.find( ( { id } ) => id === presetQuestion?.questionId )
-			?.label || ''
-	);
+	return catalog.find( ( { id } ) => id === presetQuestion?.questionId )
+		?.label;
 }
 
 /**

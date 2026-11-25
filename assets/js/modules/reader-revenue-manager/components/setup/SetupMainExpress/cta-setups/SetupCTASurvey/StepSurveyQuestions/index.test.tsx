@@ -27,7 +27,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { Registry } from '@/js/googlesitekit-data';
+import { Registry, Select } from '@/js/googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { SURVEY_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
@@ -47,7 +47,7 @@ import {
 	waitFor,
 	within,
 } from '@tests/js/test-utils';
-import StepSurveyQuestions from '.';
+import StepSurveyQuestions, { surveyQuestionsStep } from '.';
 
 const LIMIT_MESSAGE =
 	'You’ve reached the maximum of 3 questions per survey. To add a question, remove a question first.';
@@ -663,6 +663,29 @@ describe( 'StepSurveyQuestions', () => {
 			expect( onComplete ).not.toHaveBeenCalled();
 		} );
 
+		it( 'leaves a predefined question that is not in the catalog out of the selected questions pane', () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( EXPRESS_SETUP_CTA_FORMS.SURVEY, {
+					[ SURVEY_FORM.SELECTED_QUESTIONS ]: [
+						{
+							id: 'preset-9999',
+							question: { presetQuestion: { questionId: 9999 } },
+						},
+						{
+							id: `preset-${ ageQuestion.id }`,
+							question: {
+								presetQuestion: { questionId: ageQuestion.id },
+							},
+						},
+					],
+				} );
+
+			renderStep();
+
+			expect( getPaneQuestions() ).toEqual( [ ageQuestion.label ] );
+		} );
+
 		it( 'renders a back action that calls the back callback', () => {
 			const onGoBack = jest.fn();
 			const onComplete = jest.fn();
@@ -673,6 +696,41 @@ describe( 'StepSurveyQuestions', () => {
 
 			expect( onGoBack ).toHaveBeenCalledTimes( 1 );
 			expect( onComplete ).not.toHaveBeenCalled();
+		} );
+	} );
+
+	describe( 'surveyQuestionsStep.isComplete', () => {
+		function isComplete() {
+			return surveyQuestionsStep.isComplete?.(
+				registry.select as Select
+			);
+		}
+
+		it( 'returns `false` with no selected questions', () => {
+			expect( isComplete() ).toBe( false );
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( EXPRESS_SETUP_CTA_FORMS.SURVEY, {
+					[ SURVEY_FORM.SELECTED_QUESTIONS ]: [],
+				} );
+
+			expect( isComplete() ).toBe( false );
+		} );
+
+		it( 'returns `true` with a selected question', () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( EXPRESS_SETUP_CTA_FORMS.SURVEY, {
+					[ SURVEY_FORM.SELECTED_QUESTIONS ]: [
+						{
+							id: 'preset-1',
+							question: { presetQuestion: { questionId: 1 } },
+						},
+					],
+				} );
+
+			expect( isComplete() ).toBe( true );
 		} );
 	} );
 } );

@@ -35,6 +35,7 @@ import { Select, useSelect } from 'googlesitekit-data';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
 import {
@@ -169,6 +170,15 @@ const StepSurveyQuestions: FC< SetupStepProps > = ( {
 		}
 	}
 
+	// Entries without text, such as a predefined question that the catalog
+	// does not have, are left out of the pane.
+	const paneQuestions = selectedQuestions.flatMap(
+		( entry ): SelectedSurveyQuestion[] => {
+			const question = getQuestionText( entry, catalog );
+
+			return question ? [ { id: entry.id, question } ] : [];
+		}
+	);
 	const isAtLimit = selectedQuestions.length >= MAX_SELECTED_QUESTIONS;
 	const isLastExpandedSelected = selectedQuestions.some(
 		( { id } ) => id === lastExpandedID
@@ -239,15 +249,7 @@ const StepSurveyQuestions: FC< SetupStepProps > = ( {
 								}
 								onRemove={ removeQuestion }
 								onReorder={ reorderQuestions }
-								questions={ selectedQuestions.map(
-									( entry ) => ( {
-										id: entry.id,
-										question: getQuestionText(
-											entry,
-											catalog
-										),
-									} )
-								) }
+								questions={ paneQuestions }
 							/>
 						</div>
 					) }
@@ -265,12 +267,21 @@ const StepSurveyQuestions: FC< SetupStepProps > = ( {
 	);
 };
 
-// No `isComplete`: this step never counts as complete, so the flow can always
-// resolve to it.
+// Complete once a question is selected. The flow then opens this step in
+// place of a requested survey CTA step while no question is selected, and opens
+// a resumed draft at the first step that is not complete.
 export const surveyQuestionsStep: SetupStep = {
 	slug: EXPRESS_SETUP_STEPS.SURVEY_QUESTIONS,
 	label: __( 'Survey questions', 'google-site-kit' ),
 	Component: StepSurveyQuestions,
+	isComplete: ( select: Select ) => {
+		const selectedQuestions = select( CORE_FORMS ).getValue(
+			EXPRESS_SETUP_CTA_FORMS.SURVEY,
+			SURVEY_FORM.SELECTED_QUESTIONS
+		) as IdentifiedSurveyQuestion[] | undefined;
+
+		return !! selectedQuestions?.length;
+	},
 };
 
 export default StepSurveyQuestions;

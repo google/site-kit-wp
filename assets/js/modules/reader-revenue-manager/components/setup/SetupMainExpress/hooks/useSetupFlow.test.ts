@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry, Select } from '@/js/googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	existingCTAStep,
 	publicationPoliciesStep,
@@ -28,12 +29,14 @@ import {
 	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import { signupFormStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/StepSignupForm';
+import { SURVEY_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/constants';
 import { surveyCTAStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/StepSurveyCTA';
 import { surveyQuestionsStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/StepSurveyQuestions';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_CTAS,
+	EXPRESS_SETUP_CTA_FORMS,
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -662,6 +665,19 @@ describe( 'useSetupFlow', () => {
 			global.location.href = 'http://example.com/?step=survey-cta';
 
 			provideConnectedPublication( registry, publicationWithPolicies );
+
+			// The survey CTA step opens only once a question is selected.
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( EXPRESS_SETUP_CTA_FORMS.SURVEY, {
+					[ SURVEY_FORM.SELECTED_QUESTIONS ]: [
+						{
+							id: 'preset-1',
+							// eslint-disable-next-line sitekit/acronym-case -- `questionId` is the API's field name.
+							question: { presetQuestion: { questionId: 1 } },
+						},
+					],
+				} );
 
 			const { result } = renderUseSetupFlow( SURVEY_FLOW );
 

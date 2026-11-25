@@ -142,7 +142,7 @@ describe( 'SetupCTASurvey utils', () => {
 			).toBe( demographicQuestion.label );
 		} );
 
-		it( 'returns an empty string for a predefined question that is not in the catalog', () => {
+		it( 'returns `undefined` for a predefined question that is not in the catalog', () => {
 			expect(
 				getQuestionText(
 					{
@@ -151,7 +151,7 @@ describe( 'SetupCTASurvey utils', () => {
 					},
 					surveyQuestionCatalog
 				)
-			).toBe( '' );
+			).toBeUndefined();
 		} );
 	} );
 
