@@ -787,7 +787,7 @@ describe( 'KeyFactors', () => {
 
 		expect(
 			getByText(
-				'No channel changed notably compared with the previous 28 days'
+				'No channel changed notably compared with the previous 28 days.'
 			)
 		).toBeInTheDocument();
 		expect(
@@ -815,7 +815,7 @@ describe( 'KeyFactors', () => {
 		).toHaveTextContent( 'Referral traffic from substack.com is up most' );
 		expect(
 			queryByText(
-				'No channel changed notably compared with the previous 28 days'
+				'No channel changed notably compared with the previous 28 days.'
 			)
 		).not.toBeInTheDocument();
 		expect(
@@ -838,7 +838,7 @@ describe( 'KeyFactors', () => {
 		} );
 
 		const notice = getByText(
-			'No channel changed notably compared with the previous 28 days'
+			'No channel changed notably compared with the previous 28 days.'
 		);
 		const headings = getAllByRole( 'heading', { level: 4 } );
 
@@ -895,7 +895,7 @@ describe( 'KeyFactors', () => {
 			expect( insight ).toBeInTheDocument();
 			expect(
 				getByText(
-					'No channel changed notably compared with the previous 28 days'
+					'No channel changed notably compared with the previous 28 days.'
 				).compareDocumentPosition( insight )
 			).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
 			expect(
@@ -919,7 +919,7 @@ describe( 'KeyFactors', () => {
 		).toEqual( [ 'Organic Search', 'Direct' ] );
 		expect(
 			queryByText(
-				'No channel changed notably compared with the previous 28 days'
+				'No channel changed notably compared with the previous 28 days.'
 			)
 		).not.toBeInTheDocument();
 		expect(
@@ -943,7 +943,7 @@ describe( 'KeyFactors', () => {
 
 		expect(
 			getByText(
-				'No channel changed notably compared with the previous 28 days'
+				'No channel changed notably compared with the previous 28 days.'
 			)
 		).toBeInTheDocument();
 		expect(
@@ -972,7 +972,7 @@ describe( 'KeyFactors', () => {
 
 		expect(
 			queryByText(
-				'No channel changed notably compared with the previous 28 days'
+				'No channel changed notably compared with the previous 28 days.'
 			)
 		).not.toBeInTheDocument();
 		expect(
@@ -1050,7 +1050,7 @@ describe( 'KeyFactors', () => {
 		).toBeInTheDocument();
 		expect(
 			queryByText(
-				'No channel changed notably compared with the previous 28 days'
+				'No channel changed notably compared with the previous 28 days.'
 			)
 		).not.toBeInTheDocument();
 	} );
@@ -1089,7 +1089,7 @@ describe( 'KeyFactors', () => {
 
 		expect(
 			queryByText(
-				'No channel changed notably compared with the previous 28 days'
+				'No channel changed notably compared with the previous 28 days.'
 			)
 		).not.toBeInTheDocument();
 		expect(

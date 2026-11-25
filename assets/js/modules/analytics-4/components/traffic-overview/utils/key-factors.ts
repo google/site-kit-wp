@@ -315,8 +315,8 @@ export function getKeyFactorsNoticeText( {
 	return sprintf(
 		/* translators: %d: the number of days in the selected date range, such as "28" */
 		_n(
-			'No channel changed notably compared with the previous %d day',
-			'No channel changed notably compared with the previous %d days',
+			'No channel changed notably compared with the previous %d day.',
+			'No channel changed notably compared with the previous %d days.',
 			daysInSelectedRange,
 			'google-site-kit'
 		),

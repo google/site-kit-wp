@@ -238,7 +238,7 @@ describe( 'getKeyFactorsNoticeText', () => {
 		expect(
 			getKeyFactorsNoticeText( { ...OPTIONS, noChange: true } )
 		).toBe(
-			'No channel changed notably compared with the previous 28 days'
+			'No channel changed notably compared with the previous 28 days.'
 		);
 	} );
 
@@ -249,6 +249,8 @@ describe( 'getKeyFactorsNoticeText', () => {
 				noChange: true,
 				daysInSelectedRange: 1,
 			} )
-		).toBe( 'No channel changed notably compared with the previous 1 day' );
+		).toBe(
+			'No channel changed notably compared with the previous 1 day.'
+		);
 	} );
 } );

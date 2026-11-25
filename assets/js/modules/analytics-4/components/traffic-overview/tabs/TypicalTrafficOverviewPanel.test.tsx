@@ -1007,7 +1007,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 
 			expect(
 				getByText(
-					'No channel changed notably compared with the previous 28 days'
+					'No channel changed notably compared with the previous 28 days.'
 				)
 			).toBeInTheDocument();
 		} );
@@ -1036,7 +1036,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 
 			expect(
 				getByText(
-					'No channel changed notably compared with the previous 28 days'
+					'No channel changed notably compared with the previous 28 days.'
 				)
 			).toBeInTheDocument();
 			expect(
@@ -1071,7 +1071,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			).toBeInTheDocument();
 			expect(
 				queryByText(
-					'No channel changed notably compared with the previous 28 days'
+					'No channel changed notably compared with the previous 28 days.'
 				)
 			).not.toBeInTheDocument();
 			expect(
@@ -1142,7 +1142,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				// changed.
 				expect(
 					queryByText(
-						'No channel changed notably compared with the previous 28 days'
+						'No channel changed notably compared with the previous 28 days.'
 					)
 				).not.toBeInTheDocument();
 			}
@@ -1656,7 +1656,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 
 			expect( notices ).toHaveLength( 1 );
 			expect( notices[ 0 ] ).toHaveTextContent(
-				'Select a date range of at least 7 days to see which channels changed the most'
+				'Select a date range of at least 7 days to see which channels changed the most.'
 			);
 			expect(
 				notices[ 0 ].closest(

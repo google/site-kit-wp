@@ -465,7 +465,7 @@ describe( 'Typical Traffic Overview PDF', () => {
 							...TYPICAL_TRAFFIC,
 							driver: null,
 							keyFactorsNotice:
-								'No channel changed notably compared with the previous 28 days',
+								'No channel changed notably compared with the previous 28 days.',
 							keyFactors: [
 								{
 									name: 'Organic Search',
@@ -489,7 +489,7 @@ describe( 'Typical Traffic Overview PDF', () => {
 				)
 			).toEqual( [
 				'Biggest traffic shifts vs. the previous 28 days',
-				'No channel changed notably compared with the previous 28 days',
+				'No channel changed notably compared with the previous 28 days.',
 				'Organic Search',
 				'+4 visits',
 				'52.4% of all visits',

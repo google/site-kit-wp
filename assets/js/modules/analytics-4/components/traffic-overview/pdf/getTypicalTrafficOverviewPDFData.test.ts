@@ -990,7 +990,7 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 			} );
 
 			expect( result.data?.typicalTraffic?.keyFactorsNotice ).toBe(
-				'No channel changed notably compared with the previous 28 days'
+				'No channel changed notably compared with the previous 28 days.'
 			);
 			expect(
 				result.data?.typicalTraffic?.keyFactors.map(

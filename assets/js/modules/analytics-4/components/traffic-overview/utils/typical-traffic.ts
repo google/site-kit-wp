@@ -605,7 +605,7 @@ export function getTypicalTrafficAvailabilityText(
 ): string | null {
 	if ( rangeTooShort ) {
 		return __(
-			'Select a date range of at least 7 days to see which channels changed the most',
+			'Select a date range of at least 7 days to see which channels changed the most.',
 			'google-site-kit'
 		);
 	}
