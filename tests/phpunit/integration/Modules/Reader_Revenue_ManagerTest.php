@@ -427,6 +427,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'terms-of-service',
 				'user-settings',
 				'ctas',
+				'cta',
 				'create-cta',
 				'survey-question-catalog',
 			),
