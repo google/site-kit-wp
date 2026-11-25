@@ -120,7 +120,7 @@ function toggleQuestion( question: string ) {
 }
 
 function getCreateNewButton() {
-	return screen.getByRole( 'button', { name: 'Create new' } );
+	return screen.getByRole( 'button', { name: /^Create new/ } );
 }
 
 function createCustomQuestion( question: string, answers: string[] ) {

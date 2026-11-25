@@ -32,17 +32,17 @@
 
 	.googlesitekit-rrm-survey-questions-step__questions {
 		display: grid;
-		gap: $grid-gap-desktop;
+		gap: 48px;
 	}
 
 	.googlesitekit-rrm-survey-questions-step__group-header {
-		align-items: center;
-		border-block-end: 1px solid $c-utility-divider;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px 16px;
-		justify-content: space-between;
-		padding-block-end: 12px;
+		display: grid;
+		gap: 10px;
+		justify-items: start;
+	}
+
+	.googlesitekit-rrm-survey-questions-step__group-header + .googlesitekit-rrm-survey-question-row {
+		margin-block-start: 12px;
 	}
 
 	.googlesitekit-rrm-survey-questions-step__group-title {
@@ -51,10 +51,12 @@
 
 	.googlesitekit-rrm-survey-questions-step__create {
 		display: inline-flex;
+		padding-block: 6px;
+	}
 
-		.mdc-button {
-			margin: 0;
-		}
+	// `Link` puts 5px after its icon; the design has 10px.
+	.googlesitekit-rrm-survey-questions-step__create-link svg {
+		margin-inline-end: 5px;
 	}
 
 	// Keep the selected questions in view while the questions scroll.

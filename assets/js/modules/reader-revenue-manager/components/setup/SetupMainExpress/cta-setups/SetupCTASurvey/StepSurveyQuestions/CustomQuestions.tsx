@@ -31,9 +31,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
+import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
-import { SIZE_LARGE, TYPE_LABEL } from '@/js/components/Typography/constants';
+import {
+	SIZE_LARGE,
+	SIZE_MEDIUM,
+	TYPE_LABEL,
+} from '@/js/components/Typography/constants';
 import MaybeTooltip from '@/js/googlesitekit/components-gm2/Button/MaybeTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
 import { SURVEY_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTASurvey/constants';
@@ -51,7 +55,7 @@ import {
 	type CustomQuestion,
 	type IdentifiedSurveyQuestion,
 } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
-import PlusIcon from '@/svg/icons/plus.svg';
+import PlusCircleIcon from '@/svg/icons/plus-circle.svg';
 import { QuestionGroupProps } from './types';
 
 const CustomQuestions: FC< QuestionGroupProps > = ( {
@@ -143,21 +147,26 @@ const CustomQuestions: FC< QuestionGroupProps > = ( {
 					tooltipTitle={ isAtLimit ? limitMessage : undefined }
 					tooltip
 				>
-					{ /* `Button` shows no tooltip while it is disabled. */ }
+					{ /* A disabled button shows no tooltip of its own. */ }
 					<div className="googlesitekit-rrm-survey-questions-step__create">
-						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button
+						<Typography
 							aria-describedby={
 								isAtLimit ? limitMessageID : undefined
 							}
+							as={ Link }
+							asType="button"
+							className="googlesitekit-rrm-survey-questions-step__create-link"
 							disabled={ isAtLimit }
-							icon={ <PlusIcon height={ 12 } width={ 12 } /> }
+							leadingIcon={
+								<PlusCircleIcon height={ 18 } width={ 18 } />
+							}
 							onClick={ () => openSideSheet() }
-							type="button"
-							tertiary
+							size={ SIZE_MEDIUM }
+							type={ TYPE_LABEL }
+							secondary
 						>
 							{ __( 'Create new', 'google-site-kit' ) }
-						</Button>
+						</Typography>
 					</div>
 				</MaybeTooltip>
 
