@@ -11,6 +11,7 @@ namespace Google\Site_Kit\Tests\Core\User_Surveys;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Surveys\REST_User_Surveys_Controller;
@@ -773,5 +774,127 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 		$this->assertSame( array( 'survey' => null ), $response, 'Current survey response should have a null survey when the queue is empty.' );
 		$this->assertMatchesRouteResourceSchema( $response, 'core/user/data/survey', 'Current survey response with an empty queue should match its resource schema.' );
+	}
+
+	public function data_survey_requests() {
+		return array(
+			'survey-trigger'  => array(
+				'POST',
+				'survey-trigger',
+				array(
+					'data' => array(
+						'triggerID' => 'test_trigger',
+						'ttl'       => 3600,
+					),
+				),
+			),
+			// Both events, so a request the route lets through sets the global timeout and takes the queued survey off.
+			'survey-event'    => array(
+				'POST',
+				'survey-event',
+				array(
+					'data' => array(
+						'session' => array(
+							'session_id'    => 'test_session_id',
+							'session_token' => 'test_session_token',
+						),
+						'event'   => array(
+							'survey_shown'  => array(),
+							'survey_closed' => array(),
+						),
+					),
+				),
+			),
+			'survey-timeouts' => array( 'GET', 'survey-timeouts', array() ),
+			'survey'          => array( 'GET', 'survey', array() ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_survey_requests
+	 */
+	public function test_survey_routes__reject_a_cookie_request_without_a_nonce( $method, $route, $body_params ) {
+		$this->fake_proxy_site_connection();
+		// WordPress runs a cookie request with no REST nonce as user 0.
+		// The controller still reads the token of the administrator that set_up() signed in.
+		wp_set_current_user( 0 );
+
+		$this->assert_survey_request_rejected( $method, $route, $body_params, 401 );
+	}
+
+	/**
+	 * @dataProvider data_survey_requests
+	 */
+	public function test_survey_routes__reject_an_editor_who_kept_a_token( $method, $route, $body_params ) {
+		$this->fake_proxy_site_connection();
+		wp_get_current_user()->set_role( 'editor' );
+
+		$this->assert_survey_request_rejected( $method, $route, $body_params, 403 );
+	}
+
+	/**
+	 * @dataProvider data_survey_requests
+	 */
+	public function test_survey_routes__reject_an_administrator_without_a_token( $method, $route, $body_params ) {
+		$this->fake_proxy_site_connection();
+		$this->user_options->delete( OAuth_Client::OPTION_ACCESS_TOKEN );
+
+		$this->assert_survey_request_rejected( $method, $route, $body_params, 403 );
+	}
+
+	/**
+	 * @dataProvider data_survey_requests
+	 */
+	public function test_survey_routes__reject_an_administrator_on_a_site_without_the_proxy( $method, $route, $body_params ) {
+		$this->fake_site_connection();
+
+		$this->assert_survey_request_rejected( $method, $route, $body_params, 403 );
+	}
+
+	/**
+	 * Sends a survey request, and asserts that its route rejects it and leaves the survey timeouts and queue as they were.
+	 *
+	 * It also asserts that the request sends nothing to the Site Kit service.
+	 * The queued survey has the session that `data_survey_requests()` sends, so the queue assertion fails if the route lets a `survey_closed` event through.
+	 *
+	 * @param string $method      HTTP method of the request.
+	 * @param string $route       Route under `core/user/data/`.
+	 * @param array  $body_params Body params of the request.
+	 * @param int    $status      Expected status code.
+	 */
+	private function assert_survey_request_rejected( $method, $route, $body_params, $status ) {
+		$this->queue->enqueue(
+			array(
+				'survey_id' => 'queued_survey',
+				'payload'   => array(),
+				'session'   => array(
+					'session_id'    => 'test_session_id',
+					'session_token' => 'test_session_token',
+				),
+			)
+		);
+		$this->timeouts->add( 'existing_trigger', 3600 );
+
+		$timeouts = $this->user_options->get( Survey_Timeouts::OPTION );
+		$queue    = $this->user_options->get( Survey_Queue::OPTION );
+
+		$this->answer_service_requests( wp_json_encode( $this->get_service_survey() ) );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new WP_REST_Request( $method, '/' . REST_Routes::REST_ROOT . '/core/user/data/' . $route );
+		$request->set_body_params( $body_params );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertEquals( $status, $response->get_status(), "The survey route should reject the request with a {$status} status." );
+		$this->assertEquals( 'rest_forbidden', $data['code'], 'The survey route should reject the request with the rest_forbidden code.' );
+		$this->assertEqualSets( array( 'code', 'message', 'data' ), array_keys( $data ), 'The rejected request should return the error alone.' );
+		$this->assertEmpty( $this->service_requests, 'The rejected request should send nothing to the Site Kit service.' );
+		$this->assertEqualSetsWithIndex( $timeouts, $this->user_options->get( Survey_Timeouts::OPTION ), 'The rejected request should leave the survey timeouts as they were.' );
+		$this->assertEqualSetsWithIndex( $queue, $this->user_options->get( Survey_Queue::OPTION ), 'The rejected request should leave the survey queue as it was.' );
 	}
 }

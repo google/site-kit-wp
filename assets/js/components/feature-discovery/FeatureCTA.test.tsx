@@ -39,7 +39,10 @@ import {
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
-import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
+import {
+	surveyTriggerEndpoint,
+	waitForSurveyTrigger,
+} from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -47,6 +50,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -67,6 +71,7 @@ describe( 'FeatureCTA', () => {
 
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, name: 'Analytics' },
 		] );
@@ -240,6 +245,8 @@ describe( 'FeatureCTA', () => {
 				'click_setup_cta',
 				'test-feature'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 
 		it( 'should track click_resume_setup_cta when the feature is in progress', async () => {
@@ -278,6 +285,8 @@ describe( 'FeatureCTA', () => {
 				'click_resume_setup_cta',
 				'test-feature'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 	} );
 
@@ -549,6 +558,8 @@ describe( 'FeatureCTA', () => {
 			expect( button ).not.toHaveClass(
 				'googlesitekit-button-icon--spinner__running'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 
 		it( 'should fire the setup complete callback when setup completes', async () => {
@@ -576,6 +587,8 @@ describe( 'FeatureCTA', () => {
 			);
 
 			expect( onSetupComplete ).toHaveBeenCalledTimes( 1 );
+
+			await waitForSurveyTrigger();
 		} );
 	} );
 
@@ -614,6 +627,8 @@ describe( 'FeatureCTA', () => {
 				.select( CORE_FEATURE_DISCOVERY )
 				.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
 		).toBe( error );
+
+		await waitForSurveyTrigger();
 	} );
 
 	it( 'should share progress across CTAs mounted during externally started setup', async () => {

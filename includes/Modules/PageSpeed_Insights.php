@@ -185,7 +185,7 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes, Mod
 		return array(
 			'slug'        => 'pagespeed-insights',
 			'name'        => _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA', 'google-site-kit' ),
+			'description' => __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO, and PWA', 'google-site-kit' ),
 			'homepage'    => __( 'https://pagespeed.web.dev', 'google-site-kit' ),
 		);
 	}

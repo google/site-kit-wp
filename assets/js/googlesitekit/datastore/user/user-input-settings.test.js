@@ -26,6 +26,7 @@ import {
 	muteFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	subscribeUntil,
 	untilResolved,
 } from '@tests/js/utils';
@@ -167,6 +168,7 @@ describe( 'core/user user-input-settings', () => {
 
 			it( 'should trigger survey if there is no error and answers conatin "Other"', async () => {
 				provideUserAuthentication( registry );
+				provideUserCapabilities( registry );
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				const settingsResponse = {
@@ -278,6 +280,7 @@ describe( 'core/user user-input-settings', () => {
 		describe( 'maybeTriggerUserInputSurvey', () => {
 			beforeEach( () => {
 				provideUserAuthentication( registry );
+				provideUserCapabilities( registry );
 			} );
 
 			it( 'should bail if no answers contain "Other"', async () => {
