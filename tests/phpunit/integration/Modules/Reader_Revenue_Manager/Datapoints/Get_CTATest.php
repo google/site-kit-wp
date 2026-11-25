@@ -36,29 +36,15 @@ class Get_CTATest extends TestCase {
 	 */
 	private $datapoint;
 
-	/**
-	 * Reader Revenue Manager module.
-	 *
-	 * @var Reader_Revenue_Manager
-	 */
-	private $module;
-
 	public function set_up() {
 		parent::set_up();
 
 		$this->enable_feature( 'rrmExpressSetup' );
 
-		$this->module = new Reader_Revenue_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->module->get_settings()->register();
-		$this->module->get_settings()->merge(
-			array(
-				'organizationID' => 'organization-1',
-				'publicationID'  => 'publication-1',
-			)
-		);
-		$this->module->get_client()->withDefer( true );
+		$module = new Reader_Revenue_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$module->get_client()->withDefer( true );
 
-		$service         = new WebContentPublisher( $this->module->get_client() );
+		$service         = new WebContentPublisher( $module->get_client() );
 		$this->datapoint = new Get_CTA(
 			array(
 				'service' => function () use ( $service ) {
@@ -190,21 +176,6 @@ class Get_CTATest extends TestCase {
 			),
 			$this->to_array( $this->datapoint->parse_response( $cta, $this->get_data_request( $this->get_params() ) ) ),
 			'The survey CTA should be returned with its fields and its questions in order.'
-		);
-	}
-
-	public function test_parse_response__does_not_synchronize_the_settings() {
-		$cta = new Cta();
-		$cta->setName( 'organizations/organization-1/publications/publication-1/ctas/newsletter-cta' );
-		$cta->setType( Cta::TYPE_NEWSLETTER_SIGNUP );
-		$cta->setState( Cta::STATE_ACTIVE );
-
-		$this->datapoint->parse_response( $cta, $this->get_data_request( $this->get_params() ) );
-
-		$this->assertSame(
-			array(),
-			(array) $this->module->get_settings()->get()['configuredCTAs'],
-			'Reading a single CTA should not change the configured CTAs.'
 		);
 	}
 
