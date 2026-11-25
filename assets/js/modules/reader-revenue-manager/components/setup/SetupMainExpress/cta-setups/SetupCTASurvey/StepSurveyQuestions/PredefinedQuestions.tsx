@@ -134,10 +134,10 @@ const PredefinedQuestions: FC< PredefinedQuestionsProps > = ( {
 					getDefaultPresetAnswerIDs( catalogQuestion );
 
 				function onChange( value: string[] ) {
-					setChosenAnswerIDs( {
-						...chosenAnswerIDs,
+					setChosenAnswerIDs( ( previousChosenAnswerIDs ) => ( {
+						...previousChosenAnswerIDs,
 						[ id ]: value,
-					} );
+					} ) );
 
 					if ( isAdded ) {
 						onUpdate(
