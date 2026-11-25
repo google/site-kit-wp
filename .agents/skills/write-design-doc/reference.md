@@ -123,7 +123,7 @@ Before finishing, run these from the plugin root against the doc
 (`DOC=design-doc/workspace/<feature>/design-doc.md`, or a preparation note) and fix anything
 they report:
 
-- **Every anchor link resolves**:
+- **Every anchor link resolves** (design doc only):
 
   ```sh
   comm -23 <(grep -o '](#[^)]*)' "$DOC" | sed 's/](#\(.*\))/\1/' | sort -u) \

@@ -152,12 +152,16 @@ Avoid these Mermaid pitfalls, which break the parse or render literally:
 
 ## Intra-document links {#intra-document-links}
 
-Design docs are typically pasted from Markdown into Google Docs. To ensure internal links
-still resolve there, give every link target section an explicit anchor and link to it by
-anchor.
+The design doc (`design-doc.md`) is pasted from Markdown into Google Docs. To ensure its
+internal links still resolve there, give every link target section an explicit anchor and
+link to it by anchor.
 
 Append the anchor to the target heading as `{#anchor-name}` and link to it as
 `[text](#anchor-name)`.
+
+This applies only to the design doc. The introduction and preparation notes aren't exported,
+so keep their headings plain and link to the slug a Markdown viewer generates
+(`## 3. Data availability dates` → `#3-data-availability-dates`).
 
 - **Say it once.** Specify each concept or mechanic in exactly one home section and
   cross-reference it elsewhere by anchor. Don't re-explain the same behavior in several
