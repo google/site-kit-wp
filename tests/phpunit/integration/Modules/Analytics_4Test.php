@@ -39,6 +39,7 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Event_Collector;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Server_Events_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -2039,6 +2040,26 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertNull( $this->analytics->get_server_events_guard(), 'The module should create no `Server_Events_Guard` with the `serverSideEvents` flag off.' );
 		$this->assertFalse( has_action( 'init' ), 'Nothing should hook to `init` with the `serverSideEvents` flag off.' );
+	}
+
+	public function test_get_event_collector__with_feature_flag() {
+		$this->enable_feature( 'serverSideEvents' );
+		remove_all_actions( 'shutdown' );
+
+		$this->analytics->register();
+		$event_collector = $this->analytics->get_event_collector();
+
+		$this->assertInstanceOf( Event_Collector::class, $event_collector, 'The module should create `Event_Collector` with the `serverSideEvents` flag on.' );
+		$this->assertSame( PHP_INT_MAX, has_action( 'shutdown', array( $event_collector, 'flush' ) ), '`Event_Collector::flush()` should run on `shutdown` after every other callback.' );
+	}
+
+	public function test_get_event_collector__without_feature_flag() {
+		remove_all_actions( 'shutdown' );
+
+		$this->analytics->register();
+
+		$this->assertNull( $this->analytics->get_event_collector(), 'The module should create no `Event_Collector` with the `serverSideEvents` flag off.' );
+		$this->assertFalse( has_action( 'shutdown' ), 'Nothing should hook to `shutdown` with the `serverSideEvents` flag off.' );
 	}
 
 	public function test_measurement_protocol_secret_value_not_exposed() {

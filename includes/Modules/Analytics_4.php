@@ -106,6 +106,8 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Update_Enhanced_Measurement_S
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Event_Collector;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Client;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Secret;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Server_Events_Guard;
@@ -302,6 +304,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $server_events_guard;
 
 	/**
+	 * Event_Collector instance, or null while the `serverSideEvents` feature flag is off.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Event_Collector|null
+	 */
+	protected $event_collector;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -345,7 +356,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.30.0
 	 * @since 1.101.0 Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
 	 * @since 1.190.0 The `googlesitekit_proxy_setup_mode` callback no longer overrides a mode that is already set.
-	 * @since n.e.x.t Registers the Measurement Protocol secret setting, which the settings change callback deletes when the property, web data stream or measurement ID changes. With the `serverSideEvents` feature flag, registers `Server_Events_Guard` too.
+	 * @since n.e.x.t Registers the Measurement Protocol secret setting, which the settings change callback deletes when the property, web data stream or measurement ID changes. With the `serverSideEvents` feature flag, registers `Server_Events_Guard` too, and hooks `Event_Collector::flush()` to `shutdown`.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -393,6 +404,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$this->tracking_exclusions
 			);
 			$this->server_events_guard->register();
+
+			$this->event_collector = new Event_Collector(
+				$this->context,
+				$this->get_settings(),
+				$this->measurement_protocol_secret,
+				new Measurement_Protocol_Client( $this->get_settings(), $this->measurement_protocol_secret ),
+				$this->server_events_guard
+			);
+			// `flush()` runs after core ends the output buffers at priority 1, so the response can finish before the events are sent.
+			add_action( 'shutdown', array( $this->event_collector, 'flush' ), PHP_INT_MAX );
 		}
 
 		( new Advanced_Tracking( $this->context ) )->register();
@@ -745,6 +766,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	public function get_server_events_guard() {
 		return $this->server_events_guard;
+	}
+
+	/**
+	 * Gets the Event_Collector instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Event_Collector|null Event_Collector instance, or null while the `serverSideEvents` feature flag is off.
+	 */
+	public function get_event_collector() {
+		return $this->event_collector;
 	}
 
 	/**
