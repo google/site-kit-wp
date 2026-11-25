@@ -52,6 +52,17 @@ class Newsletter_Signup_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	}
 
 	/**
+	 * Gets the CTA field that holds the newsletter configuration.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string CTA configuration field name.
+	 */
+	public function get_config_field() {
+		return 'newsletterConfig';
+	}
+
+	/**
 	 * Validates and applies newsletter configuration to a CTA model.
 	 *
 	 * @since 1.187.0

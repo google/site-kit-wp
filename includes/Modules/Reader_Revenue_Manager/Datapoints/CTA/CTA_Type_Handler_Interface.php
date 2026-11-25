@@ -39,4 +39,15 @@ interface CTA_Type_Handler_Interface {
 	 * @param array $config Type-specific configuration.
 	 */
 	public function configure_cta( Cta $cta, array $config );
+
+	/**
+	 * Gets the CTA field that holds the type-specific configuration.
+	 *
+	 * Used as the update mask field when the configuration is updated.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string CTA configuration field name.
+	 */
+	public function get_config_field();
 }

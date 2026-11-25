@@ -15,10 +15,7 @@ use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA\CTA_Type_Handler_Interface;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA\Newsletter_Signup_CTA_Type_Handler;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA\Survey_CTA_Type_Handler;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA\CTA_Type_Handlers;
 use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
 
 /**
@@ -37,7 +34,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @since 1.187.0
 	 * @since 1.189.0 Added support for the CTA `state` property.
-	 * @since n.e.x.t Requires the publication identifiers in the request.
+	 * @since n.e.x.t Requires the publication identifiers in the request, and uses the shared CTA type handlers.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -55,7 +52,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 			throw new Invalid_Param_Exception( 'data' );
 		}
 
-		$handlers = $this->get_cta_type_handlers();
+		$handlers = ( new CTA_Type_Handlers() )->get_handlers();
 		$type     = isset( $cta_data['type'] ) && is_string( $cta_data['type'] ) ? $cta_data['type'] : '';
 
 		if ( ! isset( $handlers[ $type ] ) ) {
@@ -93,33 +90,6 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 		$parent = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications_ctas->create( $parent, $cta );
-	}
-
-	/**
-	 * Gets the supported CTA type handlers, keyed by CTA type.
-	 *
-	 * @since 1.187.0
-	 * @since n.e.x.t Added the survey CTA type handler, when the `rrmSurveyCTA` feature flag is enabled.
-	 *
-	 * @return CTA_Type_Handler_Interface[] CTA type handlers.
-	 */
-	private function get_cta_type_handlers() {
-		$handlers = array();
-
-		$type_handlers = array(
-			new Newsletter_Signup_CTA_Type_Handler(),
-			// Register additional CTA type handlers here as they are added.
-		);
-
-		if ( Feature_Flags::enabled( 'rrmSurveyCTA' ) ) {
-			$type_handlers[] = new Survey_CTA_Type_Handler();
-		}
-
-		foreach ( $type_handlers as $handler ) {
-			$handlers[ $handler->get_type() ] = $handler;
-		}
-
-		return $handlers;
 	}
 
 	/**

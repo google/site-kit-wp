@@ -63,6 +63,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications_L
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Terms_Of_Service;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Save_User_Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Update_CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Update_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
@@ -487,6 +488,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			);
 
 			$datapoints['POST:create-cta'] = new Create_CTA(
+				array(
+					'scopes'  => array( self::MANAGE_SCOPE ),
+					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
+				)
+			);
+
+			$datapoints['POST:cta'] = new Update_CTA(
 				array(
 					'scopes'  => array( self::MANAGE_SCOPE ),
 					'service' => fn() => $this->get_service( 'webcontentpublisher' ),

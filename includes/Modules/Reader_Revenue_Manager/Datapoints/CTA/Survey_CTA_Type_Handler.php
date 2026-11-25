@@ -44,6 +44,17 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	}
 
 	/**
+	 * Gets the CTA field that holds the survey configuration.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string CTA configuration field name.
+	 */
+	public function get_config_field() {
+		return 'surveyConfig';
+	}
+
+	/**
 	 * Validates and applies survey configuration to a CTA model.
 	 *
 	 * @since n.e.x.t
