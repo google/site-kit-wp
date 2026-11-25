@@ -218,6 +218,22 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			);
 		}
 
+		// Preload user settings to avoid delays with feature setup reminder
+		// notifications.
+		if ( Feature_Flags::enabled( 'featureDiscoveryHub' ) ) {
+			add_filter(
+				'googlesitekit_apifetch_preload_paths',
+				function ( $routes ) {
+					return array_merge(
+						$routes,
+						array(
+							'/' . REST_Routes::REST_ROOT . '/modules/reader-revenue-manager/data/user-settings',
+						)
+					);
+				}
+			);
+		}
+
 		$synchronization = new Synchronization(
 			$this,
 			$this->user_options
