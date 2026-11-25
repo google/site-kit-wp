@@ -285,6 +285,24 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				).toEqual( [] );
 			} );
 
+			it( 'should store the created CTA for getCTA() before the CTAs are loaded', async () => {
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( createArgs );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTA( '9d2418415-ab3a' )
+				).toEqual( cta );
+				expect( fetchMock ).not.toHaveFetched( ctaEndpoint );
+			} );
+
 			it( 'should set an action error when the request fails', async () => {
 				const errorResponse = {
 					code: 'internal_server_error',
@@ -564,6 +582,106 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.getErrorForSelector( 'getPublicationCTAs', [
 							params.organizationID,
 							params.publicationID,
+						] )
+				).toMatchObject( response );
+
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getPublicationCTA', () => {
+			const ctaID = '9d2418415-ab3a';
+			const ctaParams = { ...params, ctaID };
+
+			it( 'should return the CTA stored under the given publication and CTA ID', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTA( cta, ctaParams );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationCTA(
+							params.organizationID,
+							params.publicationID,
+							ctaID
+						)
+				).toEqual( cta );
+			} );
+
+			it( 'should return `undefined` for a CTA that is not loaded', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTA( cta, ctaParams );
+
+				// Reading an unloaded CTA requests it.
+				muteFetch( ctaEndpoint );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationCTA(
+							otherParams.organizationID,
+							otherParams.publicationID,
+							ctaID
+						)
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					otherParams.organizationID,
+					otherParams.publicationID,
+					ctaID
+				);
+			} );
+
+			it( 'should associate a CTA fetch error with the request identifiers', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( ctaEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublicationCTA(
+						params.organizationID,
+						params.publicationID,
+						ctaID
+					);
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					params.organizationID,
+					params.publicationID,
+					ctaID
+				);
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationCTA(
+							params.organizationID,
+							params.publicationID,
+							ctaID
+						)
+				).toBeUndefined();
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getErrorForSelector( 'getPublicationCTA', [
+							params.organizationID,
+							params.publicationID,
+							ctaID,
 						] )
 				).toMatchObject( response );
 
@@ -988,49 +1106,6 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 							ctaID,
 						] )
 				).toBeUndefined();
-
-				expect( console ).toHaveErrored();
-			} );
-
-			it( 'should associate a CTA fetch error with the request identifiers', async () => {
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-
-				fetchMock.getOnce( ctaEndpoint, {
-					body: response,
-					status: 500,
-				} );
-
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getCTA( ctaID );
-
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getPublicationCTA(
-					params.organizationID,
-					params.publicationID,
-					ctaID
-				);
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getCTA( ctaID )
-				).toBeUndefined();
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getErrorForSelector( 'getPublicationCTA', [
-							params.organizationID,
-							params.publicationID,
-							ctaID,
-						] )
-				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();
 			} );
