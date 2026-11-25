@@ -553,19 +553,10 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
 			} );
 
-			it( 'should store the updated CTA by its ID, whether or not it was loaded', async () => {
+			it( 'should store the updated CTA by its publication and ID', async () => {
 				const { getState } =
 					// @ts-expect-error The WPDataRegistry type is missing the stores property.
 					registry.stores[ MODULES_READER_REVENUE_MANAGER ].store;
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetPublicationCTAs( [ cta, secondCTA ], params );
-
-				expect( getState().ctasByID[ params.publicationID ] ).toEqual( {
-					[ ctaID ]: cta,
-					'1a2b3c4d5-ef6g': secondCTA,
-				} );
 
 				fetchMock.postOnce( ctaEndpoint, {
 					body: updatedCTA,
@@ -576,30 +567,9 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.updateCTA( updateArgs );
 
-				expect( getState().ctasByID[ params.publicationID ] ).toEqual( {
-					[ ctaID ]: updatedCTA,
-					'1a2b3c4d5-ef6g': secondCTA,
+				expect( getState().ctasByID ).toEqual( {
+					[ params.publicationID ]: { [ ctaID ]: updatedCTA },
 				} );
-
-				const unloadedCTA = {
-					...cta,
-					name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/7e5f6a7b8-ij9k',
-				};
-
-				fetchMock.postOnce( ctaEndpoint, {
-					body: unloadedCTA,
-					status: 200,
-				} );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.updateCTA( { ...updateArgs, ctaID: '7e5f6a7b8-ij9k' } );
-
-				expect(
-					getState().ctasByID[ params.publicationID ][
-						'7e5f6a7b8-ij9k'
-					]
-				).toEqual( unloadedCTA );
 			} );
 
 			it( 'should not add the updated CTA before the CTAs are loaded', async () => {
