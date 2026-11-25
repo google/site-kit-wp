@@ -38,10 +38,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
-import {
-	surveyTriggerEndpoint,
-	waitForSurveyTrigger,
-} from '@tests/js/mock-survey-endpoints';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -597,8 +594,6 @@ describe( 'FeatureCard', () => {
 				'click_setup_cta',
 				'test-feature'
 			);
-
-			await waitForSurveyTrigger();
 		} );
 
 		it( 'should track click_read_more', () => {
