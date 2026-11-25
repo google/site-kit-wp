@@ -309,6 +309,9 @@ Each bullet states an outcome:
   Name a class, hook or filter when the outcome itself is server behavior someone verifies on the
   server; do not name the internals that merely produce a visible result. Names the issue invents
   are spelled out in full words — `character_count`, never `char_cnt`.
+- **Write user-facing strings with the terms in `docs/context/terminology.md`**, even when the
+  design capitalizes a term differently. Say so on the issue when you change a design's
+  capitalization.
 - **Give the input that produces the outcome**, in the form a tester can paste or click: the
   exact `href`, URL, setting value or sequence of clicks. `https://wa.me/15551234567` is
   verifiable; "a WhatsApp link with a recipient" is not.

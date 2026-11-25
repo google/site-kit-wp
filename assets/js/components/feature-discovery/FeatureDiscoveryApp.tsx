@@ -38,6 +38,7 @@ import DashboardSharingDialog from '@/js/components/dashboard-sharing/DashboardS
 import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
 import {
 	ALL_SERVICES_TAB_PATH,
+	FDH_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID,
 	WHATS_NEW_TAB_PATH,
 } from '@/js/components/feature-discovery/constants';
 import useConsumePendingSetup from '@/js/components/feature-discovery/useConsumePendingSetup';
@@ -48,6 +49,7 @@ import Layout from '@/js/components/layout/Layout';
 import SetupCTAOverlays from '@/js/components/notifications/SetupCTAOverlays';
 import PDFExportRoot from '@/js/components/pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from '@/js/components/pdf-export/PDFSectionsSelectionPanel';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_MEDIUM,
@@ -62,6 +64,7 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { SURVEY_TRIGGER_MAX_TTL } from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
@@ -180,6 +183,10 @@ const FeatureDiscoveryApp: FC = () => {
 	return (
 		<Fragment>
 			<FeatureEffects />
+			<SurveyViewTrigger
+				triggerID={ FDH_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID }
+				ttl={ SURVEY_TRIGGER_MAX_TTL }
+			/>
 			<Header>
 				<HelpMenu />
 			</Header>

@@ -25,6 +25,7 @@ import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import ctas from './ctas';
 import publications from './publications';
 import service from './service';
+import surveyQuestionCatalog from './survey-question-catalog';
 import termsOfService from './terms-of-service';
 import userSettings from './user-settings';
 import viewOnSite from './view-on-site';
@@ -34,6 +35,7 @@ const store = combineStores(
 	ctas,
 	publications,
 	service,
+	surveyQuestionCatalog,
 	termsOfService,
 	userSettings,
 	viewOnSite

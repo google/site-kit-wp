@@ -88,7 +88,17 @@ class Create_Measurement_Protocol_Secret extends Datapoint implements Executable
 		}
 
 		return function ( Google_Site_Kit_Client $client ) {
-			// `execute_data_request()` turns client defer on, while `create()` needs the responses of its requests.
+			// `execute_data_request()` (which will typically be what
+			// executes this code) will keep **client defer** on until this
+			// closure returns.
+			//
+			// We disable client refer until this request completes, because with
+			// defer on, an Admin API call returns the request without sending
+			// it. `create()` (below) needs the responses from this request: the
+			// list of secrets to find an existing one, and the created secret
+			// to store it.
+			//
+			// We restore client defer behaviour after `create()` finishes.
 			$restore_defer = $client->withDefer( false );
 
 			try {

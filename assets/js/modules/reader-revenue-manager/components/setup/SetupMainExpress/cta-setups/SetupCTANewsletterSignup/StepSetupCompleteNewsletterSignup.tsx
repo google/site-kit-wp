@@ -129,7 +129,7 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 				>
 					{ createInterpolateElement(
 						__(
-							'Because you already have other CTAs active, this new form will be displayed last. You can reorder your CTAs at any time in the <a>Publisher center</a>',
+							'Because you already have other CTAs active, this new form will be displayed last. You can reorder your CTAs at any time in the <a>Publisher Center</a>',
 							'google-site-kit'
 						),
 						{
@@ -168,7 +168,7 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 			>
 				{ createInterpolateElement(
 					__(
-						'You can edit the content of the CTA any time in <a>Publisher center</a>',
+						'You can edit the content of the CTA any time in <a>Publisher Center</a>',
 						'google-site-kit'
 					),
 					{
