@@ -33,6 +33,7 @@ import {
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
 import { formatDate, getDateString, stringToDate } from '@/js/util';
+import { getKeyFactorsWaitingText } from './key-factors';
 import { getMetricValue } from './report';
 
 export type TypicalTrafficAvailability = Pick<
@@ -285,38 +286,196 @@ export function getTypicalTrafficRangeWaitingText(
 }
 
 /**
- * Gets the text of the notice that takes the generated insight's place when
- * the selected date range is too long for it, if it has one.
+ * Gets the text of the notice that says when the typical traffic range and
+ * the key factors will show, while the site's history is too short for both.
  *
- * The Site Kit service writes the insight for a date range of up to 364 days,
- * so a longer range has the band and the key factors, but no insight. The
- * notice says what range the insight needs, as the short-range notice does
- * for the key factors. While the key factors wait for the period before the
- * range, there is no insight either way, and their section says when they
- * will show, so the notice waits for them.
+ * Each part shows from the last day of the first date range of this length
+ * with enough history for it, so one notice gives both days, the earlier
+ * first, rather than two notices each giving its own:
  *
- * The dashboard's panel and the PDF export show the same notice.
+ * - When both days are later than today, the notice says when to check back
+ *   for each, or for both on a day they share.
+ * - When both have passed, the selected range ends in the past, before them,
+ *   so the notice asks for a range that ends on the later day or after it,
+ *   which has both parts.
+ * - When only the earlier day has passed, the selected range ends before it,
+ *   so the notice asks for a range that ends on that day or after it, as the
+ *   notice of that part alone does. Once such a range is selected, the other
+ *   part's notice says when it will show.
+ * - Without the days, the site has no recorded traffic up to the end of the
+ *   selected range, so the notice says only that its history is too short
+ *   for either part.
  *
  * @since n.e.x.t
  *
- * @param {Object}  availability                     Which parts of the typical traffic view the selected date range has.
- * @param {boolean} availability.rangeTooLong        Whether the range is too long for the insight.
- * @param {boolean} availability.keyFactorsAvailable Whether the range has the key factors.
- * @return {string|null} The notice's text, or null when the range has no such notice.
+ * @param {string|null} bandAvailableFrom       The last day of the first date range of this length with the typical traffic range, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
+ * @param {string|null} keyFactorsAvailableFrom The last day of the first date range of this length with the key factors, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
+ * @param {string}      referenceDate           Today, as `YYYY-MM-DD`.
+ * @return {string} The notice's text.
  */
-export function getTrafficInsightRangeText( {
-	rangeTooLong,
-	keyFactorsAvailable,
-}: Pick<
-	TypicalTrafficAvailability,
-	'rangeTooLong' | 'keyFactorsAvailable'
-> ): string | null {
-	if ( ! rangeTooLong || ! keyFactorsAvailable ) {
-		return null;
+export function getTypicalTrafficWaitingText(
+	bandAvailableFrom: string | null,
+	keyFactorsAvailableFrom: string | null,
+	referenceDate: string
+): string {
+	// Both days are counted from the site's first day of recorded traffic, so
+	// the response has both or neither.
+	if ( ! bandAvailableFrom || ! keyFactorsAvailableFrom ) {
+		return __(
+			'There isn’t enough traffic history for a typical traffic range on these dates, and there’s no previous period to compare to.',
+			'google-site-kit'
+		);
 	}
 
-	return __(
-		'Select a date range of up to 364 days to see insights about your traffic.',
-		'google-site-kit'
+	const keyFactorsFirst = keyFactorsAvailableFrom < bandAvailableFrom;
+	const [ earlierDay, laterDay ] = keyFactorsFirst
+		? [ keyFactorsAvailableFrom, bandAvailableFrom ]
+		: [ bandAvailableFrom, keyFactorsAvailableFrom ];
+
+	if ( laterDay <= referenceDate ) {
+		return sprintf(
+			/* translators: %s: the last day of the first date range of this length with both a typical traffic range and a previous period to compare to, such as "April 2, 2025" */
+			__(
+				'There isn’t enough traffic history for these dates. Select a date range that ends on or after %s to see your typical traffic range and which channels changed the most.',
+				'google-site-kit'
+			),
+			formatDate( laterDay, { month: 'long' } )
+		);
+	}
+
+	if ( earlierDay <= referenceDate ) {
+		return keyFactorsFirst
+			? getKeyFactorsWaitingText( earlierDay, referenceDate )
+			: getTypicalTrafficRangeWaitingText( earlierDay, referenceDate );
+	}
+
+	const earlierDate = formatDate( earlierDay, { month: 'long' } );
+
+	if ( earlierDay === laterDay ) {
+		return sprintf(
+			/* translators: %s: the first day both the typical traffic range and the key factors show, such as "April 2, 2025" */
+			__(
+				'We’re still learning what’s usual for your site. Check back on %s to see your typical traffic range and which channels changed the most.',
+				'google-site-kit'
+			),
+			earlierDate
+		);
+	}
+
+	const laterDate = formatDate( laterDay, { month: 'long' } );
+
+	if ( keyFactorsFirst ) {
+		return sprintf(
+			/* translators: 1: the first day the key factors show, such as "February 6, 2025", 2: the first day the typical traffic range shows, such as "April 2, 2025" */
+			__(
+				'We’re still learning what’s usual for your site. Check back on %1$s to see which channels changed the most, and on %2$s to see your typical traffic range.',
+				'google-site-kit'
+			),
+			earlierDate,
+			laterDate
+		);
+	}
+
+	return sprintf(
+		/* translators: 1: the first day the typical traffic range shows, such as "April 2, 2025", 2: the first day the key factors show, such as "June 30, 2025" */
+		__(
+			'We’re still learning what’s usual for your site. Check back on %1$s to see your typical traffic range, and on %2$s to see which channels changed the most.',
+			'google-site-kit'
+		),
+		earlierDate,
+		laterDate
 	);
+}
+
+/**
+ * Gets the text of the notice at the top of the Typical Traffic Overview
+ * panel, which says what the selected date range lacks, if anything.
+ *
+ * The panel says it once, in the analysis's place, rather than in a notice for
+ * each part. The first that holds gives the text:
+ *
+ * 1. A range too short for the key factors asks for one of at least 7 days.
+ *    Its typical traffic range, if it waits too, waits for a day that a
+ *    longer range moves, so the notice says nothing of it.
+ * 2. While the key factors wait for the period before the range, the notice
+ *    says when they will show, and when the typical traffic range will, if it
+ *    waits too.
+ * 3. While the typical traffic range alone waits, the notice says when it
+ *    will show.
+ * 4. A range too long for the generated insight, with the `trafficInsights`
+ *    feature, says what range the insight needs. A range whose key factors
+ *    wait has no insight either way, and says what they wait for instead.
+ *
+ * The key factors' section shows only for a range with key factors, so it
+ * never says what a range lacks. The dashboard's panel and the PDF export
+ * show the same notice.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}      availability                         Which parts of the typical traffic view the selected date range has.
+ * @param {boolean}     availability.rangeTooShort           Whether the range is too short for the key factors.
+ * @param {boolean}     availability.bandAvailable           Whether every day of the range has its typical traffic range.
+ * @param {string|null} availability.bandAvailableFrom       The last day of the first date range of this length with the typical traffic range, or null.
+ * @param {boolean}     availability.keyFactorsAvailable     Whether the range has the key factors.
+ * @param {string|null} availability.keyFactorsAvailableFrom The last day of the first date range of this length with the key factors, or null.
+ * @param {boolean}     availability.rangeTooLong            Whether the range is too long for the generated insight.
+ * @param {Object}      options                              Options.
+ * @param {string}      options.referenceDate                Today, as `YYYY-MM-DD`.
+ * @param {boolean}     options.insightsEnabled              Whether the panel shows the generated insights, with the `trafficInsights` feature.
+ * @return {string|null} The notice's text, or null when the range lacks nothing.
+ */
+export function getTypicalTrafficAvailabilityText(
+	{
+		rangeTooShort,
+		bandAvailable,
+		bandAvailableFrom,
+		keyFactorsAvailable,
+		keyFactorsAvailableFrom,
+		rangeTooLong,
+	}: Pick<
+		TypicalTrafficAvailability,
+		| 'rangeTooShort'
+		| 'bandAvailable'
+		| 'bandAvailableFrom'
+		| 'keyFactorsAvailable'
+		| 'keyFactorsAvailableFrom'
+		| 'rangeTooLong'
+	>,
+	{
+		referenceDate,
+		insightsEnabled,
+	}: { referenceDate: string; insightsEnabled: boolean }
+): string | null {
+	if ( rangeTooShort ) {
+		return __(
+			'Select a date range of at least 7 days to see which channels changed the most',
+			'google-site-kit'
+		);
+	}
+
+	if ( ! keyFactorsAvailable ) {
+		return bandAvailable
+			? getKeyFactorsWaitingText( keyFactorsAvailableFrom, referenceDate )
+			: getTypicalTrafficWaitingText(
+					bandAvailableFrom,
+					keyFactorsAvailableFrom,
+					referenceDate
+			  );
+	}
+
+	if ( ! bandAvailable ) {
+		return getTypicalTrafficRangeWaitingText(
+			bandAvailableFrom,
+			referenceDate
+		);
+	}
+
+	if ( rangeTooLong && insightsEnabled ) {
+		return __(
+			'Select a date range of up to 364 days to see insights about your traffic.',
+			'google-site-kit'
+		);
+	}
+
+	return null;
 }

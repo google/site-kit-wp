@@ -260,12 +260,8 @@ describe( 'getKeyFactorsWaitingText', () => {
 	} );
 } );
 
-/** A 28-day range with its key factors, on 2025-02-05. */
+/** A 28-day range with its key factors. */
 const OPTIONS: KeyFactorsNoticeOptions = {
-	rangeTooShort: false,
-	noPreviousPeriod: false,
-	keyFactorsAvailableFrom: '2025-01-01',
-	referenceDate: '2025-02-05',
 	noChange: false,
 	daysInSelectedRange: 28,
 };
@@ -291,32 +287,5 @@ describe( 'getKeyFactorsNoticeText', () => {
 				daysInSelectedRange: 1,
 			} )
 		).toBe( 'No channel changed notably compared with the previous 1 day' );
-	} );
-
-	it( 'should say when the key factors will show while the previous period has no recorded traffic, rather than that no channel changed', () => {
-		expect(
-			getKeyFactorsNoticeText( {
-				...OPTIONS,
-				noPreviousPeriod: true,
-				keyFactorsAvailableFrom: '2025-02-06',
-				noChange: true,
-			} )
-		).toBe(
-			'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.'
-		);
-	} );
-
-	it( 'should ask for a range of at least 7 days for a range too short, whatever else holds', () => {
-		expect(
-			getKeyFactorsNoticeText( {
-				...OPTIONS,
-				rangeTooShort: true,
-				noPreviousPeriod: true,
-				noChange: true,
-				daysInSelectedRange: 1,
-			} )
-		).toBe(
-			'Select a date range of at least 7 days to see which channels changed the most'
-		);
 	} );
 } );

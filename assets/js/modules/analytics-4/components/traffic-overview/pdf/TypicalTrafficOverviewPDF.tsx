@@ -168,13 +168,10 @@ const TypicalTrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 			: undefined;
 
 	// The analysis compares the visits with their typical range, so it prints
-	// only where the chart draws the band, and the band's waiting text in its
-	// place, as on the dashboard. A range too long for the insight has the
-	// band, and the notice that says what range the insight needs.
+	// only where the chart draws the band. Otherwise, the notice of what the
+	// range lacks prints in its place, as on the dashboard.
 	const summaryNotice =
-		typicalTraffic?.analysis ||
-		typicalTraffic?.bandNotice ||
-		typicalTraffic?.insightNotice;
+		typicalTraffic?.analysis || typicalTraffic?.availabilityNotice;
 	const hasGeneratedText =
 		!! typicalTraffic?.analysis || !! typicalTraffic?.driver;
 
@@ -224,7 +221,9 @@ const TypicalTrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 					<Image src={ lineChartImage } style={ styles.chart } />
 				) }
 			</PDFCard>
-			{ typicalTraffic && (
+			{ typicalTraffic?.keyFactorsAvailable && (
+				// A range without key factors prints no section for them, as
+				// the dashboard shows none: the notice above says why.
 				<TrafficOverviewKeyFactorsPDF { ...typicalTraffic } />
 			) }
 			<View style={ styles.breakdowns }>

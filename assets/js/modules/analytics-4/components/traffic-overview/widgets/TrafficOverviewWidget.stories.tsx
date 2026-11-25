@@ -435,7 +435,8 @@ TypicalTrafficShortHistory.args = {
 		// period before it has recorded traffic, from the one that ends on
 		// `2025-02-25`, and the typical traffic range once its first day has
 		// 84 days of history, from the one that ends on `2025-04-21`. Until
-		// then, the panel says when each will show.
+		// then, one notice above the visitor figures says when each will
+		// show, and the panel leaves out the key factors section.
 		provideBenchmarkingResponse( registry, {
 			...response,
 			dailyTraffic: response.dailyTraffic.map( ( day ) => ( {

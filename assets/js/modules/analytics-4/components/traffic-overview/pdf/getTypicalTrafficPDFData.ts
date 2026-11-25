@@ -23,9 +23,8 @@ import { getKeyFactorName } from '@/js/modules/analytics-4/components/traffic-ov
 import {
 	getKeyFactorShareText,
 	getKeyFactorsNoticeText,
-	getTrafficInsightRangeText,
 	getTypicalTrafficAvailability,
-	getTypicalTrafficRangeWaitingText,
+	getTypicalTrafficAvailabilityText,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import {
 	BenchmarkingInsight,
@@ -54,10 +53,10 @@ export interface TrafficOverviewTypicalTrafficPDFData {
 	daysInRange: number;
 	/** The generated sentence that compares the visits with their typical range, or null when the PDF prints none. */
 	analysis: string | null;
-	/** The text that says when the typical traffic range will show, while the chart has no band, or null. */
-	bandNotice: string | null;
-	/** The text that says what date range the generated insight needs, in its place, when the date range is too long for it, or null. */
-	insightNotice: string | null;
+	/** The text that says what the date range lacks, in the analysis's place, as the panel's notice says it, or null when it lacks nothing. */
+	availabilityNotice: string | null;
+	/** Whether the date range has the key factors, without which the PDF prints no key factors section, as the panel shows none. */
+	keyFactorsAvailable: boolean;
 	/** The generated summary of the key factors, or null when the PDF prints none. */
 	driver: string | null;
 	/** The notice under the key factors' heading, or null when the section has none. */
@@ -85,13 +84,12 @@ export interface TypicalTrafficPDFDataOptions {
  * Gets the parts of the typical traffic view that the PDF prints, the way the
  * dashboard's panel shows them.
  *
- * The cards, their notice and the waiting text follow the availability of the
- * benchmarking response, as `TrafficOverviewPanel` does: the analysis prints
- * only where the chart draws the band, and the band's waiting text in its
- * place. The insight prints only where the panel would ask for it, so a
- * leftover insight never describes figures the PDF doesn't print. A range too
- * long for the insight prints the notice that takes its place, as the panel
- * shows it.
+ * The cards, their notice and the notice of what the date range lacks follow
+ * the availability of the benchmarking response, as `TrafficOverviewPanel`
+ * does: the analysis prints only where the chart draws the band, and the
+ * notice of what the range lacks in its place. The key factors print only for
+ * a range that has them. The insight prints only where the panel would ask for
+ * it, so a leftover insight never describes figures the PDF doesn't print.
  *
  * @since n.e.x.t
  *
@@ -112,16 +110,12 @@ export function getTypicalTrafficPDFData( {
 	daysInRange,
 	insightsEnabled,
 }: TypicalTrafficPDFDataOptions ): TrafficOverviewTypicalTrafficPDFData {
+	const availability = getTypicalTrafficAvailability( benchmarkingResponse );
 	const {
-		rangeTooShort,
-		bandAvailable,
-		bandAvailableFrom,
 		keyFactorsAvailable,
-		keyFactorsAvailableFrom,
 		insightRequestAllowed,
 		performanceInsightAvailable,
-		rangeTooLong,
-	} = getTypicalTrafficAvailability( benchmarkingResponse );
+	} = availability;
 
 	const { steadyTraffic } = benchmarkingResponse;
 
@@ -154,27 +148,20 @@ export function getTypicalTrafficPDFData( {
 		analysis:
 			( performanceInsightAvailable && requestedInsight?.analysis ) ||
 			null,
-		bandNotice: bandAvailable
-			? null
-			: getTypicalTrafficRangeWaitingText(
-					bandAvailableFrom,
-					referenceDate
-			  ),
-		insightNotice: insightsEnabled
-			? getTrafficInsightRangeText( {
-					rangeTooLong,
-					keyFactorsAvailable,
+		availabilityNotice: getTypicalTrafficAvailabilityText( availability, {
+			referenceDate,
+			insightsEnabled,
+		} ),
+		keyFactorsAvailable,
+		driver,
+		keyFactorsNotice: keyFactorsAvailable
+			? getKeyFactorsNoticeText( {
+					noChange:
+						steadyTraffic ||
+						( keyFactors.length === 0 && ! driver ),
+					daysInSelectedRange: daysInRange,
 			  } )
 			: null,
-		driver,
-		keyFactorsNotice: getKeyFactorsNoticeText( {
-			rangeTooShort,
-			noPreviousPeriod: ! rangeTooShort && ! keyFactorsAvailable,
-			keyFactorsAvailableFrom,
-			referenceDate,
-			noChange: steadyTraffic || ( keyFactors.length === 0 && ! driver ),
-			daysInSelectedRange: daysInRange,
-		} ),
 		keyFactors,
 	};
 }

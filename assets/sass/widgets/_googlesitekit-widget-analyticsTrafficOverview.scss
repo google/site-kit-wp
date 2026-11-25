@@ -490,8 +490,7 @@ $traffic-overview-column-gap: 42px;
 
 		// An `INFO_CIRCLE` notice is white with a gray icon. The design draws
 		// the panel's notices in the colors of an `INFO` notice.
-		.googlesitekit-notice.googlesitekit-traffic-overview__band-notice,
-		.googlesitekit-notice.googlesitekit-traffic-overview__insight-range-notice,
+		.googlesitekit-notice.googlesitekit-traffic-overview__availability-notice,
 		.googlesitekit-notice.googlesitekit-traffic-overview__key-factors-notice {
 			background-color: $c-surfaces-background;
 

@@ -29,7 +29,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { KEY_FACTORS } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
@@ -42,8 +41,7 @@ const REFERENCE_SITE_URL = 'https://example.com';
 
 /**
  * Puts the site info in the store, whose admin URL a landing page's link is
- * built on, and `2025-02-05` as today, which the notice of `noPreviousPeriod`
- * compares its day with.
+ * built on.
  *
  * @since n.e.x.t
  *
@@ -52,7 +50,6 @@ const REFERENCE_SITE_URL = 'https://example.com';
  */
 function setupRegistry( registry: WPDataRegistry ) {
 	provideSiteInfo( registry );
-	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 }
 
 /**
@@ -247,12 +244,6 @@ interface KeyFactorsStoryProps {
 	keyFactors: BenchmarkingKeyFactor[];
 	/** Whether traffic was steady, when the cards show their shares of the site's visits. */
 	steady?: boolean;
-	/** Whether the selected date range is too short for the key factors. */
-	rangeTooShort?: boolean;
-	/** Whether the site's recorded traffic doesn't cover the period before the selected date range yet. */
-	noPreviousPeriod?: boolean;
-	/** The last day of the first date range of this length with the key factors. */
-	keyFactorsAvailableFrom?: string | null;
 	/** The number of days in the selected date range. */
 	daysInSelectedRange?: number;
 	/** Whether the key factors have arrived. */
@@ -266,9 +257,6 @@ interface KeyFactorsStoryProps {
 function Template( {
 	keyFactors,
 	steady,
-	rangeTooShort,
-	noPreviousPeriod,
-	keyFactorsAvailableFrom,
 	daysInSelectedRange = 28,
 	loaded,
 	insight,
@@ -289,9 +277,6 @@ function Template( {
 					<KeyFactors
 						keyFactors={ keyFactors }
 						steady={ steady }
-						rangeTooShort={ rangeTooShort }
-						noPreviousPeriod={ noPreviousPeriod }
-						keyFactorsAvailableFrom={ keyFactorsAvailableFrom }
 						loaded={ loaded }
 						insight={ insight }
 						daysInSelectedRange={ daysInSelectedRange }
@@ -342,30 +327,6 @@ SteadyTraffic.args = {
 	keyFactors: STEADY_KEY_FACTORS,
 	steady: true,
 	insight: PLACEHOLDER_KEY_FACTORS_INSIGHT,
-};
-
-// `RangeTooShort` runs no visual check, because it only changes the notice
-// text of `NoNotableChange`.
-export const RangeTooShort = Template.bind(
-	{}
-) as Story< KeyFactorsStoryProps >;
-RangeTooShort.storyName = 'Range Too Short';
-RangeTooShort.args = {
-	keyFactors: [],
-	rangeTooShort: true,
-	daysInSelectedRange: 3,
-};
-
-// `NoPreviousPeriod` runs no visual check, because it only changes the
-// notice text of `NoNotableChange`.
-export const NoPreviousPeriod = Template.bind(
-	{}
-) as Story< KeyFactorsStoryProps >;
-NoPreviousPeriod.storyName = 'No Previous Period';
-NoPreviousPeriod.args = {
-	keyFactors: [],
-	noPreviousPeriod: true,
-	keyFactorsAvailableFrom: '2025-02-25',
 };
 
 export const LongLabels = Template.bind( {} ) as Story< KeyFactorsStoryProps >;

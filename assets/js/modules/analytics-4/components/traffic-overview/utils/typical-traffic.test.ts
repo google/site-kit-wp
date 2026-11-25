@@ -22,11 +22,13 @@
 import { createBenchmarkingResponse } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import {
+	TypicalTrafficAvailability,
 	getDailyTrafficFromReport,
-	getTrafficInsightRangeText,
 	getTrafficOverviewVisits,
 	getTypicalTrafficAvailability,
+	getTypicalTrafficAvailabilityText,
 	getTypicalTrafficRangeWaitingText,
+	getTypicalTrafficWaitingText,
 	hasTypicalTrafficRange,
 } from './typical-traffic';
 
@@ -407,34 +409,205 @@ describe( 'getTypicalTrafficRangeWaitingText', () => {
 	} );
 } );
 
-describe( 'getTrafficInsightRangeText', () => {
-	it( 'should say what range the insight needs when the range is too long for it', () => {
+describe( 'getTypicalTrafficWaitingText', () => {
+	it.each( [
+		[
+			'the key factors show first',
+			'2025-04-02',
+			'2025-02-06',
+			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.',
+		],
+		[
+			'the typical traffic range shows first',
+			'2025-04-02',
+			'2025-06-30',
+			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range, and on June 30, 2025 to see which channels changed the most.',
+		],
+		[
+			'both show on the same day',
+			'2025-04-02',
+			'2025-04-02',
+			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range and which channels changed the most.',
+		],
+	] )(
+		'should say when to check back for each part, the earlier first, when %s',
+		( _, bandAvailableFrom, keyFactorsAvailableFrom, text ) => {
+			expect(
+				getTypicalTrafficWaitingText(
+					bandAvailableFrom,
+					keyFactorsAvailableFrom,
+					'2025-02-05'
+				)
+			).toBe( text );
+		}
+	);
+
+	it( 'should ask for a date range that ends on the later day or after it when both days have passed', () => {
+		// The selected range ends in the past, before both days, so a range
+		// that ends on the later day or after it has both parts.
 		expect(
-			getTrafficInsightRangeText( {
-				rangeTooLong: true,
-				keyFactorsAvailable: true,
-			} )
+			getTypicalTrafficWaitingText(
+				'2025-02-05',
+				'2025-01-10',
+				'2025-02-05'
+			)
+		).toBe(
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 5, 2025 to see your typical traffic range and which channels changed the most.'
+		);
+	} );
+
+	it.each( [
+		[
+			'the key factors',
+			'2025-04-02',
+			'2025-02-01',
+			'There’s no previous period to compare to. Select a date range that ends on or after February 1, 2025 to see which channels changed the most.',
+		],
+		[
+			'the typical traffic range',
+			'2025-02-01',
+			'2025-06-30',
+			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after February 1, 2025 to see it.',
+		],
+	] )(
+		'should ask only for a date range that ends later when the earlier day has passed and the later hasn’t, as the notice of %s alone does',
+		( _, bandAvailableFrom, keyFactorsAvailableFrom, text ) => {
+			expect(
+				getTypicalTrafficWaitingText(
+					bandAvailableFrom,
+					keyFactorsAvailableFrom,
+					'2025-02-05'
+				)
+			).toBe( text );
+		}
+	);
+
+	it( 'should say only that the history is too short for either part when the site has no recorded traffic up to the end of the date range', () => {
+		expect( getTypicalTrafficWaitingText( null, null, '2025-02-05' ) ).toBe(
+			'There isn’t enough traffic history for a typical traffic range on these dates, and there’s no previous period to compare to.'
+		);
+	} );
+} );
+
+/** A 28-day range with every part, on 2025-02-05. */
+const AVAILABILITY: TypicalTrafficAvailability = {
+	rangeTooShort: false,
+	bandAvailable: true,
+	bandAvailableFrom: '2024-11-01',
+	keyFactorsAvailable: true,
+	keyFactorsAvailableFrom: '2024-09-01',
+	insightRequestAllowed: true,
+	performanceInsightAvailable: true,
+	lastYearAvailable: false,
+	rangeTooLong: false,
+};
+
+const NOTICE_OPTIONS = {
+	referenceDate: '2025-02-05',
+	insightsEnabled: true,
+};
+
+describe( 'getTypicalTrafficAvailabilityText', () => {
+	it( 'should have no text when the range has every part', () => {
+		expect(
+			getTypicalTrafficAvailabilityText( AVAILABILITY, NOTICE_OPTIONS )
+		).toBeNull();
+	} );
+
+	it( 'should ask for a range of at least 7 days for a range too short for the key factors, and say nothing of the typical traffic range that waits too', () => {
+		// The typical traffic range waits for a day of a range this short,
+		// which a longer range moves.
+		expect(
+			getTypicalTrafficAvailabilityText(
+				{
+					...AVAILABILITY,
+					rangeTooShort: true,
+					bandAvailable: false,
+					bandAvailableFrom: '2025-04-02',
+					keyFactorsAvailable: false,
+					keyFactorsAvailableFrom: null,
+				},
+				NOTICE_OPTIONS
+			)
+		).toBe(
+			'Select a date range of at least 7 days to see which channels changed the most'
+		);
+	} );
+
+	it( 'should say when the key factors and the typical traffic range will show, in one text, while both wait', () => {
+		expect(
+			getTypicalTrafficAvailabilityText(
+				{
+					...AVAILABILITY,
+					bandAvailable: false,
+					bandAvailableFrom: '2025-04-02',
+					keyFactorsAvailable: false,
+					keyFactorsAvailableFrom: '2025-02-06',
+				},
+				NOTICE_OPTIONS
+			)
+		).toBe(
+			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.'
+		);
+	} );
+
+	it.each( [
+		[ 'within 364 days', false ],
+		[ 'too long for the insight', true ],
+	] )(
+		'should say when the key factors will show while they alone wait, for a range %s',
+		( _, rangeTooLong ) => {
+			// A 90-day range has its typical traffic range before its key
+			// factors, and a range whose key factors wait has no insight
+			// either way.
+			expect(
+				getTypicalTrafficAvailabilityText(
+					{
+						...AVAILABILITY,
+						keyFactorsAvailable: false,
+						keyFactorsAvailableFrom: '2025-02-06',
+						rangeTooLong,
+					},
+					NOTICE_OPTIONS
+				)
+			).toBe(
+				'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.'
+			);
+		}
+	);
+
+	it( 'should say when the typical traffic range will show while it alone waits', () => {
+		expect(
+			getTypicalTrafficAvailabilityText(
+				{
+					...AVAILABILITY,
+					bandAvailable: false,
+					bandAvailableFrom: '2025-04-02',
+				},
+				NOTICE_OPTIONS
+			)
+		).toBe(
+			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.'
+		);
+	} );
+
+	it( 'should say what range the insight needs for a range too long for it', () => {
+		expect(
+			getTypicalTrafficAvailabilityText(
+				{ ...AVAILABILITY, rangeTooLong: true },
+				NOTICE_OPTIONS
+			)
 		).toBe(
 			'Select a date range of up to 364 days to see insights about your traffic.'
 		);
 	} );
 
-	it.each( [
-		[ 'a range the insight is written for', false, true ],
-		[
-			'a range too long for the insight whose key factors still wait for the period before it',
-			true,
-			false,
-		],
-	] )(
-		'should have no text for %s',
-		( _label, rangeTooLong, keyFactorsAvailable ) => {
-			expect(
-				getTrafficInsightRangeText( {
-					rangeTooLong,
-					keyFactorsAvailable,
-				} )
-			).toBeNull();
-		}
-	);
+	it( 'should have no text for a range too long for the insight without the trafficInsights feature', () => {
+		expect(
+			getTypicalTrafficAvailabilityText(
+				{ ...AVAILABILITY, rangeTooLong: true },
+				{ ...NOTICE_OPTIONS, insightsEnabled: false }
+			)
+		).toBeNull();
+	} );
 } );

@@ -945,8 +945,8 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 			expect( result.data?.typicalTraffic ).toEqual( {
 				daysInRange: 28,
 				analysis: null,
-				bandNotice: null,
-				insightNotice: null,
+				availabilityNotice: null,
+				keyFactorsAvailable: true,
 				driver: null,
 				keyFactorsNotice: null,
 				keyFactors: [
@@ -1034,7 +1034,7 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 			] );
 		} );
 
-		it( 'should say when the band and the key factors will show while the history is too short for them', async () => {
+		it( 'should say when the band and the key factors will show, in one notice, and leave out the key factors while the history is too short for them', async () => {
 			const response = createBenchmarkingResponse( startDate, endDate );
 
 			provideResponse( {
@@ -1061,11 +1061,13 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 				signal: new AbortController().signal,
 			} );
 
+			// No comparison was made, so the key factors' section, which
+			// the PDF leaves out, says nothing either.
 			expect( result.data?.typicalTraffic ).toMatchObject( {
-				bandNotice:
-					'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.',
-				keyFactorsNotice:
-					'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.',
+				availabilityNotice:
+					'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.',
+				keyFactorsAvailable: false,
+				keyFactorsNotice: null,
 				keyFactors: [],
 			} );
 		} );
@@ -1083,7 +1085,7 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 			],
 		] )(
 			'should %s, for a range too long for the insight',
-			async ( _label, insightsEnabled, insightNotice ) => {
+			async ( _label, insightsEnabled, availabilityNotice ) => {
 				if ( insightsEnabled ) {
 					enabledFeatures.add( 'trafficInsights' );
 				}
@@ -1110,8 +1112,7 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 
 				expect( result.data?.typicalTraffic ).toMatchObject( {
 					analysis: null,
-					bandNotice: null,
-					insightNotice,
+					availabilityNotice,
 					driver: null,
 				} );
 			}

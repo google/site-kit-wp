@@ -1090,15 +1090,15 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 					bandAvailableFrom: '2025-04-02',
 					keyFactorsAvailableFrom: '2025-02-06',
 				},
-				'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.',
+				'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.',
 			],
 			[
 				'the site has no recorded traffic',
 				availabilityWithoutTraffic,
-				'There’s no previous period to compare to.',
+				'There isn’t enough traffic history for a typical traffic range on these dates, and there’s no previous period to compare to.',
 			],
 		] )(
-			'should say when the key factors will show, in place of their cards, when the benchmarking response has none for the selected range, as when %s',
+			'should say when the key factors and the typical traffic range will show, in one notice above the visitor figures, and leave out the key factors, when the benchmarking response has neither for the selected range, as when %s',
 			async ( _, availability, notice ) => {
 				// The response has no key factors until every day of the
 				// previous period has recorded traffic, and says so in its
@@ -1109,30 +1109,35 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 					createResponse( { availability, keyFactors: [] } )
 				);
 
-				const {
-					container,
-					getByRole,
-					getByText,
-					queryByText,
-					waitForRegistry,
-				} = renderPanel();
+				const { container, queryByRole, queryByText, waitForRegistry } =
+					renderPanel();
 
 				await waitForRegistry();
 
-				// Without cards, the section has the space under its notice
-				// that it has under "No channel changed notably…".
+				const notices = container.querySelectorAll(
+					'.googlesitekit-notice'
+				);
+
+				// One notice says it all, at the top of the summary, above the
+				// visitor figures.
+				expect( notices ).toHaveLength( 1 );
+				expect( notices[ 0 ] ).toHaveTextContent( notice );
+				expect(
+					notices[ 0 ].closest( '.googlesitekit-notice-container' )
+						?.nextElementSibling
+				).toHaveClass(
+					'googlesitekit-traffic-overview__total-visitors'
+				);
 				expect( getSectionClassNames( container ) ).toEqual( [
 					'googlesitekit-traffic-overview__summary',
 					'googlesitekit-traffic-overview__chart',
-					'googlesitekit-traffic-overview__key-factors googlesitekit-traffic-overview__key-factors--no-change',
 					'googlesitekit-traffic-overview__breakdown',
 				] );
 				expect(
-					getByRole( 'heading', {
+					queryByRole( 'heading', {
 						name: 'Biggest traffic shifts vs. the previous 28 days',
 					} )
-				).toBeInTheDocument();
-				expect( getByText( notice ) ).toBeInTheDocument();
+				).not.toBeInTheDocument();
 				// No comparison was made, so nothing says that no channel
 				// changed.
 				expect(
@@ -1143,7 +1148,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			}
 		);
 
-		it( 'should ask for a date range that ends later, in place of the key factor cards, when the selected range ends before the first range of its length with them, and still say when to check back for the typical traffic range', async () => {
+		it( 'should ask only for a date range that ends later when the selected range ends before the first range of its length with the key factors, which one could select today, and the typical traffic range shows later', async () => {
 			// With recorded traffic from `2024-12-08` on, the 28 days that
 			// end on `2025-01-20` have no key factors, and the 28-day ranges
 			// that end on `2025-02-01` or later have them: one could be
@@ -1167,40 +1172,47 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				} )
 			);
 
-			const { getByText, waitForRegistry } = renderPanel();
+			const { container, waitForRegistry } = renderPanel();
 
 			await waitForRegistry();
 
-			expect(
-				getByText(
-					'There’s no previous period to compare to. Select a date range that ends on or after February 1, 2025 to see which channels changed the most.'
-				)
-			).toBeInTheDocument();
-			expect(
-				getByText(
-					'We’re still learning what’s usual for your site. Check back on March 28, 2025 to see your typical traffic range.'
-				)
-			).toBeInTheDocument();
+			// Once a later range is selected, the panel's notice says when to
+			// check back for the typical traffic range.
+			const notices = container.querySelectorAll(
+				'.googlesitekit-notice'
+			);
+
+			expect( notices ).toHaveLength( 1 );
+			expect( notices[ 0 ] ).toHaveTextContent(
+				'There’s no previous period to compare to. Select a date range that ends on or after February 1, 2025 to see which channels changed the most.'
+			);
 		} );
 
 		it.each( [
 			[
 				'a later day',
-				{
-					...availabilityWithoutTraffic,
-					bandAvailableFrom: '2025-04-02',
-					keyFactorsAvailableFrom: '2025-02-06',
-				},
+				'2025-04-02',
 				'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.',
 			],
 			[
-				'no day, as when the site has no recorded traffic',
-				availabilityWithoutTraffic,
-				'There isn’t enough traffic history for a typical traffic range on these dates.',
+				'a day that has passed',
+				'2025-01-10',
+				'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after January 10, 2025 to see it.',
 			],
 		] )(
-			'should say when the typical traffic range will show, above the visitor figures, when the days of the selected range have none, and the benchmarking response names %s',
-			async ( _, availability, notice ) => {
+			'should say when the typical traffic range will show, above the visitor figures, when the days of the selected range have none but it has its key factors, and the benchmarking response names %s',
+			async ( _, bandAvailableFrom, notice ) => {
+				// The key factors need every day of the previous period, and
+				// the typical traffic range 84 days of history before the
+				// range's first day, so a range of under 83 days has its key
+				// factors first.
+				const availability = {
+					...availabilityWithoutTraffic,
+					bandAvailableFrom,
+					keyFactorsAvailable: true,
+					keyFactorsAvailableFrom: '2024-12-01',
+				};
+
 				provideBenchmarkingResponse(
 					registry,
 					createResponse( {
@@ -1234,13 +1246,13 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				);
 				expect(
 					bandNotice?.querySelector(
-						'.googlesitekit-traffic-overview__band-notice'
+						'.googlesitekit-traffic-overview__availability-notice'
 					)
 				).toBeInTheDocument();
 			}
 		);
 
-		it( 'should leave out the notice of the typical traffic range when every day of the selected range has its typical range', async () => {
+		it( 'should leave out the notice of what the selected range lacks when it has every part', async () => {
 			provideBenchmarkingResponse( registry, createResponse() );
 
 			const { container, waitForRegistry } = renderPanel();
@@ -1249,7 +1261,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 
 			expect(
 				container.querySelector(
-					'.googlesitekit-traffic-overview__band-notice'
+					'.googlesitekit-traffic-overview__availability-notice'
 				)
 			).not.toBeInTheDocument();
 		} );
@@ -1593,7 +1605,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should render "Select a date range of at least 7 days…" in place of the key factor cards, between the traffic chart and the traffic breakdown, when the benchmarking response says the selected range is too short for them', async () => {
+		it( 'should render "Select a date range of at least 7 days…" above the visitor figures, alone, and leave out the key factors, when the benchmarking response says the selected range is too short for them', async () => {
 			registry.dispatch( CORE_USER ).setDateRangeSelection( {
 				type: 'custom',
 				startDate: '2025-02-03',
@@ -1612,6 +1624,11 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				availability: {
 					...response.availability,
 					rangeTooShort: true,
+					// The typical traffic range waits for a day of a range
+					// this short, which a longer range moves, so the notice
+					// says nothing of it.
+					bandAvailable: false,
+					bandAvailableFrom: '2025-04-02',
 					keyFactorsAvailable: false,
 					keyFactorsAvailableFrom: null,
 					insightRequestAllowed: false,
@@ -1620,33 +1637,34 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				keyFactors: [],
 			} );
 
-			const { container, getByRole, getByText, waitForRegistry } =
-				renderPanel();
+			const { container, queryByRole, waitForRegistry } = renderPanel();
 
 			await waitForRegistry();
 
-			// Without cards, the section has the space under its notice that
-			// it has under "No channel changed notably…".
+			const notices = container.querySelectorAll(
+				'.googlesitekit-notice'
+			);
+
+			expect( notices ).toHaveLength( 1 );
+			expect( notices[ 0 ] ).toHaveTextContent(
+				'Select a date range of at least 7 days to see which channels changed the most'
+			);
+			expect(
+				notices[ 0 ].closest(
+					'.googlesitekit-traffic-overview__summary'
+				)
+			).toBeInTheDocument();
+			// The heading would name a comparison with the previous 3 days
+			// that wasn't made.
 			expect( getSectionClassNames( container ) ).toEqual( [
 				'googlesitekit-traffic-overview__summary',
 				'googlesitekit-traffic-overview__chart',
-				'googlesitekit-traffic-overview__key-factors googlesitekit-traffic-overview__key-factors--no-change',
 				'googlesitekit-traffic-overview__breakdown',
 			] );
 			expect(
-				getByRole( 'heading', {
+				queryByRole( 'heading', {
 					name: 'Biggest traffic shifts vs. the previous 3 days',
 				} )
-			).toBeInTheDocument();
-			expect(
-				getByText(
-					'Select a date range of at least 7 days to see which channels changed the most'
-				)
-			).toBeInTheDocument();
-			expect(
-				container.querySelector(
-					'.googlesitekit-traffic-overview__key-factors-cards'
-				)
 			).not.toBeInTheDocument();
 		} );
 
@@ -2163,7 +2181,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			] );
 			expect(
 				summary.firstElementChild?.querySelector(
-					'.googlesitekit-traffic-overview__insight-range-notice'
+					'.googlesitekit-traffic-overview__availability-notice'
 				)
 			).toHaveTextContent(
 				'Select a date range of up to 364 days to see insights about your traffic.'
@@ -2190,7 +2208,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				false,
 			],
 		] )(
-			'should have no notice for a range too long for the insight %s',
+			'should not say what range the insight needs for a range too long for it %s',
 			async ( _label, features, keyFactorsAvailable ) => {
 				const { startDate, endDate } = registry
 					.select( CORE_USER )
@@ -2213,20 +2231,25 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 					keyFactors: keyFactorsAvailable ? response.keyFactors : [],
 				} );
 
-				const { container, waitForRegistry } = renderPanel( {
-					features,
-				} );
+				const { container, queryByText, waitForRegistry } = renderPanel(
+					{
+						features,
+					}
+				);
 
 				await waitForRegistry();
 
+				// While the key factors wait, the panel's notice says when
+				// they will show instead, since there is no insight either
+				// way until they do.
 				expect(
 					container.querySelector(
 						'.googlesitekit-traffic-overview__total-visitors'
 					)
 				).toBeInTheDocument();
 				expect(
-					container.querySelector(
-						'.googlesitekit-traffic-overview__insight-range-notice'
+					queryByText(
+						'Select a date range of up to 364 days to see insights about your traffic.'
 					)
 				).not.toBeInTheDocument();
 			}

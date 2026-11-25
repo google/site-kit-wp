@@ -1,5 +1,5 @@
 /**
- * Traffic Overview typical traffic range notice.
+ * Traffic Overview typical traffic availability notice.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -28,43 +28,52 @@ import { Select, useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getTypicalTrafficRangeWaitingText } from '@/js/modules/analytics-4/components/traffic-overview/utils';
+import {
+	TypicalTrafficAvailability,
+	getTypicalTrafficAvailabilityText,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 
-export interface TypicalTrafficRangeNoticeProps {
-	/** Whether every day of the selected date range has its typical traffic range, so the chart draws the band and the notice has nothing to say. */
-	bandAvailable?: boolean;
-	/** The last day of the first date range of this length with the typical traffic range, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range. */
-	availableFrom?: string | null;
+export interface TypicalTrafficAvailabilityNoticeProps {
+	/** Which parts of the typical traffic view the selected date range has, as `getTypicalTrafficAvailability()` reads them. */
+	availability: TypicalTrafficAvailability;
+	/** Whether the panel shows the generated insights, with the `trafficInsights` feature. Without them, a range too long for the insight has nothing to explain. */
+	insightsEnabled?: boolean;
 	/** Whether the panel's figures have arrived. The notice waits for them, so it doesn't show before the sections around it. */
 	loaded?: boolean;
 }
 
-const TypicalTrafficRangeNotice: FC< TypicalTrafficRangeNoticeProps > = ( {
-	bandAvailable = true,
-	availableFrom = null,
-	loaded = true,
-} ) => {
+const TypicalTrafficAvailabilityNotice: FC<
+	TypicalTrafficAvailabilityNoticeProps
+> = ( { availability, insightsEnabled = false, loaded = true } ) => {
 	const referenceDate = useSelect(
 		( select: Select ) => select( CORE_USER ).getReferenceDate(),
 		[]
 	);
 
-	if ( ! loaded || bandAvailable ) {
+	if ( ! loaded ) {
+		return null;
+	}
+
+	// One notice says whatever the range lacks, so notices about its parts
+	// never stack.
+	const text = getTypicalTrafficAvailabilityText( availability, {
+		referenceDate,
+		insightsEnabled,
+	} );
+
+	if ( ! text ) {
 		return null;
 	}
 
 	return (
-		// `INFO_CIRCLE` gives the info icon of the key factors' notices, and
-		// the panel's styles give it their gray background.
+		// `INFO_CIRCLE` gives the info icon of the key factors' notice, and
+		// the panel's styles give it its gray background.
 		<Notice
 			type={ NOTICE_TYPES.INFO_CIRCLE }
-			className="googlesitekit-traffic-overview__band-notice"
-			description={ getTypicalTrafficRangeWaitingText(
-				availableFrom,
-				referenceDate
-			) }
+			className="googlesitekit-traffic-overview__availability-notice"
+			description={ text }
 		/>
 	);
 };
 
-export default TypicalTrafficRangeNotice;
+export default TypicalTrafficAvailabilityNotice;

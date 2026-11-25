@@ -39,10 +39,9 @@ import TypicalTrafficBreakdown from '@/js/modules/analytics-4/components/traffic
 import { getPublishedPosts } from '@/js/modules/analytics-4/components/traffic-overview/charts/getPublishedPosts';
 import TypicalTrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart';
 import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
-import TrafficInsightRangeNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightRangeNotice';
 import TrafficInsightResetNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightResetNotice';
 import TypicalTotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTotalVisitors';
-import TypicalTrafficRangeNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTrafficRangeNotice';
+import TypicalTrafficAvailabilityNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTrafficAvailabilityNotice';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors';
 import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
@@ -114,29 +113,25 @@ const TypicalTrafficOverviewPanel: FC = () => {
 	// first range of this length with each part.
 	//
 	// - The band needs a typical range under every day, and the analysis,
-	//   which compares the visits with it, needs the band. Until then, the
-	//   summary says when the band will show, in the analysis's place.
+	//   which compares the visits with it, needs the band.
 	// - The key factors compare the selected range with the period before it,
 	//   so the response has none until every day of that period has recorded
-	//   traffic. Until then, their section says when they will, rather than
-	//   that no channel changed notably, and the panel asks for no insight,
-	//   whose driver would describe a change against days that weren't
-	//   measured. A range too short for the key factors has none either, and
-	//   their section says what range they need instead.
+	//   traffic, and none for a range too short for them. Until then, their
+	//   section is left out, rather than saying that no channel changed
+	//   notably, and the panel asks for no insight, whose driver would
+	//   describe a change against days that weren't measured.
 	// - The Site Kit service writes the insight for a range of up to 364
-	//   days, so the panel asks for none for a longer range, and a notice
-	//   says what range it needs in the analysis's place.
+	//   days, so the panel asks for none for a longer range.
+	//
+	// One notice, in the analysis's place, says what the range lacks and when
+	// each waiting part will show, so notices about the parts never stack.
+	const availability = getTypicalTrafficAvailability( benchmarkingResponse );
 	const {
-		rangeTooShort,
-		rangeTooLong,
-		bandAvailable,
-		bandAvailableFrom,
 		keyFactorsAvailable,
-		keyFactorsAvailableFrom,
 		insightRequestAllowed,
 		performanceInsightAvailable,
 		lastYearAvailable,
-	} = getTypicalTrafficAvailability( benchmarkingResponse );
+	} = availability;
 
 	// The insight arrives after the figures, since the service generates it
 	// from them. Without an insight, the panel shows its figures alone.
@@ -166,7 +161,7 @@ const TypicalTrafficOverviewPanel: FC = () => {
 			role="tabpanel"
 			aria-labelledby={ TRAFFIC_OVERVIEW_TAB_ID }
 		>
-			{ errors.length > 0 && (
+			{ errors.length > 0 ? (
 				<ReportError
 					moduleSlug={ MODULE_SLUG_ANALYTICS_4 }
 					error={ errors }
@@ -174,8 +169,7 @@ const TypicalTrafficOverviewPanel: FC = () => {
 					// other than `getReport` only with `onRetry`.
 					onRetry={ retryBenchmarkingData }
 				/>
-			) }
-			{ errors.length === 0 && (
+			) : (
 				<Fragment>
 					<div className="googlesitekit-traffic-overview__summary">
 						<TrafficInsightResetNotice
@@ -195,19 +189,13 @@ const TypicalTrafficOverviewPanel: FC = () => {
 								loading={ insightLoading }
 							/>
 						) }
-						<TrafficInsightRangeNotice
-							// In the analysis's place, for a range too long
-							// for the insight.
-							insightsShown={ showInsights }
-							rangeTooLong={ rangeTooLong }
-							keyFactorsAvailable={ keyFactorsAvailable }
-							loaded={ ! isLoading }
-						/>
 						{ showKeyFactors && (
-							// In the analysis's place, while the band waits.
-							<TypicalTrafficRangeNotice
-								bandAvailable={ bandAvailable }
-								availableFrom={ bandAvailableFrom }
+							// In the analysis's place, whatever the range
+							// lacks: a part that waits for history, or a
+							// length the key factors or the insight need.
+							<TypicalTrafficAvailabilityNotice
+								availability={ availability }
+								insightsEnabled={ trafficInsightsEnabled }
 								loaded={ ! isLoading }
 							/>
 						) }
@@ -251,15 +239,14 @@ const TypicalTrafficOverviewPanel: FC = () => {
 							/>
 						</div>
 					) }
-					{ showKeyFactors && (
+					{ showKeyFactors && ( isLoading || keyFactorsAvailable ) && (
+						// The section keeps its placeholders until the
+						// figures arrive, so the sections arrive together. A
+						// range without key factors then leaves it out, and
+						// the notice above the figures says why.
 						<KeyFactors
 							keyFactors={ benchmarkingResponse?.keyFactors }
 							steady={ benchmarkingResponse?.steadyTraffic }
-							rangeTooShort={ rangeTooShort }
-							noPreviousPeriod={
-								! rangeTooShort && ! keyFactorsAvailable
-							}
-							keyFactorsAvailableFrom={ keyFactorsAvailableFrom }
 							loaded={ ! isLoading }
 							// The driver describes the change against the
 							// previous period, and what carried it.

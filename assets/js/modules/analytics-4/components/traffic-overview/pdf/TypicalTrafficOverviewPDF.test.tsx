@@ -92,8 +92,8 @@ const TYPICAL_TRAFFIC: TrafficOverviewTypicalTrafficPDFData = {
 	daysInRange: 28,
 	analysis:
 		'Over the last 28 days, your site had **1,234** visits, about 12% above what is usual for it.',
-	bandNotice: null,
-	insightNotice: null,
+	availabilityNotice: null,
+	keyFactorsAvailable: true,
 	driver: 'Visits rose 12% (+134 visits), led by **Referral** (+365 visits).',
 	keyFactorsNotice: null,
 	keyFactors: [
@@ -368,27 +368,7 @@ describe( 'Typical Traffic Overview PDF', () => {
 			expect( JSON.stringify( tree.toJSON() ) ).not.toContain( '**' );
 		} );
 
-		it( 'prints the band’s waiting text in place of the analysis', () => {
-			const texts = renderPDFText(
-				<TypicalTrafficOverviewPDF
-					data={ {
-						...DEFAULT_REPORTS,
-						typicalTraffic: {
-							...TYPICAL_TRAFFIC,
-							analysis: null,
-							bandNotice:
-								'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.',
-						},
-					} }
-				/>
-			);
-
-			expect( texts ).toContain(
-				'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.'
-			);
-		} );
-
-		it( 'prints the notice of a range too long for the insight in place of the analysis', () => {
+		it( 'prints the notice of what the range lacks in place of the analysis', () => {
 			const texts = renderPDFText(
 				<TypicalTrafficOverviewPDF
 					data={ {
@@ -397,7 +377,7 @@ describe( 'Typical Traffic Overview PDF', () => {
 							...TYPICAL_TRAFFIC,
 							analysis: null,
 							driver: null,
-							insightNotice:
+							availabilityNotice:
 								'Select a date range of up to 364 days to see insights about your traffic.',
 						},
 					} }
@@ -409,6 +389,34 @@ describe( 'Typical Traffic Overview PDF', () => {
 					'Select a date range of up to 364 days to see insights about your traffic.'
 				)
 			).toBeLessThan( texts.indexOf( 'Total visits' ) );
+		} );
+
+		it( 'prints no key factors section for a range without key factors, with the notice of what they wait for in place of the analysis', () => {
+			const notice =
+				'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.';
+			const texts = renderPDFText(
+				<TypicalTrafficOverviewPDF
+					data={ {
+						...DEFAULT_REPORTS,
+						typicalTraffic: {
+							...TYPICAL_TRAFFIC,
+							analysis: null,
+							driver: null,
+							availabilityNotice: notice,
+							keyFactorsAvailable: false,
+							keyFactors: [],
+						},
+					} }
+				/>
+			);
+
+			expect( texts.indexOf( notice ) ).toBeGreaterThan( -1 );
+			expect( texts.indexOf( notice ) ).toBeLessThan(
+				texts.indexOf( 'Total visits' )
+			);
+			expect( texts ).not.toContain(
+				'Biggest traffic shifts vs. the previous 28 days'
+			);
 		} );
 
 		it( 'prints the key factors’ heading, the driver, then each card with its change in visits, after the chart and before the breakdowns', () => {
