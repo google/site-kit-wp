@@ -59,7 +59,7 @@ Working notes that feed the doc, in the feature's `preparation/` directory.
 | --- | --- | --- | --- |
 | P1. Understand requirements | `overview.md` | PRD, Figma | An overview of the feature, with Figma screenshots following the [screenshot conventions](SKILL.md#screenshots). |
 | P2. Define architecture | `architecture.md` | P1 | The core architecture: data flow, datastores, REST and settings changes, grounded in real, [verified](SKILL.md#style-guide) APIs. |
-| P3. List components | `components.md` | P1, P2 | The React components the feature needs, as a `Name \| Path \| Role` [table](SKILL.md#tables), marking which are new and which are modified. |
+| P3. List components | `components.md` | P1, P2 | The new React components as a [hierarchy](SKILL.md#tables), and anything worth flagging that isn't an implementation detail. |
 | P4. Outline the detailed design | `outline.md` | P1–P3 | A skeleton of the detailed design section: sub-section headings, each with a very brief description. |
 
 ### Authoring {#authoring}

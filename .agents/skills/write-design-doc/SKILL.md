@@ -118,7 +118,7 @@ Figma URL, and `get_metadata` for its text):
   (the design doc, or for `preparation/screenshots/`, one of the preparation notes); delete
   any that end up unreferenced so the folder matches its documents.
 
-## Diagrams
+## Diagrams {#diagrams}
 
 Author diagrams in [Mermaid](https://mermaid.js.org/). The inlined ```mermaid fence in the
 document is the **authoritative source** for each diagram.
@@ -186,8 +186,14 @@ Append the anchor to the target heading as `{#anchor-name}` and link to it as
 
 ## Tables {#tables}
 
-- Inventory components and surfaces as tables (e.g. `Name | Path | Role`, or
-  `Surface | key | predicate`), not prose paragraphs.
+- Inventory surfaces as tables (e.g. `Surface | key | predicate`), not prose paragraphs.
+- **Show new components as a hierarchy**, not a list of every affected component: a tree
+  placing each new component under the existing component that renders it, then a
+  `Name | Role` table. Draw the tree as a [Mermaid](#diagrams) flowchart where that shows the
+  structure more clearly, e.g. when components nest several levels deep or share a parent.
+  Leave changes to existing components (titles, labels, conditions) to the issues the doc is
+  broken down into. Call out only what isn't such a detail: where the designs don't match
+  the codebase, a design gap, or a dependency on unmerged work.
 - Keep an identity/"Role" cell to one line that *names* the thing and links to its owning
   section — don't re-specify behavior there.
 - Escape literal pipes as `\|` inside cells (e.g. type unions like `'a' \| 'b'`).
@@ -235,3 +241,4 @@ Append the anchor to the target heading as `{#anchor-name}` and link to it as
     (grep for stale references) so the doc never contradicts itself.
   - Reviewer feedback arrives as inline `[COMMENT: …]` markers: apply the change and delete
     the marker.
+
