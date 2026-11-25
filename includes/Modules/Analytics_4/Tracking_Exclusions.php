@@ -69,8 +69,9 @@ class Tracking_Exclusions {
 		/**
 		 * Filters whether Analytics tracking is off for the current request.
 		 *
-		 * Where it is true at `wp_head`, Site Kit prints the Analytics opt-out snippet. Where it is true when `init` ends,
-		 * or at the first event if that comes earlier, Site Kit sends no server-side event in that request.
+		 * When it is true in the page head (`wp_head`, or `web_stories_story_head` on a Web Story), Site Kit prints the
+		 * Analytics opt-out snippet. For server-side events, Site Kit uses its value from the end of `init`, or from the
+		 * first event if that comes earlier, and sends no server-side event in that request when that value is true.
 		 *
 		 * @since 1.1.0
 		 * @since n.e.x.t Also refuses server-side events.

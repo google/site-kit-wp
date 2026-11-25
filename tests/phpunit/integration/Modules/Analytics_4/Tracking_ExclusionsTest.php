@@ -91,6 +91,14 @@ class Tracking_ExclusionsTest extends TestCase {
 		$this->assertFalse( $this->tracking_exclusions->is_disabled(), 'Tracking should stay on when the `googlesitekit_allow_tracking_disabled` filter returns `false`.' );
 	}
 
+	public function test_is_disabled__tracking_disabled_filter_turns_tracking_back_on() {
+		$this->settings->merge( array( 'trackingDisabled' => array( 'loggedinUsers' ) ) );
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'subscriber' ) ) );
+		add_filter( 'googlesitekit_analytics_tracking_disabled', '__return_false' );
+
+		$this->assertFalse( $this->tracking_exclusions->is_disabled(), 'The `googlesitekit_analytics_tracking_disabled` filter should turn tracking back on for an excluded user.' );
+	}
+
 	public function test_is_disabled__returns_the_tracking_disabled_filter() {
 		$this->settings->merge( array( 'trackingDisabled' => array( 'loggedinUsers' ) ) );
 		$filtered_values = array();

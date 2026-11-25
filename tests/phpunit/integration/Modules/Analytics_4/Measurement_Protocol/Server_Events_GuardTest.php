@@ -152,7 +152,7 @@ class Server_Events_GuardTest extends TestCase {
 	}
 
 	public function test_can_send__statistics_consent_denied() {
-		$_COOKIE['wp_consent_statistics'] = 'deny';
+		$_COOKIE['custom_consent_statistics'] = 'deny';
 
 		$this->assertFalse( $this->create_guard()->can_send( 'sign_up:user:1' ), 'An event should be refused when the visitor denied statistics consent.' );
 	}
@@ -171,14 +171,14 @@ class Server_Events_GuardTest extends TestCase {
 
 	public function data_statistics_consent_not_denied() {
 		return array(
-			'an `allow` cookie'                          => array( array( 'wp_consent_statistics' => 'allow' ), 'wp_consent_statistics' ),
-			'a `deny` cookie without the WP Consent API' => array( array( 'wp_consent_statistics' => 'deny' ), null ),
+			'an `allow` cookie'                          => array( array( 'custom_consent_statistics' => 'allow' ), 'custom_consent_statistics' ),
+			'a `deny` cookie without the WP Consent API' => array( array( 'custom_consent_statistics' => 'deny' ), null ),
 		);
 	}
 
 	public function test_can_send__without_the_wp_consent_api() {
 		$args = $this->get_guard_args();
-		// The real input passes the cookie name to `filter_input()`, which takes no `null` from PHP 8.1.
+		// The real input passes the cookie name to `filter_input()`, which PHP 8.1 deprecates for `null`, so this test fails if the guard reads the cookie without a name.
 		$args[0] = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$guard   = new Server_Events_Guard( ...$args );
 
@@ -402,7 +402,7 @@ class Server_Events_GuardTest extends TestCase {
 		$this->load_wp_consent_api_stub();
 		\WP_Consent_API::$config = new class() {
 			public function consent_cookie_prefix() {
-				return 'wp_consent';
+				return 'custom_consent';
 			}
 		};
 
@@ -410,7 +410,7 @@ class Server_Events_GuardTest extends TestCase {
 		$cookie_name = $this->get_accessible_method( $guard, 'get_consent_cookie_name' )->invoke( $guard );
 
 		// A failed `assertSame()` adds a `ComparisonFailure` whose trace has this test case and its closures, which PHPUnit can't send out of a separate process.
-		$this->assertTrue( 'wp_consent_statistics' === $cookie_name, "The cookie name should be the prefix of the WP Consent API, then `_statistics`, not `{$cookie_name}`." );
+		$this->assertTrue( 'custom_consent_statistics' === $cookie_name, "The cookie name should be the prefix of the WP Consent API, then `_statistics`, not `{$cookie_name}`." );
 	}
 
 	/**
@@ -485,7 +485,7 @@ class Server_Events_GuardTest extends TestCase {
 	 * @param string|null $consent_cookie_name Name of the statistics cookie, or null without the WP Consent API.
 	 * @return Server_Events_Guard Instance under test.
 	 */
-	private function create_guard( $consent_cookie_name = 'wp_consent_statistics' ) {
+	private function create_guard( $consent_cookie_name = 'custom_consent_statistics' ) {
 		return new class( $consent_cookie_name, ...$this->get_guard_args() ) extends Server_Events_Guard {
 			/**
 			 * Name of the statistics cookie.
