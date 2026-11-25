@@ -100,12 +100,22 @@ const StepSurveyQuestions: FC< SetupStepProps > = ( {
 		return <ProgressBar />;
 	}
 
+	const hasCatalog = catalog !== undefined;
+	const canGoForward = hasCatalog && selectedQuestions.length > 0;
+
 	function onSubmit( event: FormEvent< HTMLFormElement > ) {
 		event.preventDefault();
 
 		// The custom question side sheet renders its form in a portal, so its
 		// submit event bubbles up to this form through the React tree.
 		if ( event.target !== event.currentTarget ) {
+			return;
+		}
+
+		// Other buttons in this form submit it too, such as the error notice's
+		// Retry button, which has no `type`. Complete the step only when "Next"
+		// is enabled.
+		if ( ! canGoForward ) {
 			return;
 		}
 
@@ -159,7 +169,6 @@ const StepSurveyQuestions: FC< SetupStepProps > = ( {
 		}
 	}
 
-	const hasCatalog = catalog !== undefined;
 	const isAtLimit = selectedQuestions.length >= MAX_SELECTED_QUESTIONS;
 	const isLastExpandedSelected = selectedQuestions.some(
 		( { id } ) => id === lastExpandedID
@@ -245,7 +254,7 @@ const StepSurveyQuestions: FC< SetupStepProps > = ( {
 				</div>
 
 				<ExpressSetupStepActions
-					canGoForward={ hasCatalog && selectedQuestions.length > 0 }
+					canGoForward={ canGoForward }
 					isBusy={ false }
 					label={ __( 'Next', 'google-site-kit' ) }
 					onGoBack={ onGoBack }

@@ -248,7 +248,9 @@ describe( 'StepSurveyQuestions', () => {
 
 		fetchMock.getOnce( catalogEndpoint, { body: error, status: 500 } );
 
-		renderStep();
+		const onComplete = jest.fn();
+
+		renderStep( { onComplete } );
 
 		expect(
 			await screen.findByText( /Internal server error/ )
@@ -279,6 +281,9 @@ describe( 'StepSurveyQuestions', () => {
 			} )
 		).toBeInTheDocument();
 		expect( fetchMock ).toHaveFetchedTimes( 2 );
+
+		// Retry sits inside the step's form, so its click submits the form.
+		expect( onComplete ).not.toHaveBeenCalled();
 	} );
 
 	describe( 'with the catalog', () => {
