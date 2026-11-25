@@ -230,6 +230,11 @@ so keep their headings plain and link to the slug a Markdown viewer generates
 - **Reserve bold** for terms being defined and for decisions. Bolding several phrases per
   paragraph drains emphasis of its signal.
 - **Use US English** (color, behavior, catalog), to match the codebase style guide.
+- **Keep current and planned behavior apart by tense.** Use the present tense for what's on
+  `develop`, and "will" for changes to something that exists there ("`getLatestSelectableDate()`
+  will return yesterday"). Anything plainly new or proposed can take the present tense, since
+  it reads faster and can't be misread ("A new `DataAvailabilityNotice` renders below…").
+  Keep "would" for hypotheticals and open questions.
 - **Avoid vague magic constants.** Give a concrete value, or explicitly defer it to UX polish.
 - **Edit cleanly, leaving no trace of the edit.** When editing the document in response to a
   prompt, write the updated content as if the document had always been written that way.
