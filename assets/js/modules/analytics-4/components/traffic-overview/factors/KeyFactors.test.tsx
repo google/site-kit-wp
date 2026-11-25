@@ -1280,6 +1280,7 @@ describe( 'KeyFactors page links', () => {
 	it.each( [
 		[ 'Command', { metaKey: true } ],
 		[ 'Control', { ctrlKey: true } ],
+		[ 'Shift', { shiftKey: true } ],
 	] )(
 		'should track `click_page_link` and leave the click to the browser when a link is clicked with %s held',
 		( _key, modifiers ) => {
@@ -1321,4 +1322,62 @@ describe( 'KeyFactors page links', () => {
 			expect( global.location.assign ).not.toHaveBeenCalled();
 		}
 	);
+
+	it.each( [
+		[
+			'the title of a post’s card',
+			NEW_POST,
+			'Ice cream is good for your health',
+			'CONTENT',
+		],
+		[
+			'a landing page row',
+			REFERRAL,
+			'/ice-cream-is-good-for-your-health/',
+			'CHANNEL',
+		],
+	] )(
+		'should track `click_page_link` and leave the click to the browser when %s is middle-clicked',
+		( _label, card, linkName, cardKind ) => {
+			const { getByRole } = renderOnMainDashboard( [ card ] );
+
+			// The browser reports a middle click as an `auxclick`, not a
+			// `click`, and `fireEvent` has no shortcut for it.
+			const notPrevented = fireEvent(
+				getByRole( 'link', { name: linkName } ),
+				new MouseEvent( 'auxclick', {
+					bubbles: true,
+					cancelable: true,
+					button: 1,
+				} )
+			);
+
+			expect( notPrevented ).toBe( true );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_typical-traffic',
+				'click_page_link',
+				cardKind
+			);
+			expect( global.location.assign ).not.toHaveBeenCalled();
+		}
+	);
+
+	it( 'should not track a click with the right button, which doesn’t open the link', () => {
+		const { getByRole } = renderOnMainDashboard( [ NEW_POST ] );
+
+		const notPrevented = fireEvent(
+			getByRole( 'link', {
+				name: 'Ice cream is good for your health',
+			} ),
+			new MouseEvent( 'auxclick', {
+				bubbles: true,
+				cancelable: true,
+				button: 2,
+			} )
+		);
+
+		expect( notPrevented ).toBe( true );
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+		expect( global.location.assign ).not.toHaveBeenCalled();
+	} );
 } );

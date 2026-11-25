@@ -45,7 +45,9 @@ export type KeyFactorLinkClickHandler = (
  * of a post's card and a landing page row.
  *
  * The handler records the click, labelled with the card's kind, before it
- * leaves the page for the link's dashboard.
+ * leaves the page for the link's dashboard. A link passes it both its `click`
+ * and its `auxclick` events, since the browser reports a middle click as an
+ * `auxclick`.
  *
  * @since n.e.x.t
  *
@@ -68,11 +70,22 @@ export function useKeyFactorLinkClick(
 				);
 			}
 
-			// A Command or Control click opens the link in a new tab or window,
-			// so this page stays open to save the click, and the browser
-			// handles the click.
-			if ( event.metaKey || event.ctrlKey ) {
+			// A middle click, and a click with Command, Control, or Shift held,
+			// opens the link in a new tab or window, so this page stays open
+			// to save the click, and the browser handles the click.
+			if (
+				event.button === 1 ||
+				event.metaKey ||
+				event.ctrlKey ||
+				event.shiftKey
+			) {
 				track();
+				return;
+			}
+
+			// Any other button, such as the right one, which some browsers
+			// report as an `auxclick` too, doesn't open the link.
+			if ( event.button !== 0 ) {
 				return;
 			}
 

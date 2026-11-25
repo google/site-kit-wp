@@ -356,6 +356,30 @@ class Key_FactorsTest extends TestCase {
 		$this->assertSame( -1, $decomposition['residual_delta'], 'The residual should be the change of `Email`, which has no card.' );
 	}
 
+	public function test_get_cards__keeps_a_flat_period_steady_when_only_a_placeholder_channel_moved_beyond_the_site() {
+		// The site's visits stayed at 1,000. `(not set)` gained 12 visits, 1.2%
+		// of them, but no card can name it. The other channels each lost less
+		// than 1%.
+		$key_factors = $this->build(
+			array( 1000, 1000 ),
+			array(
+				array( 'Organic Search', 396, 400 ),
+				array( 'Direct', 297, 300 ),
+				array( 'Referral', 197, 200 ),
+				array( 'Email', 78, 80 ),
+				array( '(not set)', 32, 20 ),
+			)
+		);
+
+		$this->assertTrue( $key_factors->is_steady(), 'A placeholder channel has no card, so its change alone should not make the period offsetting.' );
+		$this->assertSame( 'STEADY', $key_factors->get_decomposition()['shape'], 'The shape should be `STEADY`.' );
+		$this->assertSame(
+			array( 'Organic Search', 'Direct', 'Referral' ),
+			array_column( $key_factors->get_cards(), 'label' ),
+			'The cards should be the three channels with the most visits.'
+		);
+	}
+
 	public function test_get_cards__gives_a_steady_card_only_the_landing_page_device_and_visitor_type_that_moved_with_it() {
 		$key_factors = $this->build(
 			array( 1010, 1000 ),

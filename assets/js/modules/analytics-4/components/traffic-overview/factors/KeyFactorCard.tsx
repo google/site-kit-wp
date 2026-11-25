@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, MouseEvent } from 'react';
 
 /**
  * WordPress dependencies
@@ -216,6 +216,11 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 							onClick={ ( event ) =>
 								handleLinkClick( event, titleHref )
 							}
+							// The browser reports a middle click as an
+							// `auxclick`.
+							onAuxClick={ (
+								event: MouseEvent< HTMLAnchorElement >
+							) => handleLinkClick( event, titleHref ) }
 						>
 							{ name }
 						</Link>

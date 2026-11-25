@@ -666,9 +666,11 @@ const baseResolvers = {
 				.getBenchmarkingData( startDate, endDate )
 		) ) as DecodedBenchmarkingResponse | undefined;
 
-		// A response without a payload has no insight to request: the
-		// feature is off, the period is too short or too long, the site had
-		// no visits, or the request for the response failed.
+		// A response without a payload has no insight to request. Either the
+		// feature is off, or the range has no key factor cards: it is shorter
+		// than 7 days, the history doesn't cover the period before it, or the
+		// site has low traffic. Or the range is longer than 364 days, neither
+		// period had a visit, or the request for the response failed.
 		if ( ! benchmarkingResponse?.insightPayload ) {
 			yield baseActions.receiveBenchmarkingInsight( null, {
 				startDate,

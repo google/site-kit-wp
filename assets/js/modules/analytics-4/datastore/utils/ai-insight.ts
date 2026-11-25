@@ -543,7 +543,8 @@ export function getFailureLifetime( error: ErrorObject ): number | undefined {
  *   `AI_INSIGHT_RATE_LIMIT_HOLD`, and for longer when the refusal's
  *   `Retry-After` asks for it.
  *
- * A refusal without a usable `Retry-After` is held for an hour, and none for
+ * A daily cap without a usable `Retry-After` is held for an hour, and the
+ * user's allowance for `AI_INSIGHT_RATE_LIMIT_HOLD`. No refusal is held for
  * longer than a day.
  *
  * @since n.e.x.t
@@ -1020,9 +1021,13 @@ export async function resolveAIInsight< Insight >(
 	const outcome = await waitForInsight( request, operation );
 
 	if ( 'insight' in outcome ) {
-		// The service keeps an insight for a day. The insight keeps
-		// describing the period when the figures change later in the day,
-		// rather than costing a generation each time they do.
+		// The service keeps an insight for a day, so the entry does too. The
+		// request's `cacheKey` decides what new figures later in the day do.
+		// A key without the figures, such as the conversion insight's, keeps
+		// the insight through the day, rather than costing a generation each
+		// time the figures change. A key with them, such as the benchmarking
+		// insight's signed request, asks for a new insight, which describes
+		// the new figures.
 		await writeInsightCacheEntry( request, outcome, DAY_IN_SECONDS );
 	} else {
 		const lifetime = ( request.getFailureLifetime ?? getFailureLifetime )(

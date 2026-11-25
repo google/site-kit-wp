@@ -776,12 +776,21 @@ final class Key_Factors {
 	 * `OFFSETTING_EXCESS_PERCENT`, so on a flat period channels moved against
 	 * each other.
 	 *
+	 * A channel named by a placeholder, such as `(not set)`, is left out, as it
+	 * is from the cards: an `OFFSETTING` period's cards could not show its
+	 * change, while a steady period's cards still show the channels with the
+	 * most visits. Service §5.10 counts every channel here.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @return bool True when a channel's excess change reaches it, false otherwise.
 	 */
 	private function has_offsetting_channel() {
 		foreach ( $this->channels as $channel ) {
+			if ( Insight_Request_Builder::is_placeholder( $channel['title'] ) ) {
+				continue;
+			}
+
 			if ( abs( $channel['excess'] ) / $this->denominator * 100 >= self::OFFSETTING_EXCESS_PERCENT ) {
 				return true;
 			}

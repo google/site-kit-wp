@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, MouseEvent } from 'react';
 
 /**
  * Internal dependencies
@@ -53,7 +53,7 @@ export interface KeyFactorAttributeProps {
 	shareText?: string | null;
 	/** The Site Kit page the value links to, such as a landing page's entity dashboard, or `undefined` when it is not a link. */
 	href?: string;
-	/** Called on a click on the link, with the click event and `href`. */
+	/** Called on a click or a middle click on the link, with the event and `href`. */
 	onLinkClick?: KeyFactorLinkClickHandler;
 }
 
@@ -91,6 +91,10 @@ const KeyFactorAttribute: FC< KeyFactorAttributeProps > = ( {
 					<Link
 						href={ href }
 						onClick={ ( event ) => onLinkClick?.( event, href ) }
+						// The browser reports a middle click as an `auxclick`.
+						onAuxClick={ (
+							event: MouseEvent< HTMLAnchorElement >
+						) => onLinkClick?.( event, href ) }
 						noFlex
 						secondary
 					>
