@@ -40,7 +40,10 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import {
+	publications,
+	surveyQuestionCatalog,
+} from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
@@ -198,8 +201,19 @@ SurveyQuestions.parameters = {
 	},
 };
 SurveyQuestions.args = {
-	setupRegistry: ( registry: WPDataRegistry ) =>
-		connectPublication( registry, COMPLETE_PUBLICATION ),
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		connectPublication( registry, COMPLETE_PUBLICATION );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationSurveyQuestionCatalog(
+				surveyQuestionCatalog,
+				{
+					organizationID: ORGANIZATION_ID,
+					publicationID: PUBLICATION_ID,
+				}
+			);
+	},
 };
 SurveyQuestions.scenario = {};
 
