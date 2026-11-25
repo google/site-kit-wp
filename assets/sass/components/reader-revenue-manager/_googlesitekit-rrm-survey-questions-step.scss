@@ -19,14 +19,32 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-rrm-survey-questions-step__columns {
-		display: grid;
-		gap: $grid-gap-desktop;
-		grid-template-columns: minmax(0, 1fr);
+		// Below desktop, the selected questions pane comes right after the
+		// headline, above the description and the questions.
+		display: contents;
 
 		@media (min-width: $bp-desktop) {
 			align-items: start;
+			display: grid;
 			gap: 48px;
 			grid-template-columns: minmax(0, 1fr) 320px;
+		}
+	}
+
+	.googlesitekit-rrm-survey-questions-step .googlesitekit-rrm-express-setup-step__form-content {
+		reading-flow: grid-order;
+
+		@media (min-width: $bp-desktop) {
+			reading-flow: normal;
+		}
+	}
+
+	.googlesitekit-rrm-survey-questions-step .googlesitekit-rrm-express-setup-step__description,
+	.googlesitekit-rrm-survey-questions-step__questions {
+		order: 1;
+
+		@media (min-width: $bp-desktop) {
+			order: 0;
 		}
 	}
 
