@@ -225,8 +225,9 @@ const fetchGetPublicationCTAStore = createFetchStore( {
 				{ useCache: false }
 			);
 		} catch ( error ) {
-			// A CTA that does not exist is returned as `null`, rather than as an
-			// error.
+			// A CTA that does not exist is returned as `null`, so `getCTA()` can
+			// tell it apart from one that is still loading, without an error
+			// notice offering to retry it.
 			if ( ( error as { code?: unknown } )?.code === 404 ) {
 				return null;
 			}
@@ -270,6 +271,13 @@ const fetchCreateCTAStore = createFetchStore( {
 		),
 	reducerCallback: createReducer(
 		( state: CTAsState, cta: CTA, { publicationID }: CreateCTARequest ) => {
+			const ctaID = getCTAID( cta.name );
+
+			if ( ctaID ) {
+				state.ctasByID[ publicationID ] ??= {};
+				state.ctasByID[ publicationID ][ ctaID ] = cta;
+			}
+
 			// Only extend an already loaded list, otherwise the resolver would
 			// treat the single created CTA as the complete set.
 			if ( state.ctas[ publicationID ] === undefined ) {
