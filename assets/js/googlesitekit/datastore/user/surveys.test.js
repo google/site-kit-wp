@@ -30,16 +30,43 @@ import {
 	muteFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
-import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
+import {
+	CORE_USER,
+	GLOBAL_SURVEYS_TIMEOUT_SLUG,
+	PERMISSION_AUTHENTICATE,
+} from './constants';
 
 describe( 'core/user surveys', () => {
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideUserCapabilities( registry );
 	} );
+
+	afterEach( () => {
+		delete global._googlesitekitAPIFetchData.preloadedData;
+	} );
+
+	function preloadUserCapabilities() {
+		const capabilities = { [ PERMISSION_AUTHENTICATE ]: true };
+
+		global._googlesitekitAPIFetchData.preloadedData = {
+			'/google-site-kit/v1/core/user/data/permissions': {
+				body: capabilities,
+			},
+		};
+
+		// The resolver fetches the capabilities again once it has the preload.
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/permissions' ),
+			{ body: capabilities }
+		);
+	}
 
 	const survey = {
 		survey_payload: 'foo',
@@ -116,6 +143,26 @@ describe( 'core/user surveys', () => {
 				} );
 			} );
 
+			it( 'should not fetch if the user cannot connect Site Kit', async () => {
+				provideUserAuthentication( registry );
+				provideSiteInfo( registry );
+				provideUserCapabilities( registry, {
+					[ PERMISSION_AUTHENTICATE ]: false,
+				} );
+
+				muteFetch( surveyTimeoutsEndpoint, [] );
+				muteFetch( surveyTriggerEndpoint );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerSurvey( 'userInput_answered_other__goals' );
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).not.toHaveFetched( surveyTimeoutsEndpoint );
+				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
+			} );
+
 			it( 'should wait for authentication to be resolved before making a network request', async () => {
 				provideSiteInfo( registry );
 				muteFetch( surveyTriggerEndpoint );
@@ -147,6 +194,29 @@ describe( 'core/user surveys', () => {
 							triggerID: 'userInput_answered_other__goals',
 							ttl: 123,
 						},
+					},
+				} );
+			} );
+
+			it( 'should wait for the user capabilities to load before it sends the trigger', async () => {
+				// A registry with no capabilities, so their resolver loads them.
+				registry = createTestRegistry();
+				provideUserAuthentication( registry );
+				provideSiteInfo( registry );
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+				preloadUserCapabilities();
+				muteFetch( surveyTriggerEndpoint );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerSurvey( 'userInput_answered_other__goals' );
+
+				expect(
+					await registry.resolveSelect( CORE_USER ).getCapabilities()
+				).toEqual( { [ PERMISSION_AUTHENTICATE ]: true } );
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID: 'userInput_answered_other__goals' },
 					},
 				} );
 			} );
@@ -227,6 +297,7 @@ describe( 'core/user surveys', () => {
 
 				await registry.resolveSelect( CORE_USER ).getSurveyTimeouts();
 				await registry.resolveSelect( CORE_SITE ).getSiteInfo();
+				await registry.resolveSelect( CORE_USER ).getCapabilities();
 
 				jest.useFakeTimers();
 
@@ -393,6 +464,44 @@ describe( 'core/user surveys', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should not fetch the survey timeouts if the user cannot connect Site Kit', async () => {
+				provideUserCapabilities( registry, {
+					[ PERMISSION_AUTHENTICATE ]: false,
+				} );
+				muteFetch( surveyTimeoutsEndpoint, [] );
+
+				expect(
+					registry.select( CORE_USER ).getSurveyTimeouts()
+				).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
+				await waitForDefaultTimeouts();
+
+				expect(
+					registry.select( CORE_USER ).getSurveyTimeouts()
+				).toBeUndefined();
+				expect( fetchMock ).not.toHaveFetched( surveyTimeoutsEndpoint );
+			} );
+
+			it( 'should wait for the user capabilities to load before it fetches the survey timeouts', async () => {
+				// A registry with no capabilities, so their resolver loads them.
+				registry = createTestRegistry();
+				preloadUserCapabilities();
+				muteFetch( surveyTimeoutsEndpoint, [ 'foo' ] );
+
+				registry.select( CORE_USER ).getSurveyTimeouts();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
+
+				expect(
+					await registry.resolveSelect( CORE_USER ).getCapabilities()
+				).toEqual( { [ PERMISSION_AUTHENTICATE ]: true } );
+				expect( fetchMock ).toHaveFetched( surveyTimeoutsEndpoint );
+				expect(
+					registry.select( CORE_USER ).getSurveyTimeouts()
+				).toEqual( [ 'foo' ] );
 			} );
 		} );
 

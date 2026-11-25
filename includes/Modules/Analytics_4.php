@@ -59,10 +59,12 @@ use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Utilities;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Acknowledge_User_Data_Collection;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Audience;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Conversion_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Measurement_Protocol_Secret;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Account_Summaries;
@@ -856,6 +858,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.191.0 Registers `GET:plain-permalink-top-posts` with the `freshData` feature flag on.
 	 * @since 1.192.0 Always registers `GET:plain-permalink-top-posts`.
 	 * @since n.e.x.t Registers `POST:conversion-insights` and `GET:conversion-insights` with the `siteGoalsInsights` feature flag on.
+	 * @since n.e.x.t Registers `POST:acknowledge-user-data-collection` and `POST:create-measurement-protocol-secret` with the `serverSideEvents` feature flag on.
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -1171,6 +1174,29 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 			$this->datapoints['POST:conversion-insights'] = new Create_Conversion_Insight( array_merge( $conversion_insights_definition, array( 'module' => $this ) ) );
 			$this->datapoints['GET:conversion-insights']  = new Get_Conversion_Insight( $conversion_insights_definition );
+		}
+
+		if ( Feature_Flags::enabled( 'serverSideEvents' ) ) {
+			$this->datapoints['POST:acknowledge-user-data-collection'] = new Acknowledge_User_Data_Collection(
+				array(
+					'settings'               => $this->get_settings(),
+					'service'                => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
+					'scopes'                 => array( self::EDIT_SCOPE ),
+					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to acknowledge user data collection for this Analytics property on your behalf.', 'google-site-kit' ),
+				)
+			);
+
+			$this->datapoints['POST:create-measurement-protocol-secret'] = new Create_Measurement_Protocol_Secret(
+				array(
+					'settings'                    => $this->get_settings(),
+					'measurement_protocol_secret' => $this->measurement_protocol_secret,
+					'service'                     => '',
+					'scopes'                      => array( self::EDIT_SCOPE ),
+					'request_scopes_message'      => __( 'You’ll need to grant Site Kit permission to create a Measurement Protocol secret on your behalf.', 'google-site-kit' ),
+				)
+			);
 		}
 
 		$this->datapoints['GET:plain-permalink-top-posts'] = new Get_Plain_Permalink_Top_Posts(
