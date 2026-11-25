@@ -32,8 +32,8 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import DocumentationLink from '@/js/components/DocumentationLink';
 import InfoTooltip from '@/js/components/InfoTooltip';
-import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import Typography from '@/js/components/Typography';
@@ -119,8 +119,9 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 			'google-site-kit'
 		),
 		{
-			// TODO: Point the link at the section's support page.
-			a: <Link href="#" external hideExternalIndicator />,
+			// The slug names the section by its heading, "Biggest traffic
+			// shifts".
+			a: <DocumentationLink slug="typical-traffic-shifts" />,
 		}
 	);
 

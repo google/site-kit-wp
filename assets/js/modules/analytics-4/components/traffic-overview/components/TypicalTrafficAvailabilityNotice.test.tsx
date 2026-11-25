@@ -22,7 +22,7 @@
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { TypicalTrafficAvailability } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { fireEvent, render } from '@tests/js/test-utils';
-import { createTestRegistry } from '@tests/js/utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import TypicalTrafficAvailabilityNotice, {
 	TypicalTrafficAvailabilityNoticeProps,
 } from './TypicalTrafficAvailabilityNotice';
@@ -68,6 +68,7 @@ function renderNotice(
 	customRange?: { startDate: string; endDate: string }
 ) {
 	const registry = createTestRegistry();
+	provideSiteInfo( registry );
 	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 
 	if ( customRange ) {
@@ -162,7 +163,7 @@ describe( 'TypicalTrafficAvailabilityNotice', () => {
 		);
 		expect( getByRole( 'link', { name: /Learn more/ } ) ).toHaveAttribute(
 			'href',
-			'#'
+			'https://sitekit.withgoogle.com/support/?doc=typical-traffic-low-traffic'
 		);
 		expect( getByRole( 'button', { name: 'Got it' } ) ).toBeInTheDocument();
 	} );

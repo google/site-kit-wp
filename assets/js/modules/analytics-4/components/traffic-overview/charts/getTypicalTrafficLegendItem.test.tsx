@@ -20,7 +20,24 @@
  * Internal dependencies
  */
 import { render } from '@tests/js/test-utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import { getTypicalTrafficLegendItem } from './getTypicalTrafficLegendItem';
+
+/**
+ * Renders the tooltip of a legend item, with the site's info, which its
+ * "Learn more" link reads the support URL from.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} item The legend item.
+ * @return {Object} The render result.
+ */
+function renderInfo( item: ReturnType< typeof getTypicalTrafficLegendItem > ) {
+	const registry = createTestRegistry();
+	provideSiteInfo( registry );
+
+	return render( <div>{ item.info }</div>, { registry } );
+}
 
 /**
  * Renders the tooltip text of a legend item.
@@ -31,9 +48,7 @@ import { getTypicalTrafficLegendItem } from './getTypicalTrafficLegendItem';
  * @return {string|null} The text of its tooltip.
  */
 function getInfoText( item: ReturnType< typeof getTypicalTrafficLegendItem > ) {
-	const { container } = render( <div>{ item.info }</div> );
-
-	return container.textContent;
+	return renderInfo( item ).container.textContent;
 }
 
 describe( 'getTypicalTrafficLegendItem', () => {
@@ -93,16 +108,18 @@ describe( 'getTypicalTrafficLegendItem', () => {
 		).not.toContain( 'last year' );
 	} );
 
-	it( 'should end the tooltip with a "Learn more" link', () => {
-		const { getByRole } = render(
-			<div>
-				{ getTypicalTrafficLegendItem( { referenceDays: 364 } ).info }
-			</div>
+	it( 'should end the tooltip with a "Learn more" link to the typical traffic range\'s support page', () => {
+		const { getByRole } = renderInfo(
+			getTypicalTrafficLegendItem( { referenceDays: 364 } )
 		);
 
-		expect(
-			getByRole( 'link', { name: /Learn more/ } )
-		).toBeInTheDocument();
+		const learnMoreLink = getByRole( 'link', { name: /Learn more/ } );
+
+		expect( learnMoreLink ).toHaveAttribute(
+			'href',
+			'https://sitekit.withgoogle.com/support/?doc=typical-traffic-range'
+		);
+		expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
 	} );
 
 	it.each( [

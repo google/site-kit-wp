@@ -189,7 +189,7 @@ describe( 'KeyFactors', () => {
 		}
 	);
 
-	it( 'should show the tooltip text and a "Learn more" link to `#` when the info icon is hovered', async () => {
+	it( 'should show the tooltip text and a "Learn more" link to the section\'s support page when the info icon is hovered', async () => {
 		const { getByRole } = renderKeyFactors();
 
 		fireEvent.mouseOver(
@@ -211,7 +211,10 @@ describe( 'KeyFactors', () => {
 			name: 'Learn more (opens in a new tab)',
 		} );
 
-		expect( learnMoreLink ).toHaveAttribute( 'href', '#' );
+		expect( learnMoreLink ).toHaveAttribute(
+			'href',
+			'https://sitekit.withgoogle.com/support/?doc=typical-traffic-shifts'
+		);
 		expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
 	} );
 

@@ -25,7 +25,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '@/js/components/Link';
+import DocumentationLink from '@/js/components/DocumentationLink';
 import { TypicalChartLegendItem } from './TypicalChartLegend';
 import { TYPICAL_TRAFFIC_RANGE_COLOR } from './typicalTrafficChartOptions';
 
@@ -116,9 +116,7 @@ export function getTypicalTrafficLegendItem( {
 				lastYearAvailable,
 			} ),
 			{
-				// TODO: Point the link at the typical traffic range's support
-				// page.
-				a: <Link href="#" external hideExternalIndicator />,
+				a: <DocumentationLink slug="typical-traffic-range" />,
 			}
 		),
 	};

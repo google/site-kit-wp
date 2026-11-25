@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import Link from '@/js/components/Link';
+import DocumentationLink from '@/js/components/DocumentationLink';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -91,10 +91,9 @@ const TypicalTrafficAvailabilityNotice: FC<
 				description={
 					<Fragment>
 						{ text }{ ' ' }
-						{ /* TODO: Point the link at the low traffic state's support page. */ }
-						<Link href="#" external hideExternalIndicator>
+						<DocumentationLink slug="typical-traffic-low-traffic">
 							{ __( 'Learn more', 'google-site-kit' ) }
-						</Link>
+						</DocumentationLink>
 					</Fragment>
 				}
 				// The button has no action yet: the notice shows whenever the
