@@ -24,6 +24,7 @@ import { Report } from '@/js/modules/analytics-4/datastore/types';
 import {
 	TypicalTrafficAvailability,
 	getDailyTrafficFromReport,
+	getKeyFactorsWaitingText,
 	getTrafficOverviewVisits,
 	getTypicalTrafficAvailability,
 	getTypicalTrafficAvailabilityText,
@@ -371,10 +372,22 @@ describe( 'hasTypicalTrafficRange', () => {
 	} );
 } );
 
+/** A range that ends today, 2025-02-05, the last day a range can end on. */
+const ENDS_TODAY = {
+	endDate: '2025-02-05',
+	latestSelectableDate: '2025-02-05',
+};
+
+/** A range that ends in the past, on 2025-01-20, while today is 2025-02-05. */
+const ENDS_IN_THE_PAST = {
+	endDate: '2025-01-20',
+	latestSelectableDate: '2025-02-05',
+};
+
 describe( 'getTypicalTrafficRangeWaitingText', () => {
-	it( 'should say when to check back for the typical traffic range when it shows on a later day', () => {
+	it( 'should say when to check back for the typical traffic range when the selected range ends today', () => {
 		expect(
-			getTypicalTrafficRangeWaitingText( '2025-04-02', '2025-02-05' )
+			getTypicalTrafficRangeWaitingText( '2025-04-02', ENDS_TODAY )
 		).toBe(
 			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.'
 		);
@@ -382,29 +395,79 @@ describe( 'getTypicalTrafficRangeWaitingText', () => {
 
 	it.each( [
 		[
-			'today',
-			'2025-02-05',
-			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after February 5, 2025 to see it.',
+			'the selected range ends in the past, and the day is still ahead',
+			'2025-04-02',
+			ENDS_IN_THE_PAST,
+			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after April 2, 2025 to see it.',
 		],
 		[
-			'a day that has passed',
-			'2025-01-10',
-			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after January 10, 2025 to see it.',
+			'the selected range ends in the past, and the day has passed',
+			'2025-02-01',
+			ENDS_IN_THE_PAST,
+			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after February 1, 2025 to see it.',
+		],
+		[
+			'the day isn’t ahead',
+			'2025-02-05',
+			ENDS_TODAY,
+			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after February 5, 2025 to see it.',
 		],
 	] )(
-		'should ask for a date range that ends later when the typical traffic range shows from %s',
-		( _, availableFrom, text ) => {
-			// The selected range ends in the past, before the day, so a range
-			// that ends on the day or later has the typical traffic range.
+		'should ask for a date range that ends later when %s',
+		( _, availableFrom, dates, text ) => {
+			// A range that ends before the last day a range can end on never
+			// gains the history it lacks, so waiting doesn't help.
 			expect(
-				getTypicalTrafficRangeWaitingText( availableFrom, '2025-02-05' )
+				getTypicalTrafficRangeWaitingText( availableFrom, dates )
 			).toBe( text );
 		}
 	);
 
 	it( 'should say only that the history is too short when the site has no recorded traffic up to the end of the date range', () => {
-		expect( getTypicalTrafficRangeWaitingText( null, '2025-02-05' ) ).toBe(
+		expect( getTypicalTrafficRangeWaitingText( null, ENDS_TODAY ) ).toBe(
 			'There isn’t enough traffic history for a typical traffic range on these dates.'
+		);
+	} );
+} );
+
+describe( 'getKeyFactorsWaitingText', () => {
+	it( 'should say when to check back for the key factors when the selected range ends today', () => {
+		expect( getKeyFactorsWaitingText( '2025-02-06', ENDS_TODAY ) ).toBe(
+			'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.'
+		);
+	} );
+
+	it.each( [
+		[
+			'the selected range ends in the past, and the day is still ahead',
+			'2025-02-06',
+			ENDS_IN_THE_PAST,
+			'There’s no previous period to compare to. Select a date range that ends on or after February 6, 2025 to see which channels changed the most.',
+		],
+		[
+			'the selected range ends in the past, and the day has passed',
+			'2025-01-25',
+			ENDS_IN_THE_PAST,
+			'There’s no previous period to compare to. Select a date range that ends on or after January 25, 2025 to see which channels changed the most.',
+		],
+		[
+			'the day isn’t ahead',
+			'2025-02-05',
+			ENDS_TODAY,
+			'There’s no previous period to compare to. Select a date range that ends on or after February 5, 2025 to see which channels changed the most.',
+		],
+	] )(
+		'should ask for a date range that ends later when %s',
+		( _, availableFrom, dates, text ) => {
+			expect( getKeyFactorsWaitingText( availableFrom, dates ) ).toBe(
+				text
+			);
+		}
+	);
+
+	it( 'should say only that there is no previous period when the site has no recorded traffic up to the end of the date range', () => {
+		expect( getKeyFactorsWaitingText( null, ENDS_TODAY ) ).toBe(
+			'There’s no previous period to compare to.'
 		);
 	} );
 } );
@@ -430,60 +493,66 @@ describe( 'getTypicalTrafficWaitingText', () => {
 			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range and which channels changed the most.',
 		],
 	] )(
-		'should say when to check back for each part, the earlier first, when %s',
+		'should say when to check back for each part, the earlier first, when the selected range ends today and %s',
 		( _, bandAvailableFrom, keyFactorsAvailableFrom, text ) => {
 			expect(
 				getTypicalTrafficWaitingText(
 					bandAvailableFrom,
 					keyFactorsAvailableFrom,
-					'2025-02-05'
+					ENDS_TODAY
 				)
 			).toBe( text );
 		}
 	);
 
-	it( 'should ask for a date range that ends on the later day or after it when both days have passed', () => {
-		// The selected range ends in the past, before both days, so a range
-		// that ends on the later day or after it has both parts.
-		expect(
-			getTypicalTrafficWaitingText(
-				'2025-02-05',
-				'2025-01-10',
-				'2025-02-05'
-			)
-		).toBe(
-			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 5, 2025 to see your typical traffic range and which channels changed the most.'
-		);
-	} );
-
 	it.each( [
 		[
-			'the key factors',
+			'the key factors show first',
 			'2025-04-02',
-			'2025-02-01',
-			'There’s no previous period to compare to. Select a date range that ends on or after February 1, 2025 to see which channels changed the most.',
+			'2025-02-06',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 6, 2025 to see which channels changed the most, and on or after April 2, 2025 to see your typical traffic range.',
 		],
 		[
-			'the typical traffic range',
-			'2025-02-01',
+			'the typical traffic range shows first',
+			'2025-04-02',
 			'2025-06-30',
-			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after February 1, 2025 to see it.',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after April 2, 2025 to see your typical traffic range, and on or after June 30, 2025 to see which channels changed the most.',
+		],
+		[
+			'both show on the same day',
+			'2025-04-02',
+			'2025-04-02',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after April 2, 2025 to see your typical traffic range and which channels changed the most.',
+		],
+		[
+			'only the earlier day has passed',
+			'2025-03-28',
+			'2025-02-01',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 1, 2025 to see which channels changed the most, and on or after March 28, 2025 to see your typical traffic range.',
+		],
+		[
+			'both days have passed',
+			'2025-02-04',
+			'2025-01-25',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after January 25, 2025 to see which channels changed the most, and on or after February 4, 2025 to see your typical traffic range.',
 		],
 	] )(
-		'should ask only for a date range that ends later when the earlier day has passed and the later hasn’t, as the notice of %s alone does',
+		'should ask for a date range that ends on or after each day, the earlier first, when the selected range ends in the past and %s',
 		( _, bandAvailableFrom, keyFactorsAvailableFrom, text ) => {
+			// The range never gains the history it lacks, however long one
+			// waits, so a day still ahead asks for a later range too.
 			expect(
 				getTypicalTrafficWaitingText(
 					bandAvailableFrom,
 					keyFactorsAvailableFrom,
-					'2025-02-05'
+					ENDS_IN_THE_PAST
 				)
 			).toBe( text );
 		}
 	);
 
 	it( 'should say only that the history is too short for either part when the site has no recorded traffic up to the end of the date range', () => {
-		expect( getTypicalTrafficWaitingText( null, null, '2025-02-05' ) ).toBe(
+		expect( getTypicalTrafficWaitingText( null, null, ENDS_TODAY ) ).toBe(
 			'There isn’t enough traffic history for a typical traffic range on these dates, and there’s no previous period to compare to.'
 		);
 	} );
@@ -503,7 +572,7 @@ const AVAILABILITY: TypicalTrafficAvailability = {
 };
 
 const NOTICE_OPTIONS = {
-	referenceDate: '2025-02-05',
+	...ENDS_TODAY,
 	insightsEnabled: true,
 };
 
@@ -590,6 +659,42 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.'
 		);
 	} );
+
+	it.each( [
+		[
+			'the key factors',
+			{
+				keyFactorsAvailable: false,
+				keyFactorsAvailableFrom: '2025-02-06',
+			},
+			'There’s no previous period to compare to. Select a date range that ends on or after February 6, 2025 to see which channels changed the most.',
+		],
+		[
+			'the typical traffic range',
+			{ bandAvailable: false, bandAvailableFrom: '2025-04-02' },
+			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after April 2, 2025 to see it.',
+		],
+		[
+			'both parts',
+			{
+				bandAvailable: false,
+				bandAvailableFrom: '2025-04-02',
+				keyFactorsAvailable: false,
+				keyFactorsAvailableFrom: '2025-02-06',
+			},
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 6, 2025 to see which channels changed the most, and on or after April 2, 2025 to see your typical traffic range.',
+		],
+	] )(
+		'should ask for a date range that ends later, rather than say when to check back, for a range that ends in the past, with a day still ahead for %s',
+		( _, changes, text ) => {
+			expect(
+				getTypicalTrafficAvailabilityText(
+					{ ...AVAILABILITY, ...changes },
+					{ ...NOTICE_OPTIONS, ...ENDS_IN_THE_PAST }
+				)
+			).toBe( text );
+		}
+	);
 
 	it( 'should say what range the insight needs for a range too long for it', () => {
 		expect(

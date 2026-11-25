@@ -45,8 +45,15 @@ export interface TypicalTrafficAvailabilityNoticeProps {
 const TypicalTrafficAvailabilityNotice: FC<
 	TypicalTrafficAvailabilityNoticeProps
 > = ( { availability, insightsEnabled = false, loaded = true } ) => {
-	const referenceDate = useSelect(
-		( select: Select ) => select( CORE_USER ).getReferenceDate(),
+	// A waiting part's notice says when to check back only for a range that
+	// ends on the last day a range can end on, today. An earlier range never
+	// gains the history it lacks, so the notice asks for one that ends later.
+	const endDate = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeDates().endDate,
+		[]
+	);
+	const latestSelectableDate = useSelect(
+		( select: Select ) => select( CORE_USER ).getLatestSelectableDate(),
 		[]
 	);
 
@@ -57,7 +64,8 @@ const TypicalTrafficAvailabilityNotice: FC<
 	// One notice says whatever the range lacks, so notices about its parts
 	// never stack.
 	const text = getTypicalTrafficAvailabilityText( availability, {
-		referenceDate,
+		endDate,
+		latestSelectableDate,
 		insightsEnabled,
 	} );
 

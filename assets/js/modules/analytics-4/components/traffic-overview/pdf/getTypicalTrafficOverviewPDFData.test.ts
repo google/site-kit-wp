@@ -1062,7 +1062,10 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 			} );
 
 			// No comparison was made, so the key factors' section, which
-			// the PDF leaves out, says nothing either.
+			// the PDF leaves out, says nothing either. The PDF's ranges end
+			// the day before today, as `DATES` does, so the notice says when
+			// to check back, as the dashboard does for its range that ends
+			// today.
 			expect( result.data?.typicalTraffic ).toMatchObject( {
 				availabilityNotice:
 					'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.',

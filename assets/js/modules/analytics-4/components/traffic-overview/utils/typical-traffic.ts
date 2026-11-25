@@ -33,7 +33,6 @@ import {
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
 import { formatDate, getDateString, stringToDate } from '@/js/util';
-import { getKeyFactorsWaitingText } from './key-factors';
 import { getMetricValue } from './report';
 
 export type TypicalTrafficAvailability = Pick<
@@ -48,6 +47,18 @@ export type TypicalTrafficAvailability = Pick<
 	| 'lastYearAvailable'
 	| 'rangeTooLong'
 >;
+
+/**
+ * The days that decide whether a notice says when to check back for a part
+ * of the typical traffic view that waits for history, or asks for a date range
+ * that ends later.
+ */
+export interface TypicalTrafficNoticeDates {
+	/** The last day of the selected date range, as `YYYY-MM-DD`. */
+	endDate: string;
+	/** The last day a date range can end on, as `YYYY-MM-DD`: today on the dashboard, and the day before in the PDF export, whose ranges end then. */
+	latestSelectableDate: string;
+}
 
 export interface TrafficOverviewVisitsOptions {
 	/** The benchmarking response for the selected range, or `undefined` while there is none. */
@@ -234,26 +245,59 @@ export function hasTypicalTrafficRange(
 }
 
 /**
+ * Checks whether a notice says when to check back for a part of the typical
+ * traffic view that waits for history, rather than asking for another date
+ * range.
+ *
+ * A part shows from the last day of the first date range of this length with
+ * enough history for it, its day. Only a range that ends on the last day a
+ * range can end on gains it by waiting: no range that ends later can be
+ * selected yet, so the notice says when to check back. A range that ends
+ * earlier never gains the history it lacks, however long one waits, so the
+ * notice asks for a range that ends on the part's day or after it, even a day
+ * still ahead. A day that has passed always asks for another range, whatever
+ * the selected range.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} availableFrom              The part's day, as `YYYY-MM-DD`.
+ * @param {Object} dates                      The days the notice compares it with.
+ * @param {string} dates.endDate              The last day of the selected date range, as `YYYY-MM-DD`.
+ * @param {string} dates.latestSelectableDate The last day a date range can end on, as `YYYY-MM-DD`.
+ * @return {boolean} True when the notice says when to check back, false when it asks for a range that ends later.
+ */
+function isCheckBackDay(
+	availableFrom: string,
+	{ endDate, latestSelectableDate }: TypicalTrafficNoticeDates
+): boolean {
+	return (
+		endDate >= latestSelectableDate && availableFrom > latestSelectableDate
+	);
+}
+
+/**
  * Gets the text of the notice that says when the chart will draw the typical
  * traffic range, while the site's history is too short for it.
  *
  * The range shows from the last day of the first date range of this length
- * with enough history, `availableFrom`. A range that ends today reaches it on
- * that day, so a later day says when to check back. A day that has passed
- * means the selected range ends in the past, before it, so the notice asks for
- * a range that ends on that day or later. Without the day, the site has no
- * recorded traffic up to the end of the selected range, and the notice says
- * only that its history is too short.
+ * with enough history, `availableFrom`. A selected range that ends on the last
+ * day a range can end on reaches it by waiting, so the notice says when to
+ * check back. One that ends earlier never does, so the notice asks for a range
+ * that ends on that day or later, as `isCheckBackDay()` explains. Without the
+ * day, the site has no recorded traffic up to the end of the selected range,
+ * and the notice says only that its history is too short.
  *
  * @since n.e.x.t
  *
- * @param {string|null} availableFrom The last day of the first date range of this length with the typical traffic range, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
- * @param {string}      referenceDate Today, as `YYYY-MM-DD`.
+ * @param {string|null} availableFrom              The last day of the first date range of this length with the typical traffic range, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
+ * @param {Object}      dates                      The days the notice compares it with.
+ * @param {string}      dates.endDate              The last day of the selected date range, as `YYYY-MM-DD`.
+ * @param {string}      dates.latestSelectableDate The last day a date range can end on, as `YYYY-MM-DD`.
  * @return {string} The notice's text.
  */
 export function getTypicalTrafficRangeWaitingText(
 	availableFrom: string | null,
-	referenceDate: string
+	dates: TypicalTrafficNoticeDates
 ): string {
 	if ( ! availableFrom ) {
 		return __(
@@ -264,7 +308,7 @@ export function getTypicalTrafficRangeWaitingText(
 
 	const date = formatDate( availableFrom, { month: 'long' } );
 
-	if ( availableFrom > referenceDate ) {
+	if ( isCheckBackDay( availableFrom, dates ) ) {
 		return sprintf(
 			/* translators: %s: the first day the typical traffic range shows, such as "April 2, 2025" */
 			__(
@@ -286,6 +330,123 @@ export function getTypicalTrafficRangeWaitingText(
 }
 
 /**
+ * Gets the text of the notice that says when the key factors will show, while
+ * the site's history doesn't cover the period before the selected date range,
+ * which they compare it with.
+ *
+ * The key factors show from the last day of the first date range of this
+ * length whose previous period has recorded traffic, `availableFrom`. A
+ * selected range that ends on the last day a range can end on reaches it by
+ * waiting, so the notice says when to check back. One that ends earlier never
+ * does, so the notice asks for a range that ends on that day or later, as
+ * `isCheckBackDay()` explains. Without the day, the site has no recorded
+ * traffic up to the end of the selected range, and the notice says only that
+ * there's nothing to compare to.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string|null} availableFrom              The last day of the first date range of this length with the key factors, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
+ * @param {Object}      dates                      The days the notice compares it with.
+ * @param {string}      dates.endDate              The last day of the selected date range, as `YYYY-MM-DD`.
+ * @param {string}      dates.latestSelectableDate The last day a date range can end on, as `YYYY-MM-DD`.
+ * @return {string} The notice's text.
+ */
+export function getKeyFactorsWaitingText(
+	availableFrom: string | null,
+	dates: TypicalTrafficNoticeDates
+): string {
+	if ( ! availableFrom ) {
+		return __(
+			'There’s no previous period to compare to.',
+			'google-site-kit'
+		);
+	}
+
+	const date = formatDate( availableFrom, { month: 'long' } );
+
+	if ( isCheckBackDay( availableFrom, dates ) ) {
+		return sprintf(
+			/* translators: %s: the first day the key factors show, such as "February 6, 2025" */
+			__(
+				'There’s no previous period to compare to yet. Check back on %s to see which channels changed the most.',
+				'google-site-kit'
+			),
+			date
+		);
+	}
+
+	return sprintf(
+		/* translators: %s: the last day of the first date range of this length with the key factors, such as "February 6, 2025" */
+		__(
+			'There’s no previous period to compare to. Select a date range that ends on or after %s to see which channels changed the most.',
+			'google-site-kit'
+		),
+		date
+	);
+}
+
+/**
+ * Gets the text of the notice that asks for a date range that ends later, to
+ * see the typical traffic range and the key factors, while the selected range
+ * has neither and ends before the last day a range can end on.
+ *
+ * Such a range never gains the history it lacks, so the notice asks for a
+ * range that ends on each part's day or after it, the earlier first, or on
+ * the day they share, whether the days have passed or not.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} bandAvailableFrom       The last day of the first date range of this length with the typical traffic range, as `YYYY-MM-DD`.
+ * @param {string} keyFactorsAvailableFrom The last day of the first date range of this length with the key factors, as `YYYY-MM-DD`.
+ * @return {string} The notice's text.
+ */
+function getTypicalTrafficSelectLaterText(
+	bandAvailableFrom: string,
+	keyFactorsAvailableFrom: string
+): string {
+	const keyFactorsFirst = keyFactorsAvailableFrom < bandAvailableFrom;
+	const [ earlierDay, laterDay ] = keyFactorsFirst
+		? [ keyFactorsAvailableFrom, bandAvailableFrom ]
+		: [ bandAvailableFrom, keyFactorsAvailableFrom ];
+	const laterDate = formatDate( laterDay, { month: 'long' } );
+
+	if ( earlierDay === laterDay ) {
+		return sprintf(
+			/* translators: %s: the last day of the first date range of this length with both a typical traffic range and a previous period to compare to, such as "April 2, 2025" */
+			__(
+				'There isn’t enough traffic history for these dates. Select a date range that ends on or after %s to see your typical traffic range and which channels changed the most.',
+				'google-site-kit'
+			),
+			laterDate
+		);
+	}
+
+	const earlierDate = formatDate( earlierDay, { month: 'long' } );
+
+	if ( keyFactorsFirst ) {
+		return sprintf(
+			/* translators: 1: the last day of the first date range of this length with a previous period to compare to, such as "February 6, 2025", 2: the last day of the first date range of this length with a typical traffic range, such as "April 2, 2025" */
+			__(
+				'There isn’t enough traffic history for these dates. Select a date range that ends on or after %1$s to see which channels changed the most, and on or after %2$s to see your typical traffic range.',
+				'google-site-kit'
+			),
+			earlierDate,
+			laterDate
+		);
+	}
+
+	return sprintf(
+		/* translators: 1: the last day of the first date range of this length with a typical traffic range, such as "April 2, 2025", 2: the last day of the first date range of this length with a previous period to compare to, such as "June 30, 2025" */
+		__(
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after %1$s to see your typical traffic range, and on or after %2$s to see which channels changed the most.',
+			'google-site-kit'
+		),
+		earlierDate,
+		laterDate
+	);
+}
+
+/**
  * Gets the text of the notice that says when the typical traffic range and
  * the key factors will show, while the site's history is too short for both.
  *
@@ -293,30 +454,29 @@ export function getTypicalTrafficRangeWaitingText(
  * with enough history for it, so one notice gives both days, the earlier
  * first, rather than two notices each giving its own:
  *
- * - When both days are later than today, the notice says when to check back
- *   for each, or for both on a day they share.
- * - When both have passed, the selected range ends in the past, before them,
- *   so the notice asks for a range that ends on the later day or after it,
- *   which has both parts.
- * - When only the earlier day has passed, the selected range ends before it,
- *   so the notice asks for a range that ends on that day or after it, as the
- *   notice of that part alone does. Once such a range is selected, the other
- *   part's notice says when it will show.
+ * - When the selected range ends on the last day a range can end on, it gains
+ *   each part by waiting, so the notice says when to check back for each, or
+ *   for both on a day they share.
+ * - When it ends earlier, it never gains them, so the notice asks for a range
+ *   that ends on each day or after it, whether the days have passed or not,
+ *   as `isCheckBackDay()` explains.
  * - Without the days, the site has no recorded traffic up to the end of the
  *   selected range, so the notice says only that its history is too short
  *   for either part.
  *
  * @since n.e.x.t
  *
- * @param {string|null} bandAvailableFrom       The last day of the first date range of this length with the typical traffic range, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
- * @param {string|null} keyFactorsAvailableFrom The last day of the first date range of this length with the key factors, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
- * @param {string}      referenceDate           Today, as `YYYY-MM-DD`.
+ * @param {string|null} bandAvailableFrom          The last day of the first date range of this length with the typical traffic range, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
+ * @param {string|null} keyFactorsAvailableFrom    The last day of the first date range of this length with the key factors, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
+ * @param {Object}      dates                      The days the notice compares them with.
+ * @param {string}      dates.endDate              The last day of the selected date range, as `YYYY-MM-DD`.
+ * @param {string}      dates.latestSelectableDate The last day a date range can end on, as `YYYY-MM-DD`.
  * @return {string} The notice's text.
  */
 export function getTypicalTrafficWaitingText(
 	bandAvailableFrom: string | null,
 	keyFactorsAvailableFrom: string | null,
-	referenceDate: string
+	dates: TypicalTrafficNoticeDates
 ): string {
 	// Both days are counted from the site's first day of recorded traffic, so
 	// the response has both or neither.
@@ -332,21 +492,12 @@ export function getTypicalTrafficWaitingText(
 		? [ keyFactorsAvailableFrom, bandAvailableFrom ]
 		: [ bandAvailableFrom, keyFactorsAvailableFrom ];
 
-	if ( laterDay <= referenceDate ) {
-		return sprintf(
-			/* translators: %s: the last day of the first date range of this length with both a typical traffic range and a previous period to compare to, such as "April 2, 2025" */
-			__(
-				'There isn’t enough traffic history for these dates. Select a date range that ends on or after %s to see your typical traffic range and which channels changed the most.',
-				'google-site-kit'
-			),
-			formatDate( laterDay, { month: 'long' } )
+	// The later day is ahead whenever the earlier is.
+	if ( ! isCheckBackDay( earlierDay, dates ) ) {
+		return getTypicalTrafficSelectLaterText(
+			bandAvailableFrom,
+			keyFactorsAvailableFrom
 		);
-	}
-
-	if ( earlierDay <= referenceDate ) {
-		return keyFactorsFirst
-			? getKeyFactorsWaitingText( earlierDay, referenceDate )
-			: getTypicalTrafficRangeWaitingText( earlierDay, referenceDate );
 	}
 
 	const earlierDate = formatDate( earlierDay, { month: 'long' } );
@@ -402,6 +553,11 @@ export function getTypicalTrafficWaitingText(
  *    waits too.
  * 3. While the typical traffic range alone waits, the notice says when it
  *    will show.
+ *
+ *    A waiting part's notice says when to check back only for a range that
+ *    ends on the last day a range can end on. A range that ends earlier never
+ *    gains the history it lacks, so the notice asks for a range that ends on
+ *    the part's day or after it.
  * 4. A range too long for the generated insight, with the `trafficInsights`
  *    feature, says what range the insight needs. A range whose key factors
  *    wait has no insight either way, and says what they wait for instead.
@@ -420,7 +576,8 @@ export function getTypicalTrafficWaitingText(
  * @param {string|null} availability.keyFactorsAvailableFrom The last day of the first date range of this length with the key factors, or null.
  * @param {boolean}     availability.rangeTooLong            Whether the range is too long for the generated insight.
  * @param {Object}      options                              Options.
- * @param {string}      options.referenceDate                Today, as `YYYY-MM-DD`.
+ * @param {string}      options.endDate                      The last day of the selected date range, as `YYYY-MM-DD`.
+ * @param {string}      options.latestSelectableDate         The last day a date range can end on, as `YYYY-MM-DD`: today on the dashboard, and the day before in the PDF export.
  * @param {boolean}     options.insightsEnabled              Whether the panel shows the generated insights, with the `trafficInsights` feature.
  * @return {string|null} The notice's text, or null when the range lacks nothing.
  */
@@ -442,9 +599,9 @@ export function getTypicalTrafficAvailabilityText(
 		| 'rangeTooLong'
 	>,
 	{
-		referenceDate,
 		insightsEnabled,
-	}: { referenceDate: string; insightsEnabled: boolean }
+		...dates
+	}: TypicalTrafficNoticeDates & { insightsEnabled: boolean }
 ): string | null {
 	if ( rangeTooShort ) {
 		return __(
@@ -455,19 +612,16 @@ export function getTypicalTrafficAvailabilityText(
 
 	if ( ! keyFactorsAvailable ) {
 		return bandAvailable
-			? getKeyFactorsWaitingText( keyFactorsAvailableFrom, referenceDate )
+			? getKeyFactorsWaitingText( keyFactorsAvailableFrom, dates )
 			: getTypicalTrafficWaitingText(
 					bandAvailableFrom,
 					keyFactorsAvailableFrom,
-					referenceDate
+					dates
 			  );
 	}
 
 	if ( ! bandAvailable ) {
-		return getTypicalTrafficRangeWaitingText(
-			bandAvailableFrom,
-			referenceDate
-		);
+		return getTypicalTrafficRangeWaitingText( bandAvailableFrom, dates );
 	}
 
 	if ( rangeTooLong && insightsEnabled ) {

@@ -62,7 +62,7 @@ import {
 	BenchmarkingInsight,
 	DecodedBenchmarkingResponse,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
-import { getDayCount, stringToDate } from '@/js/util';
+import { getDayCount, getPreviousDate, stringToDate } from '@/js/util';
 import type { GetPDFDataParams } from './getPDFData';
 import {
 	TrafficOverviewTypicalTrafficPDFData,
@@ -374,7 +374,15 @@ function getTypicalTraffic(
 	return getTypicalTrafficPDFData( {
 		benchmarkingResponse,
 		insight: getLoadedInsight( registry, startDate, endDate ),
-		referenceDate: registry.select( CORE_USER ).getReferenceDate(),
+		endDate,
+		// The PDF's date ranges end on the day before the reference date, as
+		// `PDFExportOrchestrator` resolves them, so a range that ends then
+		// gains a waiting part by waiting, as one that ends today does on the
+		// dashboard.
+		latestSelectableDate: getPreviousDate(
+			registry.select( CORE_USER ).getReferenceDate(),
+			1
+		),
 		referenceSiteURL:
 			registry.select( CORE_SITE ).getReferenceSiteURL() || undefined,
 		daysInRange: getDayCount( startDate, endDate ),

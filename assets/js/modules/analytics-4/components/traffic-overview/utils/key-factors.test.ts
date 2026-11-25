@@ -28,7 +28,6 @@ import {
 	getKeyFactorAttributeShareText,
 	getKeyFactorShareText,
 	getKeyFactorsNoticeText,
-	getKeyFactorsWaitingText,
 } from './key-factors';
 
 describe( 'formatVisitsChange', () => {
@@ -221,42 +220,6 @@ describe( 'getKeyFactorAttributeShareText', () => {
 				sharePct: 0,
 			} )
 		).toBeNull();
-	} );
-} );
-
-describe( 'getKeyFactorsWaitingText', () => {
-	it( 'should say when to check back for the key factors when they show on a later day', () => {
-		expect( getKeyFactorsWaitingText( '2025-02-06', '2025-02-05' ) ).toBe(
-			'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.'
-		);
-	} );
-
-	it.each( [
-		[
-			'today',
-			'2025-02-05',
-			'There’s no previous period to compare to. Select a date range that ends on or after February 5, 2025 to see which channels changed the most.',
-		],
-		[
-			'a day that has passed',
-			'2025-01-10',
-			'There’s no previous period to compare to. Select a date range that ends on or after January 10, 2025 to see which channels changed the most.',
-		],
-	] )(
-		'should ask for a date range that ends later when the key factors show from %s',
-		( _, availableFrom, text ) => {
-			// The selected range ends in the past, before the day, so a range
-			// that ends on the day or later has the key factors.
-			expect(
-				getKeyFactorsWaitingText( availableFrom, '2025-02-05' )
-			).toBe( text );
-		}
-	);
-
-	it( 'should say only that there is no previous period when the site has no recorded traffic up to the end of the date range', () => {
-		expect( getKeyFactorsWaitingText( null, '2025-02-05' ) ).toBe(
-			'There’s no previous period to compare to.'
-		);
 	} );
 } );
 

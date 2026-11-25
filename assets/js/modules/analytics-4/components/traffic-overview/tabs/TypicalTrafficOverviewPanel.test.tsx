@@ -1148,12 +1148,13 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			}
 		);
 
-		it( 'should ask only for a date range that ends later when the selected range ends before the first range of its length with the key factors, which one could select today, and the typical traffic range shows later', async () => {
+		it( 'should ask for a date range that ends on or after the day of each part when the selected range ends in the past, whether the day has passed or not', async () => {
 			// With recorded traffic from `2024-12-08` on, the 28 days that
 			// end on `2025-01-20` have no key factors, and the 28-day ranges
 			// that end on `2025-02-01` or later have them: one could be
 			// selected today. The first with the typical traffic range ends
-			// on `2025-03-28`, after today.
+			// on `2025-03-28`, after today, but the selected range never
+			// gains it by waiting, so the notice doesn't say to check back.
 			registry.dispatch( CORE_USER ).setDateRangeSelection( {
 				type: 'custom',
 				startDate: '2024-12-24',
@@ -1176,39 +1177,47 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 
 			await waitForRegistry();
 
-			// Once a later range is selected, the panel's notice says when to
-			// check back for the typical traffic range.
 			const notices = container.querySelectorAll(
 				'.googlesitekit-notice'
 			);
 
 			expect( notices ).toHaveLength( 1 );
 			expect( notices[ 0 ] ).toHaveTextContent(
-				'There’s no previous period to compare to. Select a date range that ends on or after February 1, 2025 to see which channels changed the most.'
+				'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 1, 2025 to see which channels changed the most, and on or after March 28, 2025 to see your typical traffic range.'
 			);
 		} );
 
 		it.each( [
 			[
-				'a later day',
-				'2025-04-02',
+				'ends today',
+				null,
 				'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.',
 			],
 			[
-				'a day that has passed',
-				'2025-01-10',
-				'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after January 10, 2025 to see it.',
+				'ends in the past',
+				{ startDate: '2024-12-24', endDate: '2025-01-20' },
+				'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after April 2, 2025 to see it.',
 			],
 		] )(
-			'should say when the typical traffic range will show, above the visitor figures, when the days of the selected range have none but it has its key factors, and the benchmarking response names %s',
-			async ( _, bandAvailableFrom, notice ) => {
+			'should say when the typical traffic range will show, above the visitor figures, when the days of the selected range have none but it has its key factors, and the range %s',
+			async ( _, customRange, notice ) => {
+				// A range that ends in the past never gains the typical
+				// traffic range by waiting, so its notice asks for a range
+				// that ends later, though the day is still ahead.
+				if ( customRange ) {
+					registry.dispatch( CORE_USER ).setDateRangeSelection( {
+						type: 'custom',
+						...customRange,
+					} );
+				}
+
 				// The key factors need every day of the previous period, and
 				// the typical traffic range 84 days of history before the
 				// range's first day, so a range of under 83 days has its key
 				// factors first.
 				const availability = {
 					...availabilityWithoutTraffic,
-					bandAvailableFrom,
+					bandAvailableFrom: '2025-04-02',
 					keyFactorsAvailable: true,
 					keyFactorsAvailableFrom: '2024-12-01',
 				};

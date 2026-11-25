@@ -30,7 +30,7 @@ import {
 	BenchmarkingKeyFactorKind,
 	BenchmarkingKeyFactorParentChannel,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
-import { formatDate, numFmt } from '@/js/util';
+import { numFmt } from '@/js/util';
 
 /**
  * The share, in percent, from which a part reads as all of its whole's change.
@@ -283,59 +283,6 @@ export function getKeyFactorAttributeShareText(
 	}
 
 	return null;
-}
-
-/**
- * Gets the text of the notice that says when the key factors will show, while
- * the site's history doesn't cover the period before the selected date range,
- * which they compare it with.
- *
- * The key factors show from the last day of the first date range of this
- * length whose previous period has recorded traffic, `availableFrom`. A range
- * that ends today reaches it on that day, so a later day says when to check
- * back. A day that has passed means the selected range ends in the past,
- * before it, so the notice asks for a range that ends on that day or later.
- * Without the day, the site has no recorded traffic up to the end of the
- * selected range, and the notice says only that there's nothing to compare to.
- *
- * @since n.e.x.t
- *
- * @param {string|null} availableFrom The last day of the first date range of this length with the key factors, as `YYYY-MM-DD`, or null when the site has no recorded traffic up to the end of the selected range.
- * @param {string}      referenceDate Today, as `YYYY-MM-DD`.
- * @return {string} The notice's text.
- */
-export function getKeyFactorsWaitingText(
-	availableFrom: string | null,
-	referenceDate: string
-): string {
-	if ( ! availableFrom ) {
-		return __(
-			'There’s no previous period to compare to.',
-			'google-site-kit'
-		);
-	}
-
-	const date = formatDate( availableFrom, { month: 'long' } );
-
-	if ( availableFrom > referenceDate ) {
-		return sprintf(
-			/* translators: %s: the first day the key factors show, such as "February 6, 2025" */
-			__(
-				'There’s no previous period to compare to yet. Check back on %s to see which channels changed the most.',
-				'google-site-kit'
-			),
-			date
-		);
-	}
-
-	return sprintf(
-		/* translators: %s: the last day of the first date range of this length with the key factors, such as "February 6, 2025" */
-		__(
-			'There’s no previous period to compare to. Select a date range that ends on or after %s to see which channels changed the most.',
-			'google-site-kit'
-		),
-		date
-	);
 }
 
 /**

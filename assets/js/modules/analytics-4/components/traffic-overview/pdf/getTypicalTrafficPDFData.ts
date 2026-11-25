@@ -70,8 +70,10 @@ export interface TypicalTrafficPDFDataOptions {
 	benchmarkingResponse: DecodedBenchmarkingResponse;
 	/** The generated insight the dashboard has for the date range, or null when it has none. */
 	insight: BenchmarkingInsight | null;
-	/** Today, as `YYYY-MM-DD`. */
-	referenceDate: string;
+	/** The last day of the date range, as `YYYY-MM-DD`. */
+	endDate: string;
+	/** The last day a date range of the PDF can end on, the day before today, as `YYYY-MM-DD`. */
+	latestSelectableDate: string;
 	/** The site's URL, which a landing page's path is resolved against. */
 	referenceSiteURL?: string;
 	/** The number of days in the date range. */
@@ -96,7 +98,8 @@ export interface TypicalTrafficPDFDataOptions {
  * @param {Object}      options                      The response, the insight and the date range.
  * @param {Object}      options.benchmarkingResponse The benchmarking response for the date range.
  * @param {Object|null} options.insight              The generated insight the dashboard has for the date range, or null.
- * @param {string}      options.referenceDate        Today, as `YYYY-MM-DD`.
+ * @param {string}      options.endDate              The last day of the date range, as `YYYY-MM-DD`.
+ * @param {string}      options.latestSelectableDate The last day a date range of the PDF can end on, the day before today, as `YYYY-MM-DD`.
  * @param {string}      [options.referenceSiteURL]   Optional. The site's URL, which a landing page's path is resolved against.
  * @param {number}      options.daysInRange          The number of days in the date range.
  * @param {boolean}     options.insightsEnabled      Whether the dashboard shows the generated insights.
@@ -105,7 +108,8 @@ export interface TypicalTrafficPDFDataOptions {
 export function getTypicalTrafficPDFData( {
 	benchmarkingResponse,
 	insight,
-	referenceDate,
+	endDate,
+	latestSelectableDate,
 	referenceSiteURL,
 	daysInRange,
 	insightsEnabled,
@@ -149,7 +153,8 @@ export function getTypicalTrafficPDFData( {
 			( performanceInsightAvailable && requestedInsight?.analysis ) ||
 			null,
 		availabilityNotice: getTypicalTrafficAvailabilityText( availability, {
-			referenceDate,
+			endDate,
+			latestSelectableDate,
 			insightsEnabled,
 		} ),
 		keyFactorsAvailable,

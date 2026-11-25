@@ -41,16 +41,29 @@ const AVAILABILITY: TypicalTrafficAvailability = {
 };
 
 /**
- * Renders the notice with `2025-02-05` as today.
+ * Renders the notice with `2025-02-05` as today, and the last 28 days, or the
+ * given custom date range, selected.
  *
  * @since n.e.x.t
  *
- * @param {Object} props The notice's props.
+ * @param {Object} props                 The notice's props.
+ * @param {Object} [customRange]         Optional. A custom date range to select.
+ * @param {string} customRange.startDate The range's first day, as `YYYY-MM-DD`.
+ * @param {string} customRange.endDate   The range's last day, as `YYYY-MM-DD`.
  * @return {Object} The render result.
  */
-function renderNotice( props: TypicalTrafficAvailabilityNoticeProps ) {
+function renderNotice(
+	props: TypicalTrafficAvailabilityNoticeProps,
+	customRange?: { startDate: string; endDate: string }
+) {
 	const registry = createTestRegistry();
 	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+
+	if ( customRange ) {
+		registry
+			.dispatch( CORE_USER )
+			.setDateRangeSelection( { type: 'custom', ...customRange } );
+	}
 
 	return render( <TypicalTrafficAvailabilityNotice { ...props } />, {
 		registry,
@@ -77,6 +90,30 @@ describe( 'TypicalTrafficAvailabilityNotice', () => {
 		);
 		expect( notices[ 0 ] ).toHaveTextContent(
 			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.'
+		);
+	} );
+
+	it( 'should ask for a date range that ends later, rather than say when to check back, for a range that ends in the past', () => {
+		// The range never gains the history it lacks, though both days are
+		// still ahead.
+		const { container } = renderNotice(
+			{
+				availability: {
+					...AVAILABILITY,
+					bandAvailable: false,
+					bandAvailableFrom: '2025-04-02',
+					keyFactorsAvailable: false,
+					keyFactorsAvailableFrom: '2025-02-06',
+				},
+			},
+			{ startDate: '2024-12-24', endDate: '2025-01-20' }
+		);
+
+		const notices = container.querySelectorAll( '.googlesitekit-notice' );
+
+		expect( notices ).toHaveLength( 1 );
+		expect( notices[ 0 ] ).toHaveTextContent(
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 6, 2025 to see which channels changed the most, and on or after April 2, 2025 to see your typical traffic range.'
 		);
 	} );
 
