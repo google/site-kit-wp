@@ -30,8 +30,8 @@ Nothing from design-doc work is committed to Site Kit. All output goes in
 
 -   is ignored by Site Kit, both in `.gitignore` and in `.git/info/exclude`, so it stays ignored
     when you switch to a branch that doesn't have this skill;
--   is its own local-only git repository, with no remote and a `pre-push` hook that blocks every
-    push.
+-   is its own git repository, which you can push to a private repository of your own to back
+    it up or share it (see [Setting up the workspace](reference.md#setting-up-the-workspace)).
 
 The agent sets the workspace up the first time it's needed and tells you if it adds entries to
 `.git/info/exclude`.
@@ -40,7 +40,7 @@ The agent sets the workspace up the first time it's needed and tells you if it a
 design-doc/
 ├── scripts/                      # Shared tooling, tracked by Site Kit
 ├── puppeteer-config.json         # Optional and git-ignored: per-machine Chrome settings
-└── workspace/                    # Local-only git repo
+└── workspace/                    # Its own git repo, optionally pushed to a private remote
     ├── sources/
     │   ├── design-doc-template.md   # Fetched from the canonical Google Doc
     │   └── examples/                # Example design docs you supply

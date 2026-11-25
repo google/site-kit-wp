@@ -7,14 +7,11 @@ when preparing it for review.
 
 ## Setting up the workspace {#setting-up-the-workspace}
 
-The [workspace](SKILL.md#workspace) is a local-only git repository at `design-doc/workspace/`,
-ignored by the Site Kit repo. Create it from the plugin root:
+The [workspace](SKILL.md#workspace) is a git repository at `design-doc/workspace/`, ignored by
+the Site Kit repo. Create it from the plugin root:
 
 ```sh
 git init design-doc/workspace
-printf '#!/bin/sh\necho "design-doc/workspace is local-only: pushing is disabled." >&2\nexit 1\n' \
-  > design-doc/workspace/.git/hooks/pre-push
-chmod +x design-doc/workspace/.git/hooks/pre-push
 printf '# Regenerated on every Google Docs export.\n*-rendered.md\n*-embedded.md\n' \
   > design-doc/workspace/.gitignore
 EXCLUDE=$(git rev-parse --git-path info/exclude)
@@ -27,6 +24,16 @@ Site Kit's `.gitignore` ignores the same paths, but only on branches that includ
 `.git/info/exclude` applies on every branch, so switching to an older branch doesn't expose the
 workspace to `git add` or `git clean`. If the workspace already exists without the
 `.gitignore` or the exclude entries, add them.
+
+To back the workspace up or share it, the user can push it to a private repository they own:
+
+```sh
+git -C design-doc/workspace remote add origin <private-repo-url>
+git -C design-doc/workspace push -u origin HEAD
+```
+
+The workspace holds copies of internal documents (PRDs, review docs, unreleased designs), so
+the remote must be private. Add a remote or push only when the user asks.
 
 `.git/info/exclude` is outside the workspace, so when the loop adds an entry, tell the user in
 one line which entries were added, why, and that deleting those lines undoes it. Say nothing

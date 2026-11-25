@@ -29,15 +29,16 @@ hold material needed only for some tasks:
 Design-doc work is kept out of the Site Kit repository. Everything written for a feature goes in
 `design-doc/workspace/<feature>/`, where `<feature>` is a kebab-case slug of the feature name
 (e.g. `date-picker`). `design-doc/workspace/` is ignored by the Site Kit repo and is its own
-local-only git repository, with no remote and a `pre-push` hook that refuses every push.
+git repository. The user may give it a remote, which must be a private repository, to back up
+or share their design-doc work.
 
 - If `design-doc/workspace/` doesn't exist, or isn't a git repository, [set it
   up](reference.md#setting-up-the-workspace) before writing anything.
-- Never write design-doc output anywhere else in the Site Kit repo, and never add a remote to
-  the workspace repository.
+- Never write design-doc output anywhere else in the Site Kit repo.
 - Commit in the workspace repository only when the user asks, but help them keep its history
   (see [Managing the workspace history](workflow.md#managing-the-workspace-history)). Never
-  commit design-doc files to the Site Kit repository.
+  add a remote to it or push it unless the user asks, and never commit design-doc files to
+  the Site Kit repository.
 
 Only `design-doc/scripts/` (shared tooling) is tracked by Site Kit. All source material lives
 in the workspace, versioned with the work: the fetched template and examples, shared by every
