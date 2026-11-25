@@ -63,9 +63,10 @@ export const AVAILABILITY_INSIGHT_REQUEST_ALLOWED = 5;
 export const AVAILABILITY_PERFORMANCE_INSIGHT_AVAILABLE = 6;
 export const AVAILABILITY_LAST_YEAR_AVAILABLE = 7;
 export const AVAILABILITY_RANGE_TOO_LONG = 8;
+export const AVAILABILITY_LOW_TRAFFIC = 9;
 
 /** The number of fields of the availability member. */
-export const AVAILABILITY_FIELD_COUNT = 9;
+export const AVAILABILITY_FIELD_COUNT = 10;
 
 /**
  * The driver kinds of a key factor card, in the order they travel as. A kind's

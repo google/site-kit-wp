@@ -2205,6 +2205,94 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			).toBeGreaterThan( 0 );
 		} );
 
+		it( 'should warn that the site has too little traffic in place of the analysis, and leave out the band, the key factors and the insight, for a site with low traffic', async () => {
+			const { startDate, endDate } = registry
+				.select( CORE_USER )
+				.getDateRangeDates();
+			const response = createBenchmarkingResponse( startDate, endDate );
+
+			// The response of a site with low traffic has no band on any day
+			// and no key factors, and its availability says why, though the
+			// site's history is long enough for both.
+			provideBenchmarkingResponse( registry, {
+				...response,
+				dailyTraffic: response.dailyTraffic.map( ( day ) => ( {
+					...day,
+					expectedMin: null,
+					expectedMax: null,
+				} ) ),
+				availability: {
+					...response.availability,
+					bandAvailable: false,
+					keyFactorsAvailable: false,
+					insightRequestAllowed: false,
+					performanceInsightAvailable: false,
+					lowTraffic: true,
+				},
+				bandReferenceDays: null,
+				keyFactors: [],
+				insightLocale: 'en_US',
+				insightPayload: 'signed-payload',
+			} );
+
+			const { container, getByRole, waitForRegistry } = renderPanel( {
+				features: [ 'typicalTraffic', 'trafficInsights' ],
+			} );
+
+			await waitForRegistry();
+
+			const summary = container.querySelector(
+				'.googlesitekit-traffic-overview__summary'
+			) as Element;
+
+			expect( fetchMock ).not.toHaveFetched( insightEndpoint );
+			expect(
+				Array.from( summary.children ).map(
+					( { className } ) => className
+				)
+			).toEqual( [
+				'googlesitekit-notice-container',
+				'googlesitekit-traffic-overview__total-visitors',
+			] );
+			expect(
+				summary.firstElementChild?.querySelector(
+					'.googlesitekit-notice--warning.googlesitekit-traffic-overview__low-traffic-notice'
+				)
+			).toHaveTextContent(
+				'There isn’t enough traffic data right now to show a reliable typical range or traffic shifts. These insights will come back once your site gets more regular visits. Learn more'
+			);
+			expect(
+				getByRole( 'button', { name: 'Got it' } )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__availability-notice'
+				)
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector( trafficInsightSelector )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors'
+				)
+			).not.toBeInTheDocument();
+			// The chart draws the line and the published posts, as the design
+			// has them, without the band.
+			expect(
+				Array.from(
+					container.querySelectorAll(
+						'.googlesitekit-traffic-overview__chart-legend-label'
+					)
+				).map( ( label ) => label.textContent )
+			).toEqual( [ 'Last 28 days traffic', 'Published post' ] );
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__breakdown'
+				)
+			).toBeInTheDocument();
+		} );
+
 		it.each( [
 			[
 				'without the trafficInsights feature',

@@ -1121,6 +1121,58 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 			}
 		);
 
+		it.each( [
+			[ 'with the `trafficInsights` feature', true ],
+			[ 'without the `trafficInsights` feature', false ],
+		] )(
+			'should say that the site has too little traffic in place of the analysis, and give no key factors, for a site with low traffic, %s',
+			async ( _label, insightsEnabled ) => {
+				if ( insightsEnabled ) {
+					enabledFeatures.add( 'trafficInsights' );
+				}
+
+				const response = createBenchmarkingResponse(
+					startDate,
+					endDate
+				);
+
+				// The site's history is long enough for every part, but its
+				// traffic is too low for any of them.
+				provideResponse( {
+					availability: {
+						...response.availability,
+						bandAvailable: false,
+						keyFactorsAvailable: false,
+						insightRequestAllowed: false,
+						performanceInsightAvailable: false,
+						lowTraffic: true,
+					},
+					dailyTraffic: response.dailyTraffic.map( ( day ) => ( {
+						...day,
+						expectedMin: null,
+						expectedMax: null,
+					} ) ),
+					keyFactors: [],
+				} );
+
+				const result = await getTypicalTrafficOverviewPDFData( {
+					registry,
+					dates: DATES,
+					signal: new AbortController().signal,
+				} );
+
+				expect( result.data?.typicalTraffic ).toMatchObject( {
+					analysis: null,
+					availabilityNotice:
+						'There isn’t enough traffic data right now to show a reliable typical range or traffic shifts. These insights will come back once your site gets more regular visits.',
+					keyFactorsAvailable: false,
+					keyFactorsNotice: null,
+					driver: null,
+					keyFactors: [],
+				} );
+			}
+		);
+
 		it( 'should give the generated insight the dashboard already has, with the `trafficInsights` feature', async () => {
 			enabledFeatures.add( 'trafficInsights' );
 			provideResponse();

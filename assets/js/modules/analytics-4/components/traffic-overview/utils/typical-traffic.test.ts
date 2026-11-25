@@ -45,6 +45,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 			performanceInsightAvailable: true,
 			lastYearAvailable: false,
 			rangeTooLong: false,
+			lowTraffic: false,
 		} );
 	} );
 
@@ -70,6 +71,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 					performanceInsightAvailable: false,
 					lastYearAvailable: true,
 					rangeTooLong: true,
+					lowTraffic: true,
 				},
 			} )
 		).toEqual(
@@ -83,6 +85,7 @@ describe( 'getTypicalTrafficAvailability', () => {
 				performanceInsightAvailable: false,
 				lastYearAvailable: true,
 				rangeTooLong: true,
+				lowTraffic: true,
 			} )
 		);
 	} );
@@ -569,6 +572,7 @@ const AVAILABILITY: TypicalTrafficAvailability = {
 	performanceInsightAvailable: true,
 	lastYearAvailable: false,
 	rangeTooLong: false,
+	lowTraffic: false,
 };
 
 const NOTICE_OPTIONS = {
@@ -705,6 +709,58 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 		).toBe(
 			'Select a date range of up to 364 days to see insights about your traffic.'
 		);
+	} );
+
+	// A site with low traffic has no band and no key factors, so its
+	// availability says that neither shows, while its days still count the
+	// history alone.
+	const LOW_TRAFFIC: TypicalTrafficAvailability = {
+		...AVAILABILITY,
+		bandAvailable: false,
+		keyFactorsAvailable: false,
+		insightRequestAllowed: false,
+		performanceInsightAvailable: false,
+		lowTraffic: true,
+	};
+
+	const LOW_TRAFFIC_TEXT =
+		'There isn’t enough traffic data right now to show a reliable typical range or traffic shifts. These insights will come back once your site gets more regular visits.';
+
+	it( 'should say that the site has too little traffic, rather than when a part will show, for a site with low traffic', () => {
+		expect(
+			getTypicalTrafficAvailabilityText( LOW_TRAFFIC, NOTICE_OPTIONS )
+		).toBe( LOW_TRAFFIC_TEXT );
+	} );
+
+	it.each( [
+		[ 'too short for the key factors', { rangeTooShort: true } ],
+		[ 'too long for the insight', { rangeTooLong: true } ],
+		[
+			'whose parts would wait for history',
+			{
+				bandAvailableFrom: '2025-04-02',
+				keyFactorsAvailableFrom: '2025-02-06',
+			},
+		],
+	] )(
+		'should say that the site has too little traffic for a range %s, since waiting or another range wouldn’t bring the parts',
+		( _, changes ) => {
+			expect(
+				getTypicalTrafficAvailabilityText(
+					{ ...LOW_TRAFFIC, ...changes },
+					NOTICE_OPTIONS
+				)
+			).toBe( LOW_TRAFFIC_TEXT );
+		}
+	);
+
+	it( 'should say that the site has too little traffic without the trafficInsights feature', () => {
+		expect(
+			getTypicalTrafficAvailabilityText( LOW_TRAFFIC, {
+				...NOTICE_OPTIONS,
+				insightsEnabled: false,
+			} )
+		).toBe( LOW_TRAFFIC_TEXT );
 	} );
 
 	it( 'should have no text for a range too long for the insight without the trafficInsights feature', () => {

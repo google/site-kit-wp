@@ -465,6 +465,53 @@ TypicalTrafficShortHistory.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
+export const TypicalTrafficLowTraffic = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+TypicalTrafficLowTraffic.storyName =
+	'Typical Traffic, Low Traffic (typicalTraffic and trafficInsights enabled)';
+TypicalTrafficLowTraffic.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		typicalTrafficSetup( registry );
+		provideTypicalTrafficOverviewReports( registry );
+
+		const { startDate, endDate } = registry
+			.select( CORE_USER )
+			.getDateRangeDates();
+		const response = createBenchmarkingResponse( startDate, endDate );
+
+		// The site's history is long enough for every part, but it had under
+		// 100 visits per 28 days over the last 8 weeks. The response has no
+		// band, no key factors and no insight request, and a warning above
+		// the visitor figures says why. The chart keeps the line and the
+		// published posts, as the design's Low traffic state has them.
+		provideBenchmarkingResponse( registry, {
+			...response,
+			dailyTraffic: response.dailyTraffic.map( ( day ) => ( {
+				...day,
+				expectedMin: null,
+				expectedMax: null,
+			} ) ),
+			availability: {
+				...response.availability,
+				bandAvailable: false,
+				keyFactorsAvailable: false,
+				insightRequestAllowed: false,
+				performanceInsightAvailable: false,
+				lowTraffic: true,
+			},
+			bandReferenceDays: null,
+			keyFactors: [],
+		} );
+	},
+};
+TypicalTrafficLowTraffic.parameters = {
+	features: [ 'typicalTraffic', 'trafficInsights' ],
+};
+TypicalTrafficLowTraffic.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+};
+
 /**
  * This story sets no `scenario`, so it runs no visual check. A current entity
  * URL changes only the report requests and the footer link's address, and

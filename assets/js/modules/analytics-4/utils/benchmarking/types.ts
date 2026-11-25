@@ -76,6 +76,8 @@ export interface BenchmarkingAvailability {
 	lastYearAvailable: boolean;
 	/** Whether the date range is longer than 364 days, too long for the generated insight, which the Site Kit service writes for up to 364 days. */
 	rangeTooLong: boolean;
+	/** Whether the site has too little traffic for the band, the key factors and the generated insight: under 100 visits per 28 days over the 56 days that end on the range's last day. The range then has none of them, however long the site's history. */
+	lowTraffic: boolean;
 }
 
 export interface BenchmarkingKeyFactorAttribute {

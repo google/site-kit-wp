@@ -21,7 +21,7 @@
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { TypicalTrafficAvailability } from '@/js/modules/analytics-4/components/traffic-overview/utils';
-import { render } from '@tests/js/test-utils';
+import { fireEvent, render } from '@tests/js/test-utils';
 import { createTestRegistry } from '@tests/js/utils';
 import TypicalTrafficAvailabilityNotice, {
 	TypicalTrafficAvailabilityNoticeProps,
@@ -38,6 +38,17 @@ const AVAILABILITY: TypicalTrafficAvailability = {
 	performanceInsightAvailable: true,
 	lastYearAvailable: false,
 	rangeTooLong: false,
+	lowTraffic: false,
+};
+
+/** The same range of a site with low traffic, which has no band and no key factors. */
+const LOW_TRAFFIC: TypicalTrafficAvailability = {
+	...AVAILABILITY,
+	bandAvailable: false,
+	keyFactorsAvailable: false,
+	insightRequestAllowed: false,
+	performanceInsightAvailable: false,
+	lowTraffic: true,
 };
 
 /**
@@ -130,6 +141,46 @@ describe( 'TypicalTrafficAvailabilityNotice', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should warn that the site has too little traffic, with a link to learn more and a button to acknowledge it, for a site with low traffic', () => {
+		const { container, getByRole } = renderNotice( {
+			availability: LOW_TRAFFIC,
+			insightsEnabled: true,
+		} );
+
+		const notices = container.querySelectorAll( '.googlesitekit-notice' );
+
+		expect( notices ).toHaveLength( 1 );
+		expect( notices[ 0 ] ).toHaveClass(
+			'googlesitekit-notice--warning',
+			'googlesitekit-traffic-overview__low-traffic-notice'
+		);
+		expect( notices[ 0 ] ).not.toHaveClass(
+			'googlesitekit-traffic-overview__availability-notice'
+		);
+		expect( notices[ 0 ] ).toHaveTextContent(
+			'There isn’t enough traffic data right now to show a reliable typical range or traffic shifts. These insights will come back once your site gets more regular visits. Learn more'
+		);
+		expect( getByRole( 'link', { name: /Learn more/ } ) ).toHaveAttribute(
+			'href',
+			'#'
+		);
+		expect( getByRole( 'button', { name: 'Got it' } ) ).toBeInTheDocument();
+	} );
+
+	it( 'should keep the warning on the page when its button is clicked, since the button has no action yet', () => {
+		const { container, getByRole } = renderNotice( {
+			availability: LOW_TRAFFIC,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__low-traffic-notice'
+			)
+		).toBeInTheDocument();
+	} );
+
 	it.each( [
 		[ 'when the range has every part', { availability: AVAILABILITY } ],
 		[
@@ -146,6 +197,10 @@ describe( 'TypicalTrafficAvailabilityNotice', () => {
 				},
 				loaded: false,
 			},
+		],
+		[
+			'for a site with low traffic while the panel’s figures load',
+			{ availability: LOW_TRAFFIC, loaded: false },
 		],
 	] )( 'should render nothing %s', ( _, props ) => {
 		const { container } = renderNotice( props );

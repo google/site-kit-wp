@@ -22,9 +22,16 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -71,6 +78,32 @@ const TypicalTrafficAvailabilityNotice: FC<
 
 	if ( ! text ) {
 		return null;
+	}
+
+	if ( availability.lowTraffic ) {
+		// Waiting doesn't bring back what a site with low traffic lacks, so
+		// the design draws its notice as a warning rather than an info
+		// notice.
+		return (
+			<Notice
+				type={ NOTICE_TYPES.WARNING }
+				className="googlesitekit-traffic-overview__low-traffic-notice"
+				description={
+					<Fragment>
+						{ text }{ ' ' }
+						{ /* TODO: Point the link at the low traffic state's support page. */ }
+						<Link href="#" external hideExternalIndicator>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					</Fragment>
+				}
+				// The button has no action yet: the notice shows whenever the
+				// site has low traffic.
+				dismissButton={ {
+					label: __( 'Got it', 'google-site-kit' ),
+				} }
+			/>
+		);
 	}
 
 	return (

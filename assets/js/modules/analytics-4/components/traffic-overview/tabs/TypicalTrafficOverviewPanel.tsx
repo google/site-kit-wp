@@ -122,9 +122,14 @@ const TypicalTrafficOverviewPanel: FC = () => {
 	//   describe a change against days that weren't measured.
 	// - The Site Kit service writes the insight for a range of up to 364
 	//   days, so the panel asks for none for a longer range.
+	// - A site with too little traffic has no band, no key factors and no
+	//   insight, however long its history: the response has none of them,
+	//   and the chart keeps its line and the published posts.
 	//
 	// One notice, in the analysis's place, says what the range lacks and when
-	// each waiting part will show, so notices about the parts never stack.
+	// each waiting part will show, so notices about the parts never stack. For
+	// a site with low traffic, it is a warning that says why the parts are
+	// missing.
 	const availability = getTypicalTrafficAvailability( benchmarkingResponse );
 	const {
 		keyFactorsAvailable,

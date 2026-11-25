@@ -46,6 +46,7 @@ export type TypicalTrafficAvailability = Pick<
 	| 'performanceInsightAvailable'
 	| 'lastYearAvailable'
 	| 'rangeTooLong'
+	| 'lowTraffic'
 >;
 
 /**
@@ -83,9 +84,10 @@ export interface TrafficOverviewVisits {
 /**
  * The parts of the typical traffic view while the benchmarking response loads:
  * every part, so each keeps its placeholder until the response says otherwise,
- * and no notice that takes the place of a part: not the short-range or the
- * long-range notice, nor the days a waiting part arrives. The band's tooltip
- * shows with the band alone, so no history of last year either.
+ * and no notice that takes the place of a part: not the short-range, the
+ * long-range or the low traffic notice, nor the days a waiting part arrives.
+ * The band's tooltip shows with the band alone, so no history of last year
+ * either.
  */
 const AVAILABILITY_WHILE_LOADING: TypicalTrafficAvailability = {
 	rangeTooShort: false,
@@ -97,6 +99,7 @@ const AVAILABILITY_WHILE_LOADING: TypicalTrafficAvailability = {
 	performanceInsightAvailable: true,
 	lastYearAvailable: false,
 	rangeTooLong: false,
+	lowTraffic: false,
 };
 
 /**
@@ -545,20 +548,25 @@ export function getTypicalTrafficWaitingText(
  * The panel says it once, in the analysis's place, rather than in a notice for
  * each part. The first that holds gives the text:
  *
- * 1. A range too short for the key factors asks for one of at least 7 days.
+ * 1. A site with too little traffic for the typical traffic range, the key
+ *    factors and the generated insight says so. It has none of them, however
+ *    long its history or the range, so nothing else the range lacks matters,
+ *    and waiting for a day wouldn't bring them. The dashboard's panel shows
+ *    this text as a warning.
+ * 2. A range too short for the key factors asks for one of at least 7 days.
  *    Its typical traffic range, if it waits too, waits for a day that a
  *    longer range moves, so the notice says nothing of it.
- * 2. While the key factors wait for the period before the range, the notice
+ * 3. While the key factors wait for the period before the range, the notice
  *    says when they will show, and when the typical traffic range will, if it
  *    waits too.
- * 3. While the typical traffic range alone waits, the notice says when it
+ * 4. While the typical traffic range alone waits, the notice says when it
  *    will show.
  *
  *    A waiting part's notice says when to check back only for a range that
  *    ends on the last day a range can end on. A range that ends earlier never
  *    gains the history it lacks, so the notice asks for a range that ends on
  *    the part's day or after it.
- * 4. A range too long for the generated insight, with the `trafficInsights`
+ * 5. A range too long for the generated insight, with the `trafficInsights`
  *    feature, says what range the insight needs. A range whose key factors
  *    wait has no insight either way, and says what they wait for instead.
  *
@@ -575,6 +583,7 @@ export function getTypicalTrafficWaitingText(
  * @param {boolean}     availability.keyFactorsAvailable     Whether the range has the key factors.
  * @param {string|null} availability.keyFactorsAvailableFrom The last day of the first date range of this length with the key factors, or null.
  * @param {boolean}     availability.rangeTooLong            Whether the range is too long for the generated insight.
+ * @param {boolean}     availability.lowTraffic              Whether the site has too little traffic for the typical traffic range, the key factors and the generated insight.
  * @param {Object}      options                              Options.
  * @param {string}      options.endDate                      The last day of the selected date range, as `YYYY-MM-DD`.
  * @param {string}      options.latestSelectableDate         The last day a date range can end on, as `YYYY-MM-DD`: today on the dashboard, and the day before in the PDF export.
@@ -589,6 +598,7 @@ export function getTypicalTrafficAvailabilityText(
 		keyFactorsAvailable,
 		keyFactorsAvailableFrom,
 		rangeTooLong,
+		lowTraffic,
 	}: Pick<
 		TypicalTrafficAvailability,
 		| 'rangeTooShort'
@@ -597,12 +607,20 @@ export function getTypicalTrafficAvailabilityText(
 		| 'keyFactorsAvailable'
 		| 'keyFactorsAvailableFrom'
 		| 'rangeTooLong'
+		| 'lowTraffic'
 	>,
 	{
 		insightsEnabled,
 		...dates
 	}: TypicalTrafficNoticeDates & { insightsEnabled: boolean }
 ): string | null {
+	if ( lowTraffic ) {
+		return __(
+			'There isn’t enough traffic data right now to show a reliable typical range or traffic shifts. These insights will come back once your site gets more regular visits.',
+			'google-site-kit'
+		);
+	}
+
 	if ( rangeTooShort ) {
 		return __(
 			'Select a date range of at least 7 days to see which channels changed the most.',

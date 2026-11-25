@@ -1056,6 +1056,29 @@ class Response_BuilderTest extends TestCase {
 		$this->assertNull( $response['insightRequest'], 'A period longer than 364 days, which the service writes no insight for, should have no insight request.' );
 	}
 
+	public function test_build__gives_a_site_with_low_traffic_no_band_no_key_factor_cards_and_no_insight_request() {
+		$this->enable_feature( 'trafficInsights' );
+		$this->provide_key_factor_reports();
+		// The 420 days from `2025-07-23` to `2026-09-15`: a year of 100 visits a
+		// day, then 3 a day over the last 56 days, 168 visits in all, which is
+		// under 100 per 28 days. The year gives the period the history of its
+		// band, and the breakdowns would give it key factor cards.
+		$this->report_rows['date'] = $this->get_daily_report_rows( '2025-07-23', '2026-09-15', fn( $position ) => $position < 364 ? 100 : 3 );
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertTrue( $response['availability']['low_traffic'], 'The site should have low traffic.' );
+		$this->assertSame(
+			array_fill( 0, 28, array( null, null ) ),
+			$this->get_expected_ranges( $response['dailyTraffic'] ),
+			'No day of the period should have an expected range, so the chart draws no band.'
+		);
+		$this->assertNull( $response['bandReferenceDays'], 'Without a band, the response should have no days for its tooltip.' );
+		$this->assertSame( array(), $response['keyFactors'], 'A site with low traffic should have no key factor cards.' );
+		$this->assertFalse( $response['steadyTraffic'], 'A site with low traffic should not be steady, since it has no key factors.' );
+		$this->assertNull( $response['insightRequest'], 'A site with low traffic should have no insight request.' );
+	}
+
 	public function test_build__gives_each_day_the_band_period_baseline_fits_for_the_period() {
 		$get_visits        = fn( $position ) => 150 + ( $position * 37 ) % 91 - ( 0 === $position % 7 ? 60 : 0 );
 		$this->report_rows = array(

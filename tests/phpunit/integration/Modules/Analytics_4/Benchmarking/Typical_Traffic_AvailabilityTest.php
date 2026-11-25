@@ -47,13 +47,15 @@ class Typical_Traffic_AvailabilityTest extends TestCase {
 	 */
 	public function test_get__matches_the_availability_fixture( array $fixture_case ) {
 		// The fixture leaves out a date the site has no history for. The
-		// service's rules have no longest period, and no fixture's period is
-		// longer than 364 days.
+		// service's rules have no longest period and no low traffic state, no
+		// fixture's period is longer than 364 days, and every fixture's site
+		// has over 100 visits a day.
 		$expected = array_merge(
 			array(
 				'band_available_from'        => null,
 				'key_factors_available_from' => null,
 				'range_too_long'             => false,
+				'low_traffic'                => false,
 			),
 			$fixture_case['expected']
 		);
@@ -160,6 +162,115 @@ class Typical_Traffic_AvailabilityTest extends TestCase {
 		$this->assertNull( $availability['key_factors_available_from'], 'A site without history should have no date for the key factors.' );
 		$this->assertFalse( $availability['band_available'], 'A site without history should have no band.' );
 		$this->assertFalse( $availability['insight_request_allowed'], 'A site without history should get no insight request.' );
+		$this->assertFalse( $availability['low_traffic'], 'A site without history should have no traffic to call low, so its parts say they wait for history.' );
+	}
+
+	/**
+	 * @dataProvider data_period_lengths
+	 *
+	 * @param int $period_days The period's length in days.
+	 */
+	public function test_get__has_low_traffic_under_100_visits_per_28_days_over_the_last_56_days( $period_days ) {
+		// A year of 100 visits a day, then 199 visits over the last 56 days:
+		// 31 days of 4 visits and 25 days of 3.
+		$availability = Typical_Traffic_Availability::get(
+			new Period_Baseline( $this->get_rows_with_visits( '2026-09-15', array_merge( array_fill( 0, 365, 100 ), array_fill( 0, 31, 4 ), array_fill( 0, 25, 3 ) ) ) ),
+			'2026-09-15',
+			$period_days
+		);
+
+		$this->assertTrue( $availability['low_traffic'], "A $period_days-day period should have low traffic with 199 visits over the last 56 days, whatever the history before them." );
+		$this->assertFalse( $availability['band_available'], "A $period_days-day period of a site with low traffic should have no band." );
+		$this->assertFalse( $availability['key_factors_available'], "A $period_days-day period of a site with low traffic should have no key factors." );
+		$this->assertFalse( $availability['insight_request_allowed'], "A $period_days-day period of a site with low traffic should get no insight request." );
+		$this->assertFalse( $availability['performance_insight_available'], "A $period_days-day period of a site with low traffic should show no analysis." );
+		$this->assertNotNull( $availability['band_available_from'], 'The band\'s date should count the history alone.' );
+		$this->assertNotNull( $availability['key_factors_available_from'], 'The key factors\' date should count the history alone.' );
+	}
+
+	/**
+	 * @dataProvider data_period_lengths
+	 *
+	 * @param int $period_days The period's length in days.
+	 */
+	public function test_get__has_no_low_traffic_at_100_visits_per_28_days_over_the_last_56_days( $period_days ) {
+		// 200 visits over the last 56 days: 32 days of 4 visits and 24 of 3.
+		$availability = Typical_Traffic_Availability::get(
+			new Period_Baseline( $this->get_rows_with_visits( '2026-09-15', array_merge( array_fill( 0, 365, 100 ), array_fill( 0, 32, 4 ), array_fill( 0, 24, 3 ) ) ) ),
+			'2026-09-15',
+			$period_days
+		);
+
+		$this->assertFalse( $availability['low_traffic'], "A $period_days-day period should not have low traffic with 200 visits over the last 56 days." );
+		$this->assertTrue( $availability['band_available'], "A $period_days-day period should have its band." );
+	}
+
+	public function data_period_lengths() {
+		return array(
+			'7 days'  => array( 7 ),
+			'28 days' => array( 28 ),
+			'90 days' => array( 90 ),
+		);
+	}
+
+	public function test_get__has_no_low_traffic_for_a_drop_within_the_last_56_days() {
+		// 300 visits over the 28 days before the period, then none at all: the
+		// band should show the drop rather than give way to the notice.
+		$availability = Typical_Traffic_Availability::get(
+			new Period_Baseline( $this->get_rows_with_visits( '2026-09-15', array_merge( array_fill( 0, 337, 100 ), array( 300 ), array_fill( 0, 27, 0 ), array_fill( 0, 28, 0 ) ) ) ),
+			'2026-09-15',
+			28
+		);
+
+		$this->assertFalse( $availability['low_traffic'], 'A site with 300 visits in the 28 days before a period without visits should not have low traffic.' );
+		$this->assertTrue( $availability['band_available'], 'The period should have its band, which shows the drop.' );
+		$this->assertTrue( $availability['key_factors_available'], 'The period should have its key factors, which show what dropped.' );
+	}
+
+	/**
+	 * @dataProvider data_short_histories
+	 *
+	 * @param int  $visits      The visits over the 14 days of history.
+	 * @param bool $low_traffic Whether the site has low traffic.
+	 */
+	public function test_get__measures_a_history_shorter_than_56_days_over_its_own_days( $visits, $low_traffic ) {
+		// 14 days of history, with every visit on its last day.
+		$availability = Typical_Traffic_Availability::get(
+			new Period_Baseline( $this->get_rows_with_visits( '2026-09-15', array_merge( array( 1 ), array_fill( 0, 12, 0 ), array( $visits - 1 ) ) ) ),
+			'2026-09-15',
+			7
+		);
+
+		$this->assertSame( $low_traffic, $availability['low_traffic'], "$visits visits over 14 days should have low traffic only under 50, which is 100 per 28 days." );
+		$this->assertSame( ! $low_traffic, $availability['key_factors_available'], 'A 7-day period with 14 days of history should have its key factors unless the site has low traffic.' );
+	}
+
+	public function data_short_histories() {
+		return array(
+			'49 visits' => array( 49, true ),
+			'50 visits' => array( 50, false ),
+		);
+	}
+
+	/**
+	 * Builds daily rows that end on a day, one for each number of visits.
+	 *
+	 * @param string $end_date The last day, as `YYYY-MM-DD`.
+	 * @param int[]  $visits   The visits of each day, oldest first.
+	 * @return array List of rows, oldest first, each with `date` and `visits`.
+	 */
+	private function get_rows_with_visits( $end_date, array $visits ) {
+		$end   = new DateTimeImmutable( $end_date, new DateTimeZone( 'UTC' ) );
+		$count = count( $visits );
+
+		return array_map(
+			fn( $position, $day_visits ) => array(
+				'date'   => $end->modify( '-' . ( $count - 1 - $position ) . ' days' )->format( 'Y-m-d' ),
+				'visits' => $day_visits,
+			),
+			array_keys( $visits ),
+			$visits
+		);
 	}
 
 	/**

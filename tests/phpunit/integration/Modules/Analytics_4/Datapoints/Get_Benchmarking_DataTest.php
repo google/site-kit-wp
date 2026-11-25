@@ -389,6 +389,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 					'performance_insight_available' => false,
 					'last_year_available'           => false,
 					'range_too_long'                => false,
+					'low_traffic'                   => false,
 				),
 				'keyFactors'   => array(
 					array(
@@ -422,7 +423,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( array( array( 0, 0, 700, 600, 58.3 ) ), $data[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry the `CHANNEL` card as a list of its kind, label, counts and share.' );
 		$this->assertSame( array( array() ), $data[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry one empty list of attributes for the card.' );
 		$this->assertSame( array( null, array( 31.4, 62.8 ) ), $data[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'The response should carry the expected range of each day, and null for the day without one.' );
-		$this->assertSame( array( false, false, 3, true, -26, true, false, false, false ), $data[ Wire_Format::MEMBER_AVAILABILITY ], 'The response should carry which parts of the typical traffic view show, with each day as its offset from the first plotted day.' );
+		$this->assertSame( array( false, false, 3, true, -26, true, false, false, false, false ), $data[ Wire_Format::MEMBER_AVAILABILITY ], 'The response should carry which parts of the typical traffic view show, with each day as its offset from the first plotted day.' );
 		$this->assertCount( 12, $data, 'Without the `trafficInsights` feature, the response should have its twelve members and no insight members.' );
 	}
 

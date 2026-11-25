@@ -94,10 +94,10 @@ class Response_Builder {
 	 *     The assembled response, or the error a failed report returned.
 	 *
 	 *     @type array       $visits            Visit totals for the selected period and the one before it.
-	 *     @type array       $dailyTraffic      List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the band `Period_Baseline::get_daily_ranges()` fits for the period. The bounds are null on every day when the period has no band, with fewer than `Period_Baseline::get_min_band_history_days()` days of recorded traffic up to and including its last day.
+	 *     @type array       $dailyTraffic      List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the band `Period_Baseline::get_daily_ranges()` fits for the period. The bounds are null on every day when `availability` has no band for the period: it has fewer than `Period_Baseline::get_min_band_history_days()` days of recorded traffic up to and including its last day, or the site has low traffic.
 	 *     @type array       $availability      Which parts of the typical traffic view show for the period, as `Typical_Traffic_Availability::get()` returns them, so the panel reads them instead of working them out again.
 	 *     @type int|null    $bandReferenceDays The number of days of traffic the band of the period's last day is fitted on, at most 365, which the band's tooltip names in weeks. Null when the period has no band.
-	 *     @type array       $keyFactors        The key factor cards, as `Key_Factors::get_cards()` returns them. Empty when `availability` has no key factors for the period: it is shorter than 7 days, or the compare period starts before the site's first day with visits, since a day before it wasn't measured yet. Also empty when nothing moved enough for a card.
+	 *     @type array       $keyFactors        The key factor cards, as `Key_Factors::get_cards()` returns them. Empty when `availability` has no key factors for the period: it is shorter than 7 days, the compare period starts before the site's first day with visits, since a day before it wasn't measured yet, or the site has low traffic. Also empty when nothing moved enough for a card.
 	 *     @type bool        $steadyTraffic     Whether no channel changed notably, as `Key_Factors::is_steady()` tells. The key factor cards are then the channels with the most visits, each with its share of the site's visits as `sharePct`. False when the period has no key factors.
 	 *     @type array       $contentMarkers    The posts published in the selected period that the chart marks, as `Content_Markers::build()` returns them. Empty when the property has no post date custom dimension, since the content report doesn't run then, or when the dimension has no data yet.
 	 *     @type array|null  $insightRequest    Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request, which includes a period without key factors.
@@ -152,11 +152,14 @@ class Response_Builder {
 
 		// The band's tooltip says how much traffic the band is based on: the
 		// days the fit of the period's last day reads, the longest of any day.
-		$daily_range = $period_baseline->get_daily_range( $end_date, $report_options->get_period_days() );
+		// A site with low traffic has no band, whatever its history.
+		$daily_range = $availability['band_available']
+			? $period_baseline->get_daily_range( $end_date, $report_options->get_period_days() )
+			: null;
 
 		$response = array(
 			'visits'            => $visits,
-			'dailyTraffic'      => $this->get_daily_traffic( $daily_series, $start_date, $end_date, $period_baseline ),
+			'dailyTraffic'      => $this->get_daily_traffic( $daily_series, $start_date, $end_date, $availability['band_available'] ? $period_baseline : null ),
 			'availability'      => $availability,
 			'bandReferenceDays' => null === $daily_range ? null : $daily_range['reference_days'],
 			'keyFactors'        => $key_factors,
@@ -426,13 +429,13 @@ class Response_Builder {
 	 * @since 1.192.0
 	 * @since n.e.x.t Added the `$end_date` and `$period_baseline` parameters, and gives each day `expectedMin` and `expectedMax`.
 	 *
-	 * @param array           $daily_series    The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
-	 * @param string          $start_date      The first day of the selected period, as `YYYY-MM-DD`.
-	 * @param string          $end_date        The last day of the selected period, as `YYYY-MM-DD`.
-	 * @param Period_Baseline $period_baseline The model of the same daily series.
+	 * @param array                $daily_series    The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
+	 * @param string               $start_date      The first day of the selected period, as `YYYY-MM-DD`.
+	 * @param string               $end_date        The last day of the selected period, as `YYYY-MM-DD`.
+	 * @param Period_Baseline|null $period_baseline The model of the same daily series, or null when the period has no band.
 	 * @return array List of days from `$start_date` on, keyed from `0`, each with `date`, `visits`, `expectedMin` and `expectedMax`.
 	 */
-	private function get_daily_traffic( array $daily_series, $start_date, $end_date, Period_Baseline $period_baseline ) {
+	private function get_daily_traffic( array $daily_series, $start_date, $end_date, ?Period_Baseline $period_baseline ) {
 		$period_days = array_values(
 			array_filter(
 				$daily_series,
@@ -442,7 +445,7 @@ class Response_Builder {
 
 		// The band comes from the same fits as the range the insight request
 		// sends as its `baseline`, and its days add up to that range.
-		$daily_ranges = $period_baseline->get_daily_ranges( $end_date, count( $period_days ) );
+		$daily_ranges = $period_baseline ? $period_baseline->get_daily_ranges( $end_date, count( $period_days ) ) : null;
 
 		return array_map(
 			function ( $day ) use ( $daily_ranges ) {

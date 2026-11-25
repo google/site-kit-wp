@@ -315,6 +315,66 @@ class Period_BaselineTest extends TestCase {
 		$this->assertSame( 0, $period_baseline->get_history_days( '2023-12-31' ), 'A day before the earliest row should have no history.' );
 	}
 
+	public function test_get_recent_visits__adds_up_the_last_days_up_to_the_day() {
+		// One visit on `2024-01-01`, two on `2024-01-02`, and so on.
+		$period_baseline = new Period_Baseline( $this->get_daily_rows( '2024-01-01', range( 1, 10 ) ) );
+
+		$this->assertSame(
+			array(
+				'visits' => 8 + 9 + 10,
+				'days'   => 3,
+			),
+			$period_baseline->get_recent_visits( '2024-01-10', 3 ),
+			'The visits should be those of the three days that end on `2024-01-10`.'
+		);
+		$this->assertSame(
+			array(
+				'visits' => 4 + 5,
+				'days'   => 2,
+			),
+			$period_baseline->get_recent_visits( '2024-01-05', 2 ),
+			'The days after the target day should not count.'
+		);
+	}
+
+	public function test_get_recent_visits__reads_a_shorter_history_over_its_own_days() {
+		$period_baseline = new Period_Baseline( $this->get_daily_rows( '2024-01-01', range( 1, 10 ) ) );
+
+		$this->assertSame(
+			array(
+				'visits' => 55,
+				'days'   => 10,
+			),
+			$period_baseline->get_recent_visits( '2024-01-10', 56 ),
+			'The window should be cut to the 10 days from the earliest row on.'
+		);
+		$this->assertNull( $period_baseline->get_recent_visits( '2023-12-31', 56 ), 'A day before the earliest row should have no visits to read.' );
+	}
+
+	public function test_get_recent_visits__reads_a_day_without_a_row_as_zero() {
+		$period_baseline = new Period_Baseline(
+			array(
+				array(
+					'date'   => '2024-01-01',
+					'visits' => 5,
+				),
+				array(
+					'date'   => '2024-01-04',
+					'visits' => 7,
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'visits' => 12,
+				'days'   => 4,
+			),
+			$period_baseline->get_recent_visits( '2024-01-04', 56 ),
+			'The two days without a row should count as days without visits.'
+		);
+	}
+
 	public function test_get_range__floors_the_range_of_a_history_without_visits() {
 		$daily_rows      = $this->get_daily_rows( '2025-01-01', array_fill( 0, 400, 0 ) );
 		$target_date     = $daily_rows[399]['date'];

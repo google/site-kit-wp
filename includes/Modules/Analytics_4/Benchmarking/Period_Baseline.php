@@ -463,6 +463,50 @@ class Period_Baseline {
 	}
 
 	/**
+	 * Gets the visits of the last days of history up to and including a day.
+	 *
+	 * The window is the days that end on the day, cut to the days from the
+	 * earliest row on, so a site with a shorter history is measured over the
+	 * days it has. A day of the window without a row counts no visits, since
+	 * Analytics reports no row for a day without visits.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $target_date The last day, as `YYYY-MM-DD`.
+	 * @param int    $days        The number of days to read, at most. A number that is not above `0` is read as 1.
+	 * @return array|null {
+	 *     The visits, or null when no row is on or before the day.
+	 *
+	 *     @type int $visits The visits of the days read.
+	 *     @type int $days   The number of days read: `$days`, or the days of history when there are fewer.
+	 * }
+	 */
+	public function get_recent_visits( $target_date, $days ) {
+		$history_days = $this->get_history_days( $target_date );
+
+		if ( 0 === $history_days ) {
+			return null;
+		}
+
+		$end    = self::parse_date( $target_date );
+		$days   = min( max( 1, (int) $days ), $history_days );
+		$visits = 0;
+
+		for ( $offset = 0; $offset < $days; $offset++ ) {
+			$date = self::shift_day( $end, -$offset )->format( 'Y-m-d' );
+
+			if ( isset( $this->visits_by_date[ $date ] ) ) {
+				$visits += $this->visits_by_date[ $date ];
+			}
+		}
+
+		return array(
+			'visits' => $visits,
+			'days'   => $days,
+		);
+	}
+
+	/**
 	 * Gets the visits of last year's windows: the period that ends on a day and
 	 * the period before it, both shifted back 364 days.
 	 *

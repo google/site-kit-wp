@@ -61,6 +61,7 @@ export const availabilityWithoutTraffic: BenchmarkingAvailability = {
 	performanceInsightAvailable: false,
 	lastYearAvailable: false,
 	rangeTooLong: false,
+	lowTraffic: false,
 };
 
 /**
