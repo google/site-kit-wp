@@ -328,6 +328,7 @@ SteadyTraffic.args = {
 	steady: true,
 	insight: PLACEHOLDER_KEY_FACTORS_INSIGHT,
 };
+SteadyTraffic.scenario = {};
 
 export const LongLabels = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
 LongLabels.storyName = 'Long Labels';

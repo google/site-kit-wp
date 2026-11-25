@@ -499,12 +499,14 @@ $traffic-overview-column-gap: 42px;
 			}
 		}
 
-		.googlesitekit-notice.googlesitekit-traffic-overview__key-factors-notice {
-			// On a steady period, the summary and the cards follow the notice,
-			// as far under it as the cards sit under the summary.
-			&:not(:last-child) {
-				margin-bottom: 24px;
-			}
+		// On a steady period, the summary and the cards follow the notice, as
+		// far under it as the cards sit under the summary. `Notice` wraps the
+		// notice in a container, so the container is what the section's other
+		// children follow, and the notice itself is always a last child.
+		.googlesitekit-notice-container:has(
+				> .googlesitekit-traffic-overview__key-factors-notice
+			):not(:last-child) {
+			margin-bottom: 24px;
 		}
 
 		.googlesitekit-traffic-overview__key-factors-insight {
