@@ -114,7 +114,7 @@ const KeyActionFeedback: FC< KeyActionFeedbackProps > = ( { goalType } ) => {
 	function handleVote( direction: VoteDirection ) {
 		trackEvent(
 			`${ viewContext }_site-goals-key-action-survey`,
-			direction === 'up' ? 'vote_up' : 'vote_down',
+			direction === VOTE_DIRECTION_UP ? 'vote_up' : 'vote_down',
 			primaryEventSlug
 		);
 	}
