@@ -103,7 +103,7 @@ describe( 'KeyActionFeedback', () => {
 		await waitForRegistry();
 	} );
 
-	describe.each< [ GoalType, string, string ] >( [
+	it.each< [ GoalType, string, string ] >( [
 		[
 			GOAL_TYPES.ECOMMERCE,
 			'site_goals_primary_action_panel_online_store',
@@ -114,86 +114,115 @@ describe( 'KeyActionFeedback', () => {
 			'site_goals_primary_action_panel_lead_generation',
 			ENUM_CONVERSION_EVENTS.CONTACT,
 		],
-	] )( 'for the %s goal', ( goalType, group, eventSlug ) => {
-		describe.each( [
-			[ 'Yes, this was helpful', 'up', UPVOTE_REASONS ],
-			[ 'No, this was not helpful', 'down', DOWNVOTE_REASONS ],
-		] )( 'after clicking "%s"', ( buttonName, direction, reasons ) => {
-			it( 'should send and track the vote, and open the "Help us improve" menu with the reasons for that vote', async () => {
-				const { getByRole, getAllByRole, waitForRegistry } = render(
-					<KeyActionFeedback goalType={ goalType } />,
+	] )(
+		'should send and track the vote for the %s goal with the `%s` group and the `%s` Key action',
+		async ( goalType, group, eventSlug ) => {
+			const { getByRole, waitForRegistry } = render(
+				<KeyActionFeedback goalType={ goalType } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Yes, this was helpful' } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_site-goals-key-action-survey',
+				'vote_up',
+				eventSlug
+			);
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
+					body: {
+						data: {
+							namespace: 'analytics',
+							group,
+							key: 'vote',
+							value: 'up',
+						},
+					},
+				} )
+			);
+
+			await waitForRegistry();
+		}
+	);
+
+	describe.each( [
+		[ 'Yes, this was helpful', 'up', UPVOTE_REASONS ],
+		[ 'No, this was not helpful', 'down', DOWNVOTE_REASONS ],
+	] )( 'after clicking "%s"', ( buttonName, direction, reasons ) => {
+		it( 'should send and track the vote, and open the "Help us improve" menu with the reasons for that vote', async () => {
+			const { getByRole, getAllByRole, waitForRegistry } = render(
+				<KeyActionFeedback goalType={ GOAL_TYPES.ECOMMERCE } />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: buttonName } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_site-goals-key-action-survey',
+				`vote_${ direction }`,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			);
+
+			expect(
+				getByRole( 'heading', { name: 'Help us improve' } )
+			).toBeInTheDocument();
+			expect(
+				getAllByRole( 'menuitem' ).map( ( item ) => item.textContent )
+			).toEqual( reasons.map( ( [ label ] ) => label ) );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
+					body: {
+						data: {
+							namespace: 'analytics',
+							group: 'site_goals_primary_action_panel_online_store',
+							key: 'vote',
+							value: direction,
+						},
+					},
+				} )
+			);
+
+			await waitForRegistry();
+		} );
+
+		it.each( reasons )(
+			'should send the "%s" reason as `%s` without a GA event',
+			async ( label, value ) => {
+				const { getByRole, findByText } = render(
+					<KeyActionFeedback goalType={ GOAL_TYPES.ECOMMERCE } />,
 					{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 				);
 
 				fireEvent.click( getByRole( 'button', { name: buttonName } ) );
 
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					'mainDashboard_site-goals-key-action-survey',
-					`vote_${ direction }`,
-					eventSlug
-				);
+				mockTrackEvent.mockClear();
+
+				fireEvent.click( getByRole( 'menuitem', { name: label } ) );
 
 				expect(
-					getByRole( 'heading', { name: 'Help us improve' } )
+					await findByText( 'Thanks for the feedback!' )
 				).toBeInTheDocument();
-				expect(
-					getAllByRole( 'menuitem' ).map(
-						( item ) => item.textContent
-					)
-				).toEqual( reasons.map( ( [ label ] ) => label ) );
 
 				await waitFor( () =>
 					expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
 						body: {
 							data: {
 								namespace: 'analytics',
-								group,
-								key: 'vote',
-								value: direction,
+								group: 'site_goals_primary_action_panel_online_store',
+								key: 'vote_reason',
+								value,
 							},
 						},
 					} )
 				);
 
-				await waitForRegistry();
-			} );
-
-			it.each( reasons )(
-				'should send the "%s" reason as `%s` without a GA event',
-				async ( label, value ) => {
-					const { getByRole, findByText } = render(
-						<KeyActionFeedback goalType={ goalType } />,
-						{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-					);
-
-					fireEvent.click(
-						getByRole( 'button', { name: buttonName } )
-					);
-
-					mockTrackEvent.mockClear();
-
-					fireEvent.click( getByRole( 'menuitem', { name: label } ) );
-
-					expect(
-						await findByText( 'Thanks for the feedback!' )
-					).toBeInTheDocument();
-
-					await waitFor( () =>
-						expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
-							body: {
-								data: {
-									namespace: 'analytics',
-									group,
-									key: 'vote_reason',
-									value,
-								},
-							},
-						} )
-					);
-
-					expect( mockTrackEvent ).not.toHaveBeenCalled();
-				}
-			);
-		} );
+				expect( mockTrackEvent ).not.toHaveBeenCalled();
+			}
+		);
 	} );
 } );
