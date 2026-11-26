@@ -196,6 +196,7 @@ class Event_Collector {
 	 *
 	 * It drops the event where `Server_Events_Guard` refuses it, or where the visitor has no current Google Analytics session.
 	 * Of two events with one dedupe key, it keeps the more specific one, or the first where both are as specific.
+	 * It checks none of Google's limits, which `flush()` checks, so a more specific event that breaks a limit still replaces the other.
 	 *
 	 * @since n.e.x.t
 	 *
