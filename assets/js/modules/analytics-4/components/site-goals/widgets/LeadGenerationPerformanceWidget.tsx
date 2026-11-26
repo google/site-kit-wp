@@ -81,11 +81,11 @@ import {
 	processReports,
 } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
-import SiteGoalsWidgetFeedback from '@/js/modules/analytics-4/components/site-goals/widgets/SiteGoalsWidgetFeedback';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent, untrailingslashit } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import SiteGoalsWidgetFeedback from './SiteGoalsWidgetFeedback';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 

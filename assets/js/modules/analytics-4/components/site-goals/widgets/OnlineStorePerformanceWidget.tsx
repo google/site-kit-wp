@@ -84,7 +84,6 @@ import {
 	VisitorEngagementTiles,
 	resolveVisitorEngagementSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
-import SiteGoalsWidgetFeedback from '@/js/modules/analytics-4/components/site-goals/widgets/SiteGoalsWidgetFeedback';
 import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -92,6 +91,7 @@ import {
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import SiteGoalsWidgetFeedback from './SiteGoalsWidgetFeedback';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
