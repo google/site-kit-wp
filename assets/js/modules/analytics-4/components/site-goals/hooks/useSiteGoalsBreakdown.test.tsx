@@ -41,7 +41,13 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getPreviousDate } from '@/js/util';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
-import { provideModules, provideUserCapabilities } from '@tests/js/utils';
+import {
+	freezeFetch,
+	provideModules,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	untilResolved,
+} from '@tests/js/utils';
 import { useSiteGoalsBreakdown } from './useSiteGoalsBreakdown';
 
 describe( 'useSiteGoalsBreakdown', () => {
@@ -200,18 +206,112 @@ describe( 'useSiteGoalsBreakdown', () => {
 		} );
 	} );
 
-	it( 'defaults the active tab to the first breakdown value', () => {
-		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [
-			'5',
-			'12',
+	it( 'should return an empty `knownActiveTabID` when the breakdown dimension doesn’t exist on the property', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setSettings( { availableCustomDimensions: [] } );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( result.current.knownActiveTabID ).toBe( '' );
+	} );
+
+	it( 'should return an empty `knownActiveTabID` when the property’s custom dimensions were never synced and the user can’t sync them', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setSettings( { availableCustomDimensions: null } );
+		provideUserAuthentication( registry, { authenticated: false } );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( result.current.knownActiveTabID ).toBe( '' );
+	} );
+
+	it( 'should return an undefined `knownActiveTabID` while the Analytics settings load', () => {
+		registry = createTestRegistry();
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getSettings', [] );
 
 		const { result } = renderHook(
 			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
 			{ registry }
 		);
 
+		expect( result.current.knownActiveTabID ).toBeUndefined();
+	} );
+
+	it( 'should return an undefined `knownActiveTabID` while the breakdown values load', async () => {
+		// The custom dimensions are known, so only the breakdown values load.
+		registry.select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
+		await untilResolved(
+			registry,
+			MODULES_ANALYTICS_4
+		).getAvailableCustomDimensions();
+		freezeFetch(
+			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data/report' )
+		);
+
+		const { result } = renderHook(
+			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+			{ registry }
+		);
+
+		expect( result.current.activeTabID ).toBe( '' );
+		expect( result.current.knownActiveTabID ).toBeUndefined();
+	} );
+
+	it( 'should return an empty `knownActiveTabID` when the report of breakdown values fails', async () => {
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/report'
+			),
+			{
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			}
+		);
+
+		const { result, waitForRegistry } = renderHook(
+			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect( result.current.breakdownValues ).toBeUndefined();
+		expect( result.current.knownActiveTabID ).toBe( '' );
+	} );
+
+	it( 'should default the active tab to the first breakdown value', async () => {
+		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [
+			'5',
+			'12',
+		] );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+			{ registry }
+		);
+		await waitForRegistry();
+
 		expect( result.current.activeTabID ).toBe( '5' );
+		expect( result.current.knownActiveTabID ).toBe( '5' );
 		expect( result.current.breakdownFilter ).toEqual( {
 			[ FORM_DIMENSION ]: '5',
 		} );
