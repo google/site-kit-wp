@@ -460,19 +460,21 @@ describe( 'ThumbsFeedback', () => {
 	);
 
 	describe( 'feedback reasons', () => {
-		const feedbackOptions = {
-			down: [
-				{ id: 'with-value', label: 'With value', value: 'a_reason' },
-				{ id: 'without-value', label: 'Without value' },
-			],
-		};
-
 		function renderAndDownvote() {
 			const renderResult = render(
 				<ThumbsFeedback
 					feedbackNamespace="analytics"
 					feedbackGroup="site_goals_widget_online_store"
-					feedbackOptions={ feedbackOptions }
+					feedbackOptions={ {
+						down: [
+							{
+								id: 'with-value',
+								label: 'With value',
+								value: 'a_reason',
+							},
+							{ id: 'without-value', label: 'Without value' },
+						],
+					} }
 				/>,
 				{ registry }
 			);

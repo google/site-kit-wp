@@ -217,17 +217,6 @@ describe( 'FeedbackPrompt', () => {
 	);
 
 	describe( 'with feedback options', () => {
-		const feedbackOptions = {
-			up: [ { id: 'up-reason', label: 'Up reason', value: 'up_reason' } ],
-			down: [
-				{
-					id: 'down-reason',
-					label: 'Down reason',
-					value: 'down_reason',
-				},
-			],
-		};
-
 		it.each( [
 			[
 				'Yes, this was helpful',
@@ -256,7 +245,22 @@ describe( 'FeedbackPrompt', () => {
 						gaTrackingEventArgs={ {
 							category: 'test-feedback-survey',
 						} }
-						feedbackOptions={ feedbackOptions }
+						feedbackOptions={ {
+							up: [
+								{
+									id: 'up-reason',
+									label: 'Up reason',
+									value: 'up_reason',
+								},
+							],
+							down: [
+								{
+									id: 'down-reason',
+									label: 'Down reason',
+									value: 'down_reason',
+								},
+							],
+						} }
 					/>,
 					{ registry }
 				);
