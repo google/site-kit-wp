@@ -206,18 +206,18 @@ fixed shape, but when a doc runs long, these can help:
 - **Keep screenshots that show what words can't**, such as placement or layout, and crop them
   to the part that matters. A frame that only shows a string or a label can be a Figma link.
 - **Group small changes** under one heading rather than giving each its own.
-- **Link rather than restate.** Point to an earlier design doc for what it already describes,
-  and leave out what doesn't change.
+- **Link rather than restate.** Point to an earlier design doc for what it already describes.
 - **Keep the epic to its feature.** A fix for an existing bug can be its own issue, named in a
   sentence.
 
 ## Tables {#tables}
 
 - Inventory surfaces as tables (e.g. `Surface | key | predicate`), not prose paragraphs.
-- **Show new components as a hierarchy**, not a list of every affected component: a tree
-  placing each new component under the existing component that renders it, then a
-  `Name | Role` table. Draw the tree as a [Mermaid](#diagrams) flowchart where that shows the
-  structure more clearly, e.g. when components nest several levels deep or share a parent.
+- **Show new components by where they render**, not as a list of every affected component:
+  a `Name | Rendered by | Role` table, placing each new component under the existing
+  component that renders it. Draw the hierarchy as a [Mermaid](#diagrams) flowchart instead
+  only when it shows the structure more clearly, e.g. when new components nest several
+  levels deep.
   Leave changes to existing components (titles, labels, conditions) to the issues the doc is
   broken down into. Call out only what isn't such a detail: where the designs don't match
   the codebase, a design gap, or a dependency on unmerged work.
@@ -241,6 +241,10 @@ fixed shape, but when a doc runs long, these can help:
 - **Be concise, but use human-friendly language.** Favor clear prose over terse notes.
 - **Use diagrams sparingly.** Reach for one only when it carries information that prose
   would carry less well.
+- **Leave out what doesn't change, and who decided what.** A sentence that says some code
+  needs no change, that an answer stays the same, or that someone confirmed a decision adds
+  length without adding design. State the decision, and keep the record of who agreed it in
+  the comment threads.
 - **Don't explain the obvious.** The audience is technical, experienced Site Kit developers
   who already know the codebase and its existing features and concepts. Write for them.
 - **Keep the doc self-contained.** Don't send readers to internal preparation or working
