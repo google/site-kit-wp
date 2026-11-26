@@ -544,7 +544,10 @@ describe( 'ThumbsFeedback', () => {
 		it( 'should send no reason when the menu is closed by clicking outside', async () => {
 			mockSendFeedback();
 
-			const { queryByRole, waitForRegistry } = renderAndDownvote();
+			const { getByRole, queryByRole, waitForRegistry } =
+				renderAndDownvote();
+
+			expect( getByRole( 'menu' ) ).toBeInTheDocument();
 
 			fireEvent.mouseDown( document.body );
 
