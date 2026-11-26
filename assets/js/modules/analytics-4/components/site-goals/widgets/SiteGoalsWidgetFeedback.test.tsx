@@ -22,6 +22,11 @@
 import fetchMock from 'fetch-mock';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -60,7 +65,7 @@ const DOWNVOTE_REASONS = [
 ];
 
 describe( 'SiteGoalsWidgetFeedback', () => {
-	let registry: ReturnType< typeof createTestRegistry >;
+	let registry: WPDataRegistry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
