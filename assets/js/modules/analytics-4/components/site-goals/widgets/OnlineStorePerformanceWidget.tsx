@@ -42,17 +42,19 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
-import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
 import { TilesGroup } from '@/js/modules/analytics-4/components/common/tiles';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
 import EventProviderDeactivatedNotice from '@/js/modules/analytics-4/components/site-goals/components/EventProviderDeactivatedNotice';
 import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
+import InsightNotice from '@/js/modules/analytics-4/components/site-goals/components/InsightNotice';
 import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/components/KeyActionTiles';
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
 import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/components/PartialDataBadge';
 import SiteGoalsRemovalNotice from '@/js/modules/analytics-4/components/site-goals/components/SiteGoalsRemovalNotice';
+import SiteGoalsWidgetFooter from '@/js/modules/analytics-4/components/site-goals/components/SiteGoalsWidgetFooter';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
@@ -60,7 +62,6 @@ import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE,
-	SITE_GOALS_FEEDBACK_NAMESPACE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -350,6 +351,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			breakdownValues,
 			hasBreakdownTabs,
 			activeTabID,
+			knownActiveTabID,
 			setSelectedTab,
 			isOtherSourcesTab,
 			hasOtherSources,
@@ -363,6 +365,8 @@ const OnlineStorePerformanceWidget = forwardRef<
 			detectionEventNames: keyActionEventNames,
 			supportedValues: SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
 		} );
+
+		const isSiteGoalsInsightsEnabled = useFeature( 'siteGoalsInsights' );
 
 		// Only the tabbed breakdown shows the partial-data badge, and only when
 		// the dimension is in the partial-data state.
@@ -556,6 +560,13 @@ const OnlineStorePerformanceWidget = forwardRef<
 					/>
 				) }
 
+				{ isSiteGoalsInsightsEnabled && (
+					<InsightNotice
+						goalType={ GOAL_TYPES.ECOMMERCE }
+						tabID={ knownActiveTabID }
+					/>
+				) }
+
 				{ loading ? (
 					<PreviewBlock
 						className="googlesitekit-site-goals-tiles-group"
@@ -684,15 +695,13 @@ const OnlineStorePerformanceWidget = forwardRef<
 					</Fragment>
 				) }
 
-				<FeedbackPrompt
-					feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
+				<SiteGoalsWidgetFooter
+					goalType={ GOAL_TYPES.ECOMMERCE }
+					tabID={ knownActiveTabID }
 					feedbackGroup={
 						SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE
 					}
-					gaTrackingEventArgs={ {
-						category: `${ viewContext }_site-goals-widget-survey`,
-						label: GOAL_TYPES.ECOMMERCE,
-					} }
+					isInsightEnabled={ isSiteGoalsInsightsEnabled }
 				/>
 			</WidgetComponent>
 		);
