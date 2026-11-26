@@ -212,6 +212,67 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 		} );
 	} );
 
+	describe( 'isLoadingBreakdownValues', () => {
+		it( 'should return true while the report of breakdown values loads', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [
+					getDiscoveryReportOptions( 'googlesitekit_form_id' ),
+				] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.isLoadingBreakdownValues( 'googlesitekit_form_id' )
+			).toBe( true );
+		} );
+
+		it( 'should return false once the report of breakdown values has loaded', () => {
+			seedDiscoveryReport( 'googlesitekit_form_id', [ '5' ] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.isLoadingBreakdownValues( 'googlesitekit_form_id' )
+			).toBe( false );
+		} );
+
+		it( 'should return false when the report of breakdown values fails', async () => {
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/report'
+				),
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				}
+			);
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getBreakdownValues( 'googlesitekit_form_id' );
+			await resolved().getReport(
+				getDiscoveryReportOptions( 'googlesitekit_form_id' )
+			);
+
+			expect( console ).toHaveErrored();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getBreakdownValues( 'googlesitekit_form_id' )
+			).toBeUndefined();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.isLoadingBreakdownValues( 'googlesitekit_form_id' )
+			).toBe( false );
+		} );
+	} );
+
 	describe( 'getFormMetadata', () => {
 		it( 'returns resolved metadata mapped by form ID', async () => {
 			fetchMock.getOnce( formMetadataEndpoint, {
