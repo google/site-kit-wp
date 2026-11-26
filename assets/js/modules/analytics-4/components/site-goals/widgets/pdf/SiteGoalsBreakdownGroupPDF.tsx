@@ -25,7 +25,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,8 +38,6 @@ import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { PDFChangeType } from '@/js/components/pdf-export/types';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { getEngagementSessionsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/engagementSessionsText';
 import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { numFmt } from '@/js/util';
 import { SiteGoalsPDFGroup, SiteGoalsPDFMetric } from './shapeSiteGoalsPDFData';
@@ -148,6 +146,28 @@ function getTileChangeProps(
 	return { ...tileChange, changeLabel: comparisonLabel };
 }
 
+/**
+ * Builds the "of N total sessions" caption shown under a rate.
+ *
+ * @since 1.187.0
+ *
+ * @param {(Object|undefined)} sessions The sessions metric, or `undefined` when the group has none.
+ * @return {(string|undefined)} The caption, or `undefined` when the group has no sessions.
+ */
+function getSessionsSubtitle(
+	sessions: SiteGoalsPDFMetric | undefined
+): string | undefined {
+	if ( ! sessions ) {
+		return undefined;
+	}
+
+	return sprintf(
+		/* translators: %s: Number of sessions the rate is calculated over. */
+		__( 'of %s total sessions', 'google-site-kit' ),
+		numFmt( sessions.current )
+	);
+}
+
 export interface SiteGoalsBreakdownGroupPDFProps {
 	/** The group to render. */
 	group: SiteGoalsPDFGroup;
@@ -164,12 +184,6 @@ export interface SiteGoalsBreakdownGroupPDFProps {
 	 * single group under the widget's own title, so it hides this.
 	 */
 	showLabel?: boolean;
-	/**
-	 * The goal type of the plugin or form the group stands for, which names the
-	 * sessions under its engagement rate. Left out for the aggregated group,
-	 * whose engagement rate covers the whole site.
-	 */
-	breakdownType?: GoalType;
 }
 
 const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
@@ -179,22 +193,15 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 	totalSubtitle,
 	comparisonLabel,
 	showLabel = true,
-	breakdownType,
 } ) => {
 	const { label, rate, total, engagementRate, sessions, engagementSessions } =
 		group;
 
 	// The rate is a share of the site's sessions, while the engagement rate is
 	// a share of the group's own sessions, as on the dashboard.
-	const sessionsSubtitle = sessions
-		? getEngagementSessionsSubtitle( numFmt( sessions.current ) )
-		: undefined;
-	const engagementSessionsSubtitle = engagementSessions
-		? getEngagementSessionsSubtitle(
-				numFmt( engagementSessions.current ),
-				breakdownType
-		  )
-		: undefined;
+	const sessionsSubtitle = getSessionsSubtitle( sessions );
+	const engagementSessionsSubtitle =
+		getSessionsSubtitle( engagementSessions );
 
 	return (
 		<View style={ styles.container }>

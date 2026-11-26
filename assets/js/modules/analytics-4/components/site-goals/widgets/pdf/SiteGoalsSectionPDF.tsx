@@ -33,7 +33,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	AGGREGATED_GROUP_ID,
 	SiteGoalsPDFGroup,
@@ -65,8 +64,6 @@ export interface SiteGoalsSectionPDFProps {
 	totalSubtitle: string;
 	/** The number of days in the PDF report's date range, for the "Vs. prev. 28 days" caption. */
 	dateRangeLength: number;
-	/** The goal type of the section, which names the sessions of each plugin or form group. */
-	goalType: GoalType;
 }
 
 const SiteGoalsSectionPDF: FC< SiteGoalsSectionPDFProps > = ( {
@@ -76,7 +73,6 @@ const SiteGoalsSectionPDF: FC< SiteGoalsSectionPDFProps > = ( {
 	totalLabel,
 	totalSubtitle,
 	dateRangeLength,
-	goalType,
 } ) => {
 	// A section with no card is a heading with nothing under it.
 	if ( groups.length === 0 ) {
@@ -104,11 +100,6 @@ const SiteGoalsSectionPDF: FC< SiteGoalsSectionPDFProps > = ( {
 							totalSubtitle={ totalSubtitle }
 							comparisonLabel={ comparisonLabel }
 							showLabel={ group.id !== AGGREGATED_GROUP_ID }
-							breakdownType={
-								group.id !== AGGREGATED_GROUP_ID
-									? goalType
-									: undefined
-							}
 						/>
 					</PDFCard>
 				) ) }
