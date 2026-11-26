@@ -2476,6 +2476,63 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should request no insight for the whole widget while the form tabs load when the `siteGoalsInsights` feature flag is enabled', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedReadyReports();
+		// The report the form tabs come from is still loading.
+		registry.dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
+			{
+				startDate: '2020-06-10',
+				endDate: '2020-09-08',
+				dimensions: [ FORM_DIMENSION ],
+				dimensionFilters: {
+					[ FORM_DIMENSION ]: {
+						filterType: 'emptyFilter',
+						notExpression: true,
+					},
+				},
+				metrics: [ { name: 'eventCount' } ],
+				orderby: [
+					{ metric: { metricName: 'eventCount' }, desc: true },
+				],
+				reportID:
+					'analytics-4_site-goals-breakdown_values_googlesitekit_form_id',
+			},
+		] );
+		fetchMock.post(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/conversion-insights'
+			),
+			{ body: {}, status: 200 }
+		);
+
+		const { container, getByRole, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry, features: [ 'siteGoalsInsights' ] }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'status' ).querySelector(
+				'.googlesitekit-ai-insight-preview'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-widget__footer'
+			)
+		).not.toHaveTextContent(
+			/This section contains data created using AI/
+		);
+		expect( fetchMock ).not.toHaveFetched(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/conversion-insights'
+			)
+		);
+	} );
+
 	it( 'should render the insight of the open form tab and the AI disclosure line when the `siteGoalsInsights` feature flag is enabled', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
