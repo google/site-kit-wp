@@ -752,7 +752,6 @@ const LeadGenerationPerformanceWidget = forwardRef<
 						>
 							<VisitorEngagementTiles
 								dates={ dates }
-								goalType={ GOAL_TYPES.LEAD }
 								breakdownFilter={ breakdownFilter }
 							/>
 						</TilesGroup>

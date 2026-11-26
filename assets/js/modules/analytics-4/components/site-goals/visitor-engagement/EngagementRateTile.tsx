@@ -25,7 +25,7 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { createInterpolateElement, useMemo } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -33,12 +33,14 @@ import { __ } from '@wordpress/i18n';
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { Tile } from '@/js/modules/analytics-4/components/common/tiles';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { getEngagementSessionsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/engagementSessionsText';
-import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
+import {
+	NUMBER_FORMAT,
+	PERCENT_FORMAT,
+} from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { numFmt } from '@/js/util';
 
 interface DateRange {
 	startDate: string;
@@ -49,14 +51,11 @@ interface DateRange {
 
 interface EngagementRateTileProps {
 	dates: DateRange;
-	/** The goal type of the widget, which names the sessions of a breakdown tab. */
-	goalType: GoalType;
 	breakdownFilter?: Record< string, unknown >;
 }
 
 const EngagementRateTile: FC< EngagementRateTileProps > = ( {
 	dates,
-	goalType,
 	breakdownFilter,
 } ) => {
 	const engagementDocumentationURL = useSelect(
@@ -122,10 +121,10 @@ const EngagementRateTile: FC< EngagementRateTileProps > = ( {
 	return (
 		<Tile
 			title={ __( 'Engagement rate', 'google-site-kit' ) }
-			subtitle={ getEngagementSessionsSubtitle(
-				currentSessions,
-				// On a breakdown tab, the sessions are only those of that tab.
-				breakdownFilter ? goalType : undefined
+			subtitle={ sprintf(
+				/* translators: %s: formatted number of total sessions */
+				__( 'of %s total sessions', 'google-site-kit' ),
+				numFmt( currentSessions, NUMBER_FORMAT )
 			) }
 			infoTooltip={ createInterpolateElement(
 				__(

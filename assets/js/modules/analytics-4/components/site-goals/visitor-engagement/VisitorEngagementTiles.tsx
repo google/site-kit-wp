@@ -29,7 +29,6 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import EngagementRateTile from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/EngagementRateTile';
 import { VisitorEngagementEventID } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
 import VisitorEngagementEventTile from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/VisitorEngagementEventTile';
@@ -44,21 +43,18 @@ interface DateRange {
 interface VisitorEngagementTilesProps {
 	dates: DateRange;
 	events?: VisitorEngagementEventID[];
-	goalType: GoalType;
 	breakdownFilter?: Record< string, unknown >;
 }
 
 const VisitorEngagementTiles: FC< VisitorEngagementTilesProps > = ( {
 	dates,
 	events = [],
-	goalType,
 	breakdownFilter,
 } ) => {
 	return (
 		<Fragment>
 			<EngagementRateTile
 				dates={ dates }
-				goalType={ goalType }
 				breakdownFilter={ breakdownFilter }
 			/>
 			{ events.map( ( eventName ) => (
