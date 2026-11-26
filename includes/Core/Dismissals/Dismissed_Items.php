@@ -139,7 +139,7 @@ class Dismissed_Items extends User_Setting {
 	 * Gets dismissed items.
 	 *
 	 * @since 1.37.0
-	 * @since n.e.x.t Returns each slug as a string.
+	 * @since 1.193.0 Returns each slug as a string.
 	 *
 	 * @return array Dismissed items array.
 	 */

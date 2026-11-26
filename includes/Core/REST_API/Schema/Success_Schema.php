@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\REST_API\Schema;
 /**
  * Class for the REST schema of a reply that says a request succeeded.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ final class Success_Schema {
 	/**
 	 * Gets the REST schema of a reply that says a request succeeded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */

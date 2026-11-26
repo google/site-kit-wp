@@ -37,7 +37,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @since 1.187.0
 	 * @since 1.189.0 Added support for the CTA `state` property.
-	 * @since n.e.x.t Requires the publication identifiers in the request.
+	 * @since 1.193.0 Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -99,7 +99,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	 * Gets the supported CTA type handlers, keyed by CTA type.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Added the survey CTA type handler, when the `rrmSurveyCTA` feature flag is enabled.
+	 * @since 1.193.0 Added the survey CTA type handler, when the `rrmSurveyCTA` feature flag is enabled.
 	 *
 	 * @return CTA_Type_Handler_Interface[] CTA type handlers.
 	 */

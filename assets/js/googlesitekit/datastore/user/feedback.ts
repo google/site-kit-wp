@@ -93,7 +93,7 @@ const baseActions = {
 	 * Sends feedback to the Site Kit Service, for a user with the `googlesitekit_authenticate` capability.
 	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Sends no request for a user without the `googlesitekit_authenticate` capability.
+	 * @since 1.193.0 Sends no request for a user without the `googlesitekit_authenticate` capability.
 	 *
 	 * @param {Object} feedback           The feedback to send.
 	 * @param {string} feedback.namespace The product area the feedback is about.

@@ -51,7 +51,7 @@ const READY_STATE: SurveyCustomDimensionsState = { status: 'ready' };
  * Creates the survey custom dimensions that are missing on the selected
  * Analytics property.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {boolean} canCreate Whether the dimensions can be checked and created.
  * @return {Object} The state of the survey custom dimensions: `pending` while

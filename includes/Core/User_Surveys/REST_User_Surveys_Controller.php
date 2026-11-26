@@ -99,7 +99,7 @@ class REST_User_Surveys_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.35.0
-	 * @since n.e.x.t Declares the argument and resource schemas of each route. Requires the current user to have `Permissions::AUTHENTICATE` for each route.
+	 * @since 1.193.0 Declares the argument and resource schemas of each route. Requires the current user to have `Permissions::AUTHENTICATE` for each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -290,7 +290,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Gets the REST schema of the reply to a survey event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */
@@ -307,7 +307,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Gets the REST schema of the survey to show the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */

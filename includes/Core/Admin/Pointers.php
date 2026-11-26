@@ -27,7 +27,7 @@ class Pointers {
 	/**
 	 * Pointers that are active on the current admin screen.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Pointer[]
 	 */
 	private $active_pointers = array();
@@ -36,7 +36,7 @@ class Pointers {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.83.0
-	 * @since n.e.x.t Registers the pointers data script.
+	 * @since 1.193.0 Registers the pointers data script.
 	 */
 	public function register() {
 		add_filter( 'googlesitekit_assets', $this->get_method_proxy( 'add_assets' ) );
@@ -47,7 +47,7 @@ class Pointers {
 	/**
 	 * Adds the pointers data script to the list of Site Kit assets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array $assets List of Asset instances.
 	 * @return array Filtered list of Asset instances.
@@ -70,7 +70,7 @@ class Pointers {
 	 * Enqueues pointer scripts.
 	 *
 	 * @since 1.83.0
-	 * @since n.e.x.t Enqueues the admin pointers script instead of printing inline scripts.
+	 * @since 1.193.0 Enqueues the admin pointers script instead of printing inline scripts.
 	 *
 	 * @param string $hook_suffix The current admin page.
 	 */
@@ -129,7 +129,7 @@ class Pointers {
 	/**
 	 * Gets the data for all active pointers that have content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array List of pointer data.
 	 */
@@ -149,7 +149,7 @@ class Pointers {
 	/**
 	 * Gets the data the admin pointers script needs to render a pointer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Pointer $pointer Pointer to get data for.
 	 * @return array|null Pointer data, or null if the pointer has no content.
