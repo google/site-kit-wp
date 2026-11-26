@@ -33,6 +33,10 @@ export const DEFAULT_TAB_PATH = WHATS_NEW_TAB_PATH;
 export const FIRST_VISIT_TAB_PATH = ALL_SERVICES_TAB_PATH;
 export const FEATURE_DISCOVERY_VISITED_ITEM_SLUG = 'feature-discovery-visited';
 export const FDH_NOT_OPENED_SURVEY_TRIGGER_ID = 'fdh_not_opened';
+export const FDH_OPENED_NO_INTERACTION_SURVEY_TRIGGER_ID =
+	'fdh_opened_no_interaction';
+export const FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID =
+	'fdh_opened_with_interaction';
 export const HUB_LAUNCH_VERSION = '1.188.0'; // Will be updated in issue #13422
 
 export const FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY =

@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\User_Surveys;
 
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\Schema\String_List_Schema;
@@ -98,13 +99,14 @@ class REST_User_Surveys_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.35.0
-	 * @since n.e.x.t Declares the argument and resource schemas of each route.
+	 * @since 1.193.0 Declares the argument and resource schemas of each route. Requires the current user to have `Permissions::AUTHENTICATE` for each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
 		$can_authenticate = function () {
-			return $this->authentication->is_authenticated()
+			return current_user_can( Permissions::AUTHENTICATE )
+				&& $this->authentication->is_authenticated()
 				&& $this->authentication->credentials()->using_proxy();
 		};
 
@@ -288,7 +290,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Gets the REST schema of the reply to a survey event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */
@@ -305,7 +307,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Gets the REST schema of the survey to show the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */

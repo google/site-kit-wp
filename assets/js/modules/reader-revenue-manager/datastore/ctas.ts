@@ -68,8 +68,14 @@ export type CreateCTAParams = {
 };
 
 type CreateCTARequest = PublicationParams & CreateCTAParams;
+
+type GetCTAParams = PublicationParams & {
+	ctaID: string;
+};
+
 interface CTAsState {
 	ctas: Record< string, CTA[] | undefined >;
+	ctasByID: Record< string, Record< string, CTA | null > >;
 	settings?: ReaderRevenueManagerSettings;
 	savedSettings?: ReaderRevenueManagerSettings;
 }
@@ -177,6 +183,16 @@ const fetchGetPublicationCTAsStore = createFetchStore( {
 		) => {
 			state.ctas[ publicationID ] = ctas;
 
+			state.ctasByID[ publicationID ] ??= {};
+
+			ctas.forEach( ( cta ) => {
+				const ctaID = getCTAID( cta.name );
+
+				if ( ctaID ) {
+					state.ctasByID[ publicationID ][ ctaID ] = cta;
+				}
+			} );
+
 			// Only the saved publication's CTAs belong in the settings.
 			if (
 				isFeatureEnabled( 'rrmExpressSetup' ) &&
@@ -193,6 +209,57 @@ const fetchGetPublicationCTAsStore = createFetchStore( {
 	validateParams: validatePublicationParams,
 } );
 
+const fetchGetPublicationCTAStore = createFetchStore( {
+	baseName: 'getPublicationCTA',
+	controlCallback: async ( {
+		organizationID,
+		publicationID,
+		ctaID,
+	}: GetCTAParams ) => {
+		try {
+			return await get(
+				'modules',
+				MODULE_SLUG_READER_REVENUE_MANAGER,
+				'cta',
+				{ organizationID, publicationID, ctaID },
+				{ useCache: false }
+			);
+		} catch ( error ) {
+			// A CTA that does not exist is returned as `null`, so `getCTA()` can
+			// tell it apart from one that is still loading, without an error
+			// notice offering to retry it.
+			if ( ( error as { code?: unknown } )?.code === 404 ) {
+				return null;
+			}
+
+			throw error;
+		}
+	},
+	reducerCallback: createReducer(
+		(
+			state: CTAsState,
+			cta: CTA | null,
+			{ publicationID, ctaID }: GetCTAParams
+		) => {
+			state.ctasByID[ publicationID ] ??= {};
+			state.ctasByID[ publicationID ][ ctaID ] = cta;
+		}
+	),
+	argsToParams: (
+		organizationID: string,
+		publicationID: string,
+		ctaID: string
+	): GetCTAParams => ( { organizationID, publicationID, ctaID } ),
+	validateParams: ( params: Partial< GetCTAParams > = {} ) => {
+		validatePublicationParams( params );
+
+		invariant(
+			typeof params.ctaID === 'string' && params.ctaID.length > 0,
+			'ctaID is required and must be a non-empty string.'
+		);
+	},
+} );
+
 const fetchCreateCTAStore = createFetchStore( {
 	baseName: 'createCTA',
 	controlCallback: ( params: CreateCTARequest ) =>
@@ -204,6 +271,13 @@ const fetchCreateCTAStore = createFetchStore( {
 		),
 	reducerCallback: createReducer(
 		( state: CTAsState, cta: CTA, { publicationID }: CreateCTARequest ) => {
+			const ctaID = getCTAID( cta.name );
+
+			if ( ctaID ) {
+				state.ctasByID[ publicationID ] ??= {};
+				state.ctasByID[ publicationID ][ ctaID ] = cta;
+			}
+
 			// Only extend an already loaded list, otherwise the resolver would
 			// treat the single created CTA as the complete set.
 			if ( state.ctas[ publicationID ] === undefined ) {
@@ -220,6 +294,7 @@ const fetchCreateCTAStore = createFetchStore( {
 
 const baseInitialState: CTAsState = {
 	ctas: {},
+	ctasByID: {},
 };
 
 const baseActions = {
@@ -228,7 +303,7 @@ const baseActions = {
 	 *
 	 * @since 1.187.0
 	 * @since 1.189.0 Added support for the CTA `state` property. Defaults to `ACTIVE`.
-	 * @since n.e.x.t No longer accepts publication identifiers.
+	 * @since 1.193.0 No longer accepts publication identifiers.
 	 *
 	 * @param  params                  Parameters.
 	 * @param  params.data             CTA data.
@@ -273,7 +348,7 @@ const baseActions = {
 	 * The resolver does nothing once the store holds the CTAs, so this is how
 	 * a caller refreshes them after creating one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -325,6 +400,34 @@ const baseResolvers = {
 			publicationID
 		);
 	},
+
+	*getPublicationCTA(
+		organizationID: string,
+		publicationID: string,
+		ctaID: string
+	): Generator< unknown, void, unknown > {
+		if ( ! organizationID || ! publicationID || ! ctaID ) {
+			return;
+		}
+
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as Registry;
+
+		const cta = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublicationCTA( organizationID, publicationID, ctaID );
+
+		if ( cta !== undefined ) {
+			return;
+		}
+
+		// @ts-expect-error createFetchStore is not properly typed yet.
+		yield fetchGetPublicationCTAStore.actions.fetchGetPublicationCTA(
+			organizationID,
+			publicationID,
+			ctaID
+		);
+	},
 };
 
 const baseSelectors = {
@@ -332,7 +435,7 @@ const baseSelectors = {
 	 * Gets the CTAs of the publication in the module settings.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t No longer accepts publication identifiers.
+	 * @since 1.193.0 No longer accepts publication identifiers.
 	 *
 	 * @return {(Array.<Object>|undefined)} The CTAs; `undefined` if not loaded yet.
 	 */
@@ -363,7 +466,7 @@ const baseSelectors = {
 	 * The organization only addresses the request, so the CTAs are not stored
 	 * under it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @private
 	 *
 	 * @param  state           Data store's state.
@@ -378,6 +481,65 @@ const baseSelectors = {
 	): CTA[] | undefined {
 		return state.ctas[ publicationID ];
 	},
+
+	/**
+	 * Gets a CTA of the publication in the module settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} ctaID CTA ID.
+	 * @return {(Object|null|undefined)} The CTA; `null` if it does not exist; `undefined` if not loaded yet.
+	 */
+	getCTA: createRegistrySelector(
+		( select: Select ) =>
+			( _state: CTAsState, ctaID: string ): CTA | null | undefined => {
+				invariant(
+					typeof ctaID === 'string' && ctaID.length > 0,
+					'ctaID is required and must be a non-empty string.'
+				);
+
+				const params = select(
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationParams();
+
+				if ( ! params ) {
+					return undefined;
+				}
+
+				return select(
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTA(
+					params.organizationID,
+					params.publicationID,
+					ctaID
+				);
+			}
+	),
+
+	/**
+	 * Gets a CTA of a publication.
+	 *
+	 * The CTAs are stored under their publication ID and then their CTA ID,
+	 * and the resolution is keyed the same way, so changing the publication
+	 * requests the new one's CTA on its own.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state           Data store's state.
+	 * @param {string} _organizationID Organization ID.
+	 * @param {string} publicationID   Publication ID.
+	 * @param {string} ctaID           CTA ID.
+	 * @return {(Object|null|undefined)} The CTA; `null` if it does not exist; `undefined` if not loaded yet.
+	 */
+	getPublicationCTA(
+		state: CTAsState,
+		_organizationID: string,
+		publicationID: string,
+		ctaID: string
+	): CTA | null | undefined {
+		return state.ctasByID[ publicationID ]?.[ ctaID ];
+	},
 };
 
 interface Store {
@@ -391,6 +553,7 @@ interface Store {
 
 const store = combineStores(
 	fetchGetPublicationCTAsStore,
+	fetchGetPublicationCTAStore,
 	fetchCreateCTAStore,
 	{
 		initialState: baseInitialState,

@@ -612,6 +612,20 @@ $traffic-overview-column-gap: 42px;
 			padding: 22px;
 		}
 
+		// The info icon sits 6px after the title, not at the end of the header.
+		.googlesitekit-table-tile__header {
+			column-gap: 6px;
+			grid-template-columns: minmax(0, auto) auto;
+			justify-content: start;
+
+			// The title's line is 16px tall, so the 16px icon lines up with it.
+			// Without this height, the icon's line box would be taller.
+			.googlesitekit-info-tooltip {
+				color: $c-surfaces-on-background-variant;
+				height: 16px;
+			}
+		}
+
 		.googlesitekit-table-tile__title.googlesitekit-typography {
 			margin-bottom: 12px;
 		}
@@ -731,7 +745,8 @@ $traffic-overview-column-gap: 42px;
 }
 
 // The padding comes on top, so the tooltip is 210px wide as in the design.
-.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__fresh-metrics-tooltip {
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__fresh-metrics-tooltip,
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__latest-post-tooltip {
 	max-width: 186px;
 }
 

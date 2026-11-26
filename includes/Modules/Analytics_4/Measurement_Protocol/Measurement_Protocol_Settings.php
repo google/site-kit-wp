@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for the stored Measurement Protocol secret value, with its secret ID and the property and web data stream it belongs to.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Measurement_Protocol_Settings extends Setting {
 	/**
 	 * Gets the stored secret.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array Secret value with its property ID, web data stream ID and secret ID.
 	 */
@@ -46,7 +46,7 @@ class Measurement_Protocol_Settings extends Setting {
 	/**
 	 * Stores the secret.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array $value Secret value with its property ID, web data stream ID and secret ID.
 	 * @return bool True on success, false on failure.
@@ -62,7 +62,7 @@ class Measurement_Protocol_Settings extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return string The type name.
 	 */
@@ -73,7 +73,7 @@ class Measurement_Protocol_Settings extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array Default value with every key set to an empty string.
 	 */
@@ -89,7 +89,7 @@ class Measurement_Protocol_Settings extends Setting {
 	/**
 	 * Determines whether the given value is an array with a string for each key of the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed $value Value to check.
 	 * @return bool True if the value is valid, otherwise false.

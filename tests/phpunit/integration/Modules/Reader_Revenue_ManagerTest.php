@@ -406,10 +406,46 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'terms-of-service',
 				'user-settings',
 				'ctas',
+				'cta',
 				'create-cta',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
 			'Reader Revenue Manager module should include the express setup datapoints when the express setup flag is enabled.'
+		);
+	}
+
+	public function test_get_datapoints__with_survey_cta_flag() {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->enable_feature( 'rrmSurveyCTA' );
+
+		$this->assertEqualSets(
+			array(
+				'create-publication',
+				'publication',
+				'publications',
+				'sync-publication-onboarding-state',
+				'terms-of-service',
+				'user-settings',
+				'ctas',
+				'cta',
+				'create-cta',
+				'survey-question-catalog',
+			),
+			$this->reader_revenue_manager->get_datapoints(),
+			'Reader Revenue Manager module should include the survey question catalog datapoint when the survey CTA flag is enabled.'
+		);
+	}
+
+	public function test_get_datapoints__with_survey_cta_flag_only() {
+		$this->enable_feature( 'rrmSurveyCTA' );
+
+		$this->assertEqualSets(
+			array(
+				'publications',
+				'sync-publication-onboarding-state',
+			),
+			$this->reader_revenue_manager->get_datapoints(),
+			'Reader Revenue Manager module should not include the survey question catalog datapoint without the express setup flag, which sets up its service.'
 		);
 	}
 

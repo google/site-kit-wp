@@ -119,9 +119,9 @@ WithSetupSuccessNotice.args = {
 				successNotice: {
 					title: 'Success! Your Newsletter sign-up form by Reader Revenue Manager is set up',
 					description:
-						'You can always update your sign-up form settings in Publisher center',
+						'You can always update your sign-up form settings in Publisher Center',
 					cta: {
-						label: 'Go to Publisher center',
+						label: 'Go to Publisher Center',
 						getURL: () => 'https://publishercenter.google.com/',
 						external: true,
 					},

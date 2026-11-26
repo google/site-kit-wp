@@ -102,7 +102,7 @@ export const actions = {
 	 * @since 1.132.0
 	 * @since 1.146.0 Added `featureFlag` parameter.
 	 * @since 1.155.0 Changed to a generator function to allow for state interaction.
-	 * @since n.e.x.t Allowed `featureFlag` to be an array of feature flags.
+	 * @since 1.193.0 Allowed `featureFlag` to be an array of feature flags.
 	 *
 	 * @param {string}          id                           Notification's slug.
 	 * @param {Object}          settings                     Notification's settings.
@@ -313,7 +313,7 @@ export const actions = {
 	 * Unlike `dismissNotification()`, this doesn't persist a dismissal, so the
 	 * notification can be queued again on a later page view.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param {string} id Notification ID to remove from the queue.
 	 * @return {Object} Redux-style action.

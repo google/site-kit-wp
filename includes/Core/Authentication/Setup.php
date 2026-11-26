@@ -145,6 +145,7 @@ class Setup {
 	 * Handles the setup start action, taking the user to the proxy setup screen.
 	 *
 	 * @since 1.48.0
+	 * @since 1.193.0 Hides the Key Metrics widget area only during the site's first sign-in.
 	 */
 	public function handle_action_setup_start() {
 		$nonce        = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'nonce' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
@@ -213,10 +214,13 @@ class Setup {
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
-		$options = new Options( $this->context );
-
-		$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $options );
-		$key_metrics_setup_is_widget_area_hidden->set( true );
+		// Hide Key Metrics until Analytics is connected, but only during the
+		// site's first sign-in, before it has proxy credentials. The option is
+		// site-wide, so later sign-ins must leave it as it is.
+		if ( ! $this->credentials->has() ) {
+			$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( new Options( $this->context ) );
+			$key_metrics_setup_is_widget_area_hidden->set( true );
+		}
 
 		wp_safe_redirect( $oauth_setup_redirect );
 		exit;

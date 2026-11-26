@@ -70,6 +70,11 @@ only for a rule that must hold even when the skill does not run.
 -   **One component per file**: never define more than one React component in a single file. Extract each additional component (including small sub-components) into its own file and import it. Shared, non-component code (styles, constants, helpers) may live in a separate non-component module (e.g. `pdfStyles.ts`).
 -   **Details**: See `.eslintrc.json` and custom ESLint plugin
 
+### User-facing copy
+
+-   Capitalize product names, feature names, and other terms as `docs/context/terminology.md` says. It is the source of truth, including when a design or an issue writes a term differently.
+-   Use American English spelling and the Oxford comma in all user-facing copy and source strings.
+
 ## Testing Strategy
 
 **Comprehensive multi-layer testing:**

@@ -30,7 +30,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 /**
  * Returns a callback that hides the admin screen tooltip.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @return {Function} Callback that hides the tooltip.
  */

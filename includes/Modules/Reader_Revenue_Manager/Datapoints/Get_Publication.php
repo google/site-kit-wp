@@ -63,7 +63,7 @@ class Get_Publication extends Datapoint implements Executable_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t Requires the publication identifiers in the request.
+	 * @since 1.193.0 Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.

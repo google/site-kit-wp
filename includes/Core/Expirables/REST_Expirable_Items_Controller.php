@@ -77,7 +77,7 @@ class REST_Expirable_Items_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.128.0
-	 * @since n.e.x.t Declares the argument and resource schemas of each route.
+	 * @since 1.193.0 Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

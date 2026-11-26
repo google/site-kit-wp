@@ -293,7 +293,7 @@ final class Assets {
 	 * The asset list is read when a tag is printed, so that assets added later
 	 * through the `googlesitekit_assets` filter are included.
 	 *
-	 * @since n.e.x.t Reads the asset list when a tag is printed, instead of taking it as an argument.
+	 * @since 1.193.0 Reads the asset list when a tag is printed, instead of taking it as an argument.
 	 *
 	 * @todo What about dependencies?
 	 */

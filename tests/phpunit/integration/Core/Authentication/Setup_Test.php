@@ -7,10 +7,14 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Setup;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use WP_Error;
@@ -24,6 +28,7 @@ use WPDieException;
 class Setup_Test extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use ModulesHelperTrait;
 
 	public function set_up() {
 		parent::set_up();
@@ -177,6 +182,89 @@ class Setup_Test extends TestCase {
 			$site_bodies[0]['scope'],
 			'Setup should send the required scopes with the site fields.'
 		);
+	}
+
+	public function test_handle_action_setup_start__hides_key_metrics_on_first_sign_in() {
+		$options = $this->run_setup_start_for_key_metrics( false, false );
+
+		$this->assertTrue(
+			$options->get( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION ),
+			'Setup start should hide the Key Metrics widget area during the site\'s first sign-in.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_key_metrics_after_first_sign_in
+	 */
+	public function test_handle_action_setup_start__keeps_key_metrics_setting_after_first_sign_in( $is_analytics_connected, $is_hidden ) {
+		$options = $this->run_setup_start_for_key_metrics( true, $is_analytics_connected, $is_hidden );
+
+		$this->assertSame(
+			$is_hidden,
+			$options->has( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION ),
+			'Setup start should leave the Key Metrics widget area setting unchanged once the site has credentials.'
+		);
+	}
+
+	public function data_key_metrics_after_first_sign_in() {
+		return array(
+			'Analytics connected, Key Metrics shown'      => array( true, false ),
+			'Analytics connected, Key Metrics hidden'     => array( true, true ),
+			'Analytics not connected, Key Metrics shown'  => array( false, false ),
+			'Analytics not connected, Key Metrics hidden' => array( false, true ),
+		);
+	}
+
+	/**
+	 * Runs the setup start action for the Key Metrics widget area tests.
+	 *
+	 * @param bool $has_credentials        Whether the site already has proxy credentials.
+	 * @param bool $is_analytics_connected Whether Analytics is connected.
+	 * @param bool $is_hidden              Optional. Whether the Key Metrics widget area is already hidden. Default false.
+	 * @return Options Options instance to read the stored values from.
+	 */
+	protected function run_setup_start_for_key_metrics( $has_credentials, $is_analytics_connected, $is_hidden = false ) {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$options = new Options( $context );
+		$options->delete( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION );
+		if ( $is_hidden ) {
+			$options->set( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION, true );
+		}
+
+		$setup = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$setup->register();
+
+		if ( $has_credentials ) {
+			$this->fake_proxy_site_connection();
+		}
+
+		remove_all_filters( 'googlesitekit_is_module_connected' );
+		if ( $is_analytics_connected ) {
+			$this->force_connect_modules( Analytics_4::MODULE_SLUG );
+		}
+
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_SETUP_START );
+
+		$this->subscribe_to_wp_http_requests(
+			function () {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array( Google_Proxy::HEADER_REDIRECT_TO => 'https://sitekit.withgoogle.com/test-page' ),
+				'body'     => '{}',
+			)
+		);
+
+		try {
+			do_action( 'admin_action_' . Google_Proxy::ACTION_SETUP_START );
+			$this->fail( 'Expected redirection to proxy setup URL!' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/test-page', $redirect->get_location(), 'Setup start should redirect to the proxy setup URL.' );
+		}
+
+		return $options;
 	}
 
 	/**

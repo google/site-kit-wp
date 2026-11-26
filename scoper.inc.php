@@ -10,20 +10,27 @@
 
 use Symfony\Component\Finder\Finder;
 
-$installed        = include __DIR__ . '/vendor/composer/installed.php';
-$non_dev_packages = array_filter(
-	$installed['versions'],
-	fn ( $pkg ) => ! $pkg['dev_requirement']
-);
+// The packages to prefix are passed by bin/prefix-dependencies.php, which decides which packages are production dependencies.
+$packages = array_filter( explode( ',', (string) getenv( 'GOOGLESITEKIT_PREFIX_PACKAGES' ) ) );
+if ( empty( $packages ) ) {
+	// Without any packages, the finder below would match every file in `vendor`, including dev packages.
+	throw new InvalidArgumentException( 'No packages to prefix. Run `composer run prefix-dependencies` instead.' );
+}
 
 return array(
 	'prefix'                  => 'Google\\Site_Kit_Dependencies',
 	'finders'                 => array(
-		// All non-dev dependency package files.
+		// All files of the packages to prefix.
 		Finder::create()
 			->files()
 			->in( __DIR__ . '/vendor' )
-			->path( array_keys( $non_dev_packages ) )
+			// Match package directories exactly, e.g. so that `google/apiclient` doesn't also match `google/apiclient-services-*`.
+			->path(
+				array_map(
+					fn ( $name ) => '#^' . preg_quote( $name, '#' ) . '/#',
+					$packages
+				)
+			)
 			->ignoreVCS( true )
 			->notName( '/LICENSE|.*\\.md|.*\\.dist|Makefile|composer\\.(json|lock)/' )
 			->exclude(
@@ -41,6 +48,10 @@ return array(
 	'exclude-files'           => array(
 		// This dependency is a global function which should remain global.
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
+		// PHP-Scoper writes files relative to the deepest directory common to all input files. Copying a
+		// file from `vendor/composer` keeps that directory `vendor` even when only one package is prefixed,
+		// so each package is always written to `<output-dir>/<package-name>`.
+		'vendor/composer/installed.php',
 	),
 	'patchers'                => array(
 		function ( $file_path, $prefix, $contents ) {

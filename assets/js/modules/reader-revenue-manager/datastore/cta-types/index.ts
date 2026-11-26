@@ -102,7 +102,7 @@ const CTA_TYPE_HANDLERS: Record< CallToActionType, CallToActionTypeHandler > = {
  * Checks whether a value is a supported CTA type.
  *
  * @since 1.187.0
- * @since n.e.x.t The survey type is only supported when the `rrmSurveyCTA` feature flag is enabled.
+ * @since 1.193.0 The survey type is only supported when the `rrmSurveyCTA` feature flag is enabled.
  *
  * @param  type Value to check.
  * @return {boolean} Whether the value is a supported CTA type.

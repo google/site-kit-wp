@@ -40,6 +40,7 @@ import {
 	fireEvent,
 	provideModules,
 	provideSiteInfo,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -86,6 +87,7 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 				authenticated: true,
 			}
 		);
+		provideUserCapabilities( registry );
 		fetchMock.postOnce(
 			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
 			{ body: {} }
