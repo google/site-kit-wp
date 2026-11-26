@@ -36,13 +36,11 @@ import {
 	RECENT_ACTIVITY_INTERACTION_TIMER,
 	RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED,
 	RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED,
-	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
 	RECENT_ACTIVITY_TAB_OPENED_TIMER,
 	RECENT_ACTIVITY_ZERO_INTERACTION_VISIT_COUNT,
 	TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { selectZeroInteractionTrigger } from '@/js/modules/analytics-4/components/traffic-overview/utils/selectZeroInteractionTrigger';
-import { startTimerOnce } from '@/js/modules/analytics-4/components/traffic-overview/utils/startTimerOnce';
 import { DAY_IN_SECONDS } from '@/js/util/dates';
 
 interface RecentActivitySurveyTriggersOptions {
@@ -55,20 +53,22 @@ interface RecentActivitySurveyTriggersOptions {
 /**
  * Triggers the Recent activity survey matching the user's use of the tab.
  *
- * While enabled, the hook starts the "tab available" timer, counts one
- * Traffic card visit per page load once the card has been in view, until the
- * user opens the tab or the count reaches 3, and sends
- * at most one of the three Recent activity survey triggers, at most once a
- * day:
+ * While enabled, the hook counts one Traffic card visit per page load once
+ * the card has been in view, until the user opens the tab or the count
+ * reaches 3. It sends each of these triggers at most once a day:
  *
- * 1. Opened and interacted: the "meaningful interaction" timer has expired.
- * 2. Opened but not interacted: the "tab opened" timer has expired, and the
- *    user has never interacted with the tab.
- * 3. Zero interaction: the user never opened the tab, and either the latest
- *    post was published 7 days or less ago, or the user has visited the card
- *    3 or more times and the tab became available 10 to 14 days ago.
+ * 1. Opened and interacted: the user has interacted with the tab.
+ * 2. Opened but not interacted: the user has opened the tab, but never
+ *    interacted with it.
+ * 3. Zero interaction: the user never opened the tab, has visited the card 3
+ *    or more times, and the site has at least one published post.
+ *
+ * Each trigger is sent as soon as the user meets its criteria, so one page
+ * load can send more than one, for example when the user opens the tab and
+ * then interacts with it.
  *
  * @since 1.192.0
+ * @since 1.193.0 Sends the triggers without waiting for a timer to expire or checking the age of the latest post, and no longer starts the "tab available" timer.
  *
  * @param {Object}  options                 Hook options.
  * @param {boolean} options.isEnabled       Whether the widget shows the Recent activity tab, with Analytics connected.
@@ -82,12 +82,6 @@ export function useRecentActivitySurveyTriggers( {
 	const registry = useRegistry() as unknown as Registry;
 	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
 	const hasCountedVisit = useRef( false );
-
-	useEffect( () => {
-		if ( isEnabled ) {
-			startTimerOnce( registry, RECENT_ACTIVITY_TAB_AVAILABLE_TIMER );
-		}
-	}, [ isEnabled, registry ] );
 
 	useEffect( () => {
 		if ( ! isEnabled || ! hasBeenInView || hasCountedVisit.current ) {
@@ -143,9 +137,10 @@ export function useRecentActivitySurveyTriggers( {
 				return undefined;
 			}
 
-			const { hasExpirableItem, isExpirableItemActive } =
-				select( CORE_USER );
+			const { hasExpirableItem } = select( CORE_USER );
 
+			// The timers stay in the expirable items after they expire, so
+			// having one means the user opened the tab, or interacted with it.
 			const hasInteractionTimer = hasExpirableItem(
 				RECENT_ACTIVITY_INTERACTION_TIMER.slug
 			);
@@ -155,19 +150,11 @@ export function useRecentActivitySurveyTriggers( {
 			}
 
 			if ( hasInteractionTimer ) {
-				return isExpirableItemActive(
-					RECENT_ACTIVITY_INTERACTION_TIMER.slug
-				)
-					? undefined
-					: RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED;
+				return RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED;
 			}
 
 			if ( hasExpirableItem( RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ) ) {
-				return isExpirableItemActive(
-					RECENT_ACTIVITY_TAB_OPENED_TIMER.slug
-				)
-					? undefined
-					: RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED;
+				return RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED;
 			}
 
 			return selectZeroInteractionTrigger( select );

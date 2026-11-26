@@ -20,9 +20,13 @@
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
+import { FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID } from '@/js/components/feature-discovery/constants';
 import { VoteDirection } from '@/js/components/feedback/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	SURVEY_TRIGGER_MAX_TTL,
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -35,6 +39,7 @@ describe( 'FeatureRelevancyFeedback', () => {
 	let registry: Registry;
 	let setFeatureRelevancyVote: jest.SpyInstance;
 	let sendFeedback: jest.SpyInstance;
+	let triggerSurvey: jest.SpyInstance;
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
@@ -53,6 +58,10 @@ describe( 'FeatureRelevancyFeedback', () => {
 
 		sendFeedback = jest
 			.spyOn( registry.dispatch( CORE_USER ), 'sendFeedback' )
+			.mockResolvedValue( {} );
+
+		triggerSurvey = jest
+			.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
 			.mockResolvedValue( {} );
 	} );
 
@@ -177,6 +186,32 @@ describe( 'FeatureRelevancyFeedback', () => {
 			);
 
 			expect( reasonCalls ).toHaveLength( 1 );
+		}
+	);
+
+	it.each< VoteDirection >( [ 'up', 'down' ] )(
+		'should send the hub interaction survey trigger on a %s vote',
+		( direction ) => {
+			const { getByRole } = render(
+				<FeatureRelevancyFeedback slug="first" />,
+				{ registry }
+			);
+
+			expect( triggerSurvey ).not.toHaveBeenCalled();
+
+			fireEvent.click(
+				getByRole( 'button', {
+					name:
+						direction === 'up'
+							? 'Yes, this was helpful'
+							: 'No, this was not helpful',
+				} )
+			);
+
+			expect( triggerSurvey ).toHaveBeenCalledWith(
+				FDH_OPENED_WITH_INTERACTION_SURVEY_TRIGGER_ID,
+				{ ttl: SURVEY_TRIGGER_MAX_TTL }
+			);
 		}
 	);
 } );

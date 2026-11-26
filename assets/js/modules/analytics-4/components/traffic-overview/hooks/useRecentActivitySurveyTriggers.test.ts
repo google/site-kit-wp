@@ -31,7 +31,6 @@ import {
 	RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED,
 	RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED,
 	RECENT_ACTIVITY_SURVEY_TRIGGER_ZERO_INTERACTION,
-	RECENT_ACTIVITY_TAB_AVAILABLE_TIMER,
 	RECENT_ACTIVITY_TAB_OPENED_TIMER,
 	TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
@@ -40,7 +39,6 @@ import {
 	getExpiryFromNow,
 	provideLatestPost,
 	provideRecentActivitySurveyState,
-	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { provideIncludeProductsState } from '@/js/modules/analytics-4/datastore/test-utils';
 import { DAY_IN_SECONDS } from '@/js/util/dates';
@@ -54,6 +52,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	renderHook,
 	waitFor,
 	waitForDefaultTimeouts,
@@ -64,20 +63,10 @@ import { useRecentActivitySurveyTriggers } from './useRecentActivitySurveyTrigge
 describe( 'useRecentActivitySurveyTriggers', () => {
 	const REFERENCE_DATE = '2026-10-01';
 
-	// `LATEST_POST` was published 14 days before the reference date.
-	// Published 7 days before the reference date.
-	const RECENT_POST = { ...LATEST_POST, publishedAt: '2026-09-24T12:30:00Z' };
-
 	const ACTIVE = getExpiryFromNow( DAY_IN_SECONDS );
 	const EXPIRED = getExpiryFromNow( -DAY_IN_SECONDS );
 
 	let registry: WPDataRegistry;
-
-	function timerRequests(): unknown[] {
-		return fetchMock
-			.calls( setExpirableItemTimersEndpoint )
-			.map( ( call ) => JSON.parse( String( call[ 1 ]?.body ) ).data );
-	}
 
 	// The response to a visit has the visit count after the visit.
 	function mockVisit( count: number ) {
@@ -105,129 +94,78 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( REFERENCE_DATE );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
 
 		fetchMock.get( surveyTimeoutsEndpoint, { status: 200, body: [] } );
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
-		fetchMock.post( setExpirableItemTimersEndpoint, {
-			status: 200,
-			body: {},
-		} );
 	} );
 
 	describe( 'opened and interacted', () => {
-		it( 'should trigger the survey once a day when the "meaningful interaction" timer has expired', async () => {
-			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-					[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: EXPIRED,
-					[ RECENT_ACTIVITY_INTERACTION_TIMER.slug ]: EXPIRED,
-				},
-			} );
-			mockVisit( 1 );
-
-			const { waitForRegistry } = render();
-			await waitForRegistry();
-
-			await waitFor( () =>
-				expect( triggeredIDs() ).toEqual( [
-					RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED,
-				] )
-			);
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: {
-						triggerID:
-							RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED,
-						ttl: DAY_IN_SECONDS,
+		it.each( [
+			[ 'active', ACTIVE ],
+			[ 'expired', EXPIRED ],
+		] )(
+			'should trigger the survey once a day when the "meaningful interaction" timer is %s',
+			async ( _state, interactionExpiry ) => {
+				provideRecentActivitySurveyState( registry, {
+					expirableItems: {
+						[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: EXPIRED,
+						[ RECENT_ACTIVITY_INTERACTION_TIMER.slug ]:
+							interactionExpiry,
 					},
-				},
-			} );
-		} );
+				} );
 
-		it( 'should not trigger any survey while the "meaningful interaction" timer is active', async () => {
-			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-					[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: EXPIRED,
-					[ RECENT_ACTIVITY_INTERACTION_TIMER.slug ]: ACTIVE,
-				},
-			} );
-			provideLatestPost( registry, RECENT_POST );
-			mockVisit( 1 );
+				const { waitForRegistry } = render();
+				await waitForRegistry();
 
-			const { waitForRegistry } = render();
-			await waitForRegistry();
-			await waitForDefaultTimeouts();
-
-			expect( triggeredIDs() ).toEqual( [] );
-		} );
+				await waitFor( () =>
+					expect( triggeredIDs() ).toEqual( [
+						RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED,
+					] )
+				);
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: {
+							triggerID:
+								RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_AND_INTERACTED,
+							ttl: DAY_IN_SECONDS,
+						},
+					},
+				} );
+			}
+		);
 	} );
 
 	describe( 'opened but not interacted', () => {
-		it( 'should trigger the survey when the "tab opened" timer has expired and there is no "meaningful interaction" timer', async () => {
-			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-					[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: EXPIRED,
-				},
-			} );
-			mockVisit( 1 );
+		it.each( [
+			[ 'active', ACTIVE ],
+			[ 'expired', EXPIRED ],
+		] )(
+			'should trigger the survey when the "tab opened" timer is %s and there is no "meaningful interaction" timer',
+			async ( _state, tabOpenedExpiry ) => {
+				provideRecentActivitySurveyState( registry, {
+					expirableItems: {
+						[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]:
+							tabOpenedExpiry,
+					},
+				} );
 
-			const { waitForRegistry } = render();
-			await waitForRegistry();
+				const { waitForRegistry } = render();
+				await waitForRegistry();
 
-			await waitFor( () =>
-				expect( triggeredIDs() ).toEqual( [
-					RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED,
-				] )
-			);
-		} );
-
-		it( 'should not trigger any survey while the "tab opened" timer is active', async () => {
-			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-					[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: ACTIVE,
-				},
-			} );
-			provideLatestPost( registry, RECENT_POST );
-			mockVisit( 1 );
-
-			const { waitForRegistry } = render();
-			await waitForRegistry();
-			await waitForDefaultTimeouts();
-
-			expect( triggeredIDs() ).toEqual( [] );
-		} );
+				await waitFor( () =>
+					expect( triggeredIDs() ).toEqual( [
+						RECENT_ACTIVITY_SURVEY_TRIGGER_OPENED_BUT_NOT_INTERACTED,
+					] )
+				);
+			}
+		);
 	} );
 
 	describe( 'zero interaction', () => {
-		it( 'should trigger the survey when the latest post was published 7 days or less before the reference date', async () => {
+		it( 'should trigger the survey on the third visit', async () => {
 			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-				},
-			} );
-			provideLatestPost( registry, RECENT_POST );
-			mockVisit( 1 );
-
-			const { waitForRegistry } = render();
-			await waitForRegistry();
-
-			await waitFor( () =>
-				expect( triggeredIDs() ).toEqual( [
-					RECENT_ACTIVITY_SURVEY_TRIGGER_ZERO_INTERACTION,
-				] )
-			);
-		} );
-
-		it( 'should trigger the survey on the third visit when the "tab available" timer has 4 days or less left', async () => {
-			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]:
-						getExpiryFromNow( 4 * DAY_IN_SECONDS ),
-				},
 				dismissedPrompts: {
 					[ TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ]: {
 						expires: 0,
@@ -248,12 +186,8 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 			);
 		} );
 
-		it( 'should not trigger any survey on the second visit', async () => {
+		it( 'should not trigger any survey on the second visit, even when the latest post was published on the reference date', async () => {
 			provideRecentActivitySurveyState( registry, {
-				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]:
-						getExpiryFromNow( DAY_IN_SECONDS ),
-				},
 				dismissedPrompts: {
 					[ TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ]: {
 						expires: 0,
@@ -261,7 +195,10 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 					},
 				},
 			} );
-			provideLatestPost( registry );
+			provideLatestPost( registry, {
+				...LATEST_POST,
+				publishedAt: '2026-10-01T12:30:00Z',
+			} );
 			mockVisit( 2 );
 
 			const { waitForRegistry } = render();
@@ -272,7 +209,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		} );
 	} );
 
-	it( 'should not trigger any survey, count a visit or start a timer when disabled', async () => {
+	it( 'should not trigger any survey or count a visit when disabled', async () => {
 		provideRecentActivitySurveyState( registry, {
 			expirableItems: {
 				[ RECENT_ACTIVITY_INTERACTION_TIMER.slug ]: EXPIRED,
@@ -285,16 +222,16 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 
 		expect( triggeredIDs() ).toEqual( [] );
 		expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
-		expect( fetchMock ).not.toHaveFetched( setExpirableItemTimersEndpoint );
 	} );
 
 	it( 'should not trigger any survey while the expirable items load', async () => {
 		freezeFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/expirable-items' )
 		);
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
-		provideLatestPost( registry, RECENT_POST );
-		mockVisit( 1 );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ]: { expires: 0, count: 3 },
+		} );
+		provideLatestPost( registry );
 
 		render();
 		await waitForDefaultTimeouts();
@@ -304,13 +241,15 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 
 	it( 'should not trigger any survey while the latest post loads', async () => {
 		provideRecentActivitySurveyState( registry, {
-			expirableItems: {
-				[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
+			dismissedPrompts: {
+				[ TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ]: {
+					expires: 0,
+					count: 3,
+				},
 			},
 		} );
 		provideIncludeProductsState( registry, { wooCommerceActive: false } );
 		freezeFetch( new RegExp( '^/wp/v2/posts' ) );
-		mockVisit( 1 );
 
 		render();
 		await waitForDefaultTimeouts();
@@ -326,8 +265,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		} );
 		mockVisit( 1 );
 
-		const { waitForRegistry } = render( { hasBeenInView: false } );
-		await waitForRegistry();
+		render( { hasBeenInView: false } );
 		await waitForDefaultTimeouts();
 
 		expect( triggeredIDs() ).toEqual( [] );
@@ -335,18 +273,14 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 	} );
 
 	it( 'should count one visit per page load, once the widget has been in view', async () => {
-		provideRecentActivitySurveyState( registry, {
-			expirableItems: {
-				[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-			},
-		} );
+		provideRecentActivitySurveyState( registry );
 		provideLatestPost( registry );
 		mockVisit( 1 );
 
 		const { rerender, waitForRegistry } = render( {
 			hasBeenInView: false,
 		} );
-		await waitForRegistry();
+		await waitForDefaultTimeouts();
 
 		expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
 
@@ -356,6 +290,10 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		rerender( { isEnabled: false, hasBeenInView: true } );
 		rerender( { isEnabled: true, hasBeenInView: true } );
 		await waitForRegistry();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint )
+		);
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, dismissPromptEndpoint );
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
@@ -376,9 +314,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		async ( _state, tabOpenedExpiry ) => {
 			provideRecentActivitySurveyState( registry, {
 				expirableItems: {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
 					[ RECENT_ACTIVITY_TAB_OPENED_TIMER.slug ]: tabOpenedExpiry,
-					[ RECENT_ACTIVITY_INTERACTION_TIMER.slug ]: ACTIVE,
 				},
 			} );
 			mockVisit( 1 );
@@ -393,9 +329,6 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 
 	it( 'should not count a visit once the count has reached 3', async () => {
 		provideRecentActivitySurveyState( registry, {
-			expirableItems: {
-				[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-			},
 			dismissedPrompts: {
 				[ TRAFFIC_CARD_VISIT_COUNT_PROMPT_SLUG ]: {
 					expires: 0,
@@ -423,10 +356,7 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 		[
 			'dismissed prompts',
 			'^/google-site-kit/v1/core/user/data/dismissed-prompts',
-			() =>
-				registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
-					[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-				} ),
+			() => registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} ),
 		],
 	] )(
 		'should not count a visit when the %s fail to load',
@@ -447,40 +377,4 @@ describe( 'useRecentActivitySurveyTriggers', () => {
 			expect( fetchMock ).not.toHaveFetched( dismissPromptEndpoint );
 		}
 	);
-
-	it( 'should start the "tab available" timer for 14 days when the user does not have it', async () => {
-		provideRecentActivitySurveyState( registry );
-		provideLatestPost( registry );
-		mockVisit( 1 );
-
-		const { waitForRegistry } = render();
-		await waitForRegistry();
-
-		await waitFor( () =>
-			expect( timerRequests() ).toEqual( [
-				[
-					{
-						slug: RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug,
-						expiration: 14 * DAY_IN_SECONDS,
-					},
-				],
-			] )
-		);
-	} );
-
-	it( 'should not restart the "tab available" timer when the user has it', async () => {
-		provideRecentActivitySurveyState( registry, {
-			expirableItems: {
-				[ RECENT_ACTIVITY_TAB_AVAILABLE_TIMER.slug ]: ACTIVE,
-			},
-		} );
-		provideLatestPost( registry );
-		mockVisit( 1 );
-
-		const { waitForRegistry } = render();
-		await waitForRegistry();
-		await waitForDefaultTimeouts();
-
-		expect( timerRequests() ).toEqual( [] );
-	} );
 } );

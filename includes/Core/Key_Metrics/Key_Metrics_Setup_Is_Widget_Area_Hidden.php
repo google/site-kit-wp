@@ -15,6 +15,11 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for handling the Key Metrics setup widget area hidden state.
  *
+ * This site-wide flag hides Key Metrics when Site Kit is first set up without
+ * Analytics. It is set only during the site's first sign-in, and deleted once
+ * Analytics is connected. It is not a user's preference to hide Key Metrics,
+ * and should not be reused as one.
+ *
  * @since 1.184.0
  * @access private
  * @ignore

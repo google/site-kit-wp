@@ -36,13 +36,13 @@ import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
 	SIZE_MEDIUM,
-	TYPE_BODY,
 	TYPE_LABEL,
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import FeatureSetupListItem from './FeatureSetupListItem';
 
 interface FeatureDetailRequirementsProps {
 	feature: Feature;
@@ -92,14 +92,7 @@ const FeatureDetailRequirements: FC< FeatureDetailRequirementsProps > = ( {
 
 					<ol className="googlesitekit-feature-details-panel__setup-list">
 						{ setupList.map( ( step, index ) => (
-							<Typography
-								as="li"
-								key={ index }
-								size={ SIZE_MEDIUM }
-								type={ TYPE_BODY }
-							>
-								{ step }
-							</Typography>
+							<FeatureSetupListItem key={ index } step={ step } />
 						) ) }
 					</ol>
 				</section>

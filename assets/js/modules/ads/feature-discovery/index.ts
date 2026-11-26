@@ -91,25 +91,34 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				documentationURL:
 					'https://sitekit.withgoogle.com/documentation/supported-services/ads/',
 				serviceRequirements: __(
-					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information and payment details',
+					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information, and payment details',
 					'google-site-kit'
 				),
 				setupList: [
+					__( 'Choose your Google Ads account', 'google-site-kit' ),
+					{
+						label: __( 'Connect your account', 'google-site-kit' ),
+						subSteps: [
+							__(
+								'New account: Set up your account, campaign and payment details.',
+								'google-site-kit'
+							),
+							__(
+								'Existing account: Enter your Ads conversion ID.',
+								'google-site-kit'
+							),
+						],
+					},
 					__(
-						'Create a new Ads account or use your existing account',
+						'Turn on plugin conversion tracking in Settings (optional)',
 						'google-site-kit'
 					),
-					__( 'Enter your Ads conversion ID', 'google-site-kit' ),
 					__(
-						'Enable plugin conversion tracking (optional)',
+						'Turn on Google tag gateway for advertisers in Settings (optional)',
 						'google-site-kit'
 					),
 					__(
-						'Enable Google tag gateway for advertisers (optional)',
-						'google-site-kit'
-					),
-					__(
-						'Ads is set up! You are growing your reach.',
+						"Ads is set up! You're reaching more people.",
 						'google-site-kit'
 					),
 				],

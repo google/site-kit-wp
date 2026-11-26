@@ -56,6 +56,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		rate: { current: 0.5, previous: 0.4 },
 		engagementRate: { current: 0.75, previous: 0.7 },
 		sessions: { current: 1000, previous: 900 },
+		engagementSessions: { current: 200, previous: 150 },
 	};
 
 	const OTHER_SOURCES_GROUP = {
@@ -108,7 +109,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		expect( text ).not.toContain( 'Engagement rate' );
 	} );
 
-	it( 'renders the total subtitle and the sessions caption under the rate and engagement tiles', () => {
+	it( 'should render the site sessions under the rate tile and the group sessions under the engagement tile', () => {
 		const text = renderBreakdownGroupText( {
 			group: FULL_GROUP,
 			rateLabel: 'Sales rate',
@@ -117,13 +118,22 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		} );
 
 		expect( text ).toContain( '"purchase" events' );
-		const sessionsCaption = `of ${ numFmt(
-			FULL_GROUP.sessions.current
-		) } total sessions`;
-		// Rendered once under the rate tile and once under the engagement tile.
-		expect(
-			text.filter( ( entry ) => entry === sessionsCaption ).length
-		).toBe( 2 );
+		// The rate is a share of the site's sessions, and the engagement rate
+		// a share of the group's own sessions.
+		const rateIndex = text.indexOf( 'Sales rate' );
+		const engagementIndex = text.indexOf( 'Engagement rate' );
+		const siteSessionsIndex = text.indexOf(
+			`of ${ numFmt( FULL_GROUP.sessions.current ) } total sessions`
+		);
+		const groupSessionsIndex = text.indexOf(
+			`of ${ numFmt(
+				FULL_GROUP.engagementSessions.current
+			) } total sessions`
+		);
+
+		expect( siteSessionsIndex ).toBeGreaterThan( rateIndex );
+		expect( siteSessionsIndex ).toBeLessThan( engagementIndex );
+		expect( groupSessionsIndex ).toBeGreaterThan( engagementIndex );
 	} );
 
 	it( 'renders the rate tile with a green background when the rate rises and a red one when it falls', () => {

@@ -177,6 +177,10 @@ final class Screens {
 					#adminmenu .toplevel_page_googlesitekit-dashboard.wp-has-current-submenu img {
 						opacity: 1;
 					}
+					/* WordPress places its own menu icons 7px from the top of the icon box. */
+					#adminmenu .toplevel_page_googlesitekit-dashboard div.wp-menu-image.svg {
+						background-position: center 7px;
+					}
 				</style>
 				<?php
 			}
@@ -225,7 +229,7 @@ final class Screens {
 	 * Gets the Screen instance for a given hook suffix.
 	 *
 	 * @since 1.11.0
-	 * @since n.e.x.t Returns null for an empty hook suffix.
+	 * @since 1.193.0 Returns null for an empty hook suffix.
 	 *
 	 * @param string|null $hook_suffix The hook suffix associated with the screen to retrieve.
 	 * @return Screen|null Screen instance if available, otherwise null;
@@ -651,12 +655,15 @@ final class Screens {
 						$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
 						$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
 
-						// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
+						// The proxy's permissions page links here after the user revokes access, and that link can't carry
+						// a nonce. So anyone could send a user here, and only a token Google refuses to refresh is removed.
 						if ( ! $reset_session && 'revoked' === $splash_context && $this->authentication->is_authenticated() ) {
-							$this->authentication->disconnect();
+							$this->authentication->maybe_remove_revoked_token();
 
-							wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
-							exit;
+							if ( ! $this->authentication->is_authenticated() ) {
+								wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
+								exit;
+							}
 						}
 
 						// Don't consider redirect if the current user cannot access the dashboard (yet).

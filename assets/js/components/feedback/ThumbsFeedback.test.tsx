@@ -26,6 +26,7 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
@@ -46,6 +47,7 @@ describe( 'ThumbsFeedback', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 	} );
 

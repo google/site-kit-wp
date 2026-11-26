@@ -25,10 +25,11 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { set } from 'googlesitekit-api';
-import { combineStores } from 'googlesitekit-data';
+import { Registry, combineStores, commonActions } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { ErrorObject } from '@/js/util/errors';
+import { CORE_USER, PERMISSION_AUTHENTICATE } from './constants';
 
 export interface Feedback {
 	/** The product area the feedback is about, e.g. `feature_hub`. */
@@ -42,11 +43,11 @@ export interface Feedback {
 }
 
 export interface SendFeedbackResult {
-	/** Response from the Site Kit Service, or `undefined` when the request fails. */
+	/** Response from the Site Kit Service, or `undefined` when no request is sent or the request fails. */
 	response?: {
 		success: true;
 	};
-	/** Error from the request, or `undefined` when the request succeeds. */
+	/** Error from the request, or `undefined` when no request is sent or the request succeeds. */
 	error?: ErrorObject;
 }
 
@@ -89,9 +90,10 @@ const fetchSendFeedbackStore = createFetchStore( {
 
 const baseActions = {
 	/**
-	 * Sends feedback to the Site Kit Service.
+	 * Sends feedback to the Site Kit Service, for a user with the `googlesitekit_authenticate` capability.
 	 *
 	 * @since 1.192.0
+	 * @since 1.193.0 Sends no request for a user without the `googlesitekit_authenticate` capability.
 	 *
 	 * @param {Object} feedback           The feedback to send.
 	 * @param {string} feedback.namespace The product area the feedback is about.
@@ -105,6 +107,19 @@ const baseActions = {
 		function* (
 			feedback: Feedback
 		): Generator< unknown, SendFeedbackResult, unknown > {
+			const { resolveSelect, select } =
+				( yield commonActions.getRegistry() ) as Registry;
+
+			yield commonActions.await(
+				resolveSelect( CORE_USER ).getCapabilities()
+			);
+
+			if (
+				! select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
+			) {
+				return {};
+			}
+
 			return ( yield fetchSendFeedbackStore.actions.fetchSendFeedback(
 				feedback
 			) ) as SendFeedbackResult;

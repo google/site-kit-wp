@@ -35,16 +35,19 @@ interface FetchAnalyticsReportResult {
 
 /**
  * The Analytics reports one Site Goals PDF section needs. The Key action
- * events and the engagement metrics are each requested with no dimension, for
- * the section's whole-site fallback card. When the property has the breakdown
+ * events, the sessions with a Key action and the engagement metrics are each
+ * requested with no dimension, for the section's whole-site fallback card and
+ * for the site's total sessions. When the property has the breakdown
  * dimension, each is requested again grouped by that dimension, so the section
  * can render a card per group.
  */
 export type SiteGoalsPDFReports = Pick<
 	ShapeSiteGoalsPDFDataArgs,
 	| 'eventsReport'
+	| 'keyActionSessionsReport'
 	| 'engagementReport'
 	| 'aggregatedEventsReport'
+	| 'aggregatedKeyActionSessionsReport'
 	| 'aggregatedEngagementReport'
 >;
 
@@ -58,6 +61,7 @@ export type SiteGoalsPDFReports = Pick<
  * empty object).
  *
  * @since 1.188.0
+ * @since n.e.x.t Requested the Key action sessions reports.
  *
  * @param {Object}      params                         Analytics report request parameters.
  * @param {Object}      params.registry                WordPress data registry.
@@ -82,6 +86,7 @@ export default async function fetchSiteGoalsPDFReports( {
 	const groupedOptions = groupedReportOptions
 		? [
 				groupedReportOptions.eventsReportOptions,
+				groupedReportOptions.keyActionSessionsReportOptions,
 				groupedReportOptions.engagementReportOptions,
 		  ]
 		: [];
@@ -90,6 +95,7 @@ export default async function fetchSiteGoalsPDFReports( {
 		[
 			...groupedOptions,
 			aggregatedReportOptions.eventsReportOptions,
+			aggregatedReportOptions.keyActionSessionsReportOptions,
 			aggregatedReportOptions.engagementReportOptions,
 		].map( ( reportOptions ) =>
 			fetchGetReport( reportOptions, { signal } )
@@ -115,16 +121,20 @@ export default async function fetchSiteGoalsPDFReports( {
 
 	const reports = reportResults.map( ( { response } ) => response );
 
-	const [ eventsReport, engagementReport ] = groupedOptions.length
-		? reports
-		: [];
-	const [ aggregatedEventsReport, aggregatedEngagementReport ] =
-		reports.slice( groupedOptions.length );
+	const [ eventsReport, keyActionSessionsReport, engagementReport ] =
+		groupedOptions.length ? reports : [];
+	const [
+		aggregatedEventsReport,
+		aggregatedKeyActionSessionsReport,
+		aggregatedEngagementReport,
+	] = reports.slice( groupedOptions.length );
 
 	return {
 		eventsReport,
+		keyActionSessionsReport,
 		engagementReport,
 		aggregatedEventsReport,
+		aggregatedKeyActionSessionsReport,
 		aggregatedEngagementReport,
 	};
 }

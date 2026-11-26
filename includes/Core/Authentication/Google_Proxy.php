@@ -47,7 +47,7 @@ class Google_Proxy {
 	/**
 	 * Endpoint of the conversion insight request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const CONVERSION_INSIGHT_URI = '/v1/ai/conversion-insights';
 
@@ -55,7 +55,7 @@ class Google_Proxy {
 	 * Endpoint of an AI operation, with its ID in place of `%s`.
 	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Renamed from `BENCHMARKING_INSIGHT_OPERATION_URI`.
+	 * @since 1.193.0 Renamed from `BENCHMARKING_INSIGHT_OPERATION_URI`.
 	 */
 	const AI_OPERATION_URI = '/v1/ai/operations/%s';
 
@@ -297,7 +297,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.27.0
 	 * @since 1.192.0 Added the `method` argument.
-	 * @since n.e.x.t The error of a failed response carries the response's `code` as `reason`, and its `Retry-After` header as `retryAfter`, when it has them.
+	 * @since 1.193.0 The error of a failed response carries the response's `code` as `reason`, and its `Retry-After` header as `retryAfter`, when it has them.
 	 *
 	 * @param string      $uri Endpoint to send the request to.
 	 * @param Credentials $credentials Credentials instance.
@@ -389,7 +389,7 @@ class Google_Proxy {
 	 * endpoints name an error with a machine-readable `code`, which a client
 	 * matches on rather than on the message.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array      $response The response.
 	 * @param int        $code     The response's status.
@@ -862,7 +862,7 @@ class Google_Proxy {
 	 * The request names the plugin release in its `User-Agent` header, so the
 	 * service can tie each request to the release that computed it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
@@ -889,7 +889,7 @@ class Google_Proxy {
 	 * Gets an AI operation from the proxy.
 	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Renamed from `get_benchmarking_insight_operation()`.
+	 * @since 1.193.0 Renamed from `get_benchmarking_insight_operation()`.
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.

@@ -82,7 +82,7 @@ export default function ConfirmDisableConsentModeDialog( {
 		__( 'Track how visitors interact with your site', 'google-site-kit' ),
 	];
 	let subtitle = __(
-		'Disabling consent mode may affect your ability in the European Economic Area, the UK and Switzerland to:',
+		'Disabling consent mode may affect your ability in the European Economic Area, the UK, and Switzerland to:',
 		'google-site-kit'
 	);
 
@@ -95,7 +95,7 @@ export default function ConfirmDisableConsentModeDialog( {
 			),
 		];
 		subtitle = __(
-			'Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland:',
+			'Disabling consent mode may affect your ability to track these in the European Economic Area, the UK, and Switzerland:',
 			'google-site-kit'
 		);
 	}

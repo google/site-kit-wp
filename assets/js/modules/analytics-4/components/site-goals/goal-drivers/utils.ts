@@ -31,20 +31,3 @@ export function normalizePrimaryEvents(
 		)
 	);
 }
-
-export function getDimensionFiltersForEvents(
-	eventNames: string[],
-	breakdownFilter?: Record< string, unknown >
-) {
-	if ( ! eventNames.length ) {
-		return undefined;
-	}
-
-	return {
-		eventName: {
-			filterType: 'inListFilter',
-			value: eventNames,
-		},
-		...breakdownFilter,
-	};
-}

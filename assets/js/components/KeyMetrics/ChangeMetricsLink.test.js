@@ -36,6 +36,7 @@ import {
 	provideKeyMetrics,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	provideUserInfo,
 	render,
 } from '@tests/js/test-utils';
@@ -63,6 +64,7 @@ describe( 'ChangeMetricsLink', () => {
 		freezeFetch( dismissedToursEndpointRegExp );
 
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 	} );
 
 	it( 'should not render if key metrics are undefined', () => {

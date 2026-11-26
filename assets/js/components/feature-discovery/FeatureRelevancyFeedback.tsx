@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import useFeatureDiscoveryInteractionSurveyTrigger from '@/js/components/feature-discovery/useFeatureDiscoveryInteractionSurveyTrigger';
 import {
 	VOTE_DIRECTION_DOWN,
 	VoteDirection,
@@ -51,6 +52,8 @@ interface FeatureRelevancyFeedbackProps {
 const FeatureRelevancyFeedback: FC< FeatureRelevancyFeedbackProps > = ( {
 	slug,
 } ) => {
+	const triggerInteractionSurvey =
+		useFeatureDiscoveryInteractionSurveyTrigger();
 	const { setFeatureRelevancyVote } = useDispatch( CORE_FEATURE_DISCOVERY );
 
 	const [ voteDirection, setVoteDirection ] =
@@ -96,10 +99,12 @@ const FeatureRelevancyFeedback: FC< FeatureRelevancyFeedbackProps > = ( {
 
 	const onVote = useCallback(
 		( direction: VoteDirection ) => {
+			triggerInteractionSurvey();
+
 			setFeatureRelevancyVote( slug, direction );
 			setVoteDirection( direction );
 		},
-		[ setFeatureRelevancyVote, slug ]
+		[ setFeatureRelevancyVote, slug, triggerInteractionSurvey ]
 	);
 
 	return (

@@ -93,10 +93,6 @@ import {
 	buildDeviceTypeReportOptions,
 	mapDeviceTypeRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/deviceType';
-import {
-	buildEngagementReportOptions,
-	buildPrimaryEventReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { buildGoalDriverTotalReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/reportOptionsHelpers';
 import {
 	getGoalDriverTotalCount,
@@ -115,8 +111,16 @@ import {
 	buildVisitorTypeReportOptions,
 	mapVisitorTypeRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/visitorType';
+import {
+	buildEngagementReportOptions,
+	buildKeyActionSessionsReportOptions,
+	buildPrimaryEventReportOptions,
+} from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
-import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+import {
+	getKeyActionRates,
+	processReports,
+} from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	getEngagedTrafficSourceReportOptions,
 	getEngagedTrafficSourceSubtext,
@@ -179,6 +183,7 @@ import {
 	decodeAmpersand,
 	splitCategories,
 } from '@/js/modules/analytics-4/utils';
+import { isZeroReport } from '@/js/modules/analytics-4/utils/is-zero-report';
 import { getPageReportURL } from '@/js/modules/analytics-4/utils/page-report-url';
 import {
 	getPagePaths,
@@ -2029,20 +2034,21 @@ export const KEY_METRICS_PDF_TILES = {
 				// `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`).
 				// If we used `getPrimaryEcommerceEvent()`, the tile would start
 				// showing "add-to-cart" data under the "sales" label.
-				const primaryEventOptions = buildPrimaryEventReportOptions(
-					dates,
-					ENUM_CONVERSION_EVENTS.PURCHASE
-				);
+				const keyActionSessionsOptions =
+					buildKeyActionSessionsReportOptions(
+						dates,
+						ENUM_CONVERSION_EVENTS.PURCHASE
+					);
 
 				// No primary ecommerce event means no data.
-				if ( ! primaryEventOptions ) {
+				if ( ! keyActionSessionsOptions ) {
 					return [];
 				}
 
 				return [
 					{
 						moduleStore: MODULES_ANALYTICS_4,
-						options: primaryEventOptions,
+						options: keyActionSessionsOptions,
 					},
 					{
 						moduleStore: MODULES_ANALYTICS_4,
@@ -2050,15 +2056,16 @@ export const KEY_METRICS_PDF_TILES = {
 					},
 				];
 			},
-			( [ primaryEventReport, engagementReport ] ) => {
+			( [ keyActionSessionsReport, engagementReport ] ) => {
 				const { currentRate, previousRate, currentSessions } =
-					processReports(
-						primaryEventReport || {},
+					getKeyActionRates(
+						keyActionSessionsReport || {},
 						engagementReport || {}
 					);
 
-				// No rows means the report has no data, so don't render the tile.
-				if ( ! primaryEventReport?.rows?.length ) {
+				// The report has no dimension, so GA4 returns a row of `0` for each
+				// period when there is no Key action. Check the values instead.
+				if ( isZeroReport( keyActionSessionsReport ) !== false ) {
 					return null;
 				}
 
@@ -2323,16 +2330,17 @@ export const KEY_METRICS_PDF_TILES = {
 		getTileData: createKeyMetricTileDataLoader(
 			createLeadEventsPDFTileRequestBuilder(
 				( dates, detectedLeadEvents ) => {
-					const primaryEventOptions = buildPrimaryEventReportOptions(
-						dates,
-						detectedLeadEvents
-					);
+					const keyActionSessionsOptions =
+						buildKeyActionSessionsReportOptions(
+							dates,
+							detectedLeadEvents
+						);
 
 					return (
-						primaryEventOptions && [
+						keyActionSessionsOptions && [
 							{
 								moduleStore: MODULES_ANALYTICS_4,
-								options: primaryEventOptions,
+								options: keyActionSessionsOptions,
 							},
 							{
 								moduleStore: MODULES_ANALYTICS_4,
@@ -2342,16 +2350,16 @@ export const KEY_METRICS_PDF_TILES = {
 					);
 				}
 			),
-			( [ primaryEventReport, engagementReport ] ) => {
+			( [ keyActionSessionsReport, engagementReport ] ) => {
 				const { currentRate, previousRate, currentSessions } =
-					processReports(
-						primaryEventReport || {},
-						engagementReport || {},
-						{ aggregate: true }
+					getKeyActionRates(
+						keyActionSessionsReport || {},
+						engagementReport || {}
 					);
 
-				// No rows means the report has no data, so don't render the tile.
-				if ( ! primaryEventReport?.rows?.length ) {
+				// The report has no dimension, so GA4 returns a row of `0` for each
+				// period when there is no Key action. Check the values instead.
+				if ( isZeroReport( keyActionSessionsReport ) !== false ) {
 					return null;
 				}
 

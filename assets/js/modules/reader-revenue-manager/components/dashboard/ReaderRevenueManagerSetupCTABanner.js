@@ -196,7 +196,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 					'google-site-kit'
 				) }
 				description={ __(
-					'Turn casual visitors into loyal readers and earn more from your content with paywalls, contributions, surveys, newsletter sign-ups and reader insight tools.',
+					'Turn casual visitors into loyal readers and earn more from your content with paywalls, contributions, surveys, newsletter sign-ups, and reader insight tools.',
 					'google-site-kit'
 				) }
 				ctaButton={ {

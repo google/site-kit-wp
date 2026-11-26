@@ -38,6 +38,7 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -65,6 +66,7 @@ describe( 'KeyActionFeedback', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

@@ -25,7 +25,7 @@ import type { AdminPointer } from './types';
 /**
  * Opens a WordPress pointer and registers its tracking.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param  $       The jQuery instance with the `wp-pointer` plugin loaded.
  * @param  ajaxURL The WordPress admin AJAX URL, used to persist dismissal.

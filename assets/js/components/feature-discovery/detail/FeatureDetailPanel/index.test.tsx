@@ -42,7 +42,10 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
-import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
+import {
+	surveyTriggerEndpoint,
+	waitForSurveyTrigger,
+} from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -51,6 +54,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 	within,
@@ -174,6 +178,32 @@ describe( 'FeatureDetailPanel', () => {
 		const { queryByRole } = render( <FeatureDetailPanel />, { registry } );
 
 		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should label its CTA with the feature-specific label rather than the card label', () => {
+		provideFeatures( registry, [
+			{
+				slug: 'setup-flow-feature',
+				title: 'Setup flow feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up the feature',
+				},
+			},
+		] );
+
+		setFeature( 'setup-flow-feature' );
+
+		const { getByRole } = render( <FeatureDetailPanel />, { registry } );
+
+		const dialog = within( getByRole( 'dialog' ) );
+
+		expect(
+			dialog.getByRole( 'button', { name: 'Set up the feature' } )
+		).toBeInTheDocument();
+		expect(
+			dialog.queryByRole( 'button', { name: 'Set up now' } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should clear the feature slug when the sheet closes', () => {
@@ -347,6 +377,7 @@ describe( 'FeatureDetailPanel', () => {
 	it( 'should keep the panel open during setup and close after it completes', async () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
@@ -416,6 +447,7 @@ describe( 'FeatureDetailPanel', () => {
 	it( 'should close and open an in-place feature’s panel over the hub, as the card does', async () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
@@ -563,6 +595,7 @@ describe( 'FeatureDetailPanel', () => {
 		it( 'should track the CTA and nothing on close after the setup completes', async () => {
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
 			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
@@ -596,11 +629,14 @@ describe( 'FeatureDetailPanel', () => {
 				'click_setup_cta',
 				'background'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 
 		it( 'should track click_resume_setup_cta for a feature in progress', async () => {
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
 			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
@@ -636,6 +672,8 @@ describe( 'FeatureDetailPanel', () => {
 				'click_resume_setup_cta',
 				'resumable'
 			);
+
+			await waitForSurveyTrigger();
 		} );
 	} );
 } );

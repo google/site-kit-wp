@@ -587,9 +587,10 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$payload = $this->get_analytics_payload_for_detected_events( array( 'purchase', 'contact' ) );
 
 		$this->assertArrayHasKey( 'site_goals_online_store_primary_by_provider', $payload, 'get_user_payload() should return the store count split by provider when the event provider dimension has data.' );
-		$this->assertArrayHasKey( 'site_goals_engagement_by_provider', $payload, 'get_user_payload() should return the sessions split by provider when the event provider dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_online_store_key_action_sessions_by_provider', $payload, 'get_user_payload() should return the sessions with a store event split by provider when the event provider dimension has data.' );
 		$this->assertArrayHasKey( 'site_goals_lead_primary_by_form', $payload, 'get_user_payload() should return the lead count split by form when the form ID dimension has data.' );
-		$this->assertArrayHasKey( 'site_goals_engagement_by_form', $payload, 'get_user_payload() should return the sessions split by form when the form ID dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_lead_key_action_sessions_by_form', $payload, 'get_user_payload() should return the sessions with a lead event split by form when the form ID dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_engagement', $payload, 'get_user_payload() should return the site-wide sessions every group rate is a share of when the breakdown dimensions have data.' );
 	}
 
 	public function test_get_user_payload__adds_the_site_wide_site_goals_reports_when_the_breakdown_dimensions_have_no_data() {

@@ -46,10 +46,3 @@ export type GoalDriverRowMapper = (
 	rows: ReportRow[],
 	secondaryReport?: { rows?: ReportRow[] }
 ) => GoalDriverRow[];
-
-export interface HeadlineMetricReportDates {
-	startDate: string;
-	endDate: string;
-	compareStartDate?: string;
-	compareEndDate?: string;
-}

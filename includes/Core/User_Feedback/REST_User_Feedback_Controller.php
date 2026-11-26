@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\User_Feedback;
 
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use WP_Error;
 use WP_REST_Request;
@@ -63,12 +64,14 @@ class REST_User_Feedback_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.192.0
+	 * @since 1.193.0 Requires the current user to have `Permissions::AUTHENTICATE`.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
 		$can_authenticate = function () {
-			return $this->authentication->is_authenticated()
+			return current_user_can( Permissions::AUTHENTICATE )
+				&& $this->authentication->is_authenticated()
 				&& $this->authentication->credentials()->using_proxy();
 		};
 

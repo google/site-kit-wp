@@ -32,6 +32,7 @@ import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import {
 	createTestRegistry,
 	fireEvent,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -63,6 +64,7 @@ describe( 'SiteGoalsWidgetFeedback', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideUserCapabilities( registry );
 
 		fetchMock.post( feedbackEndpoint, {
 			status: 200,
