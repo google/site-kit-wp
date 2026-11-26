@@ -335,6 +335,7 @@ final class Authentication implements Provides_Feature_Metrics {
 				}
 
 				$user['connectURL']           = esc_url_raw( $this->get_connect_url() );
+				$user['disconnectURL']        = esc_url_raw( $this->get_disconnect_url() );
 				$user['initialVersion']       = $this->initial_version->get();
 				$user['isUserInputCompleted'] = ! $this->user_input->are_settings_empty();
 				$user['verified']             = $this->verification->has();
@@ -565,6 +566,40 @@ final class Authentication implements Provides_Feature_Metrics {
 			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE user_id = %d AND meta_key LIKE %s", $user_id, $prefix )
 		);
 		wp_cache_delete( $user_id, 'user_meta' );
+	}
+
+	/**
+	 * Removes the current user's token when Google refuses to refresh it because they revoked Site Kit's access.
+	 *
+	 * Only the token and its OAuth data are removed, so the user's Site Kit settings, such as dismissed items, stay for
+	 * when they sign in again.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function maybe_remove_revoked_token() {
+		$oauth_client = $this->get_oauth_client();
+		$option_names = array( OAuth_Client::OPTION_ERROR_CODE, OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+		$saved_values = array();
+
+		foreach ( $option_names as $option_name ) {
+			$saved_values[ $option_name ] = $this->user_options->get( $option_name );
+		}
+
+		$oauth_client->refresh_token();
+
+		if ( 'missing_delegation_consent' === $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE ) ) {
+			$oauth_client->revoke_token();
+		}
+
+		// A failed refresh stores an error code, and with the proxy an access code, which the next screen shows
+		// as a setup error notice. This check isn't a setup step, so the user options go back to what they were.
+		foreach ( $saved_values as $option_name => $saved_value ) {
+			if ( false === $saved_value ) {
+				$this->user_options->delete( $option_name );
+			} else {
+				$this->user_options->set( $option_name, $saved_value );
+			}
+		}
 	}
 
 	/**
@@ -810,6 +845,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * Handles request to disconnect via oAuth.
 	 *
 	 * @since 1.32.0
+	 * @since n.e.x.t Redirects to the splash screen with the `revoked` context.
 	 */
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
@@ -827,6 +863,7 @@ final class Authentication implements Provides_Feature_Metrics {
 			'splash',
 			array(
 				'googlesitekit_reset_session' => 1,
+				'googlesitekit_context'       => 'revoked',
 			)
 		);
 

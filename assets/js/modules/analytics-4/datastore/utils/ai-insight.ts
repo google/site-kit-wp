@@ -41,7 +41,7 @@ import { ErrorObject } from '@/js/util/errors';
  * which is 60 seconds. A wait that gives up still leaves the generation
  * running, and the service keeps its result for the next request.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 const AI_INSIGHT_DEADLINE = 60 * 1000;
 
@@ -49,7 +49,7 @@ const AI_INSIGHT_DEADLINE = 60 * 1000;
  * The time between two reads of the operation that generates an insight, in
  * milliseconds: the `Retry-After` the service sends while it runs.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 const AI_INSIGHT_POLL_INTERVAL = 2 * 1000;
 
@@ -58,7 +58,7 @@ const AI_INSIGHT_POLL_INTERVAL = 2 * 1000;
  * turned away for being busy, in milliseconds: the `Retry-After` the service
  * sends with a 409 or a 503.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 const AI_INSIGHT_RETRY_INTERVAL = 5 * 1000;
 
@@ -67,7 +67,7 @@ const AI_INSIGHT_RETRY_INTERVAL = 5 * 1000;
  * milliseconds: the longest the service's client contract tells a client to
  * read an operation.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 const AI_INSIGHT_OPERATION_LIFETIME = 2 * 60 * 1000;
 
@@ -77,7 +77,7 @@ const AI_INSIGHT_OPERATION_LIFETIME = 2 * 60 * 1000;
  * identical request (409), or had no capacity for a new one (503). Neither
  * counts against the service's rate limit.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 const RETRIED_SUBMIT_STATUSES = [ 409, 503 ];
 
@@ -86,14 +86,14 @@ const RETRIED_SUBMIT_STATUSES = [ 409, 503 ];
  * the insight again, once: the operation has expired (404), or its instance
  * stopped before it finished (503).
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 const RESUBMITTED_OPERATION_STATUSES = [ 404, 503 ];
 
 /**
  * The answer to a request for an insight.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 export interface AIInsightSubmitResponse< Insight > {
 	/** The ID of the operation that generates the insight, when the service has to generate it. */
@@ -105,7 +105,7 @@ export interface AIInsightSubmitResponse< Insight > {
 /**
  * The answer to a read of the operation that generates an insight.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 export interface AIInsightOperationResponse< Insight > {
 	/** Whether the operation has finished. */
@@ -119,7 +119,7 @@ export interface AIInsightOperationResponse< Insight > {
 /**
  * The result of a fetch store action.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 export interface AIInsightFetchResult< Response > {
 	response?: Response;
@@ -130,7 +130,7 @@ export interface AIInsightFetchResult< Response > {
  * What the store ends up with: the insight, which is null when there is none
  * to show, or the error that stopped it.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 export type AIInsightOutcome< Insight > =
 	| { insight: Insight | null }
@@ -139,7 +139,7 @@ export type AIInsightOutcome< Insight > =
 /**
  * The requests and the cache entry of one insight.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 export interface AIInsightRequest< Insight > {
 	/** Sends the request for the insight, with the fetch store action of the datapoint's `POST`. */
@@ -200,7 +200,7 @@ type ReadStep< Insight > =
  * The waits measure the time that has passed, so they read the clock rather
  * than the reference date that reports use.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @return {number} The current time, in milliseconds since the Unix epoch.
  */
@@ -212,7 +212,7 @@ function getCurrentTime(): number {
 /**
  * Waits for a time.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {number} milliseconds The time to wait, in milliseconds.
  * @return {Promise} A promise that resolves once the time has passed.
@@ -226,7 +226,7 @@ function sleep( milliseconds: number ): Promise< void > {
 /**
  * Gets the status of a failed request.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object} error The error of the request.
  * @return {(number|undefined)} The status, or `undefined` when the error has none, as a network error doesn't.
@@ -241,7 +241,7 @@ function getErrorStatus( error: ErrorObject ): number | undefined {
  * Gets the error the store gives up with when the service returns no
  * insight it can read.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {string} code The code of the error.
  * @return {Object} The error.
@@ -261,7 +261,7 @@ function getInvalidResponseError( code: string ): ErrorObject {
  * Gets the error the store gives up with when the insight takes longer than
  * `AI_INSIGHT_DEADLINE`.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {string} code The code of the error.
  * @return {Object} The error.
@@ -279,7 +279,7 @@ function getTimeoutError( code: string ): ErrorObject {
 /**
  * Checks whether a value is an insight, or null for no insight.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {*} value The value.
  * @return {boolean} Whether the value is an object or null.
@@ -298,7 +298,7 @@ function isInsightOrNull( value: unknown ): boolean {
  * day. A refusal for permissions (403) is kept for an hour. Any other failure
  * isn't kept, so the next load asks again.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object} error The error of the request.
  * @return {(number|undefined)} The time to keep the failure, in seconds, or `undefined` when it isn't kept.
@@ -328,7 +328,7 @@ function getFailureLifetime( error: ErrorObject ): number | undefined {
 /**
  * Reads the entry the store keeps for an insight.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {string} key The key of the entry.
  * @return {Promise<(Object|undefined)>} The entry, or `undefined` when there is none, it has expired, it can't be read, or the API cache is off.
@@ -356,7 +356,7 @@ async function readInsightCacheEntry< Insight >(
 /**
  * Writes the entry the store keeps for an insight.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {string} key   The key of the entry.
  * @param {Object} entry The entry.
@@ -376,7 +376,7 @@ async function writeInsightCacheEntry< Insight >(
 /**
  * Deletes the entry the store keeps for an insight.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {string} key The key of the entry.
  * @return {Promise} A promise that resolves once the entry is deleted.
@@ -390,7 +390,7 @@ async function deleteInsightCacheEntry( key: string ): Promise< void > {
 /**
  * Gets the outcome or the operation that is in a cache entry.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {(Object|undefined)} entry The cache entry, if there is one.
  * @return {Object} The outcome as `outcome`, or the operation as `operation`, or neither when the entry has nothing to use.
@@ -435,7 +435,7 @@ function readCacheEntryStep< Insight >(
  * accept the request, the store asks again every `AI_INSIGHT_RETRY_INTERVAL`
  * until the deadline.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object} request  The requests and the cache entry of the insight.
  * @param {number} deadline The time to give up at, in milliseconds since the Unix epoch.
@@ -503,7 +503,7 @@ async function submitInsight< Insight >(
 /**
  * Reads the operation that generates the insight.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object}  request          The requests and the cache entry of the insight.
  * @param {Object}  args             The read.
@@ -583,7 +583,7 @@ async function readOperation< Insight >(
  * `AI_INSIGHT_OPERATION_LIFETIME`. A wait that gives up at the deadline
  * leaves the operation in the cache entry for the next load.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object} request            The requests and the cache entry of the insight.
  * @param {Object} [pendingOperation] Optional. The operation read back from the cache entry.
@@ -657,7 +657,7 @@ async function waitForInsight< Insight >(
  * operation of a wait that gave up stays in the entry, so the next load
  * reads it.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object} request The requests and the cache entry of the insight.
  * @return {Promise<Object>} The insight as `insight`, or the error as `error`.

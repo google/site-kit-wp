@@ -67,6 +67,8 @@ export function resetGlobals() {
 		},
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
+		disconnectURL:
+			'http://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=abc123',
 		initialVersion: '',
 		verified: true,
 		isUserInputCompleted: true,

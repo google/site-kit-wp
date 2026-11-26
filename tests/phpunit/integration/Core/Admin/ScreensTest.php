@@ -16,8 +16,10 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screens;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Intents\Intents;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
@@ -27,6 +29,7 @@ use Google\Site_Kit\Tests\Core\Intents\FakeIntent;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\Fake_Token_Refresh_Trait;
 use Google\Site_Kit\Tests\MutableInput;
 use stdClass;
 use WPDieException;
@@ -38,6 +41,7 @@ use WPDieException;
  */
 class ScreensTest extends TestCase {
 	use Fake_Site_Connection_Trait;
+	use Fake_Token_Refresh_Trait;
 
 	/**
 	 * Screens object.
@@ -358,16 +362,21 @@ class ScreensTest extends TestCase {
 	}
 
 	/**
-	 * Helper to load dashboard screen (simulate load- hook) capturing redirect.
+	 * Helper to load a screen (simulate load- hook) capturing redirect.
 	 *
+	 * @since n.e.x.t Takes the slug of the screen to load.
+	 *
+	 * @param string $screen_slug Slug of the screen to load, e.g. `googlesitekit-dashboard`.
 	 * @return \Google\Site_Kit\Tests\Exception\RedirectException|null
 	 */
-	private function load_dashboard_screen() {
-		$this->screens->register();
-		do_action( 'admin_menu' );
+	private function load_screen( $screen_slug ) {
+		// The plugin registered its own Screens at plugin load, and that one would run its own callback on the same hook.
+		remove_all_actions( 'admin_menu' );
+
+		$this->register_screens();
 
 		foreach ( array_keys( $this->force_get_property( $this->screens, 'screens' ) ) as $hook_suffix ) {
-			if ( strpos( $hook_suffix, 'googlesitekit-dashboard' ) !== false ) {
+			if ( strpos( $hook_suffix, $screen_slug ) !== false ) {
 				try {
 					do_action( "load-{$hook_suffix}" );
 				} catch ( \Google\Site_Kit\Tests\Exception\RedirectException $e ) {
@@ -379,10 +388,151 @@ class ScreensTest extends TestCase {
 		return null;
 	}
 
+	/**
+	 * Builds the screens with the authentication of the current user, who signed in with a refresh token.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Authentication Authentication of the current user.
+	 */
+	private function set_up_screens_with_refresh_token() {
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$authentication = $this->create_signed_in_authentication( $context );
+
+		$this->screens = new Screens( $context, new Assets( $context ), new Modules( $context ), $authentication );
+
+		return $authentication;
+	}
+
+	public function data_token_errors_of_a_revoked_access() {
+		return array(
+			'missing delegation consent' => array(
+				array(
+					'error' => 'missing_delegation_consent',
+					'code'  => 'test-proxy-access-code',
+				),
+			),
+			'invalid grant'              => array(
+				array( 'error' => 'invalid_grant' ),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_token_errors_of_a_revoked_access
+	 *
+	 * @param array $token_response_body Body of the failed token refresh.
+	 */
+	public function test_splash_initialize__revoked_context_signs_out_a_user_whose_access_was_revoked( $token_response_body ) {
+		$authentication       = $this->set_up_screens_with_refresh_token();
+		$requests             = $this->fake_token_response( $authentication, 400, $token_response_body );
+		$key_metrics_settings = new Key_Metrics_Settings( new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$key_metrics_settings->set(
+			array(
+				'widgetSlugs'    => array( 'kmAnalyticsNewVisitors' ),
+				'isWidgetHidden' => false,
+			)
+		);
+
+		$_GET['googlesitekit_context'] = 'revoked';
+
+		$redirect = $this->load_screen( 'googlesitekit-splash' );
+
+		$this->assertFalse( $authentication->is_authenticated(), 'The user should be signed out when Google refuses to refresh their token.' );
+		$this->assertSame( 'POST https://sitekit.withgoogle.com/o/oauth2/token/', $requests[0]->getMethod() . ' ' . $requests[0]->getUri(), 'The splash screen should refresh the token of a signed-in user.' );
+		$this->assertNotNull( $redirect, 'The splash screen should reload once the user is signed out.' );
+		$this->assertStringContainsString( 'googlesitekit_reset_session=1', $redirect->get_location(), 'The reloaded splash screen should not refresh the token again.' );
+		$this->assertEquals(
+			array(
+				'widgetSlugs'    => array( 'kmAnalyticsNewVisitors' ),
+				'isWidgetHidden' => false,
+			),
+			$key_metrics_settings->get(),
+			'The Site Kit settings of the signed-out user, such as their selected key metrics, should stay.'
+		);
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE ), 'The failed refresh should not leave an error code for a setup error notice.' );
+	}
+
+	public function data_token_responses_of_a_working_access() {
+		return array(
+			'refreshed token' => array(
+				200,
+				array(
+					'access_token' => 'test-refreshed-access-token',
+					'expires_in'   => 3599,
+				),
+			),
+			'server error'    => array(
+				500,
+				array( 'error' => 'internal_error' ),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_token_responses_of_a_working_access
+	 *
+	 * @param int   $token_response_status HTTP status of the token refresh.
+	 * @param array $token_response_body   Body of the token refresh.
+	 */
+	public function test_splash_initialize__revoked_context_sends_a_user_whose_access_works_to_the_dashboard( $token_response_status, $token_response_body ) {
+		$authentication = $this->set_up_screens_with_refresh_token();
+		$requests       = $this->fake_token_response( $authentication, $token_response_status, $token_response_body );
+
+		$_GET['googlesitekit_context'] = 'revoked';
+
+		$redirect = $this->load_screen( 'googlesitekit-splash' );
+
+		$this->assertCount( 1, $requests, 'The splash screen should refresh the token once.' );
+		$this->assertSame( 'POST https://sitekit.withgoogle.com/o/oauth2/token/', $requests[0]->getMethod() . ' ' . $requests[0]->getUri(), 'The only request should refresh the token.' );
+		$this->assertTrue( $authentication->is_authenticated(), 'The user should stay signed in when Google doesn’t refuse their token.' );
+		$this->assertNotNull( $redirect, 'The splash screen should redirect a signed-in user.' );
+		$this->assertStringContainsString( 'page=googlesitekit-dashboard', $redirect->get_location(), 'A signed-in user should be redirected to the dashboard.' );
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE ), 'The refresh should not leave an error code for a setup error notice.' );
+	}
+
+	public function data_splash_requests_that_skip_the_revocation_check() {
+		return array(
+			'without the revoked context'    => array( array() ),
+			'after the reset of the session' => array(
+				array(
+					'googlesitekit_context'       => 'revoked',
+					'googlesitekit_reset_session' => '1',
+				),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_splash_requests_that_skip_the_revocation_check
+	 *
+	 * @param array $query_args Query arguments of the splash screen request.
+	 */
+	public function test_splash_initialize__no_token_refresh( $query_args ) {
+		$authentication = $this->set_up_screens_with_refresh_token();
+		$requests       = $this->fake_token_response( $authentication, 400, array( 'error' => 'missing_delegation_consent' ) );
+
+		$_GET = $query_args;
+
+		$this->load_screen( 'googlesitekit-splash' );
+
+		$this->assertCount( 0, $requests, 'The splash screen should not refresh the token.' );
+		$this->assertTrue( $authentication->is_authenticated(), 'The user should stay signed in when the splash screen doesn’t check their token.' );
+	}
+
+	public function test_splash_initialize__revoked_context_leaves_a_user_who_is_not_signed_in_on_the_splash_screen() {
+		$authentication = $this->set_up_screens_with_refresh_token();
+		$authentication->token()->delete();
+
+		$_GET['googlesitekit_context'] = 'revoked';
+
+		$this->assertNull( $this->load_screen( 'googlesitekit-splash' ), 'The splash screen should not check the token of a user who is not signed in, so it doesn’t reload.' );
+	}
+
 	public function test_dashboard_initialize__no_redirect_when_setup_complete() {
 		$this->set_analytics_setup_complete( true );
 
-		$redirect = $this->load_dashboard_screen();
+		$redirect = $this->load_screen( 'googlesitekit-dashboard' );
 
 		$this->assertNull( $redirect, 'Should not redirect when Analytics setup is complete.' );
 	}
@@ -391,7 +541,7 @@ class ScreensTest extends TestCase {
 		$this->set_analytics_setup_complete( true );
 		$this->set_has_site_purpose_answer( false );
 
-		$redirect = $this->load_dashboard_screen();
+		$redirect = $this->load_screen( 'googlesitekit-dashboard' );
 
 		$this->assertNotNull( $redirect, 'Should redirect when the site purpose question is unanswered.' );
 		$this->assertStringContainsString( 'page=googlesitekit-key-metrics-setup', $redirect->get_location(), 'Redirect should include key-metrics-setup page.' );
@@ -402,7 +552,7 @@ class ScreensTest extends TestCase {
 		$this->set_analytics_setup_complete( true );
 		$this->set_has_site_purpose_answer( true );
 
-		$redirect = $this->load_dashboard_screen();
+		$redirect = $this->load_screen( 'googlesitekit-dashboard' );
 
 		$this->assertNull( $redirect, 'Should not redirect when the site purpose question is answered.' );
 	}
@@ -415,7 +565,7 @@ class ScreensTest extends TestCase {
 		$_GET['intent']      = 'ads-conversion-tracking';
 		$_GET['intent_code'] = 'abc123';
 
-		$this->assertNull( $this->load_dashboard_screen(), 'Should not redirect to Key Metrics setup when the request has an intent.' );
+		$this->assertNull( $this->load_screen( 'googlesitekit-dashboard' ), 'Should not redirect to Key Metrics setup when the request has an intent.' );
 	}
 
 	public function test_dashboard_initialize__no_redirect_to_analytics_setup_for_an_intent() {
@@ -425,7 +575,7 @@ class ScreensTest extends TestCase {
 		$_GET['intent']      = 'ads-conversion-tracking';
 		$_GET['intent_code'] = 'abc123';
 
-		$this->assertNull( $this->load_dashboard_screen(), 'Should not redirect to Analytics setup when the request has an intent.' );
+		$this->assertNull( $this->load_screen( 'googlesitekit-dashboard' ), 'Should not redirect to Analytics setup when the request has an intent.' );
 	}
 
 	public function test_dashboard_initialize__redirect_to_key_metrics_setup_for_an_unregistered_intent() {
@@ -436,7 +586,7 @@ class ScreensTest extends TestCase {
 		$_GET['intent']      = 'not-a-registered-intent';
 		$_GET['intent_code'] = 'abc123';
 
-		$redirect = $this->load_dashboard_screen();
+		$redirect = $this->load_screen( 'googlesitekit-dashboard' );
 
 		$this->assertNotNull( $redirect, 'Should redirect when the intent is not registered.' );
 		$this->assertStringContainsString( 'page=googlesitekit-key-metrics-setup', $redirect->get_location(), 'An unregistered intent should not skip the Key Metrics setup redirect.' );
@@ -445,7 +595,7 @@ class ScreensTest extends TestCase {
 	public function test_dashboard_initialize__redirect_to_analytics_setup_screen_when_setup_incomplete_and_ga4_not_connected() {
 		$this->set_analytics_setup_complete( false );
 
-		$redirect = $this->load_dashboard_screen();
+		$redirect = $this->load_screen( 'googlesitekit-dashboard' );
 
 		$this->assertNotNull( $redirect, 'Should redirect to the Analytics setup screen when setup is incomplete and Analytics is not connected.' );
 		$this->assertStringContainsString( 'page=googlesitekit-dashboard', $redirect->get_location(), 'Redirect should include dashboard page.' );
@@ -470,7 +620,7 @@ class ScreensTest extends TestCase {
 		$_GET['reAuth']       = '1';
 		$_GET['showProgress'] = '1';
 
-		$redirect = $this->load_dashboard_screen();
+		$redirect = $this->load_screen( 'googlesitekit-dashboard' );
 
 		$this->assertNull( $redirect, 'Analytics setup screen should not redirect.' );
 	}
@@ -505,7 +655,7 @@ class ScreensTest extends TestCase {
 			)
 		);
 
-		$redirect = $this->load_dashboard_screen();
+		$redirect = $this->load_screen( 'googlesitekit-dashboard' );
 
 		$this->assertNull( $redirect, 'Analytics setup screen should not redirect.' );
 	}
@@ -527,7 +677,7 @@ class ScreensTest extends TestCase {
 			)
 		);
 
-		$redirect = $this->load_dashboard_screen();
+		$redirect = $this->load_screen( 'googlesitekit-dashboard' );
 
 		$this->assertNotNull( $redirect, 'Should redirect to the Key Metrics setup screen when setup is incomplete and Analytics is connected.' );
 		$this->assertStringContainsString( 'page=googlesitekit-key-metrics-setup', $redirect->get_location(), 'Redirect should include key-metrics-setup page.' );

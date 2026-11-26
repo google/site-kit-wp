@@ -88,7 +88,7 @@ class REST_Key_Metrics_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.93.0
-	 * @since n.e.x.t Declares the argument and resource schemas of each route.
+	 * @since 1.193.0 Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -179,7 +179,7 @@ class REST_Key_Metrics_Controller {
 	/**
 	 * Gets the REST schema of the key metrics settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */

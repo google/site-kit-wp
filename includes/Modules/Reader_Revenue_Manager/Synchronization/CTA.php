@@ -33,7 +33,7 @@ class CTA {
 	 * Values must match `EXPRESS_SETUP_CTAS` in the JS datastore.
 	 *
 	 * @since 1.188.0
-	 * @since n.e.x.t Added the survey CTA type.
+	 * @since 1.193.0 Added the survey CTA type.
 	 * @var array<string, string>
 	 */
 	const CTA_TYPE_SLUGS = array(

@@ -33,7 +33,7 @@ import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
  * The card uses a generic label, while the detail panel keeps the
  * feature-specific `ctaLabel` from the feature's registration.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Feature} feature The feature to get the card CTA label for.
  * @return {string} The card CTA label.

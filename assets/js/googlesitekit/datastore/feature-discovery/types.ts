@@ -52,6 +52,11 @@ export interface FeatureScreenshot {
 	height: number;
 }
 
+export interface FeatureSetupListStep {
+	label: ReactNode;
+	subSteps: ReactNode[];
+}
+
 export interface FeatureDetail {
 	description?: {
 		whatIs?: ReactNode;
@@ -63,7 +68,7 @@ export interface FeatureDetail {
 	};
 	requirements?: {
 		serviceRequirements?: ReactNode;
-		setupList?: ReactNode[];
+		setupList?: ( ReactNode | FeatureSetupListStep )[];
 		documentationURL?: string;
 	};
 	screenshots?: FeatureScreenshot[];

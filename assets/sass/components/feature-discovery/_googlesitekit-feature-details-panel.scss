@@ -134,6 +134,12 @@
 		dd {
 			margin: 0;
 		}
+
+		.googlesitekit-feature-details-panel__setup-list-sub-steps {
+			list-style-type: circle;
+			margin-block-start: 8px;
+			padding-inline-start: 4ch;
+		}
 	}
 
 	.googlesitekit-feature-details-panel__section {

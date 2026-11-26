@@ -33,7 +33,7 @@ use WP_Error;
  * receives the Google client the request runs with, and its access token
  * authenticates the call to the service.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -45,7 +45,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * failure, including a transport error that has no status, is a 500. A
 	 * datapoint that the service answers with fewer of them overrides the list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const PASSED_ERROR_STATUSES = array( 400, 403, 404, 409, 429, 503 );
 
@@ -53,14 +53,14 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * The code of the error for a service response the datapoint can't read.
 	 * Each subclass names its own insight in it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const INVALID_RESPONSE_ERROR_CODE = 'invalid_ai_insight_response';
 
 	/**
 	 * Google_Proxy instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Google_Proxy
 	 */
 	protected $google_proxy;
@@ -68,7 +68,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	/**
 	 * Credentials instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Credentials
 	 */
 	protected $credentials;
@@ -76,7 +76,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` to reach the service with.
 	 */
@@ -90,7 +90,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
@@ -108,7 +108,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * `POST` datapoint in particular: without it, the module data route lets
 	 * only users who can manage options write.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return bool True if the current user can view the dashboard, false otherwise.
 	 */
@@ -128,7 +128,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * 403, which the browser keeps for a while. Any other failure to refresh the
 	 * token, such as a network error, is a 500, so the next load tries again.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param object $client The Google client the request runs with.
 	 * @return string|WP_Error The access token, or an error with status 403 when there is none, or 500 when it couldn't be refreshed.
@@ -167,7 +167,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * The error keeps the service's message, its machine-readable code as
 	 * `reason`, and its `Retry-After` as `retryAfter`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param WP_Error $error The error of the service request.
 	 * @return WP_Error The error, with a status from `PASSED_ERROR_STATUSES` or 500.
@@ -201,7 +201,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * service's response, such as one with neither an operation nor an
 	 * insight in it, or an insight without a text.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return WP_Error The error, with the `INVALID_RESPONSE_ERROR_CODE` of the datapoint and status 500.
 	 */
@@ -221,7 +221,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * again then starts a new generation. Any other failure is a failed
 	 * generation, which is a 500.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed  $operation_error The operation's `error`, with `code`, `message` and `status`.
 	 * @param string $error_code      The code of the error, which names the insight that failed.

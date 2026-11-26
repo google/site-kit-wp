@@ -34,6 +34,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	renderHook,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -47,6 +48,7 @@ describe( 'useFeatureDiscoveryInteractionSurveyTrigger', () => {
 
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 
 		fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 	} );

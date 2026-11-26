@@ -39,6 +39,7 @@ import { escapeURI } from '@/js/util/escape-uri';
 import { CORE_USER } from './constants';
 
 const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
+const RECEIVE_DISCONNECT_URL = 'RECEIVE_DISCONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
 const RECEIVE_IS_USER_INPUT_COMPLETED = 'RECEIVE_IS_USER_INPUT_COMPLETED';
@@ -47,6 +48,7 @@ const RECEIVE_USER_INITIAL_SITE_KIT_VERSION =
 
 const initialState = {
 	connectURL: undefined,
+	disconnectURL: undefined,
 	initialVersion: undefined,
 	user: undefined,
 	verified: undefined,
@@ -71,6 +73,26 @@ export const actions = {
 				connectURL,
 			},
 			type: RECEIVE_CONNECT_URL,
+		};
+	},
+
+	/**
+	 * Stores the URL for disconnecting from Site Kit in the datastore.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} disconnectURL Full URL to the Site Kit googlesitekit_disconnect handler.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveDisconnectURL( disconnectURL ) {
+		invariant( disconnectURL, 'disconnectURL is required.' );
+
+		return {
+			payload: {
+				disconnectURL,
+			},
+			type: RECEIVE_DISCONNECT_URL,
 		};
 	},
 
@@ -163,6 +185,10 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			state.connectURL = payload.connectURL;
 			break;
 
+		case RECEIVE_DISCONNECT_URL:
+			state.disconnectURL = payload.disconnectURL;
+			break;
+
 		case RECEIVE_USER_INFO:
 			state.user = payload.user;
 			break;
@@ -199,6 +225,22 @@ export const resolvers = {
 		const { connectURL } = global._googlesitekitUserData;
 
 		yield actions.receiveConnectURL( connectURL );
+	},
+
+	*getDisconnectURL() {
+		const { select } = yield commonActions.getRegistry();
+
+		if ( select( CORE_USER ).getDisconnectURL() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitUserData ) {
+			global.console.error( 'Could not load core/user info.' );
+			return;
+		}
+		const { disconnectURL } = global._googlesitekitUserData;
+
+		yield actions.receiveDisconnectURL( disconnectURL );
 	},
 
 	*getUser() {
@@ -339,6 +381,18 @@ export const selectors = {
 		}
 
 		return addQueryArgs( connectURL, queryArgs );
+	},
+
+	/**
+	 * Gets the URL for disconnecting from Site Kit.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} Full URL to disconnect, or `undefined` if not loaded yet.
+	 */
+	getDisconnectURL( state ) {
+		return state.disconnectURL;
 	},
 
 	/**

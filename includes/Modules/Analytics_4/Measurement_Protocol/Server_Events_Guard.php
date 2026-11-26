@@ -208,7 +208,7 @@ class Server_Events_Guard {
 	 * @return bool True if neither the filter nor those two classes stop the tag, otherwise false.
 	 */
 	private function can_place_tag() {
-		// `Analytics_4::register_tag()` runs these checks on a web page, and `Tag_Verify_Guard` too.
+		// Unlike `Analytics_4::register_tag()`, this leaves out `Tag_Verify_Guard`, which only hides the tag on Site Kit's own `tagverify` request.
 		$tag = new Web_Tag( $this->analytics->get_settings()->get()['measurementID'], Analytics_4::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
@@ -273,6 +273,7 @@ class Server_Events_Guard {
 	 * @return bool True if every check of the event passes, otherwise false.
 	 */
 	private function is_event_allowed( string $dedupe_key ) {
+		// Action Scheduler, which WooCommerce bundles, can run its queue in an admin-ajax request that carries the visitor's cookies, where `wp_doing_cron()` is false.
 		if ( wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) || doing_action( 'action_scheduler_run_queue' ) ) {
 			return false;
 		}
