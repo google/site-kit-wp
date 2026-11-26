@@ -137,7 +137,7 @@ const KeyActionFeedback: FC< KeyActionFeedbackProps > = ( { goalType } ) => {
 				onVote={ handleVote }
 				ariaLabel={ __( 'Is this a key action?', 'google-site-kit' ) }
 				popperPlacement="bottom-end"
-				feedbackMenuPlacement="top-end"
+				feedbackMenuPlacement="bottom-end"
 			/>
 		</div>
 	);

@@ -85,6 +85,23 @@ describe( 'KeyActionFeedback', () => {
 		mockTrackEvent.mockClear();
 	} );
 
+	it( 'should open the "Help us improve" menu below the thumbs, so the panel can scroll to it', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<KeyActionFeedback goalType={ GOAL_TYPES.ECOMMERCE } />,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		expect(
+			getByRole( 'menu' ).closest( '.googlesitekit-feedback-menu' )
+		).toHaveClass( 'googlesitekit-feedback-menu--bottom-end' );
+
+		await waitForRegistry();
+	} );
+
 	describe.each< [ GoalType, string, string ] >( [
 		[
 			GOAL_TYPES.ECOMMERCE,
