@@ -282,6 +282,7 @@ describe( 'KeyFactors', () => {
 					label: '/',
 					attributes: [],
 				},
+				REFERRAL,
 			],
 		} );
 
@@ -369,7 +370,7 @@ describe( 'KeyFactors', () => {
 		] );
 	} );
 
-	it( 'should say that an attribute that moved further than its card is more than the channel’s net change, and give the side that moved the other way its change alone', () => {
+	it( 'should list the two sides of a net as one row, whose line names the side that moved the other way', () => {
 		// Direct gained 1,280 visits: 1,643 on desktop, less the 362 it lost
 		// on mobile.
 		const { getByRole } = renderKeyFactors( {
@@ -408,10 +409,278 @@ describe( 'KeyFactors', () => {
 			[
 				'Device',
 				'desktop+1,643 visits',
-				'More than the channel’s net change',
+				'Partly offset by -362 visits from mobile',
 			],
-			[ 'Device', 'mobile-362 visits' ],
 		] );
+	} );
+
+	it.each( [
+		[
+			'a page larger than its channel',
+			{
+				kind: 'LANDING_PAGE' as const,
+				label: '/',
+				current: 161,
+				previous: 100,
+			},
+			57,
+			[ 'Landing page', 'Homepage+61 visits', 'While other pages fell' ],
+		],
+		[
+			'a campaign larger than its channel',
+			{
+				kind: 'CAMPAIGN' as const,
+				label: 'spring-sale',
+				current: 50,
+				previous: 260,
+			},
+			-180,
+			[
+				'Campaign',
+				'spring-sale-210 visits',
+				'While other campaigns rose',
+			],
+		],
+		[
+			'a visitor type larger than its channel',
+			{
+				kind: 'USER_TYPE' as const,
+				label: 'new',
+				current: 215,
+				previous: 100,
+			},
+			100,
+			[
+				'Visitor type',
+				'new+115 visits',
+				'While returning-visitor visits fell',
+			],
+		],
+		[
+			'a referring site larger than its channel',
+			{
+				kind: 'REFERRING_SITE' as const,
+				label: 'news.example',
+				current: 330,
+				previous: 0,
+			},
+			300,
+			[
+				'Referring site',
+				'news.example+330 visits',
+				'While other sources fell',
+			],
+		],
+	] )(
+		'should say that the card’s other parts moved the other way under %s, rather than give it a share',
+		( _, attribute, change, texts ) => {
+			const { getByRole } = renderKeyFactors( {
+				keyFactors: [
+					{
+						kind: 'CHANNEL',
+						label: 'Referral',
+						current: 1000 + change,
+						previous: 1000,
+						sharePct: 25,
+						shareBasis: 'GROSS_CHANGE',
+						attributes: [
+							{ ...attribute, sharePct: 0, oversized: true },
+						],
+					},
+				],
+			} );
+
+			expect(
+				getAttributeTexts( getByRole( 'region', { name: 'Referral' } ) )
+			).toEqual( [ texts ] );
+		}
+	);
+
+	it( 'should give a search keyword no share line when the site’s search clicks are unknown, and say other queries moved the other way when it moved against them', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					...ORGANIC_SEARCH,
+					attributes: [
+						{
+							kind: 'SEARCH_KEYWORD',
+							label: 'healthy ice cream types',
+							current: 17,
+							previous: 20,
+							sharePct: 0,
+							noSearchClicks: true,
+						},
+					],
+				},
+				{
+					...ORGANIC_SEARCH,
+					label: 'Organic Video',
+					attributes: [
+						{
+							kind: 'SEARCH_KEYWORD',
+							label: 'ice cream recipes',
+							current: 40,
+							previous: 90,
+							sharePct: 0,
+							oversized: true,
+						},
+					],
+				},
+			],
+		} );
+
+		expect(
+			getAttributeTexts(
+				getByRole( 'region', { name: 'Organic Search' } )
+			)
+		).toEqual( [
+			[ 'Search keyword', 'healthy ice cream types-3 clicks' ],
+		] );
+		expect(
+			getAttributeTexts(
+				getByRole( 'region', { name: 'Organic Video' } )
+			)
+		).toEqual( [
+			[
+				'Search keyword',
+				'ice cream recipes-50 clicks',
+				'While other queries rose',
+			],
+		] );
+	} );
+
+	it( 'should name a landing page by its title, and link it by its path', () => {
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					...REFERRAL,
+					attributes: [
+						{
+							...REFERRAL.attributes[ 0 ],
+							title: 'Ice cream is good for your health',
+						},
+					],
+				},
+			],
+		} );
+
+		expect(
+			getAttributeTexts( getByRole( 'region', { name: 'Referral' } ) )
+		).toEqual( [
+			[
+				'Landing page',
+				'Ice cream is good for your health+16 visits',
+				'12.9% of the change',
+			],
+		] );
+		expect(
+			getByRole( 'link', { name: 'Ice cream is good for your health' } )
+		).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=https%3A%2F%2Fexample.com%2Fice-cream-is-good-for-your-health%2F'
+		);
+	} );
+
+	it( 'should name a page that brought visits from several channels by its title, list the channels with their shares of its change, and name the channel’s other pages', () => {
+		const { getAllByRole, getByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					kind: 'CONTENT',
+					label: 'Ice cream is good for your health',
+					url: '/ice-cream-is-good-for-your-health/',
+					current: 420,
+					previous: 20,
+					sharePct: 57.1,
+					shareBasis: 'GROSS_CHANGE',
+					attributes: [
+						{
+							kind: 'TRAFFIC_CHANNEL',
+							label: 'Direct',
+							current: 260,
+							previous: 10,
+							sharePct: 62.5,
+						},
+						{
+							kind: 'TRAFFIC_CHANNEL',
+							label: 'Cross-network ads',
+							current: 160,
+							previous: 10,
+							sharePct: 37.5,
+						},
+					],
+				},
+				{
+					kind: 'CHANNEL',
+					label: 'Direct',
+					current: 1500,
+					previous: 1380,
+					sharePct: 17.1,
+					shareBasis: 'GROSS_CHANGE',
+					otherPages: true,
+					attributes: [],
+				},
+			],
+		} );
+
+		expect(
+			getAllByRole( 'heading', { level: 4 } ).map(
+				( heading ) => heading.textContent
+			)
+		).toEqual( [
+			'Ice cream is good for your health',
+			'Direct (other pages)',
+		] );
+		expect(
+			getAttributeTexts(
+				getByRole( 'region', {
+					name: 'Ice cream is good for your health',
+				} )
+			)
+		).toEqual( [
+			[ 'Traffic channel', 'Direct+250 visits', '62.5% of the change' ],
+			[
+				'Traffic channel',
+				'Cross-network ads+150 visits',
+				'37.5% of the change',
+			],
+		] );
+	} );
+
+	it( 'should name the channels the Site Kit service names in its own words, as cards and as the channel a card took the place of', () => {
+		const { container, getAllByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					kind: 'CHANNEL',
+					label: 'Unassigned',
+					current: 300,
+					previous: 100,
+					sharePct: 40,
+					shareBasis: 'GROSS_CHANGE',
+					attributes: [],
+				},
+				{
+					kind: 'CAMPAIGN',
+					label: 'spring-sale',
+					current: 220,
+					previous: 0,
+					sharePct: 73.3,
+					shareBasis: 'PARENT_CHANNEL',
+					parentChannel: { label: 'Cross-network ads', change: 300 },
+					attributes: [],
+				},
+			],
+		} );
+
+		expect(
+			getAllByRole( 'heading', { level: 4 } ).map(
+				( heading ) => heading.textContent
+			)
+		).toEqual( [ 'Uncategorized traffic', 'spring-sale' ] );
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factor-share'
+			)?.textContent
+		).toBe( '73.3% of Cross-network ads’ +300 visits' );
 	} );
 
 	it( 'should say that an attribute carried all of its card’s change from a share of 99.5%', () => {
@@ -474,6 +743,9 @@ describe( 'KeyFactors', () => {
 					parentChannel: { label: 'Referral', change: 300 },
 					attributes: [],
 				},
+				// A part without rows takes its channel's card only beside
+				// another card.
+				ORGANIC_SEARCH,
 			],
 		} );
 
@@ -486,6 +758,36 @@ describe( 'KeyFactors', () => {
 		).toBe( '73.3% of Referral’s +300 visits' );
 		expect( within( card ).getByText( '+220 visits' ) ).toBeInTheDocument();
 	} );
+
+	it.each( [
+		[ 'whose share is of the site’s change', 'GROSS_CHANGE' as const ],
+		[ 'without a share, on a flat period', undefined ],
+	] )(
+		'should name the channel a card %s took the place of under its title, as more than the channel’s change',
+		( _, shareBasis ) => {
+			const { getByRole } = renderKeyFactors( {
+				keyFactors: [
+					{
+						kind: 'REFERRING_SITE',
+						label: 'news.example',
+						current: 330,
+						previous: 0,
+						sharePct: shareBasis ? 25.4 : 0,
+						shareBasis,
+						parentChannel: { label: 'Referral', change: 310 },
+						attributes: [],
+					},
+					ORGANIC_SEARCH,
+				],
+			} );
+
+			expect(
+				getByRole( 'region', { name: 'news.example' } ).querySelector(
+					'.googlesitekit-traffic-overview__key-factor-share'
+				)?.textContent
+			).toBe( 'More than Referral’s net change of +310 visits' );
+		}
+	);
 
 	it( 'should show no share under the title of a card that took no channel’s place, when traffic was not steady', () => {
 		const { container } = renderKeyFactors( {
@@ -678,7 +980,7 @@ describe( 'KeyFactors', () => {
 
 	it( 'should leave out "Top changes within" when a card has no attributes', () => {
 		const { getByRole, queryByText } = renderKeyFactors( {
-			keyFactors: [ { ...REFERRAL, attributes: [] } ],
+			keyFactors: [ { ...REFERRAL, attributes: [] }, ORGANIC_SEARCH ],
 		} );
 
 		expect(
@@ -690,6 +992,8 @@ describe( 'KeyFactors', () => {
 	} );
 
 	it( 'should say that the change of a card without attributes was spread across many pages, under "Top changes within", in place of the attributes', () => {
+		// The card says why it has no attributes, so it shows even as the
+		// only card.
 		const { getByRole } = renderKeyFactors( {
 			keyFactors: [
 				{ ...REFERRAL, attributes: [], spreadAcrossPages: true },
@@ -745,6 +1049,100 @@ describe( 'KeyFactors', () => {
 		).toEqual( [ 'Referral' ] );
 		expect( queryByText( 'Landing page' ) ).not.toBeInTheDocument();
 		expect( queryByText( 'Referring site' ) ).toBeInTheDocument();
+	} );
+
+	it.each( [
+		[ 'the insight', { insight: INSIGHT } ],
+		[
+			'the placeholder of the insight while it loads',
+			{ insightLoading: true },
+		],
+	] )(
+		'should leave out the only card when it has nothing under its title, and keep %s under the heading',
+		( _, props ) => {
+			const { container, getByRole, queryByRole, queryByText } =
+				renderKeyFactors( {
+					keyFactors: [ { ...REFERRAL, attributes: [] } ],
+					...props,
+				} );
+
+			expect(
+				getByRole( 'heading', {
+					level: 3,
+					name: 'Biggest traffic shifts vs. the previous 28 days',
+				} )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors-insight'
+				)
+			).toBeInTheDocument();
+			expect(
+				queryByRole( 'heading', { level: 4 } )
+			).not.toBeInTheDocument();
+			// Referral still changed notably, though its card is left out.
+			expect(
+				queryByText(
+					'No channel changed notably compared with the previous 28 days.'
+				)
+			).not.toBeInTheDocument();
+			// The section keeps the spacing it has without cards.
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors'
+				)
+			).toHaveClass(
+				'googlesitekit-traffic-overview__key-factors--no-change'
+			);
+		}
+	);
+
+	it( 'should leave out the only card whose attributes have no name, as it shows none of them', () => {
+		const { queryByRole } = renderKeyFactors( {
+			keyFactors: [
+				{
+					...REFERRAL,
+					attributes: REFERRAL.attributes.map( ( attribute ) => ( {
+						...attribute,
+						label: null,
+					} ) ),
+				},
+			],
+			insight: INSIGHT,
+		} );
+
+		expect(
+			queryByRole( 'heading', { level: 4 } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should leave out the section when the only card has nothing under its title and there is no insight, so the heading has nothing under it', () => {
+		const { container, queryByRole } = renderKeyFactors( {
+			keyFactors: [ { ...REFERRAL, attributes: [] } ],
+		} );
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-traffic-overview__key-factors'
+			)
+		).not.toBeInTheDocument();
+		expect( queryByRole( 'heading' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should render "No channel changed notably…" without the only card when traffic was steady and the card has nothing under its title', () => {
+		const { getByText, queryByRole } = renderKeyFactors( {
+			keyFactors: [ STEADY_KEY_FACTORS[ 0 ] ],
+			steady: true,
+		} );
+
+		expect(
+			getByText(
+				'No channel changed notably compared with the previous 28 days.'
+			)
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'heading', { level: 4 } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should render the insight above the cards, with the names it highlights in bold and marked as generated by AI', () => {
@@ -1176,7 +1574,10 @@ describe( 'KeyFactors page links', () => {
 	} );
 
 	/**
-	 * Renders the section on the main dashboard with the given cards.
+	 * Renders the section on the main dashboard with the given cards, then
+	 * the card of `ORGANIC_SEARCH`, which has no link. A post's card has no
+	 * rows, and the section leaves out a lone card with nothing under its
+	 * title.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -1190,7 +1591,7 @@ describe( 'KeyFactors page links', () => {
 
 		return render(
 			<KeyFactors
-				keyFactors={ keyFactors }
+				keyFactors={ [ ...keyFactors, ORGANIC_SEARCH ] }
 				daysInSelectedRange={ 28 }
 				referenceSiteURL={ REFERENCE_SITE_URL }
 			/>,
@@ -1216,12 +1617,18 @@ describe( 'KeyFactors page links', () => {
 	} );
 
 	it.each( [
-		[ 'without its path', { ...NEW_POST, url: undefined } ],
-		[ 'of another kind', { ...REFERRAL, attributes: [] } ],
-	] )( 'should not link the title of a card %s', ( _label, card ) => {
+		[
+			'without its path',
+			{ ...NEW_POST, url: undefined },
+			'Ice cream is good for your health',
+		],
+		[ 'of another kind', { ...REFERRAL, attributes: [] }, 'Referral' ],
+	] )( 'should not link the title of a card %s', ( _label, card, name ) => {
 		const { getByRole, queryByRole } = renderOnMainDashboard( [ card ] );
 
-		expect( getByRole( 'heading', { level: 4 } ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'heading', { level: 4, name } )
+		).toBeInTheDocument();
 		expect( queryByRole( 'link' ) ).not.toBeInTheDocument();
 	} );
 

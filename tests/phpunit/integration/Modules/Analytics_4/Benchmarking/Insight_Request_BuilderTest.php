@@ -91,6 +91,19 @@ class Insight_Request_BuilderTest extends TestCase {
 	}
 
 	/**
+	 * Gets the visits of the days of a site with 100 visits a day, but 1,000
+	 * on `2026-09-01` and `2026-09-02`.
+	 *
+	 * @param string $first_date The first day of the series, as `YYYY-MM-DD`.
+	 * @return callable Function that gets the visits of a day from its position, `0` for `$first_date`.
+	 */
+	private function get_brief_spike_visits( $first_date ) {
+		$first = new DateTimeImmutable( $first_date, new DateTimeZone( 'UTC' ) );
+
+		return fn( $position ) => in_array( $first->modify( "+$position days" )->format( 'Y-m-d' ), array( '2026-09-01', '2026-09-02' ), true ) ? 1000 : 100;
+	}
+
+	/**
 	 * Builds the request for the selected 28-day period, with the daily series
 	 * `Report_Options` asks for and the given rows.
 	 *
@@ -363,50 +376,50 @@ class Insight_Request_BuilderTest extends TestCase {
 	}
 
 	public function test_build__sends_the_history_days_in_place_of_a_baseline_below_the_minimum_history() {
-		// 110 days, from `2026-05-29`, are one short of the 111 a 28-day period
-		// needs for a range: its first day needs the 84 days of its own fit.
+		// 82 days, from `2026-06-26`, are one short of the 83 a 28-day period
+		// needs for a range: its first day needs the 56 days of its own fit.
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
-			$this->get_period_baseline( '2026-05-29', self::END_DATE, array( $this, 'get_varying_visits' ) ),
+			$this->get_period_baseline( '2026-06-26', self::END_DATE, array( $this, 'get_varying_visits' ) ),
 			array(
-				'current'  => 7596,
-				'previous' => 7882,
+				'current'  => 7882,
+				'previous' => 7564,
 			),
 			array()
 		);
 
-		$this->assertArrayNotHasKey( 'baseline', $request, 'A site with 110 days of history should get no expected range for a 28-day period.' );
-		$this->assertSame( 110, $request['history_days'], 'The request should carry the 110 days of history, so the service can say when the site will have a range.' );
-		$this->assertArrayNotHasKey( 'last_year', $request['visits'], 'A site with 110 days of history should have no visits a year ago.' );
+		$this->assertArrayNotHasKey( 'baseline', $request, 'A site with 82 days of history should get no expected range for a 28-day period.' );
+		$this->assertSame( 82, $request['history_days'], 'The request should carry the 82 days of history, so the service can say when the site will have a range.' );
+		$this->assertArrayNotHasKey( 'last_year', $request['visits'], 'A site with 82 days of history should have no visits a year ago.' );
 	}
 
 	public function test_build__sends_a_baseline_from_the_minimum_history_on() {
 		$request = $this->builder->build(
 			self::START_DATE,
 			self::END_DATE,
-			$this->get_period_baseline( '2026-05-28', self::END_DATE, array( $this, 'get_varying_visits' ) ),
+			$this->get_period_baseline( '2026-06-25', self::END_DATE, array( $this, 'get_varying_visits' ) ),
 			array(
-				'current'  => 7726,
-				'previous' => 7861,
+				'current'  => 7861,
+				'previous' => 7543,
 			),
 			array()
 		);
 
 		$this->assertSame(
 			array(
-				'expected_range_min' => 5877,
-				'expected_range_max' => 9579,
+				'expected_range_min' => 5713,
+				'expected_range_max' => 9813,
 			),
 			$request['baseline'],
-			'A site with 111 days of history should get an expected range for a 28-day period.'
+			'A site with 83 days of history should get an expected range for a 28-day period.'
 		);
 		$this->assertArrayNotHasKey( 'history_days', $request, 'A request with an expected range should carry no history days.' );
 	}
 
 	public function test_build__counts_the_history_from_the_first_day_with_visits() {
-		// The site recorded no visit for the first 309 days of the series, so its
-		// history is the same 111 days as in the test above, and a year ago it
+		// The site recorded no visit for the first 337 days of the series, so its
+		// history is the same 83 days as in the test above, and a year ago it
 		// wasn't measured yet.
 		$request = $this->builder->build(
 			self::START_DATE,
@@ -414,27 +427,27 @@ class Insight_Request_BuilderTest extends TestCase {
 			$this->get_period_baseline(
 				self::SERIES_START_DATE,
 				self::END_DATE,
-				fn( $position ) => $position < 309 ? 0 : $this->get_varying_visits( $position - 309 )
+				fn( $position ) => $position < 337 ? 0 : $this->get_varying_visits( $position - 337 )
 			),
 			array(
-				'current'  => 7726,
-				'previous' => 7861,
+				'current'  => 7861,
+				'previous' => 7543,
 			),
 			array()
 		);
 
 		$this->assertSame(
 			array(
-				'expected_range_min' => 5877,
-				'expected_range_max' => 9579,
+				'expected_range_min' => 5713,
+				'expected_range_max' => 9813,
 			),
 			$request['baseline'],
 			'The days before the first day with visits should not count towards the history the expected range is fitted on.'
 		);
 		$this->assertSame(
 			array(
-				'current_period'  => 7726,
-				'previous_period' => 7861,
+				'current_period'  => 7861,
+				'previous_period' => 7543,
 			),
 			$request['visits'],
 			'Last year\'s periods, before the first day with visits, should be left out rather than sent as periods without visits.'
@@ -448,7 +461,7 @@ class Insight_Request_BuilderTest extends TestCase {
 			$this->get_period_baseline(
 				self::SERIES_START_DATE,
 				self::END_DATE,
-				fn( $position ) => $position < 337 ? 0 : $this->get_varying_visits( $position )
+				fn( $position ) => $position < 338 ? 0 : $this->get_varying_visits( $position )
 			),
 			array(
 				'current'  => 7800,
@@ -457,7 +470,7 @@ class Insight_Request_BuilderTest extends TestCase {
 			array()
 		);
 
-		$this->assertSame( 83, $request['history_days'], 'The history days should count from the first day with visits, not from the first day of the series.' );
+		$this->assertSame( 82, $request['history_days'], 'The history days should count from the first day with visits, not from the first day of the series.' );
 	}
 
 	public function test_build__sends_last_years_visits_and_the_baseline_of_a_7_day_period() {
@@ -495,6 +508,69 @@ class Insight_Request_BuilderTest extends TestCase {
 			$request,
 			'A 7-day period should get last year\'s two 7-day periods and its own expected range.'
 		);
+	}
+
+	public function test_build__sends_the_brief_spike_of_the_period_after_its_baseline() {
+		// A year of 100 visits a day, but 1,000 on `2026-09-01` and
+		// `2026-09-02`: 4,600 visits in the period, 1,800 more than the period
+		// before. Each day's band reaches 116.4 visits, so the two days had
+		// 1,767.2 visits above their bounds, 98.2% of the gain.
+		$request = $this->builder->build(
+			self::START_DATE,
+			self::END_DATE,
+			$this->get_period_baseline( self::SERIES_START_DATE, self::END_DATE, $this->get_brief_spike_visits( self::SERIES_START_DATE ) ),
+			array(
+				'current'  => 4600,
+				'previous' => 2800,
+			),
+			array()
+		);
+
+		$this->assertSame(
+			array(
+				'end_date'        => '2026-09-15',
+				'days_in_period'  => 28,
+				'visits'          => array(
+					'current_period'  => 4600,
+					'previous_period' => 2800,
+					'last_year'       => array(
+						'current_period'  => 2800,
+						'previous_period' => 2800,
+					),
+				),
+				'baseline'        => array(
+					'expected_range_min' => 2341,
+					'expected_range_max' => 3259,
+				),
+				'in_period_spike' => array(
+					'peak_date'         => '2026-09-01',
+					'start_date'        => '2026-09-01',
+					'end_date'          => '2026-09-02',
+					'days'              => 2,
+					'share_of_gain_pct' => 98.2,
+				),
+			),
+			$request,
+			'The request should carry the brief spike of the period after its expected range, which the spike is measured against.'
+		);
+	}
+
+	public function test_build__sends_no_brief_spike_without_a_baseline() {
+		// The same spike, with 82 days of history, too few for an expected
+		// range.
+		$request = $this->builder->build(
+			self::START_DATE,
+			self::END_DATE,
+			$this->get_period_baseline( '2026-06-26', self::END_DATE, $this->get_brief_spike_visits( '2026-06-26' ) ),
+			array(
+				'current'  => 4600,
+				'previous' => 2800,
+			),
+			array()
+		);
+
+		$this->assertSame( 82, $request['history_days'], 'A site with 82 days of history should get no expected range, and its request the days of history.' );
+		$this->assertArrayNotHasKey( 'in_period_spike', $request, 'A request without an expected range should carry no brief spike.' );
 	}
 
 	public function test_build__lists_every_channel_device_and_visitor_type_with_the_most_visited_first() {

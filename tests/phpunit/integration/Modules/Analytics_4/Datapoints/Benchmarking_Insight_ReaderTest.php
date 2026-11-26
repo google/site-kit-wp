@@ -24,7 +24,6 @@ class Benchmarking_Insight_ReaderTest extends TestCase {
 		$this->assertSame(
 			array(
 				'scenario'      => 'BELOW_EXPECTED',
-				'teaser'        => 'Your site is quieter than usual.',
 				'analysis'      => 'Your site had fewer visits than usual, mostly from Organic Search.',
 				'driver'        => 'Organic Search brought fewer visits.',
 				'interactionID' => '01M4ZDVWTA3J4SBF8QX8NVXT93',
@@ -33,7 +32,6 @@ class Benchmarking_Insight_ReaderTest extends TestCase {
 			( new Benchmarking_Insight_Reader() )->read(
 				array(
 					'scenario'       => 'BELOW_EXPECTED',
-					'teaser'         => 'Your site is quieter than usual.',
 					'analysis'       => 'Your site had fewer visits than usual, mostly from Organic Search.',
 					'driver'         => 'Organic Search brought fewer visits.',
 					'interaction_id' => '01M4ZDVWTA3J4SBF8QX8NVXT93',
@@ -45,11 +43,24 @@ class Benchmarking_Insight_ReaderTest extends TestCase {
 		);
 	}
 
+	public function test_read__leaves_out_a_teaser() {
+		$insight = ( new Benchmarking_Insight_Reader() )->read(
+			array(
+				'scenario' => 'BELOW_EXPECTED',
+				'teaser'   => 'Your site is quieter than usual.',
+				'analysis' => 'Your site had fewer visits than usual, mostly from Organic Search.',
+				'driver'   => 'Organic Search brought fewer visits.',
+			)
+		);
+
+		$this->assertArrayNotHasKey( 'teaser', $insight, 'A teaser, which the service no longer writes, should be left out of the insight.' );
+		$this->assertSame( 'Your site had fewer visits than usual, mostly from Organic Search.', $insight['analysis'], 'The rest of a response with a teaser should still be read.' );
+	}
+
 	public function test_read__answers_null_for_a_field_that_is_empty_missing_or_not_a_string() {
 		$this->assertSame(
 			array(
-				'scenario'      => 'WITHIN_EXPECTED',
-				'teaser'        => null,
+				'scenario'      => null,
 				'analysis'      => 'Your site had as many visits as usual.',
 				'driver'        => null,
 				'interactionID' => null,
@@ -57,9 +68,8 @@ class Benchmarking_Insight_ReaderTest extends TestCase {
 			),
 			( new Benchmarking_Insight_Reader() )->read(
 				array(
-					'scenario'       => 'WITHIN_EXPECTED',
-					'teaser'         => '',
 					'analysis'       => 'Your site had as many visits as usual.',
+					'driver'         => '',
 					'interaction_id' => 1234,
 					'model_version'  => array( 'model-1' ),
 				)

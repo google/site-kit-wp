@@ -99,7 +99,6 @@ export function provideBenchmarkingData(
  */
 export const benchmarkingInsight: BenchmarkingInsight = {
 	scenario: 'ABOVE_EXPECTED.UP',
-	teaser: 'Your site had more visits than usual for it.',
 	analysis:
 		'Over the last 28 days, your site had **1,740** visits, about 12% above what is usual for it.',
 	driver: 'Visits rose 18% (+265 visits) compared to the previous 28 days, led by **Organic Search** (+190 visits).',

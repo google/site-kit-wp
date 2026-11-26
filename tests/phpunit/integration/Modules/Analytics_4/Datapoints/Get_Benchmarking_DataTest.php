@@ -522,8 +522,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 		// `plant garlic` row, and the site's clicks, which its fake API
 		// reports as those of `plant garlic`. The key factor card is the one
 		// channel, `Organic Search`, with the `plant garlic` keyword, whose
-		// clicks moved as the site's did. Its one device and its one visitor
-		// type have all of its visits, so neither explains its rise.
+		// clicks moved as the site's did, and its new visitors, who carried
+		// all of its rise. Its one device has all of its visits, so it
+		// explains none of the rise.
 		$this->assertSame(
 			array(
 				'request' => array(
@@ -604,6 +605,14 @@ class Get_Benchmarking_DataTest extends TestCase {
 										'value'        => array( 'text' => 'plant garlic' ),
 										'entity_delta' => 90,
 										'share_of_search_clicks_pct' => 30,
+									),
+									array(
+										'kind'         => 'VISITOR_TYPE',
+										'role'         => 'DECOMPOSITION',
+										'label'        => 'Visitor type',
+										'value'        => array( 'text' => 'new' ),
+										'share_of_parent_change_pct' => 100,
+										'entity_delta' => 40,
 									),
 								),
 							),

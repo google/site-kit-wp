@@ -126,7 +126,6 @@ class Create_Benchmarking_InsightTest extends TestCase {
 	private function get_service_insight() {
 		return array(
 			'scenario'       => 'ABOVE_EXPECTED',
-			'teaser'         => 'Your site is busier than usual.',
 			'analysis'       => 'Your site had more visits than usual, mostly from Organic Search.',
 			'driver'         => 'Organic Search brought most of the extra visits.',
 			'interaction_id' => '01M4ZDVWTA3J4SBF8QX8NVXT93',
@@ -203,7 +202,6 @@ class Create_Benchmarking_InsightTest extends TestCase {
 			array(
 				'insight' => array(
 					'scenario'      => 'ABOVE_EXPECTED',
-					'teaser'        => 'Your site is busier than usual.',
 					'analysis'      => 'Your site had more visits than usual, mostly from Organic Search.',
 					'driver'        => 'Organic Search brought most of the extra visits.',
 					'interactionID' => '01M4ZDVWTA3J4SBF8QX8NVXT93',
@@ -221,8 +219,8 @@ class Create_Benchmarking_InsightTest extends TestCase {
 			200,
 			array(
 				'scenario'      => null,
-				'teaser'        => '',
 				'analysis'      => 'Your site had as many visits as usual.',
+				'driver'        => '',
 				'model_version' => 7,
 			)
 		);
@@ -233,7 +231,6 @@ class Create_Benchmarking_InsightTest extends TestCase {
 			array(
 				'insight' => array(
 					'scenario'      => null,
-					'teaser'        => null,
 					'analysis'      => 'Your site had as many visits as usual.',
 					'driver'        => null,
 					'interactionID' => null,

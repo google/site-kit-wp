@@ -43,17 +43,14 @@ import {
 } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useKeyFactorLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorLinkClick';
-import {
-	getKeyFactorAttributeShareText,
-	getPageURL,
-} from '@/js/modules/analytics-4/components/traffic-overview/utils';
+import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import {
 	BenchmarkingKeyFactorAttribute,
 	BenchmarkingKeyFactorKind,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { KEY_FACTOR_ATTRIBUTE_TITLES } from './attributeTitles';
 import { getKeyFactorName } from './getKeyFactorName';
-import { getLandingPageLabel } from './getLandingPageLabel';
+import { NamedKeyFactorAttribute, getKeyFactorRows } from './getKeyFactorRows';
 import KeyFactorAttribute from './KeyFactorAttribute';
 import KeyFactorChangeBadge from './KeyFactorChangeBadge';
 
@@ -67,9 +64,9 @@ export interface KeyFactorCardProps {
 	/**
 	 * What the card's change is a share of, under its title, as
 	 * `getKeyFactorShareText()` gives it: its share of the site's visits when
-	 * traffic was steady, since its change explains nothing then, or its share
-	 * of the change of the channel whose place it took. Null when the card
-	 * shows its change alone.
+	 * traffic was steady, since its change explains nothing then, or the
+	 * channel whose place it took, with its share of the channel's change or
+	 * as more than it. Null when the card shows its change alone.
 	 */
 	shareText?: string | null;
 	/** The values inside the driver that carried its change, in the order to show them. */
@@ -80,7 +77,12 @@ export interface KeyFactorCardProps {
 	 * and its change alone.
 	 */
 	spreadAcrossPages?: boolean;
-	/** The post's path on a `CONTENT` card, which its title links to. */
+	/**
+	 * Whether the card is for its channel's pages other than a page that
+	 * brought visits from several channels, which took a card of its own.
+	 */
+	otherPages?: boolean;
+	/** The page's path on a `CONTENT` card, which its title links to. */
 	url?: string;
 	/** The site's URL, which a landing page's path is resolved against to link to the page's entity dashboard. */
 	referenceSiteURL?: string;
@@ -108,26 +110,6 @@ function getAttributePageURL(
 	return getPageURL( referenceSiteURL, label );
 }
 
-/**
- * Gets the name an attribute shows for its value.
- *
- * @since n.e.x.t
- *
- * @param {Object} attribute          The attribute.
- * @param {string} attribute.kind     The attribute's kind, such as `LANDING_PAGE`.
- * @param {string} attribute.label    The attribute's value, such as a page path.
- * @param {string} [referenceSiteURL] Optional. The site's URL.
- * @return {string} "Homepage" when the attribute is the site's homepage, or its value otherwise.
- */
-function getAttributeLabel(
-	{ kind, label }: BenchmarkingKeyFactorAttribute & { label: string },
-	referenceSiteURL?: string
-): string {
-	return kind === 'LANDING_PAGE'
-		? getLandingPageLabel( label, referenceSiteURL )
-		: label;
-}
-
 const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 	kind,
 	label,
@@ -135,6 +117,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 	shareText,
 	attributes,
 	spreadAcrossPages = false,
+	otherPages = false,
 	url,
 	referenceSiteURL,
 } ) => {
@@ -148,18 +131,22 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 
 	// An attribute without a value has nothing to name, so it is left out.
 	const namedAttributes = attributes.filter(
-		(
-			attribute
-		): attribute is BenchmarkingKeyFactorAttribute & {
-			label: string;
-		} => !! attribute.label
+		( attribute ): attribute is NamedKeyFactorAttribute =>
+			!! attribute.label
+	);
+	// The two sides of a net are one row, so there can be fewer rows than
+	// attributes.
+	const rows = getKeyFactorRows(
+		{ kind, change },
+		namedAttributes,
+		referenceSiteURL
 	);
 
 	// A landing page links to the page's entity dashboard, the Site Kit
-	// dashboard for that one page.
+	// dashboard for that one page, by its path, whatever name it shows.
 	const attributeHrefs = useSelect(
 		( select: Select ) =>
-			namedAttributes.map( ( attribute ) => {
+			rows.map( ( { attribute } ) => {
 				const pageURL = getAttributePageURL(
 					attribute,
 					referenceSiteURL
@@ -172,10 +159,10 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 					  )
 					: undefined;
 			} ),
-		[ namedAttributes, referenceSiteURL ]
+		[ rows, referenceSiteURL ]
 	);
 
-	// A post's title links to the post's entity dashboard, as a landing page
+	// A page's title links to the page's entity dashboard, as a landing page
 	// row does.
 	const titleHref = useSelect(
 		( select: Select ) =>
@@ -189,7 +176,10 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 
 	const handleLinkClick = useKeyFactorLinkClick( kind );
 
-	const name = getKeyFactorName( kind, label, referenceSiteURL );
+	const name = getKeyFactorName(
+		{ kind, label, otherPages },
+		referenceSiteURL
+	);
 
 	// A change spread across many pages is a real answer, rather than a gap,
 	// so it takes the place of the attributes.
@@ -268,34 +258,29 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 						</Typography>
 					) : (
 						<dl className="googlesitekit-traffic-overview__key-factor-attribute-list">
-							{ namedAttributes.map( ( attribute, index ) => (
+							{ rows.map( ( row, index ) => (
 								<KeyFactorAttribute
 									// Keyed by position: nothing here reorders,
 									// and two kinds can share a value.
 									key={ index }
 									title={
 										KEY_FACTOR_ATTRIBUTE_TITLES[
-											attribute.kind
+											row.attribute.kind
 										]
 									}
-									label={ getAttributeLabel(
-										attribute,
-										referenceSiteURL
-									) }
+									label={ row.name }
 									change={
-										attribute.current - attribute.previous
+										row.attribute.current -
+										row.attribute.previous
 									}
 									// A search keyword's change counts its clicks
 									// in Search Console, which are not visits.
 									unit={
-										attribute.kind === 'SEARCH_KEYWORD'
+										row.attribute.kind === 'SEARCH_KEYWORD'
 											? 'clicks'
 											: 'visits'
 									}
-									shareText={ getKeyFactorAttributeShareText(
-										kind,
-										attribute
-									) }
+									shareText={ row.shareText }
 									href={ attributeHrefs[ index ] }
 									onLinkClick={ handleLinkClick }
 								/>

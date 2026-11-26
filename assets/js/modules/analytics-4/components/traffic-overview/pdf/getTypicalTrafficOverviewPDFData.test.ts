@@ -1014,7 +1014,17 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 						sharePct: 73.3,
 						shareBasis: 'PARENT_CHANNEL',
 						parentChannel: { label: 'Referral', change: 300 },
-						attributes: [],
+						// The page the visits landed on, so the only card
+						// has a row under its title.
+						attributes: [
+							{
+								kind: 'LANDING_PAGE',
+								label: '/launch/',
+								current: 150,
+								previous: 0,
+								sharePct: 0,
+							},
+						],
 					},
 				],
 			} );
@@ -1030,6 +1040,131 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 					name: 'news.example',
 					change: 220,
 					shareText: '73.3% of Referral’s +300 visits',
+				},
+			] );
+		} );
+
+		it( 'should leave out the only card when it has nothing under its title, as the dashboard does, without saying that no channel changed notably', async () => {
+			provideResponse( {
+				keyFactors: [
+					{
+						kind: 'CHANNEL',
+						label: 'Direct',
+						current: 500,
+						previous: 300,
+						sharePct: 100,
+						shareBasis: 'GROSS_CHANGE',
+						attributes: [],
+					},
+				],
+			} );
+
+			const result = await getTypicalTrafficOverviewPDFData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			expect( result.data?.typicalTraffic?.keyFactors ).toEqual( [] );
+			expect( result.data?.typicalTraffic?.keyFactorsNotice ).toBeNull();
+		} );
+
+		it( 'should say that no channel changed notably, and leave out the only card when it has nothing under its title, on a steady period', async () => {
+			provideResponse( {
+				steadyTraffic: true,
+				keyFactors: [
+					{
+						kind: 'CHANNEL',
+						label: 'Direct',
+						current: 301,
+						previous: 300,
+						sharePct: 100,
+						attributes: [],
+					},
+				],
+			} );
+
+			const result = await getTypicalTrafficOverviewPDFData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			expect( result.data?.typicalTraffic?.keyFactors ).toEqual( [] );
+			expect( result.data?.typicalTraffic?.keyFactorsNotice ).toBe(
+				'No channel changed notably compared with the previous 28 days.'
+			);
+		} );
+
+		it( 'should keep the only card when its change was spread across many pages, which the dashboard says in place of rows', async () => {
+			provideResponse( {
+				keyFactors: [
+					{
+						kind: 'CHANNEL',
+						label: 'Organic Search',
+						current: 1420,
+						previous: 1251,
+						sharePct: 100,
+						shareBasis: 'GROSS_CHANGE',
+						spreadAcrossPages: true,
+						attributes: [],
+					},
+				],
+			} );
+
+			const result = await getTypicalTrafficOverviewPDFData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			expect( result.data?.typicalTraffic?.keyFactors ).toEqual( [
+				{ name: 'Organic Search', change: 169, shareText: null },
+			] );
+		} );
+
+		it( 'should name a card for its channel’s other pages, and the channel a card moved further than, as the dashboard shows them', async () => {
+			provideResponse( {
+				keyFactors: [
+					{
+						kind: 'REFERRING_SITE',
+						label: 'news.example',
+						current: 330,
+						previous: 0,
+						sharePct: 25.4,
+						shareBasis: 'GROSS_CHANGE',
+						parentChannel: { label: 'Referral', change: 310 },
+						attributes: [],
+					},
+					{
+						kind: 'CHANNEL',
+						label: 'Unassigned',
+						current: 600,
+						previous: 480,
+						sharePct: 9.2,
+						shareBasis: 'GROSS_CHANGE',
+						otherPages: true,
+						attributes: [],
+					},
+				],
+			} );
+
+			const result = await getTypicalTrafficOverviewPDFData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			expect( result.data?.typicalTraffic?.keyFactors ).toEqual( [
+				{
+					name: 'news.example',
+					change: 330,
+					shareText: 'More than Referral’s net change of +310 visits',
+				},
+				{
+					name: 'Uncategorized traffic (other pages)',
+					change: 120,
+					shareText: null,
 				},
 			] );
 		} );

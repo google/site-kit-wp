@@ -239,6 +239,253 @@ const SPREAD_KEY_FACTORS: BenchmarkingKeyFactor[] = [
 	},
 ];
 
+/**
+ * A page that brought visits from several channels, which took the first card
+ * with a row for each of them, beside the cards of those channels' other
+ * pages. A landing page of the site's other pages is named by its title.
+ */
+const OTHER_PAGES_KEY_FACTORS: BenchmarkingKeyFactor[] = [
+	{
+		kind: 'CONTENT',
+		label: 'Ice cream is good for your health',
+		url: '/ice-cream-is-good-for-your-health/',
+		current: 420,
+		previous: 20,
+		sharePct: 57.1,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'TRAFFIC_CHANNEL',
+				label: 'Direct',
+				current: 260,
+				previous: 10,
+				sharePct: 62.5,
+			},
+			{
+				kind: 'TRAFFIC_CHANNEL',
+				label: 'Cross-network ads',
+				current: 160,
+				previous: 10,
+				sharePct: 37.5,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Direct',
+		current: 1500,
+		previous: 1380,
+		sharePct: 17.1,
+		shareBasis: 'GROSS_CHANGE',
+		otherPages: true,
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/',
+				current: 410,
+				previous: 350,
+				sharePct: 50,
+			},
+			{
+				kind: 'LANDING_PAGE',
+				label: '/sorbet-recipes/',
+				title: 'Sorbet recipes for a hot summer',
+				current: 130,
+				previous: 100,
+				sharePct: 25,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL_GROUP',
+		label: 'Paid traffic',
+		current: 340,
+		previous: 310,
+		sharePct: 4.3,
+		shareBasis: 'GROSS_CHANGE',
+		otherPages: true,
+		attributes: [
+			{
+				kind: 'TRAFFIC_CHANNEL',
+				label: 'Paid Search',
+				current: 210,
+				previous: 130,
+				sharePct: 61.5,
+			},
+			{
+				kind: 'TRAFFIC_CHANNEL',
+				label: 'Cross-network ads',
+				current: 130,
+				previous: 180,
+				sharePct: 38.5,
+			},
+		],
+	},
+];
+
+/**
+ * Cards whose two rows are the two sides of a net, which show as one row: a
+ * page whose drop the homepage partly offset under Referral, and a referring
+ * site whose rise another one partly offset under Organic Social.
+ */
+const NET_PAIR_KEY_FACTORS: BenchmarkingKeyFactor[] = [
+	{
+		kind: 'CHANNEL',
+		label: 'Referral',
+		current: 450,
+		previous: 500,
+		sharePct: 38.2,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/best-ice-cream-shops-guide/',
+				title: 'The best ice cream shops in town',
+				current: 40,
+				previous: 102,
+				sharePct: 0,
+				oversized: true,
+			},
+			{
+				kind: 'LANDING_PAGE',
+				label: '/',
+				current: 62,
+				previous: 50,
+				sharePct: 0,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Social',
+		current: 239,
+		previous: 200,
+		sharePct: 29.8,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'REFERRING_SITE',
+				label: 'facebook.com',
+				current: 109,
+				previous: 60,
+				sharePct: 0,
+				oversized: true,
+			},
+			{
+				kind: 'REFERRING_SITE',
+				label: 'instagram.com',
+				current: 30,
+				previous: 40,
+				sharePct: 0,
+			},
+		],
+	},
+];
+
+/**
+ * Cards with a row larger than the card, which says that the card's other
+ * parts of its kind moved the other way: the homepage under Direct, a
+ * campaign under an Email card that fell, and a search keyword that rose
+ * further than the site's search clicks under Organic Search.
+ */
+const OVERSIZED_KEY_FACTORS: BenchmarkingKeyFactor[] = [
+	{
+		kind: 'CHANNEL',
+		label: 'Direct',
+		current: 1057,
+		previous: 1000,
+		sharePct: 41.2,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/',
+				current: 561,
+				previous: 500,
+				sharePct: 0,
+				oversized: true,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Email',
+		current: 220,
+		previous: 400,
+		sharePct: 100,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'CAMPAIGN',
+				label: 'Spring sale',
+				current: 50,
+				previous: 260,
+				sharePct: 0,
+				oversized: true,
+			},
+		],
+	},
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Search',
+		current: 1480,
+		previous: 1400,
+		sharePct: 31.4,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'SEARCH_KEYWORD',
+				label: 'homemade ice cream',
+				current: 160,
+				previous: 70,
+				sharePct: 3.6,
+				oversized: true,
+			},
+			{
+				kind: 'LANDING_PAGE',
+				label: '/homemade-ice-cream-without-a-machine/',
+				title: 'Homemade ice cream without a machine',
+				current: 100,
+				previous: 60,
+				sharePct: 50,
+			},
+		],
+	},
+];
+
+/**
+ * A search keyword of a site whose search clicks are unknown, which shows its
+ * change in clicks alone, beside a landing page named by its title.
+ */
+const NO_SEARCH_CLICKS_KEY_FACTORS: BenchmarkingKeyFactor[] = [
+	{
+		kind: 'CHANNEL',
+		label: 'Organic Search',
+		current: 1480,
+		previous: 1230,
+		sharePct: 71.4,
+		shareBasis: 'GROSS_CHANGE',
+		attributes: [
+			{
+				kind: 'SEARCH_KEYWORD',
+				label: 'how long does homemade ice cream last',
+				current: 310,
+				previous: 90,
+				sharePct: 0,
+				noSearchClicks: true,
+			},
+			{
+				kind: 'LANDING_PAGE',
+				label: '/how-long-does-homemade-ice-cream-last/',
+				title: 'How long does homemade ice cream last?',
+				current: 160,
+				previous: 60,
+				sharePct: 40,
+			},
+		],
+	},
+];
+
 interface KeyFactorsStoryProps {
 	/** The key factor cards to show. */
 	keyFactors: BenchmarkingKeyFactor[];
@@ -337,9 +584,9 @@ LongLabels.args = {
 };
 LongLabels.scenario = {};
 
-// A card that took its channel's place names the channel under its title, a
-// row larger than its card says it is more than the channel's net change, and
-// the paid channels' rows are shares of their movement.
+// A card that took its channel's place names the channel under its title, the
+// two sides of a net show as one row, whose line names the side that moved
+// the other way, and the paid channels' rows are shares of their movement.
 export const Shares = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
 Shares.storyName = 'Shares';
 Shares.args = {
@@ -357,6 +604,46 @@ SpreadAcrossPages.args = {
 	keyFactors: SPREAD_KEY_FACTORS,
 };
 SpreadAcrossPages.scenario = {};
+
+// A page that brought visits from several channels lists the channels, and
+// the channels' cards are for their other pages.
+export const OtherPages = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
+OtherPages.storyName = 'Other Pages';
+OtherPages.args = {
+	keyFactors: OTHER_PAGES_KEY_FACTORS,
+};
+OtherPages.scenario = {};
+
+// The two sides of a net show as one row, whose line names the side that
+// moved the other way.
+export const NetPairs = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
+NetPairs.storyName = 'Net Pairs';
+NetPairs.args = {
+	keyFactors: NET_PAIR_KEY_FACTORS,
+};
+NetPairs.scenario = {};
+
+// A row larger than its card says that the card's other parts of its kind
+// moved the other way.
+export const OversizedRows = Template.bind(
+	{}
+) as Story< KeyFactorsStoryProps >;
+OversizedRows.storyName = 'Oversized Rows';
+OversizedRows.args = {
+	keyFactors: OVERSIZED_KEY_FACTORS,
+};
+OversizedRows.scenario = {};
+
+// A search keyword of a site whose search clicks are unknown shows its change
+// alone, and a landing page shows its title.
+export const WithoutSearchClicks = Template.bind(
+	{}
+) as Story< KeyFactorsStoryProps >;
+WithoutSearchClicks.storyName = 'Without Search Clicks';
+WithoutSearchClicks.args = {
+	keyFactors: NO_SEARCH_CLICKS_KEY_FACTORS,
+};
+WithoutSearchClicks.scenario = {};
 
 export const Loading = Template.bind( {} ) as Story< KeyFactorsStoryProps >;
 Loading.storyName = 'Loading';

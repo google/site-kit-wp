@@ -22,12 +22,17 @@
 import {
 	KeyFactorsNoticeOptions,
 	formatClicksChange,
+	formatNetPairOffset,
+	formatParentChannelOverrun,
 	formatParentChannelShare,
 	formatVisitsChange,
 	formatVisitsShare,
+	getChannelName,
 	getKeyFactorAttributeShareText,
 	getKeyFactorShareText,
 	getKeyFactorsNoticeText,
+	getShownKeyFactors,
+	isKeyFactorNetPair,
 } from './key-factors';
 
 describe( 'formatVisitsChange', () => {
@@ -92,6 +97,30 @@ describe( 'formatVisitsShare', () => {
 	} );
 } );
 
+describe( 'getChannelName', () => {
+	it.each( [
+		[ 'Paid traffic', 'Paid traffic' ],
+		[ 'Cross-network ads', 'Cross-network ads' ],
+		[ 'Cross-network', 'Cross-network ads' ],
+		[ 'multi-platform ads', 'Cross-network ads' ],
+		[ 'Uncategorized traffic', 'Uncategorized traffic' ],
+		[ 'Unassigned', 'Uncategorized traffic' ],
+		[ ' unassigned ', 'Uncategorized traffic' ],
+	] )(
+		'should name the channel the plugin or the Site Kit service names, `%s`, as "%s"',
+		( label, name ) => {
+			expect( getChannelName( label ) ).toBe( name );
+		}
+	);
+
+	it.each( [ 'Organic Search', 'Referral', 'AI Assistant', 'Paid Search' ] )(
+		'should name a channel Analytics names, `%s`, as Analytics does',
+		( label ) => {
+			expect( getChannelName( label ) ).toBe( label );
+		}
+	);
+} );
+
 describe( 'formatParentChannelShare', () => {
 	it( 'should name the channel and its change after the share of it', () => {
 		expect(
@@ -119,6 +148,61 @@ describe( 'formatParentChannelShare', () => {
 			).toBe( 'All of Referral’s +300 visits' );
 		}
 	);
+
+	it.each( [
+		[
+			52.3,
+			'Cross-network ads',
+			'52.3% of Cross-network ads’ +300 visits',
+		],
+		[ 100, 'Affiliates', 'All of Affiliates’ +300 visits' ],
+		[ 61, 'SMS', '61% of SMS’ +300 visits' ],
+	] )(
+		'should give a channel whose name ends in "s" a bare apostrophe: a share of %d of %s',
+		( sharePct, label, text ) => {
+			expect(
+				formatParentChannelShare( sharePct, { label, change: 300 } )
+			).toBe( text );
+		}
+	);
+
+	it( 'should name the channel as `getChannelName()` does', () => {
+		expect(
+			formatParentChannelShare( 64.2, {
+				label: 'Unassigned',
+				change: -40,
+			} )
+		).toBe( '64.2% of Uncategorized traffic’s -40 visits' );
+		expect(
+			formatParentChannelShare( 64.2, {
+				label: 'Cross-network',
+				change: 40,
+			} )
+		).toBe( '64.2% of Cross-network ads’ +40 visits' );
+	} );
+} );
+
+describe( 'formatParentChannelOverrun', () => {
+	it( 'should name the channel and its change, without a share', () => {
+		expect(
+			formatParentChannelOverrun( { label: 'Referral', change: 300 } )
+		).toBe( 'More than Referral’s net change of +300 visits' );
+	} );
+
+	it( 'should give a drop its sign', () => {
+		expect(
+			formatParentChannelOverrun( {
+				label: 'Organic Social',
+				change: -1203,
+			} )
+		).toBe( 'More than Organic Social’s net change of -1,203 visits' );
+	} );
+
+	it( 'should give a channel whose name ends in "s" a bare apostrophe, and name it as `getChannelName()` does', () => {
+		expect(
+			formatParentChannelOverrun( { label: 'Cross-network', change: 30 } )
+		).toBe( 'More than Cross-network ads’ net change of +30 visits' );
+	} );
 } );
 
 describe( 'getKeyFactorShareText', () => {
@@ -126,27 +210,66 @@ describe( 'getKeyFactorShareText', () => {
 
 	it( 'should give a card its share of all visits on a steady period', () => {
 		expect(
-			getKeyFactorShareText( { sharePct: 45.2 }, { steady: true } )
+			getKeyFactorShareText(
+				{ sharePct: 45.2, shareBasis: 'VOLUME' },
+				{ steady: true }
+			)
 		).toBe( '45.2% of all visits' );
 	} );
 
 	it( 'should give a card that took its channel’s place its share of the channel’s change', () => {
 		expect(
 			getKeyFactorShareText(
-				{ sharePct: 73.3, parentChannel },
+				{ sharePct: 73.3, shareBasis: 'PARENT_CHANNEL', parentChannel },
 				{ steady: false }
 			)
 		).toBe( '73.3% of Referral’s +300 visits' );
 	} );
 
-	it( 'should give any other card no line, since its change is shown alone', () => {
-		expect(
-			getKeyFactorShareText( { sharePct: 64.5 }, { steady: false } )
-		).toBeNull();
-	} );
+	it.each( [
+		[ 'whose share is of the site’s change', 'GROSS_CHANGE' as const ],
+		[ 'without a share, on a flat period', undefined ],
+	] )(
+		'should name the channel a card %s took the place of, as more than the channel’s change',
+		( _, shareBasis ) => {
+			expect(
+				getKeyFactorShareText(
+					{
+						sharePct: shareBasis ? 25.4 : 0,
+						shareBasis,
+						parentChannel,
+					},
+					{ steady: false }
+				)
+			).toBe( 'More than Referral’s net change of +300 visits' );
+		}
+	);
+
+	it.each( [
+		'GROSS_CHANGE' as const,
+		'NET_CHANGE' as const,
+		'SITE_TRAFFIC' as const,
+		undefined,
+	] )(
+		'should give any other card no line, since its share of the site’s change has no design: %s',
+		( shareBasis ) => {
+			expect(
+				getKeyFactorShareText(
+					{ sharePct: 64.5, shareBasis },
+					{ steady: false }
+				)
+			).toBeNull();
+		}
+	);
 } );
 
 describe( 'getKeyFactorAttributeShareText', () => {
+	/** A channel's card that rose. */
+	const RISING_CHANNEL = { kind: 'CHANNEL' as const, change: 1280 };
+
+	/** A channel's card that fell. */
+	const FALLING_CHANNEL = { kind: 'CHANNEL' as const, change: -1280 };
+
 	it.each( [
 		[ 'a share of the card’s change', 75, '75% of the change' ],
 		[ 'a share with a decimal', 12.9, '12.9% of the change' ],
@@ -158,68 +281,254 @@ describe( 'getKeyFactorAttributeShareText', () => {
 		[ 'all of the change', 100, 'All of the change' ],
 	] )( 'should write %s', ( _, sharePct, text ) => {
 		expect(
-			getKeyFactorAttributeShareText( 'CHANNEL', {
+			getKeyFactorAttributeShareText( RISING_CHANNEL, {
 				kind: 'LANDING_PAGE',
+				label: '/hello-world/',
 				sharePct,
 			} )
 		).toBe( text );
 	} );
 
-	it( 'should say that an attribute that moved further than its card is more than the channel’s net change, rather than give it a share', () => {
-		expect(
-			getKeyFactorAttributeShareText( 'CHANNEL', {
-				kind: 'DEVICE',
-				sharePct: 0,
-				oversized: true,
-			} )
-		).toBe( 'More than the channel’s net change' );
-	} );
+	it.each( [
+		[ 'LANDING_PAGE', '/hello-world/', 'While other pages' ],
+		[ 'CAMPAIGN', 'spring-sale', 'While other campaigns' ],
+		[ 'DEVICE', 'desktop', 'While other devices' ],
+		[ 'USER_TYPE', 'new', 'While returning-visitor visits' ],
+		[ 'USER_TYPE', 'returning', 'While new-visitor visits' ],
+		[ 'TRAFFIC_CHANNEL', 'Direct', 'While other channels' ],
+		[ 'REFERRING_SITE', 'news.example', 'While other sources' ],
+		[ 'PLATFORM', 'YouTube', 'While other sources' ],
+		[ 'ASSISTANT', 'chatgpt.com', 'While other sources' ],
+	] as const )(
+		'should say that the card’s other parts moved the other way for a %s `%s` that moved further than its card, rather than give it a share',
+		( kind, label, text ) => {
+			const attribute = { kind, label, sharePct: 0, oversized: true };
 
-	it( 'should give an attribute without a share no line, as the side of a net that moved against its card', () => {
-		expect(
-			getKeyFactorAttributeShareText( 'CHANNEL', {
-				kind: 'DEVICE',
-				sharePct: 0,
-			} )
-		).toBeNull();
-	} );
+			expect(
+				getKeyFactorAttributeShareText( RISING_CHANNEL, attribute )
+			).toBe( `${ text } fell` );
+			expect(
+				getKeyFactorAttributeShareText( FALLING_CHANNEL, attribute )
+			).toBe( `${ text } rose` );
+		}
+	);
+
+	it.each( [
+		[ 'a side of a net that moved against its card', 'DEVICE', 'mobile' ],
+		[
+			'the channel’s page under a referring site that took the channel’s card',
+			'LANDING_PAGE',
+			'/hello-world/',
+		],
+	] as const )(
+		'should give an attribute without a share no line, such as %s',
+		( _, kind, label ) => {
+			expect(
+				getKeyFactorAttributeShareText(
+					{ kind: 'REFERRING_SITE', change: 220 },
+					{ kind, label, sharePct: 0 }
+				)
+			).toBeNull();
+		}
+	);
 
 	it.each( [
 		[
 			'its change as a share of the site’s search clicks',
-			3.6,
+			{ sharePct: 3.6 },
 			'A change equal to 3.6% of the site’s search clicks',
 		],
 		[
 			'a share that rounds to 0 as less than 0.1%',
-			0,
+			{ sharePct: 0 },
 			'A change equal to less than 0.1% of the site’s search clicks',
 		],
-	] )( 'should give a search keyword %s', ( _, sharePct, text ) => {
+		[
+			'that it moved against the other queries, after its share',
+			{ sharePct: 3.6, oversized: true },
+			'A change equal to 3.6% of the site’s search clicks, while other queries fell',
+		],
+		[
+			'that it moved against the other queries, in place of a share under 0.1%',
+			{ sharePct: 0, oversized: true },
+			'While other queries fell',
+		],
+	] )( 'should give a search keyword %s', ( _, fields, text ) => {
 		expect(
-			getKeyFactorAttributeShareText( 'CHANNEL', {
+			getKeyFactorAttributeShareText( RISING_CHANNEL, {
 				kind: 'SEARCH_KEYWORD',
-				sharePct,
+				label: 'how to plant garlic',
+				...fields,
 			} )
 		).toBe( text );
 	} );
 
+	it( 'should say that the other queries rose under a search keyword of a card that fell', () => {
+		expect(
+			getKeyFactorAttributeShareText( FALLING_CHANNEL, {
+				kind: 'SEARCH_KEYWORD',
+				label: 'how to plant garlic',
+				sharePct: 3.6,
+				oversized: true,
+			} )
+		).toBe(
+			'A change equal to 3.6% of the site’s search clicks, while other queries rose'
+		);
+		expect(
+			getKeyFactorAttributeShareText( FALLING_CHANNEL, {
+				kind: 'SEARCH_KEYWORD',
+				label: 'how to plant garlic',
+				sharePct: 0,
+				oversized: true,
+			} )
+		).toBe( 'While other queries rose' );
+	} );
+
+	it.each( [
+		[ 'without a share', { sharePct: 0 } ],
+		[
+			'that moved against the other queries',
+			{ sharePct: 0, oversized: true },
+		],
+	] )(
+		'should give a search keyword %s no line when the site’s search clicks are unknown',
+		( _, fields ) => {
+			expect(
+				getKeyFactorAttributeShareText( RISING_CHANNEL, {
+					kind: 'SEARCH_KEYWORD',
+					label: 'how to plant garlic',
+					noSearchClicks: true,
+					...fields,
+				} )
+			).toBeNull();
+		}
+	);
+
 	it( 'should give a channel of the paid group its share of the paid channels’ movement, rather than of the group’s change', () => {
 		expect(
-			getKeyFactorAttributeShareText( 'CHANNEL_GROUP', {
-				kind: 'TRAFFIC_CHANNEL',
-				sharePct: 65.6,
-			} )
+			getKeyFactorAttributeShareText(
+				{ kind: 'CHANNEL_GROUP', change: 105 },
+				{
+					kind: 'TRAFFIC_CHANNEL',
+					label: 'Paid Search',
+					sharePct: 65.6,
+				}
+			)
 		).toBe( '65.6% of paid traffic’s movement' );
 	} );
 
 	it( 'should give a channel of the paid group without a share no line', () => {
 		expect(
-			getKeyFactorAttributeShareText( 'CHANNEL_GROUP', {
-				kind: 'TRAFFIC_CHANNEL',
-				sharePct: 0,
-			} )
+			getKeyFactorAttributeShareText(
+				{ kind: 'CHANNEL_GROUP', change: 105 },
+				{
+					kind: 'TRAFFIC_CHANNEL',
+					label: 'Paid Social',
+					sharePct: 0,
+				}
+			)
 		).toBeNull();
+	} );
+
+	it.each( [
+		[
+			'its share of the page’s change',
+			{ sharePct: 62.5 },
+			'62.5% of the change',
+		],
+		[
+			'all of the change from 99.5%',
+			{ sharePct: 99.5 },
+			'All of the change',
+		],
+		[
+			'that the other channels moved the other way when it moved further than the page',
+			{ sharePct: 0, oversized: true },
+			'While other channels fell',
+		],
+	] )(
+		'should give a channel that brought visits to a page’s card %s',
+		( _, fields, text ) => {
+			expect(
+				getKeyFactorAttributeShareText(
+					{ kind: 'CONTENT', change: 400 },
+					{ kind: 'TRAFFIC_CHANNEL', label: 'Direct', ...fields }
+				)
+			).toBe( text );
+		}
+	);
+
+	it( 'should give a channel that brought visits to a page’s card no line without a share', () => {
+		expect(
+			getKeyFactorAttributeShareText(
+				{ kind: 'CONTENT', change: 400 },
+				{ kind: 'TRAFFIC_CHANNEL', label: 'Direct', sharePct: 0 }
+			)
+		).toBeNull();
+	} );
+} );
+
+describe( 'isKeyFactorNetPair', () => {
+	const DESKTOP = {
+		kind: 'DEVICE' as const,
+		current: 2643,
+		previous: 1000,
+		sharePct: 0,
+	};
+	const MOBILE = {
+		kind: 'DEVICE' as const,
+		current: 638,
+		previous: 1000,
+		sharePct: 0,
+	};
+
+	it( 'should take two attributes without a share that moved in opposite directions for a net', () => {
+		expect( isKeyFactorNetPair( DESKTOP, MOBILE ) ).toBe( true );
+	} );
+
+	it( 'should take two attributes of different kinds for a net', () => {
+		expect(
+			isKeyFactorNetPair(
+				{ ...DESKTOP, kind: 'LANDING_PAGE' },
+				{ ...MOBILE, kind: 'REFERRING_SITE' }
+			)
+		).toBe( true );
+	} );
+
+	it.each( [
+		[ 'the first has a share', { ...DESKTOP, sharePct: 82.4 }, MOBILE ],
+		[ 'the second has a share', DESKTOP, { ...MOBILE, sharePct: 12.1 } ],
+		[ 'they moved the same way', DESKTOP, { ...MOBILE, current: 1200 } ],
+		[ 'one didn’t change', DESKTOP, { ...MOBILE, current: 1000 } ],
+		[
+			'one is a search keyword',
+			{ ...DESKTOP, kind: 'SEARCH_KEYWORD' as const },
+			MOBILE,
+		],
+		[
+			'one is a channel',
+			DESKTOP,
+			{ ...MOBILE, kind: 'TRAFFIC_CHANNEL' as const },
+		],
+	] )( 'should not take two attributes for a net when %s', ( _, a, b ) => {
+		expect( isKeyFactorNetPair( a, b ) ).toBe( false );
+	} );
+} );
+
+describe( 'formatNetPairOffset', () => {
+	it( 'should name the side that moved the other way, with its signed change', () => {
+		expect( formatNetPairOffset( -362, 'mobile' ) ).toBe(
+			'Partly offset by -362 visits from mobile'
+		);
+		expect( formatNetPairOffset( 12, 'Homepage' ) ).toBe(
+			'Partly offset by +12 visits from Homepage'
+		);
+	} );
+
+	it( 'should use the singular unit for a change of one visit', () => {
+		expect( formatNetPairOffset( -1, 'facebook.com' ) ).toBe(
+			'Partly offset by -1 visit from facebook.com'
+		);
 	} );
 } );
 
@@ -252,5 +561,42 @@ describe( 'getKeyFactorsNoticeText', () => {
 		).toBe(
 			'No channel changed notably compared with the previous 1 day.'
 		);
+	} );
+} );
+
+describe( 'getShownKeyFactors', () => {
+	const LANDING_PAGE = {
+		kind: 'LANDING_PAGE' as const,
+		label: '/guide/',
+		current: 400,
+		previous: 100,
+		sharePct: 75,
+	};
+
+	it( 'should leave out the only card when it has no rows', () => {
+		expect( getShownKeyFactors( [ { attributes: [] } ] ) ).toEqual( [] );
+	} );
+
+	it( 'should leave out the only card when its rows have no name, as the card shows none of them', () => {
+		expect(
+			getShownKeyFactors( [
+				{ attributes: [ { ...LANDING_PAGE, label: null } ] },
+			] )
+		).toEqual( [] );
+	} );
+
+	it.each( [
+		[ 'the only card with a row', [ { attributes: [ LANDING_PAGE ] } ] ],
+		[
+			'the only card whose change was spread across many pages, which it says in place of rows',
+			[ { attributes: [], spreadAcrossPages: true } ],
+		],
+		[
+			'two cards without rows',
+			[ { attributes: [] }, { attributes: [] } ],
+		],
+		[ 'no cards', [] ],
+	] )( 'should show %s as given', ( _, keyFactors ) => {
+		expect( getShownKeyFactors( keyFactors ) ).toBe( keyFactors );
 	} );
 } );

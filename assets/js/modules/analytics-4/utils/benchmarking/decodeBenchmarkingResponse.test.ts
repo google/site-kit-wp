@@ -1234,13 +1234,18 @@ describe( 'decodeBenchmarkingResponse', () => {
 		}
 	);
 
-	it( 'should decode the channel a card on `PARENT_CHANNEL` took the place of, and of no other card', () => {
+	it( 'should decode the channel a part of a channel took the place of, on any basis or on none, and of no channel’s card', () => {
 		const keyFactors = decodeKeyFactors(
-			[ 'news.example', 'Referral' ],
+			[ 'news.example', 'Referral', 'spring-sale', 'Email', 'Direct' ],
 			[
 				[ 3, 0, 220, 0, 73.3, null, 4, 1, 300 ],
-				// Only a share of a channel's change names the channel.
-				[ 3, 0, 220, 0, 73.3, null, 0, 1, 300 ],
+				// The referring site moved further than its channel, so
+				// its share is of the site's growth.
+				[ 3, 0, 330, 0, 25.4, null, 0, 1, 310 ],
+				// A campaign on a flat period has no share.
+				[ 4, 2, 60, 0, 0, null, null, 3, 55 ],
+				// A channel's card never names a channel.
+				[ 0, 4, 500, 480, 12.5, null, 0, 1, 300 ],
 			]
 		);
 
@@ -1254,18 +1259,32 @@ describe( 'decodeBenchmarkingResponse', () => {
 			parentChannel: { label: 'Referral', change: 300 },
 			attributes: [],
 		} );
-		expect( keyFactors?.[ 1 ] ).not.toHaveProperty( 'parentChannel' );
+		expect( keyFactors?.[ 1 ] ).toMatchObject( {
+			shareBasis: 'GROSS_CHANGE',
+			parentChannel: { label: 'Referral', change: 310 },
+		} );
+		expect( keyFactors?.[ 2 ] ).toEqual( {
+			kind: 'CAMPAIGN',
+			label: 'spring-sale',
+			current: 60,
+			previous: 0,
+			sharePct: 0,
+			parentChannel: { label: 'Email', change: 55 },
+			attributes: [],
+		} );
+		expect( keyFactors?.[ 3 ] ).not.toHaveProperty( 'parentChannel' );
 	} );
 
 	it.each( [
 		[ 'the channel is out of the string table', [ 9, 300 ] ],
+		[ 'the channel is empty', [ 2, 300 ] ],
 		[ 'the change is not a whole number', [ 1, '300' ] ],
 		[ 'the change is missing', [ 1 ] ],
 	] )(
-		'should decode a card on `PARENT_CHANNEL` without its channel when %s, and keep the card',
+		'should decode a part of a channel without its channel when %s, and keep the card',
 		( _, parent ) => {
 			const keyFactors = decodeKeyFactors(
-				[ 'news.example', 'Referral' ],
+				[ 'news.example', 'Referral', '' ],
 				[ [ 3, 0, 220, 0, 73.3, null, 4, ...parent ] ]
 			);
 
@@ -1301,6 +1320,37 @@ describe( 'decodeBenchmarkingResponse', () => {
 		expect( keyFactors?.[ 2 ] ).not.toHaveProperty( 'spreadAcrossPages' );
 	} );
 
+	it( 'should mark only a card that carries `true` after its spread mark as one for its channel’s other pages', () => {
+		const keyFactors = decodeKeyFactors(
+			[ 'Direct', 'Paid traffic' ],
+			[
+				[ 0, 0, 600, 480, 24, null, 0, null, null, null, true ],
+				[ 5, 1, 300, 220, 16, null, 0, null, null, null, true ],
+				[ 0, 0, 600, 480, 24, null, 0 ],
+				[ 0, 0, 600, 480, 24, null, 0, null, null, null, 'true' ],
+			]
+		);
+
+		expect( keyFactors?.[ 0 ] ).toEqual( {
+			kind: 'CHANNEL',
+			label: 'Direct',
+			current: 600,
+			previous: 480,
+			sharePct: 24,
+			shareBasis: 'GROSS_CHANGE',
+			otherPages: true,
+			attributes: [],
+		} );
+		expect( keyFactors?.[ 1 ] ).toMatchObject( {
+			kind: 'CHANNEL_GROUP',
+			label: 'Paid traffic',
+			otherPages: true,
+		} );
+		expect( keyFactors?.[ 1 ] ).not.toHaveProperty( 'spreadAcrossPages' );
+		expect( keyFactors?.[ 2 ] ).not.toHaveProperty( 'otherPages' );
+		expect( keyFactors?.[ 3 ] ).not.toHaveProperty( 'otherPages' );
+	} );
+
 	it( 'should mark only an attribute that carries `true` after its share as oversized', () => {
 		const keyFactors = decodeKeyFactors(
 			[ 'Direct', 'desktop', 'mobile' ],
@@ -1320,6 +1370,112 @@ describe( 'decodeBenchmarkingResponse', () => {
 		expect( keyFactors?.[ 0 ].attributes[ 1 ] ).not.toHaveProperty(
 			'oversized'
 		);
+	} );
+
+	it( 'should decode the title of a landing page after its oversized mark, through the string table, and of no other attribute', () => {
+		const keyFactors = decodeKeyFactors(
+			[
+				'Referral',
+				'/how-to-plant-garlic/',
+				'How to plant garlic',
+				'facebook.com',
+			],
+			[ [ 0, 0, 545, 180, 52.4, null, 0 ] ],
+			[
+				[
+					[ 1, 1, 300, 40, 71.2, null, 2 ],
+					[ 1, 1, 500, 100, 0, true, 2 ],
+					// A title out of the string table is no title.
+					[ 1, 1, 300, 40, 71.2, null, 9 ],
+					// Only a landing page carries a title.
+					[ 3, 3, 92, 60, 25.8, null, 2 ],
+				],
+			]
+		);
+
+		expect( keyFactors?.[ 0 ].attributes ).toEqual( [
+			{
+				kind: 'LANDING_PAGE',
+				label: '/how-to-plant-garlic/',
+				current: 300,
+				previous: 40,
+				sharePct: 71.2,
+				title: 'How to plant garlic',
+			},
+			{
+				kind: 'LANDING_PAGE',
+				label: '/how-to-plant-garlic/',
+				current: 500,
+				previous: 100,
+				sharePct: 0,
+				oversized: true,
+				title: 'How to plant garlic',
+			},
+			{
+				kind: 'LANDING_PAGE',
+				label: '/how-to-plant-garlic/',
+				current: 300,
+				previous: 40,
+				sharePct: 71.2,
+			},
+			{
+				kind: 'REFERRING_SITE',
+				label: 'facebook.com',
+				current: 92,
+				previous: 60,
+				sharePct: 25.8,
+			},
+		] );
+	} );
+
+	it( 'should mark only a search keyword that carries `true` after its title as one without the site’s search clicks', () => {
+		const keyFactors = decodeKeyFactors(
+			[ 'Organic Search', 'how to plant garlic', 'Direct' ],
+			[ [ 0, 0, 1480, 230, 71.4, null, 0 ] ],
+			[
+				[
+					[ 2, 1, 310, 90, 0, null, null, true ],
+					[ 2, 1, 310, 90, 3.6, true ],
+					[ 2, 1, 310, 90, 0, null, null, 1 ],
+					// Only a search keyword can lack the site's search
+					// clicks.
+					[ 0, 2, 40, 10, 75, null, null, true ],
+				],
+			]
+		);
+
+		expect( keyFactors?.[ 0 ].attributes ).toEqual( [
+			{
+				kind: 'SEARCH_KEYWORD',
+				label: 'how to plant garlic',
+				current: 310,
+				previous: 90,
+				sharePct: 0,
+				noSearchClicks: true,
+			},
+			{
+				kind: 'SEARCH_KEYWORD',
+				label: 'how to plant garlic',
+				current: 310,
+				previous: 90,
+				sharePct: 3.6,
+				oversized: true,
+			},
+			{
+				kind: 'SEARCH_KEYWORD',
+				label: 'how to plant garlic',
+				current: 310,
+				previous: 90,
+				sharePct: 0,
+			},
+			{
+				kind: 'TRAFFIC_CHANNEL',
+				label: 'Direct',
+				current: 40,
+				previous: 10,
+				sharePct: 75,
+			},
+		] );
 	} );
 
 	describe( 'content markers', () => {

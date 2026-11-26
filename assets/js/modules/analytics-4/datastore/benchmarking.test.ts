@@ -2526,27 +2526,27 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 			it.each( [
 				[
-					'the rate limit, for 30 minutes though its Retry-After is a minute',
+					'the rate limit, for its Retry-After of a minute',
 					'RATE_LIMITED',
 					60,
-					AI_INSIGHT_RATE_LIMIT_HOLD,
+					60,
 				],
 				[
-					'the rate limit, for longer when its Retry-After asks for it',
+					'the rate limit, for its Retry-After of 30 minutes',
 					'RATE_LIMITED',
-					7200,
-					2 * HOUR_IN_SECONDS,
+					1800,
+					30 * 60,
 				],
 				[
-					'the rate limit without a Retry-After, for 30 minutes',
+					'the rate limit without a Retry-After, for a minute',
 					'RATE_LIMITED',
 					undefined,
 					AI_INSIGHT_RATE_LIMIT_HOLD,
 				],
 				[
-					'a 429 with a code the store does not know, as the rate limit',
+					'a 429 with a code the store does not know and no Retry-After, for a minute, as the rate limit',
 					'A_NEW_CODE',
-					60,
+					undefined,
 					AI_INSIGHT_RATE_LIMIT_HOLD,
 				],
 				[
@@ -2556,7 +2556,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					2 * HOUR_IN_SECONDS,
 				],
 				[
-					'the daily cap, until its Retry-After, though that is under 30 minutes',
+					'the daily cap, until its Retry-After, though that is under an hour',
 					'DAILY_CAP',
 					600,
 					600,

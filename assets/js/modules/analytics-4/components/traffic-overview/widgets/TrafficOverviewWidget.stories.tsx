@@ -434,7 +434,7 @@ TypicalTrafficShortHistory.args = {
 		// today. A 28-day range has the key factors once every day of the
 		// period before it has recorded traffic, from the one that ends on
 		// `2025-02-25`, and the typical traffic range once its first day has
-		// 84 days of history, from the one that ends on `2025-04-21`. Until
+		// 56 days of history, from the one that ends on `2025-03-24`. Until
 		// then, one notice above the visitor figures says when each will
 		// show, and the panel leaves out the key factors section.
 		provideBenchmarkingResponse( registry, {
@@ -447,7 +447,7 @@ TypicalTrafficShortHistory.args = {
 			availability: {
 				...response.availability,
 				bandAvailable: false,
-				bandAvailableFrom: '2025-04-21',
+				bandAvailableFrom: '2025-03-24',
 				keyFactorsAvailable: false,
 				keyFactorsAvailableFrom: '2025-02-25',
 				insightRequestAllowed: false,

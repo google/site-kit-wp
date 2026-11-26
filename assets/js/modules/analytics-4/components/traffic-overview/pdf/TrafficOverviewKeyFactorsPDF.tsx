@@ -62,6 +62,9 @@ export type TrafficOverviewKeyFactorsPDFProps = Pick<
  * Prints the key factors section, in the order the dashboard shows it: the
  * heading, the notice, the generated summary, then the cards.
  *
+ * As on the dashboard, a section with nothing under its heading, where a lone
+ * card with nothing under its title was left out, isn't printed.
+ *
  * @since n.e.x.t
  *
  * @param {Object}        props                  Component props.
@@ -69,46 +72,55 @@ export type TrafficOverviewKeyFactorsPDFProps = Pick<
  * @param {string|null}   props.driver           The generated summary of the key factors, or null.
  * @param {string|null}   props.keyFactorsNotice The notice under the heading, or null.
  * @param {Array<Object>} props.keyFactors       The cards, in the order to print them.
- * @return {Element} The section.
+ * @return {Element|null} The section, or null when it has nothing under its heading.
  */
 const TrafficOverviewKeyFactorsPDF: FC<
 	TrafficOverviewKeyFactorsPDFProps
-> = ( { daysInRange, driver, keyFactorsNotice, keyFactors } ) => (
-	<View style={ styles.section }>
-		<PDFTypography type="title" size="medium" style={ styles.heading }>
-			{ sprintf(
-				/* translators: %d: the number of days in the selected date range, such as "28" */
-				_n(
-					'Biggest traffic shifts vs. the previous %d day',
-					'Biggest traffic shifts vs. the previous %d days',
-					daysInRange,
-					'google-site-kit'
-				),
-				daysInRange
+> = ( { daysInRange, driver, keyFactorsNotice, keyFactors } ) => {
+	if ( ! keyFactorsNotice && ! driver && keyFactors.length === 0 ) {
+		return null;
+	}
+
+	return (
+		<View style={ styles.section }>
+			<PDFTypography type="title" size="medium" style={ styles.heading }>
+				{ sprintf(
+					/* translators: %d: the number of days in the selected date range, such as "28" */
+					_n(
+						'Biggest traffic shifts vs. the previous %d day',
+						'Biggest traffic shifts vs. the previous %d days',
+						daysInRange,
+						'google-site-kit'
+					),
+					daysInRange
+				) }
+			</PDFTypography>
+			{ !! keyFactorsNotice && (
+				<TrafficOverviewNoticePDF
+					text={ keyFactorsNotice }
+					style={ styles.block }
+				/>
 			) }
-		</PDFTypography>
-		{ !! keyFactorsNotice && (
-			<TrafficOverviewNoticePDF
-				text={ keyFactorsNotice }
-				style={ styles.block }
-			/>
-		) }
-		{ !! driver && (
-			<TrafficOverviewNoticePDF text={ driver } style={ styles.block } />
-		) }
-		{ keyFactors.length > 0 && (
-			<View style={ styles.cards }>
-				{ keyFactors.map( ( keyFactor, index ) => (
-					// Keyed by position: nothing here reorders, and two kinds
-					// of driver can share a name.
-					<TrafficOverviewKeyFactorCardPDF
-						key={ index }
-						{ ...keyFactor }
-					/>
-				) ) }
-			</View>
-		) }
-	</View>
-);
+			{ !! driver && (
+				<TrafficOverviewNoticePDF
+					text={ driver }
+					style={ styles.block }
+				/>
+			) }
+			{ keyFactors.length > 0 && (
+				<View style={ styles.cards }>
+					{ keyFactors.map( ( keyFactor, index ) => (
+						// Keyed by position: nothing here reorders, and two
+						// kinds of driver can share a name.
+						<TrafficOverviewKeyFactorCardPDF
+							key={ index }
+							{ ...keyFactor }
+						/>
+					) ) }
+				</View>
+			) }
+		</View>
+	);
+};
 
 export default TrafficOverviewKeyFactorsPDF;

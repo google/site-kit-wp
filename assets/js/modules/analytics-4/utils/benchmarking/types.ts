@@ -83,7 +83,11 @@ export interface BenchmarkingAvailability {
 export interface BenchmarkingKeyFactorAttribute {
 	/** The attribute's kind, such as `DEVICE` for the device behind a `Direct` card. */
 	kind: BenchmarkingKeyFactorAttributeKind;
-	/** The attribute's name, or null when the response carried none. */
+	/**
+	 * The attribute's name, or null when the response carried none: a page
+	 * path for a `LANDING_PAGE`, which its link is built on, or the channel's
+	 * name for a `TRAFFIC_CHANNEL`.
+	 */
 	label: string | null;
 	/** Visits in the date range the reader chose, or clicks for a `SEARCH_KEYWORD`. */
 	current: number;
@@ -99,9 +103,22 @@ export interface BenchmarkingKeyFactorAttribute {
 	/**
 	 * Whether the attribute moved further than its card, the same way,
 	 * because the card's other parts moved the other way. It then has no
-	 * share: it is more than the card's net change. Left out otherwise.
+	 * share. For a `SEARCH_KEYWORD`, whether its clicks moved against the
+	 * site's search clicks or further than their change, because other
+	 * queries moved the other way. Left out otherwise.
 	 */
 	oversized?: boolean;
+	/**
+	 * The page's title, when it is known, on a `LANDING_PAGE` that names a
+	 * page other than the homepage. The attribute shows it in place of the
+	 * path in `label`. Left out otherwise.
+	 */
+	title?: string;
+	/**
+	 * Whether the site's search clicks are unknown, on a `SEARCH_KEYWORD`, so
+	 * its change is no share of them. Left out otherwise.
+	 */
+	noSearchClicks?: boolean;
 }
 
 export interface BenchmarkingKeyFactorParentChannel {
@@ -115,7 +132,9 @@ export interface BenchmarkingKeyFactor {
 	/**
 	 * The kind of driver behind the card's change: a `CHANNEL`, the paid
 	 * channels as one `CHANNEL_GROUP`, or a part of a channel that carried most
-	 * of its change, a `CONTENT` post, a `REFERRING_SITE` or a `CAMPAIGN`.
+	 * of its change, a `CONTENT` post, a `REFERRING_SITE` or a `CAMPAIGN`. A
+	 * `CONTENT` card can also be a page that brought visits from several
+	 * channels, with a `TRAFFIC_CHANNEL` attribute for each of them.
 	 */
 	kind: BenchmarkingKeyFactorKind;
 	/** The driver's name, or null when the response carried none. */
@@ -128,18 +147,21 @@ export interface BenchmarkingKeyFactor {
 	 * The card's share, in percent, as the generated insight reads it: of the
 	 * site's visits when traffic was steady, and otherwise of the change it is
 	 * part of, such as the site's change in its direction, or its channel's
-	 * change for a part of a channel.
+	 * change for a part of a channel. `0` on a card without a basis.
 	 */
 	sharePct: number;
 	/**
 	 * What `sharePct` is of, as the Site Kit service names it, such as
 	 * `PARENT_CHANNEL` for a part of a channel that took the channel's card.
-	 * Left out when the response carried none.
+	 * Left out when the response carried none, such as for a channel on a
+	 * period whose total didn't change notably.
 	 */
 	shareBasis?: BenchmarkingKeyFactorShareBasis;
 	/**
-	 * The channel a card on `PARENT_CHANNEL` took the place of, whose change
-	 * `sharePct` is a share of. Left out on any other card.
+	 * The channel a part of a channel took the place of: on `PARENT_CHANNEL`,
+	 * the channel whose change `sharePct` is a share of, and on any other
+	 * basis, or without one, the channel the part moved further than. Left
+	 * out on any other card.
 	 */
 	parentChannel?: BenchmarkingKeyFactorParentChannel;
 	/**
@@ -148,9 +170,16 @@ export interface BenchmarkingKeyFactor {
 	 * out on any other card.
 	 */
 	spreadAcrossPages?: boolean;
+	/**
+	 * Whether a channel's card, or the paid channels', is for its pages other
+	 * than the page that brought visits from several channels, which took a
+	 * card of its own. `label` is then the channel's own name. Left out
+	 * otherwise.
+	 */
+	otherPages?: boolean;
 	/** The values inside the driver that carried its change, in the order the response ranked them. */
 	attributes: BenchmarkingKeyFactorAttribute[];
-	/** The post's path, such as `/how-to-plant-garlic/`, on a `CONTENT` card. */
+	/** The page's path, such as `/how-to-plant-garlic/`, on a `CONTENT` card. */
 	url?: string;
 }
 
@@ -213,8 +242,6 @@ export interface BenchmarkingInsight {
 	 * of labels is open, so a label may be one the plugin doesn't know.
 	 */
 	scenario: string | null;
-	/** One sentence on how the period compares with what is usual for the site, or null when the service wrote none. */
-	teaser: string | null;
 	/** The period's visits, and how they compare with what is usual for the site. */
 	analysis: string | null;
 	/** The change against the previous period and what carried it, where `**` pairs mark the names it highlights. */

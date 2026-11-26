@@ -92,24 +92,24 @@ class Typical_Traffic_AvailabilityTest extends TestCase {
 		$this->assertFalse( $availability( 55 )['key_factors_available'], 'A 28-day period should have no key factors while a day of the previous period is before the history.' );
 		$this->assertFalse( $availability( 55 )['insight_request_allowed'], 'A 28-day period should get no insight request without its key factors.' );
 		$this->assertTrue( $availability( 56 )['insight_request_allowed'], 'A 28-day period should get an insight request once the previous period is in the history.' );
-		$this->assertFalse( $availability( 110 )['performance_insight_available'], 'A 28-day period should show no analysis without its band.' );
-		$this->assertTrue( $availability( 111 )['band_available'], 'A 28-day period should have a band from 111 days of history.' );
-		$this->assertTrue( $availability( 111 )['performance_insight_available'], 'A 28-day period should show the analysis with its band and its request.' );
-		$this->assertSame( '2026-09-15', $availability( 111 )['band_available_from'], 'With 111 days of history, the band should be available from the end date.' );
+		$this->assertFalse( $availability( 82 )['performance_insight_available'], 'A 28-day period should show no analysis without its band.' );
+		$this->assertTrue( $availability( 83 )['band_available'], 'A 28-day period should have a band from 83 days of history.' );
+		$this->assertTrue( $availability( 83 )['performance_insight_available'], 'A 28-day period should show the analysis with its band and its request.' );
+		$this->assertSame( '2026-09-15', $availability( 83 )['band_available_from'], 'With 83 days of history, the band should be available from the end date.' );
 	}
 
 	public function test_get__has_the_band_of_a_90_day_period_before_its_key_factors() {
 		$availability = Typical_Traffic_Availability::get(
-			new Period_Baseline( $this->get_daily_rows( '2026-09-15', 173 ) ),
+			new Period_Baseline( $this->get_daily_rows( '2026-09-15', 145 ) ),
 			'2026-09-15',
 			90
 		);
 
-		$this->assertTrue( $availability['band_available'], 'A 90-day period should have its band from 173 days of history.' );
+		$this->assertTrue( $availability['band_available'], 'A 90-day period should have its band from 145 days of history.' );
 		$this->assertFalse( $availability['key_factors_available'], 'A 90-day period should have no key factors before 180 days of history.' );
 		$this->assertFalse( $availability['insight_request_allowed'], 'A 90-day period should get no insight request before its key factors.' );
 		$this->assertFalse( $availability['performance_insight_available'], 'A 90-day period should show no analysis without its insight request, band or not.' );
-		$this->assertSame( '2026-09-22', $availability['key_factors_available_from'], 'The key factors should be available a week later, once the history holds 180 days.' );
+		$this->assertSame( '2026-10-20', $availability['key_factors_available_from'], 'The key factors should be available five weeks later, once the history holds 180 days.' );
 	}
 
 	/**

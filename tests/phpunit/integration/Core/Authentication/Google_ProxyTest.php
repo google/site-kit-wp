@@ -950,7 +950,6 @@ class Google_ProxyTest extends TestCase {
 
 		$expected_response = array(
 			'scenario'       => 'above_benchmark',
-			'teaser'         => 'Your site is doing well.',
 			'text'           => 'Your site had more sessions than similar sites.',
 			'driver'         => 'organic_search',
 			'interaction_id' => 'interaction-456',
@@ -1223,7 +1222,6 @@ class Google_ProxyTest extends TestCase {
 			'state'    => 'SUCCEEDED',
 			'response' => array(
 				'scenario'       => 'above_benchmark',
-				'teaser'         => 'Your site is doing well.',
 				'text'           => 'Your site had more sessions than similar sites.',
 				'driver'         => 'organic_search',
 				'interaction_id' => 'interaction-456',

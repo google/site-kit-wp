@@ -292,19 +292,33 @@ class Response_EncoderTest extends TestCase {
 		$this->assertSame( array( 'news.example', 'Referral' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'The channel should be in the string table.' );
 	}
 
-	public function test_encode__leaves_out_the_channel_of_a_card_on_another_basis_and_a_basis_the_format_does_not_list() {
+	public function test_encode__writes_the_channel_of_a_card_on_another_basis_or_on_none_and_leaves_out_a_basis_the_format_does_not_list() {
 		$encoded = $this->encode_as_sent(
 			array(
 				'keyFactors' => array(
+					// The referring site moved further than Referral, so its
+					// share is of the site's growth.
 					array(
-						'kind'                => 'CHANNEL',
-						'label'               => 'Referral',
-						'current'             => 800,
-						'previous'            => 500,
-						'sharePct'            => 100.0,
+						'kind'                => 'REFERRING_SITE',
+						'label'               => 'news.example',
+						'current'             => 330,
+						'previous'            => 0,
+						'sharePct'            => 25.4,
 						'shareBasis'          => 'GROSS_CHANGE',
-						'parentChannel'       => 'Direct',
-						'parentChannelChange' => 40,
+						'parentChannel'       => 'Referral',
+						'parentChannelChange' => 310,
+						'attributes'          => array(),
+					),
+					// A post on a flat period has no share.
+					array(
+						'kind'                => 'CONTENT',
+						'label'               => 'How to plant garlic',
+						'url'                 => '/how-to-plant-garlic/',
+						'current'             => 64,
+						'previous'            => 0,
+						'sharePct'            => 0.0,
+						'parentChannel'       => 'Cross-network ads',
+						'parentChannelChange' => 60,
 						'attributes'          => array(),
 					),
 					array(
@@ -322,13 +336,70 @@ class Response_EncoderTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				array( 0, 0, 800, 500, 100, null, 0 ),
-				array( 0, 1, 80, 50, 10 ),
+				array( 3, 0, 330, 0, 25.4, null, 0, 1, 310 ),
+				array( 1, 2, 64, 0, 0, 3, null, 4, 60 ),
+				array( 0, 5, 80, 50, 10 ),
 			),
 			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
-			'A channel should travel only with a share of its change, and a basis the format does not list should be left out with the null before it.'
+			'A card should carry its channel and the channel\'s change on any basis or on none, and a basis the format does not list should be left out with the null before it.'
 		);
-		$this->assertSame( array( 'Referral', 'Email' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'A channel left out should add nothing to the string table.' );
+		$this->assertSame(
+			array( 'news.example', 'Referral', 'How to plant garlic', '/how-to-plant-garlic/', 'Cross-network ads', 'Email' ),
+			$encoded[ Wire_Format::MEMBER_STRINGS ],
+			'Each channel should be in the string table.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_unusable_parent_channels
+	 *
+	 * @param array $parent_fields The card's `parentChannel` and `parentChannelChange`.
+	 */
+	public function test_encode__leaves_out_a_channel_without_a_name_or_a_change( array $parent_fields ) {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array_merge(
+						array(
+							'kind'       => 'REFERRING_SITE',
+							'label'      => 'news.example',
+							'current'    => 220,
+							'previous'   => 0,
+							'sharePct'   => 73.3,
+							'shareBasis' => 'PARENT_CHANNEL',
+							'attributes' => array(),
+						),
+						$parent_fields
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( array( 3, 0, 220, 0, 73.3, null, 4 ) ),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'A channel without a name or a change should be left out, with its change or its name.'
+		);
+		$this->assertSame( array( 'news.example' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'A channel left out should add nothing to the string table.' );
+	}
+
+	public function data_unusable_parent_channels() {
+		return array(
+			'a channel without a change' => array( array( 'parentChannel' => 'Referral' ) ),
+			'a change without a channel' => array( array( 'parentChannelChange' => 300 ) ),
+			'an empty channel'           => array(
+				array(
+					'parentChannel'       => '',
+					'parentChannelChange' => 300,
+				),
+			),
+			'a channel that is no text'  => array(
+				array(
+					'parentChannel'       => array( 'Referral' ),
+					'parentChannelChange' => 300,
+				),
+			),
+		);
 	}
 
 	public function test_encode__marks_a_card_whose_change_was_spread_across_many_pages_after_its_parent_channel_and_leaves_the_mark_out_otherwise() {
@@ -366,6 +437,55 @@ class Response_EncoderTest extends TestCase {
 			),
 			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
 			'Only the card whose change was spread across many pages should carry `true`, after nulls in place of the parent channel it has none of.'
+		);
+	}
+
+	public function test_encode__marks_a_card_for_its_channels_other_pages_after_its_spread_mark_and_leaves_the_mark_out_otherwise() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CONTENT',
+						'label'      => 'How to plant garlic',
+						'url'        => '/how-to-plant-garlic/',
+						'current'    => 400,
+						'previous'   => 100,
+						'sharePct'   => 60.0,
+						'shareBasis' => 'GROSS_CHANGE',
+						'attributes' => array(),
+					),
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Direct',
+						'current'    => 600,
+						'previous'   => 480,
+						'sharePct'   => 24.0,
+						'shareBasis' => 'GROSS_CHANGE',
+						'otherPages' => true,
+						'attributes' => array(),
+					),
+					array(
+						'kind'       => 'CHANNEL_GROUP',
+						'label'      => 'Paid traffic',
+						'current'    => 300,
+						'previous'   => 220,
+						'sharePct'   => 16.0,
+						'shareBasis' => 'GROSS_CHANGE',
+						'otherPages' => false,
+						'attributes' => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 1, 0, 400, 100, 60, 1, 0 ),
+				array( 0, 2, 600, 480, 24, null, 0, null, null, null, true ),
+				array( 5, 3, 300, 220, 16, null, 0 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'Only the card for its channel\'s other pages should carry `true`, after nulls in place of the fields it has no value for, and its label should be the channel\'s own.'
 		);
 	}
 
@@ -412,6 +532,114 @@ class Response_EncoderTest extends TestCase {
 			),
 			$encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ],
 			'Only the attribute that moved further than its card should carry `true` after its share.'
+		);
+	}
+
+	public function test_encode__writes_the_title_of_a_landing_page_after_its_oversized_mark_through_the_string_table() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Referral',
+						'current'    => 545,
+						'previous'   => 180,
+						'sharePct'   => 52.4,
+						'shareBasis' => 'GROSS_CHANGE',
+						'attributes' => array(
+							array(
+								'kind'     => 'LANDING_PAGE',
+								'label'    => '/how-to-plant-garlic/',
+								'current'  => 300,
+								'previous' => 40,
+								'sharePct' => 71.2,
+								'title'    => 'How to plant garlic',
+							),
+							array(
+								'kind'      => 'LANDING_PAGE',
+								'label'     => '/garlic-varieties/',
+								'current'   => 500,
+								'previous'  => 100,
+								'sharePct'  => 0.0,
+								'oversized' => true,
+								'title'     => 'How to plant garlic',
+							),
+							array(
+								'kind'     => 'LANDING_PAGE',
+								'label'    => '/',
+								'current'  => 90,
+								'previous' => 50,
+								'sharePct' => 11.0,
+								'title'    => '',
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					array( 1, 1, 300, 40, 71.2, null, 2 ),
+					array( 1, 3, 500, 100, 0, true, 2 ),
+					array( 1, 4, 90, 50, 11 ),
+				),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ],
+			'A page\'s title should travel through the string table after the oversized mark, or a null in its place, and an empty title should be left out.'
+		);
+		$this->assertSame(
+			array( 'Referral', '/how-to-plant-garlic/', 'How to plant garlic', '/garlic-varieties/', '/' ),
+			$encoded[ Wire_Format::MEMBER_STRINGS ],
+			'A title should be stored once, like any other string.'
+		);
+	}
+
+	public function test_encode__marks_a_search_keyword_without_the_sites_search_clicks_after_its_title_and_leaves_the_mark_out_otherwise() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Organic Search',
+						'current'    => 1480,
+						'previous'   => 230,
+						'sharePct'   => 71.4,
+						'shareBasis' => 'GROSS_CHANGE',
+						'attributes' => array(
+							array(
+								'kind'           => 'SEARCH_KEYWORD',
+								'label'          => 'how to plant garlic',
+								'current'        => 310,
+								'previous'       => 90,
+								'sharePct'       => 0.0,
+								'noSearchClicks' => true,
+							),
+							array(
+								'kind'           => 'SEARCH_KEYWORD',
+								'label'          => 'garlic varieties',
+								'current'        => 120,
+								'previous'       => 60,
+								'sharePct'       => 3.6,
+								'oversized'      => true,
+								'noSearchClicks' => false,
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					array( 2, 1, 310, 90, 0, null, null, true ),
+					array( 2, 2, 120, 60, 3.6, true ),
+				),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ],
+			'Only the keyword whose site has no search clicks should carry `true`, after nulls in place of the oversized mark and the title it has none of.'
 		);
 	}
 

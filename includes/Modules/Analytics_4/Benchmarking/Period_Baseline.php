@@ -15,16 +15,17 @@ use DateTimeZone;
 
 /**
  * Calculates the expected range of a period's visits total, the band of each
- * of its days, and last year's totals for the same windows, from the site's
- * daily visits.
+ * of its days, last year's totals for the same windows, and the brief spike
+ * of a period above its band, from the site's daily visits.
  *
  * This is a port of the Site Kit Service's reference baseline model,
  * `internal/ai/baseline_model.go` and `fitDailyRange()` in
  * `internal/ai/expected_range.go`, which §5.4 of the service's
  * `docs/benchmarking_feature_design.md` specifies (§5.5 for last year's
- * totals, §5.6 for the chart's band). The range is the expected range the
- * benchmarking insight request sends as `baseline`, and last year's totals
- * are its `visits.last_year`.
+ * totals, §5.6 for the chart's band), and of its `DetectInPeriodSpike()` in
+ * `internal/ai/benchmark_dataset.go` (§7.4). The range is the expected range
+ * the benchmarking insight request sends as `baseline`, last year's totals
+ * are its `visits.last_year`, and the spike is its `in_period_spike`.
  *
  * Each day of the period is forecast from the history at least 28 days before
  * it: its fit is the model for the 28 days that end on it, fitted only on the
@@ -40,7 +41,10 @@ use DateTimeZone;
  * Each fit removes spikes and outages from its reference, the up to 365 days
  * before its period, fits a level, a damped drift and a margin on the 28-day
  * blocks of four alignments 7 days apart, and takes the medians over the
- * alignments.
+ * alignments. A fit needs one block of reference, so a period's band needs
+ * `d + 55` days of history. While the fit of the period's first day has a
+ * single block, its margin has no past miss to learn from, and the band is
+ * early.
  *
  * Every constant keeps the value, and the name without its `baseline` prefix,
  * of its counterpart in the service, and every guard and rounding rule is the
@@ -71,15 +75,16 @@ class Period_Baseline {
 	const BLOCK_DAYS = 28;
 
 	/**
-	 * The fewest blocks of reference a range needs: two blocks give a level and
-	 * one past miss.
+	 * The fewest blocks of reference a range needs: one block gives a level,
+	 * and the margin is the traffic-size default until a second block gives a
+	 * past miss.
 	 *
 	 * @since n.e.x.t
 	 */
-	const MIN_REFERENCE_BLOCKS = 2;
+	const MIN_REFERENCE_BLOCKS = 1;
 
 	/**
-	 * The fewest days of reference a fit needs: two blocks.
+	 * The fewest days of reference a fit needs: one block.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -217,6 +222,48 @@ class Period_Baseline {
 	const LAST_YEAR_OFFSET_DAYS = 364;
 
 	/**
+	 * The most days in a row a brief spike lasts.
+	 *
+	 * @since n.e.x.t
+	 */
+	const IN_PERIOD_SPIKE_MAX_DAYS = 3;
+
+	/**
+	 * The smallest share of the period's gain that a brief spike's excess
+	 * carries.
+	 *
+	 * @since n.e.x.t
+	 */
+	const IN_PERIOD_SPIKE_MIN_GAIN_SHARE = 0.40;
+
+	/**
+	 * The smallest share of the period's visits that a brief spike's excess
+	 * makes up when the period's visits didn't rise, so a day a little above
+	 * its band isn't a spike for carrying most of a steady period's tiny gain.
+	 *
+	 * @since n.e.x.t
+	 */
+	const IN_PERIOD_SPIKE_MIN_VOLUME_SHARE = 0.05;
+
+	/**
+	 * The smallest share of the visits above the range that a brief spike's
+	 * excess carries when the period's visits are above it, so a period above
+	 * its range throughout isn't put down to a few of its days.
+	 *
+	 * @since n.e.x.t
+	 */
+	const IN_PERIOD_SPIKE_MIN_ABOVE_BAND_SHARE = 0.40;
+
+	/**
+	 * The change of a period's visits, in percent of the period before it and
+	 * rounded to one decimal place, above which they rose: the same 5% as
+	 * `Key_Factors::NOTABLE_CHANGE_PERCENT`.
+	 *
+	 * @since n.e.x.t
+	 */
+	const TRAFFIC_TREND_DEADBAND_PCT = 5.0;
+
+	/**
 	 * The visits of each date with a row, by date as `YYYY-MM-DD`. A date with
 	 * more than one row has the visits of its last row.
 	 *
@@ -307,13 +354,13 @@ class Period_Baseline {
 
 	/**
 	 * Gets the fewest days of history, up to and including the last day of a
-	 * fit's period, that the fit needs: the period and two 28-day reference
-	 * blocks.
+	 * fit's period, that the fit needs: the period and one 28-day reference
+	 * block.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int $period_days The period's length in days. A length that is not above `0` is read as 28.
-	 * @return int The fewest days of history, 84 for a 28-day period.
+	 * @return int The fewest days of history, 56 for a 28-day period.
 	 */
 	public static function get_min_range_history_days( $period_days ) {
 		return self::get_period_days( $period_days ) + self::MIN_REFERENCE_DAYS;
@@ -322,13 +369,13 @@ class Period_Baseline {
 	/**
 	 * Gets the fewest days of history, up to and including a period's last day,
 	 * that give the period its band and its range: every day of the period has
-	 * its 28-day fit, so its first day needs the 84 days of that fit up to and
+	 * its 28-day fit, so its first day needs the 56 days of that fit up to and
 	 * including itself.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int $period_days The period's length in days. A length that is not above `0` is read as 28.
-	 * @return int The fewest days of history, `d + 83`: 111 for a 28-day period.
+	 * @return int The fewest days of history, `d + 55`: 83 for a 28-day period.
 	 */
 	public static function get_min_band_history_days( $period_days ) {
 		return self::get_period_days( $period_days ) - 1 + self::get_min_range_history_days( self::STANDARD_DAYS_IN_PERIOD );
@@ -408,10 +455,17 @@ class Period_Baseline {
 	 * calibration for a total of the period's length. The days' half-widths
 	 * are then scaled to add up to that margin. This is the service's
 	 * `fitDailyRange()` in `internal/ai/expected_range.go`, which §5.4 of its
-	 * design specifies (*Request range*), and the keys and the values are those
-	 * of the `range` of its conformance fixtures.
+	 * design specifies (*Request range*), and the `center`, the `margin` and
+	 * the `days` are those of the `range` of its conformance fixtures.
+	 *
+	 * The fit of the period's first day has the shortest reference. While it
+	 * is under two blocks, from `d + 55` to `d + 82` days of history, the fit
+	 * has no past miss of the site's own, so its margin is the traffic-size
+	 * default alone, and the band is early, as the service's `EarlyBand` of
+	 * its `ExpectedRangeSeries` says.
 	 *
 	 * @since n.e.x.t
+	 * @since n.e.x.t Returns `early_band`.
 	 *
 	 * @param string $target_date The period's last day, as `YYYY-MM-DD`: the last complete day.
 	 * @param int    $period_days The period's length in days. A length that is not above `0` is read as 28.
@@ -423,6 +477,7 @@ class Period_Baseline {
 	 *     @type float $center         The center of the period's total: the sum of the days' centers.
 	 *     @type float $margin         The margin of the period's total.
 	 *     @type int   $reference_days The number of days the fit of the period's last day is fitted on, at most 365.
+	 *     @type bool  $early_band     Whether the fit of the period's first day is fitted on fewer than two blocks, 56 days, so the band is early.
 	 *     @type array $days           The days of the period, oldest first, each with its `date` as `YYYY-MM-DD`, its `center`, its scaled `half_width`, and its `expected_min` and `expected_max` rounded half away from zero to one decimal place, the minimum never below `0`.
 	 * }
 	 */
@@ -547,6 +602,159 @@ class Period_Baseline {
 			'current_period'  => $current,
 			'previous_period' => $previous,
 		);
+	}
+
+	/**
+	 * Gets the brief spike of the period that ends on a day: the run of one to
+	 * three days in a row above their band that carried most of the period's
+	 * gain.
+	 *
+	 * A day is above its band when it has more visits than the most of its
+	 * expected range, as get_daily_ranges() gives it. When the period has no
+	 * band, or a day's most visits are not above `0`, the day's bound is the
+	 * period's even share of the most visits of its range instead,
+	 * `expected_range_max / d`. A run's excess is the visits its days had
+	 * above their bounds. A run is a brief spike when its excess is at least
+	 * 40% of the period's gain; when it is also at least 5% of the period's
+	 * visits, unless they rose by more than 5%; and, when the period's visits
+	 * are above the range, when it is also at least 40% of the visits above
+	 * the range. The spike is the run with the largest excess, and the
+	 * earliest of the runs with the same excess.
+	 *
+	 * The period's visits are those of its days with a row, and a day without
+	 * a row ends a run. The period before had the period's visits less its
+	 * gain, never below `0`.
+	 *
+	 * This is the service's `DetectInPeriodSpike()` in
+	 * `internal/ai/benchmark_dataset.go`, which §7.4 of its design specifies
+	 * (`in_period_spike`). The spike passes the service's checks of the
+	 * request's `in_period_spike` by construction: its three dates are valid
+	 * and in order, it lasts one to three days, and its share is above `0`
+	 * and at most `100`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $target_date  The period's last day, as `YYYY-MM-DD`: the last complete day.
+	 * @param int    $period_days  The period's length in days. A length that is not above `0` is read as 28.
+	 * @param array  $range        The expected range of the period's visits total, with `expected_range_min` and `expected_range_max`, as get_range() returns it.
+	 * @param int    $period_delta The period's gain: its visits less the visits of the period before it.
+	 * @return array|null {
+	 *     The spike, or null when no run is a brief spike, the period's visits
+	 *     didn't grow, or the range lacks a bound or its most visits are not
+	 *     above `0`.
+	 *
+	 *     @type string $peak_date         The first day of the run with the most visits, as `YYYY-MM-DD`.
+	 *     @type string $start_date        The run's first day, as `YYYY-MM-DD`.
+	 *     @type string $end_date          The run's last day, as `YYYY-MM-DD`.
+	 *     @type int    $days              The number of days of the run, from 1 to 3.
+	 *     @type float  $share_of_gain_pct The run's excess as a percentage of the period's gain, at most `100`, rounded half away from zero to one decimal place.
+	 * }
+	 */
+	public function get_in_period_spike( $target_date, $period_days, array $range, $period_delta ) {
+		$end          = self::parse_date( $target_date );
+		$days         = self::get_period_days( $period_days );
+		$period_delta = (int) $period_delta;
+
+		if ( null === $end || ! isset( $range['expected_range_min'], $range['expected_range_max'] ) || $period_delta <= 0 ) {
+			return null;
+		}
+
+		$range_max  = (int) $range['expected_range_max'];
+		$flat_bound = (float) $range_max / $days;
+
+		if ( $flat_bound <= 0 ) {
+			return null;
+		}
+
+		// The days' bounds come from the same fits as the band the chart
+		// draws, which are made once.
+		$daily_ranges  = $this->get_daily_ranges( $target_date, $days );
+		$period_visits = 0;
+		$runs          = array();
+		$in_run        = false;
+
+		for ( $day = self::shift_day( $end, 1 - $days ); $day <= $end; $day = self::shift_day( $day, 1 ) ) {
+			$date   = $day->format( 'Y-m-d' );
+			$visits = isset( $this->visits_by_date[ $date ] ) ? $this->visits_by_date[ $date ] : null;
+			$bound  = isset( $daily_ranges[ $date ] ) && $daily_ranges[ $date ]['expected_max'] > 0 ? $daily_ranges[ $date ]['expected_max'] : $flat_bound;
+
+			if ( null !== $visits ) {
+				$period_visits += $visits;
+			}
+
+			// A day within its bound ends a run, and so does a day without a
+			// row, since the days of a run follow each other.
+			if ( null === $visits || $visits <= $bound ) {
+				$in_run = false;
+
+				continue;
+			}
+
+			if ( ! $in_run ) {
+				$runs[] = array();
+				$in_run = true;
+			}
+
+			$runs[ count( $runs ) - 1 ][] = array(
+				'date'   => $date,
+				'visits' => $visits,
+				'bound'  => $bound,
+			);
+		}
+
+		$rose        = self::is_rising( $period_visits, max( 0, $period_visits - $period_delta ) );
+		$above_range = $period_visits - $range_max;
+		$spike       = null;
+		$top_excess  = 0.0;
+
+		foreach ( $runs as $run ) {
+			if ( count( $run ) > self::IN_PERIOD_SPIKE_MAX_DAYS ) {
+				continue;
+			}
+
+			$excess = 0.0;
+			$peak   = $run[0];
+
+			foreach ( $run as $run_day ) {
+				$excess += $run_day['visits'] - $run_day['bound'];
+
+				if ( $run_day['visits'] > $peak['visits'] ) {
+					$peak = $run_day;
+				}
+			}
+
+			$share = $excess / $period_delta;
+
+			if ( $share < self::IN_PERIOD_SPIKE_MIN_GAIN_SHARE ) {
+				continue;
+			}
+
+			// A period whose visits didn't rise has a spike only of a part of
+			// its visits, so a steady period's tiny gain doesn't make one.
+			if ( ! $rose && ( $period_visits <= 0 || $excess < self::IN_PERIOD_SPIKE_MIN_VOLUME_SHARE * $period_visits ) ) {
+				continue;
+			}
+
+			// A period above its range has a spike only of a part of the
+			// visits above it, so a period above it throughout doesn't.
+			if ( $above_range > 0 && $excess < self::IN_PERIOD_SPIKE_MIN_ABOVE_BAND_SHARE * $above_range ) {
+				continue;
+			}
+
+			// Of the runs with the same excess, the earliest is kept.
+			if ( $excess > $top_excess ) {
+				$top_excess = $excess;
+				$spike      = array(
+					'peak_date'         => $peak['date'],
+					'start_date'        => $run[0]['date'],
+					'end_date'          => $run[ count( $run ) - 1 ]['date'],
+					'days'              => count( $run ),
+					'share_of_gain_pct' => self::round_half_away_from_zero( min( 100.0, $share * 100 ) * 10 ) / 10,
+				);
+			}
+		}
+
+		return $spike;
 	}
 
 	/**
@@ -675,10 +883,15 @@ class Period_Baseline {
 		$margin = self::get_margin_for( $fit, $center );
 		$raw    = array_sum( array_column( $bands, 'half_width' ) );
 
+		// The fit of the period's first day, made in the loop, has the
+		// shortest reference of the period's fits.
+		$first_fit = $this->get_day_fit( $visits, $dates, $weekdays, $history_days - $days );
+
 		return array(
 			'center'         => $center,
 			'margin'         => $margin,
 			'reference_days' => $fit['reference_days'],
+			'early_band'     => $first_fit['reference_days'] < 2 * self::BLOCK_DAYS,
 			'days'           => array_map(
 				function ( $band ) use ( $margin, $raw, $days ) {
 					// The days' half-widths are scaled to add up to the margin
@@ -793,7 +1006,7 @@ class Period_Baseline {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param float[]  $reference   The visits of each day of the reference, oldest first: at least two blocks.
+	 * @param float[]  $reference   The visits of each day of the reference, oldest first: at least one block.
 	 * @param string[] $dates       The date of each day of the reference, in the same order.
 	 * @param int[]    $weekdays    The weekday of each day of the reference, in the same order.
 	 * @param int      $period_days The period's length in days.
@@ -808,8 +1021,8 @@ class Period_Baseline {
 
 		// Each alignment is a fit of the reference cut by 0, 7, 14 and 21 days,
 		// so the band does not depend on where the block grid falls. A cut that
-		// leaves fewer than two blocks is skipped; the uncut reference always
-		// has two.
+		// leaves less than one block is skipped; the uncut reference always has
+		// one.
 		$fits = array();
 
 		for ( $alignment = 0; $alignment < self::ALIGNMENTS; $alignment++ ) {
@@ -920,7 +1133,7 @@ class Period_Baseline {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param float[] $reference The raw visits of each day of the reference, oldest first: at least two blocks.
+	 * @param float[] $reference The raw visits of each day of the reference, oldest first: at least one block. A single block has no ratios.
 	 * @param float[] $cleaned   The cleaned visits of each day of the reference, in the same order.
 	 * @return array {
 	 *     The fit.
@@ -1243,7 +1456,9 @@ class Period_Baseline {
 	 * square with one or two, each deviation capped at 0.19. It is blended with
 	 * the traffic-size default spread, the floor margin over the center over
 	 * 1.645, which weighs as much as four misses. The margin is the center
-	 * times 2.326 times the blended spread, and never below 15.
+	 * times 2.326 times the blended spread, and never below 15. Without a
+	 * miss, as on a reference of one block, the margin is the floor margin
+	 * times 2.326 over 1.645.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -1349,6 +1564,28 @@ class Period_Baseline {
 		}
 
 		return ( $values[ $middle - 1 ] + $values[ $middle ] ) / 2;
+	}
+
+	/**
+	 * Checks whether a period's visits rose: by more than 5% of the visits of
+	 * the period before it, the change rounded half away from zero to one
+	 * decimal place, or from none at all.
+	 *
+	 * This is the `UP` direction of the service's `DetermineTrafficTrend()`,
+	 * the rule `Key_Factors` reads the direction of the site's visits by.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $current  The period's visits.
+	 * @param int $previous The visits of the period before it.
+	 * @return bool True when the period's visits rose, false otherwise.
+	 */
+	private static function is_rising( $current, $previous ) {
+		if ( 0 === $previous ) {
+			return $current > 0;
+		}
+
+		return self::round_half_away_from_zero( (float) ( $current - $previous ) / $previous * 1000 ) / 10 > self::TRAFFIC_TREND_DEADBAND_PCT;
 	}
 
 	/**

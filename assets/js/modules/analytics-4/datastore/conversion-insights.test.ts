@@ -962,10 +962,11 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 
 		it.each( [
 			[ 'a 403, for an hour', 403, undefined, HOUR_IN_SECONDS ],
+			[ 'a 429, for its retryAfter of a minute', 429, 60, 60 ],
 			[
-				'a 429, for 30 minutes though its retryAfter is a minute',
+				'a 429 without a retryAfter, for a minute',
 				429,
-				60,
+				undefined,
 				AI_INSIGHT_RATE_LIMIT_HOLD,
 			],
 			[
