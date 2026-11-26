@@ -188,6 +188,33 @@ describe( 'useSiteGoalsInsight', () => {
 		);
 	} );
 
+	it( 'should return `undefined` and request no insight while it is not known whether the open tab is in the partial data state', async () => {
+		fetchMock.post(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/conversion-insights'
+			),
+			{ body: {}, status: 200 }
+		);
+
+		const { result } = renderHook(
+			() => useSiteGoalsInsight( GOAL_TYPES.LEAD, 'contact-form' ),
+			{ registry }
+		);
+		await waitForDefaultTimeouts();
+
+		expect(
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.isCustomDimensionPartialData( 'googlesitekit_form_id' )
+		).toBeUndefined();
+		expect( result.current ).toBeUndefined();
+		expect( fetchMock ).not.toHaveFetched(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/conversion-insights'
+			)
+		);
+	} );
+
 	it.each( [
 		[
 			'the "Last 7 days" preset is selected',
