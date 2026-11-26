@@ -26,7 +26,7 @@ use WP_Error;
  * builds the numbers the insight is written from, so the model only ever
  * reads the site's own Analytics data.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -37,7 +37,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	 * characters of an event parameter value, so no form ID or event provider
 	 * is longer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const MAX_TAB_LENGTH = 500;
 
@@ -46,14 +46,14 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	 * on. The service refuses a request for the insight with a 400, a 403, a
 	 * 409, a 429 or a 503, and any other failure is a 500.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const PASSED_ERROR_STATUSES = array( 400, 403, 409, 429, 503 );
 
 	/**
 	 * Insight_Payload_Builder instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Insight_Payload_Builder
 	 */
 	private $payload_builder;
@@ -61,7 +61,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` to reach the service with, and the Analytics `module` that runs the reports.
 	 */
@@ -78,7 +78,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	 * because WordPress checks those only from version 5.5. `create_request()`
 	 * checks both instead.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array Map of parameter names to their schemas.
 	 */
@@ -103,7 +103,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that asks the service for the insight. It returns the ID of the operation that generates the insight as `operationID`, the insight as `insight` when the service had one in its cache, `insight` as null when there is no insight to write, or an error.
@@ -178,7 +178,7 @@ class Create_Conversion_Insight extends Conversion_Insights_Datapoint implements
 	 * server error, such as a 503, so the browser doesn't take it for the
 	 * service being busy and ask again, which would run the reports again.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param WP_Error $error The error of the reports.
 	 * @return WP_Error The error.

@@ -97,7 +97,7 @@ export function findBlockingStep(
  * @since 1.190.0
  * @since 1.191.0 Returns no current step until the initial step resolves.
  * @since 1.192.0 Added the `ctaType` parameter and the existing CTA step.
- * @since n.e.x.t Added the `goBack` callback.
+ * @since 1.193.0 Added the `goBack` callback.
  *
  * @param {Array.<Object>} steps     Ordered step definitions. Must be referentially stable.
  * @param {string}         [ctaType] Optional. The express setup CTA type, one of `EXPRESS_SETUP_CTAS`.

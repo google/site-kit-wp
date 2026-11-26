@@ -265,7 +265,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Measurement_Protocol_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @var Measurement_Protocol_Settings
 	 */
@@ -274,7 +274,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Measurement_Protocol_Secret instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @var Measurement_Protocol_Secret
 	 */
@@ -323,7 +323,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.30.0
 	 * @since 1.101.0 Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
 	 * @since 1.190.0 The `googlesitekit_proxy_setup_mode` callback no longer overrides a mode that is already set.
-	 * @since n.e.x.t Registers the Measurement Protocol secret setting, which the settings change callback deletes when the property, web data stream or measurement ID changes.
+	 * @since 1.193.0 Registers the Measurement Protocol secret setting, which the settings change callback deletes when the property, web data stream or measurement ID changes.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -665,7 +665,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Cleans up when the module is deactivated.
 	 *
 	 * @since 1.30.0
-	 * @since n.e.x.t Deletes the stored Measurement Protocol secret.
+	 * @since 1.193.0 Deletes the stored Measurement Protocol secret.
 	 */
 	public function on_deactivation() {
 		// We need to reset the resource data availability dates before deleting the settings.
@@ -684,7 +684,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Gets the Measurement_Protocol_Secret instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return Measurement_Protocol_Secret Measurement_Protocol_Secret instance.
 	 */
@@ -857,7 +857,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.30.0
 	 * @since 1.191.0 Registers `GET:plain-permalink-top-posts` with the `freshData` feature flag on.
 	 * @since 1.192.0 Always registers `GET:plain-permalink-top-posts`.
-	 * @since n.e.x.t Registers `POST:conversion-insights` and `GET:conversion-insights` with the `siteGoalsInsights` feature flag on.
+	 * @since 1.193.0 Registers `POST:conversion-insights` and `GET:conversion-insights` with the `siteGoalsInsights` feature flag on.
 	 * @since n.e.x.t Registers `POST:acknowledge-user-data-collection` and `POST:create-measurement-protocol-secret` with the `serverSideEvents` feature flag on.
 	 *
 	 * @return array Map of datapoints to their definitions.
@@ -1997,7 +1997,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Gets the resource name of a web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param string $property_id        Property ID.
 	 * @param string $web_data_stream_id Web data stream ID.

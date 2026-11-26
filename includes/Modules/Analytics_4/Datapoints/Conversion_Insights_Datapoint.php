@@ -17,7 +17,7 @@ use WP_Error;
  * `POST:conversion-insights`, which asks for the insight, and
  * `GET:conversion-insights`, which reads the operation that generates it.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ abstract class Conversion_Insights_Datapoint extends AI_Insight_Datapoint {
 	/**
 	 * The code of the error for a service response the datapoint can't read.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const INVALID_RESPONSE_ERROR_CODE = 'invalid_conversion_insight_response';
 
@@ -42,7 +42,7 @@ abstract class Conversion_Insights_Datapoint extends AI_Insight_Datapoint {
 	 * feedback endpoint checks a vote against, so they pass through unchanged
 	 * too.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array $response The service's answer, or the response of a succeeded operation.
 	 * @return array|null|WP_Error The insight, with `interactionID`, `scenario`, `code`, `text` and `actionableRecommendation`; null when the service wrote no insight: `insights` is missing or empty, its first entry isn't an object, or that entry has the code `NO_INSIGHT`; or an error with status 500 when the insight has no `text`.
@@ -70,7 +70,7 @@ abstract class Conversion_Insights_Datapoint extends AI_Insight_Datapoint {
 	/**
 	 * Gets a field of the service's answer that the browser reads as text.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array  $entry The answer, or the entry of `insights`, the field is in.
 	 * @param string $field The name of the field.

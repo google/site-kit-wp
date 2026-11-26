@@ -26,7 +26,7 @@ use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\SurveyQuesti
  * on the CTA state or the question catalog, such as the number of questions
  * and answers, are left to the API.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -35,7 +35,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	/**
 	 * Gets the CTA type handled by this instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return string CTA type.
 	 */
@@ -57,7 +57,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	/**
 	 * Validates and applies survey configuration to a CTA model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Cta   $cta    CTA model.
 	 * @param array $config Survey configuration.
@@ -93,7 +93,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	/**
 	 * Validates a survey question and builds its model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed  $question Survey question.
 	 * @param string $path     Path of the question in the configuration, for the error.
@@ -126,7 +126,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	/**
 	 * Validates a preset question and builds its model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed  $question Preset question.
 	 * @param string $path     Path of the question in the configuration, for the error.
@@ -159,7 +159,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	/**
 	 * Validates a custom question and builds its model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed  $question Custom question.
 	 * @param string $path     Path of the question in the configuration, for the error.
@@ -214,7 +214,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	/**
 	 * Validates that a value is an array with only supported fields.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed    $value            Value to validate.
 	 * @param string   $path             Path of the value in the configuration, for the error.
@@ -230,7 +230,7 @@ class Survey_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	/**
 	 * Validates that a value is a string.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed  $value Value to validate.
 	 * @param string $path  Path of the value in the configuration, for the error.

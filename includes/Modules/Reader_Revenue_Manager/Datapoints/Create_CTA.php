@@ -34,7 +34,8 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @since 1.187.0
 	 * @since 1.189.0 Added support for the CTA `state` property.
-	 * @since n.e.x.t Requires the publication identifiers in the request, and uses the shared CTA type handlers.
+	 * @since 1.193.0 Requires the publication identifiers in the request.
+	 * @since n.e.x.t Uses the shared CTA type handlers.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -90,6 +91,33 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 		$parent = $this->get_publication_name( $data_request );
 
 		return $this->get_service()->organizations_publications_ctas->create( $parent, $cta );
+	}
+
+	/**
+	 * Gets the supported CTA type handlers, keyed by CTA type.
+	 *
+	 * @since 1.187.0
+	 * @since 1.193.0 Added the survey CTA type handler, when the `rrmSurveyCTA` feature flag is enabled.
+	 *
+	 * @return CTA_Type_Handler_Interface[] CTA type handlers.
+	 */
+	private function get_cta_type_handlers() {
+		$handlers = array();
+
+		$type_handlers = array(
+			new Newsletter_Signup_CTA_Type_Handler(),
+			// Register additional CTA type handlers here as they are added.
+		);
+
+		if ( Feature_Flags::enabled( 'rrmSurveyCTA' ) ) {
+			$type_handlers[] = new Survey_CTA_Type_Handler();
+		}
+
+		foreach ( $type_handlers as $handler ) {
+			$handlers[ $handler->get_type() ] = $handler;
+		}
+
+		return $handlers;
 	}
 
 	/**

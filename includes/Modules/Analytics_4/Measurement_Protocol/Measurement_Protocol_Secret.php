@@ -21,7 +21,7 @@ use WP_Error;
 /**
  * Class that finds or creates the Measurement Protocol secret of the connected web data stream, and stores, reads and clears it.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -30,14 +30,14 @@ class Measurement_Protocol_Secret {
 	/**
 	 * Display name of the Measurement Protocol secret that Site Kit uses. It is an API value, so it is not translated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const DISPLAY_NAME = 'Site Kit by Google';
 
 	/**
 	 * Analytics 4 settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -45,7 +45,7 @@ class Measurement_Protocol_Secret {
 	/**
 	 * Measurement_Protocol_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Measurement_Protocol_Settings
 	 */
 	private $measurement_protocol_settings;
@@ -53,7 +53,7 @@ class Measurement_Protocol_Secret {
 	/**
 	 * Function that returns the Google Analytics Admin service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var callable
 	 */
 	private $get_service;
@@ -61,7 +61,7 @@ class Measurement_Protocol_Secret {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Settings                      $settings                      Analytics 4 settings instance.
 	 * @param Measurement_Protocol_Settings $measurement_protocol_settings Measurement_Protocol_Settings instance.
@@ -76,7 +76,7 @@ class Measurement_Protocol_Secret {
 	/**
 	 * Gets the stored secret value when it belongs to the connected property and web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return string The secret value, or an empty string when no secret is stored for the connected web data stream.
 	 */
@@ -94,7 +94,7 @@ class Measurement_Protocol_Secret {
 	/**
 	 * Stores the given secret when it belongs to the connected property and web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param GoogleAnalyticsAdminV1betaMeasurementProtocolSecret $secret Secret returned by the Google Analytics Admin API.
 	 * @return bool True if the secret was stored, otherwise false.
@@ -135,7 +135,7 @@ class Measurement_Protocol_Secret {
 	/**
 	 * Finds the "Site Kit by Google" secret on the connected web data stream and stores it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return bool|WP_Error True if a "Site Kit by Google" secret was found, false if there is none,
 	 *                       or a WP_Error when no web data stream is connected or the request fails.
@@ -273,7 +273,7 @@ class Measurement_Protocol_Secret {
 	/**
 	 * Deletes the stored secret and empties the `measurementProtocolSecretID` setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	public function clear() {
 		$this->measurement_protocol_settings->delete();

@@ -462,7 +462,7 @@ const baseSelectors = {
 	 * the Site Kit ones.
 	 *
 	 * @since 1.182.0
-	 * @since n.e.x.t Returns every custom dimension on the property, not only the `googlesitekit_`-prefixed ones.
+	 * @since 1.193.0 Returns every custom dimension on the property, not only the `googlesitekit_`-prefixed ones.
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID GA4 property ID to get the custom dimensions for.

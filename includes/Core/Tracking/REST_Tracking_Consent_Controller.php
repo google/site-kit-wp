@@ -85,7 +85,7 @@ class REST_Tracking_Consent_Controller {
 	 * Gets tracking routes.
 	 *
 	 * @since 1.49.0
-	 * @since n.e.x.t Declares the argument and resource schemas of each route.
+	 * @since 1.193.0 Declares the argument and resource schemas of each route.
 	 *
 	 * @param array $routes Array of routes.
 	 * @return array Modified array of routes that contains tracking related routes.

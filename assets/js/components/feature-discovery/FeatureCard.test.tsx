@@ -28,7 +28,10 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
-import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import {
+	getFeatureNewnessKey,
+	getFeatureSetupSurveyTriggerID,
+} from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
@@ -38,7 +41,6 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
-import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -560,11 +562,9 @@ describe( 'FeatureCard', () => {
 		const viewContext = 'testViewContext';
 
 		it( 'should track the CTA click in the feature card category', async () => {
-			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry );
 			provideUserCapabilities( registry );
-			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 			provideFeatures( registry, [
 				{
@@ -593,6 +593,12 @@ describe( 'FeatureCard', () => {
 				`${ viewContext }_feature-card`,
 				'click_setup_cta',
 				'test-feature'
+			);
+
+			// `triggerSurvey` is mocked for this file, so the trigger sends no
+			// request that could land in a later test.
+			expect( triggerSurvey ).toHaveBeenCalledWith(
+				getFeatureSetupSurveyTriggerID( 'test-feature' )
 			);
 		} );
 

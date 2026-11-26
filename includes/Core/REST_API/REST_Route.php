@@ -131,7 +131,7 @@ final class REST_Route {
 	 * from 5.5, and `minProperties` only from 5.6. So once WordPress's own check passes, this checks those
 	 * keywords too. WordPress 5.6 and later check them first, so this can go once Site Kit requires 5.6.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed           $value   Value of the argument.
 	 * @param WP_REST_Request $request Request the argument belongs to.
@@ -158,7 +158,7 @@ final class REST_Route {
 	 * It walks `properties` and `items` as WordPress does. It checks no type, because WordPress's own check
 	 * of the value runs first.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed $value  Value to check.
 	 * @param array $schema Schema of the value.
@@ -230,7 +230,7 @@ final class REST_Route {
 	 * Parses data for a supported request argument.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Defaults the validate callback to {@see REST_Route::validate_request_arg()}.
+	 * @since 1.193.0 Defaults the validate callback to {@see REST_Route::validate_request_arg()}.
 	 *
 	 * @param array $data {
 	 *     Request argument data.
