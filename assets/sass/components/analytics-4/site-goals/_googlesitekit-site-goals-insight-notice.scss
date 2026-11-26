@@ -25,14 +25,22 @@
 	}
 
 	.googlesitekit-site-goals-insight-notice {
-		align-items: center;
+		align-items: flex-start;
 		background-color: $c-blue-b-50;
 		border-radius: $br-xxs;
 		box-sizing: border-box;
 		display: flex;
-		gap: $grid-gap-phone;
+		flex-direction: column;
+		gap: 6px;
 		min-height: 72px;
-		padding: $grid-gap-phone $grid-gap-desktop;
+		padding: 12px $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			flex-direction: row;
+			gap: $grid-gap-phone;
+			padding: $grid-gap-phone $grid-gap-desktop;
+		}
 	}
 
 	.googlesitekit-site-goals-insight-notice__icon {
