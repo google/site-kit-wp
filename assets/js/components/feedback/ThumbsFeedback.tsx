@@ -87,7 +87,7 @@ interface ThumbsFeedbackProps {
  * @param props.feedbackMenuPlacement Feedback menu position, defaults to `top-start`.
  * @param props.voteDirection         Controlled vote; null selects neither thumb. Omit to manage selection internally.
  * @param props.feedbackOptions       Feedback options for each vote direction.
- * @param props.onSelectFeedback      Callback run when feedback is selected, after any option value is sent as feedback.
+ * @param props.onSelectFeedback      Callback run with the chosen option's value, or `undefined` for an option without one. The value is already sent as `vote_reason` feedback.
  * @return React element.
  */
 const ThumbsFeedback: FC< ThumbsFeedbackProps > = ( {
