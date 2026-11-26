@@ -332,6 +332,93 @@ describe( 'core/feature-discovery newness', () => {
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'eligible-in-progress' ] );
 		} );
+
+		it( 'should return undefined while a new, undismissed feature’s isEnabled() is undefined', () => {
+			provideNewnessState();
+			const state: { isEnabled?: boolean } = {};
+			registerFeature( 'loading-feature', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => state.isEnabled,
+				},
+			} );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getWhatsNewFeatures()
+			).toBeUndefined();
+
+			state.isEnabled = false;
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getWhatsNewFeatures()
+					.map( ( { slug }: { slug: string } ) => slug )
+			).toEqual( [ 'loading-feature' ] );
+		} );
+
+		it( 'should return undefined while a new, undismissed feature’s isInProgress() is undefined', () => {
+			provideNewnessState();
+			registerFeature( 'loading-progress', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => undefined,
+				},
+			} );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getWhatsNewFeatures()
+			).toBeUndefined();
+		} );
+
+		it( 'should return undefined while a new, undismissed feature’s prerequisite module state is loading', () => {
+			// Use a registry without the modules `beforeEach()` provides.
+			registry = createTestRegistry();
+			freezeFetch(
+				new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
+			);
+			provideNewnessState();
+			registerFeature( 'needs-module', {
+				prerequisiteModules: [ 'analytics-4' ],
+			} );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getWhatsNewFeatures()
+			).toBeUndefined();
+		} );
+
+		it( 'should not wait on features that are dismissed, not new, or missing prerequisite modules', () => {
+			provideModules( registry, [
+				{ slug: 'analytics-4', active: false, connected: false },
+			] );
+			provideNewnessState( {
+				dismissedItems: [ getFeatureDismissalKey( 'dismissed' ) ],
+			} );
+			const loadingSetup = {
+				type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+				isEnabled: () => undefined,
+				isInProgress: () => undefined,
+			};
+
+			registerFeature( 'ready' );
+			registerFeature( 'dismissed', { setup: loadingSetup } );
+			registerFeature( 'not-new', {
+				setup: loadingSetup,
+				addedInVersion: '1.100.0',
+			} );
+			registerFeature( 'no-prerequisite', {
+				setup: loadingSetup,
+				prerequisiteModules: [ 'analytics-4' ],
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getWhatsNewFeatures()
+					.map( ( { slug }: { slug: string } ) => slug )
+			).toEqual( [ 'ready' ] );
+		} );
 	} );
 
 	describe( 'isFeatureUnread', () => {

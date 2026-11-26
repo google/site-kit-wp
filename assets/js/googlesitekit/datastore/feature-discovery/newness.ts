@@ -202,7 +202,7 @@ export const selectors = {
 	 *
 	 * @since 1.188.0
 	 *
-	 * @return {(Array.<Object>|undefined)} New available features, or `undefined` while user state is loading.
+	 * @return {(Array.<Object>|undefined)} New available features, or `undefined` while user state or the features' setup state is loading.
 	 */
 	getWhatsNewFeatures: createRegistrySelector(
 		( select: Select ) => (): Feature[] | undefined => {
@@ -210,8 +210,53 @@ export const selectors = {
 				return undefined;
 			}
 
-			const { isFeatureInProgress, isFeatureNew, isFeatureUnread } =
-				select( CORE_FEATURE_DISCOVERY );
+			const {
+				getFeatures,
+				isFeatureConnected,
+				isFeatureInProgress,
+				isFeatureNew,
+				isFeaturePrerequisiteMet,
+				isFeatureUnread,
+			} = select( CORE_FEATURE_DISCOVERY );
+
+			// Wait for the setup state of every candidate feature, so a
+			// feature whose state loads late is not left out of the list
+			// or sorted into the wrong place.
+			const isSetupStateLoading = getFeatures().some(
+				( feature: Feature ) => {
+					if (
+						! isFeatureNew( feature.slug ) ||
+						select( CORE_USER ).isItemDismissed(
+							getFeatureDismissalKey( feature.slug )
+						)
+					) {
+						return false;
+					}
+
+					const isPrerequisiteMet = isFeaturePrerequisiteMet(
+						feature.slug
+					);
+
+					if ( isPrerequisiteMet === undefined ) {
+						return true;
+					}
+
+					// `getAvailableFeatures()` leaves this feature out, so
+					// its own state does not matter.
+					if ( ! isPrerequisiteMet ) {
+						return false;
+					}
+
+					return (
+						isFeatureConnected( feature.slug ) === undefined ||
+						isFeatureInProgress( feature.slug ) === undefined
+					);
+				}
+			);
+
+			if ( isSetupStateLoading ) {
+				return undefined;
+			}
 
 			return select( CORE_FEATURE_DISCOVERY )
 				.getAvailableFeatures()
