@@ -24,19 +24,19 @@ import { getEngagementSessionsSubtitle } from './engagementSessionsText';
 
 describe( 'getEngagementSessionsSubtitle', () => {
 	it( 'should show the total sessions without a breakdown', () => {
-		expect( getEngagementSessionsSubtitle( '1,250' ) ).toBe(
+		expect( getEngagementSessionsSubtitle( 1250 ) ).toBe(
 			'of 1,250 total sessions'
 		);
 	} );
 
 	it( 'should name the plugin sessions on an ecommerce plugin breakdown', () => {
 		expect(
-			getEngagementSessionsSubtitle( '29', GOAL_TYPES.ECOMMERCE )
+			getEngagementSessionsSubtitle( 29, GOAL_TYPES.ECOMMERCE )
 		).toBe( 'of 29 sessions with this plugin' );
 	} );
 
 	it( 'should name the form sessions on a form breakdown', () => {
-		expect( getEngagementSessionsSubtitle( '29', GOAL_TYPES.LEAD ) ).toBe(
+		expect( getEngagementSessionsSubtitle( 29, GOAL_TYPES.LEAD ) ).toBe(
 			'of 29 sessions with this form'
 		);
 	} );
