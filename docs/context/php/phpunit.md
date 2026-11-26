@@ -805,9 +805,11 @@ two reads, an exact assertion fails, and the next run usually passes.
 
 The `SiteKit.PHPUnit.NoCurrentTimeInExactAssertion` sniff reports this mistake in `composer lint`.
 It checks the expected value, which is the first argument, of `assertEquals()`, `assertSame()`,
-`assertNotEquals()` and `assertNotSame()`. It reports `time()`, `microtime()` and `current_time()`,
-`date()` and `gmdate()` without a timestamp argument, and `strtotime()` with a relative string
-such as `'now'`.
+`assertNotEquals()`, and `assertNotSame()`. It reports these calls:
+
+-   `time()`, `microtime()`, and `current_time()`.
+-   `date()` and `gmdate()` without a timestamp argument.
+-   `strtotime()` with a relative string such as `'now'`.
 
 Use one of these patterns, in order of preference.
 
