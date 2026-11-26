@@ -46,24 +46,6 @@ import SiteGoalsWidgetFeedback from './SiteGoalsWidgetFeedback';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-const UPVOTE_REASONS = [
-	[
-		'Shows me which traffic actually drives results',
-		'shows_what_drives_results',
-	],
-	[
-		'Clear visibility into which channels are working for me',
-		'clear_channel_visibility',
-	],
-	[ 'Easy to understand at a glance', 'easy_to_understand' ],
-];
-
-const DOWNVOTE_REASONS = [
-	[ 'It’s missing the metrics I track / care about', 'missing_metrics' ],
-	[ 'Numbers are wrong or out of date', 'numbers_wrong' ],
-	[ 'I don’t understand what a metric means', 'metric_unclear' ],
-];
-
 describe( 'SiteGoalsWidgetFeedback', () => {
 	let registry: WPDataRegistry;
 
@@ -120,8 +102,33 @@ describe( 'SiteGoalsWidgetFeedback', () => {
 	);
 
 	describe.each( [
-		[ 'Yes, this was helpful', 'up', UPVOTE_REASONS ],
-		[ 'No, this was not helpful', 'down', DOWNVOTE_REASONS ],
+		[
+			'Yes, this was helpful',
+			'up',
+			[
+				[
+					'Shows me which traffic actually drives results',
+					'shows_what_drives_results',
+				],
+				[
+					'Clear visibility into which channels are working for me',
+					'clear_channel_visibility',
+				],
+				[ 'Easy to understand at a glance', 'easy_to_understand' ],
+			],
+		],
+		[
+			'No, this was not helpful',
+			'down',
+			[
+				[
+					'It’s missing the metrics I track / care about',
+					'missing_metrics',
+				],
+				[ 'Numbers are wrong or out of date', 'numbers_wrong' ],
+				[ 'I don’t understand what a metric means', 'metric_unclear' ],
+			],
+		],
 	] )( 'after clicking "%s"', ( buttonName, direction, reasons ) => {
 		it( 'should send and track the vote, and open the "Help us improve" menu with the reasons for that vote', async () => {
 			const { getByRole, getAllByRole, waitForRegistry } = render(

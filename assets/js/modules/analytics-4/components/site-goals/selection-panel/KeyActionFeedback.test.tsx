@@ -50,18 +50,6 @@ import KeyActionFeedback from './KeyActionFeedback';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-const UPVOTE_REASONS = [
-	[ 'It’s what matters most', 'matters_most' ],
-	[ 'Only some of them matter', 'only_some_matter' ],
-	[ 'Other actions matter too', 'other_actions_matter' ],
-];
-
-const DOWNVOTE_REASONS = [
-	[ 'Some are missing or wrong', 'missing_or_wrong' ],
-	[ 'People call or email instead', 'call_or_email_instead' ],
-	[ 'Something else matters more', 'something_else_matters_more' ],
-];
-
 describe( 'KeyActionFeedback', () => {
 	let registry: WPDataRegistry;
 
@@ -150,8 +138,27 @@ describe( 'KeyActionFeedback', () => {
 	);
 
 	describe.each( [
-		[ 'Yes, this was helpful', 'up', UPVOTE_REASONS ],
-		[ 'No, this was not helpful', 'down', DOWNVOTE_REASONS ],
+		[
+			'Yes, this was helpful',
+			'up',
+			[
+				[ 'It’s what matters most', 'matters_most' ],
+				[ 'Only some of them matter', 'only_some_matter' ],
+				[ 'Other actions matter too', 'other_actions_matter' ],
+			],
+		],
+		[
+			'No, this was not helpful',
+			'down',
+			[
+				[ 'Some are missing or wrong', 'missing_or_wrong' ],
+				[ 'People call or email instead', 'call_or_email_instead' ],
+				[
+					'Something else matters more',
+					'something_else_matters_more',
+				],
+			],
+		],
 	] )( 'after clicking "%s"', ( buttonName, direction, reasons ) => {
 		it( 'should send and track the vote, and open the "Help us improve" menu with the reasons for that vote', async () => {
 			const { getByRole, getAllByRole, waitForRegistry } = render(
