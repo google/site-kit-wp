@@ -117,7 +117,7 @@ interface SyncPublicationOnboardingStateParams {
  * Validates publication parameters.
  *
  * @since 1.186.0
- * @since n.e.x.t Requires both identifiers.
+ * @since 1.193.0 Requires both identifiers.
  *
  * @param  params Publication parameters to validate.
  * @return {void}
@@ -187,7 +187,7 @@ function syncConnectedPublicationSettings(
  * Stores a publication under its ID, and in the publications list when that
  * already holds it.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object} state       Module state.
  * @param {Object} publication Publication to store.
@@ -494,7 +494,7 @@ const baseActions = {
 	 * The resolver does nothing once the store holds the publication, so this
 	 * is how a caller refreshes it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -523,7 +523,7 @@ const baseActions = {
 	 * Updates the publication in the module settings.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t No longer accepts publication identifiers.
+	 * @since 1.193.0 No longer accepts publication identifiers.
 	 *
 	 * @param {Object} params      Publication update parameters.
 	 * @param {Object} params.data Publication fields to update.
@@ -838,7 +838,7 @@ const baseSelectors = {
 	 * Settings saved before express setup hold a publication ID without an
 	 * organization ID, which is then read from the publications list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return {(Object|null|undefined)} Publication identifiers; `null` if there is no publication to request; `undefined` while they are loading.
 	 */
@@ -893,7 +893,7 @@ const baseSelectors = {
 	 * Gets the publication in the module settings.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t No longer accepts publication identifiers.
+	 * @since 1.193.0 No longer accepts publication identifiers.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
@@ -919,7 +919,7 @@ const baseSelectors = {
 	 * The resolution is keyed by the publication's identifiers, so a caller
 	 * would otherwise have to assemble that key itself.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return {boolean} TRUE once the publication has resolved, or when there is none to resolve.
 	 */
@@ -957,7 +957,7 @@ const baseSelectors = {
 	 * The organization only addresses the request, so the publications are not
 	 * stored under it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @private
 	 *
 	 * @param {Object} state           Data store's state.

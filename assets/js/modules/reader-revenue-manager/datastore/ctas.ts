@@ -303,7 +303,7 @@ const baseActions = {
 	 *
 	 * @since 1.187.0
 	 * @since 1.189.0 Added support for the CTA `state` property. Defaults to `ACTIVE`.
-	 * @since n.e.x.t No longer accepts publication identifiers.
+	 * @since 1.193.0 No longer accepts publication identifiers.
 	 *
 	 * @param  params                  Parameters.
 	 * @param  params.data             CTA data.
@@ -348,7 +348,7 @@ const baseActions = {
 	 * The resolver does nothing once the store holds the CTAs, so this is how
 	 * a caller refreshes them after creating one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -435,7 +435,7 @@ const baseSelectors = {
 	 * Gets the CTAs of the publication in the module settings.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t No longer accepts publication identifiers.
+	 * @since 1.193.0 No longer accepts publication identifiers.
 	 *
 	 * @return {(Array.<Object>|undefined)} The CTAs; `undefined` if not loaded yet.
 	 */
@@ -466,7 +466,7 @@ const baseSelectors = {
 	 * The organization only addresses the request, so the CTAs are not stored
 	 * under it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @private
 	 *
 	 * @param  state           Data store's state.

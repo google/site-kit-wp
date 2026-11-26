@@ -64,7 +64,7 @@ class REST_User_Feedback_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Requires the current user to have `Permissions::AUTHENTICATE`.
+	 * @since 1.193.0 Requires the current user to have `Permissions::AUTHENTICATE`.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

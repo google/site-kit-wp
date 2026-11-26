@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Util\Input;
  * The format of these cookies is not a public contract, so all parsing of them stays in this class.
  * Each pattern ends on `\z`, because `$` also accepts a trailing newline, which a cookie's value can have.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -27,14 +27,14 @@ final class GA_Session {
 	/**
 	 * Most seconds between the last hit and the current time for a session to count as current.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const DEFAULT_SESSION_TIMEOUT = 30 * MINUTE_IN_SECONDS;
 
 	/**
 	 * Google Analytics client ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var string
 	 */
 	private $client_id;
@@ -42,7 +42,7 @@ final class GA_Session {
 	/**
 	 * Google Analytics session ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var string
 	 */
 	private $session_id;
@@ -50,7 +50,7 @@ final class GA_Session {
 	/**
 	 * Unix time of the visitor's last Google Analytics hit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var int
 	 */
 	private $last_hit;
@@ -58,7 +58,7 @@ final class GA_Session {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param string $client_id  Google Analytics client ID.
 	 * @param string $session_id Google Analytics session ID.
@@ -73,7 +73,7 @@ final class GA_Session {
 	/**
 	 * Gets the Google Analytics client ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return string Client ID.
 	 */
@@ -84,7 +84,7 @@ final class GA_Session {
 	/**
 	 * Gets the Google Analytics session ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return string Session ID.
 	 */
@@ -95,7 +95,7 @@ final class GA_Session {
 	/**
 	 * Gets the Unix time of the visitor's last hit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return int Unix time of the last hit.
 	 */
@@ -106,7 +106,7 @@ final class GA_Session {
 	/**
 	 * Gets a measurement ID's container ID, the suffix of its session cookie's name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param string $measurement_id Measurement ID, such as `G-ABC123`.
 	 * @return string Measurement ID without its `G-` prefix, or an empty string when it is invalid.
@@ -118,7 +118,7 @@ final class GA_Session {
 	/**
 	 * Creates a session from the values of the two cookies.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param string   $ga             Value of the `_ga` cookie.
 	 * @param string   $ga_session     Value of the session cookie, in the GS1 or GS2 format.
@@ -152,7 +152,7 @@ final class GA_Session {
 	/**
 	 * Creates a session from the visitor's cookies.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Input  $input          Input instance.
 	 * @param string $measurement_id Measurement ID.
@@ -170,7 +170,7 @@ final class GA_Session {
 		 * PHP reads a dot or a space in a cookie's name as an underscore, so return each name in that form.
 		 * A result that is not an array with non-empty `client` and `session` strings is ignored.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.193.0
 		 *
 		 * @param array  $cookie_names   Cookie names, under the keys `client` and `session`.
 		 * @param string $measurement_id Measurement ID.
@@ -199,7 +199,7 @@ final class GA_Session {
 		 *
 		 * A result that is not a positive integer is ignored.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.193.0
 		 *
 		 * @param int $timeout Session timeout in seconds.
 		 */
@@ -218,7 +218,7 @@ final class GA_Session {
 	 * GS1 is `GS1.<n>.<session_id>.<session_count>.<engaged>.<last_hit>...`.
 	 * GS2 is `GS2.<n>.s<session_id>$o...$t<last_hit>...`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param string $ga_session Value of the session cookie.
 	 * @return array List with the session ID and the last hit, each an empty string where the cookie lacks it.

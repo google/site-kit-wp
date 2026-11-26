@@ -118,7 +118,7 @@ export type Report = {
 /**
  * The generated Site Goals insight of a widget, or of one of its tabs.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  */
 export type ConversionInsight = {
 	/** The ID the feedback on the insight is sent with. */

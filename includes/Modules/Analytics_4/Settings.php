@@ -92,7 +92,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 *
 	 * @since 1.30.0
 	 * @since 1.192.0 Always includes `freshDataIncludesWooCommerceProducts`.
-	 * @since n.e.x.t Added `measurementProtocolSecretID`.
+	 * @since 1.193.0 Added `measurementProtocolSecretID`.
 	 *
 	 * @return array
 	 */
@@ -137,7 +137,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.30.0
-	 * @since n.e.x.t Sanitizes `measurementProtocolSecretID`.
+	 * @since 1.193.0 Sanitizes `measurementProtocolSecretID`.
 	 *
 	 * @return callable|null
 	 */
@@ -303,7 +303,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Only Site Kit writes this ID, but saving the settings sends it back from the browser, so a value
 	 * that is not a string is replaced with an empty string.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array &$option The option array to sanitize.
 	 */

@@ -17,22 +17,22 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4;
 
 /**
- * Class Migration_N_E_X_T.
+ * Class Migration_1_193_0.
  *
  * Earlier versions hid Key Metrics for the whole site every time an admin
  * started a Google sign-in, even when Analytics was already connected. This
  * migration shows Key Metrics again on sites where Analytics is connected, or
  * was set up before and has since been disconnected.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
-class Migration_N_E_X_T {
+class Migration_1_193_0 {
 	/**
 	 * Target DB version.
 	 */
-	const DB_VERSION = 'n.e.x.t';
+	const DB_VERSION = '1.193.0';
 
 	/**
 	 * DB version option name.
@@ -42,7 +42,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Options
 	 */
 	protected Options $options;
@@ -50,7 +50,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Key_Metrics_Setup_Is_Widget_Area_Hidden instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Key_Metrics_Setup_Is_Widget_Area_Hidden
 	 */
 	protected Key_Metrics_Setup_Is_Widget_Area_Hidden $key_metrics_setup_is_widget_area_hidden;
@@ -58,7 +58,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Context $context Plugin context instance.
 	 * @param Options $options Optional. Options instance.
@@ -77,7 +77,7 @@ class Migration_N_E_X_T {
 	 * All migrations register at priority 0, so they run in the order
 	 * `Plugin.php` registers them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
@@ -86,7 +86,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
@@ -105,7 +105,7 @@ class Migration_N_E_X_T {
 	 * The setting is kept only on sites set up without Analytics that have
 	 * never set it up, which is the case it is meant for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	protected function migrate_key_metrics_setup_is_widget_area_hidden() {
 		$is_analytics_connected = apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );

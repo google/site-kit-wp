@@ -75,7 +75,7 @@ class REST_Conversion_Reporting_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.144.0
-	 * @since n.e.x.t Declares the argument and resource schemas of each route.
+	 * @since 1.193.0 Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -145,7 +145,7 @@ class REST_Conversion_Reporting_Controller {
 	/**
 	 * Gets the REST schema of the conversion reporting settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */

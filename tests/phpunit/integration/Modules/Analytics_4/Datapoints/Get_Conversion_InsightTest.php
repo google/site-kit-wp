@@ -42,7 +42,7 @@ class Get_Conversion_InsightTest extends TestCase {
 	/**
 	 * Requests the datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array $params Optional. Query parameters. Default the ID of an operation.
 	 * @return \WP_REST_Response The response.

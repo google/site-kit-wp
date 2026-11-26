@@ -26,7 +26,7 @@ use WP_Error;
  * operation, so the browser never has to ask for the insight again to find
  * out whether it is coming.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -42,14 +42,14 @@ class Get_Conversion_Insight extends Conversion_Insights_Datapoint implements Sc
 	 * operation that an instance shutdown interrupted. Only an operation that
 	 * failed with code 503 is a 503.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const PASSED_ERROR_STATUSES = array( 400, 403, 404 );
 
 	/**
 	 * The longest operation ID the datapoint accepts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const MAX_OPERATION_ID_LENGTH = 256;
 
@@ -60,7 +60,7 @@ class Get_Conversion_Insight extends Conversion_Insights_Datapoint implements Sc
 	 * required string can be, and its length, because WordPress checks
 	 * `maxLength` only from version 5.5.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array Map of parameter names to their schemas.
 	 */
@@ -76,7 +76,7 @@ class Get_Conversion_Insight extends Conversion_Insights_Datapoint implements Sc
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that reads the operation. It returns `done` and `state`, with the `insight` once the operation succeeded, or an error, such as a 503 when an instance shutdown interrupted the operation, or a 500 when the generation failed.
@@ -114,7 +114,7 @@ class Get_Conversion_Insight extends Conversion_Insights_Datapoint implements Sc
 	/**
 	 * Gets the state of an operation, and its insight once it succeeded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed $operation The operation, as the service returned it.
 	 * @return array|WP_Error The state as `done` and `state`, with the `insight` once the operation succeeded, or an error when it failed.
