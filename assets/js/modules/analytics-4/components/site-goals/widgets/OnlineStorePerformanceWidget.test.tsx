@@ -2432,6 +2432,107 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 	} );
 
+	it( 'should request no insight for the whole widget while the provider tabs load when the `siteGoalsInsights` feature flag is enabled', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedReadyReports();
+		// The report the provider tabs come from is still loading.
+		registry.dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
+			{
+				startDate: '2020-06-10',
+				endDate: '2020-09-08',
+				dimensions: [ PROVIDER_DIMENSION ],
+				dimensionFilters: {
+					[ PROVIDER_DIMENSION ]: {
+						filterType: 'emptyFilter',
+						notExpression: true,
+					},
+					eventName: {
+						filterType: 'inListFilter',
+						value: [
+							ENUM_CONVERSION_EVENTS.PURCHASE,
+							ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+						],
+					},
+				},
+				metrics: [ { name: 'eventCount' } ],
+				orderby: [
+					{ metric: { metricName: 'eventCount' }, desc: true },
+				],
+				reportID:
+					'analytics-4_site-goals-breakdown_values_googlesitekit_event_provider',
+			},
+		] );
+		fetchMock.post(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/conversion-insights'
+			),
+			{ body: {}, status: 200 }
+		);
+
+		const { container, getByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry, features: [ 'siteGoalsInsights' ] }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'status' ).querySelector(
+				'.googlesitekit-ai-insight-preview'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-widget__footer'
+			)
+		).not.toHaveTextContent(
+			/This section contains data created using AI/
+		);
+		expect( fetchMock ).not.toHaveFetched(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/conversion-insights'
+			)
+		);
+	} );
+
+	it( 'should render the insight of the open provider tab and the AI disclosure line when the `siteGoalsInsights` feature flag is enabled', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		// The provider dimension has data from before "Last 28 days" starts on
+		// 2020-08-12, so the tabs are not in the partial data state.
+		seedBreakdown( {
+			providerValues: [ 'woocommerce' ],
+			availabilityDate: 20200101,
+		} );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveConversionInsight(
+			{
+				...conversionInsight,
+				text: 'WooCommerce purchases are up 30% over the past 28 days.',
+			},
+			{
+				goalType: GOAL_TYPES.ECOMMERCE,
+				tabID: 'woocommerce',
+				endDate: '2020-09-07',
+			}
+		);
+
+		const { getByRole, getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry, features: [ 'siteGoalsInsights' ] }
+		);
+		await waitForRegistry();
+
+		expect( getByRole( 'status' ) ).toHaveTextContent(
+			'WooCommerce purchases are up 30% over the past 28 days.'
+		);
+		expect(
+			getByText( /This section contains data created using AI/ )
+		).toBeInTheDocument();
+	} );
+
 	it( 'should render "Is this section helpful?" without the AI disclosure line when the insight has nothing to show and the `siteGoalsInsights` feature flag is enabled', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
