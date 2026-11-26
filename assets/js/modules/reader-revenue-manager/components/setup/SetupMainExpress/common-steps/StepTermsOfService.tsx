@@ -285,7 +285,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 								type={ TYPE_BODY }
 							>
 								{ __(
-									'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
+									'Yes, send me customized help, performance suggestions, and product updates for Reader Revenue Manager',
 									'google-site-kit'
 								) }
 							</Typography>

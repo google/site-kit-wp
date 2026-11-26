@@ -50,7 +50,7 @@ const ADJUSTING_TIMEOUT_MILLISECONDS = 30 * 1000;
  * The page keeps the element in place until the user's first mouse wheel
  * scroll, click, tap or key press, and for 30 seconds at most.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @return {Function} The function that scrolls to the element its selector names.
  */

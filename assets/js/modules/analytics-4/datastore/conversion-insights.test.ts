@@ -50,7 +50,7 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 	/**
 	 * Gets the key of the cache entry of the insight of the lead widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param {string} [tabID]  Optional. The tab. Default is the whole widget.
 	 * @param {string} [locale] Optional. The locale of the insight. Default is `en-US`, the locale of the test environment.
@@ -69,7 +69,7 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 	 * Runs the timers, 100 milliseconds at a time, until the resolution of the
 	 * insight of the lead widget has finished.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param {Object} targetRegistry        The registry that resolves the insight.
 	 * @param {number} remainingMilliseconds The longest time to run the timers for.
@@ -106,7 +106,7 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 	 * Selects the insight of the lead widget, and runs the timers until its
 	 * resolution has finished.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param {Object} [targetRegistry] Optional. The registry that resolves the insight. Default is the test's registry.
 	 * @return {Promise<(Object|null)>} The insight, or null.
@@ -128,7 +128,7 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 	 * Gets the error the resolution of the insight of the lead widget stopped
 	 * with.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param {Object} [targetRegistry] Optional. The registry that resolved the insight. Default is the test's registry.
 	 * @return {(Object|undefined)} The error, if there is one.
@@ -146,7 +146,7 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 	/**
 	 * Builds the response of a request that the datapoint refused.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param {number} status The status of the response.
 	 * @param {Object} [data] Optional. More data of the error, such as `reason` and `retryAfter`.

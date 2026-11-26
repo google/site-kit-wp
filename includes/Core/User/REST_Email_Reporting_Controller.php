@@ -88,7 +88,7 @@ class REST_Email_Reporting_Controller {
 	 *
 	 * @since 1.162.0
 	 * @since 1.185.0 Added the `email-reporting-next-report` route.
-	 * @since n.e.x.t Declares the argument and resource schemas of each route.
+	 * @since 1.193.0 Declares the argument and resource schemas of each route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -196,7 +196,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Gets the REST schema of the email reporting settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */
@@ -227,7 +227,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Gets the REST schema of the next email report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */

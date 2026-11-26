@@ -101,7 +101,7 @@ const CUSTOM_ANSWER_CHOICE_FIELDS = [ 'displayText' ];
 /**
  * Validates that a value is an object with only supported fields.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param  value           Value to validate.
  * @param  path            Path of the value in the configuration, for error messages.
@@ -126,7 +126,7 @@ function validateObject(
 /**
  * Validates an optional string field.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param  value Value to validate.
  * @param  path  Path of the value in the configuration, for error messages.
@@ -142,7 +142,7 @@ function validateOptionalString( value: unknown, path: string ): void {
 /**
  * Validates a preset survey question.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param  presetQuestion Preset question to validate.
  * @param  path           Path of the question in the configuration, for error messages.
@@ -169,7 +169,7 @@ function validatePresetQuestion( presetQuestion: unknown, path: string ): void {
 /**
  * Validates a custom survey question.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param  customQuestion Custom question to validate.
  * @param  path           Path of the question in the configuration, for error messages.
@@ -211,7 +211,7 @@ function validateCustomQuestion( customQuestion: unknown, path: string ): void {
  * on the CTA state or the question catalog, such as the number of questions
  * and answers, are left to the API.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param  config CTA configuration.
  * @return {void}

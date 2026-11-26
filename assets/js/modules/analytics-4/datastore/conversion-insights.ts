@@ -77,7 +77,7 @@ interface ConversionInsightsState {
  * Throws an error when the goal type, the tab or the end date of an insight
  * is not one the datapoint accepts.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object} params          The insight's parameters.
  * @param {string} params.goalType The goal type: `lead` or `ecommerce`.
@@ -102,7 +102,7 @@ function validateConversionInsightParams( {
  * Gets the key of the insight of a goal type, tab and end date in the store's
  * state.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object} params          The insight's parameters.
  * @param {string} params.goalType The goal type: `lead` or `ecommerce`.
@@ -125,7 +125,7 @@ function getStateKey( { goalType, tabID, endDate }: ConversionInsightParams ) {
  * with `conversion-insights`. The key has the user's locale, so a change of
  * language asks for an insight in the new language.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {Object} params          The insight's parameters.
  * @param {string} params.goalType The goal type: `lead` or `ecommerce`.
@@ -202,7 +202,7 @@ const baseActions = {
 	 * Stores the generated Site Goals insight of a goal type, tab and end
 	 * date.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param {(Object|null)} insight         The insight, or null when there is none to show.
 	 * @param {Object}        params          The insight's parameters.
@@ -374,7 +374,7 @@ const baseSelectors = {
 	 * until it arrives. Read the error that stopped it with
 	 * `getErrorForSelector( 'getConversionInsight', [ goalType, tabID, endDate ] )`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param {Object} state    The data store's state.
 	 * @param {string} goalType The goal type of the widget: `lead` or `ecommerce`.
@@ -402,7 +402,7 @@ const baseSelectors = {
 	 * wait between two reads of the operation that generates it. Checking
 	 * it sends no request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param {Object} state    The data store's state.
 	 * @param {string} goalType The goal type of the widget: `lead` or `ecommerce`.

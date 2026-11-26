@@ -39,7 +39,7 @@ describe( 'useScrollToAdjustingForHeight', () => {
 	 * Renders the hook, and calls the function it returns with the selector of
 	 * the test element.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return {Object} The result of `renderHook()`.
 	 */

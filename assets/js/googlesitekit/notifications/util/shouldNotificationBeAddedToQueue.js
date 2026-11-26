@@ -24,7 +24,7 @@ import { isFeatureEnabled } from '@/js/features';
  * its feature flags, groupID, viewContext, etc.
  *
  * @since 1.155.0
- * @since n.e.x.t Added support for multiple feature flag requirements.
+ * @since 1.193.0 Added support for multiple feature flag requirements.
  *
  * @param {Object}  notification                Notification object.
  * @param {Object}  params                      Parameters.

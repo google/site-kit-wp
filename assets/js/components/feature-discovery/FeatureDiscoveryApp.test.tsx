@@ -51,6 +51,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -119,7 +120,7 @@ function provideHeader( registry: ReturnType< typeof createTestRegistry > ) {
 	registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 	fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 
-	registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
+	provideUserCapabilities( registry );
 	registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	fetchMock.post( dismissItemEndpoint, { body: [] } );

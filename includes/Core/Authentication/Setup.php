@@ -145,7 +145,7 @@ class Setup {
 	 * Handles the setup start action, taking the user to the proxy setup screen.
 	 *
 	 * @since 1.48.0
-	 * @since n.e.x.t Hides the Key Metrics widget area only during the site's first sign-in.
+	 * @since 1.193.0 Hides the Key Metrics widget area only during the site's first sign-in.
 	 */
 	public function handle_action_setup_start() {
 		$nonce        = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'nonce' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );

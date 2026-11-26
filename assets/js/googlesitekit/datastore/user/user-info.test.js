@@ -248,6 +248,35 @@ describe( 'core/user userInfo', () => {
 			} );
 		} );
 
+		describe( 'getDisconnectURL', () => {
+			it( 'should load the URL from the `_googlesitekitUserData` global', async () => {
+				global[ userDataGlobal ] = {
+					disconnectURL:
+						'http://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=abc123',
+				};
+
+				registry.select( CORE_USER ).getDisconnectURL();
+				await untilResolved( registry, CORE_USER ).getDisconnectURL();
+
+				expect( registry.select( CORE_USER ).getDisconnectURL() ).toBe(
+					'http://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=abc123'
+				);
+			} );
+
+			it( 'should return `undefined` and log an error when the `_googlesitekitUserData` global is missing', async () => {
+				expect(
+					registry.select( CORE_USER ).getDisconnectURL()
+				).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getDisconnectURL();
+
+				expect(
+					registry.select( CORE_USER ).getDisconnectURL()
+				).toBeUndefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
 		describe( 'getUser', () => {
 			it( 'uses a resolver to load user data from a global variable', async () => {
 				// Set up the global

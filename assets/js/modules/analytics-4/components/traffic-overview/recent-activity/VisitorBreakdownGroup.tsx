@@ -24,12 +24,19 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, useMemo } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useMemo,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useReportState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportState';
 import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -69,6 +76,14 @@ function getVisitorsOfType(
 const VisitorBreakdownGroup: FC< VisitorBreakdownGroupProps > = ( {
 	reportArgs,
 } ) => {
+	const documentationURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getDocumentationLinkURL(
+				'visitor-group-insights'
+			),
+		[]
+	);
+
 	const reportOptions = useMemo(
 		() => getVisitorsReportOptions( reportArgs ),
 		[ reportArgs ]
@@ -80,7 +95,24 @@ const VisitorBreakdownGroup: FC< VisitorBreakdownGroupProps > = ( {
 	);
 
 	return (
-		<LatestPostTile title={ __( 'Visitor breakdown', 'google-site-kit' ) }>
+		<LatestPostTile
+			title={ __( 'Visitor breakdown', 'google-site-kit' ) }
+			infoTooltip={ createInterpolateElement(
+				__(
+					'Visitors can sometimes be counted as both “new” and “returning,” so these totals may not add up. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							href={ documentationURL }
+							external
+							hideExternalIndicator
+						/>
+					),
+				}
+			) }
+		>
 			{ ! loading && !! error ? (
 				<LatestPostReportError error={ error } onRetry={ retry } />
 			) : (

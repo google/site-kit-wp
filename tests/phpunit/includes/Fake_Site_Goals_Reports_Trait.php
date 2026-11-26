@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Tests;
  * report in it has the rows of `$report_rows` for that report. The rows are
  * keyed for the reports of an end date of `2026-09-15`.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ trait Fake_Site_Goals_Reports_Trait {
 	 * Each row lists its dimension values in the order the report asks for them,
 	 * then its `dateRange`, then its metric values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var array
 	 */
 	protected $report_rows = array();
@@ -45,7 +45,7 @@ trait Fake_Site_Goals_Reports_Trait {
 	 * which answers `totalUsers` alone.
 	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Moved from `Insight_Payload_BuilderTest`.
+	 * @since 1.193.0 Moved from `Insight_Payload_BuilderTest`.
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return array The report, in the shape Analytics returns it.
@@ -94,7 +94,7 @@ trait Fake_Site_Goals_Reports_Trait {
 	 * Gets the key of `$report_rows` that a report request asks for.
 	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Moved from `Insight_Payload_BuilderTest`.
+	 * @since 1.193.0 Moved from `Insight_Payload_BuilderTest`.
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return string `engagement`, `key_actions`, `key_action_sessions` or `year_ago_key_actions`.

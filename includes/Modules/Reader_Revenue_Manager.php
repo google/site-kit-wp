@@ -41,6 +41,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
@@ -56,10 +57,12 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_CTAs;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications_Legacy;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Survey_Question_Catalog;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Terms_Of_Service;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Save_User_Settings;
@@ -214,6 +217,22 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'googlesitekit_auth_scopes',
 				function ( array $scopes ) {
 					return $this->get_refined_scopes( $scopes );
+				}
+			);
+		}
+
+		// Preload user settings to avoid delays with feature setup reminder
+		// notifications.
+		if ( Feature_Flags::enabled( 'featureDiscoveryHub' ) ) {
+			add_filter(
+				'googlesitekit_apifetch_preload_paths',
+				function ( $routes ) {
+					return array_merge(
+						$routes,
+						array(
+							'/' . REST_Routes::REST_ROOT . '/modules/reader-revenue-manager/data/user-settings',
+						)
+					);
 				}
 			);
 		}
@@ -486,12 +505,26 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				)
 			);
 
+			$datapoints['GET:cta'] = new Get_CTA(
+				array(
+					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
+				)
+			);
+
 			$datapoints['POST:create-cta'] = new Create_CTA(
 				array(
 					'scopes'  => array( self::MANAGE_SCOPE ),
 					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
 				)
 			);
+
+			if ( Feature_Flags::enabled( 'rrmSurveyCTA' ) ) {
+				$datapoints['GET:survey-question-catalog'] = new Get_Survey_Question_Catalog(
+					array(
+						'service' => fn() => $this->get_service( 'webcontentpublisher' ),
+					)
+				);
+			}
 		}
 
 		return $datapoints;

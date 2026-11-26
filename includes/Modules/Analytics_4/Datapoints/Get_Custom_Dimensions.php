@@ -25,7 +25,7 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
  * yet saved in settings.
  *
  * @since 1.182.0
- * @since n.e.x.t Returns every custom dimension on the property, not only the Site Kit ones.
+ * @since 1.193.0 Returns every custom dimension on the property, not only the Site Kit ones.
  * @access private
  * @ignore
  */
@@ -56,7 +56,7 @@ class Get_Custom_Dimensions extends Datapoint implements Executable_Datapoint {
 	 * Parses a response into the list of custom dimension names on the property.
 	 *
 	 * @since 1.182.0
-	 * @since n.e.x.t Returns every parameter name, not only the `googlesitekit_`-prefixed ones.
+	 * @since 1.193.0 Returns every parameter name, not only the `googlesitekit_`-prefixed ones.
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
