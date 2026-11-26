@@ -509,6 +509,359 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				).toThrow( 'data.state is not supported.' );
 			} );
 		} );
+		describe( 'updateCTA', () => {
+			const ctaID = '9d2418415-ab3a';
+
+			const updatedCTA = {
+				...cta,
+				state: 'DRAFT',
+				displayName: 'Renamed newsletter',
+			};
+
+			const secondCTA = {
+				...cta,
+				name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/1a2b3c4d5-ef6g',
+				displayName: 'Other newsletter',
+			};
+
+			const updateArgs = {
+				ctaID,
+				data: { state: 'DRAFT', displayName: 'Renamed newsletter' },
+			} as const;
+
+			it( 'should send the CTA ID and data, and return the response', async () => {
+				fetchMock.postOnce( ctaEndpoint, {
+					body: updatedCTA,
+					status: 200,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updateCTA( updateArgs );
+
+				expect( response ).toEqual( updatedCTA );
+				expect( error ).toBeUndefined();
+				expect( fetchMock ).toHaveFetchedTimes( 1, ctaEndpoint );
+				expect( fetchMock ).toHaveFetched( ctaEndpoint, {
+					body: {
+						data: { ...params, ...updateArgs },
+					},
+				} );
+			} );
+
+			it( 'should replace the updated CTA in the loaded CTAs without another request', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs( [ cta, secondCTA ], params );
+
+				fetchMock.postOnce( ctaEndpoint, {
+					body: updatedCTA,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updateCTA( updateArgs );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ updatedCTA, secondCTA ] );
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+			} );
+
+			it( 'should store the updated CTA by its publication and ID', async () => {
+				const { getState } =
+					// @ts-expect-error The WPDataRegistry type is missing the stores property.
+					registry.stores[ MODULES_READER_REVENUE_MANAGER ].store;
+
+				fetchMock.postOnce( ctaEndpoint, {
+					body: updatedCTA,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updateCTA( updateArgs );
+
+				expect( getState().ctasByID ).toEqual( {
+					[ params.publicationID ]: { [ ctaID ]: updatedCTA },
+				} );
+			} );
+
+			it( 'should not add the updated CTA before the CTAs are loaded', async () => {
+				fetchMock.postOnce( ctaEndpoint, {
+					body: updatedCTA,
+					status: 200,
+				} );
+				fetchMock.getOnce( ctasEndpoint, {
+					body: [ cta ],
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updateCTA( updateArgs );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationCTAs(
+					params.organizationID,
+					params.publicationID
+				);
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
+			} );
+
+			it( 'should not replace a CTA in another publication list', async () => {
+				const otherPublicationCTA = { ...otherCTA, name: cta.name };
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs( [ cta ], params );
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs(
+						[ otherPublicationCTA ],
+						otherParams
+					);
+
+				fetchMock.postOnce( ctaEndpoint, {
+					body: updatedCTA,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updateCTA( updateArgs );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ updatedCTA ] );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationCTAs(
+							otherParams.organizationID,
+							otherParams.publicationID
+						)
+				).toEqual( [ otherPublicationCTA ] );
+			} );
+
+			it( 'should send no request when no publication is connected', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setPublicationID( '' );
+
+				expect(
+					await registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.updateCTA( updateArgs )
+				).toEqual( {} );
+
+				expect( fetchMock ).not.toHaveFetched( ctaEndpoint );
+			} );
+
+			it( 'should set an action error when the request fails', async () => {
+				const errorResponse = {
+					code: 'not_found',
+					message: 'CTA not found',
+					data: { status: 404 },
+				};
+				fetchMock.postOnce( ctaEndpoint, {
+					body: errorResponse,
+					status: 404,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updateCTA( updateArgs );
+
+				expect( console ).toHaveErrored();
+				expect( response ).toBeUndefined();
+				expect( error ).toEqual( errorResponse );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getErrorForAction( 'updateCTA', [
+							{ ...params, ...updateArgs },
+						] )
+				).toEqual( errorResponse );
+			} );
+
+			it( 'should send a newsletter sign-up config with its type', async () => {
+				const data = {
+					type: 'NEWSLETTER_SIGNUP',
+					config: { title: 'Join our newsletter' },
+				} as const;
+
+				fetchMock.postOnce( ctaEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updateCTA( { ctaID, data } );
+
+				expect( fetchMock ).toHaveFetched( ctaEndpoint, {
+					body: { data: { ...params, ctaID, data } },
+				} );
+			} );
+
+			it( 'should update a survey CTA with its complete configuration when the rrmSurveyCTA feature flag is enabled', async () => {
+				enabledFeatures.add( 'rrmSurveyCTA' );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublicationCTAs( [ cta, surveyCTA ], params );
+
+				const reorderedConfig = {
+					customMessage: 'Tell us about yourself',
+					questions: [
+						surveyConfig.questions[ 1 ],
+						surveyConfig.questions[ 0 ],
+					],
+				};
+
+				const updatedSurveyCTA = {
+					...surveyCTA,
+					displayName: 'Reader survey',
+					state: 'ACTIVE',
+					surveyConfig: {
+						...reorderedConfig,
+						// eslint-disable-next-line sitekit/acronym-case -- An API field name.
+						reportUrl: surveyCTA.surveyConfig.reportUrl,
+					},
+				};
+
+				const data = {
+					displayName: 'Reader survey',
+					state: 'ACTIVE',
+					type: 'SURVEY',
+					config: reorderedConfig,
+				} as const;
+
+				fetchMock.postOnce( ctaEndpoint, {
+					body: updatedSurveyCTA,
+					status: 200,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updateCTA( { ctaID: '5c3027196-gh6d', data } );
+
+				expect( response ).toEqual( updatedSurveyCTA );
+				expect( error ).toBeUndefined();
+				expect( fetchMock ).toHaveFetched( ctaEndpoint, {
+					body: {
+						data: { ...params, ctaID: '5c3027196-gh6d', data },
+					},
+				} );
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta, updatedSurveyCTA ] );
+			} );
+
+			it( 'should reject a survey config without a request when the rrmSurveyCTA feature flag is disabled', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.updateCTA( {
+							ctaID,
+							data: { type: 'SURVEY', config: surveyConfig },
+						} )
+				).toThrow( 'data.type is not supported.' );
+
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it.each( [
+				[ 'no params', undefined, 'params must be an object.' ],
+				[
+					'a missing CTA ID',
+					{ data: updateArgs.data },
+					'ctaID is required and must be a non-empty string.',
+				],
+				[
+					'an empty CTA ID',
+					{ ctaID: '', data: updateArgs.data },
+					'ctaID is required and must be a non-empty string.',
+				],
+				[
+					'missing data',
+					{ ctaID },
+					'data is required and must be a non-empty object.',
+				],
+				[
+					'empty data',
+					{ ctaID, data: {} },
+					'data is required and must be a non-empty object.',
+				],
+				[
+					'data without a supported field',
+					{ ctaID, data: { type: 'NEWSLETTER_SIGNUP' } },
+					'data must include at least one of displayName, state or config.',
+				],
+				[
+					'an unsupported state',
+					{ ctaID, data: { state: 'ENABLED' } },
+					'data.state is not supported.',
+				],
+				[
+					'a non-string display name',
+					{ ctaID, data: { displayName: 123 } },
+					'data.displayName must be a string.',
+				],
+				[
+					'a config without a type',
+					{ ctaID, data: { config: { title: 'Subscribe' } } },
+					'data.type is not supported.',
+				],
+				[
+					'a config with an unsupported type',
+					{
+						ctaID,
+						data: {
+							type: 'SUBSCRIPTION',
+							config: { title: 'Subscribe' },
+						},
+					},
+					'data.type is not supported.',
+				],
+				[
+					'a config the type handler rejects',
+					{
+						ctaID,
+						data: {
+							type: 'NEWSLETTER_SIGNUP',
+							config: { unknownSetting: 'value' },
+						},
+					},
+					'config contains unsupported fields.',
+				],
+			] )(
+				'should throw without a request for %s',
+				( _description, args, message ) => {
+					expect( () =>
+						registry
+							.dispatch( MODULES_READER_REVENUE_MANAGER )
+							.updateCTA( args )
+					).toThrow( message );
+
+					expect( fetchMock ).not.toHaveFetched();
+				}
+			);
+		} );
 	} );
 
 	describe( 'selectors', () => {

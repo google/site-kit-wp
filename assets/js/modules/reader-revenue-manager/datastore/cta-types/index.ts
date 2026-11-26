@@ -90,6 +90,24 @@ export type CreateCTAData = {
 	};
 }[ CallToActionType ];
 
+type UpdateCTAWithConfig = {
+	[ Type in CallToActionType ]: {
+		displayName?: string;
+		state?: CallToActionState;
+		type: Type;
+		config: CallToActionConfig< Type >;
+	};
+}[ CallToActionType ];
+
+type UpdateCTAWithoutConfig = {
+	displayName?: string;
+	state?: CallToActionState;
+	type?: never;
+	config?: never;
+};
+
+export type UpdateCTAData = UpdateCTAWithConfig | UpdateCTAWithoutConfig;
+
 export type CTA = CallToActionByType[ CallToActionType ];
 
 const CTA_TYPE_HANDLERS: Record< CallToActionType, CallToActionTypeHandler > = {

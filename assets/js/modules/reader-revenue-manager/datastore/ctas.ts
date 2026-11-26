@@ -53,6 +53,7 @@ import {
 	type CTA,
 	CTA_STATES,
 	type CreateCTAData,
+	type UpdateCTAData,
 	getCTATypeHandler,
 	isCTAState,
 	isCTAType,
@@ -83,6 +84,13 @@ interface CTAsState {
 type Registry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
+
+export type UpdateCTAParams = {
+	ctaID: string;
+	data: UpdateCTAData;
+};
+
+type UpdateCTARequest = PublicationParams & UpdateCTAParams;
 
 /**
  * Syncs configured CTAs into settings and savedSettings.
@@ -163,6 +171,58 @@ function validateCreateCTAParams( params: unknown ): void {
 	);
 
 	getCTATypeHandler( type ).validateConfig( config );
+}
+
+/**
+ * Validates the CTA update parameters.
+ *
+ * @since n.e.x.t
+ *
+ * @param  params Parameters to validate.
+ * @return {void}
+ */
+function validateUpdateCTAParams( params: unknown ): void {
+	invariant( isPlainObject( params ), 'params must be an object.' );
+
+	const { ctaID, data } = params as Partial< UpdateCTAParams >;
+
+	invariant(
+		typeof ctaID === 'string' && ctaID.length > 0,
+		'ctaID is required and must be a non-empty string.'
+	);
+
+	invariant(
+		isPlainObject( data ) && Object.keys( data as object ).length > 0,
+		'data is required and must be a non-empty object.'
+	);
+
+	const { type, config, displayName, state } = data as Record<
+		string,
+		unknown
+	>;
+
+	invariant(
+		displayName !== undefined ||
+			state !== undefined ||
+			config !== undefined,
+		'data must include at least one of displayName, state or config.'
+	);
+
+	invariant(
+		state === undefined || isCTAState( state ),
+		'data.state is not supported.'
+	);
+
+	invariant(
+		displayName === undefined || typeof displayName === 'string',
+		'data.displayName must be a string.'
+	);
+
+	if ( config !== undefined ) {
+		invariant( isCTAType( type ), 'data.type is not supported.' );
+
+		getCTATypeHandler( type ).validateConfig( config );
+	}
 }
 
 const fetchGetPublicationCTAsStore = createFetchStore( {
@@ -292,6 +352,39 @@ const fetchCreateCTAStore = createFetchStore( {
 	isAction: true,
 } );
 
+const fetchUpdateCTAStore = createFetchStore( {
+	baseName: 'updateCTA',
+	controlCallback: ( params: UpdateCTARequest ) =>
+		set( 'modules', MODULE_SLUG_READER_REVENUE_MANAGER, 'cta', params ),
+	reducerCallback: createReducer(
+		(
+			state: CTAsState,
+			cta: CTA,
+			{ publicationID, ctaID }: UpdateCTARequest
+		) => {
+			state.ctasByID[ publicationID ] ??= {};
+			state.ctasByID[ publicationID ][ ctaID ] = cta;
+
+			const ctas = state.ctas[ publicationID ];
+
+			// A list that hasn't loaded yet is left alone, so its resolver
+			// still requests the complete set.
+			if ( ctas === undefined ) {
+				return;
+			}
+
+			const index = ctas.findIndex( ( { name } ) => name === cta.name );
+
+			if ( index !== -1 ) {
+				ctas[ index ] = cta;
+			}
+		}
+	),
+	argsToParams: ( params: UpdateCTARequest ) => params,
+	validateParams: validateUpdateCTAParams,
+	isAction: true,
+} );
+
 const baseInitialState: CTAsState = {
 	ctas: {},
 	ctasByID: {},
@@ -338,6 +431,52 @@ const baseActions = {
 					...data,
 					state: data.state ?? CTA_STATES.ACTIVE,
 				},
+			} );
+		}
+	),
+
+	/**
+	 * Updates a CTA of the publication in the module settings.
+	 *
+	 * Only the given fields are updated. A `config` is given together with
+	 * the CTA's `type`, and replaces its type-specific configuration as a
+	 * whole.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  params                  Parameters.
+	 * @param  params.ctaID            ID of the CTA to update.
+	 * @param  params.data             CTA data to update.
+	 * @param  params.data.displayName Optional. Internal display name.
+	 * @param  params.data.state       Optional. CTA state (`ACTIVE` or `DRAFT`).
+	 * @param  params.data.type        Optional. CTA type; required with `config`.
+	 * @param  params.data.config      Optional. Type-specific CTA configuration.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	updateCTA: createValidatedAction(
+		validateUpdateCTAParams,
+		function* ( {
+			ctaID,
+			data,
+		}: UpdateCTAParams ): Generator< unknown, unknown, unknown > {
+			const registryResult = yield commonActions.getRegistry();
+			const registry = registryResult as Registry;
+
+			const params = ( yield commonActions.await(
+				registry
+					.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+					.getPublicationParams()
+			) ) as PublicationParams | null;
+
+			if ( ! params ) {
+				return {};
+			}
+
+			// @ts-expect-error createFetchStore is not properly typed yet.
+			return yield fetchUpdateCTAStore.actions.fetchUpdateCTA( {
+				...params,
+				ctaID,
+				data,
 			} );
 		}
 	),
@@ -555,6 +694,7 @@ const store = combineStores(
 	fetchGetPublicationCTAsStore,
 	fetchGetPublicationCTAStore,
 	fetchCreateCTAStore,
+	fetchUpdateCTAStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
