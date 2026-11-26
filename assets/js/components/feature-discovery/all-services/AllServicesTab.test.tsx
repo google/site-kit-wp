@@ -36,7 +36,11 @@ import {
 } from '@/js/components/feature-discovery/constants';
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_CATEGORIES,
+	FEATURE_SETUP_TYPES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
@@ -399,6 +403,50 @@ describe( 'AllServicesTab', () => {
 			'Second audience feature',
 			'Audience feature',
 		] );
+	} );
+
+	it( 'should list an in-progress feature first in its goal group, keeping the order of the rest', async () => {
+		const thirdAudienceFeature: Partial< Feature > = {
+			slug: 'third-audience-feature',
+			title: 'Third audience feature',
+			goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+		};
+
+		provideFeatures( registry, [
+			audienceFeature,
+			{
+				...secondAudienceFeature,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Set up now',
+					isInProgress: () => true,
+				},
+			} as Partial< Feature >,
+			thirdAudienceFeature,
+			monetizationFeature,
+		] );
+
+		const { container, getByText, waitForRegistry } = render(
+			<AllServicesTab />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getCardTitles( container ) ).toEqual( [
+			'Second audience feature',
+			'Audience feature',
+			'Third audience feature',
+			'Monetization feature',
+		] );
+
+		expect(
+			container.querySelector( '.googlesitekit-feature-card' )
+		).toHaveClass( 'googlesitekit-feature-card--in-progress' );
+		expect( getByText( 'Setup in progress' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should still list a feature dismissed in What’s new?', async () => {

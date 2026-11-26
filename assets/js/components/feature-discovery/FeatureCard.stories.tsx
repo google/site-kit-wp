@@ -34,6 +34,7 @@ import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { Story } from '@/js/types/Story';
 import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
@@ -83,6 +84,26 @@ const TEST_NEW_FEATURE: Feature = {
 const TEST_NEW_MODULE_FEATURE: Feature = {
 	...TEST_MODULE_FEATURE,
 	addedInVersion: TEST_NEW_VERSION,
+};
+
+const TEST_IN_PROGRESS_FEATURE: Feature = {
+	slug: 'newsletter-signup',
+	title: 'Collect reader emails directly on your site',
+	shortDescription:
+		'Add a simple sign-up form to your site so readers can share their email addresses with you. It’s an easy, privacy-safe way to start building a list of your most interested visitors.',
+	effort: FEATURE_EFFORTS.MEDIUM,
+	goalCategories: [ FEATURE_CATEGORIES.ENGAGEMENT ],
+	moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+	// New, so the story shows the in-progress state taking the place of the
+	// New badge and the unread dot.
+	addedInVersion: TEST_NEW_VERSION,
+	prerequisiteModules: [],
+	badges: [],
+	setup: {
+		type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+		ctaLabel: 'Set up a sign-up form',
+		isInProgress: () => true,
+	},
 };
 
 interface StoryArgs {
@@ -145,6 +166,16 @@ Dismissing.scenario = {
 	postInteractionWait: 300,
 };
 
+export const InProgress = Template.bind( {} ) as Story< StoryArgs >;
+InProgress.storyName = 'In Progress';
+InProgress.args = {
+	cards: [ { slug: 'newsletter-signup', isDismissible: true } ],
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideFeatures( registry, [ TEST_IN_PROGRESS_FEATURE ] );
+	},
+};
+InProgress.scenario = {};
+
 export default {
 	title: 'Components/Feature Discovery/FeatureCard',
 	component: FeatureCard,
@@ -165,6 +196,10 @@ export default {
 				provideModuleRegistrations( registry );
 				provideModules( registry, [
 					{ slug: MODULE_SLUG_ADS, name: 'Ads' },
+					{
+						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+						name: 'Reader Revenue Manager',
+					},
 				] );
 
 				setupRegistry( registry );

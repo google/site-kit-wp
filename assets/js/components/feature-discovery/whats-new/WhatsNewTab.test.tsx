@@ -32,6 +32,7 @@ import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
+	FEATURE_CATEGORIES,
 	FEATURE_SETUP_TYPES,
 	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
@@ -583,6 +584,114 @@ describe( 'WhatsNewTab', () => {
 			container.querySelector( EMPTY_STATE_SELECTOR )
 		).toBeInTheDocument();
 		expect( queryByText( 'Feedback unavailable' ) ).not.toBeInTheDocument();
+	} );
+
+	describe( 'with an in-progress feature', () => {
+		// The oldest, already seen feature, so being in progress is the only
+		// thing that can move it to the top.
+		const IN_PROGRESS_FEATURES: Partial< Feature >[] = TEST_FEATURES.map(
+			( feature ) =>
+				feature.slug === 'seen-older'
+					? ( {
+							...feature,
+							setup: {
+								type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+								ctaLabel: 'Set up now',
+								isInProgress: () => true,
+							},
+					  } as Partial< Feature > )
+					: feature
+		);
+
+		it( 'should list the in-progress feature first, without an unread dot', async () => {
+			fetchMock.postOnce( TIMERS_ENDPOINT, { body: {}, status: 200 } );
+
+			provideFeatures( registry, IN_PROGRESS_FEATURES );
+
+			const { container, waitForRegistry } = render( <WhatsNewTab />, {
+				registry,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			} );
+
+			await waitForRegistry();
+
+			expect( getListedTitles( container ) ).toEqual( [
+				'Seen older feature',
+				'Unread newer feature',
+				'Unread older feature',
+				'Seen newer feature',
+			] );
+
+			const [ firstCard ] = Array.from(
+				container.querySelectorAll( '.googlesitekit-feature-card' )
+			);
+
+			expect( firstCard ).toHaveClass(
+				'googlesitekit-feature-card--in-progress'
+			);
+			expect(
+				firstCard.querySelector(
+					'.googlesitekit-feature-card__dot--visible'
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should remove the dismissed in-progress feature from What’s new? only', async () => {
+			fetchMock.postOnce( TIMERS_ENDPOINT, { body: {}, status: 200 } );
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/dismiss-item'
+				),
+				{
+					body: [ 'feature-discovery-dismissed-seen-older' ],
+					status: 200,
+				}
+			);
+
+			jest.spyOn(
+				registry.dispatch( CORE_USER ),
+				'sendFeedback'
+			).mockResolvedValue( {} );
+
+			provideFeatures( registry, IN_PROGRESS_FEATURES );
+
+			const { container, getByRole, waitForRegistry } = render(
+				<WhatsNewTab />,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Dismiss Seen older feature' } )
+			);
+
+			fireEvent.click(
+				getByRole( 'menuitem', { name: 'Just hide this suggestion' } )
+			);
+
+			await waitFor( () =>
+				expect( getListedTitles( container ) ).toEqual( [
+					'Unread newer feature',
+					'Unread older feature',
+					'Seen newer feature',
+				] )
+			);
+
+			// It is still the first feature of its goal group, as listed in
+			// All services and features.
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.map( ( { slug }: Feature ) => slug )
+			).toEqual( [
+				'seen-older',
+				'seen-newer',
+				'unread-older',
+				'unread-newer',
+			] );
+		} );
 	} );
 
 	describe( 'with a feature set up from the tab', () => {

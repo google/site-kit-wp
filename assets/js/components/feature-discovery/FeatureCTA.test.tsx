@@ -210,6 +210,102 @@ describe( 'FeatureCTA', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	describe( 'for an in-progress feature', () => {
+		it.each( [
+			[ 'setup flow', FEATURE_SETUP_TYPES.SETUP_FLOW, 'Set up now' ],
+			[
+				'in-place panel',
+				FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+				'Try it now',
+			],
+		] )(
+			'should show "Complete setup" on the card for a %s feature',
+			( _, type, setupLabel ) => {
+				provideFeatures( registry, [
+					{
+						slug: 'test-feature',
+						setup: {
+							type,
+							ctaLabel: 'Set up test feature',
+							isInProgress: () => true,
+						},
+					},
+				] );
+
+				const { getByRole, queryByRole } = render(
+					<FeatureCTA
+						gaEventCategory="test_category"
+						slug="test-feature"
+						isFeatureCardCTA
+					/>,
+					{ registry }
+				);
+
+				expect(
+					getByRole( 'button', { name: 'Complete setup' } )
+				).toBeInTheDocument();
+				expect(
+					queryByRole( 'button', { name: setupLabel } )
+				).not.toBeInTheDocument();
+			}
+		);
+
+		it( 'should keep the card label when the feature is not in progress', () => {
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: {
+						type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+						ctaLabel: 'Set up test feature',
+						isInProgress: () => false,
+					},
+				},
+			] );
+
+			const { getByRole, queryByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+					isFeatureCardCTA
+				/>,
+				{ registry }
+			);
+
+			expect(
+				getByRole( 'button', { name: 'Set up now' } )
+			).toBeInTheDocument();
+			expect(
+				queryByRole( 'button', { name: 'Complete setup' } )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should keep the feature’s CTA label when isFeatureCardCTA is not set', () => {
+			// The detail panel's in-progress label is not part of the card.
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: {
+						type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+						ctaLabel: 'Set up test feature',
+						isInProgress: () => true,
+					},
+				},
+			] );
+
+			const { getByRole } = render(
+				<FeatureCTA
+					gaEventCategory="test_category"
+					slug="test-feature"
+				/>,
+				{ registry }
+			);
+
+			expect(
+				getByRole( 'button', { name: 'Set up test feature' } )
+			).toBeInTheDocument();
+		} );
+	} );
+
 	describe( 'event tracking', () => {
 		it( 'should track click_setup_cta with the given category and the feature slug', async () => {
 			fetchMock.post( surveyTriggerEndpoint, { body: {} } );

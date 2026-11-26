@@ -35,9 +35,12 @@ import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContex
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
+	FEATURE_CATEGORIES,
+	FEATURE_SETUP_TYPES,
 	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
@@ -112,6 +115,31 @@ WithInPlaceSetupErrorNotice.args = {
 	},
 };
 
+export const WithFeatureInProgress = Template.bind( {} ) as Story;
+WithFeatureInProgress.storyName = 'With Feature In Progress';
+WithFeatureInProgress.args = {
+	// The newsletter sign-up form is registered after Sign in with Google, so
+	// the story shows it moving to the top of its goal group.
+	getFeatures: () =>
+		sampleFeatures.map( ( feature ) =>
+			feature.slug === 'newsletter-signup'
+				? {
+						...feature,
+						goalCategories: [
+							FEATURE_CATEGORIES.ENGAGEMENT,
+							FEATURE_CATEGORIES.MONETIZATION,
+						],
+						setup: {
+							type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+							ctaLabel: 'Set up a sign-up form',
+							isInProgress: () => true,
+						},
+				  }
+				: feature
+		),
+};
+WithFeatureInProgress.scenario = {};
+
 export default {
 	title: 'Components/Feature Discovery/AllServicesTab',
 	component: AllServicesTab,
@@ -129,7 +157,15 @@ export default {
 
 				provideModules( registry, sampleModules );
 				provideModuleRegistrations( registry );
-				provideFeatures( registry, sampleFeatures );
+				// A feature can only be registered once, so a story replaces
+				// the sample features rather than adding to them.
+				// Returned from a function, as Storybook can't hold callbacks
+				// nested in an args array.
+				const getFeatures = args?.getFeatures as
+					| ( () => Partial< Feature >[] )
+					| undefined;
+
+				provideFeatures( registry, getFeatures?.() ?? sampleFeatures );
 
 				args?.setupRegistry?.( registry );
 			}

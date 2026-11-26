@@ -36,11 +36,14 @@ import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContex
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
+	FEATURE_CATEGORIES,
+	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 	SUCCEEDED_FEATURES_UI_KEY,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
@@ -185,6 +188,34 @@ WithInPlaceSetupErrorNotice.args = {
 	},
 };
 
+export const WithFeatureInProgress = Template.bind( {} ) as Story< StoryArgs >;
+WithFeatureInProgress.storyName = 'With Feature In Progress';
+WithFeatureInProgress.args = {
+	// The in-progress feature is registered last and is unseen, so the story
+	// shows it listed first, without an unread dot.
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideFeatures( registry, [
+			...WHATS_NEW_FEATURES,
+			{
+				slug: 'newsletter-signup',
+				title: 'Collect reader emails directly on your site',
+				shortDescription:
+					'Add a simple sign-up form to your site so readers can share their email addresses with you. It’s an easy, privacy-safe way to start building a list of your most interested visitors.',
+				effort: FEATURE_EFFORTS.MEDIUM,
+				goalCategories: [ FEATURE_CATEGORIES.ENGAGEMENT ],
+				moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Set up a sign-up form',
+					isInProgress: () => true,
+				},
+			},
+		] );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+	},
+};
+WithFeatureInProgress.scenario = {};
+
 export default {
 	title: 'Components/Feature Discovery/WhatsNewTab',
 	component: WhatsNewTab,
@@ -199,6 +230,10 @@ export default {
 				provideModuleRegistrations( registry );
 				provideModules( registry, [
 					{ slug: MODULE_SLUG_ADS, name: 'Ads' },
+					{
+						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+						name: 'Reader Revenue Manager',
+					},
 				] );
 
 				setupRegistry( registry );
