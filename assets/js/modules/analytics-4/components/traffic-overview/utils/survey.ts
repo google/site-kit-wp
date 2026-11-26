@@ -103,7 +103,7 @@ export function startTimerOnce(
  * Recent activity tab.
  *
  * @since 1.192.0
- * @since n.e.x.t No longer reads the age of the latest post or the time since the Recent activity tab became available.
+ * @since 1.193.0 No longer reads the age of the latest post or the time since the Recent activity tab became available.
  *
  * @param {Function} select The data store select function.
  * @return {(string|null|undefined)} The trigger ID, `undefined` when the user doesn't meet its criteria, or `null` while the data loads.

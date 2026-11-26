@@ -35,7 +35,7 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { numFmt } from '@/js/util';

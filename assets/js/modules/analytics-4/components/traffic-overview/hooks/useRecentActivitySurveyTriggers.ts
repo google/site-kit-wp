@@ -68,7 +68,7 @@ interface RecentActivitySurveyTriggersOptions {
  * then interacts with it.
  *
  * @since 1.192.0
- * @since n.e.x.t Sends the triggers without waiting for a timer to expire or checking the age of the latest post, and no longer starts the "tab available" timer.
+ * @since 1.193.0 Sends the triggers without waiting for a timer to expire or checking the age of the latest post, and no longer starts the "tab available" timer.
  *
  * @param {Object}  options                 Hook options.
  * @param {boolean} options.isEnabled       Whether the widget shows the Recent activity tab, with Analytics connected.

@@ -61,7 +61,7 @@ export function renderJSON( element: ReactElement ) {
  *
  * @since 1.184.0
  * @since 1.186.0 Added the `dismissedItems` parameter.
- * @since n.e.x.t Sets user capabilities on the registry instance.
+ * @since 1.193.0 Sets user capabilities on the registry instance.
  *
  * @param  registry       The test registry the component under test renders with.
  * @param  dismissedItems The slugs already in WordPress user meta. They pick one of the three PDF export surveys.

@@ -31,7 +31,7 @@ use WP_Error;
  * each insight's `GET` datapoint is an instance of this class, with the
  * insight's reader for the response of a succeeded operation.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -47,14 +47,14 @@ class Get_AI_Insight_Operation extends AI_Insight_Datapoint implements Schema_Aw
 	 * operation that an instance shutdown interrupted. Only an operation that
 	 * failed with code 503 is a 503.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const PASSED_ERROR_STATUSES = array( 400, 403, 404 );
 
 	/**
 	 * The longest operation ID the datapoint accepts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const MAX_OPERATION_ID_LENGTH = 256;
 
@@ -65,7 +65,7 @@ class Get_AI_Insight_Operation extends AI_Insight_Datapoint implements Schema_Aw
 	 * required string can be, and its length, because WordPress checks
 	 * `maxLength` only from version 5.5.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array Map of parameter names to their schemas.
 	 */
@@ -82,7 +82,7 @@ class Get_AI_Insight_Operation extends AI_Insight_Datapoint implements Schema_Aw
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that reads the operation. It returns `done` and `state`, with the `insight` once the operation succeeded, or with the seconds to wait before the next read as `retryAfter` while it runs, when the service sent them; or an error, such as a 503 when an instance shutdown interrupted the operation, or a 500 when the generation failed.
@@ -122,7 +122,7 @@ class Get_AI_Insight_Operation extends AI_Insight_Datapoint implements Schema_Aw
 	/**
 	 * Gets the state of an operation, and its insight once it succeeded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed $operation The operation, as the service returned it.
 	 * @return array|WP_Error The state as `done` and `state`, with the `insight` once the operation succeeded, or with `retryAfter` while it runs, when the service sent it; or an error when it failed.

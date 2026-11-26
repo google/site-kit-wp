@@ -48,7 +48,7 @@ export function getFeatureIncompleteSetupReminderKey( slug: string ) {
 /**
  * Returns whether the provided key is a feature incomplete setup reminder key.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @param {string} key Key to check.
  * @return {boolean} Whether the provided key is a feature incomplete setup reminder key.

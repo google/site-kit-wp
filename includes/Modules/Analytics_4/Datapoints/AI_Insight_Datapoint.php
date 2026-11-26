@@ -36,7 +36,7 @@ use WP_Error;
  * What differs between insights is what the service writes for them, so the
  * datapoints of an insight read it with that insight's `AI_Insight_Reader`.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -52,14 +52,15 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * the error carries as `reason`, and on the status only for an error
 	 * without a code it knows, as the service's contract asks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const PASSED_ERROR_STATUSES = array( 400, 403, 404, 409, 429, 503 );
 
 	/**
 	 * Callback that returns the Google_Proxy instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
+	 * @since n.e.x.t Holds a callback that returns the instance, and is `private`.
 	 * @var callable
 	 */
 	private $google_proxy;
@@ -67,7 +68,8 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	/**
 	 * Callback that returns the Credentials instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
+	 * @since n.e.x.t Holds a callback that returns the instance, and is `private`.
 	 * @var callable
 	 */
 	private $credentials;
@@ -83,7 +85,8 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
+	 * @since n.e.x.t Takes the `google_proxy` and the `credentials` as callbacks, and the `insight_reader` of the insight.
 	 *
 	 * @param array $definition Definition fields, with the `google_proxy` and the `credentials` callbacks that return what reaches the service, and the `insight_reader` of the insight.
 	 */
@@ -131,7 +134,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
@@ -149,7 +152,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * `POST` datapoint in particular: without it, the module data route lets
 	 * only users who can manage options write.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return bool True if the current user can view the dashboard, false otherwise.
 	 */
@@ -169,7 +172,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * 403, which the browser keeps for a while. Any other failure to refresh the
 	 * token, such as a network error, is a 500, so the next load tries again.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param object $client The Google client the request runs with.
 	 * @return string|WP_Error The access token, or an error with status 403 when there is none, or 500 when it couldn't be refreshed.
@@ -208,7 +211,7 @@ abstract class AI_Insight_Datapoint extends Shareable_Datapoint implements Execu
 	 * The error keeps the service's message, its machine-readable code as
 	 * `reason`, and its `Retry-After` as `retryAfter`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param WP_Error $error The error of the service request.
 	 * @return WP_Error The error, with a status from `PASSED_ERROR_STATUSES` or 500.

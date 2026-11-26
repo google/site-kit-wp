@@ -125,7 +125,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 		$this->builder = new Insight_Payload_Builder( $this->analytics );
 	}
 
-	public function test_build__asks_for_the_three_reports_in_one_batch_call_over_the_four_periods_of_the_end_date() {
+	public function test_build__asks_for_the_four_reports_in_one_batch_call_over_the_four_periods_of_the_end_date() {
 		$this->provide_lead_rows();
 
 		$this->builder->build( 'lead', '', '2026-09-15' );
@@ -135,15 +135,16 @@ class Insight_Payload_BuilderTest extends TestCase {
 			array(
 				array( '2026-08-19 to 2026-09-15', '2026-07-22 to 2026-08-18' ),
 				array( '2026-08-19 to 2026-09-15', '2026-07-22 to 2026-08-18' ),
+				array( '2026-08-19 to 2026-09-15', '2026-07-22 to 2026-08-18' ),
 				array( '2025-08-20 to 2025-09-16', '2025-07-23 to 2025-08-19' ),
 			),
 			$this->get_requested_periods(),
-			'The `build()` method should ask for the engagement and the key action reports over the 28 days that end on `2026-09-15` and the 28 days before them. The year-ago report should cover both periods 364 days earlier.'
+			'The `build()` method should ask for the engagement, the key action and the key action sessions reports over the 28 days that end on `2026-09-15` and the 28 days before them. The year-ago report should cover both periods 364 days earlier.'
 		);
 		$this->assertSame(
-			array( array(), array( 'eventName' ), array( 'eventName' ) ),
+			array( array(), array( 'eventName' ), array(), array( 'eventName' ) ),
 			$this->get_requested_dimensions(),
-			'The `build()` method should ask for the sessions of the whole site, and for the key actions by event name alone on the whole widget.'
+			'The `build()` method should ask for the sessions of the whole site, for the key actions by event name alone, and for the sessions with a key action of the whole widget.'
 		);
 	}
 
@@ -151,10 +152,10 @@ class Insight_Payload_BuilderTest extends TestCase {
 		$this->builder->build( 'lead', '', '2028-03-10' );
 
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the reports of the end date `2028-03-10` in one `batchRunReports` call.' );
-		$this->assertCount( 3, $this->batch_requests[0]['requests'], 'The `build()` method should ask for the year-ago report of the end date `2028-03-10` as the third report of the call.' );
+		$this->assertCount( 4, $this->batch_requests[0]['requests'], 'The `build()` method should ask for the year-ago report of the end date `2028-03-10` as the fourth report of the call.' );
 		$this->assertSame(
 			array( '2027-02-13 to 2027-03-12', '2027-01-16 to 2027-02-12' ),
-			$this->get_requested_periods()[2],
+			$this->get_requested_periods()[3],
 			'The `build()` method should move the year-ago periods 364 days back when 29 February falls between them and the end date. Each year-ago day then keeps its weekday.'
 		);
 	}
@@ -168,13 +169,13 @@ class Insight_Payload_BuilderTest extends TestCase {
 				'month_start_date'         => '2026-08-19',
 				'current'                  => array(
 					'conversions'     => 150,
-					'conversion_rate' => 0.025,
+					'conversion_rate' => 0.02,
 					'sessions'        => 6000,
 					'engagement_rate' => 0.66,
 				),
 				'previous'                 => array(
 					'conversions'     => 100,
-					'conversion_rate' => 0.02,
+					'conversion_rate' => 0.018,
 					'sessions'        => 5000,
 					'engagement_rate' => 0.6,
 				),
@@ -182,28 +183,34 @@ class Insight_Payload_BuilderTest extends TestCase {
 				'yoy_previous_conversions' => 125,
 			),
 			$this->builder->build( 'lead', '', '2026-09-15' ),
-			'The `build()` method should add up `contact` and `submit_lead_form` in each period, and send them as `generate_lead` with every field in the order the service reads them. A property created at the last moment of `2025-07-22` gets both year-ago counts.'
+			'The `build()` method should add up `contact` and `submit_lead_form` in each period, divide the sessions with either of them by the sessions of the whole site, and send them as `generate_lead` with every field in the order the service reads them. A property created at the last moment of `2025-07-22` gets both year-ago counts.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the Leads reports in one `batchRunReports` call.' );
 		$this->assertSame(
-			array( array(), array( 'contact', 'submit_lead_form' ), array( 'contact', 'submit_lead_form' ) ),
+			array( array(), array( 'contact', 'submit_lead_form' ), array( 'contact', 'submit_lead_form' ), array( 'contact', 'submit_lead_form' ) ),
 			$this->get_requested_event_names(),
-			'The `build()` method should ask both key action reports for `contact` and `submit_lead_form`, the lead events Analytics has found, and the engagement report for no event.'
+			'The `build()` method should ask the three key action reports for `contact` and `submit_lead_form`, the lead events Analytics has found, and the engagement report for no event.'
 		);
 	}
 
 	public function test_build__counts_only_the_form_of_a_form_tab_and_keeps_the_sessions_of_the_whole_site() {
 		$this->report_rows = array(
-			'engagement'  => array(
+			'engagement'          => array(
 				array( 'date_range_0', '0.66', '6000' ),
 				array( 'date_range_1', '0.6', '5000' ),
 			),
-			'key_actions' => array(
+			'key_actions'         => array(
 				array( 'contact', '123', 'date_range_0', '40' ),
 				array( 'submit_lead_form', '123', 'date_range_0', '20' ),
 				array( 'contact', '456', 'date_range_0', '90' ),
 				array( 'contact', '123', 'date_range_1', '30' ),
 				array( 'contact', '456', 'date_range_1', '70' ),
+			),
+			'key_action_sessions' => array(
+				array( '123', 'date_range_0', '45' ),
+				array( '456', 'date_range_0', '80' ),
+				array( '123', 'date_range_1', '24' ),
+				array( '456', 'date_range_1', '60' ),
 			),
 		);
 
@@ -213,28 +220,29 @@ class Insight_Payload_BuilderTest extends TestCase {
 				'month_start_date' => '2026-08-19',
 				'current'          => array(
 					'conversions'     => 60,
-					'conversion_rate' => 0.01,
+					'conversion_rate' => 0.0075,
 					'sessions'        => 6000,
 					'engagement_rate' => 0.66,
 				),
 				'previous'         => array(
 					'conversions'     => 30,
-					'conversion_rate' => 0.006,
+					'conversion_rate' => 0.0048,
 					'sessions'        => 5000,
 					'engagement_rate' => 0.6,
 				),
 			),
 			$this->builder->build( 'lead', '123', '2026-09-15' ),
-			'The `build()` method should count the form `123` alone on its tab, and divide by the sessions of the whole site.'
+			'The `build()` method should count the form `123` alone on its tab, and divide its sessions with a key action by the sessions of the whole site.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the reports of a form tab in one `batchRunReports` call.' );
 		$this->assertSame(
 			array(
 				array(),
 				array( 'eventName', 'customEvent:googlesitekit_form_id' ),
+				array( 'customEvent:googlesitekit_form_id' ),
 			),
 			$this->get_requested_dimensions(),
-			'The `build()` method should split the key actions by form on a form tab, and ask for the sessions of the whole site.'
+			'The `build()` method should split the key actions and the sessions with a key action by form on a form tab, and ask for the sessions of the whole site.'
 		);
 	}
 
@@ -287,9 +295,10 @@ class Insight_Payload_BuilderTest extends TestCase {
 			array(
 				array(),
 				array( 'eventName', 'customEvent:googlesitekit_event_provider' ),
+				array( 'customEvent:googlesitekit_event_provider' ),
 			),
 			$this->get_requested_dimensions(),
-			'The `build()` method should split the key actions by event provider on a provider tab, and ask for the sessions of the whole site.'
+			'The `build()` method should split the key actions and the sessions with a key action by event provider on a provider tab, and ask for the sessions of the whole site.'
 		);
 	}
 
@@ -306,9 +315,9 @@ class Insight_Payload_BuilderTest extends TestCase {
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the Online store reports in one `batchRunReports` call.' );
 		$this->assertSame(
-			array( array(), array( 'purchase' ), array( 'purchase' ) ),
+			array( array(), array( 'purchase' ), array( 'purchase' ), array( 'purchase' ) ),
 			$this->get_requested_event_names(),
-			'The `build()` method should ask both key action reports for `purchase` alone when Analytics has found it.'
+			'The `build()` method should ask the three key action reports for `purchase` alone when Analytics has found it.'
 		);
 	}
 
@@ -326,21 +335,53 @@ class Insight_Payload_BuilderTest extends TestCase {
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the Online store reports in one `batchRunReports` call when Analytics has found no `purchase`.' );
 		$this->assertSame(
-			array( array(), array( 'add_to_cart' ), array( 'add_to_cart' ) ),
+			array( array(), array( 'add_to_cart' ), array( 'add_to_cart' ), array( 'add_to_cart' ) ),
 			$this->get_requested_event_names(),
-			'The `build()` method should ask both key action reports for `add_to_cart` alone when Analytics has found no `purchase`.'
+			'The `build()` method should ask the three key action reports for `add_to_cart` alone when Analytics has found no `purchase`.'
+		);
+	}
+
+	public function test_build__sends_the_share_of_sessions_with_a_key_action_as_the_conversion_rate() {
+		$this->analytics->get_settings()->merge( array( 'detectedEvents' => array( 'add_to_cart' ) ) );
+		$this->report_rows = array(
+			'engagement'          => array(
+				array( 'date_range_0', '0.5', '1000' ),
+				array( 'date_range_1', '0.5', '1000' ),
+			),
+			// 50 sessions each add 6 products to the cart.
+			'key_actions'         => array(
+				array( 'add_to_cart', 'date_range_0', '300' ),
+				array( 'add_to_cart', 'date_range_1', '300' ),
+			),
+			'key_action_sessions' => array(
+				array( 'date_range_0', '50' ),
+				array( 'date_range_1', '50' ),
+			),
+		);
+
+		$entry = $this->builder->build( 'ecommerce', '', '2026-09-15' );
+
+		$this->assertIsArray( $entry, 'The `build()` method should build an entry for the 300 `add_to_cart` events.' );
+		$this->assertSame(
+			array( 300, 0.05 ),
+			array( $entry['current']['conversions'], $entry['current']['conversion_rate'] ),
+			'The `build()` method should send the 300 key actions as the conversions, and the 50 of 1000 sessions that hold them as the rate `0.05`, not `0.3`.'
 		);
 	}
 
 	public function test_build__rounds_the_rates_to_4_decimals_and_casts_the_counts_to_integers() {
 		$this->report_rows = array(
-			'engagement'  => array(
+			'engagement'          => array(
 				array( 'date_range_0', '0.666666', '3000' ),
 				array( 'date_range_1', '0.123456', '7' ),
 			),
-			'key_actions' => array(
+			'key_actions'         => array(
 				array( 'contact', 'date_range_0', '1000' ),
 				array( 'contact', 'date_range_1', '2' ),
+			),
+			'key_action_sessions' => array(
+				array( 'date_range_0', '1000' ),
+				array( 'date_range_1', '2' ),
 			),
 		);
 
@@ -355,7 +396,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 				'engagement_rate' => 0.6667,
 			),
 			$entry['current'],
-			'The `build()` method should send 1000 of 3000 sessions as the rate `0.3333`, and the engagement rate `0.666666` as `0.6667`, with integer counts.'
+			'The `build()` method should send 1000 sessions with a key action of 3000 sessions as the rate `0.3333`, and the engagement rate `0.666666` as `0.6667`, with integer counts.'
 		);
 		$this->assertSame(
 			array(
@@ -365,18 +406,23 @@ class Insight_Payload_BuilderTest extends TestCase {
 				'engagement_rate' => 0.1235,
 			),
 			$entry['previous'],
-			'The `build()` method should send 2 of 7 sessions as the rate `0.2857`, and the engagement rate `0.123456` as `0.1235`, with integer counts.'
+			'The `build()` method should send 2 sessions with a key action of 7 sessions as the rate `0.2857`, and the engagement rate `0.123456` as `0.1235`, with integer counts.'
 		);
 	}
 
 	public function test_build__sends_a_conversion_rate_of_0_when_a_period_has_no_sessions() {
 		$this->report_rows = array(
-			'engagement'  => array(
+			'engagement'          => array(
 				array( 'date_range_0', '0.5', '1000' ),
 			),
-			'key_actions' => array(
+			'key_actions'         => array(
 				array( 'contact', 'date_range_0', '10' ),
 				array( 'contact', 'date_range_1', '4' ),
+			),
+			// Sessions with a key action in both periods, so the previous rate can only be `0` because the site has no sessions.
+			'key_action_sessions' => array(
+				array( 'date_range_0', '8' ),
+				array( 'date_range_1', '3' ),
 			),
 		);
 
@@ -409,7 +455,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 			'The `build()` method should leave out both year-ago counts when the property was created at 00:00 UTC on `2025-07-23`.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the reports of a property created on `2025-07-23` in one `batchRunReports` call.' );
-		$this->assertCount( 2, $this->batch_requests[0]['requests'], 'The `build()` method should not ask for the year-ago report when it leaves out the year-ago counts.' );
+		$this->assertCount( 3, $this->batch_requests[0]['requests'], 'The `build()` method should not ask for the year-ago report when it leaves out the year-ago counts.' );
 	}
 
 	public function test_build__leaves_out_the_year_ago_counts_when_the_property_create_time_is_not_synchronized() {
@@ -425,7 +471,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 			'The `build()` method should leave out both year-ago counts while `propertyCreateTime` is `0`, before Site Kit synchronizes it.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the reports in one `batchRunReports` call while `propertyCreateTime` is `0`.' );
-		$this->assertCount( 2, $this->batch_requests[0]['requests'], 'The `build()` method should not ask for the year-ago report while `propertyCreateTime` is `0`.' );
+		$this->assertCount( 3, $this->batch_requests[0]['requests'], 'The `build()` method should not ask for the year-ago report while `propertyCreateTime` is `0`.' );
 	}
 
 	public function test_build__leaves_out_the_year_ago_counts_and_request_on_a_form_tab() {
@@ -449,7 +495,7 @@ class Insight_Payload_BuilderTest extends TestCase {
 			'The `build()` method should leave out both year-ago counts on a form tab, even for a property created before the year-ago periods.'
 		);
 		$this->assertCount( 1, $this->batch_requests, 'The `build()` method should ask for the reports of a form tab in one `batchRunReports` call.' );
-		$this->assertCount( 2, $this->batch_requests[0]['requests'], 'The `build()` method should not ask for the year-ago report on a form tab.' );
+		$this->assertCount( 3, $this->batch_requests[0]['requests'], 'The `build()` method should not ask for the year-ago report on a form tab.' );
 	}
 
 	public function test_build__returns_null_when_neither_period_has_a_conversion() {
@@ -556,6 +602,11 @@ class Insight_Payload_BuilderTest extends TestCase {
 				array( 'submit_lead_form', 'date_range_0', '60' ),
 				array( 'contact', 'date_range_1', '70' ),
 				array( 'submit_lead_form', 'date_range_1', '30' ),
+			),
+			// Some sessions hold more than one lead event.
+			'key_action_sessions'  => array(
+				array( 'date_range_0', '120' ),
+				array( 'date_range_1', '90' ),
 			),
 			'year_ago_key_actions' => array(
 				array( 'contact', 'date_range_0', '80' ),

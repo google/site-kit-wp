@@ -46,7 +46,6 @@ import {
 	provideAnalytics4MockReport,
 } from '@/js/modules/analytics-4/utils/data-mock';
 import { Story } from '@/js/types/Story';
-import { getPreviousDate } from '@/js/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
@@ -58,20 +57,14 @@ import {
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
-
-// Reference date: 2020-09-07, 28-day range with comparison.
-const dates = {
-	startDate: '2020-08-11',
-	endDate: '2020-09-07',
-	compareStartDate: '2020-07-14',
-	compareEndDate: '2020-08-10',
-};
-
-// The fixed 90-day window the breakdown tab structure is evaluated over.
-const discoveryDates = {
-	startDate: getPreviousDate( '2020-09-07', 90 ),
-	endDate: '2020-09-07',
-};
+import {
+	buildKeyActionSessionsReportOptions,
+	dates,
+	discoveryDates,
+	engagementReportOptions,
+	provideKeyActionSessionsReport,
+	provideSiteEngagementReport,
+} from './siteGoalsWidgetStoryReports';
 
 function buildPrimaryEventReportOptions(
 	primaryEvent: string,
@@ -110,11 +103,8 @@ function maybeEmptyRows< T >( empty: boolean, rows: T[] ) {
 	return empty ? [] : rows;
 }
 
-const engagementReportOptions = {
-	...dates,
-	metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-	reportID: 'analytics-4_site-goals_engagementReportOptions',
-};
+// Share of the site sessions with a store Key action, unless a story sets its own.
+const STORE_KEY_ACTION_SHARE = 0.032;
 
 const purchaseReportOptions = buildPrimaryEventReportOptions(
 	ENUM_CONVERSION_EVENTS.PURCHASE
@@ -828,6 +818,13 @@ function seedTabbedBreakdown(
 				breakdownFilter
 			)
 		);
+		provideKeyActionSessionsReport(
+			registry,
+			ENUM_CONVERSION_EVENTS.PURCHASE,
+			0.018,
+			breakdownFilter
+		);
+		// The Engagement rate tile is scoped to the tab.
 		provideAnalytics4MockReport( registry, {
 			...engagementReportOptions,
 			dimensionFilters: breakdownFilter,
@@ -844,12 +841,18 @@ function seedTabbedBreakdown(
 		} );
 	} );
 
-	// Unfiltered reports back the "Other sources" tab's view.
+	// Unfiltered reports back the "Other sources" tab's view. The site
+	// sessions also back the Key action rate on every tab.
 	provideAnalytics4MockReport(
 		registry,
 		buildPrimaryEventReportOptions( ENUM_CONVERSION_EVENTS.PURCHASE )
 	);
-	provideAnalytics4MockReport( registry, engagementReportOptions );
+	provideKeyActionSessionsReport(
+		registry,
+		ENUM_CONVERSION_EVENTS.PURCHASE,
+		STORE_KEY_ACTION_SHARE
+	);
+	provideSiteEngagementReport( registry );
 }
 
 function Template( {
@@ -875,7 +878,12 @@ Ready.args = {
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, purchaseReportOptions );
-		provideAnalytics4MockReport( registry, engagementReportOptions );
+		provideKeyActionSessionsReport(
+			registry,
+			ENUM_CONVERSION_EVENTS.PURCHASE,
+			STORE_KEY_ACTION_SHARE
+		);
+		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	},
 };
@@ -891,7 +899,12 @@ GatheringBreakdownData.args = {
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, purchaseReportOptions );
-		provideAnalytics4MockReport( registry, engagementReportOptions );
+		provideKeyActionSessionsReport(
+			registry,
+			ENUM_CONVERSION_EVENTS.PURCHASE,
+			STORE_KEY_ACTION_SHARE
+		);
+		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		provideUserCapabilities( registry );
@@ -979,7 +992,12 @@ ReadyAddToCart.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 		provideAnalytics4MockReport( registry, addToCartReportOptions );
-		provideAnalytics4MockReport( registry, engagementReportOptions );
+		provideKeyActionSessionsReport(
+			registry,
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			0.087
+		);
+		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 		] );
@@ -1024,6 +1042,13 @@ Loading.args = {
 			.startResolution( 'getReport', [ purchaseReportOptions ] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildKeyActionSessionsReportOptions(
+					ENUM_CONVERSION_EVENTS.PURCHASE
+				),
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ engagementReportOptions ] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -1061,6 +1086,12 @@ ZeroData.args = {
 			.receiveGetReport( zeroSessionsReport, {
 				options: engagementReportOptions,
 			} );
+
+		provideKeyActionSessionsReport(
+			registry,
+			ENUM_CONVERSION_EVENTS.PURCHASE,
+			0
+		);
 
 		// An empty chart report makes the tile show its zero data message.
 		const chartReportOptions = getKeyActionChartReportOptions( {

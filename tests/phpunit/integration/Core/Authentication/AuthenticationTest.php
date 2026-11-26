@@ -35,6 +35,7 @@ use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\Fake_Token_Refresh_Trait;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
@@ -48,6 +49,7 @@ use WPDieException;
  */
 class AuthenticationTest extends TestCase {
 	use Fake_Site_Connection_Trait;
+	use Fake_Token_Refresh_Trait;
 
 	public function test_register() {
 		remove_all_actions( 'init' );
@@ -106,6 +108,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'connectURL',
+				'disconnectURL',
 				'initialVersion',
 				'isUserInputCompleted',
 				'verified',
@@ -113,6 +116,7 @@ class AuthenticationTest extends TestCase {
 			array_keys( $user_data ),
 			'User data should contain all required authentication keys.'
 		);
+		$this->assertStringContainsString( 'action=googlesitekit_disconnect', $user_data['disconnectURL'], 'The `disconnectURL` should point to the `googlesitekit_disconnect` action.' );
 
 		// When a profile is set, additional data is added.
 		$email     = 'wapuu.wordpress@gmail.com';
@@ -123,6 +127,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'connectURL',
+				'disconnectURL',
 				'initialVersion',
 				'isUserInputCompleted',
 				'verified',
@@ -673,6 +678,51 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( $auth->is_authenticated(), 'Authentication should be true when valid token is set.' );
 	}
 
+	public function test_maybe_remove_revoked_token__revokes_the_token_when_delegation_consent_is_missing() {
+		$this->fake_proxy_site_connection();
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$auth     = $this->create_signed_in_authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$requests = $this->fake_token_response(
+			$auth,
+			400,
+			array(
+				'error' => 'missing_delegation_consent',
+				'code'  => 'test-proxy-access-code',
+			)
+		);
+
+		$auth->maybe_remove_revoked_token();
+
+		$this->assertFalse( $auth->is_authenticated(), 'The user should be signed out when the refresh fails with `missing_delegation_consent`.' );
+		$this->assertCount( 2, $requests, 'The token should be refreshed and then revoked.' );
+		$this->assertSame( 'POST https://sitekit.withgoogle.com/o/oauth2/token/', $requests[0]->getMethod() . ' ' . $requests[0]->getUri(), 'The first request should refresh the token.' );
+		$this->assertSame( 'POST https://sitekit.withgoogle.com/o/oauth2/revoke/', $requests[1]->getMethod() . ' ' . $requests[1]->getUri(), 'The second request should revoke the token.' );
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE ), 'The `missing_delegation_consent` error code should not be left for a setup error notice.' );
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_PROXY_ACCESS_CODE ), 'The proxy access code from the failed refresh should not be left for a setup error notice.' );
+	}
+
+	public function test_maybe_remove_revoked_token__keeps_a_refreshed_token_and_the_previous_error() {
+		$this->fake_proxy_site_connection();
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$auth = $this->create_signed_in_authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		update_user_option( get_current_user_id(), OAuth_Client::OPTION_ERROR_CODE, 'access_denied' );
+		update_user_option( get_current_user_id(), OAuth_Client::OPTION_PROXY_ACCESS_CODE, 'test-previous-proxy-access-code' );
+		$this->fake_token_response(
+			$auth,
+			200,
+			array(
+				'access_token' => 'test-refreshed-access-token',
+				'expires_in'   => 3599,
+			)
+		);
+
+		$auth->maybe_remove_revoked_token();
+
+		$this->assertSame( 'test-refreshed-access-token', $auth->get_oauth_client()->get_access_token(), 'The user should keep the refreshed access token.' );
+		$this->assertSame( 'access_denied', get_user_option( OAuth_Client::OPTION_ERROR_CODE ), 'The error code stored before the check should be put back after a successful refresh.' );
+		$this->assertSame( 'test-previous-proxy-access-code', get_user_option( OAuth_Client::OPTION_PROXY_ACCESS_CODE ), 'The proxy access code stored before the check should stay.' );
+	}
+
 	public function test_credentials() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -872,7 +922,15 @@ class AuthenticationTest extends TestCase {
 			$redirect_url = $e->get_location();
 			$this->assertStringStartsWith( $context->admin_url( 'splash' ), $redirect_url, 'Should redirect to splash page after disconnect.' ); // PHPCS: line 649.
 			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $params );
-			$this->assertEquals( 1, $params['googlesitekit_reset_session'], 'Reset session parameter should be set to 1 after disconnect.' );
+			$this->assertEquals(
+				array(
+					'page'                        => 'googlesitekit-splash',
+					'googlesitekit_reset_session' => '1',
+					'googlesitekit_context'       => 'revoked',
+				),
+				$params,
+				'The splash screen should open in the `revoked` context, without checking the token again, after disconnect.'
+			);
 		}
 	}
 

@@ -44,7 +44,7 @@ import {
  * one feature is unread, and at least two features are not set up yet. It is
  * sent at most once per user. Nothing is sent while any value is loading.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @return {void}
  */

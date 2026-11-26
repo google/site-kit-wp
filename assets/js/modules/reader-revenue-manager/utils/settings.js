@@ -33,7 +33,7 @@ import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastor
  *
  * @since 1.188.0
  * @since 1.192.0 Uses the CTA's display name as the label, falling back to the type label.
- * @since n.e.x.t Lists survey CTAs when the `rrmSurveyCTA` feature flag is enabled.
+ * @since 1.193.0 Lists survey CTAs when the `rrmSurveyCTA` feature flag is enabled.
  *
  * @param {Object} configuredCTAs The `configuredCTAs` setting value, keyed by CTA ID with an object of the CTA's `type`, `state` and `displayName` as the value.
  * @return {Array.<Object>} List of objects with `ctaID`, `ctaType`, and `label` properties.

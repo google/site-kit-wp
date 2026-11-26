@@ -228,7 +228,7 @@ class REST_RoutesTest extends TestCase {
 	/**
 	 * Lists each property inside a schema, at any depth, that has no description.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array  $schema Schema whose properties to check.
 	 * @param string $path   Where the schema sits, for the message.
@@ -341,7 +341,7 @@ class REST_RoutesTest extends TestCase {
 	 * `REST_Route::validate_request_arg()` does not check. WordPress 5.2 lets a value that breaks such
 	 * a keyword through to the callback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array  $schema Argument schema.
 	 * @param string $path   Where the schema sits, for the message.
@@ -408,7 +408,7 @@ class REST_RoutesTest extends TestCase {
 	/**
 	 * Registers the Site Kit REST routes on a new REST server, with no other routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	private function register_site_kit_routes() {
 		$rest_routes = new REST_Routes( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );

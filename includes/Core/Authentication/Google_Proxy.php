@@ -47,7 +47,7 @@ class Google_Proxy {
 	/**
 	 * Endpoint of the conversion insight request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	const CONVERSION_INSIGHT_URI = '/v1/ai/conversion-insights';
 
@@ -55,7 +55,7 @@ class Google_Proxy {
 	 * Endpoint of an AI operation, with its ID in place of `%s`.
 	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Renamed from `BENCHMARKING_INSIGHT_OPERATION_URI`.
+	 * @since 1.193.0 Renamed from `BENCHMARKING_INSIGHT_OPERATION_URI`.
 	 */
 	const AI_OPERATION_URI = '/v1/ai/operations/%s';
 
@@ -297,7 +297,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.27.0
 	 * @since 1.192.0 Added the `method` argument.
-	 * @since n.e.x.t The error of a failed response carries the response's `code` as `reason`, and its `Retry-After` header as `retryAfter`, when it has them.
+	 * @since 1.193.0 The error of a failed response carries the response's `code` as `reason`, and its `Retry-After` header as `retryAfter`, when it has them.
 	 * @since n.e.x.t Added the `return_retry_after` argument, which adds the `Retry-After` header of a successful response to the response as `retryAfter`.
 	 *
 	 * @param string      $uri Endpoint to send the request to.
@@ -398,7 +398,7 @@ class Google_Proxy {
 	 * endpoints name an error with a machine-readable `code`, which a client
 	 * matches on rather than on the message.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array      $response The response.
 	 * @param int        $code     The response's status.
@@ -903,7 +903,8 @@ class Google_Proxy {
 	 * `Retry-After` header, the seconds to wait before the first read of the
 	 * operation, which the answer carries as `retryAfter`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
+	 * @since n.e.x.t Returns the `Retry-After` header of the response as `retryAfter`.
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
@@ -935,7 +936,8 @@ class Google_Proxy {
 	 * the answer carries as `retryAfter`.
 	 *
 	 * @since 1.192.0
-	 * @since n.e.x.t Renamed from `get_benchmarking_insight_operation()`, and returns the `Retry-After` header of the response as `retryAfter`.
+	 * @since 1.193.0 Renamed from `get_benchmarking_insight_operation()`.
+	 * @since n.e.x.t Returns the `Retry-After` header of the response as `retryAfter`.
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.

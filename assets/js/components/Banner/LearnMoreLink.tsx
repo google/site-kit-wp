@@ -51,7 +51,7 @@ export interface LearnMoreLinkProps {
  * specified URL to content like a paragraph.
  *
  * @since 1.153.0
- * @since n.e.x.t Added the `hideExternalIndicator` prop.
+ * @since 1.193.0 Added the `hideExternalIndicator` prop.
  *
  * @param props                         The props for the component.
  * @param props.className               The class name for the link.

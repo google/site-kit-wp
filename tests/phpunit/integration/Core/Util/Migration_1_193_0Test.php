@@ -1,6 +1,6 @@
 <?php
 /**
- * \Google\Site_Kit\Tests\Core\Util\Migration_N_E_X_TTest
+ * \Google\Site_Kit\Tests\Core\Util\Migration_1_193_0Test
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2026 Google LLC
@@ -14,12 +14,12 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Core\Modules\Disconnected_Modules;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
+use Google\Site_Kit\Core\Util\Migration_1_193_0;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
 
-class Migration_N_E_X_TTest extends TestCase {
+class Migration_1_193_0Test extends TestCase {
 
 	use ModulesHelperTrait;
 
@@ -34,7 +34,7 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		// Remove every option the migration reads or writes, so each test relies
 		// only on the values it creates and stores.
-		$this->options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
+		$this->options->delete( Migration_1_193_0::DB_VERSION_OPTION );
 		$this->options->delete( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION );
 		$this->options->delete( Disconnected_Modules::OPTION );
 
@@ -44,11 +44,11 @@ class Migration_N_E_X_TTest extends TestCase {
 	/**
 	 * Gets a migration whose target version is above the current plugin version.
 	 *
-	 * The real target version is `n.e.x.t` until release, which
+	 * The real target version is `1.193.0` until release, which
 	 * `version_compare()` sorts below every numeric version.
 	 */
 	public function get_new_migration_instance() {
-		return new class( $this->context, $this->options ) extends Migration_N_E_X_T {
+		return new class( $this->context, $this->options ) extends Migration_1_193_0 {
 			const DB_VERSION = GOOGLESITEKIT_VERSION . '.1';
 		};
 	}
@@ -124,13 +124,13 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__sets_db_version() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, '1.192.0' );
+		$this->options->set( Migration_1_193_0::DB_VERSION_OPTION, '1.192.0' );
 
 		$migration->migrate();
 
 		$this->assertSame(
 			$migration::DB_VERSION,
-			$this->options->get( Migration_N_E_X_T::DB_VERSION_OPTION ),
+			$this->options->get( Migration_1_193_0::DB_VERSION_OPTION ),
 			"Database version should update to the migration's target version after the migration runs."
 		);
 	}
@@ -138,7 +138,7 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__skips_when_the_db_version_is_current() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, $migration::DB_VERSION );
+		$this->options->set( Migration_1_193_0::DB_VERSION_OPTION, $migration::DB_VERSION );
 		$this->force_connect_modules( Analytics_4::MODULE_SLUG );
 		$this->options->set( Key_Metrics_Setup_Is_Widget_Area_Hidden::OPTION, true );
 

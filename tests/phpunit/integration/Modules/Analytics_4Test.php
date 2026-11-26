@@ -42,6 +42,7 @@ use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Benchmarking_Insight;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_AI_Insight_Operation;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Server_Events_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
@@ -2021,6 +2022,25 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_settings()->get()['measurementProtocolSecretID'],
 			'The `measurementProtocolSecretID` setting should be kept when other settings change.'
 		);
+	}
+
+	public function test_get_server_events_guard__with_feature_flag() {
+		$this->enable_feature( 'serverSideEvents' );
+		remove_all_actions( 'init' );
+
+		$this->analytics->register();
+
+		$this->assertInstanceOf( Server_Events_Guard::class, $this->analytics->get_server_events_guard(), 'The module should create `Server_Events_Guard` with the `serverSideEvents` flag on.' );
+		$this->assertTrue( has_action( 'init' ), '`Server_Events_Guard` should hook its store of the tracking exclusions to `init`.' );
+	}
+
+	public function test_get_server_events_guard__without_feature_flag() {
+		remove_all_actions( 'init' );
+
+		$this->analytics->register();
+
+		$this->assertNull( $this->analytics->get_server_events_guard(), 'The module should create no `Server_Events_Guard` with the `serverSideEvents` flag off.' );
+		$this->assertFalse( has_action( 'init' ), 'Nothing should hook to `init` with the `serverSideEvents` flag off.' );
 	}
 
 	public function test_measurement_protocol_secret_value_not_exposed() {

@@ -46,7 +46,7 @@ class Survey_Timeouts extends User_Setting {
 	 * Gets survey timeouts.
 	 *
 	 * @since 1.73.0
-	 * @since n.e.x.t Returns each trigger ID as a string.
+	 * @since 1.193.0 Returns each trigger ID as a string.
 	 *
 	 * @return array Survey timeouts array.
 	 */

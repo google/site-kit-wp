@@ -65,7 +65,7 @@ class Date {
 	 * month.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t Moved from `Get_Benchmarking_Data`, as a public method.
+	 * @since 1.193.0 Moved from `Get_Benchmarking_Data`, as a public method.
 	 *
 	 * @param mixed $value The value, such as a request parameter as it arrived.
 	 * @return bool True when the value names a real day, false otherwise.
