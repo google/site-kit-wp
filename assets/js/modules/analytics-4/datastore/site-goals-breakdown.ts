@@ -652,6 +652,42 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Checks whether the report the breakdown values come from is still
+	 * loading.
+	 *
+	 * `getBreakdownValues()` returns `undefined` both while that report loads
+	 * and after it fails. This returns false once the report has loaded or
+	 * failed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}        state               Data store's state.
+	 * @param {string}        customDimensionSlug Custom dimension slug.
+	 * @param {Array<string>} [eventNames]        Event names to scope discovery to (the goal's events).
+	 * @return {boolean} True until the report's request has finished, false once it has loaded or failed.
+	 */
+	isLoadingBreakdownValues: createRegistrySelector(
+		( select: Select ) =>
+			(
+				state: State,
+				customDimensionSlug: string,
+				eventNames: string[] = []
+			): boolean =>
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[
+						getBreakdownReportOptions(
+							getDiscoveryDates(
+								select( CORE_USER ).getReferenceDate
+							),
+							customDimensionSlug,
+							eventNames
+						),
+					]
+				)
+	),
+
+	/**
 	 * Gets the pages each form appears on, ordered by event count (busiest
 	 * first).
 	 *
