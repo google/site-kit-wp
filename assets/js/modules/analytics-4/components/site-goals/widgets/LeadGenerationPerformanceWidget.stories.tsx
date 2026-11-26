@@ -36,6 +36,7 @@ import { buildTopTrafficChannelsSessionsReportOptions } from '@/js/modules/analy
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { conversionInsight } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -922,6 +923,29 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
+
+export const ReadyWithInsight = Template.bind( {} ) as Story;
+ReadyWithInsight.storyName = 'Ready with insight';
+ReadyWithInsight.args = {
+	...Ready.args,
+	setupRegistry: ( registry ) => {
+		Ready.args?.setupRegistry?.( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveConversionInsight(
+			{
+				...conversionInsight,
+				text: 'Leads are up **60%** over the past 28 days.',
+			},
+			{ goalType: GOAL_TYPES.LEAD, tabID: '', endDate: '2020-09-06' }
+		);
+	},
+};
+ReadyWithInsight.parameters = {
+	features: [ 'siteGoalsInsights' ],
+};
+ReadyWithInsight.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 	delay: 400,
 };
