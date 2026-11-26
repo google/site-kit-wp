@@ -74,8 +74,9 @@ All authoring stages work on `design-doc.md`.
 | A4. Work estimates | Add the [work estimates](SKILL.md#work-estimates) section, once the rest of the design is settled. |
 | A5. Refine the whole doc | Revise all sections together for consistency, accuracy and the [style guide](SKILL.md#style-guide). |
 
-Ground A2–A5 in the requirements and preparation notes, not only the existing draft — the
-draft may have drifted from them.
+The preparation notes are working material: carry their decisions into the doc, and leave
+detail that an implementation brief would specify. Ground A2–A5 in the requirements and
+preparation notes, not only the existing draft — the draft may have drifted from them.
 
 **Redoing a stage from scratch** (when the request asks for a fresh version rather than an
 edit): write it from the introduction, sources and preparation notes without reading the

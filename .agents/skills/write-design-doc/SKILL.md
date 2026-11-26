@@ -92,6 +92,8 @@ Screenshots (e.g. exported from Figma) should be:
   `screenshots/` for the design doc, `preparation/screenshots/` for preparation notes. When the
   design doc uses a screenshot taken for a preparation note, copy it into the feature's
   `screenshots/` rather than linking across directories, so the doc stays self-contained.
+- Chosen for what they show that prose can't (see [Keeping the doc
+  short](#keeping-the-doc-short)).
 - Named according to the feature or section they represent, with a numeric prefix, e.g.
   `01-overall-structure.png`, `02-entry-points.png`.
 - Referenced in the document with standard Markdown image syntax pointing at that
@@ -187,6 +189,27 @@ so keep their headings plain and link to the slug a Markdown viewer generates
 - **For a dense concept**, separate intent from mechanism: state the rules as a short named
   list, each with a one-line "why"; add a concrete worked example; and define any notation
   explicitly rather than glossing it inline.
+
+## Keeping the doc short {#keeping-the-doc-short}
+
+A shorter doc is quicker to review. Design docs vary a lot with their subject, so there's no
+fixed shape, but when a doc runs long, these can help:
+
+- **Lead with the decision.** A section that opens with what it decides, in bold, reads faster
+  than one that opens with how things work today.
+- **Move reference material out of the way.** File paths, report options, lists of callers or
+  a full set of user-facing copy matter to whoever picks up an issue, not to every reviewer.
+  An appendix works, or, for a lot of it, a Google Docs tab of its own, kept in its own
+  Markdown file next to the doc. Pasted Markdown can't link between tabs, so the doc mentions
+  the tab by name (see [Preparing the doc for Google
+  Docs](reference.md#preparing-the-doc-for-google-docs)).
+- **Keep screenshots that show what words can't**, such as placement or layout, and crop them
+  to the part that matters. A frame that only shows a string or a label can be a Figma link.
+- **Group small changes** under one heading rather than giving each its own.
+- **Link rather than restate.** Point to an earlier design doc for what it already describes,
+  and leave out what doesn't change.
+- **Keep the epic to its feature.** A fix for an existing bug can be its own issue, named in a
+  sentence.
 
 ## Tables {#tables}
 

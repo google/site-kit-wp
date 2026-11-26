@@ -158,8 +158,9 @@ they report:
   ```
 
   Skip the second for a preparation note, which doesn't follow the template.
-- **Style**: reread against the [style guide](SKILL.md#style-guide) — concise, diagrams
-  sparing, nothing obvious over-explained, no editing artifacts, US English.
+- **Style**: reread against the [style guide](SKILL.md#style-guide) and [Keeping the doc
+  short](SKILL.md#keeping-the-doc-short) — concise, diagrams sparing, nothing obvious
+  over-explained, no editing artifacts, US English.
 
 ## Preparing the doc for Google Docs {#preparing-the-doc-for-google-docs}
 
@@ -183,6 +184,11 @@ Run both from the plugin root.
    <doc>-rendered.md` inlines every `![](…)` image as a base64 data URI, writing
    `<doc>-embedded.md` — a single file that survives a paste into Google Docs. (`extract`
    reverses this.)
+
+When the doc spans more than one Google Docs tab, each kept in its own Markdown file, run both
+steps on each file and paste each `-embedded.md` file into its own tab. Pasting can't create
+tabs or links between them, so after pasting, search each tab for the other tabs' names and turn
+those mentions into links.
 
 The hand-written source `.md` is canonical; regenerate the rendered/embedded copies from it
 rather than editing them. Pasting back from Google Docs leaves Markdown specials
