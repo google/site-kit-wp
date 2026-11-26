@@ -250,7 +250,7 @@ class Event_Collector {
 		$mode = $this->get_dispatch_mode();
 
 		if ( 'finish' === $mode ) {
-			// An output buffer still open belongs to code that runs after this, so the response is finished only with none open.
+			// A buffer still open was opened after core ended the buffers at priority 1, or cannot be removed. So the response is finished only with none open.
 			$is_request_finished = 0 === $this->get_output_buffer_level() && $this->finish_request();
 			$mode                = $is_request_finished ? 'blocking' : 'async';
 		}
