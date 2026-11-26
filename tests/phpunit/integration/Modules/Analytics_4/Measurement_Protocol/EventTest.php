@@ -47,7 +47,7 @@ class EventTest extends TestCase {
 	}
 
 	public function test_construct__truncates_non_ascii_value_by_characters() {
-		// `€` takes 3 bytes, so a cut after 100 bytes would leave part of a character.
+		// Fails if `Event` cuts the value by bytes, because each `€` takes 3 bytes.
 		$event = new Event( 'sign_up', array( 'title' => str_repeat( '€', 150 ) ), 'sign_up:user:1' );
 		$title = $event->get_params()['title'];
 

@@ -48,13 +48,6 @@ class Event_CollectorTest extends TestCase {
 	private $analytics;
 
 	/**
-	 * Conversion_Tracking_Settings instance.
-	 *
-	 * @var Conversion_Tracking_Settings
-	 */
-	private $conversion_tracking_settings;
-
-	/**
 	 * Measurement_Protocol_Settings instance that reads and writes the same option as the module's own instance.
 	 *
 	 * @var Measurement_Protocol_Settings
@@ -67,7 +60,6 @@ class Event_CollectorTest extends TestCase {
 		$this->context                       = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$options                             = new Options( $this->context );
 		$this->analytics                     = new Analytics_4( $this->context, $options );
-		$this->conversion_tracking_settings  = new Conversion_Tracking_Settings( $options );
 		$this->measurement_protocol_settings = new Measurement_Protocol_Settings( new Encrypted_Options( $options ) );
 
 		$this->analytics->get_settings()->merge(
@@ -79,13 +71,33 @@ class Event_CollectorTest extends TestCase {
 				'useSnippet'      => true,
 			)
 		);
-		$this->store_measurement_protocol_secret( $options );
+		$this->measurement_protocol_settings->set(
+			array(
+				'secretValue'     => 'test-secret-value',
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'secretID'        => 'test-secret-id',
+			)
+		);
 		$_COOKIE['_ga']        = 'GA1.1.1234567890.1700000000';
 		$_COOKIE['_ga_ABC123'] = 'GS2.1.s1700000000$t' . time();
 
 		add_filter( 'googlesitekit_analytics_4_mp_dispatch_mode', fn () => 'blocking' );
 
-		$this->capture_requests();
+		// Answer each request with a 204 response, so no request leaves the test.
+		$this->subscribe_to_wp_http_requests(
+			function ( $url, $args ) {
+				$this->requests[] = array(
+					'url'  => $url,
+					'args' => $args,
+				);
+			},
+			array(
+				'headers'  => array(),
+				'body'     => '',
+				'response' => array( 'code' => 204 ),
+			)
+		);
 	}
 
 	public function tear_down() {
@@ -188,7 +200,7 @@ class Event_CollectorTest extends TestCase {
 		$this->create_collector()->flush();
 
 		$this->assertCount( 0, $this->requests, 'No request should be sent when no event was added.' );
-		$this->assertSame( 0, $settings_reads, 'A request with no event should read no setting.' );
+		$this->assertSame( 0, $settings_reads, '`flush()` should read no setting when no event was added.' );
 	}
 
 	public function test_flush__sends_nothing_without_secret() {
@@ -273,13 +285,67 @@ class Event_CollectorTest extends TestCase {
 			'a name with a hyphen'                      => array( 'test-event', array() ),
 			'a name of 41 characters'                   => array( 'e' . str_repeat( 'a', 40 ), array() ),
 			'a name that ends in a newline'             => array( "test_event\n", array() ),
-			'a reserved name'                           => array( 'session_start', array() ),
-			'a name allowed for app streams alone'      => array( 'screen_view', array() ),
 			'a param name that starts with `google_`'   => array( 'test_event', array( 'google_param' => 'a' ) ),
 			'a param name that starts with `ga_`'       => array( 'test_event', array( 'ga_param' => 'a' ) ),
 			'a param name that starts with `firebase_`' => array( 'test_event', array( 'firebase_param' => 'a' ) ),
 			'23 params of its own'                      => array( 'test_event', self::create_params( 23 ) ),
 		);
+	}
+
+	/**
+	 * @dataProvider data_reserved_event_names
+	 *
+	 * @param string $name Event name.
+	 */
+	public function test_flush__drops_events_with_reserved_names( $name ) {
+		$collector = $this->create_collector();
+
+		$collector->add( new Event( 'sign_up', array(), 'sign_up:user:1' ) );
+		$collector->add( new Event( $name, array(), "{$name}:post:1" ) );
+		$collector->flush();
+
+		$this->assertSame( array( 'sign_up' ), array_column( $this->get_sent_body()['events'], 'name' ), 'An event with a reserved name should not be sent.' );
+	}
+
+	public function data_reserved_event_names() {
+		$names = array(
+			'ad_activeview',
+			'ad_click',
+			'ad_exposure',
+			'ad_query',
+			'ad_reward',
+			'adunit_exposure',
+			'app_clear_data',
+			'app_exception',
+			'app_install',
+			'app_remove',
+			'app_store_refund',
+			'app_update',
+			'app_upgrade',
+			'dynamic_link_app_open',
+			'dynamic_link_app_update',
+			'dynamic_link_first_open',
+			'error',
+			'firebase_campaign',
+			'firebase_in_app_message_action',
+			'firebase_in_app_message_dismiss',
+			'firebase_in_app_message_impression',
+			'first_open',
+			'first_visit',
+			'notification_dismiss',
+			'notification_foreground',
+			'notification_open',
+			'notification_receive',
+			'notification_send',
+			'os_update',
+			'session_start',
+			'user_engagement',
+			'ad_impression',
+			'in_app_purchase',
+			'screen_view',
+		);
+
+		return array_combine( $names, array_map( fn ( $name ) => array( $name ), $names ) );
 	}
 
 	/**
@@ -377,7 +443,7 @@ class Event_CollectorTest extends TestCase {
 		$collector->flush();
 
 		$this->assertCount( 1, $this->requests, 'One request should be sent.' );
-		$this->assertSame( $finish_request_calls, $finish_request_calls_at_request, 'The response should be finished before the request, and only with no output buffer open.' );
+		$this->assertSame( $finish_request_calls, $finish_request_calls_at_request, 'The collector should try to finish the response before the request, and only with no output buffer open.' );
 		$this->assertSame( $blocking, $this->requests[0]['args']['blocking'], 'The request should wait for Google Analytics only after the visitor\'s response is finished.' );
 	}
 
@@ -439,11 +505,12 @@ class Event_CollectorTest extends TestCase {
 	}
 
 	public function test_flush__sends_event_that_the_real_guard_allows() {
-		$this->conversion_tracking_settings->set( array( 'enabled' => true ) );
+		$conversion_tracking_settings = new Conversion_Tracking_Settings( new Options( $this->context ) );
+		$conversion_tracking_settings->set( array( 'enabled' => true ) );
 		$server_events_guard = new Server_Events_Guard(
 			$this->context,
 			$this->analytics,
-			$this->conversion_tracking_settings,
+			$conversion_tracking_settings,
 			$this->analytics->get_measurement_protocol_secret(),
 			$this->analytics->get_tracking_exclusions()
 		);
@@ -513,6 +580,8 @@ class Event_CollectorTest extends TestCase {
 	/**
 	 * Creates the given number of params.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param int $count Number of params.
 	 * @return array Params from `param_1` to `param_<count>`, each with the value `a`.
 	 */
@@ -528,6 +597,8 @@ class Event_CollectorTest extends TestCase {
 
 	/**
 	 * Gets the arguments of the collector's constructor.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param Server_Events_Guard|null $server_events_guard Optional. Server_Events_Guard instance of the collector. Default a stub that allows every event.
 	 * @return array Arguments of `Event_Collector::__construct()`, with the real client.
@@ -551,9 +622,11 @@ class Event_CollectorTest extends TestCase {
 	}
 
 	/**
-	 * Creates a collector with a set output buffering level and a set result of finishing the response.
+	 * Creates a collector with the given output buffering level and the given result of finishing the response.
 	 *
 	 * PHPUnit keeps an output buffer open, and finishes no response, so the collector takes both from the test.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param Server_Events_Guard|null $server_events_guard Optional. Server_Events_Guard instance of the collector. Default a stub that allows every event.
 	 * @param int                      $output_buffer_level Optional. Output buffering level that the collector reads. Default 0.
@@ -585,6 +658,8 @@ class Event_CollectorTest extends TestCase {
 
 			/**
 			 * Constructor.
+			 *
+			 * @since n.e.x.t
 			 *
 			 * @param int   $output_buffer_level Output buffering level.
 			 * @param bool  $is_request_finished What `finish_request()` returns.

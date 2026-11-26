@@ -11,11 +11,13 @@
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Measurement_Protocol;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Event;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\GA_Session;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Client;
+use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
 use Google\Site_Kit\Tests\Measurement_Protocol_Requests_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -55,20 +57,41 @@ class Measurement_Protocol_ClientTest extends TestCase {
 				'measurementID'   => 'G-ABC123',
 			)
 		);
-		$this->store_measurement_protocol_secret( $options );
+		( new Measurement_Protocol_Settings( new Encrypted_Options( $options ) ) )->set(
+			array(
+				// Its `+` fails the endpoint tests if the client leaves the query args unencoded.
+				'secretValue'     => 'test-secret+value',
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '987654321',
+				'secretID'        => 'test-secret-id',
+			)
+		);
 
 		$this->client  = new Measurement_Protocol_Client( $analytics->get_settings(), $analytics->get_measurement_protocol_secret() );
 		$this->session = GA_Session::from_values( 'GA1.1.1234567890.1700000000', 'GS2.1.s1700000000$t1700000500', 'G-ABC123', 1700000500 );
 
-		$this->capture_requests();
+		// Answer each request with a 204 response, so no request leaves the test.
+		$this->subscribe_to_wp_http_requests(
+			function ( $url, $args ) {
+				$this->requests[] = array(
+					'url'  => $url,
+					'args' => $args,
+				);
+			},
+			array(
+				'headers'  => array(),
+				'body'     => '',
+				'response' => array( 'code' => 204 ),
+			)
+		);
 	}
 
-	public function test_send__sends_ids_as_query_args_to_the_endpoint() {
+	public function test_send__sends_measurement_id_and_api_secret_as_query_args() {
 		$this->client->send( $this->session, array( new Event( 'sign_up', array(), 'sign_up:user:1' ) ), 'blocking' );
 
 		$this->assertCount( 1, $this->requests, 'One request should be sent.' );
 		$this->assertSame(
-			'https://www.google-analytics.com/mp/collect?measurement_id=G-ABC123&api_secret=test-secret-value',
+			'https://www.google-analytics.com/mp/collect?measurement_id=G-ABC123&api_secret=test-secret%2Bvalue',
 			$this->requests[0]['url'],
 			'The request should go to the Measurement Protocol endpoint, with the measurement ID and the API secret as query args.'
 		);
@@ -81,7 +104,7 @@ class Measurement_Protocol_ClientTest extends TestCase {
 
 		$this->assertCount( 1, $this->requests, 'One request should be sent.' );
 		$this->assertSame(
-			'https://region1.google-analytics.com/mp/collect?measurement_id=G-ABC123&api_secret=test-secret-value',
+			'https://region1.google-analytics.com/mp/collect?measurement_id=G-ABC123&api_secret=test-secret%2Bvalue',
 			$this->requests[0]['url'],
 			'The request should go to the URL the filter returns.'
 		);
@@ -117,7 +140,7 @@ class Measurement_Protocol_ClientTest extends TestCase {
 				),
 			),
 			$body,
-			'The body should have the visitor\'s IDs, denied consent, and each event with its time, its params and the params of the session.'
+			'The body should have the visitor\'s IDs, denied consent, and each event with its time, its params and the params the client adds.'
 		);
 	}
 
@@ -131,7 +154,7 @@ class Measurement_Protocol_ClientTest extends TestCase {
 		$this->assertSame(
 			'1700000000',
 			$this->get_sent_body()['events'][0]['params']['session_id'],
-			'An event\'s own `session_id` param should give way to the visitor\'s session ID.'
+			'An event\'s own `session_id` param should be replaced by the visitor\'s session ID.'
 		);
 	}
 
