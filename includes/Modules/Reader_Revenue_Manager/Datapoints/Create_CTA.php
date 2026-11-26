@@ -94,33 +94,6 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	}
 
 	/**
-	 * Gets the supported CTA type handlers, keyed by CTA type.
-	 *
-	 * @since 1.187.0
-	 * @since 1.193.0 Added the survey CTA type handler, when the `rrmSurveyCTA` feature flag is enabled.
-	 *
-	 * @return CTA_Type_Handler_Interface[] CTA type handlers.
-	 */
-	private function get_cta_type_handlers() {
-		$handlers = array();
-
-		$type_handlers = array(
-			new Newsletter_Signup_CTA_Type_Handler(),
-			// Register additional CTA type handlers here as they are added.
-		);
-
-		if ( Feature_Flags::enabled( 'rrmSurveyCTA' ) ) {
-			$type_handlers[] = new Survey_CTA_Type_Handler();
-		}
-
-		foreach ( $type_handlers as $handler ) {
-			$handlers[ $handler->get_type() ] = $handler;
-		}
-
-		return $handlers;
-	}
-
-	/**
 	 * Parses a response.
 	 *
 	 * @since 1.187.0
