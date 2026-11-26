@@ -335,26 +335,33 @@ describe( 'core/feature-discovery newness', () => {
 
 		it( 'should return undefined while a new, undismissed feature’s isEnabled() is undefined', () => {
 			provideNewnessState();
-			const state: { isEnabled?: boolean } = {};
 			registerFeature( 'loading-feature', {
 				setup: {
 					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-					isEnabled: () => state.isEnabled,
+					isEnabled: () => undefined,
 				},
 			} );
 
 			expect(
 				registry.select( CORE_FEATURE_DISCOVERY ).getWhatsNewFeatures()
 			).toBeUndefined();
+		} );
 
-			state.isEnabled = false;
+		it( 'should include a new, undismissed feature once its isEnabled() returns false', () => {
+			provideNewnessState();
+			registerFeature( 'loaded-feature', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+				},
+			} );
 
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
 					.getWhatsNewFeatures()
 					.map( ( { slug }: { slug: string } ) => slug )
-			).toEqual( [ 'loading-feature' ] );
+			).toEqual( [ 'loaded-feature' ] );
 		} );
 
 		it( 'should return undefined while a new, undismissed feature’s isInProgress() is undefined', () => {
