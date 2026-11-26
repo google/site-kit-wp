@@ -24,7 +24,7 @@ use WP_Error;
 /**
  * Trait for testing the datapoints that reach the Site Kit service's AI endpoints through the REST API, with a fake Site Kit service.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -35,7 +35,7 @@ trait AI_Insight_Datapoints_Trait {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Context
 	 */
 	protected $context;
@@ -43,7 +43,7 @@ trait AI_Insight_Datapoints_Trait {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Options
 	 */
 	protected $options;
@@ -51,7 +51,7 @@ trait AI_Insight_Datapoints_Trait {
 	/**
 	 * Modules instance the REST routes answer from.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Modules
 	 */
 	protected $modules;
@@ -59,7 +59,7 @@ trait AI_Insight_Datapoints_Trait {
 	/**
 	 * Analytics 4 module instance built for the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var Analytics_4
 	 */
 	protected $analytics;
@@ -67,7 +67,7 @@ trait AI_Insight_Datapoints_Trait {
 	/**
 	 * The ID of the administrator who connected Site Kit and owns Analytics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var int
 	 */
 	protected $admin_id;
@@ -75,7 +75,7 @@ trait AI_Insight_Datapoints_Trait {
 	/**
 	 * Each request the fake service received, with its `url` and its `args`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var array
 	 */
 	protected $service_requests = array();
@@ -85,7 +85,7 @@ trait AI_Insight_Datapoints_Trait {
 	 * `body` it encodes as JSON and the `headers` of the response, or the
 	 * error of a request that did not reach it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var array|WP_Error
 	 */
 	protected $service_response = array(
@@ -103,7 +103,7 @@ trait AI_Insight_Datapoints_Trait {
 	 * The feature flags of the datapoints stay off; a test turns them on with
 	 * `enable_insight_datapoints()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	protected function set_up_ai_insight_datapoints() {
 		$this->admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -139,7 +139,7 @@ trait AI_Insight_Datapoints_Trait {
 	 * Turns on the given feature flags, and builds the modules again for the
 	 * current user, so they define the datapoints of those flags.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param string[] $features The feature flags to turn on.
 	 */
@@ -160,7 +160,7 @@ trait AI_Insight_Datapoints_Trait {
 	 * A module reads the token of the user it was built for, so the
 	 * administrator and a view-only user each need a module built for them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param int $user_id The user the module is built for.
 	 */
@@ -179,7 +179,7 @@ trait AI_Insight_Datapoints_Trait {
 	 * Shares Analytics with the Editor role, and creates an editor who views
 	 * the shared dashboard without an account of their own.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return int The ID of the view-only user.
 	 */
@@ -203,7 +203,7 @@ trait AI_Insight_Datapoints_Trait {
 	 *   the module is not recoverable, so the request reaches the datapoint
 	 *   with the owner's account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param string $state The state the owner is left in: `recoverable`, `no_scopes` or `no_token`.
 	 */
@@ -236,7 +236,7 @@ trait AI_Insight_Datapoints_Trait {
 	/**
 	 * Makes the fake service answer with the given response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param int   $status  The status of the response.
 	 * @param mixed $body    The body of the response, which the fake service encodes as JSON.
@@ -254,7 +254,7 @@ trait AI_Insight_Datapoints_Trait {
 	 * Makes a request to the fake service fail before it reaches the service,
 	 * as an unreachable host does.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param WP_Error $error The error the request fails with.
 	 */
@@ -265,7 +265,7 @@ trait AI_Insight_Datapoints_Trait {
 	/**
 	 * Gets the URL of a path of the Site Kit service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param string $path The path, such as `/v1/ai/conversion-insights`.
 	 * @return string The URL.
@@ -279,7 +279,7 @@ trait AI_Insight_Datapoints_Trait {
 	 * service, which records it in `$service_requests` and answers with
 	 * `$service_response`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	private function fake_service() {
 		add_filter(

@@ -249,7 +249,7 @@ class REST_RouteTest extends TestCase {
 	/**
 	 * Gets the schema of an object with a required, non-empty `slug` and an optional `expiration`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array Schema of the object.
 	 */

@@ -92,7 +92,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 	/**
 	 * Connects a publication by receiving it as the module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @private
 	 *
 	 * @param {Object} settings Settings to receive.

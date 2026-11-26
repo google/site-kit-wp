@@ -61,7 +61,7 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Requires the publication identifiers in the request.
+	 * @since 1.193.0 Requires the publication identifiers in the request.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -77,7 +77,7 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @since 1.187.0
 	 * @since 1.192.0 Excludes CTAs that are neither active nor draft, such as deleted CTAs.
-	 * @since n.e.x.t Only synchronizes the CTAs of the saved publication.
+	 * @since 1.193.0 Only synchronizes the CTAs of the saved publication.
 	 *
 	 * @param mixed        $response List CTAs response.
 	 * @param Data_Request $data     Data request object.
@@ -109,7 +109,7 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Checks whether the request is for the publication in the settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return bool TRUE if the request is for the saved publication, FALSE otherwise.

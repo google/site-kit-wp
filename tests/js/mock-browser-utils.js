@@ -264,7 +264,7 @@ export function mockIntersectionObserver() {
  * Sets up in beforeAll, resets observer state in beforeEach, and restores in
  * afterAll.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @return {{
  *   getObservedElements: function(): Element[],
