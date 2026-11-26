@@ -36,8 +36,6 @@ import { feedbackEndpoint } from '@tests/js/mock-feedback-endpoint';
 import {
 	createTestRegistry,
 	fireEvent,
-	provideSiteInfo,
-	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
 	waitFor,
@@ -64,8 +62,6 @@ describe( 'KeyActionFeedback', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideSiteInfo( registry );
-		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 
 		registry
