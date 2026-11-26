@@ -16,7 +16,6 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 /**
  * Class that collects the server-side events of a request, and sends them to Google Analytics in one request at its end.
  *
- * It drops an event that `Server_Events_Guard` refuses, and every event of a visitor with no current Google Analytics session.
  * It writes nothing to the database.
  *
  * @since n.e.x.t
@@ -229,10 +228,10 @@ class Event_Collector {
 	}
 
 	/**
-	 * Sends the stored events to Google Analytics in one request, and empties the store.
+	 * Sends the stored events to Google Analytics in one request.
 	 *
-	 * It sends nothing, and keeps the store, where the measurement ID or the API secret is empty.
-	 * Otherwise it drops each event that breaks a limit of the Measurement Protocol, and sends the first 25 of the rest.
+	 * It sends nothing where the measurement ID or the API secret is empty.
+	 * Otherwise it drops each event that breaks a limit of the Measurement Protocol, sends the first 25 of the rest, and empties the store.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -262,6 +261,8 @@ class Event_Collector {
 	/**
 	 * Gets the number of output buffers open.
 	 *
+	 * A test replaces it, because PHPUnit keeps an output buffer open.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @return int Output buffering level.
@@ -271,7 +272,9 @@ class Event_Collector {
 	}
 
 	/**
-	 * Finishes the visitor's response where the server can, so the request to Google Analytics adds no wait to it.
+	 * Finishes the visitor's response where the server can.
+	 *
+	 * The request to Google Analytics then adds no wait to the response.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -290,7 +293,9 @@ class Event_Collector {
 	}
 
 	/**
-	 * Gets the visitor's Google Analytics session, read once a request.
+	 * Gets the visitor's Google Analytics session.
+	 *
+	 * It reads the session once a request, at the first call.
 	 *
 	 * @since n.e.x.t
 	 *

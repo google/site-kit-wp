@@ -22,7 +22,9 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 class Measurement_Protocol_Client {
 
 	/**
-	 * URL of the Measurement Protocol endpoint, unless a filter changes it.
+	 * URL of the Measurement Protocol endpoint.
+	 *
+	 * The `googlesitekit_analytics_4_mp_endpoint` filter can change it.
 	 *
 	 * @since n.e.x.t
 	 */

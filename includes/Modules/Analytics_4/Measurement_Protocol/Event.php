@@ -51,7 +51,9 @@ final class Event {
 	private $dedupe_key;
 
 	/**
-	 * How specific the event is, which decides between two events of one dedupe key.
+	 * How specific the event is.
+	 *
+	 * It decides which of two events with one dedupe key the collector keeps.
 	 *
 	 * @since n.e.x.t
 	 * @var int
