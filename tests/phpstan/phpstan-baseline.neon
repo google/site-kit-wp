@@ -25,12 +25,6 @@ parameters:
 			path: ../../includes/Core/Site_Health/Tag_Placement.php
 
 		-
-			rawMessage: 'Method Google\Site_Kit\Modules\AdSense::has_placed_tag_in_content() should return bool but returns int.'
-			identifier: return.type
-			count: 3
-			path: ../../includes/Modules/AdSense.php
-
-		-
 			rawMessage: 'Method Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Web_Tag::get_dns_prefetch_hints_callback() should return array but returns Closure.'
 			identifier: return.type
 			count: 1
@@ -41,12 +35,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../../includes/Modules/AdSense/Web_Tag.php
-
-		-
-			rawMessage: 'Method Google\Site_Kit\Modules\Ads::has_placed_tag_in_content() should return bool but returns int.'
-			identifier: return.type
-			count: 3
-			path: ../../includes/Modules/Ads.php
 
 		-
 			rawMessage: 'Method Google\Site_Kit\Modules\Analytics_4::get_analyticsadminv1alpha_service() should return Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha but returns Google\Site_Kit_Dependencies\Google\Service.'
@@ -64,12 +52,6 @@ parameters:
 			rawMessage: 'Method Google\Site_Kit\Modules\Analytics_4::get_tagmanager_service() should return Google\Site_Kit_Dependencies\Google\Service\TagManager but returns Google\Site_Kit_Dependencies\Google\Service.'
 			identifier: return.type
 			count: 1
-			path: ../../includes/Modules/Analytics_4.php
-
-		-
-			rawMessage: 'Method Google\Site_Kit\Modules\Analytics_4::has_placed_tag_in_content() should return bool but returns int.'
-			identifier: return.type
-			count: 3
 			path: ../../includes/Modules/Analytics_4.php
 
 		-
@@ -127,12 +109,6 @@ parameters:
 			path: ../../includes/Modules/Reader_Revenue_Manager/Datapoints/Get_Publications_Legacy.php
 
 		-
-			rawMessage: 'Method Google\Site_Kit\Modules\Reader_Revenue_Manager::has_placed_tag_in_content() should return bool but returns int.'
-			identifier: return.type
-			count: 3
-			path: ../../includes/Modules/Reader_Revenue_Manager.php
-
-		-
 			rawMessage: 'Method Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag::get_dns_prefetch_hints_callback() should return array but returns Closure.'
 			identifier: return.type
 			count: 1
@@ -143,12 +119,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../../includes/Modules/Search_Console.php
-
-		-
-			rawMessage: 'Method Google\Site_Kit\Modules\Sign_In_With_Google::has_placed_tag_in_content() should return bool but returns int.'
-			identifier: return.type
-			count: 2
-			path: ../../includes/Modules/Sign_In_With_Google.php
 
 		-
 			rawMessage: 'Return type (bool) of method Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\WP_COM_Check::run() should be compatible with return type (array) of method Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Compatibility_Check::run()'
@@ -178,12 +148,6 @@ parameters:
 			rawMessage: 'Method Google\Site_Kit\Modules\Tag_Manager::get_tagmanager_service() should return Google\Site_Kit_Dependencies\Google\Service\TagManager but returns Google\Site_Kit_Dependencies\Google\Service.'
 			identifier: return.type
 			count: 1
-			path: ../../includes/Modules/Tag_Manager.php
-
-		-
-			rawMessage: 'Method Google\Site_Kit\Modules\Tag_Manager::has_placed_tag_in_content() should return bool but returns int.'
-			identifier: return.type
-			count: 3
 			path: ../../includes/Modules/Tag_Manager.php
 
 		-

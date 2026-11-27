@@ -36,7 +36,7 @@ interface Module_With_Tag {
 	 * @since 1.119.0
 	 *
 	 * @param string $content Content to search for the tags.
-	 * @return bool TRUE if tag is found, FALSE if not.
+	 * @return int One of `Module_Tag_Matchers::TAG_PLACED_BY_SITE_KIT`, `TAG_EXISTS` and `NO_TAG_FOUND`.
 	 */
 	public function has_placed_tag_in_content( $content );
 }

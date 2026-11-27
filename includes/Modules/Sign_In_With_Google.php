@@ -1016,6 +1016,17 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	}
 
 	/**
+	 * Gets the tag IDs that the module's elements can have in their tag ID attribute.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The client ID.
+	 */
+	protected function get_tag_attribute_ids() {
+		return array( $this->get_settings()->get()['clientID'] );
+	}
+
+	/**
 	 * Gets the URL of the page(s) where a tag for the module would be placed.
 	 *
 	 * For all modules like Analytics, Tag Manager, AdSense, Ads, etc. except for
@@ -1038,33 +1049,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			);
 		}
 		return $wp_login_url;
-	}
-
-	/**
-	 * Checks if the Sign in with Google button, specifically inserted by Site Kit,
-	 * is found in the provided content.
-	 *
-	 * This method overrides the `Module_With_Tag_Trait` implementation since the HTML
-	 * comment inserted for SiwG's button is different to the standard comment inserted
-	 * for other modules' script snippets. This should be improved as speicified in the
-	 * TODO within the trait method.
-	 *
-	 * @since 1.140.0
-	 *
-	 * @param string $content Content to search for the button.
-	 * @return bool TRUE if tag is found, FALSE if not.
-	 */
-	public function has_placed_tag_in_content( $content ) {
-		$search_string              = 'Sign in with Google button added by Site Kit';
-		$search_translatable_string =
-			/* translators: %s: Sign in with Google service name */
-			sprintf( __( '%s button added by Site Kit', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) );
-
-		if ( strpos( $content, $search_string ) !== false || strpos( $content, $search_translatable_string ) !== false ) {
-			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
-		}
-
-		return Module_Tag_Matchers::NO_TAG_FOUND;
 	}
 
 	/**

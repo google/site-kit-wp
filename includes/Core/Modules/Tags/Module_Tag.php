@@ -22,6 +22,14 @@ use Google\Site_Kit\Core\Tags\Tag;
 abstract class Module_Tag extends Tag {
 
 	/**
+	 * HTML attribute that has the tag ID on each element Site Kit prints to load a module tag, other than Site Kit's
+	 * Google tag scripts.
+	 *
+	 * @since n.e.x.t
+	 */
+	const TAG_ID_ATTRIBUTE = 'data-googlesitekit-tag';
+
+	/**
 	 * Module slug.
 	 *
 	 * @since 1.24.0
@@ -42,6 +50,17 @@ abstract class Module_Tag extends Tag {
 	public function __construct( $tag_id, $module_slug ) {
 		parent::__construct( $tag_id );
 		$this->module_slug = $module_slug;
+	}
+
+	/**
+	 * Gets the tag ID attribute as HTML.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The attribute with the tag ID, after a space.
+	 */
+	protected function get_tag_id_attribute() {
+		return sprintf( ' %s="%s"', self::TAG_ID_ATTRIBUTE, esc_attr( $this->tag_id ) );
 	}
 
 	/**

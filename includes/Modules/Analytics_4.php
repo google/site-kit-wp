@@ -1817,6 +1817,28 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	}
 
 	/**
+	 * Gets the tag IDs that the module's elements can have in their tag ID attribute.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The measurement ID, which the AMP tag uses.
+	 */
+	protected function get_tag_attribute_ids() {
+		return array( $this->get_measurement_id() );
+	}
+
+	/**
+	 * Gets the tag IDs that the module adds to Site Kit's Google tag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The Google tag ID, or the measurement ID where that is empty.
+	 */
+	protected function get_google_tag_ids() {
+		return array( $this->get_tag_id() );
+	}
+
+	/**
 	 * Gets custom dimensions data based on available custom dimensions.
 	 *
 	 * @since 1.113.0

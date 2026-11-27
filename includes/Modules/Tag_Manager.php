@@ -627,6 +627,34 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	}
 
 	/**
+	 * Gets the tag IDs that the module's elements can have in their tag ID attribute.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The web and the AMP container IDs.
+	 */
+	protected function get_tag_attribute_ids() {
+		$settings = $this->get_settings()->get();
+
+		return array( $settings['containerID'], $settings['ampContainerID'] );
+	}
+
+	/**
+	 * Gets the tag IDs that the module adds to Site Kit's Google tag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The web container ID while Google tag gateway is active, and none otherwise.
+	 */
+	protected function get_google_tag_ids() {
+		if ( ! $this->is_google_tag_gateway_active() ) {
+			return array();
+		}
+
+		return array( $this->get_settings()->get()['containerID'] );
+	}
+
+	/**
 	 * Checks if the current user has access to the current configured service entity.
 	 *
 	 * @since 1.77.0

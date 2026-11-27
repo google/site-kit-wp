@@ -790,6 +790,17 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
+	 * Gets the tag IDs that the module's elements can have in their tag ID attribute.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The publication ID.
+	 */
+	protected function get_tag_attribute_ids() {
+		return array( $this->get_settings()->get()['publicationID'] );
+	}
+
+	/**
 	 * Registers the Reader Revenue Manager tag.
 	 *
 	 * @since 1.132.0

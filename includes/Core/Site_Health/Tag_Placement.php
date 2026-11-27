@@ -143,8 +143,7 @@ class Tag_Placement {
 			$settings    = $module->get_settings()->get();
 			$module_name = $module->name;
 
-			// If module has `canUseSnippet` setting, check if it is disabled.
-			if ( isset( $settings['canUseSnippet'] ) && empty( $settings['useSnippet'] ) ) {
+			if ( isset( $settings['useSnippet'] ) && empty( $settings['useSnippet'] ) ) {
 				$descriptions[] = sprintf(
 					'<li><strong>%s</strong>: %s</li>',
 					$module_name,
@@ -223,7 +222,7 @@ class Tag_Placement {
 		$module_label = $module_label ? $module_label : $module->name;
 
 		switch ( $check_tag ) {
-			case Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS:
+			case Module_Tag_Matchers::TAG_PLACED_BY_SITE_KIT:
 				return sprintf(
 					'<li><strong>%s</strong>: %s</li>',
 					$module_label,

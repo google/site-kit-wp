@@ -647,6 +647,17 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 	}
 
 	/**
+	 * Gets the tag IDs that the module's elements can have in their tag ID attribute.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The client ID.
+	 */
+	protected function get_tag_attribute_ids() {
+		return array( $this->get_settings()->get()['clientID'] );
+	}
+
+	/**
 	 * Normalizes account ID and returns it.
 	 *
 	 * @since 1.36.0

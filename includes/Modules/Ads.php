@@ -348,14 +348,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @since 1.124.0
 	 */
 	public function register_tag() {
-		$ads_conversion_id = $this->get_settings()->get()['conversionID'];
-		$pax_conversion_id = $this->get_settings()->get()['paxConversionID'];
-
-		// The PAX-supplied Conversion ID should take precedence over the
-		// user-supplied one, if both exist.
-		if ( ! empty( $pax_conversion_id ) ) {
-			$ads_conversion_id = $pax_conversion_id;
-		}
+		$ads_conversion_id = $this->get_tag_id();
 
 		$tag = $this->context->is_amp()
 			? new AMP_Tag( $ads_conversion_id, self::MODULE_SLUG )
@@ -377,6 +370,25 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$tag->set_home_domain( $home_domain );
 
 		$tag->register();
+	}
+
+	/**
+	 * Gets the Ads tag ID.
+	 *
+	 * The PAX-supplied conversion ID takes precedence over the user-supplied one, where both exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Ads tag ID.
+	 */
+	private function get_tag_id() {
+		$settings = $this->get_settings()->get();
+
+		if ( ! empty( $settings['paxConversionID'] ) ) {
+			return $settings['paxConversionID'];
+		}
+
+		return $settings['conversionID'];
 	}
 
 	/**
@@ -407,6 +419,28 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	public function get_tag_matchers() {
 		return new Tag_Matchers();
+	}
+
+	/**
+	 * Gets the tag IDs that the module's elements can have in their tag ID attribute.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The Ads tag ID, which the AMP tag uses.
+	 */
+	protected function get_tag_attribute_ids() {
+		return array( $this->get_tag_id() );
+	}
+
+	/**
+	 * Gets the tag IDs that the module adds to Site Kit's Google tag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The Ads tag ID.
+	 */
+	protected function get_google_tag_ids() {
+		return array( $this->get_tag_id() );
 	}
 
 	/**

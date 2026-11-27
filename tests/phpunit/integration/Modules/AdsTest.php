@@ -440,6 +440,48 @@ class AdsTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider data_tag_ids
+	 *
+	 * @param array  $settings Module settings.
+	 * @param string $expected Expected tag ID.
+	 */
+	public function test_tag_ids__prefer_pax_conversion_id( $settings, $expected ) {
+		$this->ads->get_settings()->merge( $settings );
+
+		$get_tag_attribute_ids = $this->get_accessible_method( $this->ads, 'get_tag_attribute_ids' );
+		$get_google_tag_ids    = $this->get_accessible_method( $this->ads, 'get_google_tag_ids' );
+
+		$this->assertSame( array( $expected ), $get_tag_attribute_ids->invoke( $this->ads ), 'The tag ID attribute should have the expected Ads tag ID.' );
+		$this->assertSame( array( $expected ), $get_google_tag_ids->invoke( $this->ads ), 'The Google tag should have the expected Ads tag ID.' );
+	}
+
+	public function data_tag_ids() {
+		return array(
+			'both conversion IDs set'  => array(
+				array(
+					'conversionID'    => 'AW-123456789',
+					'paxConversionID' => 'AW-987654321',
+				),
+				'AW-987654321',
+			),
+			'only conversionID set'    => array(
+				array(
+					'conversionID'    => 'AW-123456789',
+					'paxConversionID' => '',
+				),
+				'AW-123456789',
+			),
+			'only paxConversionID set' => array(
+				array(
+					'conversionID'    => '',
+					'paxConversionID' => 'AW-987654321',
+				),
+				'AW-987654321',
+			),
+		);
+	}
+
 	protected function get_module_with_scopes() {
 		return $this->ads;
 	}

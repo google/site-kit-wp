@@ -21,9 +21,16 @@ use Google\Site_Kit\Core\Tags\Tag_Matchers_Interface;
  */
 abstract class Module_Tag_Matchers implements Tag_Matchers_Interface {
 
-	const NO_TAG_FOUND             = 0;
-	const TAG_EXISTS               = 1;
-	const TAG_EXISTS_WITH_COMMENTS = 2;
+	const NO_TAG_FOUND = 0;
+	const TAG_EXISTS   = 1;
+
+	/**
+	 * The module's tag is on the page, and Site Kit placed it.
+	 *
+	 * @since 1.119.0
+	 * @since n.e.x.t Renamed from `TAG_EXISTS_WITH_COMMENTS`.
+	 */
+	const TAG_PLACED_BY_SITE_KIT = 2;
 
 	/**
 	 * Holds array of regex tag matchers.

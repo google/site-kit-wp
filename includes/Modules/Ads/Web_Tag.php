@@ -81,7 +81,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_With_Linker_Interface {
 			return $tag;
 		}
 
-		// Retain this comment for detection of Site Kit placed tag.
 		$snippet_comment = sprintf( "<!-- %s -->\n", esc_html__( 'Google Ads snippet added by Site Kit', 'google-site-kit' ) );
 
 		return $snippet_comment . $tag;
