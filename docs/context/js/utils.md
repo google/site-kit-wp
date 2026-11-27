@@ -428,8 +428,7 @@ utilities are imported via `@/js/util`.
 Utilities should have corresponding tests. New tests are co-located next to the source file
 as `*.test.js` / `*.test.ts` (TypeScript utilities use `.test.ts`, e.g. `escape-uri.test.ts`).
 A legacy convention also places some tests in a `test/` subdirectory; Jest matches both via
-its `testMatch` patterns. `it`/`test` titles start with "should …"; `describe` titles stay
-plain.
+its `testMatch` patterns. See `docs/context/js/tests.md` for test conventions.
 
 ```javascript
 // /assets/js/util/dates.test.js
