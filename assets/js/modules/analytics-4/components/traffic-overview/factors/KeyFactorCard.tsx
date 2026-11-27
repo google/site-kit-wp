@@ -44,14 +44,17 @@ import {
 } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useKeyFactorLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorLinkClick';
-import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils';
+import {
+	KEY_FACTOR_ATTRIBUTE_TITLES,
+	NamedKeyFactorAttribute,
+	getKeyFactorName,
+	getKeyFactorRows,
+	getPageURL,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import {
 	BenchmarkingKeyFactorAttribute,
 	BenchmarkingKeyFactorKind,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
-import { KEY_FACTOR_ATTRIBUTE_TITLES } from './attributeTitles';
-import { getKeyFactorName } from './getKeyFactorName';
-import { NamedKeyFactorAttribute, getKeyFactorRows } from './getKeyFactorRows';
 import KeyFactorAttribute from './KeyFactorAttribute';
 import KeyFactorChangeBadge from './KeyFactorChangeBadge';
 

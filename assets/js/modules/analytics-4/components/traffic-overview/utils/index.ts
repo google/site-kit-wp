@@ -17,6 +17,7 @@
  */
 
 export * from './breakdown';
+export * from './charts';
 export * from './date-range';
 export * from './key-factors';
 export * from './report';

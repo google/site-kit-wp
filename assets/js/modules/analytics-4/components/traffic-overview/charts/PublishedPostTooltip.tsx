@@ -48,9 +48,9 @@ import {
 	TYPE_LABEL,
 } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { PublishedPost } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { getLocale } from '@/js/util';
 import ChartTooltipCaret from '@/svg/icons/chart-tooltip-caret.svg';
-import { PublishedPost } from './getTypicalTrafficChartData';
 
 export interface PublishedPostTooltipDay {
 	/** The day the posts were published. */

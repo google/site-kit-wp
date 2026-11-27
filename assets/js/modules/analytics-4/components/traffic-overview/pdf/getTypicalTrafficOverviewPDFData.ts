@@ -38,13 +38,13 @@ import { isFeatureEnabled } from '@/js/features';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { TYPICAL_TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/typicalColumns';
-import { TYPICAL_TRAFFIC_CHART_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/charts/typicalTrafficChartOptions';
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	getDailyVisitsReportArgs,
 	getTypicalBreakdownReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
 import {
+	TYPICAL_TRAFFIC_CHART_OPTIONS,
 	TrafficBreakdownRow,
 	getBreakdownValuesFromReport,
 	getMetricValue,
@@ -239,7 +239,7 @@ function getLineChartOptions(
 	return {
 		curveType: 'function',
 		// `PDF_COLORS.VIOLET_V_600` holds the same hex as `TRAFFIC_CHART_LINE_COLOR`
-		// in `traffic-overview/charts/trafficChartOptions.ts`, the color the
+		// in `traffic-overview/utils/charts.tsx`, the color the
 		// dashboard's line chart draws in.
 		colors: [ PDF_COLORS.VIOLET_V_600 ],
 		chartArea: {

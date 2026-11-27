@@ -198,7 +198,7 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 	return {
 		curveType: 'function',
 		// `PDF_COLORS.VIOLET_V_600` holds the same hex as `TRAFFIC_CHART_LINE_COLOR`
-		// in `traffic-overview/charts/trafficChartOptions.ts`, the color the
+		// in `traffic-overview/utils/charts.tsx`, the color the
 		// dashboard's line chart draws in.
 		colors: [ PDF_COLORS.VIOLET_V_600 ],
 		chartArea: {

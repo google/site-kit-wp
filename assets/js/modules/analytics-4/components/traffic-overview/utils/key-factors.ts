@@ -32,6 +32,8 @@ import {
 	BenchmarkingKeyFactorParentChannel,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { numFmt } from '@/js/util';
+import { untrailingslashit } from '@/js/util/sanitize';
+import { getPageURL } from './report';
 
 /**
  * The share, in percent, from which a part reads as all of its whole's change.
@@ -39,6 +41,44 @@ import { numFmt } from '@/js/util';
  * 100%, as the Site Kit service renders it.
  */
 const ALL_OF_THE_CHANGE_PERCENT = 99.5;
+
+/**
+ * The title a key factor card shows above each kind of attribute, such as
+ * "Landing page" above a page path.
+ *
+ * `REFERRING_SITE`, `PLATFORM` and `ASSISTANT` are all the session's source.
+ * A paid or video card calls it a platform, an `AI Assistant` card an AI
+ * assistant, and any other card a referring site.
+ *
+ * @since n.e.x.t
+ */
+export const KEY_FACTOR_ATTRIBUTE_TITLES: Record<
+	BenchmarkingKeyFactorAttributeKind,
+	string
+> = {
+	TRAFFIC_CHANNEL: __( 'Traffic channel', 'google-site-kit' ),
+	LANDING_PAGE: __( 'Landing page', 'google-site-kit' ),
+	SEARCH_KEYWORD: __( 'Search keyword', 'google-site-kit' ),
+	REFERRING_SITE: __( 'Referring site', 'google-site-kit' ),
+	PLATFORM: __( 'Platform', 'google-site-kit' ),
+	CAMPAIGN: __( 'Campaign', 'google-site-kit' ),
+	DEVICE: __( 'Device', 'google-site-kit' ),
+	USER_TYPE: __( 'Visitor type', 'google-site-kit' ),
+	ASSISTANT: __( 'AI assistant', 'google-site-kit' ),
+};
+
+/**
+ * The generated summary of the key factor cards the Traffic Overview panel
+ * shows until it reads the summary from the generated insight. It is the
+ * summary of the design, and `**` pairs mark the names it highlights.
+ *
+ * The generated text comes from the insight service in the site's language,
+ * so this placeholder is not a translated string.
+ *
+ * @since n.e.x.t
+ */
+export const PLACEHOLDER_KEY_FACTORS_INSIGHT =
+	'Referral traffic from **substack.com** is up most. Visits to **“Ice cream is good for your health”** are also up, mainly from the Search query **“healthy ice cream types”**';
 
 export interface KeyFactorsNoticeOptions {
 	/** Whether no channel changed notably: traffic was steady, or there are neither cards nor a summary. */
@@ -53,6 +93,26 @@ export interface KeyFactorAttributeCard {
 	kind: BenchmarkingKeyFactorKind;
 	/** The card's change in visits, negative for a drop, against which an attribute's other parts moved. */
 	change: number;
+}
+
+/** An attribute of a key factor card that has a value to name. */
+export type NamedKeyFactorAttribute = BenchmarkingKeyFactorAttribute & {
+	label: string;
+};
+
+/** A row a key factor card lists under "Top changes". */
+export interface KeyFactorRow {
+	/** The attribute the row shows. */
+	attribute: NamedKeyFactorAttribute;
+	/** The name the row shows for the attribute's value, as `getKeyFactorAttributeName()` gives it. */
+	name: string;
+	/**
+	 * The line under the row's change: what the change is a share of, as
+	 * `getKeyFactorAttributeShareText()` gives it, or, on the first side of a
+	 * net, the second side that partly offset it. Null when the row shows its
+	 * change alone.
+	 */
+	shareText: string | null;
 }
 
 /**
@@ -160,6 +220,173 @@ export function getChannelName( label: string ): string {
 		case 'unassigned':
 		case 'uncategorized traffic':
 			return __( 'Uncategorized traffic', 'google-site-kit' );
+		default:
+			return label;
+	}
+}
+
+/**
+ * Checks whether a landing page is the site's homepage: the page at the site's
+ * URL, such as `/` for a site at the root of its domain, or `/blog/` for a site
+ * that lives under a folder.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} pagePath The landing page's path, such as `/blog/`.
+ * @param {string} siteURL  The site's URL, such as `https://example.com/blog`.
+ * @return {boolean} Whether the page is the site's homepage.
+ */
+function isHomepage( pagePath: string, siteURL: string ): boolean {
+	// A value that isn't a path on the site, such as the spam path
+	// `//example.org/`, has no URL, so it is never the homepage.
+	const pageURL = getPageURL( siteURL, pagePath );
+
+	if ( ! pageURL ) {
+		return false;
+	}
+
+	const { pathname, search } = new URL( pageURL );
+
+	// A query names another page at the same path, such as `/?p=12` for a post
+	// on a site with plain permalinks. Trailing slashes are left out of both
+	// paths, so `/blog/` matches a site URL that ends in `/blog`, and `/`
+	// matches a site URL without a path.
+	return (
+		! search &&
+		untrailingslashit( pathname ) ===
+			untrailingslashit( new URL( siteURL ).pathname )
+	);
+}
+
+/**
+ * Gets the name a key factor shows for a landing page.
+ *
+ * The site's homepage is named "Homepage", since its path tells a reader
+ * little, and any other page is named by its path. Without the site's URL, the
+ * homepage is taken to be at `/`, where most sites have it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} pagePath  The landing page's path, such as `/hello-world/`.
+ * @param {string} [siteURL] Optional. The site's URL, such as `https://example.com`.
+ * @return {string} The name to show for the page.
+ */
+export function getLandingPageLabel(
+	pagePath: string,
+	siteURL?: string
+): string {
+	const isSiteHomepage = siteURL
+		? isHomepage( pagePath, siteURL )
+		: pagePath === '/';
+
+	return isSiteHomepage ? __( 'Homepage', 'google-site-kit' ) : pagePath;
+}
+
+/**
+ * Gets the name of the driver behind a key factor card's change.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} kind               The driver's kind, such as `CONTENT` for a landing page.
+ * @param {string} label              The driver's name, such as `Referral`, or the landing page's path.
+ * @param {string} [referenceSiteURL] Optional. The site's URL, which a landing page's path is resolved against.
+ * @return {string} The driver's name.
+ */
+function getDriverName(
+	kind: BenchmarkingKeyFactorKind,
+	label: string,
+	referenceSiteURL?: string
+): string {
+	switch ( kind ) {
+		case 'CONTENT':
+			return getLandingPageLabel( label, referenceSiteURL );
+		case 'CHANNEL':
+			return getChannelName( label );
+		case 'CHANNEL_GROUP':
+			return __( 'Paid traffic', 'google-site-kit' );
+		default:
+			return label;
+	}
+}
+
+/**
+ * Gets the name a key factor card shows.
+ *
+ * A landing page's card names the site's homepage "Homepage", as its landing
+ * page attributes do. A channel's card shows the channel's name as
+ * `getChannelName()` gives it, which translates the names of the plugin and
+ * the Site Kit service, and the group of the paid channels is always "Paid
+ * traffic". Any other card shows its label as the response has it.
+ *
+ * After a page that brought visits from several channels took a card of its
+ * own, a channel's card, or the paid channels', is for the channel's other
+ * pages, and reads "Direct (other pages)", for example.
+ *
+ * The dashboard's card and the PDF export name a card the same way.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  keyFactor              The card.
+ * @param {string}  keyFactor.kind         The driver's kind, such as `CONTENT` for a landing page.
+ * @param {string}  keyFactor.label        The driver's name, such as `Referral`, or the landing page's path.
+ * @param {boolean} [keyFactor.otherPages] Optional. Whether the card is for its channel's other pages.
+ * @param {string}  [referenceSiteURL]     Optional. The site's URL, which a landing page's path is resolved against.
+ * @return {string} The card's name.
+ */
+export function getKeyFactorName(
+	{
+		kind,
+		label,
+		otherPages = false,
+	}: Pick< BenchmarkingKeyFactor, 'kind' | 'otherPages' > & { label: string },
+	referenceSiteURL?: string
+): string {
+	const name = getDriverName( kind, label, referenceSiteURL );
+
+	if ( ! otherPages ) {
+		return name;
+	}
+
+	return sprintf(
+		/* translators: %s: the name of a traffic channel, such as "Direct", whose card is for its pages other than a page that took a card of its own */
+		__( '%s (other pages)', 'google-site-kit' ),
+		name
+	);
+}
+
+/**
+ * Gets the name an attribute of a key factor card shows for its value.
+ *
+ * A landing page shows the page's title when the response has one, and
+ * otherwise "Homepage" for the site's homepage or the page's path. Either way,
+ * it links to the page by its path. A traffic channel shows its name as
+ * `getChannelName()` gives it. Any other attribute shows its value as the
+ * response has it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} attribute          The attribute.
+ * @param {string} attribute.kind     The attribute's kind, such as `LANDING_PAGE`.
+ * @param {string} attribute.label    The attribute's value, such as a page path.
+ * @param {string} [attribute.title]  Optional. The page's title, for a landing page.
+ * @param {string} [referenceSiteURL] Optional. The site's URL, which a landing page's path is resolved against.
+ * @return {string} The name to show.
+ */
+export function getKeyFactorAttributeName(
+	{
+		kind,
+		label,
+		title,
+	}: Pick< BenchmarkingKeyFactorAttribute, 'kind' | 'title' > & {
+		label: string;
+	},
+	referenceSiteURL?: string
+): string {
+	switch ( kind ) {
+		case 'LANDING_PAGE':
+			return title || getLandingPageLabel( label, referenceSiteURL );
+		case 'TRAFFIC_CHANNEL':
+			return getChannelName( label );
 		default:
 			return label;
 	}
@@ -640,6 +867,59 @@ export function formatNetPairOffset( change: number, name: string ): string {
 		formatVisitsChange( change ),
 		name
 	);
+}
+
+/**
+ * Gets the rows a key factor card lists, one for each attribute, except that
+ * the two sides of a net are one row, as the Site Kit service connects them on
+ * one line: the first side, whose line names the second side and its change,
+ * such as "Partly offset by -362 visits from mobile".
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} card               The card.
+ * @param {string} card.kind          The card's kind, such as `CHANNEL`.
+ * @param {number} card.change        The card's change in visits, negative for a drop.
+ * @param {Array}  attributes         The card's attributes that have a value, in the order to list them.
+ * @param {string} [referenceSiteURL] Optional. The site's URL, which a landing page's path is resolved against.
+ * @return {Array<Object>} The rows, in the order to list them.
+ */
+export function getKeyFactorRows(
+	card: KeyFactorAttributeCard,
+	attributes: NamedKeyFactorAttribute[],
+	referenceSiteURL?: string
+): KeyFactorRow[] {
+	const rows: KeyFactorRow[] = [];
+
+	// A plain loop, since the second side of a net is skipped.
+	for ( let index = 0; index < attributes.length; index++ ) {
+		const attribute = attributes[ index ];
+		const next = attributes[ index + 1 ];
+		const name = getKeyFactorAttributeName( attribute, referenceSiteURL );
+
+		if ( next && isKeyFactorNetPair( attribute, next ) ) {
+			rows.push( {
+				attribute,
+				name,
+				shareText: formatNetPairOffset(
+					next.current - next.previous,
+					getKeyFactorAttributeName( next, referenceSiteURL )
+				),
+			} );
+
+			// The first side's line names the second side, so it isn't
+			// listed on its own.
+			index++;
+		} else {
+			rows.push( {
+				attribute,
+				name,
+				shareText: getKeyFactorAttributeShareText( card, attribute ),
+			} );
+		}
+	}
+
+	return rows;
 }
 
 /**

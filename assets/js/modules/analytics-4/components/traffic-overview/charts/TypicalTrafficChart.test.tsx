@@ -29,6 +29,7 @@ import { getChartOptions } from '@/js/components/GoogleChart/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKPOINT_DESKTOP } from '@/js/hooks/useBreakpoint';
+import { PUBLISHED_POST_POINT_STYLE } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
@@ -40,7 +41,6 @@ import {
 } from '@tests/js/utils';
 import { PUBLISHED_POST_TOOLTIP_HIDE_DELAY } from './PublishedPostTooltip';
 import TypicalTrafficChart from './TypicalTrafficChart';
-import { PUBLISHED_POST_POINT_STYLE } from './typicalTrafficChartOptions';
 
 jest.mock( '@/js/components/GoogleChart', () =>
 	jest

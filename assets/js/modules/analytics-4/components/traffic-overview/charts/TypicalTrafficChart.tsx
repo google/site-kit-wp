@@ -34,18 +34,20 @@ import { Select, useSelect } from 'googlesitekit-data';
 import GoogleChart from '@/js/components/GoogleChart';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { useTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficDateRange';
+import {
+	PUBLISHED_POST_COLOR,
+	PublishedPost,
+	TYPICAL_TRAFFIC_CHART_OPTIONS,
+	getPropertyCreatedDateMarkers,
+	getPropertyCreatedMarkerDate,
+	getTrafficLegendItem,
+	getTypicalTrafficChartData,
+	getTypicalTrafficLegendItem,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 import { getDateString, getLocale, numFmt } from '@/js/util';
-import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
-import { getPropertyCreatedMarkerDate } from './getPropertyCreatedMarkerDate';
-import { getTrafficLegendItem } from './getTrafficLegendItem';
-import {
-	PublishedPost,
-	getTypicalTrafficChartData,
-} from './getTypicalTrafficChartData';
-import { getTypicalTrafficLegendItem } from './getTypicalTrafficLegendItem';
 import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
 import PublishedPostTooltip, {
 	PublishedPostTooltipHandle,
@@ -53,10 +55,6 @@ import PublishedPostTooltip, {
 import TypicalChartLegend, {
 	TypicalChartLegendItem,
 } from './TypicalChartLegend';
-import {
-	PUBLISHED_POST_COLOR,
-	TYPICAL_TRAFFIC_CHART_OPTIONS,
-} from './typicalTrafficChartOptions';
 
 /** What Google Charts reports when the pointer moves onto or off a day. */
 interface ChartMouseEvent {

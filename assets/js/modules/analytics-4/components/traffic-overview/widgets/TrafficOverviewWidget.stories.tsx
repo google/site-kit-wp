@@ -39,7 +39,6 @@ import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/factors/placeholderKeyFactors';
 import { getFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import {
 	FRESH_DATA_FETCH_OPTIONS,
@@ -72,6 +71,7 @@ import {
 	provideTypicalTrafficDailyVisitsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { getDailyVisitsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
+import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	benchmarkingInsight,

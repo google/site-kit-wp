@@ -26,17 +26,17 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { addTypicalTrafficRange } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	PublishedPost,
+	getPlaceholderDailyTraffic,
+	getPlaceholderPublishedPosts,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import { PublishedPost } from './getTypicalTrafficChartData';
-import {
-	getPlaceholderDailyTraffic,
-	getPlaceholderPublishedPosts,
-} from './placeholderTrafficChartData';
 import TypicalTrafficChart from './TypicalTrafficChart';
 
 const dailyTraffic = getPlaceholderDailyTraffic( '2025-01-09', '2025-02-05' );

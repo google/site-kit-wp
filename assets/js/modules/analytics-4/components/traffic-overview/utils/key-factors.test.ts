@@ -21,6 +21,7 @@
  */
 import {
 	KeyFactorsNoticeOptions,
+	NamedKeyFactorAttribute,
 	formatClicksChange,
 	formatNetPairOffset,
 	formatParentChannelOverrun,
@@ -28,9 +29,13 @@ import {
 	formatVisitsChange,
 	formatVisitsShare,
 	getChannelName,
+	getKeyFactorAttributeName,
 	getKeyFactorAttributeShareText,
+	getKeyFactorName,
+	getKeyFactorRows,
 	getKeyFactorShareText,
 	getKeyFactorsNoticeText,
+	getLandingPageLabel,
 	getShownKeyFactors,
 	isKeyFactorNetPair,
 } from './key-factors';
@@ -598,5 +603,409 @@ describe( 'getShownKeyFactors', () => {
 		[ 'no cards', [] ],
 	] )( 'should show %s as given', ( _, keyFactors ) => {
 		expect( getShownKeyFactors( keyFactors ) ).toBe( keyFactors );
+	} );
+} );
+
+describe( 'getLandingPageLabel', () => {
+	it( 'should name `/` "Homepage" on a site at the root of its domain', () => {
+		expect( getLandingPageLabel( '/', 'https://example.com' ) ).toBe(
+			'Homepage'
+		);
+	} );
+
+	it.each( [ '/blog/', '/blog' ] )(
+		'should name the folder of a site that lives under one "Homepage", as `%s`',
+		( pagePath ) => {
+			expect(
+				getLandingPageLabel( pagePath, 'https://example.com/blog' )
+			).toBe( 'Homepage' );
+		}
+	);
+
+	it.each( [
+		[
+			'any other page on a site at the root of its domain',
+			'/hello-world/',
+			'https://example.com',
+		],
+		[
+			'any other page on a site that lives under a folder',
+			'/blog/hello-world/',
+			'https://example.com/blog',
+		],
+		[
+			'the root of the domain on a site that lives under a folder',
+			'/',
+			'https://example.com/blog',
+		],
+		[
+			'a path with a query, such as a post with a plain permalink',
+			'/?p=12',
+			'https://example.com',
+		],
+		[
+			'a spam path that resolves to another site',
+			'//example.org/',
+			'https://example.com',
+		],
+	] )( 'should name %s by its path', ( _, pagePath, siteURL ) => {
+		expect( getLandingPageLabel( pagePath, siteURL ) ).toBe( pagePath );
+	} );
+
+	it( 'should name `/` "Homepage", and any other page by its path, when the site’s URL is unknown', () => {
+		expect( getLandingPageLabel( '/' ) ).toBe( 'Homepage' );
+		expect( getLandingPageLabel( '/blog/' ) ).toBe( '/blog/' );
+	} );
+} );
+
+describe( 'getKeyFactorName', () => {
+	it( 'should name the landing page that is the site’s homepage "Homepage"', () => {
+		expect(
+			getKeyFactorName(
+				{ kind: 'CONTENT', label: '/' },
+				'https://example.com'
+			)
+		).toBe( 'Homepage' );
+	} );
+
+	it( 'should name any other landing page by its label', () => {
+		expect(
+			getKeyFactorName(
+				{ kind: 'CONTENT', label: '/hello-world/' },
+				'https://example.com'
+			)
+		).toBe( '/hello-world/' );
+		expect(
+			getKeyFactorName(
+				{ kind: 'CONTENT', label: 'Hello world' },
+				'https://example.com'
+			)
+		).toBe( 'Hello world' );
+	} );
+
+	it( 'should name the group of the paid channels "Paid traffic", whatever its label', () => {
+		expect(
+			getKeyFactorName( { kind: 'CHANNEL_GROUP', label: 'Paid' } )
+		).toBe( 'Paid traffic' );
+	} );
+
+	it.each( [
+		[ 'Cross-network ads', 'Cross-network ads' ],
+		[ 'Cross-network', 'Cross-network ads' ],
+		[ 'Uncategorized traffic', 'Uncategorized traffic' ],
+		[ 'Unassigned', 'Uncategorized traffic' ],
+	] )(
+		'should name a channel the Site Kit service names, `%s`, as "%s"',
+		( label, name ) => {
+			expect( getKeyFactorName( { kind: 'CHANNEL', label } ) ).toBe(
+				name
+			);
+		}
+	);
+
+	it.each( [
+		[ 'CHANNEL', 'Organic Search' ],
+		[ 'REFERRING_SITE', 'news.example' ],
+		[ 'CAMPAIGN', 'spring_sale' ],
+	] as const )( 'should name a %s card by its label', ( kind, label ) => {
+		expect( getKeyFactorName( { kind, label } ) ).toBe( label );
+	} );
+
+	it( 'should not name a referring site or a campaign as a channel, even when its label is a channel’s name', () => {
+		expect(
+			getKeyFactorName( { kind: 'REFERRING_SITE', label: 'Unassigned' } )
+		).toBe( 'Unassigned' );
+	} );
+
+	it.each( [
+		[ 'CHANNEL', 'Direct', 'Direct (other pages)' ],
+		[ 'CHANNEL', 'Unassigned', 'Uncategorized traffic (other pages)' ],
+		[ 'CHANNEL_GROUP', 'Paid traffic', 'Paid traffic (other pages)' ],
+	] as const )(
+		'should name the %s card `%s` for its channel’s other pages "%s"',
+		( kind, label, name ) => {
+			expect(
+				getKeyFactorName( { kind, label, otherPages: true } )
+			).toBe( name );
+		}
+	);
+} );
+
+describe( 'getKeyFactorAttributeName', () => {
+	it( 'should name a landing page by its title when it has one', () => {
+		expect(
+			getKeyFactorAttributeName(
+				{
+					kind: 'LANDING_PAGE',
+					label: '/how-to-plant-garlic/',
+					title: 'How to plant garlic',
+				},
+				'https://example.com'
+			)
+		).toBe( 'How to plant garlic' );
+	} );
+
+	it( 'should name a landing page without a title by its path', () => {
+		expect(
+			getKeyFactorAttributeName(
+				{ kind: 'LANDING_PAGE', label: '/how-to-plant-garlic/' },
+				'https://example.com'
+			)
+		).toBe( '/how-to-plant-garlic/' );
+	} );
+
+	it( 'should name the site’s homepage "Homepage"', () => {
+		expect(
+			getKeyFactorAttributeName(
+				{ kind: 'LANDING_PAGE', label: '/blog/' },
+				'https://example.com/blog'
+			)
+		).toBe( 'Homepage' );
+	} );
+
+	it.each( [
+		[ 'Cross-network', 'Cross-network ads' ],
+		[ 'Uncategorized traffic', 'Uncategorized traffic' ],
+		[ 'Paid Search', 'Paid Search' ],
+	] )( 'should name a traffic channel `%s` as "%s"', ( label, name ) => {
+		expect(
+			getKeyFactorAttributeName( { kind: 'TRAFFIC_CHANNEL', label } )
+		).toBe( name );
+	} );
+
+	it.each( [
+		[ 'SEARCH_KEYWORD', 'how to plant garlic' ],
+		[ 'REFERRING_SITE', 'news.example' ],
+		[ 'DEVICE', 'desktop' ],
+		[ 'USER_TYPE', 'new' ],
+	] as const )( 'should name a %s by its value', ( kind, label ) => {
+		expect(
+			getKeyFactorAttributeName( { kind, label, title: 'A title' } )
+		).toBe( label );
+	} );
+} );
+
+const REFERENCE_SITE_URL = 'https://example.com';
+
+/**
+ * Gets the name and the line of each row of a card.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} card       The card, with `kind` and `change`.
+ * @param {Array}  attributes The card's attributes.
+ * @return {Array} One `[ name, shareText ]` pair per row.
+ */
+function getRowTexts(
+	card: Parameters< typeof getKeyFactorRows >[ 0 ],
+	attributes: NamedKeyFactorAttribute[]
+) {
+	return getKeyFactorRows( card, attributes, REFERENCE_SITE_URL ).map(
+		( { name, shareText } ) => [ name, shareText ]
+	);
+}
+
+describe( 'getKeyFactorRows', () => {
+	it( 'should list each attribute with its name and its line', () => {
+		expect(
+			getRowTexts( { kind: 'CHANNEL', change: 365 }, [
+				{
+					kind: 'LANDING_PAGE',
+					label: '/how-to-plant-garlic/',
+					title: 'How to plant garlic',
+					current: 300,
+					previous: 40,
+					sharePct: 71.2,
+				},
+				{
+					kind: 'REFERRING_SITE',
+					label: 'facebook.com',
+					current: 92,
+					previous: 60,
+					sharePct: 8.8,
+				},
+			] )
+		).toEqual( [
+			[ 'How to plant garlic', '71.2% of the change' ],
+			[ 'facebook.com', '8.8% of the change' ],
+		] );
+	} );
+
+	it( 'should list the two sides of a net as one row, whose line names the second side and its change', () => {
+		const rows = getKeyFactorRows(
+			{ kind: 'CHANNEL', change: 1280 },
+			[
+				{
+					kind: 'DEVICE',
+					label: 'desktop',
+					current: 2643,
+					previous: 1000,
+					sharePct: 0,
+					oversized: true,
+				},
+				{
+					kind: 'DEVICE',
+					label: 'mobile',
+					current: 638,
+					previous: 1000,
+					sharePct: 0,
+				},
+			],
+			REFERENCE_SITE_URL
+		);
+
+		expect( rows ).toHaveLength( 1 );
+		expect( rows[ 0 ] ).toMatchObject( {
+			attribute: { label: 'desktop' },
+			name: 'desktop',
+			shareText: 'Partly offset by -362 visits from mobile',
+		} );
+	} );
+
+	it( 'should name the second side of a net as its row would, such as "Homepage" for the site’s homepage', () => {
+		expect(
+			getRowTexts( { kind: 'CHANNEL', change: -50 }, [
+				{
+					kind: 'LANDING_PAGE',
+					label: '/how-to-plant-garlic/',
+					title: 'How to plant garlic',
+					current: 40,
+					previous: 102,
+					sharePct: 0,
+					oversized: true,
+				},
+				{
+					kind: 'LANDING_PAGE',
+					label: '/',
+					current: 62,
+					previous: 50,
+					sharePct: 0,
+				},
+			] )
+		).toEqual( [
+			[
+				'How to plant garlic',
+				'Partly offset by +12 visits from Homepage',
+			],
+		] );
+	} );
+
+	it( 'should list a lone attribute larger than its card with the wording of its kind', () => {
+		expect(
+			getRowTexts( { kind: 'CHANNEL', change: 57 }, [
+				{
+					kind: 'LANDING_PAGE',
+					label: '/',
+					current: 161,
+					previous: 100,
+					sharePct: 0,
+					oversized: true,
+				},
+			] )
+		).toEqual( [ [ 'Homepage', 'While other pages fell' ] ] );
+	} );
+
+	it.each( [
+		[
+			'a search keyword',
+			{
+				kind: 'SEARCH_KEYWORD' as const,
+				label: 'how to plant garlic',
+				current: 310,
+				previous: 90,
+				sharePct: 0,
+				oversized: true,
+			},
+		],
+		[
+			'a channel',
+			{
+				kind: 'TRAFFIC_CHANNEL' as const,
+				label: 'Direct',
+				current: 310,
+				previous: 90,
+				sharePct: 0,
+			},
+		],
+	] )(
+		'should not take %s for a side of a net',
+		( _, attribute: NamedKeyFactorAttribute ) => {
+			const rows = getKeyFactorRows(
+				{ kind: 'CHANNEL', change: 100 },
+				[
+					attribute,
+					{
+						kind: 'DEVICE',
+						label: 'mobile',
+						current: 50,
+						previous: 80,
+						sharePct: 0,
+					},
+				],
+				REFERENCE_SITE_URL
+			);
+
+			expect( rows ).toHaveLength( 2 );
+			expect( rows[ 1 ].shareText ).toBeNull();
+		}
+	);
+
+	it( 'should take a net only from adjacent attributes, and list the attribute before it on its own', () => {
+		expect(
+			getRowTexts( { kind: 'CHANNEL', change: 100 }, [
+				{
+					kind: 'SEARCH_KEYWORD',
+					label: 'how to plant garlic',
+					current: 30,
+					previous: 10,
+					sharePct: 1.2,
+				},
+				{
+					kind: 'REFERRING_SITE',
+					label: 'news.example',
+					current: 150,
+					previous: 10,
+					sharePct: 0,
+					oversized: true,
+				},
+				{
+					kind: 'REFERRING_SITE',
+					label: 'facebook.com',
+					current: 20,
+					previous: 60,
+					sharePct: 0,
+				},
+			] )
+		).toEqual( [
+			[
+				'how to plant garlic',
+				'A change equal to 1.2% of the site’s search clicks',
+			],
+			[ 'news.example', 'Partly offset by -40 visits from facebook.com' ],
+		] );
+	} );
+
+	it( 'should name the channels of a page’s card as `getChannelName()` does, with their shares of the page’s change', () => {
+		expect(
+			getRowTexts( { kind: 'CONTENT', change: 400 }, [
+				{
+					kind: 'TRAFFIC_CHANNEL',
+					label: 'Cross-network ads',
+					current: 260,
+					previous: 10,
+					sharePct: 62.5,
+				},
+				{
+					kind: 'TRAFFIC_CHANNEL',
+					label: 'Unassigned',
+					current: 160,
+					previous: 10,
+					sharePct: 37.5,
+				},
+			] )
+		).toEqual( [
+			[ 'Cross-network ads', '62.5% of the change' ],
+			[ 'Uncategorized traffic', '37.5% of the change' ],
+		] );
 	} );
 } );

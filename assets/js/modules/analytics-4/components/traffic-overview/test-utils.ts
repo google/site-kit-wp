@@ -34,10 +34,6 @@ import { Select } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { TYPICAL_TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/typicalColumns';
-import {
-	getPlaceholderDailyTraffic,
-	getPlaceholderPublishedPosts,
-} from '@/js/modules/analytics-4/components/traffic-overview/charts/placeholderTrafficChartData';
 import { PLACEHOLDER_TOTAL_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTotalVisits';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
@@ -78,6 +74,8 @@ import {
 import {
 	TrafficBreakdownValue,
 	TypicalTrafficDateRange,
+	getPlaceholderDailyTraffic,
+	getPlaceholderPublishedPosts,
 	selectTypicalTrafficDateRange,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';

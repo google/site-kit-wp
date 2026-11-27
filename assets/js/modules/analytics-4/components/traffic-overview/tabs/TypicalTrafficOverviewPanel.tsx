@@ -35,7 +35,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { useFeature } from '@/js/hooks/useFeature';
 import TypicalTrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TypicalTrafficBreakdown';
-import { getPublishedPosts } from '@/js/modules/analytics-4/components/traffic-overview/charts/getPublishedPosts';
 import TypicalTrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart';
 import TrafficInsightNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightNotice';
 import TrafficInsightResetNotice from '@/js/modules/analytics-4/components/traffic-overview/components/TrafficInsightResetNotice';
@@ -48,6 +47,7 @@ import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/tra
 import { useTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficDateRange';
 import { useTypicalTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficOverviewReports';
 import {
+	getPublishedPosts,
 	getTrafficOverviewVisits,
 	getTypicalTrafficAvailability,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils';

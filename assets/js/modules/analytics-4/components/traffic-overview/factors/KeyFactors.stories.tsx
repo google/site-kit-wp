@@ -30,12 +30,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { KEY_FACTORS } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
 import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import KeyFactors from './KeyFactors';
-import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from './placeholderKeyFactors';
 
 const REFERENCE_SITE_URL = 'https://example.com';
 

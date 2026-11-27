@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { getKeyFactorName } from '@/js/modules/analytics-4/components/traffic-overview/factors/getKeyFactorName';
 import {
+	getKeyFactorName,
 	getKeyFactorShareText,
 	getKeyFactorsNoticeText,
 	getShownKeyFactors,
