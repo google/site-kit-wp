@@ -413,7 +413,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				new Measurement_Protocol_Client( $this->get_settings(), $this->measurement_protocol_secret ),
 				$this->server_events_guard
 			);
-			// `flush()` runs after core ends the output buffers at priority 1, so the response can finish before the events are sent.
+			// `flush()` can finish the visitor's response, so it runs last: after core ends the output buffers at priority 1, and after other callbacks that print at the end of the page.
 			add_action( 'shutdown', array( $this->event_collector, 'flush' ), PHP_INT_MAX );
 		}
 
