@@ -133,4 +133,50 @@ class AMP_TagTest extends TestCase {
 			'AMP config should contain example.org as linker domain.'
 		);
 	}
+
+	/**
+	 * @dataProvider data_tag_id_attribute
+	 *
+	 * @param array  $settings    Ads settings.
+	 * @param string $expected_id Expected tag ID.
+	 */
+	public function test_amp_ads_tag_contains_tag_id_attribute( $settings, $expected_id ) {
+		$this->ads->get_settings()->set( $settings );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_footer' );
+
+		$this->ads->register();
+
+		do_action( 'template_redirect' );
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$this->assertMatchesRegularExpression(
+			'/<amp-analytics [^>]*data-googlesitekit-tag="' . $expected_id . '"/',
+			$output,
+			'The amp-analytics element should have the Ads tag ID in its tag ID attribute.'
+		);
+		$this->assertStringContainsString( '<!-- Google Ads AMP snippet added by Site Kit -->', $output, 'The AMP snippet should keep its opening comment.' );
+		$this->assertStringContainsString( '<!-- End Google Ads AMP snippet added by Site Kit -->', $output, 'The AMP snippet should keep its closing comment.' );
+	}
+
+	public function data_tag_id_attribute() {
+		return array(
+			'the conversion ID'     => array(
+				array(
+					'conversionID'    => 'AW-12345',
+					'paxConversionID' => '',
+				),
+				'AW-12345',
+			),
+			'the PAX conversion ID' => array(
+				array(
+					'conversionID'    => 'AW-12345',
+					'paxConversionID' => 'AW-67890',
+				),
+				'AW-67890',
+			),
+		);
+	}
 }
