@@ -31,6 +31,13 @@ class GTag {
 	const HANDLE = 'google_gtagjs';
 
 	/**
+	 * Site Kit's developer ID, which the inline script of the Google tag sets.
+	 *
+	 * @since n.e.x.t
+	 */
+	const DEVELOPER_ID = 'dZTNiMT';
+
+	/**
 	 * Options instance.
 	 *
 	 * @var Options
@@ -182,7 +189,7 @@ JS;
 		}
 
 		wp_add_inline_script( self::HANDLE, 'gtag("js", new Date());' );
-		wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
+		wp_add_inline_script( self::HANDLE, sprintf( 'gtag("set", "developer_id.%s", true);', self::DEVELOPER_ID ) );
 
 		if ( $this->is_google_tag_gateway_active() ) {
 			wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZmZmYj", true);' );
