@@ -393,7 +393,7 @@ describe( 'Typical Traffic Overview PDF', () => {
 
 		it( 'prints no key factors section for a range without key factors, with the notice of what they wait for in place of the analysis', () => {
 			const notice =
-				'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.';
+				'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.';
 			const texts = renderPDFText(
 				<TypicalTrafficOverviewPDF
 					data={ {

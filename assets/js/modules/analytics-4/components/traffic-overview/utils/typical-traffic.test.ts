@@ -436,7 +436,7 @@ describe( 'getTypicalTrafficRangeWaitingText', () => {
 describe( 'getKeyFactorsWaitingText', () => {
 	it( 'should say when to check back for the key factors when the selected range ends today', () => {
 		expect( getKeyFactorsWaitingText( '2025-02-06', ENDS_TODAY ) ).toBe(
-			'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.'
+			'There’s no previous period to compare to yet. Check back on February 6, 2025 to see your biggest traffic shifts.'
 		);
 	} );
 
@@ -445,19 +445,19 @@ describe( 'getKeyFactorsWaitingText', () => {
 			'the selected range ends in the past, and the day is still ahead',
 			'2025-02-06',
 			ENDS_IN_THE_PAST,
-			'There’s no previous period to compare to. Select a date range that ends on or after February 6, 2025 to see which channels changed the most.',
+			'There’s no previous period to compare to. Select a date range that ends on or after February 6, 2025 to see your biggest traffic shifts.',
 		],
 		[
 			'the selected range ends in the past, and the day has passed',
 			'2025-01-25',
 			ENDS_IN_THE_PAST,
-			'There’s no previous period to compare to. Select a date range that ends on or after January 25, 2025 to see which channels changed the most.',
+			'There’s no previous period to compare to. Select a date range that ends on or after January 25, 2025 to see your biggest traffic shifts.',
 		],
 		[
 			'the day isn’t ahead',
 			'2025-02-05',
 			ENDS_TODAY,
-			'There’s no previous period to compare to. Select a date range that ends on or after February 5, 2025 to see which channels changed the most.',
+			'There’s no previous period to compare to. Select a date range that ends on or after February 5, 2025 to see your biggest traffic shifts.',
 		],
 	] )(
 		'should ask for a date range that ends later when %s',
@@ -481,19 +481,19 @@ describe( 'getTypicalTrafficWaitingText', () => {
 			'the key factors show first',
 			'2025-04-02',
 			'2025-02-06',
-			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.',
+			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.',
 		],
 		[
 			'the typical traffic range shows first',
 			'2025-04-02',
 			'2025-06-30',
-			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range, and on June 30, 2025 to see which channels changed the most.',
+			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range, and on June 30, 2025 to see your biggest traffic shifts.',
 		],
 		[
 			'both show on the same day',
 			'2025-04-02',
 			'2025-04-02',
-			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range and which channels changed the most.',
+			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range and biggest traffic shifts.',
 		],
 	] )(
 		'should say when to check back for each part, the earlier first, when the selected range ends today and %s',
@@ -513,31 +513,31 @@ describe( 'getTypicalTrafficWaitingText', () => {
 			'the key factors show first',
 			'2025-04-02',
 			'2025-02-06',
-			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 6, 2025 to see which channels changed the most, and on or after April 2, 2025 to see your typical traffic range.',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 6, 2025 to see your biggest traffic shifts, and on or after April 2, 2025 to see your typical traffic range.',
 		],
 		[
 			'the typical traffic range shows first',
 			'2025-04-02',
 			'2025-06-30',
-			'There isn’t enough traffic history for these dates. Select a date range that ends on or after April 2, 2025 to see your typical traffic range, and on or after June 30, 2025 to see which channels changed the most.',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after April 2, 2025 to see your typical traffic range, and on or after June 30, 2025 to see your biggest traffic shifts.',
 		],
 		[
 			'both show on the same day',
 			'2025-04-02',
 			'2025-04-02',
-			'There isn’t enough traffic history for these dates. Select a date range that ends on or after April 2, 2025 to see your typical traffic range and which channels changed the most.',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after April 2, 2025 to see your typical traffic range and biggest traffic shifts.',
 		],
 		[
 			'only the earlier day has passed',
 			'2025-03-28',
 			'2025-02-01',
-			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 1, 2025 to see which channels changed the most, and on or after March 28, 2025 to see your typical traffic range.',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 1, 2025 to see your biggest traffic shifts, and on or after March 28, 2025 to see your typical traffic range.',
 		],
 		[
 			'both days have passed',
 			'2025-02-04',
 			'2025-01-25',
-			'There isn’t enough traffic history for these dates. Select a date range that ends on or after January 25, 2025 to see which channels changed the most, and on or after February 4, 2025 to see your typical traffic range.',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after January 25, 2025 to see your biggest traffic shifts, and on or after February 4, 2025 to see your typical traffic range.',
 		],
 	] )(
 		'should ask for a date range that ends on or after each day, the earlier first, when the selected range ends in the past and %s',
@@ -603,7 +603,7 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 				NOTICE_OPTIONS
 			)
 		).toBe(
-			'Select a date range of at least 7 days to see which channels changed the most.'
+			'Select a date range of at least 7 days to see your biggest traffic shifts.'
 		);
 	} );
 
@@ -620,7 +620,7 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 				NOTICE_OPTIONS
 			)
 		).toBe(
-			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.'
+			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.'
 		);
 	} );
 
@@ -644,7 +644,7 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 					NOTICE_OPTIONS
 				)
 			).toBe(
-				'There’s no previous period to compare to yet. Check back on February 6, 2025 to see which channels changed the most.'
+				'There’s no previous period to compare to yet. Check back on February 6, 2025 to see your biggest traffic shifts.'
 			);
 		}
 	);
@@ -671,7 +671,7 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 				keyFactorsAvailable: false,
 				keyFactorsAvailableFrom: '2025-02-06',
 			},
-			'There’s no previous period to compare to. Select a date range that ends on or after February 6, 2025 to see which channels changed the most.',
+			'There’s no previous period to compare to. Select a date range that ends on or after February 6, 2025 to see your biggest traffic shifts.',
 		],
 		[
 			'the typical traffic range',
@@ -686,7 +686,7 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 				keyFactorsAvailable: false,
 				keyFactorsAvailableFrom: '2025-02-06',
 			},
-			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 6, 2025 to see which channels changed the most, and on or after April 2, 2025 to see your typical traffic range.',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 6, 2025 to see your biggest traffic shifts, and on or after April 2, 2025 to see your typical traffic range.',
 		],
 	] )(
 		'should ask for a date range that ends later, rather than say when to check back, for a range that ends in the past, with a day still ahead for %s',

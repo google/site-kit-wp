@@ -603,7 +603,7 @@ A site with low traffic gets no band, no key factor cards and no insight request
 **One notice, in the analysis's place, says what the period lacks and when each waiting part shows.** `TypicalTrafficAvailabilityNotice` renders the text of `getTypicalTrafficAvailabilityText()` as an `INFO_CIRCLE` `Notice`. So notices about the parts never stack, and the notice and the `analysis` never show together. The first rule that holds gives the text:
 
 1. A site with low traffic gets the low-traffic warning, described below.  
-2. A period of fewer than 7 days gets `Select a date range of at least 7 days to see which channels changed the most.` Its band may wait too, but a longer period moves the band's day, so the notice doesn't name it.  
+2. A period of fewer than 7 days gets `Select a date range of at least 7 days to see your biggest traffic shifts.` Its band may wait too, but a longer period moves the band's day, so the notice doesn't name it.  
 3. While the key factor cards wait, the notice says when they show. If the band waits too, the same sentence says when the band shows, and the earlier day comes first.  
 4. While the band alone waits, the notice says when it shows.  
 5. A period of more than 364 days, with the `trafficInsights` feature, gets `Select a date range of up to 364 days to see insights about your traffic.`

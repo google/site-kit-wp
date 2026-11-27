@@ -1147,7 +1147,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 					bandAvailableFrom: '2025-04-02',
 					keyFactorsAvailableFrom: '2025-02-06',
 				},
-				'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.',
+				'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.',
 			],
 			[
 				'the site has no recorded traffic',
@@ -1240,7 +1240,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 
 			expect( notices ).toHaveLength( 1 );
 			expect( notices[ 0 ] ).toHaveTextContent(
-				'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 1, 2025 to see which channels changed the most, and on or after March 28, 2025 to see your typical traffic range.'
+				'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 1, 2025 to see your biggest traffic shifts, and on or after March 28, 2025 to see your typical traffic range.'
 			);
 		} );
 
@@ -1713,7 +1713,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 
 			expect( notices ).toHaveLength( 1 );
 			expect( notices[ 0 ] ).toHaveTextContent(
-				'Select a date range of at least 7 days to see which channels changed the most.'
+				'Select a date range of at least 7 days to see your biggest traffic shifts.'
 			);
 			expect(
 				notices[ 0 ].closest(

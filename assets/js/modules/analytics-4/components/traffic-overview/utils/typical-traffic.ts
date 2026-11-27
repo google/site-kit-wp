@@ -371,7 +371,7 @@ export function getKeyFactorsWaitingText(
 		return sprintf(
 			/* translators: %s: the first day the key factors show, such as "February 6, 2025" */
 			__(
-				'There’s no previous period to compare to yet. Check back on %s to see which channels changed the most.',
+				'There’s no previous period to compare to yet. Check back on %s to see your biggest traffic shifts.',
 				'google-site-kit'
 			),
 			date
@@ -381,7 +381,7 @@ export function getKeyFactorsWaitingText(
 	return sprintf(
 		/* translators: %s: the last day of the first date range of this length with the key factors, such as "February 6, 2025" */
 		__(
-			'There’s no previous period to compare to. Select a date range that ends on or after %s to see which channels changed the most.',
+			'There’s no previous period to compare to. Select a date range that ends on or after %s to see your biggest traffic shifts.',
 			'google-site-kit'
 		),
 		date
@@ -417,7 +417,7 @@ function getTypicalTrafficSelectLaterText(
 		return sprintf(
 			/* translators: %s: the last day of the first date range of this length with both a typical traffic range and a previous period to compare to, such as "April 2, 2025" */
 			__(
-				'There isn’t enough traffic history for these dates. Select a date range that ends on or after %s to see your typical traffic range and which channels changed the most.',
+				'There isn’t enough traffic history for these dates. Select a date range that ends on or after %s to see your typical traffic range and biggest traffic shifts.',
 				'google-site-kit'
 			),
 			laterDate
@@ -430,7 +430,7 @@ function getTypicalTrafficSelectLaterText(
 		return sprintf(
 			/* translators: 1: the last day of the first date range of this length with a previous period to compare to, such as "February 6, 2025", 2: the last day of the first date range of this length with a typical traffic range, such as "April 2, 2025" */
 			__(
-				'There isn’t enough traffic history for these dates. Select a date range that ends on or after %1$s to see which channels changed the most, and on or after %2$s to see your typical traffic range.',
+				'There isn’t enough traffic history for these dates. Select a date range that ends on or after %1$s to see your biggest traffic shifts, and on or after %2$s to see your typical traffic range.',
 				'google-site-kit'
 			),
 			earlierDate,
@@ -441,7 +441,7 @@ function getTypicalTrafficSelectLaterText(
 	return sprintf(
 		/* translators: 1: the last day of the first date range of this length with a typical traffic range, such as "April 2, 2025", 2: the last day of the first date range of this length with a previous period to compare to, such as "June 30, 2025" */
 		__(
-			'There isn’t enough traffic history for these dates. Select a date range that ends on or after %1$s to see your typical traffic range, and on or after %2$s to see which channels changed the most.',
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after %1$s to see your typical traffic range, and on or after %2$s to see your biggest traffic shifts.',
 			'google-site-kit'
 		),
 		earlierDate,
@@ -509,7 +509,7 @@ export function getTypicalTrafficWaitingText(
 		return sprintf(
 			/* translators: %s: the first day both the typical traffic range and the key factors show, such as "April 2, 2025" */
 			__(
-				'We’re still learning what’s usual for your site. Check back on %s to see your typical traffic range and which channels changed the most.',
+				'We’re still learning what’s usual for your site. Check back on %s to see your typical traffic range and biggest traffic shifts.',
 				'google-site-kit'
 			),
 			earlierDate
@@ -522,7 +522,7 @@ export function getTypicalTrafficWaitingText(
 		return sprintf(
 			/* translators: 1: the first day the key factors show, such as "February 6, 2025", 2: the first day the typical traffic range shows, such as "April 2, 2025" */
 			__(
-				'We’re still learning what’s usual for your site. Check back on %1$s to see which channels changed the most, and on %2$s to see your typical traffic range.',
+				'We’re still learning what’s usual for your site. Check back on %1$s to see your biggest traffic shifts, and on %2$s to see your typical traffic range.',
 				'google-site-kit'
 			),
 			earlierDate,
@@ -533,7 +533,7 @@ export function getTypicalTrafficWaitingText(
 	return sprintf(
 		/* translators: 1: the first day the typical traffic range shows, such as "April 2, 2025", 2: the first day the key factors show, such as "June 30, 2025" */
 		__(
-			'We’re still learning what’s usual for your site. Check back on %1$s to see your typical traffic range, and on %2$s to see which channels changed the most.',
+			'We’re still learning what’s usual for your site. Check back on %1$s to see your typical traffic range, and on %2$s to see your biggest traffic shifts.',
 			'google-site-kit'
 		),
 		earlierDate,
@@ -623,7 +623,7 @@ export function getTypicalTrafficAvailabilityText(
 
 	if ( rangeTooShort ) {
 		return __(
-			'Select a date range of at least 7 days to see which channels changed the most.',
+			'Select a date range of at least 7 days to see your biggest traffic shifts.',
 			'google-site-kit'
 		);
 	}

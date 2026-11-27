@@ -1203,7 +1203,7 @@ describe( 'Typical Traffic Overview getTypicalTrafficOverviewPDFData', () => {
 			// today.
 			expect( result.data?.typicalTraffic ).toMatchObject( {
 				availabilityNotice:
-					'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.',
+					'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.',
 				keyFactorsAvailable: false,
 				keyFactorsNotice: null,
 				keyFactors: [],

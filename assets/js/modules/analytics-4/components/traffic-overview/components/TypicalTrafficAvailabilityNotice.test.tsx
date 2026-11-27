@@ -101,7 +101,7 @@ describe( 'TypicalTrafficAvailabilityNotice', () => {
 			'googlesitekit-traffic-overview__availability-notice'
 		);
 		expect( notices[ 0 ] ).toHaveTextContent(
-			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see which channels changed the most, and on April 2, 2025 to see your typical traffic range.'
+			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.'
 		);
 	} );
 
@@ -125,7 +125,7 @@ describe( 'TypicalTrafficAvailabilityNotice', () => {
 
 		expect( notices ).toHaveLength( 1 );
 		expect( notices[ 0 ] ).toHaveTextContent(
-			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 6, 2025 to see which channels changed the most, and on or after April 2, 2025 to see your typical traffic range.'
+			'There isn’t enough traffic history for these dates. Select a date range that ends on or after February 6, 2025 to see your biggest traffic shifts, and on or after April 2, 2025 to see your typical traffic range.'
 		);
 	} );
 
