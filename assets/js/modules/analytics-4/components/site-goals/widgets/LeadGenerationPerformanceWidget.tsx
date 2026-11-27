@@ -61,7 +61,6 @@ import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
-	SITE_GOALS_FEEDBACK_GROUP_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -77,8 +76,13 @@ import { useShouldShowSiteGoalsRemovalNotice } from '@/js/modules/analytics-4/co
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { buildKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
-import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+import {
+	getKeyActionRates,
+	getReportsToCheck,
+	processReports,
+} from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -210,11 +214,13 @@ function getWidgetReportOptions(
 	breakdownFilter?: Record< string, unknown >
 ): {
 	leadEventsReportOptions: ReportOptions | null;
+	keyActionSessionsReportOptions: ReportOptions | null;
 	engagementReportOptions: ReportOptions | null;
 } {
 	if ( ! detectedLeadEvents.length ) {
 		return {
 			leadEventsReportOptions: null,
+			keyActionSessionsReportOptions: null,
 			engagementReportOptions: null,
 		};
 	}
@@ -235,10 +241,19 @@ function getWidgetReportOptions(
 			reportID:
 				'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
 		} as ReportOptions,
+		// Each session counts once, however many lead events it holds, so the
+		// rate never goes above 100%.
+		keyActionSessionsReportOptions:
+			buildKeyActionSessionsReportOptions(
+				dates,
+				detectedLeadEvents,
+				breakdownFilter
+			) ?? null,
+		// The rate is out of all site sessions on every breakdown tab, so this
+		// report never takes the breakdown filter.
 		engagementReportOptions: {
 			...dates,
 			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-			...( breakdownFilter ? { dimensionFilters: breakdownFilter } : {} ),
 			reportID: 'analytics-4_site-goals_engagementReportOptions',
 		} as ReportOptions,
 	};
@@ -248,6 +263,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 	HTMLDivElement,
 	LeadGenerationPerformanceWidgetProps
 >(
+	// eslint-disable-next-line complexity
 	(
 		{
 			Widget,
@@ -485,12 +501,15 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			pluginConversionTrackingDocumentationURL
 		);
 
-		const { leadEventsReportOptions, engagementReportOptions } =
-			getWidgetReportOptions(
-				dates,
-				keyActionEventNames,
-				breakdownFilter
-			);
+		const {
+			leadEventsReportOptions,
+			keyActionSessionsReportOptions,
+			engagementReportOptions,
+		} = getWidgetReportOptions(
+			dates,
+			keyActionEventNames,
+			breakdownFilter
+		);
 
 		const leadEventsReport =
 			useInViewSelect(
@@ -501,6 +520,17 @@ const LeadGenerationPerformanceWidget = forwardRef<
 						  )
 						: null,
 				[ leadEventsReportOptions ]
+			) || [];
+
+		const keyActionSessionsReport =
+			useInViewSelect(
+				( select: Select ) =>
+					keyActionSessionsReportOptions
+						? select( MODULES_ANALYTICS_4 ).getReport(
+								keyActionSessionsReportOptions
+						  )
+						: null,
+				[ keyActionSessionsReportOptions ]
 			) || [];
 
 		const engagementReport =
@@ -516,13 +546,11 @@ const LeadGenerationPerformanceWidget = forwardRef<
 
 		const [ loading, error ] = useSelect(
 			( select: Select ) => {
-				const reportsToCheck: ReportOptions[] = [];
-				if ( leadEventsReportOptions ) {
-					reportsToCheck.push( leadEventsReportOptions );
-				}
-				if ( engagementReportOptions ) {
-					reportsToCheck.push( engagementReportOptions );
-				}
+				const reportsToCheck = getReportsToCheck(
+					leadEventsReportOptions,
+					keyActionSessionsReportOptions,
+					engagementReportOptions
+				);
 
 				return [
 					select( MODULES_ANALYTICS_4 ).areReportsLoading(
@@ -533,7 +561,11 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					),
 				];
 			},
-			[ leadEventsReportOptions, engagementReportOptions ]
+			[
+				leadEventsReportOptions,
+				keyActionSessionsReportOptions,
+				engagementReportOptions,
+			]
 		);
 
 		useEffect( () => {
@@ -587,15 +619,13 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			);
 		}
 
-		const {
-			currentPrimaryCount,
-			previousPrimaryCount,
-			currentSessions,
-			currentRate,
-			previousRate,
-		} = processReports( leadEventsReport, engagementReport, {
-			aggregate: true,
-		} );
+		const { currentPrimaryCount, previousPrimaryCount } = processReports(
+			leadEventsReport,
+			engagementReport,
+			{ aggregate: true }
+		);
+		const { currentRate, previousRate, currentSessions } =
+			getKeyActionRates( keyActionSessionsReport, engagementReport );
 
 		return (
 			<WidgetComponent
@@ -763,9 +793,6 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				<SiteGoalsWidgetFooter
 					goalType={ GOAL_TYPES.LEAD }
 					tabID={ knownActiveTabID }
-					feedbackGroup={
-						SITE_GOALS_FEEDBACK_GROUP_WIDGET_LEAD_GENERATION
-					}
 					isInsightEnabled={ isSiteGoalsInsightsEnabled }
 				/>
 			</WidgetComponent>

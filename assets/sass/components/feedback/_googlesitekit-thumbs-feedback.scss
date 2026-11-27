@@ -34,6 +34,12 @@
 			opacity: 0.2;
 		}
 	}
+
+	// Keep an end-aligned feedback menu above the thumbs, as the start-aligned
+	// one is, rather than over them.
+	.googlesitekit-thumbs-feedback .googlesitekit-feedback-menu--top-end {
+		inset-block: auto 100% !important;
+	}
 }
 
 .googlesitekit-popper.googlesitekit-thumbs-feedback__popper {

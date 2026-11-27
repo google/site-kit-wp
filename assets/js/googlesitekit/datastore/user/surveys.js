@@ -137,7 +137,7 @@ const baseActions = {
 	 * Triggers a survey.
 	 *
 	 * @since 1.34.0
-	 * @since n.e.x.t Sends no request for a user without the `googlesitekit_authenticate` capability.
+	 * @since 1.193.0 Sends no request for a user without the `googlesitekit_authenticate` capability.
 	 *
 	 * @param {string} triggerID     Trigger ID for the survey.
 	 * @param {Object} options       Survey options.
@@ -358,7 +358,7 @@ const baseSelectors = {
 	 * Gets the list of survey timeouts.
 	 *
 	 * @since 1.73.0
-	 * @since n.e.x.t Stays `undefined` for a user without the `googlesitekit_authenticate` capability.
+	 * @since 1.193.0 Stays `undefined` for a user without the `googlesitekit_authenticate` capability.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string[]|undefined)} Array of surveys slugs, `undefined` if not resolved yet or for a user without the `googlesitekit_authenticate` capability.

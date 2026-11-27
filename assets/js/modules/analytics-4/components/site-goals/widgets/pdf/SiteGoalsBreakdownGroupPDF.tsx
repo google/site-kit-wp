@@ -194,9 +194,14 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 	comparisonLabel,
 	showLabel = true,
 } ) => {
-	const { label, rate, total, engagementRate, sessions } = group;
+	const { label, rate, total, engagementRate, sessions, engagementSessions } =
+		group;
 
+	// The rate is a share of the site's sessions, while the engagement rate is
+	// a share of the group's own sessions, as on the dashboard.
 	const sessionsSubtitle = getSessionsSubtitle( sessions );
+	const engagementSessionsSubtitle =
+		getSessionsSubtitle( engagementSessions );
 
 	return (
 		<View style={ styles.container }>
@@ -258,7 +263,7 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 									PERCENT_FORMAT
 								) }
 								valueSize="small"
-								subtitle={ sessionsSubtitle }
+								subtitle={ engagementSessionsSubtitle }
 								{ ...getTileChangeProps(
 									engagementRate,
 									comparisonLabel

@@ -30,17 +30,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import { VoteDirection } from '@/js/components/feedback/constants';
-import ThumbsFeedback from '@/js/components/feedback/ThumbsFeedback';
 import Typography from '@/js/components/Typography';
-import useViewContext from '@/js/hooks/useViewContext';
-import {
-	SITE_GOALS_FEEDBACK_NAMESPACE,
-	SITE_GOALS_PANEL_FEEDBACK_GROUPS_BY_GOAL_TYPE,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { trackEvent } from '@/js/util';
+import KeyActionFeedback from './KeyActionFeedback';
 
 interface PrimaryActionRowProps {
 	goalType: GoalType;
@@ -57,8 +50,6 @@ interface PrimaryActionRowProps {
  * @return React element, or null when no primary action applies.
  */
 const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
-	const viewContext = useViewContext();
-
 	const primaryActionLabel = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getPrimaryActionPanelLabel(
@@ -67,25 +58,8 @@ const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
 		[ goalType ]
 	) as string | undefined;
 
-	const primaryEventSlug = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getPrimaryActionEventSlug( goalType ),
-		[ goalType ]
-	) as string | undefined;
-
 	if ( ! primaryActionLabel ) {
 		return null;
-	}
-
-	const feedbackGroup =
-		SITE_GOALS_PANEL_FEEDBACK_GROUPS_BY_GOAL_TYPE[ goalType ];
-
-	function handleVote( direction: VoteDirection ) {
-		trackEvent(
-			`${ viewContext }_site-goals-key-action-survey`,
-			direction === 'up' ? 'vote_up' : 'vote_down',
-			primaryEventSlug
-		);
 	}
 
 	return (
@@ -106,25 +80,7 @@ const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
 					{ primaryActionLabel }
 				</Typography>
 			</div>
-			<div className="googlesitekit-site-goals-selection-panel__primary-action-row-feedback">
-				<Typography
-					type="body"
-					size="small"
-					className="googlesitekit-site-goals-selection-panel__primary-action-row-prompt"
-				>
-					{ __( 'Is this a key action?', 'google-site-kit' ) }
-				</Typography>
-				<ThumbsFeedback
-					feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
-					feedbackGroup={ feedbackGroup }
-					onVote={ handleVote }
-					ariaLabel={ __(
-						'Is this a key action?',
-						'google-site-kit'
-					) }
-					popperPlacement="bottom-end"
-				/>
-			</div>
+			<KeyActionFeedback goalType={ goalType } />
 		</div>
 	);
 };

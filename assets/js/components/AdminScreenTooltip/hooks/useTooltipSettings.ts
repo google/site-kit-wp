@@ -30,7 +30,7 @@ const DEFAULT_TOOLTIP_SETTINGS = {
 /**
  * Returns the admin screen tooltip settings.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @return {Object} Tooltip settings.
  */

@@ -29,7 +29,7 @@ import {
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { render, within } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';

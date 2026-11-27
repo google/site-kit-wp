@@ -147,7 +147,7 @@ class Site_Goals_Section_Builder {
 	}
 
 	/**
-	 * Builds the online store section payload from the key action report and the engagement report.
+	 * Builds the online store section payload from the key action reports and the engagement report.
 	 *
 	 * @since 1.187.0
 	 *
@@ -173,9 +173,9 @@ class Site_Goals_Section_Builder {
 			return array();
 		}
 
-		$engagement_report = $is_split_by_provider
-			? $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ENGAGEMENT_BY_PROVIDER_KEY )
-			: $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ENGAGEMENT_KEY );
+		$key_action_sessions_report = $is_split_by_provider
+			? $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ONLINE_STORE_KEY_ACTION_SESSIONS_BY_PROVIDER_KEY )
+			: $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ONLINE_STORE_KEY_ACTION_SESSIONS_KEY );
 
 		$group_dimension = $is_split_by_provider
 			? Analytics_4::CUSTOM_EVENT_PREFIX . Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER
@@ -209,7 +209,8 @@ class Site_Goals_Section_Builder {
 			array(
 				'section_key'          => self::ONLINE_STORE_SECTION_KEY,
 				'counts'               => $report_period_counts,
-				'sessions'             => $this->sum_sessions( $engagement_report, $group_dimension ),
+				'key_action_sessions'  => $this->sum_sessions( $key_action_sessions_report, $group_dimension ),
+				'site_sessions'        => $this->get_site_sessions( $module_payload ),
 				'group_labels'         => $group_labels,
 				'shows_other_sources'  => $is_split_by_provider && $this->has_other_sources(
 					$this->filter_rows_by_event( $site_wide_discovery_rows, $primary_event ),
@@ -227,7 +228,7 @@ class Site_Goals_Section_Builder {
 	}
 
 	/**
-	 * Builds the lead generation section payload from the key action report and the engagement report.
+	 * Builds the lead generation section payload from the key action reports and the engagement report.
 	 *
 	 * @since 1.187.0
 	 *
@@ -251,9 +252,9 @@ class Site_Goals_Section_Builder {
 			return array();
 		}
 
-		$engagement_report = $is_split_by_form
-			? $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ENGAGEMENT_BY_FORM_KEY )
-			: $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ENGAGEMENT_KEY );
+		$key_action_sessions_report = $is_split_by_form
+			? $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_KEY_ACTION_SESSIONS_BY_FORM_KEY )
+			: $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_KEY_ACTION_SESSIONS_KEY );
 
 		$group_dimension = $is_split_by_form
 			? Analytics_4::CUSTOM_EVENT_PREFIX . Analytics_4::CUSTOM_DIMENSION_FORM_ID
@@ -279,7 +280,8 @@ class Site_Goals_Section_Builder {
 			array(
 				'section_key'          => self::LEAD_GENERATION_SECTION_KEY,
 				'counts'               => $report_period_counts,
-				'sessions'             => $this->sum_sessions( $engagement_report, $group_dimension ),
+				'key_action_sessions'  => $this->sum_sessions( $key_action_sessions_report, $group_dimension ),
+				'site_sessions'        => $this->get_site_sessions( $module_payload ),
 				'group_labels'         => $group_labels,
 				'shows_other_sources'  => $is_split_by_form && $this->has_other_sources(
 					$site_wide_discovery_rows,
@@ -304,13 +306,18 @@ class Site_Goals_Section_Builder {
 	 *
 	 * @since 1.187.0
 	 * @since 1.188.0 Added the "Other sources" counts to the section input.
+	 * @since n.e.x.t Replaced the session counts of each group with the sessions with a key
+	 *                action and the site's session count.
 	 *
 	 * @param array $section_input {
 	 *     What the section is built from.
 	 *
 	 *     @type string $section_key          Section key the payload sits under.
 	 *     @type array  $counts               Key action counts, by group name and date range key.
-	 *     @type array  $sessions             Session counts, by group name and date range key.
+	 *     @type array  $key_action_sessions  Counts of the sessions with a key action, by group name
+	 *                                        and date range key.
+	 *     @type array  $site_sessions        The site's session counts, by date range key. Every
+	 *                                        group's rate is a share of these.
 	 *     @type array  $group_labels         Map of group name to its label, in the order the
 	 *                                        section shows the groups.
 	 *     @type bool   $shows_other_sources  Whether the section shows an "Other sources" group.
@@ -328,7 +335,8 @@ class Site_Goals_Section_Builder {
 			$groups[] = $this->build_group(
 				$group_label,
 				$section_input['counts'][ $group_name ] ?? array(),
-				$section_input['sessions'][ $group_name ] ?? array(),
+				$section_input['key_action_sessions'][ $group_name ] ?? array(),
+				$section_input['site_sessions'],
 				$section_input['metric_labels']
 			);
 		}
@@ -365,18 +373,20 @@ class Site_Goals_Section_Builder {
 	 * Builds one group, holding the rate tile and the total tile.
 	 *
 	 * @since 1.187.0
+	 * @since n.e.x.t Computed the rate from the sessions with a key action over the site's sessions.
 	 *
-	 * @param string $label         Label of the group, such as a plugin name or a form title.
-	 * @param array  $counts        Key action counts of this group, by date range key.
-	 * @param array  $sessions      Session counts of this group, by date range key.
-	 * @param array  $metric_labels Tile labels, holding `rate` and `total`.
+	 * @param string $label               Label of the group, such as a plugin name or a form title.
+	 * @param array  $counts              Key action counts of this group, by date range key.
+	 * @param array  $key_action_sessions Counts of this group's sessions with a key action, by date range key.
+	 * @param array  $site_sessions       The site's session counts, by date range key.
+	 * @param array  $metric_labels       Tile labels, holding `rate` and `total`.
 	 * @return array Group holding a `label` and its `metrics`.
 	 */
-	private function build_group( $label, array $counts, array $sessions, array $metric_labels ) {
+	private function build_group( $label, array $counts, array $key_action_sessions, array $site_sessions, array $metric_labels ) {
 		return array(
 			'label'   => $label,
 			'metrics' => array(
-				$this->build_rate_metric( $counts, $sessions, $metric_labels['rate'] ),
+				$this->build_rate_metric( $key_action_sessions, $site_sessions, $metric_labels['rate'] ),
 				$this->build_total_metric( $counts, $metric_labels['total'] ),
 			),
 		);
@@ -402,18 +412,21 @@ class Site_Goals_Section_Builder {
 	}
 
 	/**
-	 * Builds the rate tile, which divides the key action count by the session count.
+	 * Builds the rate tile, which divides the sessions with a key action by the site's session count.
+	 *
+	 * A session counts once, however many key actions it holds, so the rate never goes above 100%.
 	 *
 	 * @since 1.187.0
+	 * @since n.e.x.t Divided the sessions with a key action, in place of the key action count.
 	 *
-	 * @param array  $counts   Key action counts, by date range key.
-	 * @param array  $sessions Session counts, by date range key.
-	 * @param string $label    Label of the tile.
+	 * @param array  $key_action_sessions Counts of the sessions with a key action, by date range key.
+	 * @param array  $site_sessions       The site's session counts, by date range key.
+	 * @param string $label               Label of the tile.
 	 * @return array Tile holding a `label`, a `value`, and a `trend`.
 	 */
-	private function build_rate_metric( array $counts, array $sessions, $label ) {
-		$current_rate  = $this->compute_rate( $counts['date_range_0'] ?? 0.0, $sessions['date_range_0'] ?? 0.0 );
-		$previous_rate = $this->compute_rate( $counts['date_range_1'] ?? 0.0, $sessions['date_range_1'] ?? 0.0 );
+	private function build_rate_metric( array $key_action_sessions, array $site_sessions, $label ) {
+		$current_rate  = $this->compute_rate( $key_action_sessions['date_range_0'] ?? 0.0, $site_sessions['date_range_0'] ?? 0.0 );
+		$previous_rate = $this->compute_rate( $key_action_sessions['date_range_1'] ?? 0.0, $site_sessions['date_range_1'] ?? 0.0 );
 
 		return array(
 			'label' => $label,
@@ -444,12 +457,12 @@ class Site_Goals_Section_Builder {
 	}
 
 	/**
-	 * Divides a key action count by a session count.
+	 * Divides the sessions with a key action by the site's session count.
 	 *
 	 * @since 1.187.0
 	 *
-	 * @param float $count    Key action count.
-	 * @param float $sessions Session count.
+	 * @param float $count    Count of the sessions with a key action.
+	 * @param float $sessions The site's session count.
 	 * @return float Rate as a fraction, such as `0.038` for a rate of 3.8%. Zero when the period
 	 *               holds no session, because a rate needs a session to divide by.
 	 */
@@ -695,21 +708,37 @@ class Site_Goals_Section_Builder {
 	}
 
 	/**
-	 * Sums the session count of each group in the engagement report.
+	 * Sums the session count of each group in a report.
 	 *
 	 * @since 1.187.0
+	 * @since n.e.x.t Took any report with a `sessions` metric, in place of the engagement report alone.
 	 *
-	 * @param array  $engagement_report Engagement report.
-	 * @param string $group_dimension   Dimension whose value names the group. An empty string
-	 *                                  sums every row into one group.
+	 * @param array  $report          Report with a `sessions` metric.
+	 * @param string $group_dimension Dimension whose value names the group. An empty string
+	 *                                sums every row into one group.
 	 * @return array Session counts, by group name and date range key.
 	 */
-	private function sum_sessions( array $engagement_report, $group_dimension ) {
+	private function sum_sessions( array $report, $group_dimension ) {
 		return $this->data_processor->sum_metric_by_group(
-			$this->report_processor->extract_report_rows( $engagement_report ),
+			$this->report_processor->extract_report_rows( $report ),
 			$group_dimension,
 			'sessions'
 		);
+	}
+
+	/**
+	 * Gets the site's session count, which every group's rate is a share of.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $module_payload Module payload keyed by request key.
+	 * @return array The site's session counts, by date range key.
+	 */
+	private function get_site_sessions( array $module_payload ) {
+		return $this->sum_sessions(
+			$this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ENGAGEMENT_KEY ),
+			''
+		)[''] ?? array();
 	}
 
 	/**

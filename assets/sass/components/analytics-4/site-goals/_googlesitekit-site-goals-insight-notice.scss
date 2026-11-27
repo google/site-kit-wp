@@ -74,7 +74,7 @@
 
 		// The footer takes over the prompt's spacing, and keeps the prompt on
 		// the right as it is without the footer.
-		.googlesitekit-site-goals-widget__feedback {
+		.googlesitekit-feedback-prompt {
 			margin-top: 0;
 
 			@media (min-width: $bp-tablet) {

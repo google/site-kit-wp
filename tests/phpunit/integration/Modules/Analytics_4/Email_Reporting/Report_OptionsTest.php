@@ -547,6 +547,51 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		);
 	}
 
+	public function test_get_key_action_sessions_options__requests_the_sessions_with_a_key_action_for_the_whole_site() {
+		$builder = $this->create_builder_with_events( array( 'add_to_cart', 'purchase', 'contact' ) );
+
+		$store_options = $builder->get_key_action_sessions_options( 'ecommerce' );
+		$lead_options  = $builder->get_key_action_sessions_options( 'lead' );
+
+		$this->assertEquals(
+			array( array( 'name' => 'sessions' ) ),
+			$store_options['metrics'],
+			'get_key_action_sessions_options() should request the sessions metric, which counts a session once however many key actions it holds.'
+		);
+		$this->assertArrayNotHasKey(
+			'dimensions',
+			$store_options,
+			'get_key_action_sessions_options() should total the sessions for the whole site when given no dimension.'
+		);
+		$this->assertSame(
+			'purchase',
+			$store_options['dimensionFilters']['eventName'],
+			'get_key_action_sessions_options() should filter the online store sessions to purchase when the site sends both store events.'
+		);
+		$this->assertSame(
+			array( 'contact' ),
+			$lead_options['dimensionFilters']['eventName']['value'],
+			'get_key_action_sessions_options() should filter the lead generation sessions to the detected lead events.'
+		);
+		$this->assert_report_covers_both_periods( $store_options, 'get_key_action_sessions_options()' );
+	}
+
+	public function test_get_key_action_sessions_options__splits_the_sessions_by_form() {
+		$builder = $this->create_builder_with_events( array( 'contact' ) );
+		$options = $builder->get_key_action_sessions_options( 'lead', Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+
+		$this->assertEquals(
+			array( array( 'name' => 'customEvent:googlesitekit_form_id' ) ),
+			$options['dimensions'],
+			'get_key_action_sessions_options() should group the sessions by form when given the form ID dimension.'
+		);
+		$this->assertTrue(
+			$options['keepEmptyRows'],
+			'get_key_action_sessions_options() should keep a form with no session in the report.'
+		);
+		$this->assert_report_covers_both_periods( $options, 'get_key_action_sessions_options()' );
+	}
+
 	public function test_get_engagement_options__requests_the_engagement_rate_and_sessions_for_the_whole_site() {
 		$builder = $this->create_builder();
 		$options = $builder->get_engagement_options();
@@ -568,22 +613,6 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 			'keepEmptyRows',
 			$options,
 			'get_engagement_options() should add no keepEmptyRows option when it adds no breakdown dimension.'
-		);
-		$this->assert_report_covers_both_periods( $options, 'get_engagement_options()' );
-	}
-
-	public function test_get_engagement_options__splits_the_sessions_by_event_provider() {
-		$builder = $this->create_builder();
-		$options = $builder->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
-
-		$this->assertEquals(
-			array( array( 'name' => 'customEvent:googlesitekit_event_provider' ) ),
-			$options['dimensions'],
-			'get_engagement_options() should group the sessions by event provider when given the event provider dimension.'
-		);
-		$this->assertTrue(
-			$options['keepEmptyRows'],
-			'get_engagement_options() should keep an event provider with no sessions in the report.'
 		);
 		$this->assert_report_covers_both_periods( $options, 'get_engagement_options()' );
 	}

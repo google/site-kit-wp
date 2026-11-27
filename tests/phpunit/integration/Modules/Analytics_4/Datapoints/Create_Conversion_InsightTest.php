@@ -37,7 +37,7 @@ class Create_Conversion_InsightTest extends TestCase {
 	/**
 	 * Number of `batchRunReports` requests the fake Analytics API received.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 * @var int
 	 */
 	private $batch_request_count = 0;
@@ -51,13 +51,18 @@ class Create_Conversion_InsightTest extends TestCase {
 		$this->analytics->get_settings()->merge( array( 'detectedEvents' => array( 'contact' ) ) );
 
 		$this->report_rows = array(
-			'engagement'  => array(
+			'engagement'          => array(
 				array( 'date_range_0', '0.5', '1000' ),
 				array( 'date_range_1', '0.4', '800' ),
 			),
-			'key_actions' => array(
+			'key_actions'         => array(
 				array( 'contact', 'date_range_0', '20' ),
 				array( 'contact', 'date_range_1', '10' ),
+			),
+			// One contact per session, so the rate is the contacts over the site's sessions.
+			'key_action_sessions' => array(
+				array( 'date_range_0', '20' ),
+				array( 'date_range_1', '10' ),
 			),
 		);
 	}
@@ -74,7 +79,7 @@ class Create_Conversion_InsightTest extends TestCase {
 	 * for its own account and for its owner's. The fake API refuses a report
 	 * without a token, as Analytics does.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	private function enable_conversion_insights() {
 		$this->enable_insight_datapoints( array( 'siteGoalsInsights' ) );
@@ -92,7 +97,7 @@ class Create_Conversion_InsightTest extends TestCase {
 	/**
 	 * Requests the datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param array $data The `data` of the request.
 	 * @return \WP_REST_Response The response.

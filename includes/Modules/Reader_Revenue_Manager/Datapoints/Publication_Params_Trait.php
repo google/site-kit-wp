@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 /**
  * Trait for datapoints that take the publication identifiers in the request.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ trait Publication_Params_Trait {
 	/**
 	 * Builds the publication resource name from the request identifiers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return string Publication resource name.

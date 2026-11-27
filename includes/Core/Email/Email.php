@@ -40,7 +40,7 @@ class Email {
 	 * and merges with caller-supplied headers.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Defaults the From address to the site's domain and adds a Reply-To header.
+	 * @since 1.193.0 Defaults the From address to the site's domain and adds a Reply-To header.
 	 *
 	 * @param array $headers Optional. Additional headers to merge. Default empty array.
 	 * @return array Final header array with Site Kit branding.
@@ -68,7 +68,7 @@ class Email {
 	/**
 	 * Gets the default From address that wp_mail uses.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return string The "wordpress@" address on the network home URL's host, without a leading "www.".
 	 */

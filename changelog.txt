@@ -1,5 +1,44 @@
 == Changelog ==
 
+= 1.193.0 =
+
+**Enhanced**
+
+* Adjust survey triggers for Fresh Data. See [#14185](https://github.com/google/site-kit-wp/issues/14185).
+* Update the footer link on the Ad Blocking Recovery setup screen to read "Exit setup" instead of "Cancel" after the user clicks "Create message". See [#14151](https://github.com/google/site-kit-wp/issues/14151).
+* Update the CTA label in feature hub cards. See [#14143](https://github.com/google/site-kit-wp/issues/14143).
+* Improve error notice in the "Recent activity" tab when the user encounters a permissions error. See [#14121](https://github.com/google/site-kit-wp/issues/14121).
+* Add encrypted storage support for Measurement Protocol data. See [#14031](https://github.com/google/site-kit-wp/issues/14031).
+* Hide the "Unlock more Site Kit features" callout once the user has visited the Feature Discovery Hub. See [#13999](https://github.com/google/site-kit-wp/issues/13999).
+* Update the Feature Discovery Hub's feature cards for mobile viewports. See [#13987](https://github.com/google/site-kit-wp/issues/13987).
+* Add GA events for the incomplete-setup reminder and its “Add features” tooltip. See [#13935](https://github.com/google/site-kit-wp/issues/13935).
+* Add GA events for interaction with the setup success, setup error and auto-update notices on the Feature Discovery Hub. See [#13934](https://github.com/google/site-kit-wp/issues/13934).
+* Add GA event tracking for the Feature Discovery Hub's feature cards and feature detail panel. See [#13933](https://github.com/google/site-kit-wp/issues/13933).
+* Add GA event tracking for the Feature Discovery Hub's entry points and navigation. See [#13932](https://github.com/google/site-kit-wp/issues/13932).
+* Show a spinner on the splash screen's "Sign in with Google" button until the Google sign-in page loads. See [#13910](https://github.com/google/site-kit-wp/issues/13910).
+* Show a one-time tooltip pointing to "Add features" when the user first dismisses an incomplete-setup reminder. See [#13789](https://github.com/google/site-kit-wp/issues/13789).
+* Add a dashboard reminder notification to resume abandoned Reader Revenue Manager newsletter sign-up form setup. See [#13788](https://github.com/google/site-kit-wp/issues/13788).
+* Add the survey CTA type and its configuration to the Reader Revenue Manager module. See [#13739](https://github.com/google/site-kit-wp/issues/13739).
+* Add a dashboard notification that invites publishers to set up a Reader Revenue Manager survey. See [#13734](https://github.com/google/site-kit-wp/issues/13734).
+* Add a "Back" button to the survey questions and survey CTA steps of the Reader Revenue Manager express setup. See [#13733](https://github.com/google/site-kit-wp/issues/13733).
+* Create the Google Analytics custom dimensions required for the Reader Revenue Manager survey when entering the survey setup. See [#13731](https://github.com/google/site-kit-wp/issues/13731).
+* Add the selected questions pane to the Reader Revenue Manager survey setup, where users can remove and reorder their survey questions. See [#13729](https://github.com/google/site-kit-wp/issues/13729).
+* Add the custom question side sheet to the Reader Revenue Manager survey setup. See [#13728](https://github.com/google/site-kit-wp/issues/13728).
+* Require the organization and publication IDs in Reader Revenue Manager's publication and CTA datapoints. See [#13429](https://github.com/google/site-kit-wp/issues/13429).
+* Show a success notice in place of a feature's card on the Feature Discovery Hub when the feature is set up without leaving the hub. See [#13346](https://github.com/google/site-kit-wp/issues/13346).
+* Add argument and response schemas to Site Kit’s REST API routes. See [#6760](https://github.com/google/site-kit-wp/issues/6760).
+
+**Fixed**
+
+* Fix Site Kit emails being rejected or marked as spam by sending them from the site’s domain. See [#14189](https://github.com/google/site-kit-wp/issues/14189).
+* Fix "See all recent posts" so that it scrolls to the "Latest content" card and moves keyboard focus to its "Latest content" tab. See [#14122](https://github.com/google/site-kit-wp/issues/14122).
+* Update the latest post performance tiles to use a light blue background and a smaller title, and use the same smaller title in the Site goals tiles. See [#14119](https://github.com/google/site-kit-wp/issues/14119).
+* Fix the icon of the insight notice on the "Recent activity" tab to match the design. See [#14115](https://github.com/google/site-kit-wp/issues/14115).
+* Fix the color of the pin icon in the "Latest post performance since published" section. See [#14114](https://github.com/google/site-kit-wp/issues/14114).
+* Fix the heading level of the tile titles in the "Latest post performance" section of the Recent activity tab. See [#14112](https://github.com/google/site-kit-wp/issues/14112).
+* Fix the alignment of the Site Kit icon in the WordPress admin menu on small screens and in the collapsed menu. Props jibin7jose. See [#13378](https://github.com/google/site-kit-wp/issues/13378).
+* Fix a bug where Key Metrics was hidden on the dashboard after another admin signed in to Site Kit. See [#13371](https://github.com/google/site-kit-wp/issues/13371).
+
 = 1.192.0 =
 
 **Enhanced**

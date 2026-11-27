@@ -70,18 +70,20 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 				id: '12',
 				label: '“Contact” form',
 				total: { current: 40, previous: 30 },
-				sessions: { current: 200, previous: 150 },
-				rate: { current: 0.2, previous: 0.2 },
+				sessions: { current: 900, previous: 850 },
+				rate: { current: 36 / 900, previous: 17 / 850 },
 				engagementRate: { current: 0.4, previous: 0.3 },
+				engagementSessions: { current: 200, previous: 150 },
 			},
 			{
 				// A form with no title on the site falls back to its ID.
 				id: '34',
 				label: 'Form #34',
 				total: { current: 12, previous: 9 },
-				sessions: { current: 100, previous: 90 },
-				rate: { current: 0.12, previous: 0.1 },
+				sessions: { current: 900, previous: 850 },
+				rate: { current: 10 / 900, previous: 8 / 850 },
 				engagementRate: { current: 0.6, previous: 0.5 },
+				engagementSessions: { current: 100, previous: 90 },
 			},
 		] );
 	} );
@@ -120,11 +122,9 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 				label: 'Lead generation performance',
 				total: { current: 57, previous: 41 },
 				sessions: { current: 900, previous: 850 },
-				rate: {
-					current: 57 / 900,
-					previous: 41 / 850,
-				},
+				rate: { current: 48 / 900, previous: 25 / 850 },
 				engagementRate: { current: 0.45, previous: 0.42 },
+				engagementSessions: { current: 900, previous: 850 },
 			},
 		] );
 	} );
@@ -144,8 +144,9 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 				label: 'Lead generation performance',
 				total: { current: 57, previous: 41 },
 				sessions: { current: 900, previous: 850 },
-				rate: { current: 57 / 900, previous: 41 / 850 },
+				rate: { current: 48 / 900, previous: 25 / 850 },
 				engagementRate: { current: 0.45, previous: 0.42 },
+				engagementSessions: { current: 900, previous: 850 },
 			},
 		] );
 	} );
@@ -165,7 +166,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 				decodeURIComponent( String( requestURL ) )
 			);
 
-		expect( requestedURLs ).toHaveLength( 2 );
+		expect( requestedURLs ).toHaveLength( 3 );
 
 		requestedURLs.forEach( ( requestURL ) => {
 			expect( requestURL ).not.toContain(

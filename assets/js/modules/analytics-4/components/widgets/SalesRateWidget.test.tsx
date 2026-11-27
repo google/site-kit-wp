@@ -31,8 +31,8 @@ import {
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	buildEngagementReportOptions,
-	buildPrimaryEventReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+	buildKeyActionSessionsReportOptions,
+} from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -59,12 +59,12 @@ describe( 'SalesRateWidget', () => {
 		provideSalesWidgetTestRegistry( registry );
 	} );
 
-	function getPrimaryEventReportOptions() {
+	function getKeyActionSessionsReportOptions() {
 		const dates = registry
 			.select( CORE_USER )
 			.getDateRangeDates( { compare: true } );
 
-		return buildPrimaryEventReportOptions(
+		return buildKeyActionSessionsReportOptions(
 			dates,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
@@ -79,7 +79,7 @@ describe( 'SalesRateWidget', () => {
 	}
 
 	it( 'should render the loading state while resolving the reports', async () => {
-		// This widget requests two reports (primary event + engagement), so
+		// This widget requests two reports (Key action sessions + engagement), so
 		// the frozen fetch mock must cover both GET requests.
 		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
@@ -102,14 +102,15 @@ describe( 'SalesRateWidget', () => {
 	);
 
 	it( 'should render zero values when there are no purchases or sessions in either period', async () => {
-		const primaryEventReportOptions = getPrimaryEventReportOptions();
+		const keyActionSessionsReportOptions =
+			getKeyActionSessionsReportOptions();
 		const engagementReportOptions = getEngagementReportOptions();
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport(
-				{ rows: [] },
-				{ options: primaryEventReportOptions }
+				{ totals: [] },
+				{ options: keyActionSessionsReportOptions }
 			);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -143,29 +144,24 @@ describe( 'SalesRateWidget', () => {
 	} );
 
 	it( 'should render the current period sales rate, sessions subtext, and the change vs. the previous period', async () => {
-		const primaryEventReportOptions = getPrimaryEventReportOptions();
+		const keyActionSessionsReportOptions =
+			getKeyActionSessionsReportOptions();
 		const engagementReportOptions = getEngagementReportOptions();
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
-				rows: [
+				totals: [
 					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.PURCHASE },
-							{ value: 'date_range_0' },
-						],
+						dimensionValues: [ { value: 'date_range_0' } ],
 						metricValues: [ { value: '150' } ],
 					},
 					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.PURCHASE },
-							{ value: 'date_range_1' },
-						],
+						dimensionValues: [ { value: 'date_range_1' } ],
 						metricValues: [ { value: '100' } ],
 					},
 				],
 			},
-			{ options: primaryEventReportOptions }
+			{ options: keyActionSessionsReportOptions }
 		);
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -189,7 +185,7 @@ describe( 'SalesRateWidget', () => {
 		);
 		await waitForRegistry();
 
-		// currentRate = 150 purchases / 500 sessions = 30%.
+		// currentRate = 150 sessions with a purchase / 500 sessions = 30%.
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
 		).toHaveTextContent( '30%' );

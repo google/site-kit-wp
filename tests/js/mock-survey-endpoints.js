@@ -29,7 +29,7 @@ export const surveyTriggerEndpoint = new RegExp(
  * Without the wait, a trigger still on its way when the test ends finishes in
  * the next test, and uses that test's mocks.
  *
- * @since n.e.x.t
+ * @since 1.193.0
  *
  * @return {Promise} Resolves once the endpoint got a request.
  */

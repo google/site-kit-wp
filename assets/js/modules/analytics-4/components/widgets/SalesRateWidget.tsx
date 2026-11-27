@@ -37,9 +37,9 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	buildEngagementReportOptions,
-	buildPrimaryEventReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
-import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+	buildKeyActionSessionsReportOptions,
+} from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
+import { getKeyActionRates } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
@@ -64,24 +64,24 @@ const SalesRateWidget: FC< SalesRateWidgetProps > = ( { Widget } ) => {
 	// showing add-to-cart data under a "sales" label.
 	const primaryEvent = ENUM_CONVERSION_EVENTS.PURCHASE;
 
-	const primaryEventReportOptions = buildPrimaryEventReportOptions(
+	const keyActionSessionsReportOptions = buildKeyActionSessionsReportOptions(
 		dates,
 		primaryEvent
 	);
 	const engagementReportOptions = buildEngagementReportOptions( dates );
 
 	const {
-		report: primaryEventReport,
+		report: keyActionSessionsReport,
 		secondaryReport: engagementReport,
 		loading,
 		error,
 	} = useAnalyticsReportsData( {
-		primaryOptions: primaryEventReportOptions,
+		primaryOptions: keyActionSessionsReportOptions,
 		secondaryOptions: engagementReportOptions,
 	} );
 
-	const { currentRate, previousRate, currentSessions } = processReports(
-		primaryEventReport,
+	const { currentRate, previousRate, currentSessions } = getKeyActionRates(
+		keyActionSessionsReport,
 		engagementReport
 	);
 

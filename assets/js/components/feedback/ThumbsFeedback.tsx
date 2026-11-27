@@ -45,21 +45,26 @@ import ThumbDownIcon from '@/svg/icons/thumb-down.svg';
 import ThumbUpIcon from '@/svg/icons/thumb-up.svg';
 import {
 	FEEDBACK_KEY_VOTE,
+	FEEDBACK_KEY_VOTE_REASON,
 	VOTE_DIRECTION_DOWN,
 	VOTE_DIRECTION_UP,
 	VoteDirection,
 } from './constants';
-import FeedbackMenu, { FeedbackMenuOption } from './FeedbackMenu';
+import FeedbackMenu, {
+	FeedbackMenuOption,
+	FeedbackMenuProps,
+} from './FeedbackMenu';
 
 // Use a tighter gap for bottom-placed poppers. Top placement keeps the default (9px).
 const BOTTOM_POPPER_OFFSET = 4;
 
-interface ThumbsFeedbackProps {
+export interface ThumbsFeedbackProps {
 	feedbackNamespace: string;
 	feedbackGroup: string;
 	onVote?: ( direction: VoteDirection ) => void;
 	ariaLabel?: string;
 	popperPlacement?: PopperPlacement;
+	feedbackMenuPlacement?: FeedbackMenuProps[ 'placement' ];
 	voteDirection?: VoteDirection | null;
 	feedbackOptions?: Partial< Record< VoteDirection, FeedbackMenuOption[] > >;
 	onSelectFeedback?: ( value: string | undefined ) => void;
@@ -71,16 +76,18 @@ interface ThumbsFeedbackProps {
  *
  * @since 1.182.0
  * @since 1.192.0 Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
+ * @since n.e.x.t Send the selected feedback option's value to the feedback endpoint, and added the `feedbackMenuPlacement` prop.
  *
- * @param props                   Component props.
- * @param props.feedbackNamespace The product area the feedback is about.
- * @param props.feedbackGroup     The item within the namespace the feedback is about.
- * @param props.onVote            Optional callback run after the user votes.
- * @param props.ariaLabel         Accessible label for the button group.
- * @param props.popperPlacement   Popper position, defaults to `top-end`.
- * @param props.voteDirection     Controlled vote; null selects neither thumb. Omit to manage selection internally.
- * @param props.feedbackOptions   Feedback options for each vote direction.
- * @param props.onSelectFeedback  Callback run when feedback is selected.
+ * @param props                       Component props.
+ * @param props.feedbackNamespace     The product area the feedback is about.
+ * @param props.feedbackGroup         The item within the namespace the feedback is about.
+ * @param props.onVote                Optional callback run after the user votes.
+ * @param props.ariaLabel             Accessible label for the button group.
+ * @param props.popperPlacement       Popper position, defaults to `top-end`.
+ * @param props.feedbackMenuPlacement Feedback menu position, defaults to `top-start`.
+ * @param props.voteDirection         Controlled vote; null selects neither thumb. Omit to manage selection internally.
+ * @param props.feedbackOptions       Feedback options for each vote direction.
+ * @param props.onSelectFeedback      Callback run with the chosen option's value, or `undefined` for an option without one. The value is already sent as `vote_reason` feedback.
  * @return React element.
  */
 const ThumbsFeedback: FC< ThumbsFeedbackProps > = ( {
@@ -89,6 +96,7 @@ const ThumbsFeedback: FC< ThumbsFeedbackProps > = ( {
 	onVote,
 	ariaLabel,
 	popperPlacement = 'top-end',
+	feedbackMenuPlacement = 'top-start',
 	voteDirection,
 	feedbackOptions,
 	onSelectFeedback,
@@ -132,12 +140,27 @@ const ThumbsFeedback: FC< ThumbsFeedbackProps > = ( {
 		( value: string | undefined ) => {
 			closeFeedbackMenu();
 
+			if ( value ) {
+				sendFeedback( {
+					namespace: feedbackNamespace,
+					group: feedbackGroup,
+					key: FEEDBACK_KEY_VOTE_REASON,
+					value,
+				} );
+			}
+
 			setAnchorElement( wrapperRef.current );
 			setVoteCount( ( count ) => count + 1 );
 
 			onSelectFeedback?.( value );
 		},
-		[ closeFeedbackMenu, onSelectFeedback ]
+		[
+			closeFeedbackMenu,
+			feedbackGroup,
+			feedbackNamespace,
+			onSelectFeedback,
+			sendFeedback,
+		]
 	);
 
 	function handleVote( direction: VoteDirection ) {
@@ -270,7 +293,7 @@ const ThumbsFeedback: FC< ThumbsFeedbackProps > = ( {
 						isOpen={ isFeedbackMenuOpen }
 						onClose={ closeFeedbackMenu }
 						onSelect={ selectFeedback }
-						placement="top-start"
+						placement={ feedbackMenuPlacement }
 						options={ selectedFeedbackOptions }
 						sourceRef={ sourceRef }
 						wrapperRef={ wrapperRef }

@@ -24,10 +24,8 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
-import useViewContext from '@/js/hooks/useViewContext';
-import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
-import { SITE_GOALS_FEEDBACK_NAMESPACE } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import SiteGoalsWidgetFeedback from '@/js/modules/analytics-4/components/site-goals/widgets/SiteGoalsWidgetFeedback';
 import InsightDisclosure from './InsightDisclosure';
 
 interface SiteGoalsWidgetFooterProps {
@@ -35,8 +33,6 @@ interface SiteGoalsWidgetFooterProps {
 	goalType: GoalType;
 	/** The open tab, an empty string for a widget without tabs, or `undefined` while it is not known yet. */
 	tabID: string | undefined;
-	/** The item the widget's feedback is about. */
-	feedbackGroup: string;
 	/** Whether the `siteGoalsInsights` feature flag is enabled, so the AI disclosure line can show next to the feedback prompt. */
 	isInsightEnabled: boolean;
 }
@@ -44,21 +40,9 @@ interface SiteGoalsWidgetFooterProps {
 const SiteGoalsWidgetFooter: FC< SiteGoalsWidgetFooterProps > = ( {
 	goalType,
 	tabID,
-	feedbackGroup,
 	isInsightEnabled,
 } ) => {
-	const viewContext = useViewContext();
-
-	const feedbackPrompt = (
-		<FeedbackPrompt
-			feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
-			feedbackGroup={ feedbackGroup }
-			gaTrackingEventArgs={ {
-				category: `${ viewContext }_site-goals-widget-survey`,
-				label: goalType,
-			} }
-		/>
-	);
+	const feedbackPrompt = <SiteGoalsWidgetFeedback goalType={ goalType } />;
 
 	if ( ! isInsightEnabled ) {
 		return feedbackPrompt;

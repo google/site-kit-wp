@@ -42,15 +42,17 @@ export type SiteGoalsPDFEventFilter = NonNullable<
 >[ string ];
 
 /**
- * The pair of reports a Site Goals PDF widget needs.
+ * The reports a Site Goals PDF widget needs.
  *
- * These stay two reports, as they are on the dashboard: the event report is
- * scoped to the goal's events, while the engagement report must not be, or its
- * `sessions` would count only the sessions that already converted and every
- * rate would come out near 100%.
+ * As on the dashboard, the event report and the Key action sessions report are
+ * scoped to the goal's events, while the engagement report must not be, as its
+ * `sessions` are what the rate is a share of. The Key action sessions report
+ * counts each session once, however many Key action events it holds, so the
+ * rate never goes above 100%.
  */
 export interface SiteGoalsPDFReportOptions {
 	eventsReportOptions: ReportOptions;
+	keyActionSessionsReportOptions: ReportOptions;
 	engagementReportOptions: ReportOptions;
 }
 
@@ -63,18 +65,19 @@ export const LEAD_BREAKDOWN_DIMENSION = `customEvent:${
 }`;
 
 /**
- * Builds the report pair for a Site Goals PDF widget.
+ * Builds the reports for a Site Goals PDF widget.
  *
- * Both reports carry the breakdown dimension when one is given, so a single
+ * Every report carries the breakdown dimension when one is given, so a single
  * request per report returns every group, instead of one request per group.
  *
  * @since 1.187.0
+ * @since n.e.x.t Added the Key action sessions report.
  *
  * @param dates              Date range, including the compare range.
- * @param eventFilter        `eventName` dimension filter for the event report.
+ * @param eventFilter        `eventName` dimension filter for the event and Key action sessions reports.
  * @param breakdownDimension Dimension to group by, or `undefined` for the aggregated variant.
  * @param reportIDSuffix     Suffix identifying the widget and variant in the report IDs.
- * @return Report options pair.
+ * @return Report options.
  */
 function getSiteGoalsPDFReportOptions(
 	dates: SiteGoalsPDFDateRange,
@@ -96,6 +99,15 @@ function getSiteGoalsPDFReportOptions(
 			},
 			reportID: `analytics-4_site-goals-pdf_${ reportIDSuffix }EventsReportOptions`,
 		},
+		keyActionSessionsReportOptions: {
+			...dates,
+			...dimensions,
+			metrics: [ { name: 'sessions' } ],
+			dimensionFilters: {
+				eventName: eventFilter,
+			},
+			reportID: `analytics-4_site-goals-pdf_${ reportIDSuffix }KeyActionSessionsReportOptions`,
+		},
 		engagementReportOptions: {
 			...dates,
 			...dimensions,
@@ -112,7 +124,7 @@ function getSiteGoalsPDFReportOptions(
  *
  * @param dates        Date range, including the compare range.
  * @param primaryEvent Primary ecommerce event, from `getPrimaryEcommerceEvent`.
- * @return Report options pair, or `null` when there is no primary event.
+ * @return Report options, or `null` when there is no primary event.
  */
 export function getStoreGroupedReportOptions(
 	dates: SiteGoalsPDFDateRange,
@@ -137,7 +149,7 @@ export function getStoreGroupedReportOptions(
  *
  * @param dates        Date range, including the compare range.
  * @param primaryEvent Primary ecommerce event, from `getPrimaryEcommerceEvent`.
- * @return Report options pair, or `null` when there is no primary event.
+ * @return Report options, or `null` when there is no primary event.
  */
 export function getStoreAggregatedReportOptions(
 	dates: SiteGoalsPDFDateRange,
@@ -162,7 +174,7 @@ export function getStoreAggregatedReportOptions(
  *
  * @param dates      Date range, including the compare range.
  * @param leadEvents Detected lead events, from `getDetectedLeadEvents`.
- * @return Report options pair, or `null` when there are no detected lead events.
+ * @return Report options, or `null` when there are no detected lead events.
  */
 export function getLeadGroupedReportOptions(
 	dates: SiteGoalsPDFDateRange,
@@ -187,7 +199,7 @@ export function getLeadGroupedReportOptions(
  *
  * @param dates      Date range, including the compare range.
  * @param leadEvents Detected lead events, from `getDetectedLeadEvents`.
- * @return Report options pair, or `null` when there are no detected lead events.
+ * @return Report options, or `null` when there are no detected lead events.
  */
 export function getLeadAggregatedReportOptions(
 	dates: SiteGoalsPDFDateRange,

@@ -54,23 +54,28 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		);
 
 		$this->assertArrayHasKey( 'site_goals_online_store_primary_by_provider', $requests, 'build_requests() should register the store count split by provider when the event provider dimension has data.' );
-		$this->assertArrayHasKey( 'site_goals_engagement_by_provider', $requests, 'build_requests() should register the sessions split by provider when the event provider dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_online_store_key_action_sessions_by_provider', $requests, 'build_requests() should register the sessions with a store event split by provider when the event provider dimension has data.' );
 		$this->assertSame(
 			$this->report_options->get_online_store_primary_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ),
 			$requests['site_goals_online_store_primary_by_provider'],
 			'build_requests() should register the store count split by provider under site_goals_online_store_primary_by_provider.'
 		);
 		$this->assertSame(
-			$this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ),
-			$requests['site_goals_engagement_by_provider'],
-			'build_requests() should register the sessions split by provider under site_goals_engagement_by_provider.'
+			$this->report_options->get_key_action_sessions_options( 'ecommerce', Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ),
+			$requests['site_goals_online_store_key_action_sessions_by_provider'],
+			'build_requests() should register the sessions with a store event split by provider under site_goals_online_store_key_action_sessions_by_provider.'
 		);
 		$this->assertSame(
 			$this->report_options->get_online_store_primary_options(),
 			$requests['site_goals_online_store_primary'],
 			'build_requests() should register the site-wide store count under site_goals_online_store_primary when the store count splits by provider.'
 		);
-		$this->assertArrayNotHasKey( 'site_goals_engagement', $requests, 'build_requests() should register no site-wide sessions when the store count splits by provider and the site sends no lead event.' );
+		$this->assertSame(
+			$this->report_options->get_engagement_options(),
+			$requests['site_goals_engagement'],
+			'build_requests() should register the site-wide sessions under site_goals_engagement when the store count splits by provider, because every provider rate is a share of them.'
+		);
+		$this->assertArrayNotHasKey( 'site_goals_online_store_key_action_sessions', $requests, 'build_requests() should not register the site-wide sessions with a store event when they split by provider, because the section reads only the split report.' );
 	}
 
 	public function test_build_requests__registers_the_site_wide_store_count_and_sessions_when_the_event_provider_dimension_has_no_data() {
@@ -88,8 +93,13 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_engagement'],
 			'build_requests() should register the site-wide sessions under site_goals_engagement.'
 		);
+		$this->assertSame(
+			$this->report_options->get_key_action_sessions_options( 'ecommerce' ),
+			$requests['site_goals_online_store_key_action_sessions'],
+			'build_requests() should register the site-wide sessions with a store event under site_goals_online_store_key_action_sessions.'
+		);
 		$this->assertArrayNotHasKey( 'site_goals_online_store_primary_by_provider', $requests, 'build_requests() should not split the store count by provider when the event provider dimension has no data.' );
-		$this->assertArrayNotHasKey( 'site_goals_engagement_by_provider', $requests, 'build_requests() should not split the sessions by provider when the event provider dimension has no data.' );
+		$this->assertArrayNotHasKey( 'site_goals_online_store_key_action_sessions_by_provider', $requests, 'build_requests() should not split the sessions with a store event by provider when the event provider dimension has no data.' );
 	}
 
 	public function test_build_requests__registers_the_lead_count_and_sessions_split_by_form_when_the_form_id_dimension_has_data() {
@@ -99,23 +109,28 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		);
 
 		$this->assertArrayHasKey( 'site_goals_lead_primary_by_form', $requests, 'build_requests() should register the lead count split by form when the form ID dimension has data.' );
-		$this->assertArrayHasKey( 'site_goals_engagement_by_form', $requests, 'build_requests() should register the sessions split by form when the form ID dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_lead_key_action_sessions_by_form', $requests, 'build_requests() should register the sessions with a lead event split by form when the form ID dimension has data.' );
 		$this->assertSame(
 			$this->report_options->get_lead_primary_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID ),
 			$requests['site_goals_lead_primary_by_form'],
 			'build_requests() should register the lead count split by form under site_goals_lead_primary_by_form.'
 		);
 		$this->assertSame(
-			$this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID ),
-			$requests['site_goals_engagement_by_form'],
-			'build_requests() should register the sessions split by form under site_goals_engagement_by_form.'
+			$this->report_options->get_key_action_sessions_options( 'lead', Analytics_4::CUSTOM_DIMENSION_FORM_ID ),
+			$requests['site_goals_lead_key_action_sessions_by_form'],
+			'build_requests() should register the sessions with a lead event split by form under site_goals_lead_key_action_sessions_by_form.'
 		);
 		$this->assertSame(
 			$this->report_options->get_lead_primary_options(),
 			$requests['site_goals_lead_primary'],
 			'build_requests() should register the site-wide lead count under site_goals_lead_primary when the lead count splits by form.'
 		);
-		$this->assertArrayNotHasKey( 'site_goals_engagement', $requests, 'build_requests() should register no site-wide sessions when the lead count splits by form and the site sends no store event.' );
+		$this->assertSame(
+			$this->report_options->get_engagement_options(),
+			$requests['site_goals_engagement'],
+			'build_requests() should register the site-wide sessions under site_goals_engagement when the lead count splits by form, because every form rate is a share of them.'
+		);
+		$this->assertArrayNotHasKey( 'site_goals_lead_key_action_sessions', $requests, 'build_requests() should not register the site-wide sessions with a lead event when they split by form, because the section reads only the split report.' );
 	}
 
 	public function test_build_requests__registers_the_site_wide_lead_count_and_sessions_when_the_form_id_dimension_has_no_data() {
@@ -133,8 +148,13 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_engagement'],
 			'build_requests() should register the site-wide sessions under site_goals_engagement.'
 		);
+		$this->assertSame(
+			$this->report_options->get_key_action_sessions_options( 'lead' ),
+			$requests['site_goals_lead_key_action_sessions'],
+			'build_requests() should register the site-wide sessions with a lead event under site_goals_lead_key_action_sessions.'
+		);
 		$this->assertArrayNotHasKey( 'site_goals_lead_primary_by_form', $requests, 'build_requests() should not split the lead count by form when the form ID dimension has no data.' );
-		$this->assertArrayNotHasKey( 'site_goals_engagement_by_form', $requests, 'build_requests() should not split the sessions by form when the form ID dimension has no data.' );
+		$this->assertArrayNotHasKey( 'site_goals_lead_key_action_sessions_by_form', $requests, 'build_requests() should not split the sessions with a lead event by form when the form ID dimension has no data.' );
 	}
 
 	public function test_build_requests__registers_no_store_request_when_the_site_sends_no_store_event() {
@@ -208,16 +228,16 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		);
 	}
 
-	public function test_build_requests__registers_one_engagement_report_for_each_breakdown_dimension() {
+	public function test_build_requests__registers_one_site_wide_engagement_report_when_both_breakdown_dimensions_have_data() {
 		$requests = $this->build_requests_for_events(
 			array( 'purchase', 'contact' ),
 			$this->breakdown_dimension_availability()
 		);
 
 		$this->assertSame(
-			array( 'site_goals_engagement_by_provider', 'site_goals_engagement_by_form' ),
+			array( 'site_goals_engagement' ),
 			$this->request_keys_starting_with( $requests, 'site_goals_engagement' ),
-			'build_requests() should register one engagement report for each breakdown dimension, because the online store splits its rows by provider and lead generation splits its rows by form.'
+			'build_requests() should register one site-wide engagement report when both widgets split their rows, because every group rate is a share of the site sessions.'
 		);
 	}
 
@@ -337,15 +357,17 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		$site_goals_keys = array(
 			'site_goals_online_store_primary',
 			'site_goals_online_store_primary_by_provider',
+			'site_goals_online_store_key_action_sessions',
+			'site_goals_online_store_key_action_sessions_by_provider',
 			'site_goals_online_store_discovery',
 			'site_goals_online_store_discovery_site_wide',
 			'site_goals_lead_primary',
 			'site_goals_lead_primary_by_form',
+			'site_goals_lead_key_action_sessions',
+			'site_goals_lead_key_action_sessions_by_form',
 			'site_goals_lead_discovery',
 			'site_goals_lead_discovery_site_wide',
 			'site_goals_engagement',
-			'site_goals_engagement_by_provider',
-			'site_goals_engagement_by_form',
 		);
 
 		$this->assertEqualSets(
@@ -353,8 +375,8 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			Analytics_4_Report_Request_Assembler::SITE_GOALS_REQUEST_KEYS,
 			'SITE_GOALS_REQUEST_KEYS should hold every Site Goals payload key.'
 		);
-		// `$site_wide_keys` and `$breakdown_keys` both name `site_goals_online_store_primary`
-		// and `site_goals_lead_primary`, so merging them repeats those two keys.
+		// `$site_wide_keys` and `$breakdown_keys` both name the site-wide keys, such as
+		// `site_goals_online_store_primary`, so merging them repeats those keys.
 		$this->assertEqualSets(
 			$site_goals_keys,
 			array_unique( array_merge( $site_wide_keys, $breakdown_keys ) ),

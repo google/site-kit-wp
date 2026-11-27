@@ -61,7 +61,6 @@ import {
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
-	SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -77,8 +76,13 @@ import { useShouldShowSiteGoalsRemovalNotice } from '@/js/modules/analytics-4/co
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { buildKeyActionSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/utils/headlineMetrics';
 import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
-import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+import {
+	getKeyActionRates,
+	getReportsToCheck,
+	processReports,
+} from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	VisitorEngagementTiles,
 	resolveVisitorEngagementSelectionState,
@@ -160,34 +164,30 @@ function getWidgetReportOptions(
 		  }
 		: null;
 
+	// Each session counts once, however many Key action events it holds, so
+	// the rate never goes above 100%.
+	const keyActionSessionsReportOptions: ReportOptions | null =
+		buildKeyActionSessionsReportOptions(
+			dates,
+			primaryEvent,
+			breakdownFilter
+		) ?? null;
+
+	// The rate is out of all site sessions on every breakdown tab, so this
+	// report never takes the breakdown filter.
 	const engagementReportOptions: ReportOptions | null = primaryEvent
 		? {
 				...dates,
 				metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-				...( breakdownFilter
-					? {
-							dimensionFilters:
-								breakdownFilter as ReportOptions[ 'dimensionFilters' ],
-					  }
-					: {} ),
 				reportID: 'analytics-4_site-goals_engagementReportOptions',
 		  }
 		: null;
 
 	return {
 		primaryEventReportOptions,
+		keyActionSessionsReportOptions,
 		engagementReportOptions,
 	};
-}
-
-function getReportsToCheck(
-	primaryEventReportOptions: ReportOptions | null,
-	engagementReportOptions: ReportOptions | null
-): ReportOptions[] {
-	return [ primaryEventReportOptions, engagementReportOptions ].filter(
-		( reportOptions ): reportOptions is ReportOptions =>
-			Boolean( reportOptions )
-	);
 }
 
 const OnlineStorePerformanceWidget = forwardRef<
@@ -409,8 +409,11 @@ const OnlineStorePerformanceWidget = forwardRef<
 			}
 		}, [ hasBeenInView, hasTrackedView, viewAction, widgetEventCategory ] );
 
-		const { primaryEventReportOptions, engagementReportOptions } =
-			getWidgetReportOptions( dates, primaryEvent, breakdownFilter );
+		const {
+			primaryEventReportOptions,
+			keyActionSessionsReportOptions,
+			engagementReportOptions,
+		} = getWidgetReportOptions( dates, primaryEvent, breakdownFilter );
 
 		const primaryEventReport =
 			useInViewSelect(
@@ -421,6 +424,17 @@ const OnlineStorePerformanceWidget = forwardRef<
 						  )
 						: null,
 				[ primaryEventReportOptions ]
+			) || [];
+
+		const keyActionSessionsReport =
+			useInViewSelect(
+				( select: Select ) =>
+					keyActionSessionsReportOptions
+						? select( MODULES_ANALYTICS_4 ).getReport(
+								keyActionSessionsReportOptions
+						  )
+						: null,
+				[ keyActionSessionsReportOptions ]
 			) || [];
 
 		const engagementReport =
@@ -438,6 +452,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			( select: Select ) => {
 				const reportsToCheck = getReportsToCheck(
 					primaryEventReportOptions,
+					keyActionSessionsReportOptions,
 					engagementReportOptions
 				);
 
@@ -450,7 +465,11 @@ const OnlineStorePerformanceWidget = forwardRef<
 					),
 				];
 			},
-			[ primaryEventReportOptions, engagementReportOptions ]
+			[
+				primaryEventReportOptions,
+				keyActionSessionsReportOptions,
+				engagementReportOptions,
+			]
 		);
 
 		useEffect( () => {
@@ -504,13 +523,12 @@ const OnlineStorePerformanceWidget = forwardRef<
 			);
 		}
 
-		const {
-			currentPrimaryCount,
-			previousPrimaryCount,
-			currentSessions,
-			currentRate,
-			previousRate,
-		} = processReports( primaryEventReport, engagementReport );
+		const { currentPrimaryCount, previousPrimaryCount } = processReports(
+			primaryEventReport,
+			engagementReport
+		);
+		const { currentRate, previousRate, currentSessions } =
+			getKeyActionRates( keyActionSessionsReport, engagementReport );
 
 		return (
 			<WidgetComponent
@@ -698,9 +716,6 @@ const OnlineStorePerformanceWidget = forwardRef<
 				<SiteGoalsWidgetFooter
 					goalType={ GOAL_TYPES.ECOMMERCE }
 					tabID={ knownActiveTabID }
-					feedbackGroup={
-						SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE
-					}
 					isInsightEnabled={ isSiteGoalsInsightsEnabled }
 				/>
 			</WidgetComponent>

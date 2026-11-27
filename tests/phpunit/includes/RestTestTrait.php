@@ -41,7 +41,7 @@ trait RestTestTrait {
 	/**
 	 * Dispatches a REST request, and asserts that it fails with a 400 and the given error code before the route's callback runs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param WP_REST_Request $request       Request to dispatch.
 	 * @param string          $expected_code Expected error code.
@@ -61,7 +61,7 @@ trait RestTestTrait {
 	/**
 	 * Grants every user `Permissions::VIEW_DASHBOARD`, which otherwise needs a Google sign-in or a role a module is shared with.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 */
 	protected function grant_dashboard_permission() {
 		add_filter(
@@ -77,7 +77,7 @@ trait RestTestTrait {
 	/**
 	 * Gets a route's resource schema, as the REST index lists it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param string $route Route path under the Site Kit REST root.
 	 * @return array Resource schema of the route.
@@ -98,7 +98,7 @@ trait RestTestTrait {
 	 * open an object to any key, with `additionalProperties` set to `true`. And it asserts that each
 	 * value has a type its schema names once the data is JSON, as a client gets it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed  $data    Response data.
 	 * @param string $route   Route path under the Site Kit REST root.
@@ -118,7 +118,7 @@ trait RestTestTrait {
 	 * A schema with `additionalProperties` set to `true` allows any key with any value, so each
 	 * such key counts as described.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed  $value  Value to check.
 	 * @param array  $schema Schema of the value.
@@ -157,7 +157,7 @@ trait RestTestTrait {
 	 * An empty list matches `object` too, because PHP has one empty array for both, and
 	 * `wp_json_encode()` writes it as `[]`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @param mixed  $value  Value read from JSON, with each object as a `stdClass`.
 	 * @param array  $schema Schema of the value.

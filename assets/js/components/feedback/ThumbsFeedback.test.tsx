@@ -459,6 +459,108 @@ describe( 'ThumbsFeedback', () => {
 		}
 	);
 
+	describe( 'feedback reasons', () => {
+		function renderAndDownvote() {
+			const renderResult = render(
+				<ThumbsFeedback
+					feedbackNamespace="analytics"
+					feedbackGroup="site_goals_widget_online_store"
+					feedbackOptions={ {
+						down: [
+							{
+								id: 'with-value',
+								label: 'With value',
+								value: 'a_reason',
+							},
+							{ id: 'without-value', label: 'Without value' },
+						],
+					} }
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click(
+				renderResult.getByRole( 'button', {
+					name: 'No, this was not helpful',
+				} )
+			);
+
+			return renderResult;
+		}
+
+		it( 'should send the chosen reason as a vote_reason with the component’s namespace and group', async () => {
+			mockSendFeedback();
+
+			const { getByRole } = renderAndDownvote();
+
+			fireEvent.click( getByRole( 'menuitem', { name: 'With value' } ) );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetchedTimes( 2, feedbackEndpoint )
+			);
+
+			expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
+				body: {
+					data: {
+						namespace: 'analytics',
+						group: 'site_goals_widget_online_store',
+						key: 'vote_reason',
+						value: 'a_reason',
+					},
+				},
+			} );
+		} );
+
+		it( 'should send nothing for an option without a value', async () => {
+			mockSendFeedback();
+
+			const { getByRole, findByText } = renderAndDownvote();
+
+			fireEvent.click(
+				getByRole( 'menuitem', { name: 'Without value' } )
+			);
+
+			expect(
+				await findByText( 'Thanks for the feedback!' )
+			).toBeInTheDocument();
+
+			// Only the vote itself is sent.
+			expect( fetchMock ).toHaveFetchedTimes( 1, feedbackEndpoint );
+		} );
+
+		it( 'should send no reason when the menu is closed with Escape', async () => {
+			mockSendFeedback();
+
+			const { getByRole, queryByRole, waitForRegistry } =
+				renderAndDownvote();
+
+			fireEvent.keyDown( getByRole( 'menu' ), { key: 'Escape' } );
+
+			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, feedbackEndpoint );
+		} );
+
+		it( 'should send no reason when the menu is closed by clicking outside', async () => {
+			mockSendFeedback();
+
+			const { getByRole, queryByRole, waitForRegistry } =
+				renderAndDownvote();
+
+			expect( getByRole( 'menu' ) ).toBeInTheDocument();
+
+			fireEvent.mouseDown( document.body );
+
+			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, feedbackEndpoint );
+		} );
+	} );
+
 	it( 'should confirm immediately for an empty feedback option list', async () => {
 		mockSendFeedback();
 		const { getByRole, findByText } = render(

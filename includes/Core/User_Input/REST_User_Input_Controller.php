@@ -102,7 +102,7 @@ class REST_User_Input_Controller {
 	 * Gets related REST routes.
 	 *
 	 * @since 1.90.0
-	 * @since n.e.x.t Declares the argument and resource schemas of each route.
+	 * @since 1.193.0 Declares the argument and resource schemas of each route.
 	 *
 	 * @return array List of REST_Route objects.
 	 */
@@ -202,7 +202,7 @@ class REST_User_Input_Controller {
 	/**
 	 * Gets the REST schema of the user input answers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.193.0
 	 *
 	 * @return array REST schema.
 	 */

@@ -46,7 +46,6 @@ import {
 	provideAnalytics4MockReport,
 } from '@/js/modules/analytics-4/utils/data-mock';
 import { Story } from '@/js/types/Story';
-import { getPreviousDate } from '@/js/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
@@ -58,20 +57,14 @@ import {
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
-
-// Reference date: 2020-09-07, 28-day range with comparison.
-const dates = {
-	startDate: '2020-08-11',
-	endDate: '2020-09-07',
-	compareStartDate: '2020-07-14',
-	compareEndDate: '2020-08-10',
-};
-
-// The fixed 90-day window the breakdown tab structure is evaluated over.
-const discoveryDates = {
-	startDate: getPreviousDate( '2020-09-07', 90 ),
-	endDate: '2020-09-07',
-};
+import {
+	buildKeyActionSessionsReportOptions,
+	dates,
+	discoveryDates,
+	engagementReportOptions,
+	provideKeyActionSessionsReport,
+	provideSiteEngagementReport,
+} from './siteGoalsWidgetStoryReports';
 
 function buildLeadEventsReportOptions(
 	leadEvents: string[],
@@ -93,11 +86,8 @@ function buildLeadEventsReportOptions(
 	};
 }
 
-const engagementReportOptions = {
-	...dates,
-	metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-	reportID: 'analytics-4_site-goals_engagementReportOptions',
-};
+// Share of the site sessions with a lead Key action, unless a story sets its own.
+const LEAD_KEY_ACTION_SHARE = 0.045;
 
 const singleEventReportOptions = buildLeadEventsReportOptions( [
 	ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
@@ -877,6 +867,13 @@ function seedTabbedBreakdown(
 				breakdownFilter
 			)
 		);
+		provideKeyActionSessionsReport(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			0.021,
+			breakdownFilter
+		);
+		// The Engagement rate tile is scoped to the tab.
 		provideAnalytics4MockReport( registry, {
 			...engagementReportOptions,
 			dimensionFilters: breakdownFilter,
@@ -888,9 +885,15 @@ function seedTabbedBreakdown(
 		);
 	} );
 
-	// Unfiltered reports back the "Other sources" tab's view.
+	// Unfiltered reports back the "Other sources" tab's view. The site
+	// sessions also back the Key action rate on every tab.
 	provideAnalytics4MockReport( registry, singleEventReportOptions );
-	provideAnalytics4MockReport( registry, engagementReportOptions );
+	provideKeyActionSessionsReport(
+		registry,
+		[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+		LEAD_KEY_ACTION_SHARE
+	);
+	provideSiteEngagementReport( registry );
 }
 
 function Template( {
@@ -916,7 +919,12 @@ Ready.args = {
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
-		provideAnalytics4MockReport( registry, engagementReportOptions );
+		provideKeyActionSessionsReport(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			LEAD_KEY_ACTION_SHARE
+		);
+		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		] );
@@ -957,7 +965,12 @@ GatheringBreakdownData.args = {
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
-		provideAnalytics4MockReport( registry, engagementReportOptions );
+		provideKeyActionSessionsReport(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			LEAD_KEY_ACTION_SHARE
+		);
+		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		] );
@@ -1046,7 +1059,15 @@ ReadyMultipleEvents.args = {
 				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 			] );
 		provideAnalytics4MockReport( registry, multipleEventsReportOptions );
-		provideAnalytics4MockReport( registry, engagementReportOptions );
+		provideKeyActionSessionsReport(
+			registry,
+			[
+				ENUM_CONVERSION_EVENTS.CONTACT,
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			],
+			0.062
+		);
+		provideSiteEngagementReport( registry );
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.CONTACT,
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
@@ -1085,6 +1106,13 @@ Loading.args = {
 			.startResolution( 'getReport', [ singleEventReportOptions ] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildKeyActionSessionsReportOptions( [
+					ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				] ),
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ engagementReportOptions ] );
 		seedGoalDriverReports(
 			registry,
@@ -1119,6 +1147,12 @@ ZeroData.args = {
 			.receiveGetReport( zeroSessionsReport, {
 				options: engagementReportOptions,
 			} );
+
+		provideKeyActionSessionsReport(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			0
+		);
 
 		// An empty chart report makes the tile show its zero data message.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
