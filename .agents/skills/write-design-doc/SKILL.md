@@ -254,6 +254,8 @@ fixed shape, but when a doc runs long, these can help:
   plausible-sounding invented ones.
 - **Decide, or defer explicitly.** Resolve open points, or move them to an "Open questions"
   section — never leave half-decided "can…" statements that read as decided-ish.
+  Link each open question from the section it concerns, next to the decision it affects,
+  since readers reach that section first.
 - **Reserve bold** for terms being defined and for decisions. Bolding several phrases per
   paragraph drains emphasis of its signal.
 - **Use US English** (color, behavior, catalog), to match the codebase style guide.
