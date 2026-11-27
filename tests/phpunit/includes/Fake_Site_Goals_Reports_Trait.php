@@ -27,7 +27,7 @@ trait Fake_Site_Goals_Reports_Trait {
 
 	/**
 	 * Rows the fake Analytics API returns, keyed by report: `engagement`,
-	 * `key_actions` or `year_ago_key_actions`.
+	 * `key_actions`, `key_action_sessions` or `year_ago_key_actions`.
 	 *
 	 * Each row lists its dimension values in the order the report asks for them,
 	 * then its `dateRange`, then its metric values.
@@ -97,11 +97,15 @@ trait Fake_Site_Goals_Reports_Trait {
 	 * @since 1.193.0 Moved from `Insight_Payload_BuilderTest`.
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
-	 * @return string `engagement`, `key_actions` or `year_ago_key_actions`.
+	 * @return string `engagement`, `key_actions`, `key_action_sessions` or `year_ago_key_actions`.
 	 */
 	private function get_report_key( array $report_request ) {
 		if ( 'engagementRate' === $report_request['metrics'][0]['name'] ) {
 			return 'engagement';
+		}
+
+		if ( 'sessions' === $report_request['metrics'][0]['name'] ) {
+			return 'key_action_sessions';
 		}
 
 		return '2026-08-19' === $report_request['dateRanges'][0]['startDate'] ? 'key_actions' : 'year_ago_key_actions';

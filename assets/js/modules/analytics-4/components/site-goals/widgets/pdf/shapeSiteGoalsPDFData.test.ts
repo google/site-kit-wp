@@ -76,6 +76,17 @@ describe( 'shapeSiteGoalsPDFData', () => {
 		],
 	} as Report;
 
+	// Key action sessions report carries `sessions` only. A session counts
+	// once, however many Key action events it holds.
+	const keyActionSessionsReport = {
+		rows: [
+			groupedRow( 'woocommerce', 'date_range_0', [ 30 ] ),
+			groupedRow( 'woocommerce', 'date_range_1', [ 24 ] ),
+			groupedRow( 'easy-digital-downloads', 'date_range_0', [ 10 ] ),
+			groupedRow( 'easy-digital-downloads', 'date_range_1', [ 15 ] ),
+		],
+	} as Report;
+
 	// Engagement report carries `engagementRate` then `sessions`, and is not
 	// scoped to the goal's events.
 	const engagementReport = {
@@ -95,6 +106,14 @@ describe( 'shapeSiteGoalsPDFData', () => {
 		],
 	} as Report;
 
+	// The site's sessions, not scoped to a group or to the goal's events.
+	const aggregatedEngagementReport = {
+		totals: [
+			totalsRow( 'date_range_0', [ 0.5, 2000 ] ),
+			totalsRow( 'date_range_1', [ 0.45, 1600 ] ),
+		],
+	} as Report;
+
 	const labels = {
 		woocommerce: 'WooCommerce',
 		'easy-digital-downloads': 'Easy Digital Downloads',
@@ -105,7 +124,9 @@ describe( 'shapeSiteGoalsPDFData', () => {
 	it( 'shapes each group with its rate, total, engagement rate and trends', () => {
 		const groups = shapeSiteGoalsPDFData( {
 			eventsReport,
+			keyActionSessionsReport,
 			engagementReport,
+			aggregatedEngagementReport,
 			breakdownValues,
 			labels,
 			aggregatedLabel,
@@ -117,38 +138,54 @@ describe( 'shapeSiteGoalsPDFData', () => {
 			id: 'woocommerce',
 			label: 'WooCommerce',
 			total: { current: 50, previous: 40 },
-			sessions: { current: 1000, previous: 800 },
-			// 50/1000 and 40/800.
-			rate: { current: 0.05, previous: 0.05 },
+			// Every group shows the site's sessions.
+			sessions: { current: 2000, previous: 1600 },
+			// 30/2000 and 24/1600.
+			rate: { current: 0.015, previous: 0.015 },
 			engagementRate: { current: 0.4, previous: 0.3 },
+			// The engagement rate is a share of the group's own sessions.
+			engagementSessions: { current: 1000, previous: 800 },
 		} );
 
 		expect( groups[ 1 ].label ).toBe( 'Easy Digital Downloads' );
 		expect( groups[ 1 ].total ).toEqual( { current: 20, previous: 25 } );
 		expect( groups[ 1 ].sessions ).toEqual( {
+			current: 2000,
+			previous: 1600,
+		} );
+		expect( groups[ 1 ].rate ).toEqual( {
+			current: 10 / 2000,
+			previous: 15 / 1600,
+		} );
+		expect( groups[ 1 ].engagementSessions ).toEqual( {
 			current: 500,
 			previous: 500,
 		} );
 	} );
 
-	it( 'takes the rate denominator from the engagement report, not the event count', () => {
+	it( 'should compute the rate from the sessions with a Key action over the site sessions, not the event count or the group sessions', () => {
 		const groups = shapeSiteGoalsPDFData( {
 			eventsReport,
+			keyActionSessionsReport,
 			engagementReport,
+			aggregatedEngagementReport,
 			breakdownValues: [ 'woocommerce' ],
 			labels,
 			aggregatedLabel,
 		} );
 
-		// 50 events over 1000 sessions, not over the events themselves.
-		expect( groups[ 0 ].rate?.current ).toBe( 0.05 );
-		expect( groups[ 0 ].sessions?.current ).toBe( 1000 );
+		// 30 sessions with a sale over the site's 2000 sessions, not the 50
+		// events or the group's 1000 sessions.
+		expect( groups[ 0 ].rate?.current ).toBe( 0.015 );
+		expect( groups[ 0 ].sessions?.current ).toBe( 2000 );
 	} );
 
 	it( 'orders groups by the breakdown values, not by report order', () => {
 		const groups = shapeSiteGoalsPDFData( {
 			eventsReport,
+			keyActionSessionsReport,
 			engagementReport,
+			aggregatedEngagementReport,
 			breakdownValues: [ 'easy-digital-downloads', 'woocommerce' ],
 			labels,
 			aggregatedLabel,
@@ -163,7 +200,9 @@ describe( 'shapeSiteGoalsPDFData', () => {
 	it( 'falls back to the dimension value when a group has no label', () => {
 		const groups = shapeSiteGoalsPDFData( {
 			eventsReport,
+			keyActionSessionsReport,
 			engagementReport,
+			aggregatedEngagementReport,
 			breakdownValues: [ 'woocommerce' ],
 			aggregatedLabel,
 		} );
@@ -176,8 +215,14 @@ describe( 'shapeSiteGoalsPDFData', () => {
 			eventsReport: {
 				rows: [ groupedRow( 'woocommerce', 'date_range_0', [ 5 ] ) ],
 			} as Report,
+			keyActionSessionsReport: {
+				rows: [ groupedRow( 'woocommerce', 'date_range_0', [ 5 ] ) ],
+			} as Report,
 			engagementReport: {
 				rows: [ groupedRow( 'woocommerce', 'date_range_0', [ 0, 0 ] ) ],
+			} as Report,
+			aggregatedEngagementReport: {
+				totals: [ totalsRow( 'date_range_0', [ 0, 0 ] ) ],
 			} as Report,
 			breakdownValues: [ 'woocommerce' ],
 			aggregatedLabel,
@@ -190,7 +235,9 @@ describe( 'shapeSiteGoalsPDFData', () => {
 		it( 'puts the events no group covers into a trailing total-only group', () => {
 			const groups = shapeSiteGoalsPDFData( {
 				eventsReport,
+				keyActionSessionsReport,
 				engagementReport,
+				aggregatedEngagementReport,
 				aggregatedEventsReport: {
 					totals: [
 						totalsRow( 'date_range_0', [ 79 ] ),
@@ -243,7 +290,9 @@ describe( 'shapeSiteGoalsPDFData', () => {
 		it( 'omits the group when the plugin groups add up to the site-wide total', () => {
 			const groups = shapeSiteGoalsPDFData( {
 				eventsReport,
+				keyActionSessionsReport,
 				engagementReport,
+				aggregatedEngagementReport,
 				aggregatedEventsReport: {
 					totals: [
 						totalsRow( 'date_range_0', [ 70 ] ),
@@ -263,7 +312,9 @@ describe( 'shapeSiteGoalsPDFData', () => {
 		it( 'shows zero rather than a negative count when the site-wide total is lower than the plugin groups', () => {
 			const groups = shapeSiteGoalsPDFData( {
 				eventsReport,
+				keyActionSessionsReport,
 				engagementReport,
+				aggregatedEngagementReport,
 				aggregatedEventsReport: {
 					totals: [
 						totalsRow( 'date_range_0', [ 60 ] ),
@@ -291,7 +342,14 @@ describe( 'shapeSiteGoalsPDFData', () => {
 			],
 		} as Report;
 
-		const aggregatedEngagementReport = {
+		const aggregatedKeyActionSessionsReport = {
+			totals: [
+				totalsRow( 'date_range_0', [ 70 ] ),
+				totalsRow( 'date_range_1', [ 60 ] ),
+			],
+		} as Report;
+
+		const siteEngagementReport = {
 			totals: [
 				totalsRow( 'date_range_0', [ 0.36, 3579 ] ),
 				totalsRow( 'date_range_1', [ 0.3, 3000 ] ),
@@ -301,7 +359,8 @@ describe( 'shapeSiteGoalsPDFData', () => {
 		it( 'shapes a single group when there is no breakdown data', () => {
 			const groups = shapeSiteGoalsPDFData( {
 				aggregatedEventsReport,
-				aggregatedEngagementReport,
+				aggregatedKeyActionSessionsReport,
+				aggregatedEngagementReport: siteEngagementReport,
 				breakdownValues: [],
 				aggregatedLabel,
 			} );
@@ -313,8 +372,10 @@ describe( 'shapeSiteGoalsPDFData', () => {
 				total: { current: 85, previous: 70 },
 				// Site-wide sessions, so the rate stays a small percentage.
 				sessions: { current: 3579, previous: 3000 },
-				rate: { current: 85 / 3579, previous: 70 / 3000 },
+				// 70 sessions with a sale, not the 85 events.
+				rate: { current: 70 / 3579, previous: 60 / 3000 },
 				engagementRate: { current: 0.36, previous: 0.3 },
+				engagementSessions: { current: 3579, previous: 3000 },
 			} );
 		} );
 
@@ -325,7 +386,8 @@ describe( 'shapeSiteGoalsPDFData', () => {
 				} as Report,
 				engagementReport,
 				aggregatedEventsReport,
-				aggregatedEngagementReport,
+				aggregatedKeyActionSessionsReport,
+				aggregatedEngagementReport: siteEngagementReport,
 				breakdownValues: [ 'woocommerce' ],
 				aggregatedLabel,
 			} );

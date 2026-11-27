@@ -44,10 +44,14 @@ export interface SiteGoalsPDFReportFixtures {
 	discoveryReport?: Report;
 	/** The Key action events, grouped by the breakdown dimension. */
 	groupedEventsReport?: Report;
+	/** The sessions with a Key action event, grouped by the breakdown dimension. */
+	groupedKeyActionSessionsReport?: Report;
 	/** The engagement rate and the sessions, grouped by the breakdown dimension. */
 	groupedEngagementReport?: Report;
 	/** The Key action events for the whole site. */
 	aggregatedEventsReport?: Report;
+	/** The sessions with a Key action event for the whole site. */
+	aggregatedKeyActionSessionsReport?: Report;
 	/** The engagement rate and the sessions for the whole site. */
 	aggregatedEngagementReport?: Report;
 }
@@ -126,24 +130,31 @@ export function provideSiteGoalsPDFReports(
 			const isEngagementReport = decodedURL.includes(
 				'metrics[0][name]=engagementRate'
 			);
+			const isKeyActionSessionsReport = decodedURL.includes(
+				'metrics[0][name]=sessions'
+			);
 
 			if ( decodedURL.includes( 'dimensions[0][name]=customEvent:' ) ) {
-				return {
-					body:
-						( isEngagementReport
-							? reports.groupedEngagementReport
-							: reports.groupedEventsReport ) ?? {},
-					status: 200,
-				};
+				let groupedReport = reports.groupedEventsReport;
+
+				if ( isEngagementReport ) {
+					groupedReport = reports.groupedEngagementReport;
+				} else if ( isKeyActionSessionsReport ) {
+					groupedReport = reports.groupedKeyActionSessionsReport;
+				}
+
+				return { body: groupedReport ?? {}, status: 200 };
 			}
 
-			return {
-				body:
-					( isEngagementReport
-						? reports.aggregatedEngagementReport
-						: reports.aggregatedEventsReport ) ?? {},
-				status: 200,
-			};
+			let aggregatedReport = reports.aggregatedEventsReport;
+
+			if ( isEngagementReport ) {
+				aggregatedReport = reports.aggregatedEngagementReport;
+			} else if ( isKeyActionSessionsReport ) {
+				aggregatedReport = reports.aggregatedKeyActionSessionsReport;
+			}
+
+			return { body: aggregatedReport ?? {}, status: 200 };
 		},
 		{ overwriteRoutes: true }
 	);

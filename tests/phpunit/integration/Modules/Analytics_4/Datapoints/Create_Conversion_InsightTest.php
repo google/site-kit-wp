@@ -51,13 +51,18 @@ class Create_Conversion_InsightTest extends TestCase {
 		$this->analytics->get_settings()->merge( array( 'detectedEvents' => array( 'contact' ) ) );
 
 		$this->report_rows = array(
-			'engagement'  => array(
+			'engagement'          => array(
 				array( 'date_range_0', '0.5', '1000' ),
 				array( 'date_range_1', '0.4', '800' ),
 			),
-			'key_actions' => array(
+			'key_actions'         => array(
 				array( 'contact', 'date_range_0', '20' ),
 				array( 'contact', 'date_range_1', '10' ),
+			),
+			// One contact per session, so the rate is the contacts over the site's sessions.
+			'key_action_sessions' => array(
+				array( 'date_range_0', '20' ),
+				array( 'date_range_1', '10' ),
 			),
 		);
 	}
