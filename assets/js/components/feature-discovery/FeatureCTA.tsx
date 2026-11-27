@@ -22,6 +22,11 @@
 import { FC, useCallback } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
@@ -139,15 +144,22 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 		return null;
 	}
 
+	let label = feature.setup.ctaLabel;
+
+	if ( isFeatureCardCTA ) {
+		label =
+			isFeatureInProgress === true
+				? __( 'Complete setup', 'google-site-kit' )
+				: getFeatureCardCTALabel( feature );
+	}
+
 	return (
 		<FeatureCTAButton
 			isBusy={ isSetupInProgress }
 			isTertiary={ isFeatureCardCTA }
 			onClick={ onClick }
 		>
-			{ isFeatureCardCTA
-				? getFeatureCardCTALabel( feature )
-				: feature.setup.ctaLabel }
+			{ label }
 		</FeatureCTAButton>
 	);
 };

@@ -162,6 +162,7 @@ export const FEATURE_BADGES = {
 	NEW: 'new',
 	PAID_SERVICE: 'paid-service',
 	RECOMMENDED: 'recommended',
+	IN_PROGRESS: 'in-progress',
 } as const;
 
 export const FEATURE_BADGE_PROPS: Record< FeatureBadge, BadgeProps > = {
@@ -176,6 +177,10 @@ export const FEATURE_BADGE_PROPS: Record< FeatureBadge, BadgeProps > = {
 	[ FEATURE_BADGES.RECOMMENDED ]: {
 		label: __( 'Recommended for you', 'google-site-kit' ),
 		variant: BADGE_VARIANTS.RECOMMENDATION,
+	},
+	[ FEATURE_BADGES.IN_PROGRESS ]: {
+		label: __( 'Setup in progress', 'google-site-kit' ),
+		variant: BADGE_VARIANTS.WARNING,
 	},
 } as const;
 

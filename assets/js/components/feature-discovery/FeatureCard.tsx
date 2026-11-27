@@ -58,7 +58,10 @@ import {
 	FEATURE_RELEVANCY_FEEDBACK_KEYS,
 	FEATURE_RELEVANCY_REASONS,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import {
+	Feature,
+	FeatureBadge,
+} from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureRelevancyFeedbackGroup } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -169,6 +172,13 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 		[ slug ]
 	);
 
+	const isFeatureInProgress = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).isFeatureInProgress( slug ) ===
+			true,
+		[ slug ]
+	);
+
 	const feature = useSelect(
 		( select: Select ): Feature | null =>
 			select( CORE_FEATURE_DISCOVERY ).getFeature( slug ),
@@ -211,15 +221,30 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 
 	const { title, shortDescription, effort, badges = [] } = feature;
 
-	const userBadges =
-		isFeatureNew && ! hideNewBadge ? [ FEATURE_BADGES.NEW ] : [];
+	let userBadges: FeatureBadge[] = [];
 
-	const allBadges = [ ...userBadges, ...badges ];
+	if ( isFeatureInProgress ) {
+		userBadges = [ FEATURE_BADGES.IN_PROGRESS ];
+	} else if ( isFeatureNew && ! hideNewBadge ) {
+		userBadges = [ FEATURE_BADGES.NEW ];
+	}
+
+	// An in-progress feature is never presented as new.
+	const allBadges = [
+		...userBadges,
+		...badges.filter(
+			( badge ) => ! isFeatureInProgress || badge !== FEATURE_BADGES.NEW
+		),
+	];
 
 	const hasMeta = allBadges.length > 0 || isDismissible;
 
 	return (
-		<article className="googlesitekit-feature-card">
+		<article
+			className={ classnames( 'googlesitekit-feature-card', {
+				'googlesitekit-feature-card--in-progress': isFeatureInProgress,
+			} ) }
+		>
 			<div className="googlesitekit-feature-card__layout">
 				<div className="googlesitekit-feature-card__status">
 					<span

@@ -148,4 +148,28 @@ $bp-feature-card: 600px;
 			}
 		}
 	}
+
+	.googlesitekit-feature-card--in-progress {
+		background-color: $c-yellow-y-10;
+
+		// Keeps the content off the highlight's edge at every width.
+		.googlesitekit-feature-card__layout {
+			padding-inline-end: $grid-gap-phone;
+		}
+
+		.googlesitekit-feature-card__actions {
+
+			.mdc-button--raised:not(:disabled) {
+				@include mdc-button-filled-accessible($c-utility-on-warning-container);
+			}
+
+			.mdc-button--tertiary {
+				@include mdc-button-tertiary-styles(
+					$c-utility-on-warning-container,
+					$c-interactive-callout-warning-hover,
+					$c-interactive-callout-warning-focus
+				);
+			}
+		}
+	}
 }

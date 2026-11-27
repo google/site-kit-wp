@@ -101,6 +101,15 @@ const TEST_BADGED_FEATURE: Feature = {
 	badges: [ FEATURE_BADGES.PAID_SERVICE ],
 };
 
+const TEST_IN_PROGRESS_FEATURE: Feature = {
+	...TEST_NEW_FEATURE,
+	setup: {
+		type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+		ctaLabel: 'Enable test feature',
+		isInProgress: () => true,
+	},
+};
+
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
@@ -300,6 +309,107 @@ describe( 'FeatureCard', () => {
 		} );
 
 		expect( getByText( 'Paid service' ) ).toBeInTheDocument();
+	} );
+
+	describe( 'in progress', () => {
+		it( 'should add the in-progress class to the card', () => {
+			provideFeatures( registry, [ TEST_IN_PROGRESS_FEATURE ] );
+
+			const { container } = render( <FeatureCard slug="test-feature" />, {
+				registry,
+			} );
+
+			expect(
+				container.querySelector( '.googlesitekit-feature-card' )
+			).toHaveClass( 'googlesitekit-feature-card--in-progress' );
+		} );
+
+		it( 'should not add the in-progress class to a feature that is not in progress', () => {
+			provideFeatures( registry, [
+				{
+					...TEST_IN_PROGRESS_FEATURE,
+					setup: {
+						...TEST_IN_PROGRESS_FEATURE.setup,
+						isInProgress: () => false,
+					},
+				},
+			] );
+
+			const { container, queryByText } = render(
+				<FeatureCard slug="test-feature" />,
+				{ registry }
+			);
+
+			expect(
+				container.querySelector( '.googlesitekit-feature-card' )
+			).not.toHaveClass( 'googlesitekit-feature-card--in-progress' );
+			expect(
+				queryByText( 'Setup in progress' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should show the "Setup in progress" badge and no "New" badge', () => {
+			provideFeatures( registry, [ TEST_IN_PROGRESS_FEATURE ] );
+
+			const { getByText, queryByText } = render(
+				<FeatureCard slug="test-feature" />,
+				{ registry }
+			);
+
+			expect( getByText( 'Setup in progress' ) ).toBeInTheDocument();
+			expect( queryByText( 'New' ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'should not show a "New" badge carried by the catalog entry', () => {
+			provideFeatures( registry, [
+				{
+					...TEST_IN_PROGRESS_FEATURE,
+					badges: [ FEATURE_BADGES.NEW, FEATURE_BADGES.PAID_SERVICE ],
+				},
+			] );
+
+			const { getByText, queryByText } = render(
+				<FeatureCard slug="test-feature" />,
+				{ registry }
+			);
+
+			expect( getByText( 'Setup in progress' ) ).toBeInTheDocument();
+			expect( getByText( 'Paid service' ) ).toBeInTheDocument();
+			expect( queryByText( 'New' ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'should not show the unread dot for a new, unseen feature', async () => {
+			provideFeatures( registry, [ TEST_IN_PROGRESS_FEATURE ] );
+
+			const { container } = render( <FeatureCard slug="test-feature" />, {
+				registry,
+			} );
+
+			// Let any pending state updates settle before checking.
+			await act( () => Promise.resolve() );
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-feature-card__dot--visible'
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should show the "Complete setup" CTA', () => {
+			provideFeatures( registry, [ TEST_IN_PROGRESS_FEATURE ] );
+
+			const { getByRole, queryByRole } = render(
+				<FeatureCard slug="test-feature" />,
+				{ registry }
+			);
+
+			expect(
+				getByRole( 'button', { name: 'Complete setup' } )
+			).toBeInTheDocument();
+			expect(
+				queryByRole( 'button', { name: 'Set up now' } )
+			).not.toBeInTheDocument();
+		} );
 	} );
 
 	it( 'should render the feature’s own CTA in the slot the card provides', () => {

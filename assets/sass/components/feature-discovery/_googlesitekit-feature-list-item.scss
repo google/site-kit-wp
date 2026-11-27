@@ -21,6 +21,11 @@
 	.googlesitekit-feature-list-item {
 		border-bottom: 1px solid $c-neutral-n-100;
 		padding-block: 30px;
+
+		// The highlight of an in-progress card covers the whole list item.
+		&:has(> .googlesitekit-feature-card--in-progress) {
+			background-color: $c-yellow-y-10;
+		}
 	}
 
 	.googlesitekit-whats-new .googlesitekit-feature-list-item:last-child {
