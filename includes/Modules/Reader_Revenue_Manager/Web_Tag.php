@@ -122,19 +122,23 @@ class Web_Tag extends Module_Web_Tag {
 	}
 
 	/**
-	 * Add snippet comments around the tag.
+	 * Add snippet comments around the tag, and the tag ID attribute to its script.
 	 *
 	 * @since 1.132.0
+	 * @since n.e.x.t Adds the tag ID attribute to the script with a source.
 	 *
 	 * @param string $tag    The tag.
 	 * @param string $handle The script handle.
 	 *
-	 * @return string The tag with snippet comments.
+	 * @return string The tag with snippet comments, and the tag ID attribute on its script.
 	 */
 	protected function add_snippet_comments( $tag, $handle ) {
 		if ( 'google_swgjs' !== $handle ) {
 			return $tag;
 		}
+
+		// Only the script that loads swg-basic.js has a source. The inline script before it gets no attribute.
+		$tag = $this->add_attributes_to_script_with_src( $tag, $this->get_tag_id_attribute() );
 
 		$before = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Reader Revenue Manager snippet added by Site Kit', 'google-site-kit' ) );
 		$after  = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Reader Revenue Manager snippet added by Site Kit', 'google-site-kit' ) );

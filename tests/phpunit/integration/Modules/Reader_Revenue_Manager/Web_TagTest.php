@@ -47,4 +47,19 @@ class Web_TagTest extends TestCase {
 			$this->assertStringContainsString( $snippet_string, $footer_html, 'Footer HTML should contain expected Reader Revenue Manager snippet: ' . $snippet_string );
 		}
 	}
+
+	public function test_snippet_tag_id_attribute() {
+		do_action( 'wp_enqueue_scripts' );
+
+		$footer_html = $this->capture_action( 'wp_footer' );
+
+		// Checks the attribute and the source alone, because WordPress versions print the rest of the tag differently.
+		$this->assertMatchesRegularExpression(
+			'/<script data-googlesitekit-tag="12345"[^>]*\ssrc=["\']https:\/\/news\.google\.com\/swg\/js\/v1\/swg-basic\.js/',
+			$footer_html,
+			'The swg-basic.js script should have the publication ID in its tag ID attribute.'
+		);
+		$this->assertSame( 1, substr_count( $footer_html, 'data-googlesitekit-tag' ), 'The inline script before swg-basic.js should have no tag ID attribute.' );
+		$this->assertStringContainsString( '<!-- End Google Reader Revenue Manager snippet added by Site Kit -->', $footer_html, 'The snippet should keep its closing comment.' );
+	}
 }
