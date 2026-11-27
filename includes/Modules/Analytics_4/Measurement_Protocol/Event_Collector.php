@@ -194,9 +194,9 @@ class Event_Collector {
 	/**
 	 * Adds an event, to send at the end of the request.
 	 *
-	 * It drops the event where `Server_Events_Guard` refuses it, or where the visitor has no current Google Analytics session.
+	 * It drops an event that breaks a limit of the Measurement Protocol, or that `Server_Events_Guard` refuses.
+	 * It drops every event of a visitor with no current Google Analytics session.
 	 * Of two events with one dedupe key, it keeps the more specific one, or the first where both are as specific.
-	 * It checks none of Google's limits, which `flush()` checks, so a more specific event that breaks a limit still replaces the other.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -205,7 +205,7 @@ class Event_Collector {
 	public function add( Event $event ) {
 		$dedupe_key = $event->get_dedupe_key();
 
-		if ( ! $this->server_events_guard->can_send( $dedupe_key ) || null === $this->get_session() ) {
+		if ( ! $this->is_valid_event( $event ) || ! $this->server_events_guard->can_send( $dedupe_key ) || null === $this->get_session() ) {
 			return;
 		}
 
@@ -232,7 +232,7 @@ class Event_Collector {
 	 * Sends the stored events to Google Analytics in one request.
 	 *
 	 * It sends nothing where the measurement ID or the API secret is empty.
-	 * Otherwise it drops each event that breaks a limit of the Measurement Protocol, sends the first 25 of the rest, and empties the store.
+	 * Otherwise it sends the first 25 events, and empties the store.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -241,12 +241,8 @@ class Event_Collector {
 			return;
 		}
 
-		$events       = array_values( array_filter( $this->events, fn ( Event $event ) => $this->is_valid_event( $event ) ) );
+		$events       = array_values( $this->events );
 		$this->events = array();
-
-		if ( empty( $events ) ) {
-			return;
-		}
 
 		$mode = $this->get_dispatch_mode();
 

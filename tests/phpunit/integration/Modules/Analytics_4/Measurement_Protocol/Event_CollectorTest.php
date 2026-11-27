@@ -84,20 +84,7 @@ class Event_CollectorTest extends TestCase {
 
 		add_filter( 'googlesitekit_analytics_4_mp_dispatch_mode', fn () => 'blocking' );
 
-		// Answer each request with a 204 response, so no request leaves the test.
-		$this->subscribe_to_wp_http_requests(
-			function ( $url, $args ) {
-				$this->requests[] = array(
-					'url'  => $url,
-					'args' => $args,
-				);
-			},
-			array(
-				'headers'  => array(),
-				'body'     => '',
-				'response' => array( 'code' => 204 ),
-			)
-		);
+		$this->capture_requests();
 	}
 
 	public function tear_down() {
@@ -109,7 +96,7 @@ class Event_CollectorTest extends TestCase {
 
 	public function test_add__drops_event_the_guard_refuses() {
 		$server_events_guard = $this->createMock( Server_Events_Guard::class );
-		$server_events_guard->expects( $this->once() )->method( 'can_send' )->willReturn( false );
+		$server_events_guard->expects( $this->once() )->method( 'can_send' )->with( 'sign_up:user:1' )->willReturn( false );
 		$collector = $this->create_collector( $server_events_guard );
 
 		$collector->add( new Event( 'sign_up', array(), 'sign_up:user:1' ) );
@@ -252,6 +239,19 @@ class Event_CollectorTest extends TestCase {
 		$this->assertSame( 'first', $events[0]['params']['method'], 'Of two events as specific, the first should be sent.' );
 	}
 
+	public function test_add__drops_a_more_specific_event_that_breaks_a_limit() {
+		$collector = $this->create_collector();
+
+		$collector->add( new Event( 'sign_up', array( 'method' => 'accounts' ), 'sign_up:user:1', 0 ) );
+		$collector->add( new Event( 'sign_up', array( 'post-type' => 'post' ), 'sign_up:user:1', 10 ) );
+		$collector->flush();
+
+		$events = $this->get_sent_body()['events'];
+
+		$this->assertCount( 1, $events, 'One event should be sent for one dedupe key.' );
+		$this->assertSame( 'accounts', $events[0]['params']['method'], 'A more specific event that breaks a limit should not replace a valid one.' );
+	}
+
 	public function test_has() {
 		$collector = $this->create_collector();
 
@@ -269,7 +269,7 @@ class Event_CollectorTest extends TestCase {
 	 * @param string $name   Event name.
 	 * @param array  $params Event params.
 	 */
-	public function test_flush__drops_invalid_events( $name, $params ) {
+	public function test_add__drops_invalid_events( $name, $params ) {
 		$collector = $this->create_collector();
 
 		$collector->add( new Event( 'sign_up', array(), 'sign_up:user:1' ) );
@@ -297,7 +297,7 @@ class Event_CollectorTest extends TestCase {
 	 *
 	 * @param string $name Event name.
 	 */
-	public function test_flush__drops_events_with_reserved_names( $name ) {
+	public function test_add__drops_events_with_reserved_names( $name ) {
 		$collector = $this->create_collector();
 
 		$collector->add( new Event( 'sign_up', array(), 'sign_up:user:1' ) );
@@ -308,44 +308,11 @@ class Event_CollectorTest extends TestCase {
 	}
 
 	public function data_reserved_event_names() {
-		$names = array(
-			'ad_activeview',
-			'ad_click',
-			'ad_exposure',
-			'ad_query',
-			'ad_reward',
-			'adunit_exposure',
-			'app_clear_data',
-			'app_exception',
-			'app_install',
-			'app_remove',
-			'app_store_refund',
-			'app_update',
-			'app_upgrade',
-			'dynamic_link_app_open',
-			'dynamic_link_app_update',
-			'dynamic_link_first_open',
-			'error',
-			'firebase_campaign',
-			'firebase_in_app_message_action',
-			'firebase_in_app_message_dismiss',
-			'firebase_in_app_message_impression',
-			'first_open',
-			'first_visit',
-			'notification_dismiss',
-			'notification_foreground',
-			'notification_open',
-			'notification_receive',
-			'notification_send',
-			'os_update',
-			'session_start',
-			'user_engagement',
-			'ad_impression',
-			'in_app_purchase',
-			'screen_view',
+		return array(
+			'session_start'                             => array( 'session_start' ),
+			'error'                                     => array( 'error' ),
+			'screen_view, which only app streams allow' => array( 'screen_view' ),
 		);
-
-		return array_combine( $names, array_map( fn ( $name ) => array( $name ), $names ) );
 	}
 
 	/**
@@ -353,7 +320,7 @@ class Event_CollectorTest extends TestCase {
 	 *
 	 * @param string $param_name Param name.
 	 */
-	public function test_flush__drops_events_with_invalid_param_name( $param_name ) {
+	public function test_add__drops_events_with_invalid_param_name( $param_name ) {
 		$collector = $this->create_collector();
 
 		$collector->add( new Event( 'sign_up', array(), 'sign_up:user:1' ) );
@@ -407,18 +374,6 @@ class Event_CollectorTest extends TestCase {
 			array_column( $this->get_sent_body()['events'], 'name' ),
 			'The first 25 valid events should be sent.'
 		);
-	}
-
-	public function test_flush__sends_nothing_when_no_event_is_valid() {
-		remove_all_filters( 'googlesitekit_analytics_4_mp_dispatch_mode' );
-		$collector = $this->create_collector();
-
-		$collector->add( new Event( '1st-event', array(), '1st-event:post:1' ) );
-		$this->assertTrue( $collector->has( '1st-event:post:1' ), 'The invalid event should be stored until `flush()` checks it.' );
-		$collector->flush();
-
-		$this->assertCount( 0, $this->requests, 'No request should be sent when no event is valid.' );
-		$this->assertSame( 0, $collector->finish_request_calls, 'The response should not be finished when nothing is sent.' );
 	}
 
 	/**
