@@ -47,9 +47,6 @@ export const ENABLE_AUTO_UPDATES_BANNER_SLUG = 'auto-update-cta';
 export const FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG =
 	'feature-discovery-auto-update-cta';
 
-const AUTO_UPDATES_DOCUMENTATION_URL =
-	'https://wordpress.org/documentation/article/plugins-themes-auto-updates/';
-
 export default function EnableAutoUpdateBannerNotification( {
 	id,
 	Notification,
@@ -133,7 +130,7 @@ export default function EnableAutoUpdateBannerNotification( {
 							<LearnMoreLink
 								id={ id }
 								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ AUTO_UPDATES_DOCUMENTATION_URL }
+								url="https://wordpress.org/documentation/article/plugins-themes-auto-updates/"
 							/>
 						),
 					}
