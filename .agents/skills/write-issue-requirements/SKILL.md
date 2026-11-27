@@ -188,8 +188,11 @@ support thread. Write the sections that belong to the type you settled in Step 1
   collecting data during the selected date range.**"
 - **Then the gap.** What happens today, and where it falls short. Name the surface that falls
   short, and the component, class or API only when nobody using the plugin will see the change.
-- **Outline the work involved for engineers.** Split the description when the work has more than one part (server + frontend, two
-  surfaces, markup + asset), using bold run-in headings.
+- **Outline the work involved for engineers**, in a sentence or two: which surfaces or parts the
+  issue adds, and where its scope stops and a sibling issue's begins. Use bold run-in headings
+  only when the work has parts of different kinds (server + frontend, markup + asset), and even
+  then do not describe what each part contains: the sections of a component, its labels, its
+  states and its options are listed in the criteria.
 - **Carry over the decisions the issue depends on**, and why — the constraint that an acceptance
   criterion compresses into a single line. "Why the value is stored per-user rather than
   per-site" lives here.
@@ -359,6 +362,17 @@ A criterion states the outcome of implementing the brief, and nothing else. Cut:
   assumed to be the first entry". State what it *is*.
 - **Restatements.** Name the thing once, in the bullet that defines when it happens. Never add
   a separate "the selector is named `X`" bullet, and never re-justify the name.
+- **Criteria that another criterion already implies.** A bullet that lists the three options
+  shown already says a fourth is not shown; a separate "X is not offered" bullet adds nothing.
+  The same goes for a closing "only as described above". Merge two bullets that describe one
+  flow — "choosing changes nothing until Apply" and "Apply applies it" are one outcome.
+- **Behavior a prerequisite issue already delivers.** When this issue builds on another, its
+  criteria cover what this issue adds. Do not restate behavior the earlier issue made true and
+  this issue's change cannot break — that a dialog discards edits on Cancel, or that the old
+  control still renders while the feature flag is off. "Say what must stay unchanged" is for
+  shared code this issue touches, not for the work it builds on.
+- **Preconditions that are always true.** Do not lead with "When the feature flag is on" when
+  the surface the criterion describes exists only while the flag is on.
 - **Work that isn't being done.** No "no new setting is registered", "no Storybook story is
   added", "no migration needed". Silence already says it.
 - **"Out of scope" and "Known limitations" lists.** The list form names work instead of behavior,
@@ -372,6 +386,13 @@ and that a test can assert: "the notification is not rendered when …", "an unc
 contributes nothing", "the legacy option is not written", "the payload carries the slug and
 nothing else", "nothing is enqueued when the feature flag is off". A boundary with no observable
 edge — nothing a tester could do that would show the difference — is not one the issue needs.
+
+### Cut before you finish
+
+Before you report, and without being asked, read the description and the criteria side by side.
+Cut each description sentence that a criterion already says, unless it gives a reason the
+criterion leaves out, and each criterion that "Keep them compact" rules out. Stop when a further
+cut would lose an outcome or a reason.
 
 ## Step 7 — Report what did not go in the issue
 
@@ -406,6 +427,8 @@ Everything you decided, cut or discovered belongs in your reply to the user — 
   adds, or what is wrong and what it should be — not with how things work today.
 - **Plain, simple words.** No idioms, no metaphors, no unexplained jargon, no half sentences.
   Name who does what to what, and list the members of every set you name — see Steps 5 and 6.
+- **Nothing said twice.** The description does not restate the criteria, no criterion restates
+  another or a prerequisite issue's behavior, and you cut both before reporting (Step 6).
 - **Criteria are observable behavior.** Written for whoever verifies the feature by using it, not
   for whoever writes the code. Anything that can only be checked by reading the source belongs in
   the Implementation Brief.
