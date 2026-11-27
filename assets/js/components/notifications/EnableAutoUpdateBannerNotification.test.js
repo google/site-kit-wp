@@ -115,10 +115,12 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			)
 		).toBeInTheDocument();
 
-		expect( getByText( 'Learn more' ).closest( 'a' ) ).toHaveAttribute(
+		const learnMoreLink = getByText( 'Learn more' ).closest( 'a' );
+		expect( learnMoreLink ).toHaveAttribute(
 			'href',
-			expect.stringContaining( 'doc=auto-updates' )
+			'https://wordpress.org/documentation/article/plugins-themes-auto-updates/'
 		);
+		expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
 
 		fireEvent.click( getByText( 'Enable auto-updates' ) );
 
