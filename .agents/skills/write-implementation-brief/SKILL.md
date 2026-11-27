@@ -122,12 +122,15 @@ numbers in one message — together with the issue and design doc you already ha
 ### Structure
 
 ```
-<one or two sentences of context every checkbox shares, e.g. the action they all call>
+<optional: one or two sentences of context every checkbox shares, e.g. the action they all call>
 
 * [ ] <one change — it may cover several files>
 * [ ] <one change>
 ```
 
+- Open with a line of context only when every checkbox needs the same fact, such as the action
+  they all call, and stating it once saves repeating it in each; otherwise start with the first
+  checkbox.
 - One checkbox per change, not per file: "Move `FeedbackMenu` and `ThumbsSurveyTrigger` to a new
   `assets/js/components/feedback/` directory, with their tests and stories".
 - Give a path only where the reader needs it to find the place. Otherwise use the name
