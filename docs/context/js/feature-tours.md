@@ -782,7 +782,7 @@ const complexTour = {
 
 ## Testing Tours
 
-Tests are colocated with the code they cover and may be `.test.js` or `.test.ts` (TypeScript tours such as `welcome.ts` ship a `welcome.test.ts`). `it`/`test` titles start with "should …". Run a single file with `npm -w tests/js run test:js -- <path>`. See `docs/context/js/tests.md` for the full testing conventions.
+Tests are co-located with the code they cover and may be `.test.js` or `.test.ts` (TypeScript tours such as `welcome.ts` ship a `welcome.test.ts`). Run a single file with `npm -w tests/js run test:js -- <path>`. See `docs/context/js/tests.md` for the full testing conventions.
 
 ### Tour Testing Utilities
 

@@ -834,7 +834,7 @@ Use the project's `renderHook` (and `actHook`) from `@tests/js/test-utils`
 rather than importing them directly from `@testing-library/react-hooks`. The
 wrapper sets up the data registry and accepts options such as `registry`,
 `features`, and `viewContext`. Test files are co-located and may be `.test.ts` /
-`.test.tsx`. Test titles start with "should …".
+`.test.tsx`.
 
 ```javascript
 import { actHook as act, renderHook } from '@tests/js/test-utils';

@@ -347,8 +347,11 @@ npm -w tests/js run test:js -- <path/to/file.test.js>
 
 Jest discovers any `*.test.{js,jsx,ts,tsx}` file co-located with the code.
 
-Test title convention: `it(...)`/`test(...)` titles start with "should …" (e.g.
-`it( 'should render the report', …)`); `describe(...)` titles stay plain.
+Test titles: an `it(...)` title continues a sentence that starts with "it", so
+`it( 'renders the report', … )` and `it( 'should render the report', … )` both work. A
+`test(...)` title has no implied subject, so it only needs to state the behavior clearly
+(e.g., `test( 'the report renders with zero data', … )`). `describe(...)` titles name the unit
+or scenario under test.
 
 ## End-to-End Testing
 
