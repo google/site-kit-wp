@@ -1,0 +1,85 @@
+/**
+ * Site Goals insight notice styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-site-goals-insight:not(:empty) {
+		// The live region stays on the page while it is empty, so only its
+		// content makes room above the Key action section.
+		margin-bottom: 34px;
+	}
+
+	.googlesitekit-site-goals-insight-notice {
+		align-items: flex-start;
+		background-color: $c-blue-b-50;
+		border-radius: $br-xxs;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-height: 72px;
+		padding: 12px $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			flex-direction: row;
+			gap: $grid-gap-phone;
+			padding: $grid-gap-phone $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-site-goals-insight-notice__icon {
+		background-color: $c-blue-b-100;
+		border-radius: 50%;
+
+		// Makes a 30px circle around the 18px icon.
+		padding: 6px;
+	}
+
+	.googlesitekit-site-goals-insight-notice__text {
+		color: $c-blue-b-700;
+		margin: 0;
+	}
+
+	.googlesitekit-site-goals-widget__footer {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		margin-top: 20px;
+
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			flex-direction: row;
+			margin-top: 14px;
+		}
+
+		@media (min-width: $bp-desktop) {
+			margin-top: 28px;
+		}
+
+		// The footer takes over the prompt's spacing, and keeps the prompt on
+		// the right as it is without the footer.
+		.googlesitekit-feedback-prompt {
+			margin-top: 0;
+
+			@media (min-width: $bp-tablet) {
+				margin-left: auto;
+			}
+		}
+	}
+}

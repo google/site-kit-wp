@@ -37,6 +37,8 @@ export interface SiteGoalsBreakdown {
 	breakdownValues: string[] | undefined;
 	hasBreakdownTabs: boolean;
 	activeTabID: string;
+	/** `activeTabID`, or `undefined` while it is not known yet whether the widget has tabs. */
+	knownActiveTabID: string | undefined;
 	setSelectedTab: ( tabID: string ) => void;
 	isOtherSourcesTab: boolean;
 	hasOtherSources: boolean;
@@ -58,6 +60,7 @@ export interface UseSiteGoalsBreakdownOptions {
  * @since 1.187.0 Held every breakdown report back until the breakdown custom dimension exists on the property.
  * @since 1.190.0 Held every breakdown report back until plugin conversion tracking is enabled too.
  * @since 1.192.0 Stopped holding the breakdown reports back for plugin conversion tracking, so the tabs stay when it is switched off later.
+ * @since n.e.x.t Added `knownActiveTabID`.
  *
  * @param {string} goalType                      The goal type whose breakdown dimension to resolve.
  * @param {Object} [options]                     Discovery, detection and allowlist options.
@@ -171,6 +174,39 @@ export function useSiteGoalsBreakdown(
 
 	const activeTabID = selectedTab ?? breakdownValues?.[ 0 ] ?? '';
 
+	const isLoadingBreakdownValues = useInViewSelect(
+		( select: Select ) =>
+			hasBreakdownDimension
+				? select( MODULES_ANALYTICS_4 ).isLoadingBreakdownValues(
+						breakdownDimension,
+						eventNames
+				  )
+				: false,
+		[ breakdownDimension, eventNames, hasBreakdownDimension ]
+	) as boolean | undefined;
+
+	// The property's list of custom dimensions stays unset when it was never
+	// synced and the current user can't sync it. Once its lookup has finished,
+	// an unset list means no tabs, like a property without the dimension.
+	const isLoadingCustomDimensions = useInViewSelect(
+		( select: Select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getAvailableCustomDimensions'
+			),
+		[]
+	);
+
+	// While the tabs load, `activeTabID` is an empty string, which can't be
+	// told apart from a widget without tabs, so `knownActiveTabID` stays
+	// `undefined` until it is known whether the widget has tabs. Otherwise the
+	// insight notice would request the insight of the whole widget and then
+	// the one of the first tab. A failed report of breakdown values also
+	// means no tabs.
+	const isLoadingBreakdown =
+		isLoadingCustomDimensions !== false ||
+		isLoadingBreakdownValues !== false;
+	const knownActiveTabID = isLoadingBreakdown ? undefined : activeTabID;
+
 	const isOtherSourcesTab =
 		activeTabID === SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID;
 
@@ -194,6 +230,7 @@ export function useSiteGoalsBreakdown(
 		breakdownValues,
 		hasBreakdownTabs,
 		activeTabID,
+		knownActiveTabID,
 		setSelectedTab,
 		isOtherSourcesTab,
 		hasOtherSources,
