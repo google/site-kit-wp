@@ -142,13 +142,13 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 			return $tag;
 		}
 
-		// Retain this comment for detection of Site Kit placed tag.
 		$snippet_comment = sprintf( "<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 
 		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 
 		if ( $block_on_consent_attrs ) {
-			$tag = $this->add_legacy_block_on_consent_attributes( $tag, $block_on_consent_attrs );
+			// Blocking the tag this way is deprecated, and consent mode replaces it.
+			$tag = $this->add_attributes_to_script_with_src( $tag, $block_on_consent_attrs );
 		}
 
 		return $snippet_comment . $tag;
@@ -169,28 +169,5 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 		}
 
 		return $this->add_linker_to_tag_config( $config );
-	}
-
-	/**
-	 * Adds HTML attributes to the gtag script tag to block it until user consent is granted.
-	 *
-	 * This mechanism for blocking the tag is deprecated and the consent mode feature should be used instead.
-	 *
-	 * @since 1.122.0
-	 * @since 1.158.0 Remove src from signature & replacement.
-	 *
-	 * @param string $tag                    The script tag.
-	 * @param string $block_on_consent_attrs The attributes to add to the script tag to block it until user consent is granted.
-	 *
-	 * @return string The script tag with the added attributes.
-	 */
-	protected function add_legacy_block_on_consent_attributes( $tag, $block_on_consent_attrs ) {
-		// Use regex to match script tags with src attribute, regardless of other attributes like id.
-		// This handles WordPress-generated script tags which include id attributes.
-		return preg_replace(
-			'/<script\b([^>]*?)\s*src=/si',
-			'<script' . $block_on_consent_attrs . '$1 src=',
-			$tag
-		);
 	}
 }

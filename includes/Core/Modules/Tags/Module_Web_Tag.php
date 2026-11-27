@@ -128,4 +128,25 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 		 */
 		do_action( "googlesitekit_{$this->module_slug}_init_tag", $this->tag_id );
 	}
+
+	/**
+	 * Adds HTML attributes to each script tag with a source in the given HTML.
+	 *
+	 * @since 1.122.0
+	 * @since 1.158.0 Remove src from signature & replacement.
+	 * @since n.e.x.t Moved from `Analytics_4\Web_Tag::add_legacy_block_on_consent_attributes()`.
+	 *
+	 * @param string $tag        The HTML of the script tags.
+	 * @param string $attributes The attributes to add, each after a space.
+	 * @return string The HTML with the attributes on each script tag with a source.
+	 */
+	protected function add_attributes_to_script_with_src( $tag, $attributes ) {
+		// Use regex to match script tags with src attribute, regardless of other attributes like id.
+		// This handles WordPress-generated script tags which include id attributes.
+		return preg_replace(
+			'/<script\b([^>]*?)\s*src=/si',
+			'<script' . $attributes . '$1 src=',
+			$tag
+		);
+	}
 }
