@@ -120,11 +120,18 @@ class Measurement_Protocol_Client {
 		/**
 		 * Filters the URL of the Measurement Protocol endpoint that Site Kit sends server-side events to.
 		 *
+		 * A result that is not a URL is ignored.
+		 *
 		 * @since n.e.x.t
 		 *
 		 * @param string $endpoint Endpoint URL.
 		 */
-		$endpoint    = apply_filters( 'googlesitekit_analytics_4_mp_endpoint', self::DEFAULT_ENDPOINT );
+		$endpoint = apply_filters( 'googlesitekit_analytics_4_mp_endpoint', self::DEFAULT_ENDPOINT );
+
+		if ( ! is_string( $endpoint ) || ! filter_var( $endpoint, FILTER_VALIDATE_URL ) ) {
+			$endpoint = self::DEFAULT_ENDPOINT;
+		}
+
 		$is_blocking = 'blocking' === $mode;
 
 		wp_remote_post(

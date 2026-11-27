@@ -70,20 +70,7 @@ class Measurement_Protocol_ClientTest extends TestCase {
 		$this->client  = new Measurement_Protocol_Client( $analytics->get_settings(), $analytics->get_measurement_protocol_secret() );
 		$this->session = GA_Session::from_values( 'GA1.1.1234567890.1700000000', 'GS2.1.s1700000000$t1700000500', 'G-ABC123', 1700000500 );
 
-		// Answer each request with a 204 response, so no request leaves the test.
-		$this->subscribe_to_wp_http_requests(
-			function ( $url, $args ) {
-				$this->requests[] = array(
-					'url'  => $url,
-					'args' => $args,
-				);
-			},
-			array(
-				'headers'  => array(),
-				'body'     => '',
-				'response' => array( 'code' => 204 ),
-			)
-		);
+		$this->capture_requests();
 	}
 
 	public function test_send__sends_measurement_id_and_api_secret_as_query_args() {
@@ -107,6 +94,39 @@ class Measurement_Protocol_ClientTest extends TestCase {
 			'https://region1.google-analytics.com/mp/collect?measurement_id=G-ABC123&api_secret=test-secret%2Bvalue',
 			$this->requests[0]['url'],
 			'The request should go to the URL the filter returns.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_endpoints_that_are_not_urls
+	 *
+	 * @param mixed $endpoint Value the endpoint filter returns.
+	 */
+	public function test_send__sends_to_the_default_endpoint_when_the_filter_returns_no_url( $endpoint ) {
+		add_filter( 'googlesitekit_analytics_4_mp_endpoint', fn () => $endpoint );
+
+		$this->client->send( $this->session, array( new Event( 'sign_up', array(), 'sign_up:user:1' ) ), 'blocking' );
+
+		$this->assertCount( 1, $this->requests, 'One request should be sent.' );
+		$this->assertSame(
+			'https://www.google-analytics.com/mp/collect?measurement_id=G-ABC123&api_secret=test-secret%2Bvalue',
+			$this->requests[0]['url'],
+			'The request should go to the default endpoint when the filter returns no URL.'
+		);
+	}
+
+	public function data_endpoints_that_are_not_urls() {
+		$url_object = new class() {
+			public function __toString() {
+				return 'https://region1.google-analytics.com/mp/collect';
+			}
+		};
+
+		return array(
+			'an array'                         => array( array( 'https://region1.google-analytics.com/mp/collect' ) ),
+			'`false`'                          => array( false ),
+			'a path'                           => array( '/mp/collect' ),
+			'an object that converts to a URL' => array( $url_object ),
 		);
 	}
 
