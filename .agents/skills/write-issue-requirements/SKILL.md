@@ -141,10 +141,12 @@ Leave both as the template gives them, and fill in only the environment facts th
 stated — a plugin version they named, the browser they used. Never invent a version number, an
 operating system or a device, and never describe a screenshot you have not seen.
 
-**Title** — for a feature request, name the deliverable, not the activity. Lead with the symbol or
-event the issue produces, then the scope in a short clause: `` `AudienceTile` — no-data and
-partially-available states ``. For a bug report, name the symptom and where it happens, in the
-same shape: `` `AudienceTile` — no-data state renders for an audience that has data ``.
+**Title** — for a feature request, name the deliverable, not the activity. Lead with the feature
+or surface the user sees, then the scope in a short clause: `Visitor Groups tiles — no-data and
+partial-data states`. For a bug report, name the symptom and where it happens: `Visitor Groups
+tile shows "Gathering data" for a group that has visitors`. Lead with a symbol or event only when
+the issue has no surface the user sees, such as a new datastore selector or a tracking event:
+`` `contact_link_click` event — sent for email, phone, SMS, and messaging-app links ``.
 
 Nothing sits between the title and the first description heading — no epic name, no point
 estimate, no dependency line. Where the issue depends on another, that dependency is a clause
@@ -180,11 +182,17 @@ support thread. Write the sections that belong to the type you settled in Step 1
 
 ### A feature request: the Feature Description
 
-- **Open with the gap.** What happens today, and where it falls short. Name the concrete thing
-  that doesn't cover the case — the existing component, the class, the API behavior.
-- **State what the issue adds for the user**, in one sentence.
-- **Outline the work involved for engineers.** Split the description when the work has more than one part (server + frontend, two
-  surfaces, markup + asset), using bold run-in headings.
+- **Open with what the issue adds, in one bold sentence** — for the user, or for engineers when
+  nobody using the plugin will see the change: "**In Visitor Groups, a group's tile shows a
+  no-data message when the group has no visitors, and a partial-data badge when the group started
+  collecting data during the selected date range.**"
+- **Then the gap.** What happens today, and where it falls short. Name the surface that falls
+  short, and the component, class or API only when nobody using the plugin will see the change.
+- **Outline the work involved for engineers**, in a sentence or two: which surfaces or parts the
+  issue adds, and where its scope stops and a sibling issue's begins. Use bold run-in headings
+  only when the work has parts of different kinds (server + frontend, markup + asset), and even
+  then do not describe what each part contains: the sections of a component, its labels, its
+  states and its options are listed in the criteria.
 - **Carry over the decisions the issue depends on**, and why — the constraint that an acceptance
   criterion compresses into a single line. "Why the value is stored per-user rather than
   per-site" lives here.
@@ -194,10 +202,15 @@ support thread. Write the sections that belong to the type you settled in Step 1
 
 The **Bug Description** is prose, and it is short. Three things, in this order:
 
-- **What the plugin does today that is wrong.** The symptom as someone sees it, on the real
-  surface: the widget, the page, the event, the API response, the option value. Give the wrong
-  value and the value that was expected instead.
-- **What should happen instead**, in one sentence.
+- **The bug, in one bold sentence**: what is wrong and what it should be instead, at the level
+  that tells a reader what the issue is about: "**In Visitor Groups, a group's tile shows
+  `Gathering data` for a group that has visitors; it should show the group's visitor count.**"
+  Explain a term the sentence needs in a clause, or in the sentence after it.
+- **The symptom.** What the plugin does today, as someone sees it, on the real surface: the
+  widget, the page, the event, the API response, the option value. Give one example of each
+  wrong behavior, with the wrong value and the value that was expected instead. A made-up
+  example is fine when it reads as one ("for a property created on 1 March…"); never present
+  made-up values as something seen on a real site.
 - **When it happens.** The conditions the symptom needs and the ones it does not survive: which
   module is connected, which user role, which date range, which setting value, which screen size,
   which browser. Say plainly when the symptom appears every time.
@@ -207,11 +220,12 @@ read before the settings are loaded, so it is always the default". Do not prescr
 is the Implementation Brief's job. When you did not find the cause, leave it out rather than
 guessing at it.
 
-Name the other places the same wrong behavior reaches — another widget served by the same code,
+Find the other places the same wrong behavior reaches — another widget served by the same code,
 another module with the same shape. Whether this issue covers them is a scope decision, so it is
 settled in the criteria (Step 6): the ones it covers get their corrected outcome, and the ones it
-leaves get the outcome that still holds at the edge. Report the split in your reply (Step 7) so the
-user can move the line.
+leaves get the outcome that still holds at the edge. Name in the description only the places the
+fix reaches, and a place it leaves alone only when the description cannot explain the issue
+without it. Report the split in your reply (Step 7) so the user can move the line.
 
 The **Steps to reproduce** are the numbered list a tester follows with nothing but the plugin:
 
@@ -221,7 +235,7 @@ The **Steps to reproduce** are the numbered list a tester follows with nothing b
   the URL, the value in the field. "Set the date range to `Last 28 days`", not "choose a date
   range".
 - **End with the observation.** The last step is what the tester sees and what they should have
-  seen instead: "The tile shows `Gathering data`, though the audience returned 412 users."
+  seen instead: "The tile shows `Gathering data`, though the group had 412 visitors."
 - **No mechanism.** No "check the store", no "read the network response", no breakpoints — unless
   the symptom genuinely cannot be seen any other way, in which case give the exact thing to open
   and the exact value to look at.
@@ -259,6 +273,11 @@ Do **not** include, in either type of description:
   the behavior and its reason in ordinary words instead: "when a link is already a contact link it
   sends `contact_link_click` and nothing else, so the phone number in its address is never sent to
   GA".
+- **Background the issue does not need.** Explain how something works only when the issue cannot
+  be described without it, and then in a sentence or two, not a paragraph.
+- **The criteria, restated.** The description says what is wrong or missing and why; the exact
+  outcomes, and the scope edge, are the criteria's (Step 6). A sentence that a criterion already
+  says is a sentence to cut, unless it gives the reason the criterion leaves out.
 - **Links or paths to local design docs and specs.** They don't resolve for someone reading the
   issue on GitHub. Restate the constraint in a clause instead. External links — Figma, a hosted
   doc, public vendor documentation — are fine.
@@ -283,8 +302,8 @@ the parsed `URL.hostname` against an allowlist" tells a tester nothing; "clickin
 the criteria drop a rule the implementer still needs, put it in the brief.
 
 **On a bug report** the criteria are the corrected behavior, not the bug. Write the outcome the
-steps in the description must produce once the issue is done — "the tile shows the audience's 412
-users" — never "the tile no longer shows `Gathering data` incorrectly", which cannot be graded
+steps in the description must produce once the issue is done — "the tile shows the group's 412
+visitors" — never "the tile no longer shows `Gathering data` incorrectly", which cannot be graded
 without the reader deciding what "incorrectly" meant. Then write the cases that already work and
 run through the same code, so the fix is not allowed to trade one symptom for another. The cause
 and the fix stay out of the criteria, in the same way technique does for a feature.
@@ -343,6 +362,17 @@ A criterion states the outcome of implementing the brief, and nothing else. Cut:
   assumed to be the first entry". State what it *is*.
 - **Restatements.** Name the thing once, in the bullet that defines when it happens. Never add
   a separate "the selector is named `X`" bullet, and never re-justify the name.
+- **Criteria that another criterion already implies.** A bullet that lists the three options
+  shown already says a fourth is not shown; a separate "X is not offered" bullet adds nothing.
+  The same goes for a closing "only as described above". Merge two bullets that describe one
+  flow — "choosing changes nothing until Apply" and "Apply applies it" are one outcome.
+- **Behavior a prerequisite issue already delivers.** When this issue builds on another, its
+  criteria cover what this issue adds. Do not restate behavior the earlier issue made true and
+  this issue's change cannot break — that a dialog discards edits on Cancel, or that the old
+  control still renders while the feature flag is off. "Say what must stay unchanged" is for
+  shared code this issue touches, not for the work it builds on.
+- **Preconditions that are always true.** Do not lead with "When the feature flag is on" when
+  the surface the criterion describes exists only while the flag is on.
 - **Work that isn't being done.** No "no new setting is registered", "no Storybook story is
   added", "no migration needed". Silence already says it.
 - **"Out of scope" and "Known limitations" lists.** The list form names work instead of behavior,
@@ -356,6 +386,13 @@ and that a test can assert: "the notification is not rendered when …", "an unc
 contributes nothing", "the legacy option is not written", "the payload carries the slug and
 nothing else", "nothing is enqueued when the feature flag is off". A boundary with no observable
 edge — nothing a tester could do that would show the difference — is not one the issue needs.
+
+### Cut before you finish
+
+Before you report, and without being asked, read the description and the criteria side by side.
+Cut each description sentence that a criterion already says, unless it gives a reason the
+criterion leaves out, and each criterion that "Keep them compact" rules out. Stop when a further
+cut would lose an outcome or a reason.
 
 ## Step 7 — Report what did not go in the issue
 
@@ -386,8 +423,12 @@ Everything you decided, cut or discovered belongs in your reply to the user — 
   Leave Implementation Brief, Test Coverage, QA Brief and Changelog entry as the template's
   placeholder comments, and leave a bug report's Screenshots and Additional Context as the
   template gives them, except for environment facts the user actually stated.
+- **Lead with the point.** The description opens with one bold sentence saying what the issue
+  adds, or what is wrong and what it should be — not with how things work today.
 - **Plain, simple words.** No idioms, no metaphors, no unexplained jargon, no half sentences.
   Name who does what to what, and list the members of every set you name — see Steps 5 and 6.
+- **Nothing said twice.** The description does not restate the criteria, no criterion restates
+  another or a prerequisite issue's behavior, and you cut both before reporting (Step 6).
 - **Criteria are observable behavior.** Written for whoever verifies the feature by using it, not
   for whoever writes the code. Anything that can only be checked by reading the source belongs in
   the Implementation Brief.
