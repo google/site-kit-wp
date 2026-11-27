@@ -41,11 +41,9 @@ import ThumbsFeedback from '@/js/components/feedback/ThumbsFeedback';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_HUB_FEEDBACK_NAMESPACE,
-	FEATURE_RELEVANCY_FEEDBACK_KEYS,
 	FEATURE_RELEVANCY_REASONS,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { getFeatureRelevancyFeedbackGroup } from '@/js/googlesitekit/datastore/feature-discovery/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 interface FeatureRelevancyFeedbackProps {
 	slug: string;
@@ -54,7 +52,6 @@ interface FeatureRelevancyFeedbackProps {
 const FeatureRelevancyFeedback: FC< FeatureRelevancyFeedbackProps > = ( {
 	slug,
 } ) => {
-	const { sendFeedback } = useDispatch( CORE_USER );
 	const triggerInteractionSurvey =
 		useFeatureDiscoveryInteractionSurveyTrigger();
 	const { setFeatureRelevancyVote } = useDispatch( CORE_FEATURE_DISCOVERY );
@@ -100,20 +97,6 @@ const FeatureRelevancyFeedback: FC< FeatureRelevancyFeedbackProps > = ( {
 		[]
 	);
 
-	const onSelectFeedback = useCallback(
-		( value: string | undefined ) => {
-			if ( value ) {
-				sendFeedback( {
-					namespace: FEATURE_HUB_FEEDBACK_NAMESPACE,
-					group: getFeatureRelevancyFeedbackGroup( slug ),
-					key: FEATURE_RELEVANCY_FEEDBACK_KEYS.VOTE_REASON,
-					value,
-				} );
-			}
-		},
-		[ sendFeedback, slug ]
-	);
-
 	const onVote = useCallback(
 		( direction: VoteDirection ) => {
 			triggerInteractionSurvey();
@@ -135,7 +118,6 @@ const FeatureRelevancyFeedback: FC< FeatureRelevancyFeedbackProps > = ( {
 			feedbackOptions={ {
 				[ VOTE_DIRECTION_DOWN ]: feedbackOptions,
 			} }
-			onSelectFeedback={ onSelectFeedback }
 			onVote={ onVote }
 			popperPlacement="top-start"
 			voteDirection={ voteDirection || relevancyVote }

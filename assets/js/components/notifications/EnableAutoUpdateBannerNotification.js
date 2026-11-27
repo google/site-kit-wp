@@ -60,9 +60,6 @@ export default function EnableAutoUpdateBannerNotification( {
 	const enableAutoUpdateError = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorForAction( 'enableAutoUpdate', [] )
 	);
-	const autoUpdatesDocumentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'auto-updates' )
-	);
 
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
 	const ctaActivate = useCallback( async () => {
@@ -133,7 +130,7 @@ export default function EnableAutoUpdateBannerNotification( {
 							<LearnMoreLink
 								id={ id }
 								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ autoUpdatesDocumentationURL }
+								url="https://wordpress.org/documentation/article/plugins-themes-auto-updates/"
 							/>
 						),
 					}

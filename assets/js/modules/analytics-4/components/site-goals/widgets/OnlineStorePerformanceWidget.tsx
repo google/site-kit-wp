@@ -43,7 +43,6 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useViewContext from '@/js/hooks/useViewContext';
-import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
 import { TilesGroup } from '@/js/modules/analytics-4/components/common/tiles';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
@@ -59,8 +58,6 @@ import {
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
-	SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE,
-	SITE_GOALS_FEEDBACK_NAMESPACE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -94,6 +91,7 @@ import {
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import SiteGoalsWidgetFeedback from './SiteGoalsWidgetFeedback';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -703,16 +701,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 					</Fragment>
 				) }
 
-				<FeedbackPrompt
-					feedbackNamespace={ SITE_GOALS_FEEDBACK_NAMESPACE }
-					feedbackGroup={
-						SITE_GOALS_FEEDBACK_GROUP_WIDGET_ONLINE_STORE
-					}
-					gaTrackingEventArgs={ {
-						category: `${ viewContext }_site-goals-widget-survey`,
-						label: GOAL_TYPES.ECOMMERCE,
-					} }
-				/>
+				<SiteGoalsWidgetFeedback goalType={ GOAL_TYPES.ECOMMERCE } />
 			</WidgetComponent>
 		);
 	}
