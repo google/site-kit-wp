@@ -394,7 +394,7 @@ actions.fetchGetSettings = function* ( ...args ) {
         yield { type: 'FINISH_FETCH_GET_SETTINGS', payload: { params } };
     } catch ( error ) {
         // Handle error
-        yield receiveError( error, 'getSettings', args );
+        yield setErrorForSelector( error, 'getSettings', args );
         yield { type: 'CATCH_FETCH_GET_SETTINGS', payload: { params } };
     }
     
