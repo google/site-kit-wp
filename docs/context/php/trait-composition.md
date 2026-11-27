@@ -363,6 +363,8 @@ final class Analytics_4 extends Module implements Module_With_Assets {
 Provides helpers for detecting whether a module's tracking tag has been placed in
 page content and for identifying the URL where the tag should appear.
 
+A module that uses it implements `get_tag_attribute_ids()`, with the tag IDs its elements print in their `data-googlesitekit-tag` attribute (`Module_Tag::TAG_ID_ATTRIBUTE`). A module whose tag loads through Site Kit's Google tag also overrides `get_google_tag_ids()`, as Analytics, Ads and Tag Manager do.
+
 ```php
 trait Module_With_Tag_Trait {
 
@@ -371,11 +373,29 @@ trait Module_With_Tag_Trait {
      *
      * \@param string $content Content to search for the tags.
      * \@return int A Module_Tag_Matchers::TAG_* constant:
-     *              TAG_EXISTS_WITH_COMMENTS, TAG_EXISTS, or NO_TAG_FOUND.
+     *              TAG_PLACED_BY_SITE_KIT, TAG_EXISTS, or NO_TAG_FOUND.
      */
     public function has_placed_tag_in_content( $content ) {
-        // Searches for Site Kit comment markers and regex patterns
-        // returned by $this->get_tag_matchers()->regex_matchers().
+        // Looks for one of the module's tag IDs in a data-googlesitekit-tag
+        // attribute, and for one of its Google tag IDs in Site Kit's Google
+        // tag. Then looks for the regex patterns returned by
+        // $this->get_tag_matchers()->regex_matchers().
+    }
+
+    /**
+     * Gets the tag IDs that the module's elements can have in their tag ID attribute.
+     *
+     * \@return string[] Tag IDs.
+     */
+    abstract protected function get_tag_attribute_ids();
+
+    /**
+     * Gets the tag IDs that the module adds to Site Kit's Google tag.
+     *
+     * \@return string[] Tag IDs. None by default.
+     */
+    protected function get_google_tag_ids() {
+        return array();
     }
 
     /**
@@ -534,7 +554,7 @@ final class Analytics_4 extends Module implements
     protected function setup_assets() { /* ... */ }
     protected function setup_settings() { /* ... */ }
     protected function setup_scopes() { /* ... */ }
-    protected function setup_tag() { /* ... */ }
+    protected function get_tag_attribute_ids() { /* ... */ }
     protected function setup_data_available_state() { /* ... */ }
 
     // Module-specific methods

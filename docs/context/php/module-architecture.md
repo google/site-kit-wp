@@ -245,7 +245,7 @@ interface Module_With_Tag {
      * Checks if the module tag is found in the provided content.
      *
      * \@param string $content Content to search for the tags.
-     * \@return bool
+     * \@return int
      */
     public function has_placed_tag_in_content( $content );
 }
@@ -268,6 +268,11 @@ final class Analytics_4 extends Module implements Module_With_Tag {
 
     public function get_tag_matchers() {
         return new Tag_Matchers();
+    }
+
+    protected function get_tag_attribute_ids() {
+        // The ID its AMP tag prints in its data-googlesitekit-tag attribute.
+        return array( $this->get_measurement_id() );
     }
 }
 ```
@@ -709,10 +714,10 @@ final class Analytics_4 extends Module implements
     }
 
     /**
-     * Set up tracking tag.
+     * Get the ID its AMP tag prints in its data-googlesitekit-tag attribute.
      */
-    protected function setup_tag() {
-        return new Tag( $this->options, $this->get_settings() );
+    protected function get_tag_attribute_ids() {
+        return array( $this->get_measurement_id() );
     }
 
     /**
