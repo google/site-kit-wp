@@ -140,10 +140,13 @@ describe( 'WPDashboardWidgets', () => {
 	} );
 
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
-		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
+		const { getByRole, queryByRole, waitForRegistry } = render(
+			<WPDashboardWidgets />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -158,6 +161,13 @@ describe( 'WPDashboardWidgets', () => {
 			'dismiss_cta',
 			'wp_dashboard'
 		);
+
+		// Wait for the dismissal to complete, which hides the CTA.
+		await waitFor( () => {
+			expect(
+				queryByRole( 'button', { name: 'Maybe later' } )
+			).not.toBeInTheDocument();
+		} );
 	} );
 
 	it( 'should track the `confirm_cta` event when the "Set up Analytics" button is clicked in the Activate Analytics CTA', async () => {
