@@ -50,7 +50,7 @@ export interface FeedbackMenuProps {
 	onClose: () => void;
 	onSelect?: ( value: string | undefined ) => void;
 	options: FeedbackMenuOption[];
-	placement?: 'top-start' | 'top-end'; // TODO: Flesh out with more options.
+	placement?: 'top-start' | 'top-end' | 'bottom-end'; // TODO: Flesh out with more options.
 	sourceRef?: RefObject< HTMLButtonElement | HTMLAnchorElement >;
 	// eslint-disable-next-line sitekit/acronym-case -- Native DOM type.
 	wrapperRef?: RefObject< HTMLElement >;

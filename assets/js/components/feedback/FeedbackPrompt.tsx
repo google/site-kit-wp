@@ -29,12 +29,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { VoteDirection } from '@/js/components/feedback/constants';
-import ThumbsFeedback from '@/js/components/feedback/ThumbsFeedback';
 import Typography from '@/js/components/Typography';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 import { trackEvent } from '@/js/util';
+import { VoteDirection } from './constants';
+import ThumbsFeedback, { ThumbsFeedbackProps } from './ThumbsFeedback';
 
 interface FeedbackPromptProps {
 	/** The product area the feedback is about. */
@@ -54,6 +54,8 @@ interface FeedbackPromptProps {
 	hideQuestion?: boolean;
 	/** Called with the vote's direction, after the vote is tracked. */
 	onVote?: ( direction: VoteDirection ) => void;
+	/** The reasons offered in a "Help us improve" menu after each vote. */
+	feedbackOptions?: ThumbsFeedbackProps[ 'feedbackOptions' ];
 }
 
 /**
@@ -63,6 +65,7 @@ interface FeedbackPromptProps {
  * @since 1.190.0 Replaced the `goalType` prop with `gaTrackingEventArgs`.
  * @since 1.191.0 Added the `hideQuestion` prop to show only the thumbs.
  * @since 1.192.0 Added the `onVote` prop. Replaced the `voteID` prop with `feedbackNamespace` and `feedbackGroup`, and send votes to the feedback endpoint instead of triggering a survey.
+ * @since n.e.x.t Added the `feedbackOptions` prop, and moved to the shared feedback components.
  *
  * @param props                     Component props.
  * @param props.feedbackNamespace   The product area the feedback is about.
@@ -70,6 +73,7 @@ interface FeedbackPromptProps {
  * @param props.gaTrackingEventArgs Category and label used to track the vote event.
  * @param [props.hideQuestion]      Optional. Whether to hide the "Is this section helpful?" text.
  * @param [props.onVote]            Optional. Called with the vote's direction, after the vote is tracked.
+ * @param [props.feedbackOptions]   Optional. The reasons offered in a "Help us improve" menu after each vote.
  * @return React element.
  */
 const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
@@ -78,12 +82,17 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 	gaTrackingEventArgs,
 	hideQuestion,
 	onVote,
+	feedbackOptions,
 } ) => {
 	const breakpoint = useBreakpoint();
 	// On mobile the feedback row isn't right-aligned, so `top-end` pushes the
 	// popper past the card edge. Center it above the thumbs instead and let
 	// Popper shift it to fit.
 	const popperPlacement = breakpoint === BREAKPOINT_SMALL ? 'top' : 'top-end';
+	// Likewise, open the feedback menu from the start of the feedback row on
+	// mobile, and from the end of the right-aligned thumbs on larger screens.
+	const feedbackMenuPlacement =
+		breakpoint === BREAKPOINT_SMALL ? 'top-start' : 'top-end';
 
 	function handleVote( direction: VoteDirection ) {
 		trackEvent(
@@ -99,6 +108,8 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 		<ThumbsFeedback
 			feedbackNamespace={ feedbackNamespace }
 			feedbackGroup={ feedbackGroup }
+			feedbackOptions={ feedbackOptions }
+			feedbackMenuPlacement={ feedbackMenuPlacement }
 			onVote={ handleVote }
 			popperPlacement={ popperPlacement }
 		/>
@@ -109,11 +120,11 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 	}
 
 	return (
-		<div className="googlesitekit-site-goals-widget__feedback">
+		<div className="googlesitekit-feedback-prompt">
 			<Typography
 				type="label"
 				size="small"
-				className="googlesitekit-site-goals-widget__feedback-prompt"
+				className="googlesitekit-feedback-prompt__question"
 			>
 				{ __( 'Is this section helpful?', 'google-site-kit' ) }
 			</Typography>

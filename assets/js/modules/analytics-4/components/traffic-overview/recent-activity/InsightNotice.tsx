@@ -30,11 +30,11 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import FeedbackPrompt from '@/js/components/feedback/FeedbackPrompt';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import useViewContext from '@/js/hooks/useViewContext';
-import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
 import {
 	FRESH_DATA_FEEDBACK_GROUP_RECENT_ACTIVITY,
 	FRESH_DATA_FEEDBACK_NAMESPACE,

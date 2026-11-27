@@ -189,4 +189,169 @@ describe( 'FeedbackPrompt', () => {
 			);
 		}
 	);
+
+	it.each( [ 'Yes, this was helpful', 'No, this was not helpful' ] )(
+		'should show no "Help us improve" menu when "%s" is clicked without feedback options',
+		async ( buttonName ) => {
+			fetchMock.post( feedbackEndpoint, {
+				status: 200,
+				body: { success: true },
+			} );
+
+			const { getByRole, queryByRole, findByText } = render(
+				<FeedbackPrompt
+					feedbackNamespace="analytics"
+					feedbackGroup="test_vote"
+					gaTrackingEventArgs={ { category: 'test-feedback-survey' } }
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: buttonName } ) );
+
+			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
+			expect(
+				await findByText( 'Thanks for the feedback!' )
+			).toBeInTheDocument();
+		}
+	);
+
+	describe( 'with feedback options', () => {
+		const originalWindowWidth = global.innerWidth;
+
+		afterEach( () => {
+			global.innerWidth = originalWindowWidth;
+		} );
+
+		it.each( [
+			[ 'top-end', 1280 ],
+			[ 'top-start', 600 ],
+		] )(
+			'should open the "Help us improve" menu with the `%s` placement on a %ipx wide screen',
+			async ( placement, width ) => {
+				global.innerWidth = width;
+
+				fetchMock.post( feedbackEndpoint, {
+					status: 200,
+					body: { success: true },
+				} );
+
+				const { getByRole, waitForRegistry } = render(
+					<FeedbackPrompt
+						feedbackNamespace="analytics"
+						feedbackGroup="test_vote"
+						gaTrackingEventArgs={ {
+							category: 'test-feedback-survey',
+						} }
+						feedbackOptions={ {
+							up: [
+								{
+									id: 'up-reason',
+									label: 'Up reason',
+									value: 'up_reason',
+								},
+							],
+						} }
+					/>,
+					{ registry }
+				);
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Yes, this was helpful' } )
+				);
+
+				expect(
+					getByRole( 'menu' ).closest(
+						'.googlesitekit-feedback-menu'
+					)
+				).toHaveClass( `googlesitekit-feedback-menu--${ placement }` );
+
+				await waitForRegistry();
+			}
+		);
+
+		it.each( [
+			[
+				'Yes, this was helpful',
+				'Up reason',
+				'Down reason',
+				'up_reason',
+			],
+			[
+				'No, this was not helpful',
+				'Down reason',
+				'Up reason',
+				'down_reason',
+			],
+		] )(
+			'should open the "Help us improve" menu when "%s" is clicked, and send the chosen reason without a GA event',
+			async ( buttonName, reasonLabel, otherReasonLabel, value ) => {
+				fetchMock.post( feedbackEndpoint, {
+					status: 200,
+					body: { success: true },
+				} );
+
+				const { getByRole, queryByRole, findByText } = render(
+					<FeedbackPrompt
+						feedbackNamespace="analytics"
+						feedbackGroup="test_vote"
+						gaTrackingEventArgs={ {
+							category: 'test-feedback-survey',
+						} }
+						feedbackOptions={ {
+							up: [
+								{
+									id: 'up-reason',
+									label: 'Up reason',
+									value: 'up_reason',
+								},
+							],
+							down: [
+								{
+									id: 'down-reason',
+									label: 'Down reason',
+									value: 'down_reason',
+								},
+							],
+						} }
+					/>,
+					{ registry }
+				);
+
+				fireEvent.click( getByRole( 'button', { name: buttonName } ) );
+
+				expect(
+					getByRole( 'heading', { name: 'Help us improve' } )
+				).toBeInTheDocument();
+				expect(
+					queryByRole( 'menuitem', { name: otherReasonLabel } )
+				).not.toBeInTheDocument();
+
+				mockTrackEvent.mockClear();
+
+				fireEvent.click(
+					getByRole( 'menuitem', { name: reasonLabel } )
+				);
+
+				expect(
+					await findByText( 'Thanks for the feedback!' )
+				).toBeInTheDocument();
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( feedbackEndpoint, {
+						body: {
+							data: {
+								namespace: 'analytics',
+								group: 'test_vote',
+								key: 'vote_reason',
+								value,
+							},
+						},
+					} )
+				);
+
+				expect( mockTrackEvent ).not.toHaveBeenCalled();
+			}
+		);
+	} );
 } );
