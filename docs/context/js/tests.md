@@ -350,7 +350,7 @@ Jest discovers any `*.test.{js,jsx,ts,tsx}` file co-located with the code.
 Test titles: an `it(...)` title continues a sentence that starts with "it", so
 `it( 'renders the report', … )` and `it( 'should render the report', … )` both work. A
 `test(...)` title has no implied subject, so it only needs to state the behavior clearly
-(e.g. `test( 'the report renders with zero data', … )`). `describe(...)` titles name the unit
+(e.g., `test( 'the report renders with zero data', … )`). `describe(...)` titles name the unit
 or scenario under test.
 
 ## End-to-End Testing
