@@ -115,9 +115,10 @@ class AMP_Tag extends Module_AMP_Tag {
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
 
 		printf(
-			'<amp-auto-ads type="adsense" %s%s></amp-auto-ads>',
+			'<amp-auto-ads type="adsense" %s%s%s></amp-auto-ads>',
 			$attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$this->get_tag_blocked_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_tag_blocked_on_consent_attribute() returns a fixed attribute.
+			$this->get_tag_id_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_tag_id_attribute() escapes the tag ID.
 		);
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
@@ -143,9 +144,10 @@ class AMP_Tag extends Module_AMP_Tag {
 		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
 
 		$tag = sprintf(
-			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads>',
+			'<amp-auto-ads type="adsense" data-ad-client="%s"%s%s></amp-auto-ads>',
 			esc_attr( $this->tag_id ),
-			$this->get_tag_blocked_on_consent_attribute()
+			$this->get_tag_blocked_on_consent_attribute(),
+			$this->get_tag_id_attribute()
 		);
 
 		return $snippet_comment_begin . $tag . $snippet_comment_end . $content;
@@ -183,7 +185,11 @@ class AMP_Tag extends Module_AMP_Tag {
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
 
-		printf( '<amp-story-auto-ads><script type="application/json">%s</script></amp-story-auto-ads>', wp_json_encode( $config ) );
+		printf(
+			'<amp-story-auto-ads%s><script type="application/json">%s</script></amp-story-auto-ads>',
+			$this->get_tag_id_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_tag_id_attribute() escapes the tag ID.
+			wp_json_encode( $config )
+		);
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
 	}

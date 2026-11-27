@@ -387,6 +387,124 @@ class AdSenseTest extends TestCase {
 		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output, 'Content should include data-ad-client when in the loop.' );
 	}
 
+	public function test_render__tag_id_attribute() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'   => 'ca-pub-12345678',
+				'useSnippet' => true,
+			)
+		);
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_head' );
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		// Fails if this filter's `googlesitekit_tag` key replaces the tag ID attribute.
+		add_filter(
+			'googlesitekit_auto_ads_opt',
+			function () {
+				return array( 'googlesitekit_tag' => 'ca-pub-99999999' );
+			}
+		);
+
+		$output = $this->capture_action( 'wp_head' );
+
+		$this->assertMatchesRegularExpression( '/<script [^>]*data-googlesitekit-tag="ca-pub-12345678"/', $output, 'The AdSense script should have the client ID in its tag ID attribute.' );
+		$this->assertStringNotContainsString( 'ca-pub-99999999', $output, 'A filter should not replace the client ID in the tag ID attribute.' );
+		$this->assertStringContainsString( '<!-- Google AdSense snippet added by Site Kit -->', $output, 'The AdSense script should keep its opening comment.' );
+		$this->assertStringContainsString( '<!-- End Google AdSense snippet added by Site Kit -->', $output, 'The AdSense script should keep its closing comment.' );
+	}
+
+	public function test_render_amp__tag_id_attribute() {
+		$adsense = new AdSense( $this->get_amp_primary_context() );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'   => 'ca-pub-12345678',
+				'useSnippet' => true,
+			)
+		);
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_body_open' );
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		// Fails if the tag ID attribute goes through the attributes this filter replaces.
+		add_filter(
+			'googlesitekit_amp_auto_ads_attributes',
+			function () {
+				return array( 'ad-client' => 'ca-pub-12345678' );
+			}
+		);
+
+		$output = $this->capture_action( 'wp_body_open' );
+
+		$this->assertMatchesRegularExpression( '/<amp-auto-ads [^>]*data-googlesitekit-tag="ca-pub-12345678"/', $output, 'The amp-auto-ads element should have the client ID in its tag ID attribute.' );
+		$this->assertStringContainsString( '<!-- Google AdSense AMP snippet added by Site Kit -->', $output, 'The AMP snippet should keep its opening comment.' );
+		$this->assertStringContainsString( '<!-- End Google AdSense AMP snippet added by Site Kit -->', $output, 'The AMP snippet should keep its closing comment.' );
+	}
+
+	public function test_amp_content__tag_id_attribute() {
+		$adsense = new AdSense( $this->get_amp_primary_context() );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'   => 'ca-pub-12345678',
+				'useSnippet' => true,
+			)
+		);
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'the_content' );
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		// We need to fake the global to allow the hook to add the tag.
+		global $wp_query;
+		$wp_query->in_the_loop = true;
+
+		$output = apply_filters( 'the_content', 'test content' );
+
+		$this->assertMatchesRegularExpression( '/<amp-auto-ads [^>]*data-googlesitekit-tag="ca-pub-12345678"/', $output, 'The amp-auto-ads element in the content should have the client ID in its tag ID attribute.' );
+		$this->assertStringContainsString( '<!-- Google AdSense AMP snippet added by Site Kit -->', $output, 'The AMP snippet in the content should keep its opening comment.' );
+		$this->assertStringContainsString( '<!-- End Google AdSense AMP snippet added by Site Kit -->', $output, 'The AMP snippet in the content should keep its closing comment.' );
+	}
+
+	public function test_story_auto_ads__tag_id_attribute() {
+		register_post_type( 'web-story', array( 'public' => true ) );
+		$story_id = $this->factory()->post->create( array( 'post_type' => 'web-story' ) );
+		$this->go_to( get_permalink( $story_id ) );
+
+		$adsense = new AdSense( $this->get_amp_primary_context() );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'         => 'ca-pub-12345678',
+				'useSnippet'       => true,
+				'webStoriesAdUnit' => '1234567890',
+			)
+		);
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'web_stories_print_analytics' );
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		$output = $this->capture_action( 'web_stories_print_analytics' );
+
+		$this->assertMatchesRegularExpression( '/<amp-story-auto-ads data-googlesitekit-tag="ca-pub-12345678">/', $output, 'The amp-story-auto-ads element should have the client ID in its tag ID attribute.' );
+		$this->assertStringContainsString( '<!-- Google AdSense AMP snippet added by Site Kit -->', $output, 'The story snippet should keep its opening comment.' );
+		$this->assertStringContainsString( '<!-- End Google AdSense AMP snippet added by Site Kit -->', $output, 'The story snippet should keep its closing comment.' );
+
+		preg_match( '/<script type="application\/json">(.*?)<\/script>/', $output, $config_json );
+		$this->assertArrayHasKey( 1, $config_json, 'The amp-story-auto-ads element should have its JSON configuration.' );
+		$this->assertArrayNotHasKey( 'data-googlesitekit-tag', json_decode( $config_json[1], true )['ad-attributes'], 'The ad attributes of the JSON configuration should have no tag ID attribute.' );
+	}
+
 	public function data_amp_auto_ads_tag_in_the_loop() {
 		return array(
 			'primary'   => array(

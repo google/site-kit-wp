@@ -93,7 +93,14 @@ class Web_Tag extends Module_Web_Tag {
 		}
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
-		BC_Functions::wp_print_script_tag( array_merge( $adsense_script_attributes, $adsense_attributes ) );
+		// The tag ID attribute comes after the `googlesitekit_auto_ads_opt` attributes, so that filter can't replace it.
+		BC_Functions::wp_print_script_tag(
+			array_merge(
+				$adsense_script_attributes,
+				$adsense_attributes,
+				array( self::TAG_ID_ATTRIBUTE => $this->tag_id )
+			)
+		);
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 	}
 }
