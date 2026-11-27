@@ -253,7 +253,7 @@ describe( 'KeyFactors', () => {
 			} )
 		).toBeInTheDocument();
 		expect(
-			within( homepage ).getByText( 'Top changes within Homepage' )
+			within( homepage ).getByText( 'Top changes' )
 		).toBeInTheDocument();
 		expect( queryByText( '/' ) ).not.toBeInTheDocument();
 	} );
@@ -314,7 +314,7 @@ describe( 'KeyFactors', () => {
 		);
 	} );
 
-	it( 'should list the attributes of a card under "Top changes within", each with the title of its kind, its value and the change in its visits', () => {
+	it( 'should list the attributes of a card under "Top changes", each with the title of its kind, its value and the change in its visits', () => {
 		const { getByRole } = renderKeyFactors();
 
 		const referral = getByRole( 'region', { name: 'Referral' } );
@@ -324,9 +324,13 @@ describe( 'KeyFactors', () => {
 			)
 		);
 
+		// The card's title names the driver, so the heading doesn't repeat it.
+		expect( within( referral ).getByText( 'Top changes' ) ).toHaveClass(
+			'googlesitekit-traffic-overview__key-factor-attributes-heading'
+		);
 		expect(
-			within( referral ).getByText( 'Top changes within Referral' )
-		).toBeInTheDocument();
+			within( referral ).queryByText( /Top changes within/ )
+		).not.toBeInTheDocument();
 		// The testing library gives `dt` no role, so the pairs are read by tag.
 		expect(
 			attributes.map( ( attribute ) => [
@@ -978,20 +982,43 @@ describe( 'KeyFactors', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should leave out "Top changes within" when a card has no attributes', () => {
-		const { getByRole, queryByText } = renderKeyFactors( {
+	it( 'should leave out "Top changes", and the rail down the card, when a card has no attributes', () => {
+		const { getByRole } = renderKeyFactors( {
 			keyFactors: [ { ...REFERRAL, attributes: [] }, ORGANIC_SEARCH ],
 		} );
 
+		const referral = getByRole( 'region', { name: 'Referral' } );
+		const organicSearch = getByRole( 'region', { name: 'Organic Search' } );
+
 		expect(
-			getByRole( 'region', { name: 'Referral' } )
-		).toBeInTheDocument();
-		expect(
-			queryByText( 'Top changes within Referral' )
+			within( referral ).queryByText( 'Top changes' )
 		).not.toBeInTheDocument();
+		// The modifier hides the rail, which would otherwise run down the
+		// empty space of the card's row beside a card with attributes.
+		expect( referral ).toHaveClass(
+			'googlesitekit-traffic-overview__key-factor--without-details'
+		);
+		expect( organicSearch ).not.toHaveClass(
+			'googlesitekit-traffic-overview__key-factor--without-details'
+		);
 	} );
 
-	it( 'should say that the change of a card without attributes was spread across many pages, under "Top changes within", in place of the attributes', () => {
+	it( 'should give a card’s title in full on hover, since a long title is cut off', () => {
+		const label =
+			'The complete guide to making ice cream at home without a machine';
+		const { getByRole } = renderKeyFactors( {
+			keyFactors: [ { ...HOMEPAGE, label }, REFERRAL ],
+		} );
+
+		expect(
+			getByRole( 'heading', { level: 4, name: label } )
+		).toHaveAttribute( 'title', label );
+		expect(
+			getByRole( 'heading', { level: 4, name: 'Referral' } )
+		).toHaveAttribute( 'title', 'Referral' );
+	} );
+
+	it( 'should say that the change of a card without attributes was spread across many pages, under "Top changes", in place of the attributes', () => {
 		// The card says why it has no attributes, so it shows even as the
 		// only card.
 		const { getByRole } = renderKeyFactors( {
@@ -1002,9 +1029,11 @@ describe( 'KeyFactors', () => {
 
 		const card = getByRole( 'region', { name: 'Referral' } );
 
-		expect(
-			within( card ).getByText( 'Top changes within Referral' )
-		).toBeInTheDocument();
+		expect( within( card ).getByText( 'Top changes' ) ).toBeInTheDocument();
+		// The spread is a real answer, so the card keeps its rail.
+		expect( card ).not.toHaveClass(
+			'googlesitekit-traffic-overview__key-factor--without-details'
+		);
 		expect(
 			card.querySelector(
 				'.googlesitekit-traffic-overview__key-factor-spread'

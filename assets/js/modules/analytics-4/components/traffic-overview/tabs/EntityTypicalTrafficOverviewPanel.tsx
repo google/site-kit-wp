@@ -30,17 +30,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { Select, useInViewSelect } from 'googlesitekit-data';
 import ReportError from '@/js/components/ReportError';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import TypicalTrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TypicalTrafficBreakdown';
 import TypicalTrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart';
 import TypicalTotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TypicalTotalVisitors';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useEntityTrafficReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useEntityTrafficReports';
+import { useTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficDateRange';
 import {
 	getDailyTrafficFromReport,
 	getMetricValue,
@@ -64,10 +64,8 @@ const EntityTypicalTrafficOverviewPanel: FC = () => {
 		[ canViewSharedAnalytics4 ]
 	);
 
-	const { startDate, endDate } = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
-		[]
-	);
+	// The typical traffic view ends its ranges on the last full day.
+	const { startDate, endDate } = useTypicalTrafficDateRange();
 
 	const isLoading = ! loaded || isGatheringData === undefined;
 

@@ -546,6 +546,12 @@ $traffic-overview-column-gap: 42px;
 			@include tile-connector(14px);
 		}
 
+		// A card with nothing under its title keeps its dot, without the rail
+		// that would run down the empty space of its row.
+		.googlesitekit-traffic-overview__key-factor--without-details::before {
+			display: none;
+		}
+
 		.googlesitekit-traffic-overview__key-factor-header {
 			align-items: flex-start;
 			display: flex;
@@ -554,13 +560,15 @@ $traffic-overview-column-gap: 42px;
 		}
 
 		// The design gives the title a 29px row, with 2px above its 24px line.
+		// A long name, such as a page's title, is cut off with an ellipsis
+		// instead of pushing the badge out of the card.
 		.googlesitekit-traffic-overview__key-factor-title {
 			color: $c-surfaces-on-surface;
 			margin: 2px 0 3px;
 			min-width: 0;
-
-			// A long name wraps instead of pushing the badge out of the card.
-			overflow-wrap: anywhere;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
 		// The badge sits 1px down in the title's 29px row. Its colors are those
@@ -596,9 +604,6 @@ $traffic-overview-column-gap: 42px;
 		.googlesitekit-traffic-overview__key-factor-attributes-heading {
 			color: $c-surfaces-on-surface;
 			margin: 0 0 16px;
-
-			// The heading names the driver, so a long name wraps here too.
-			overflow-wrap: anywhere;
 		}
 
 		.googlesitekit-traffic-overview__key-factor-attribute-list {

@@ -32,6 +32,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { useTrafficReport } from './useTrafficReport';
+import { useTypicalTrafficDateRange } from './useTypicalTrafficDateRange';
 
 const [ CHANNELS_COLUMN, LOCATIONS_COLUMN, DEVICES_COLUMN ] =
 	TYPICAL_TRAFFIC_BREAKDOWN_COLUMNS;
@@ -43,6 +44,24 @@ const LOCATIONS_REPORT_OPTIONS =
 	getTypicalBreakdownReportOptions( LOCATIONS_COLUMN );
 const DEVICES_REPORT_OPTIONS =
 	getTypicalBreakdownReportOptions( DEVICES_COLUMN );
+
+/**
+ * Adds the typical traffic view's date range to a report's options.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} reportOptions The report's options.
+ * @param {string} startDate     The first day of the range.
+ * @param {string} endDate       The last day of the range.
+ * @return {Object} The report's options with the range.
+ */
+function withDates(
+	reportOptions: Partial< ReportOptions >,
+	startDate: string,
+	endDate: string
+): Partial< ReportOptions > {
+	return { ...reportOptions, startDate, endDate };
+}
 
 export interface TrafficBreakdownReports {
 	/**
@@ -65,18 +84,33 @@ export interface TrafficBreakdownReports {
  * Each report counts the visits of each value of its column's dimension over
  * the selected range.
  *
- * `useTrafficReport` adds the selected date range to each report, and the
- * entity URL on an entity dashboard, so the breakdown covers the page alone
- * there.
+ * Each report covers the selected date range as the typical traffic view
+ * reads it, ending on the last full day. `useTrafficReport` adds the entity
+ * URL on an entity dashboard, so the breakdown covers the page alone there.
  *
  * @since n.e.x.t
  *
  * @return {Object} The values of each column, and the arguments of the three reports.
  */
 export function useTrafficBreakdownReports(): TrafficBreakdownReports {
-	const channels = useTrafficReport( CHANNELS_REPORT_OPTIONS );
-	const locations = useTrafficReport( LOCATIONS_REPORT_OPTIONS );
-	const devices = useTrafficReport( DEVICES_REPORT_OPTIONS );
+	const { startDate, endDate } = useTypicalTrafficDateRange();
+
+	const reportOptions = useMemo(
+		() => ( {
+			channels: withDates( CHANNELS_REPORT_OPTIONS, startDate, endDate ),
+			locations: withDates(
+				LOCATIONS_REPORT_OPTIONS,
+				startDate,
+				endDate
+			),
+			devices: withDates( DEVICES_REPORT_OPTIONS, startDate, endDate ),
+		} ),
+		[ startDate, endDate ]
+	);
+
+	const channels = useTrafficReport( reportOptions.channels );
+	const locations = useTrafficReport( reportOptions.locations );
+	const devices = useTrafficReport( reportOptions.devices );
 
 	const values = useMemo(
 		() => ( {

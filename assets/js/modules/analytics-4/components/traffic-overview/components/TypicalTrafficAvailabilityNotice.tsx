@@ -30,11 +30,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficDateRange';
 import {
 	TypicalTrafficAvailability,
 	getTypicalTrafficAvailabilityText,
@@ -53,16 +52,11 @@ const TypicalTrafficAvailabilityNotice: FC<
 	TypicalTrafficAvailabilityNoticeProps
 > = ( { availability, insightsEnabled = false, loaded = true } ) => {
 	// A waiting part's notice says when to check back only for a range that
-	// ends on the last day a range can end on, today. An earlier range never
-	// gains the history it lacks, so the notice asks for one that ends later.
-	const endDate = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates().endDate,
-		[]
-	);
-	const latestSelectableDate = useSelect(
-		( select: Select ) => select( CORE_USER ).getLatestSelectableDate(),
-		[]
-	);
+	// ends on the last day a range can end on, the last full day. An earlier
+	// range never gains the history it lacks, so the notice asks for one that
+	// ends later.
+	const { endDate, latestDate: latestSelectableDate } =
+		useTypicalTrafficDateRange();
 
 	if ( ! loaded ) {
 		return null;

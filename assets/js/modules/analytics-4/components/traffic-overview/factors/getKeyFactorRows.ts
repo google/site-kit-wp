@@ -33,7 +33,7 @@ export type NamedKeyFactorAttribute = BenchmarkingKeyFactorAttribute & {
 	label: string;
 };
 
-/** A row a key factor card lists under "Top changes within". */
+/** A row a key factor card lists under "Top changes". */
 export interface KeyFactorRow {
 	/** The attribute the row shows. */
 	attribute: NamedKeyFactorAttribute;

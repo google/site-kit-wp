@@ -50,6 +50,7 @@ import {
 	getMetricValue,
 	getTrafficOverviewVisits,
 	getTypicalBreakdownRows,
+	getTypicalTrafficLatestDate,
 	hasTypicalTrafficRange,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -62,7 +63,7 @@ import {
 	BenchmarkingInsight,
 	DecodedBenchmarkingResponse,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
-import { getDayCount, getPreviousDate, stringToDate } from '@/js/util';
+import { getDayCount, stringToDate } from '@/js/util';
 import type { GetPDFDataParams } from './getPDFData';
 import {
 	TrafficOverviewTypicalTrafficPDFData,
@@ -376,12 +377,11 @@ function getTypicalTraffic(
 		insight: getLoadedInsight( registry, startDate, endDate ),
 		endDate,
 		// The PDF's date ranges end on the day before the reference date, as
-		// `PDFExportOrchestrator` resolves them, so a range that ends then
-		// gains a waiting part by waiting, as one that ends today does on the
-		// dashboard.
-		latestSelectableDate: getPreviousDate(
-			registry.select( CORE_USER ).getReferenceDate(),
-			1
+		// `PDFExportOrchestrator` resolves them and as the dashboard's typical
+		// traffic view does, so a range that ends then gains a waiting part by
+		// waiting.
+		latestSelectableDate: getTypicalTrafficLatestDate(
+			registry.select( CORE_USER ).getReferenceDate()
 		),
 		referenceSiteURL:
 			registry.select( CORE_SITE ).getReferenceSiteURL() || undefined,

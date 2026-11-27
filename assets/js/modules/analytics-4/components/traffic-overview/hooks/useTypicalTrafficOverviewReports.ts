@@ -25,7 +25,6 @@ import { useMemo } from '@wordpress/element';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getTotalsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { DAILY_VISITS_REPORT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
 import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils';
@@ -36,6 +35,7 @@ import { useBenchmarkingData } from './useBenchmarkingData';
 import { useKeyFactorsVisibility } from './useKeyFactorsVisibility';
 import { useTrafficBreakdownReports } from './useTrafficBreakdownReports';
 import { useTrafficReport } from './useTrafficReport';
+import { useTypicalTrafficDateRange } from './useTypicalTrafficDateRange';
 
 export interface TypicalTrafficOverviewReports {
 	/**
@@ -102,15 +102,17 @@ export interface TypicalTrafficOverviewReports {
  * @return {Object} The totals report, the daily visits report, the values of each breakdown column, and the benchmarking response, whether they have finished, their errors, and a function that requests the benchmarking response again.
  */
 export function useTypicalTrafficOverviewReports(): TypicalTrafficOverviewReports {
-	const { compareStartDate, compareEndDate } = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( { compare: true } ),
-		[]
-	);
+	// The typical traffic view ends its ranges on the last full day.
+	const { startDate, endDate, compareStartDate, compareEndDate } =
+		useTypicalTrafficDateRange();
 
 	const totalsReportOptions = useMemo(
-		() => getTotalsReportOptions( { compareStartDate, compareEndDate } ),
-		[ compareStartDate, compareEndDate ]
+		() => ( {
+			startDate,
+			endDate,
+			...getTotalsReportOptions( { compareStartDate, compareEndDate } ),
+		} ),
+		[ startDate, endDate, compareStartDate, compareEndDate ]
 	);
 
 	// The range before the selected one gives the visits the panel compares
@@ -118,10 +120,12 @@ export function useTypicalTrafficOverviewReports(): TypicalTrafficOverviewReport
 	const dailyVisitsReportOptions = useMemo(
 		() => ( {
 			...DAILY_VISITS_REPORT_OPTIONS,
+			startDate,
+			endDate,
 			compareStartDate,
 			compareEndDate,
 		} ),
-		[ compareStartDate, compareEndDate ]
+		[ startDate, endDate, compareStartDate, compareEndDate ]
 	);
 
 	const totals = useTrafficReport( totalsReportOptions );

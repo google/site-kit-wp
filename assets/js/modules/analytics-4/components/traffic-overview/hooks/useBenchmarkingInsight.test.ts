@@ -50,9 +50,9 @@ import {
 import { useBenchmarkingInsight } from './useBenchmarkingInsight';
 
 describe( 'useBenchmarkingInsight', () => {
-	// With the reference date below, `last-28-days` runs from `2025-01-09` to
-	// `2025-02-05`.
-	const dates = { startDate: '2025-01-09', endDate: '2025-02-05' };
+	// With the reference date below, the typical traffic view's `last-28-days`
+	// runs from `2025-01-08` to `2025-02-04`, the last full day.
+	const dates = { startDate: '2025-01-08', endDate: '2025-02-04' };
 
 	const benchmarkingDataEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'

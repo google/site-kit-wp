@@ -30,6 +30,7 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { Select } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { TYPICAL_TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/typicalColumns';
@@ -74,7 +75,11 @@ import {
 	getDailyVisitsReportArgs,
 	getTypicalBreakdownReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
-import { TrafficBreakdownValue } from '@/js/modules/analytics-4/components/traffic-overview/utils';
+import {
+	TrafficBreakdownValue,
+	TypicalTrafficDateRange,
+	selectTypicalTrafficDateRange,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
@@ -505,9 +510,25 @@ export const TRAFFIC_BREAKDOWN_PAIRS: Record<
 };
 
 /**
+ * Gets the selected date range as the typical traffic view reads it, ending on
+ * the day before the reference date, the last full day.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry with the selected date range.
+ * @return {Object} The range's dates, the number of its days, and the last day a range can end on.
+ */
+export function getTypicalTrafficDateRange(
+	registry: WPDataRegistry
+): TypicalTrafficDateRange {
+	return selectTypicalTrafficDateRange( registry.select as Select );
+}
+
+/**
  * Builds the arguments the Typical Traffic Overview panel passes to
  * `getReport` for the channels, locations, and devices reports of its
- * breakdown, over the selected date range and for the current entity URL.
+ * breakdown, over the selected date range as the typical traffic view reads
+ * it, ending on the last full day, and for the current entity URL.
  *
  * @since n.e.x.t
  *
@@ -517,9 +538,7 @@ export const TRAFFIC_BREAKDOWN_PAIRS: Record<
 export function getTypicalTrafficBreakdownReportArgs(
 	registry: WPDataRegistry
 ): Record< string, ReportOptions > {
-	const { startDate, endDate } = registry
-		.select( CORE_USER )
-		.getDateRangeDates();
+	const { startDate, endDate } = getTypicalTrafficDateRange( registry );
 	const url = registry.select( CORE_SITE ).getCurrentEntityURL() || undefined;
 
 	return Object.fromEntries(
@@ -540,8 +559,9 @@ export function getTypicalTrafficBreakdownReportArgs(
 
 /**
  * Puts the channels, locations, and devices reports of the Typical Traffic
- * Overview breakdown in the store, over the selected date range and for the current
- * entity URL, so the breakdown renders without sending a request for them.
+ * Overview breakdown in the store, over the selected date range as the typical
+ * traffic view reads it and for the current entity URL, so the breakdown
+ * renders without sending a request for them.
  *
  * @since n.e.x.t
  *
@@ -569,8 +589,9 @@ export function provideTypicalTrafficBreakdownReports(
 
 /**
  * Builds the arguments the Typical Traffic Overview panel passes to
- * `getReport` for the report of visits on each day of the selected range,
- * against the range before it, and for the current entity URL.
+ * `getReport` for the report of visits on each day of the selected range, as
+ * the typical traffic view reads it, against the range before it, and for the
+ * current entity URL.
  *
  * @since n.e.x.t
  *
@@ -580,9 +601,8 @@ export function provideTypicalTrafficBreakdownReports(
 export function getTypicalTrafficDailyVisitsReportArgs(
 	registry: WPDataRegistry
 ): ReportOptions {
-	const { startDate, endDate, compareStartDate, compareEndDate } = registry
-		.select( CORE_USER )
-		.getDateRangeDates( { compare: true } );
+	const { startDate, endDate, compareStartDate, compareEndDate } =
+		getTypicalTrafficDateRange( registry );
 	const url = registry.select( CORE_SITE ).getCurrentEntityURL() || undefined;
 
 	return getDailyVisitsReportArgs( {
@@ -615,9 +635,7 @@ export function provideTypicalTrafficDailyVisitsReport(
 	days?: Array< [ string, number ] >,
 	totalVisits: BenchmarkingVisits = PLACEHOLDER_TOTAL_VISITS
 ) {
-	const { startDate, endDate } = registry
-		.select( CORE_USER )
-		.getDateRangeDates();
+	const { startDate, endDate } = getTypicalTrafficDateRange( registry );
 	const options = getTypicalTrafficDailyVisitsReportArgs( registry );
 
 	const rows =
@@ -1125,8 +1143,9 @@ export function createBenchmarkingResponse(
 }
 
 /**
- * Stores a benchmarking response for the selected date range, so the Traffic
- * overview panel renders it without a request.
+ * Stores a benchmarking response for the selected date range, as the typical
+ * traffic view reads it, so the Traffic overview panel renders it without a
+ * request.
  *
  * @since n.e.x.t
  *
@@ -1138,9 +1157,7 @@ export function provideBenchmarkingResponse(
 	registry: WPDataRegistry,
 	response?: DecodedBenchmarkingResponse
 ) {
-	const { startDate, endDate } = registry
-		.select( CORE_USER )
-		.getDateRangeDates();
+	const { startDate, endDate } = getTypicalTrafficDateRange( registry );
 
 	provideBenchmarkingData(
 		registry,

@@ -101,7 +101,7 @@ describe( 'TypicalTrafficAvailabilityNotice', () => {
 			'googlesitekit-traffic-overview__availability-notice'
 		);
 		expect( notices[ 0 ] ).toHaveTextContent(
-			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.'
+			'We’re still learning what’s usual for your site. Check back on February 7, 2025 to see your biggest traffic shifts, and on April 3, 2025 to see your typical traffic range.'
 		);
 	} );
 

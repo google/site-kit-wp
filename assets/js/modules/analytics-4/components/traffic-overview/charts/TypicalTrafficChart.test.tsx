@@ -93,9 +93,10 @@ describe( 'TypicalTrafficChart', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// `last-3-days` against the `2025-01-16` reference date covers
-		// `2025-01-14`, `2025-01-15`, and `2025-01-16`.
-		registry.dispatch( CORE_USER ).setReferenceDate( '2025-01-16' );
+		// The typical traffic view ends its ranges on the day before the
+		// reference date, so `last-3-days` against the `2025-01-17` reference
+		// date covers `2025-01-14`, `2025-01-15`, and `2025-01-16`.
+		registry.dispatch( CORE_USER ).setReferenceDate( '2025-01-17' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-3-days' );
 		provideSiteInfo( registry );
 		provideModules( registry, [
@@ -279,6 +280,20 @@ describe( 'TypicalTrafficChart', () => {
 				text: 'Google Analytics property created',
 			},
 		] );
+	} );
+
+	it( 'should give the chart the first and the last day of the range, so its date markers follow the days it plots rather than the dashboard’s range', async () => {
+		render( <TypicalTrafficChart dailyTraffic={ dailyTraffic } />, {
+			registry,
+		} );
+
+		// The dashboard's range ends on the reference date, `2025-01-17`.
+		const { startDate, endDate } = await getLastChartProps();
+
+		expect( { startDate, endDate } ).toEqual( {
+			startDate: '2025-01-14',
+			endDate: '2025-01-16',
+		} );
 	} );
 
 	it( 'draws no marker when the Analytics property was created before the range', async () => {
@@ -493,14 +508,17 @@ describe( 'TypicalTrafficChart', () => {
 		expect( hAxis.ticks ).toEqual( options.hAxis.ticks );
 	} );
 
-	it( 'should set no horizontal view window once the property has data', async () => {
+	it( 'should run the horizontal axis from the first day it plots to the last, so the line reaches both edges of the chart area', async () => {
 		render( <TypicalTrafficChart dailyTraffic={ dailyTraffic } />, {
 			registry,
 		} );
 
 		const { options } = await getLastChartProps();
 
-		expect( options.hAxis.viewWindow ).toBeUndefined();
+		expect( options.hAxis.viewWindow ).toEqual( {
+			min: new Date( 2025, 0, 14 ),
+			max: new Date( 2025, 0, 16 ),
+		} );
 	} );
 
 	it( 'reads no day to a screen reader while the property is gathering data', async () => {

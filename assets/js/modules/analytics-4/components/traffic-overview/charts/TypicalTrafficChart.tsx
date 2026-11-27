@@ -33,11 +33,11 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { Select, useSelect } from 'googlesitekit-data';
 import GoogleChart from '@/js/components/GoogleChart';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficDateRange';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
-import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
+import { getDateString, getLocale, numFmt } from '@/js/util';
 import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
 import { getPropertyCreatedMarkerDate } from './getPropertyCreatedMarkerDate';
 import { getTrafficLegendItem } from './getTrafficLegendItem';
@@ -99,15 +99,12 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 	bandReferenceDays,
 	lastYearAvailable,
 } ) => {
-	const { startDate, endDate } = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
-		[]
-	);
-
-	const daysInRange = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
-		[]
-	);
+	// The typical traffic view ends its ranges on the last full day.
+	const {
+		startDate,
+		endDate,
+		days: daysInRange,
+	} = useTypicalTrafficDateRange();
 
 	const propertyCreateTime = useSelect(
 		( select: Select ) =>
@@ -138,14 +135,16 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 			// A baseline on the last day draws the gray line along the right edge
 			// of the chart area.
 			baseline: days[ days.length - 1 ]?.date,
-			// `getChartOptions()` drops the ticks while the property is gathering
-			// data unless the chart sets a horizontal view window of its own.
-			...( gatheringData && {
-				viewWindow: {
-					min: stringToDate( startDate ),
-					max: stringToDate( endDate ),
-				},
-			} ),
+			// Without a view window, Google Charts pads the axis past the first
+			// and the last day, so the line and the band would stop short of
+			// the chart area's edges. The window runs from the first day the
+			// chart plots to the last, so they reach both edges. It also keeps
+			// the ticks while the property is gathering data, which
+			// `getChartOptions()` otherwise drops.
+			viewWindow: {
+				min: days[ 0 ]?.date,
+				max: days[ days.length - 1 ]?.date,
+			},
 		},
 		vAxis: {
 			...TYPICAL_TRAFFIC_CHART_OPTIONS.vAxis,
@@ -236,6 +235,10 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 				chartType="LineChart"
 				data={ chartData }
 				dateMarkers={ getPropertyCreatedDateMarkers( markerDate ) }
+				// The chart plots the typical traffic view's range, which
+				// ends on the last full day.
+				startDate={ startDate }
+				endDate={ endDate }
 				gatheringData={ gatheringData }
 				height="256px"
 				loaded={ loaded }

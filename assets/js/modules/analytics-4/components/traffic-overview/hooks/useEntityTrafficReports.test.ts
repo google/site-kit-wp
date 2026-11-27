@@ -60,11 +60,11 @@ describe( 'useEntityTrafficReports', () => {
 
 	const entityURL = 'https://example.com/about/';
 
-	// With the reference date set to 2025-02-05, the `last-28-days` range
-	// covers these dates.
+	// With the reference date set to 2025-02-05, the typical traffic view's
+	// `last-28-days` range covers these dates, ending on the last full day.
 	const totalsArgs: ReportOptions = {
-		startDate: '2025-01-09',
-		endDate: '2025-02-05',
+		startDate: '2025-01-08',
+		endDate: '2025-02-04',
 		metrics: [ { name: 'totalUsers' } ],
 		reportID:
 			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
@@ -72,8 +72,8 @@ describe( 'useEntityTrafficReports', () => {
 	};
 
 	const dailyVisitsArgs: ReportOptions = {
-		startDate: '2025-01-09',
-		endDate: '2025-02-05',
+		startDate: '2025-01-08',
+		endDate: '2025-02-04',
 		metrics: [ { name: 'sessions' } ],
 		dimensions: [ 'date' ],
 		reportID:
@@ -86,8 +86,8 @@ describe( 'useEntityTrafficReports', () => {
 		[ 'country', 'locationsBreakdownArgs' ],
 		[ 'deviceCategory', 'devicesBreakdownArgs' ],
 	].map( ( [ dimensionName, reportIDSuffix ] ) => ( {
-		startDate: '2025-01-09',
-		endDate: '2025-02-05',
+		startDate: '2025-01-08',
+		endDate: '2025-02-04',
 		metrics: [ { name: 'sessions' } ],
 		dimensions: [ dimensionName ],
 		orderby: [ { metric: { metricName: 'sessions' }, desc: true } ],

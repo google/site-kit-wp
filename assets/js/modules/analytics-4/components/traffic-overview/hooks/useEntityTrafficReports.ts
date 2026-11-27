@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useMemo } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
@@ -27,6 +32,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { useTrafficBreakdownReports } from './useTrafficBreakdownReports';
 import { useTrafficReport } from './useTrafficReport';
+import { useTypicalTrafficDateRange } from './useTypicalTrafficDateRange';
 
 // The panel shows no change against the range before, so the totals report
 // leaves that range out.
@@ -69,8 +75,21 @@ export interface EntityTrafficReports {
  * @return {Object} The totals report, the daily visits report, and the values of each breakdown column, whether the reports have finished, and their errors.
  */
 export function useEntityTrafficReports(): EntityTrafficReports {
-	const totals = useTrafficReport( TOTALS_REPORT_OPTIONS );
-	const dailyVisits = useTrafficReport( DAILY_VISITS_REPORT_OPTIONS );
+	// The typical traffic view ends its ranges on the last full day.
+	const { startDate, endDate } = useTypicalTrafficDateRange();
+
+	const totalsReportOptions = useMemo(
+		() => ( { ...TOTALS_REPORT_OPTIONS, startDate, endDate } ),
+		[ startDate, endDate ]
+	);
+
+	const dailyVisitsReportOptions = useMemo(
+		() => ( { ...DAILY_VISITS_REPORT_OPTIONS, startDate, endDate } ),
+		[ startDate, endDate ]
+	);
+
+	const totals = useTrafficReport( totalsReportOptions );
+	const dailyVisits = useTrafficReport( dailyVisitsReportOptions );
 	const breakdown = useTrafficBreakdownReports();
 
 	const loaded = useSelect(

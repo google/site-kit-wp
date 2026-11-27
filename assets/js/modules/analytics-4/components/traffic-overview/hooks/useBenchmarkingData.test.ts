@@ -52,13 +52,13 @@ describe( 'useBenchmarkingData', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// With this reference date, `last-28-days` runs from `2025-01-09` to
-		// `2025-02-05`.
+		// With this reference date, the typical traffic view's `last-28-days`
+		// runs from `2025-01-08` to `2025-02-04`, the last full day.
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	} );
 
-	it( 'should request the selected date range and return the decoded response', async () => {
+	it( 'should request the selected date range, ending on the last full day, and return the decoded response', async () => {
 		fetchMock.get(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
@@ -78,11 +78,11 @@ describe( 'useBenchmarkingData', () => {
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
 			),
-			{ query: { startDate: '2025-01-09', endDate: '2025-02-05' } }
+			{ query: { startDate: '2025-01-08', endDate: '2025-02-04' } }
 		);
 		expect( result.current ).toEqual( {
-			startDate: '2025-01-09',
-			endDate: '2025-02-05',
+			startDate: '2025-01-08',
+			endDate: '2025-02-04',
 			response: decodedBenchmarkingResponse,
 			loading: false,
 			error: undefined,

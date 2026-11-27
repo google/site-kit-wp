@@ -32,7 +32,6 @@ import { Fragment } from '@wordpress/element';
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import ReportError from '@/js/components/ReportError';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { useFeature } from '@/js/hooks/useFeature';
 import TypicalTrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TypicalTrafficBreakdown';
@@ -46,6 +45,7 @@ import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/tra
 import KeyFactors from '@/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors';
 import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
 import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
+import { useTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficDateRange';
 import { useTypicalTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficOverviewReports';
 import {
 	getTrafficOverviewVisits,
@@ -89,15 +89,12 @@ const TypicalTrafficOverviewPanel: FC = () => {
 	const showKeyFactors = isKeyFactorsShown && ! benchmarkingError;
 	const showInsights = showKeyFactors && trafficInsightsEnabled;
 
-	const { startDate, endDate } = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
-		[]
-	);
-
-	const daysInSelectedRange = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
-		[]
-	);
+	// The typical traffic view ends its ranges on the last full day.
+	const {
+		startDate,
+		endDate,
+		days: daysInSelectedRange,
+	} = useTypicalTrafficDateRange();
 
 	const referenceSiteURL = useSelect(
 		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),

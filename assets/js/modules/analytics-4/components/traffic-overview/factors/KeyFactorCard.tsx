@@ -19,13 +19,14 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { FC, MouseEvent } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -184,10 +185,19 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 	// A change spread across many pages is a real answer, rather than a gap,
 	// so it takes the place of the attributes.
 	const showSpread = namedAttributes.length === 0 && spreadAcrossPages;
+	const hasDetails = namedAttributes.length > 0 || showSpread;
 
 	return (
 		<section
-			className="googlesitekit-traffic-overview__key-factor"
+			className={ classnames(
+				'googlesitekit-traffic-overview__key-factor',
+				{
+					// A card with nothing under its title has no connector
+					// running down to the attributes.
+					'googlesitekit-traffic-overview__key-factor--without-details':
+						! hasDetails,
+				}
+			) }
 			aria-labelledby={ titleID }
 		>
 			<div className="googlesitekit-traffic-overview__key-factor-header">
@@ -197,10 +207,14 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 					size={ SIZE_LARGE }
 					id={ titleID }
 					className="googlesitekit-traffic-overview__key-factor-title"
+					// A long name, such as a page's title, is cut off with an
+					// ellipsis, so the `title` gives it in full on hover.
+					title={ name }
 				>
 					{ titleHref ? (
 						// The link leads to another Site Kit dashboard, so it
-						// opens in the same tab.
+						// opens in the same tab. `noFlex` keeps the link
+						// inline, so the ellipsis cuts off its text.
 						<Link
 							href={ titleHref }
 							onClick={ ( event ) =>
@@ -211,6 +225,7 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 							onAuxClick={ (
 								event: MouseEvent< HTMLAnchorElement >
 							) => handleLinkClick( event, titleHref ) }
+							noFlex
 						>
 							{ name }
 						</Link>
@@ -230,19 +245,16 @@ const KeyFactorCard: FC< KeyFactorCardProps > = ( {
 					{ shareText }
 				</Typography>
 			) }
-			{ ( namedAttributes.length > 0 || showSpread ) && (
+			{ hasDetails && (
 				<div className="googlesitekit-traffic-overview__key-factor-attributes">
+					{ /* The card's title names the driver, so the heading doesn't repeat it. */ }
 					<Typography
 						as="p"
 						type={ TYPE_LABEL }
 						size={ SIZE_MEDIUM }
 						className="googlesitekit-traffic-overview__key-factor-attributes-heading"
 					>
-						{ sprintf(
-							/* translators: %s: the name of the driver behind the change, such as "Referral" */
-							__( 'Top changes within %s', 'google-site-kit' ),
-							name
-						) }
+						{ __( 'Top changes', 'google-site-kit' ) }
 					</Typography>
 					{ showSpread ? (
 						<Typography

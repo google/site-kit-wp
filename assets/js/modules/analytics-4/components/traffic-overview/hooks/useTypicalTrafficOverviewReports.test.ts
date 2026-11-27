@@ -74,15 +74,16 @@ describe( 'useTypicalTrafficOverviewReports', () => {
 	 * @return {Object} The expected arguments.
 	 */
 	function getExpectedArgs( url?: string ): ReportOptions {
-		// With the reference date set to 2025-02-05, the `last-28-days` range
-		// covers these dates, and the comparison range is the 28 days before.
+		// With the reference date set to 2025-02-05, the typical traffic view's
+		// `last-28-days` range covers these dates, ending on the last full
+		// day, and the comparison range is the 28 days before.
 		return {
-			startDate: '2025-01-09',
-			endDate: '2025-02-05',
+			startDate: '2025-01-08',
+			endDate: '2025-02-04',
 			metrics: [ { name: 'totalUsers' } ],
 			...( url ? { url } : {} ),
-			compareStartDate: '2024-12-12',
-			compareEndDate: '2025-01-08',
+			compareStartDate: '2024-12-11',
+			compareEndDate: '2025-01-07',
 			reportID:
 				'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
 		};
@@ -103,8 +104,8 @@ describe( 'useTypicalTrafficOverviewReports', () => {
 			[ 'country', 'locationsBreakdownArgs' ],
 			[ 'deviceCategory', 'devicesBreakdownArgs' ],
 		].map( ( [ dimensionName, reportIDSuffix ] ) => ( {
-			startDate: '2025-01-09',
-			endDate: '2025-02-05',
+			startDate: '2025-01-08',
+			endDate: '2025-02-04',
 			metrics: [ { name: 'sessions' } ],
 			dimensions: [ dimensionName ],
 			orderby: [ { metric: { metricName: 'sessions' }, desc: true } ],
@@ -445,10 +446,10 @@ describe( 'useTypicalTrafficOverviewReports', () => {
 		// before it, which the hook requests when the benchmarking request
 		// fails.
 		const dailyVisitsArgs: ReportOptions = {
-			startDate: '2025-01-09',
-			endDate: '2025-02-05',
-			compareStartDate: '2024-12-12',
-			compareEndDate: '2025-01-08',
+			startDate: '2025-01-08',
+			endDate: '2025-02-04',
+			compareStartDate: '2024-12-11',
+			compareEndDate: '2025-01-07',
 			metrics: [ { name: 'sessions' } ],
 			dimensions: [ 'date' ],
 			reportID:
@@ -478,13 +479,13 @@ describe( 'useTypicalTrafficOverviewReports', () => {
 				.setErrorForSelector(
 					benchmarkingError,
 					'getBenchmarkingData',
-					[ '2025-01-09', '2025-02-05' ]
+					[ '2025-01-08', '2025-02-04' ]
 				);
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.finishResolution( 'getBenchmarkingData', [
-					'2025-01-09',
-					'2025-02-05',
+					'2025-01-08',
+					'2025-02-04',
 				] );
 		}
 
@@ -507,7 +508,7 @@ describe( 'useTypicalTrafficOverviewReports', () => {
 			await waitForRegistry();
 
 			expect( fetchMock ).toHaveFetchedTimes( 1, benchmarkingEndpoint, {
-				query: { startDate: '2025-01-09', endDate: '2025-02-05' },
+				query: { startDate: '2025-01-08', endDate: '2025-02-04' },
 			} );
 			expect( result.current.benchmarkingResponse ).toEqual(
 				decodedBenchmarkingResponse

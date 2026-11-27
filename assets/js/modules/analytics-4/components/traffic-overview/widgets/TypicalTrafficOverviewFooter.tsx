@@ -30,14 +30,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import AIDisclosure from '@/js/modules/analytics-4/components/ai-insight/AIDisclosure';
 import SourcesLinks from '@/js/modules/analytics-4/components/traffic-overview/components/SourcesLinks';
 import { useBenchmarkingInsight } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingInsight';
 import { useKeyFactorsVisibility } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useKeyFactorsVisibility';
+import { useTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficDateRange';
 import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
 
 const TypicalTrafficOverviewFooter: FC = () => {
@@ -49,15 +48,23 @@ const TypicalTrafficOverviewFooter: FC = () => {
 		isEnabled: showKeyFactors && trafficInsightsEnabled,
 	} );
 
-	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( { compare: true } ),
-		[]
-	);
+	// The source links open the reports for the dates the tab shows, which
+	// end on the last full day.
+	const { startDate, endDate, compareStartDate, compareEndDate } =
+		useTypicalTrafficDateRange();
 
 	// Without the key factors, the tab shows Analytics reports only.
 	if ( ! hasKeyFactors ) {
-		return <TrafficOverviewSourceLink />;
+		return (
+			<TrafficOverviewSourceLink
+				dates={ {
+					startDate,
+					endDate,
+					compareStartDate,
+					compareEndDate,
+				} }
+			/>
+		);
 	}
 
 	// The key factors' search keywords come from Search Console, so the footer

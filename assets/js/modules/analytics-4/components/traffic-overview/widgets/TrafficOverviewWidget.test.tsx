@@ -41,6 +41,7 @@ import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-
 import {
 	getExpiryFromNow,
 	getSectionClassNames,
+	getTypicalTrafficDateRange,
 	provideBenchmarkingResponse,
 	provideFreshMetricsReports,
 	provideRecentActivitySurveyState,
@@ -791,7 +792,7 @@ describe( 'TrafficOverviewWidget', () => {
 		provideBenchmarkingResponse( registry );
 		provideBenchmarkingInsight(
 			registry,
-			registry.select( CORE_USER ).getDateRangeDates()
+			getTypicalTrafficDateRange( registry )
 		);
 
 		const { container, waitForRegistry } = render(

@@ -40,6 +40,7 @@ import {
 	getSectionClassNames,
 	getTypicalTrafficBreakdownReportArgs,
 	getTypicalTrafficDailyVisitsReportArgs,
+	getTypicalTrafficDateRange,
 	provideBenchmarkingResponse,
 	provideTypicalTrafficBreakdownReports,
 	provideTypicalTrafficDailyVisitsReport,
@@ -113,7 +114,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		previousValue: number
 	) {
 		const { startDate, endDate, compareStartDate, compareEndDate } =
-			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
+			getTypicalTrafficDateRange( registry );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -144,7 +145,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 	 */
 	function getTotalsArgs(): ReportOptions {
 		const { startDate, endDate, compareStartDate, compareEndDate } =
-			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
+			getTypicalTrafficDateRange( registry );
 
 		return getTotalsReportArgs( {
 			startDate,
@@ -183,7 +184,10 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		// The typical traffic view ends its ranges on the day before the
+		// reference date, the last full day, so `last-28-days` runs from
+		// `2025-01-09` to `2025-02-05`.
+		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-06' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 		provideSiteInfo( registry );
 		provideModules( registry, [
@@ -760,9 +764,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		function createResponse(
 			fields: Partial< DecodedBenchmarkingResponse > = {}
 		): DecodedBenchmarkingResponse {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 
 			return {
 				...createBenchmarkingResponse( startDate, endDate ),
@@ -779,9 +782,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		 * @return {void}
 		 */
 		function provideBenchmarkingError() {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -1147,7 +1149,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 					bandAvailableFrom: '2025-04-02',
 					keyFactorsAvailableFrom: '2025-02-06',
 				},
-				'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.',
+				'We’re still learning what’s usual for your site. Check back on February 7, 2025 to see your biggest traffic shifts, and on April 3, 2025 to see your typical traffic range.',
 			],
 			[
 				'the site has no recorded traffic',
@@ -1246,9 +1248,9 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 
 		it.each( [
 			[
-				'ends today',
+				'ends on the last full day',
 				null,
-				'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.',
+				'We’re still learning what’s usual for your site. Check back on April 3, 2025 to see your typical traffic range.',
 			],
 			[
 				'ends in the past',
@@ -1359,9 +1361,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		} );
 
 		it( 'should render the sections as placeholders while the benchmarking response is still loading, and render them together when it arrives', async () => {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 
 			// A started resolution sends no request, so the response stays
 			// on its way.
@@ -1678,9 +1679,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				endDate: '2025-02-05',
 			} );
 
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 			const response = createBenchmarkingResponse( startDate, endDate );
 
 			// A 3-day range has no key factors, whatever its history, and the
@@ -1742,7 +1742,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			async ( _, features, hasInsight ) => {
 				provideBenchmarkingInsight(
 					registry,
-					registry.select( CORE_USER ).getDateRangeDates()
+					getTypicalTrafficDateRange( registry )
 				);
 
 				const { container, waitForRegistry } = renderPanel( {
@@ -1840,9 +1840,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				index: number
 			) => BenchmarkingDailyTrafficRow
 		) {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 			const response = createBenchmarkingResponse( startDate, endDate );
 
 			provideBenchmarkingResponse( registry, {
@@ -1893,9 +1892,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		] )(
 			'should say in the typical range tooltip how many weeks of traffic the benchmarking response fitted the band on, %s',
 			async ( _label, lastYearAvailable, name ) => {
-				const { startDate, endDate } = registry
-					.select( CORE_USER )
-					.getDateRangeDates();
+				const { startDate, endDate } =
+					getTypicalTrafficDateRange( registry );
 				const response = createBenchmarkingResponse(
 					startDate,
 					endDate
@@ -1971,9 +1969,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		} );
 
 		it( 'should mark the posts of the content markers of the benchmarking response on the chart', async () => {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 
 			provideBenchmarkingResponse( registry, {
 				...createBenchmarkingResponse( startDate, endDate ),
@@ -2016,9 +2013,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		} );
 
 		it( 'should leave the published posts out of the legend when the benchmarking response has no content markers', async () => {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 
 			provideBenchmarkingResponse( registry, {
 				...createBenchmarkingResponse( startDate, endDate ),
@@ -2093,9 +2089,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		 * @return {void}
 		 */
 		function provideBenchmarkingResponseWithInsightRequest() {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 
 			provideBenchmarkingResponse( registry, {
 				...createBenchmarkingResponse( startDate, endDate ),
@@ -2107,7 +2102,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		it( 'should render the traffic insight above the visitor figures on the main dashboard', async () => {
 			provideBenchmarkingInsight(
 				registry,
-				registry.select( CORE_USER ).getDateRangeDates()
+				getTypicalTrafficDateRange( registry )
 			);
 
 			const { container, waitForRegistry } = renderPanel( {
@@ -2139,7 +2134,7 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		it( 'should render the driver of the insight above the key factor cards', async () => {
 			provideBenchmarkingInsight(
 				registry,
-				registry.select( CORE_USER ).getDateRangeDates()
+				getTypicalTrafficDateRange( registry )
 			);
 
 			const { container, waitForRegistry } = renderPanel( {
@@ -2161,9 +2156,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		} );
 
 		it( 'should leave out the traffic insight, and not ask for it, when the selected range has no key factors', async () => {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 			const response = createBenchmarkingResponse( startDate, endDate );
 
 			// The response has no key factors, as when the previous period
@@ -2207,9 +2201,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		} );
 
 		it( 'should say what range the insight needs in place of its analysis, and not ask for it, when the selected range is too long for it', async () => {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 			const response = createBenchmarkingResponse( startDate, endDate );
 
 			// The Site Kit service writes the insight for a range of up to 364
@@ -2263,9 +2256,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		} );
 
 		it( 'should warn that the site has too little traffic in place of the analysis, and leave out the band, the key factors and the insight, for a site with low traffic', async () => {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 			const response = createBenchmarkingResponse( startDate, endDate );
 
 			// The response of a site with low traffic has no band on any day
@@ -2364,9 +2356,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		] )(
 			'should not say what range the insight needs for a range too long for it %s',
 			async ( _label, features, keyFactorsAvailable ) => {
-				const { startDate, endDate } = registry
-					.select( CORE_USER )
-					.getDateRangeDates();
+				const { startDate, endDate } =
+					getTypicalTrafficDateRange( registry );
 				const response = createBenchmarkingResponse(
 					startDate,
 					endDate
@@ -2410,9 +2401,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		);
 
 		it( 'should ask for the insight, and render its driver but leave out its analysis, when the days of the selected range have no typical range', async () => {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 			const response = createBenchmarkingResponse( startDate, endDate );
 
 			// The site recorded its first visits on `2024-12-12`, the first day
@@ -2459,9 +2449,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 		} );
 
 		it( 'should render placeholders in place of the analysis and the driver while the insight loads', async () => {
-			const { startDate, endDate } = registry
-				.select( CORE_USER )
-				.getDateRangeDates();
+			const { startDate, endDate } =
+				getTypicalTrafficDateRange( registry );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )

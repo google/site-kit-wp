@@ -34,6 +34,7 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { getTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideBenchmarkingData,
@@ -84,7 +85,7 @@ describe( 'TypicalTrafficOverviewFooter', () => {
 		// once the benchmarking response it is generated from has arrived.
 		provideBenchmarkingData(
 			registry,
-			registry.select( CORE_USER ).getDateRangeDates()
+			getTypicalTrafficDateRange( registry )
 		);
 	} );
 
@@ -142,10 +143,10 @@ describe( 'TypicalTrafficOverviewFooter', () => {
 				.getAttribute( 'href' ) as string
 		);
 
-		expect( analyticsReportURL ).toContain( '_u.date00=20250109' );
-		expect( analyticsReportURL ).toContain( '_u.date01=20250205' );
-		expect( analyticsReportURL ).toContain( '_u.date10=20241212' );
-		expect( analyticsReportURL ).toContain( '_u.date11=20250108' );
+		expect( analyticsReportURL ).toContain( '_u.date00=20250108' );
+		expect( analyticsReportURL ).toContain( '_u.date01=20250204' );
+		expect( analyticsReportURL ).toContain( '_u.date10=20241211' );
+		expect( analyticsReportURL ).toContain( '_u.date11=20250107' );
 
 		expect(
 			screen
@@ -155,8 +156,8 @@ describe( 'TypicalTrafficOverviewFooter', () => {
 				.getAttribute( 'href' )
 		).toBe(
 			registry.select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
-				start_date: '20250109',
-				end_date: '20250205',
+				start_date: '20250108',
+				end_date: '20250204',
 			} )
 		);
 	} );
@@ -164,7 +165,7 @@ describe( 'TypicalTrafficOverviewFooter', () => {
 	it( 'should render the AI disclosure, with its link to the AI insights documentation page, before the sources when the `typicalTraffic` and `trafficInsights` feature flags are enabled', async () => {
 		provideBenchmarkingInsight(
 			registry,
-			registry.select( CORE_USER ).getDateRangeDates()
+			getTypicalTrafficDateRange( registry )
 		);
 
 		const { container, waitForRegistry } = render(
@@ -195,7 +196,7 @@ describe( 'TypicalTrafficOverviewFooter', () => {
 	it( 'should render the sources without the AI disclosure when there is no generated insight to show', async () => {
 		provideBenchmarkingInsight(
 			registry,
-			registry.select( CORE_USER ).getDateRangeDates(),
+			getTypicalTrafficDateRange( registry ),
 			null
 		);
 
@@ -243,7 +244,7 @@ describe( 'TypicalTrafficOverviewFooter', () => {
 		} );
 		provideBenchmarkingInsight(
 			registry,
-			registry.select( CORE_USER ).getDateRangeDates()
+			getTypicalTrafficDateRange( registry )
 		);
 
 		const { container, waitForRegistry } = render(

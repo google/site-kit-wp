@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -32,6 +31,7 @@ import {
 	BenchmarkingInsight,
 	DecodedBenchmarkingResponse,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import { useTypicalTrafficDateRange } from './useTypicalTrafficDateRange';
 
 export interface BenchmarkingInsightOptions {
 	/** Whether the hook requests the insight. Default is `true`. */
@@ -76,10 +76,8 @@ export function useBenchmarkingInsight( {
 		MODULE_SLUG_ANALYTICS_4
 	);
 
-	const { startDate, endDate } = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
-		[]
-	);
+	// The typical traffic view ends its ranges on the last full day.
+	const { startDate, endDate } = useTypicalTrafficDateRange();
 
 	// On a view-only dashboard, `canViewSharedAnalytics4` reads `undefined`
 	// until the user's capabilities load. Neither `undefined` nor `false`

@@ -36,6 +36,7 @@ import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util
 import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	getSectionClassNames,
+	getTypicalTrafficDateRange,
 	provideTypicalTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -74,9 +75,7 @@ describe( 'EntityTypicalTrafficOverviewPanel', () => {
 	 * @return {Object} The totals report's arguments.
 	 */
 	function getTotalsArgs(): ReportOptions {
-		const { startDate, endDate } = registry
-			.select( CORE_USER )
-			.getDateRangeDates();
+		const { startDate, endDate } = getTypicalTrafficDateRange( registry );
 
 		return getTotalsReportArgs( { startDate, endDate, url: entityURL } );
 	}
@@ -90,9 +89,7 @@ describe( 'EntityTypicalTrafficOverviewPanel', () => {
 	 * @return {Object} The daily visits report's arguments.
 	 */
 	function getDailyVisitsArgs(): ReportOptions {
-		const { startDate, endDate } = registry
-			.select( CORE_USER )
-			.getDateRangeDates();
+		const { startDate, endDate } = getTypicalTrafficDateRange( registry );
 
 		return {
 			startDate,
@@ -225,7 +222,10 @@ describe( 'EntityTypicalTrafficOverviewPanel', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		// The typical traffic view ends its ranges on the day before the
+		// reference date, the last full day, so `last-28-days` runs from
+		// `2025-01-09` to `2025-02-05`.
+		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-06' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 		provideSiteInfo( registry, { currentEntityURL: entityURL } );
 		provideModules( registry, [

@@ -375,24 +375,30 @@ describe( 'hasTypicalTrafficRange', () => {
 	} );
 } );
 
-/** A range that ends today, 2025-02-05, the last day a range can end on. */
-const ENDS_TODAY = {
-	endDate: '2025-02-05',
-	latestSelectableDate: '2025-02-05',
+/**
+ * A range that ends yesterday, 2025-02-04, the last full day and the last day
+ * a range can end on, while today is 2025-02-05.
+ */
+const ENDS_YESTERDAY = {
+	endDate: '2025-02-04',
+	latestSelectableDate: '2025-02-04',
 };
 
-/** A range that ends in the past, on 2025-01-20, while today is 2025-02-05. */
+/**
+ * A range that ends in the past, on 2025-01-20, while the last day a range can
+ * end on is 2025-02-04.
+ */
 const ENDS_IN_THE_PAST = {
 	endDate: '2025-01-20',
-	latestSelectableDate: '2025-02-05',
+	latestSelectableDate: '2025-02-04',
 };
 
 describe( 'getTypicalTrafficRangeWaitingText', () => {
-	it( 'should say when to check back for the typical traffic range when the selected range ends today', () => {
+	it( 'should say when to check back for the typical traffic range when the selected range ends on the last full day', () => {
 		expect(
-			getTypicalTrafficRangeWaitingText( '2025-04-02', ENDS_TODAY )
+			getTypicalTrafficRangeWaitingText( '2025-04-02', ENDS_YESTERDAY )
 		).toBe(
-			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.'
+			'We’re still learning what’s usual for your site. Check back on April 3, 2025 to see your typical traffic range.'
 		);
 	} );
 
@@ -411,9 +417,9 @@ describe( 'getTypicalTrafficRangeWaitingText', () => {
 		],
 		[
 			'the day isn’t ahead',
-			'2025-02-05',
-			ENDS_TODAY,
-			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after February 5, 2025 to see it.',
+			'2025-02-04',
+			ENDS_YESTERDAY,
+			'There isn’t enough traffic history for a typical traffic range on these dates. Select a date range that ends on or after February 4, 2025 to see it.',
 		],
 	] )(
 		'should ask for a date range that ends later when %s',
@@ -427,16 +433,18 @@ describe( 'getTypicalTrafficRangeWaitingText', () => {
 	);
 
 	it( 'should say only that the history is too short when the site has no recorded traffic up to the end of the date range', () => {
-		expect( getTypicalTrafficRangeWaitingText( null, ENDS_TODAY ) ).toBe(
+		expect(
+			getTypicalTrafficRangeWaitingText( null, ENDS_YESTERDAY )
+		).toBe(
 			'There isn’t enough traffic history for a typical traffic range on these dates.'
 		);
 	} );
 } );
 
 describe( 'getKeyFactorsWaitingText', () => {
-	it( 'should say when to check back for the key factors when the selected range ends today', () => {
-		expect( getKeyFactorsWaitingText( '2025-02-06', ENDS_TODAY ) ).toBe(
-			'There’s no previous period to compare to yet. Check back on February 6, 2025 to see your biggest traffic shifts.'
+	it( 'should say when to check back for the key factors when the selected range ends on the last full day', () => {
+		expect( getKeyFactorsWaitingText( '2025-02-06', ENDS_YESTERDAY ) ).toBe(
+			'There’s no previous period to compare to yet. Check back on February 7, 2025 to see your biggest traffic shifts.'
 		);
 	} );
 
@@ -455,9 +463,9 @@ describe( 'getKeyFactorsWaitingText', () => {
 		],
 		[
 			'the day isn’t ahead',
-			'2025-02-05',
-			ENDS_TODAY,
-			'There’s no previous period to compare to. Select a date range that ends on or after February 5, 2025 to see your biggest traffic shifts.',
+			'2025-02-04',
+			ENDS_YESTERDAY,
+			'There’s no previous period to compare to. Select a date range that ends on or after February 4, 2025 to see your biggest traffic shifts.',
 		],
 	] )(
 		'should ask for a date range that ends later when %s',
@@ -469,7 +477,7 @@ describe( 'getKeyFactorsWaitingText', () => {
 	);
 
 	it( 'should say only that there is no previous period when the site has no recorded traffic up to the end of the date range', () => {
-		expect( getKeyFactorsWaitingText( null, ENDS_TODAY ) ).toBe(
+		expect( getKeyFactorsWaitingText( null, ENDS_YESTERDAY ) ).toBe(
 			'There’s no previous period to compare to.'
 		);
 	} );
@@ -481,28 +489,28 @@ describe( 'getTypicalTrafficWaitingText', () => {
 			'the key factors show first',
 			'2025-04-02',
 			'2025-02-06',
-			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.',
+			'We’re still learning what’s usual for your site. Check back on February 7, 2025 to see your biggest traffic shifts, and on April 3, 2025 to see your typical traffic range.',
 		],
 		[
 			'the typical traffic range shows first',
 			'2025-04-02',
 			'2025-06-30',
-			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range, and on June 30, 2025 to see your biggest traffic shifts.',
+			'We’re still learning what’s usual for your site. Check back on April 3, 2025 to see your typical traffic range, and on July 1, 2025 to see your biggest traffic shifts.',
 		],
 		[
 			'both show on the same day',
 			'2025-04-02',
 			'2025-04-02',
-			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range and biggest traffic shifts.',
+			'We’re still learning what’s usual for your site. Check back on April 3, 2025 to see your typical traffic range and biggest traffic shifts.',
 		],
 	] )(
-		'should say when to check back for each part, the earlier first, when the selected range ends today and %s',
+		'should say when to check back for each part, the earlier first, when the selected range ends on the last full day and %s',
 		( _, bandAvailableFrom, keyFactorsAvailableFrom, text ) => {
 			expect(
 				getTypicalTrafficWaitingText(
 					bandAvailableFrom,
 					keyFactorsAvailableFrom,
-					ENDS_TODAY
+					ENDS_YESTERDAY
 				)
 			).toBe( text );
 		}
@@ -555,7 +563,9 @@ describe( 'getTypicalTrafficWaitingText', () => {
 	);
 
 	it( 'should say only that the history is too short for either part when the site has no recorded traffic up to the end of the date range', () => {
-		expect( getTypicalTrafficWaitingText( null, null, ENDS_TODAY ) ).toBe(
+		expect(
+			getTypicalTrafficWaitingText( null, null, ENDS_YESTERDAY )
+		).toBe(
 			'There isn’t enough traffic history for a typical traffic range on these dates, and there’s no previous period to compare to.'
 		);
 	} );
@@ -576,7 +586,7 @@ const AVAILABILITY: TypicalTrafficAvailability = {
 };
 
 const NOTICE_OPTIONS = {
-	...ENDS_TODAY,
+	...ENDS_YESTERDAY,
 	insightsEnabled: true,
 };
 
@@ -620,7 +630,7 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 				NOTICE_OPTIONS
 			)
 		).toBe(
-			'We’re still learning what’s usual for your site. Check back on February 6, 2025 to see your biggest traffic shifts, and on April 2, 2025 to see your typical traffic range.'
+			'We’re still learning what’s usual for your site. Check back on February 7, 2025 to see your biggest traffic shifts, and on April 3, 2025 to see your typical traffic range.'
 		);
 	} );
 
@@ -644,7 +654,7 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 					NOTICE_OPTIONS
 				)
 			).toBe(
-				'There’s no previous period to compare to yet. Check back on February 6, 2025 to see your biggest traffic shifts.'
+				'There’s no previous period to compare to yet. Check back on February 7, 2025 to see your biggest traffic shifts.'
 			);
 		}
 	);
@@ -660,7 +670,7 @@ describe( 'getTypicalTrafficAvailabilityText', () => {
 				NOTICE_OPTIONS
 			)
 		).toBe(
-			'We’re still learning what’s usual for your site. Check back on April 2, 2025 to see your typical traffic range.'
+			'We’re still learning what’s usual for your site. Check back on April 3, 2025 to see your typical traffic range.'
 		);
 	} );
 

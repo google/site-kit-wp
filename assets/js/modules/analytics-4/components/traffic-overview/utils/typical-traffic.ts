@@ -32,7 +32,7 @@ import {
 	DecodedBenchmarkingResponse,
 } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
-import { formatDate, getDateString, stringToDate } from '@/js/util';
+import { addDays, formatDate, getDateString, stringToDate } from '@/js/util';
 import { getMetricValue } from './report';
 
 export type TypicalTrafficAvailability = Pick<
@@ -57,7 +57,7 @@ export type TypicalTrafficAvailability = Pick<
 export interface TypicalTrafficNoticeDates {
 	/** The last day of the selected date range, as `YYYY-MM-DD`. */
 	endDate: string;
-	/** The last day a date range can end on, as `YYYY-MM-DD`: today on the dashboard, and the day before in the PDF export, whose ranges end then. */
+	/** The last day a date range of the typical traffic view can end on, as `YYYY-MM-DD`: the day before the reference date, the last full day, on the dashboard and in the PDF export. */
 	latestSelectableDate: string;
 }
 
@@ -279,14 +279,45 @@ function isCheckBackDay(
 }
 
 /**
+ * Gets the day a notice asks the reader to check back on for a part of the
+ * typical traffic view that waits for history.
+ *
+ * The part shows for a range that ends on its day, `availableFrom`. The view's
+ * ranges end on the day before the reference date, the last full day, so a
+ * range first ends on the part's day the day after it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} availableFrom The last day of the first date range of this length with the part, as `YYYY-MM-DD`.
+ * @return {string} The first day the part shows, as `YYYY-MM-DD`.
+ */
+function getCheckBackDay( availableFrom: string ): string {
+	return addDays( availableFrom, 1 );
+}
+
+/**
+ * Formats the day a notice asks the reader to check back on, as
+ * `getCheckBackDay()` gives it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} availableFrom The last day of the first date range of this length with the part, as `YYYY-MM-DD`.
+ * @return {string} The first day the part shows, such as "April 3, 2025".
+ */
+function formatCheckBackDay( availableFrom: string ): string {
+	return formatDate( getCheckBackDay( availableFrom ), { month: 'long' } );
+}
+
+/**
  * Gets the text of the notice that says when the chart will draw the typical
  * traffic range, while the site's history is too short for it.
  *
  * The range shows from the last day of the first date range of this length
  * with enough history, `availableFrom`. A selected range that ends on the last
  * day a range can end on reaches it by waiting, so the notice says when to
- * check back. One that ends earlier never does, so the notice asks for a range
- * that ends on that day or later, as `isCheckBackDay()` explains. Without the
+ * check back: the day after it, as `getCheckBackDay()` explains. One that ends
+ * earlier never does, so the notice asks for a range that ends on that day or
+ * later, as `isCheckBackDay()` explains. Without the
  * day, the site has no recorded traffic up to the end of the selected range,
  * and the notice says only that its history is too short.
  *
@@ -309,18 +340,18 @@ export function getTypicalTrafficRangeWaitingText(
 		);
 	}
 
-	const date = formatDate( availableFrom, { month: 'long' } );
-
 	if ( isCheckBackDay( availableFrom, dates ) ) {
 		return sprintf(
-			/* translators: %s: the first day the typical traffic range shows, such as "April 2, 2025" */
+			/* translators: %s: the first day the typical traffic range shows, such as "April 3, 2025" */
 			__(
 				'We’re still learning what’s usual for your site. Check back on %s to see your typical traffic range.',
 				'google-site-kit'
 			),
-			date
+			formatCheckBackDay( availableFrom )
 		);
 	}
+
+	const date = formatDate( availableFrom, { month: 'long' } );
 
 	return sprintf(
 		/* translators: %s: the last day of the first date range of this length with a typical traffic range, such as "April 2, 2025" */
@@ -340,8 +371,9 @@ export function getTypicalTrafficRangeWaitingText(
  * The key factors show from the last day of the first date range of this
  * length whose previous period has recorded traffic, `availableFrom`. A
  * selected range that ends on the last day a range can end on reaches it by
- * waiting, so the notice says when to check back. One that ends earlier never
- * does, so the notice asks for a range that ends on that day or later, as
+ * waiting, so the notice says when to check back: the day after it, as
+ * `getCheckBackDay()` explains. One that ends earlier never does, so the
+ * notice asks for a range that ends on that day or later, as
  * `isCheckBackDay()` explains. Without the day, the site has no recorded
  * traffic up to the end of the selected range, and the notice says only that
  * there's nothing to compare to.
@@ -365,18 +397,18 @@ export function getKeyFactorsWaitingText(
 		);
 	}
 
-	const date = formatDate( availableFrom, { month: 'long' } );
-
 	if ( isCheckBackDay( availableFrom, dates ) ) {
 		return sprintf(
-			/* translators: %s: the first day the key factors show, such as "February 6, 2025" */
+			/* translators: %s: the first day the key factors show, such as "February 7, 2025" */
 			__(
 				'There’s no previous period to compare to yet. Check back on %s to see your biggest traffic shifts.',
 				'google-site-kit'
 			),
-			date
+			formatCheckBackDay( availableFrom )
 		);
 	}
+
+	const date = formatDate( availableFrom, { month: 'long' } );
 
 	return sprintf(
 		/* translators: %s: the last day of the first date range of this length with the key factors, such as "February 6, 2025" */
@@ -459,7 +491,8 @@ function getTypicalTrafficSelectLaterText(
  *
  * - When the selected range ends on the last day a range can end on, it gains
  *   each part by waiting, so the notice says when to check back for each, or
- *   for both on a day they share.
+ *   for both on a day they share: the day after each part's day, as
+ *   `getCheckBackDay()` explains.
  * - When it ends earlier, it never gains them, so the notice asks for a range
  *   that ends on each day or after it, whether the days have passed or not,
  *   as `isCheckBackDay()` explains.
@@ -503,11 +536,11 @@ export function getTypicalTrafficWaitingText(
 		);
 	}
 
-	const earlierDate = formatDate( earlierDay, { month: 'long' } );
+	const earlierDate = formatCheckBackDay( earlierDay );
 
 	if ( earlierDay === laterDay ) {
 		return sprintf(
-			/* translators: %s: the first day both the typical traffic range and the key factors show, such as "April 2, 2025" */
+			/* translators: %s: the first day both the typical traffic range and the key factors show, such as "April 3, 2025" */
 			__(
 				'We’re still learning what’s usual for your site. Check back on %s to see your typical traffic range and biggest traffic shifts.',
 				'google-site-kit'
@@ -516,11 +549,11 @@ export function getTypicalTrafficWaitingText(
 		);
 	}
 
-	const laterDate = formatDate( laterDay, { month: 'long' } );
+	const laterDate = formatCheckBackDay( laterDay );
 
 	if ( keyFactorsFirst ) {
 		return sprintf(
-			/* translators: 1: the first day the key factors show, such as "February 6, 2025", 2: the first day the typical traffic range shows, such as "April 2, 2025" */
+			/* translators: 1: the first day the key factors show, such as "February 7, 2025", 2: the first day the typical traffic range shows, such as "April 3, 2025" */
 			__(
 				'We’re still learning what’s usual for your site. Check back on %1$s to see your biggest traffic shifts, and on %2$s to see your typical traffic range.',
 				'google-site-kit'
@@ -531,7 +564,7 @@ export function getTypicalTrafficWaitingText(
 	}
 
 	return sprintf(
-		/* translators: 1: the first day the typical traffic range shows, such as "April 2, 2025", 2: the first day the key factors show, such as "June 30, 2025" */
+		/* translators: 1: the first day the typical traffic range shows, such as "April 3, 2025", 2: the first day the key factors show, such as "July 1, 2025" */
 		__(
 			'We’re still learning what’s usual for your site. Check back on %1$s to see your typical traffic range, and on %2$s to see your biggest traffic shifts.',
 			'google-site-kit'
@@ -586,7 +619,7 @@ export function getTypicalTrafficWaitingText(
  * @param {boolean}     availability.lowTraffic              Whether the site has too little traffic for the typical traffic range, the key factors and the generated insight.
  * @param {Object}      options                              Options.
  * @param {string}      options.endDate                      The last day of the selected date range, as `YYYY-MM-DD`.
- * @param {string}      options.latestSelectableDate         The last day a date range can end on, as `YYYY-MM-DD`: today on the dashboard, and the day before in the PDF export.
+ * @param {string}      options.latestSelectableDate         The last day a date range can end on, as `YYYY-MM-DD`: the day before the reference date, on the dashboard and in the PDF export.
  * @param {boolean}     options.insightsEnabled              Whether the panel shows the generated insights, with the `trafficInsights` feature.
  * @return {string|null} The notice's text, or null when the range lacks nothing.
  */

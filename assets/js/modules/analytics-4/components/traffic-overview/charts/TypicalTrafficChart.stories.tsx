@@ -68,7 +68,10 @@ function commonSetup( registry: WPDataRegistry ) {
 		},
 	] );
 
-	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+	// The typical traffic view ends its ranges on the day before the reference
+	// date, the last full day, so `last-28-days` covers the days of
+	// `dailyTraffic`, from `2025-01-09` to `2025-02-05`.
+	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-06' );
 	registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 }

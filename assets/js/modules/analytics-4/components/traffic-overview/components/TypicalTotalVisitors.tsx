@@ -30,7 +30,6 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
 import ChangeBadge from '@/js/components/ChangeBadge';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
@@ -46,7 +45,7 @@ import {
 	TYPE_HEADLINE,
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficDateRange';
 import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { calculateChange, numFmt } from '@/js/util';
@@ -78,10 +77,7 @@ const TypicalTotalVisitors: FC< TypicalTotalVisitorsProps > = ( {
 	loaded = true,
 	gatheringData = false,
 } ) => {
-	const comparisonDays = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
-		[]
-	);
+	const { days: comparisonDays } = useTypicalTrafficDateRange();
 
 	const currentVisits = totalVisits?.current || 0;
 	const previousVisits = totalVisits?.previous;

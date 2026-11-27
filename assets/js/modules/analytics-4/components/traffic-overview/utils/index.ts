@@ -17,6 +17,7 @@
  */
 
 export * from './breakdown';
+export * from './date-range';
 export * from './key-factors';
 export * from './report';
 export * from './survey';

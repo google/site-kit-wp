@@ -58,6 +58,7 @@ import {
 	createBenchmarkingResponse,
 	createBreakdownReport,
 	getRecentTrafficBreakdownReportOptions,
+	getTypicalTrafficDateRange,
 	provideBenchmarkingResponse,
 	provideFreshMetricsReports,
 	provideInsightReport,
@@ -221,9 +222,19 @@ function typicalTrafficSetup( registry: WPDataRegistry ) {
  * @return {void}
  */
 function provideTypicalTrafficOverviewReports( registry: WPDataRegistry ) {
-	const [ totalsArgs ] = getTrafficOverviewReportArgs( registry );
+	// The typical traffic view ends its ranges on the last full day.
+	const { startDate, endDate, compareStartDate, compareEndDate } =
+		getTypicalTrafficDateRange( registry );
 
-	provideAnalytics4MockReport( registry, totalsArgs );
+	provideAnalytics4MockReport(
+		registry,
+		getTotalsReportArgs( {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+		} )
+	);
 	provideTypicalTrafficDailyVisitsReport( registry );
 	provideTypicalTrafficBreakdownReports( registry );
 }
@@ -239,9 +250,8 @@ function provideTypicalTrafficOverviewReports( registry: WPDataRegistry ) {
  * @return {void}
  */
 function provideEntityTypicalTrafficReports( registry: WPDataRegistry ) {
-	const { startDate, endDate } = registry
-		.select( CORE_USER )
-		.getDateRangeDates();
+	// The typical traffic view ends its ranges on the last full day.
+	const { startDate, endDate } = getTypicalTrafficDateRange( registry );
 	const url = registry.select( CORE_SITE ).getCurrentEntityURL();
 
 	provideAnalytics4MockReport(
@@ -399,7 +409,7 @@ TypicalTrafficWithInsights.args = {
 		// of the design.
 		provideBenchmarkingInsight(
 			registry,
-			registry.select( CORE_USER ).getDateRangeDates(),
+			getTypicalTrafficDateRange( registry ),
 			{
 				...benchmarkingInsight,
 				analysis: PLACEHOLDER_TRAFFIC_INSIGHT,
@@ -425,9 +435,7 @@ TypicalTrafficShortHistory.args = {
 		typicalTrafficSetup( registry );
 		provideTypicalTrafficOverviewReports( registry );
 
-		const { startDate, endDate } = registry
-			.select( CORE_USER )
-			.getDateRangeDates();
+		const { startDate, endDate } = getTypicalTrafficDateRange( registry );
 		const response = createBenchmarkingResponse( startDate, endDate );
 
 		// The site recorded its first visits on `2025-01-01`, 36 days before
@@ -475,9 +483,7 @@ TypicalTrafficLowTraffic.args = {
 		typicalTrafficSetup( registry );
 		provideTypicalTrafficOverviewReports( registry );
 
-		const { startDate, endDate } = registry
-			.select( CORE_USER )
-			.getDateRangeDates();
+		const { startDate, endDate } = getTypicalTrafficDateRange( registry );
 		const response = createBenchmarkingResponse( startDate, endDate );
 
 		// The site's history is long enough for every part, but it had under
@@ -657,9 +663,7 @@ TypicalTrafficFailure.args = {
 		// the visits of the daily visits report, against the range before.
 		provideTypicalTrafficOverviewReports( registry );
 
-		const { startDate, endDate } = registry
-			.select( CORE_USER )
-			.getDateRangeDates();
+		const { startDate, endDate } = getTypicalTrafficDateRange( registry );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

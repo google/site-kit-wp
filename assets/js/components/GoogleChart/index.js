@@ -81,6 +81,8 @@ export default function GoogleChart( props ) {
 		width,
 		options,
 		gatheringData,
+		startDate: rangeStartDate,
+		endDate: rangeEndDate,
 		...otherProps
 	} = props;
 
@@ -93,9 +95,14 @@ export default function GoogleChart( props ) {
 
 	const breakpoint = useBreakpoint();
 
-	const { startDate, endDate } = useSelect( ( select ) =>
+	const selectedDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
 	);
+
+	// A chart that plots other dates than the selected date range passes its
+	// own, so its date markers follow them.
+	const startDate = rangeStartDate || selectedDates.startDate;
+	const endDate = rangeEndDate || selectedDates.endDate;
 
 	const viewContext = useViewContext();
 
@@ -514,6 +521,8 @@ GoogleChart.propTypes = {
 	width: PropTypes.string,
 	options: PropTypes.object,
 	gatheringData: PropTypes.bool,
+	startDate: PropTypes.string,
+	endDate: PropTypes.string,
 };
 
 GoogleChart.defaultProps = {
