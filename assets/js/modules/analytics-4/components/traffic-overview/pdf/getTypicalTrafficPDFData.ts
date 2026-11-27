@@ -23,6 +23,7 @@ import { getKeyFactorName } from '@/js/modules/analytics-4/components/traffic-ov
 import {
 	getKeyFactorShareText,
 	getKeyFactorsNoticeText,
+	getShownKeyFactors,
 	getTypicalTrafficAvailability,
 	getTypicalTrafficAvailabilityText,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils';
@@ -41,8 +42,8 @@ export interface TrafficOverviewPDFKeyFactor {
 	/**
 	 * What the card's change is a share of, as the dashboard's card shows it
 	 * under its title: its share of the site's visits on a steady period, or
-	 * its share of the change of the channel whose place it took. Null when
-	 * the card shows its change alone.
+	 * the channel whose place it took, with its share of the channel's change
+	 * or as more than it. Null when the card shows its change alone.
 	 */
 	shareText?: string | null;
 }
@@ -125,24 +126,21 @@ export function getTypicalTrafficPDFData( {
 
 	// A card without a name has nothing to name, so it is left out, as on the
 	// dashboard.
-	const keyFactors = benchmarkingResponse.keyFactors
-		.filter(
-			(
-				keyFactor
-			): keyFactor is BenchmarkingKeyFactor & { label: string } =>
-				!! keyFactor.label
-		)
-		.map( ( keyFactor ) => ( {
-			name: getKeyFactorName(
-				keyFactor.kind,
-				keyFactor.label,
-				referenceSiteURL
-			),
+	const namedKeyFactors = benchmarkingResponse.keyFactors.filter(
+		( keyFactor ): keyFactor is BenchmarkingKeyFactor & { label: string } =>
+			!! keyFactor.label
+	);
+	// As on the dashboard, a lone card with nothing under its title is left
+	// out too, though the PDF prints no rows under any card's title.
+	const keyFactors = getShownKeyFactors( namedKeyFactors ).map(
+		( keyFactor ) => ( {
+			name: getKeyFactorName( keyFactor, referenceSiteURL ),
 			change: keyFactor.current - keyFactor.previous,
 			shareText: getKeyFactorShareText( keyFactor, {
 				steady: steadyTraffic,
 			} ),
-		} ) );
+		} )
+	);
 
 	const requestedInsight = insightRequestAllowed ? insight : null;
 	const driver = requestedInsight?.driver || null;
@@ -159,11 +157,12 @@ export function getTypicalTrafficPDFData( {
 		} ),
 		keyFactorsAvailable,
 		driver,
+		// The notice counts a card that was left out, as on the dashboard.
 		keyFactorsNotice: keyFactorsAvailable
 			? getKeyFactorsNoticeText( {
 					noChange:
 						steadyTraffic ||
-						( keyFactors.length === 0 && ! driver ),
+						( namedKeyFactors.length === 0 && ! driver ),
 					daysInSelectedRange: daysInRange,
 			  } )
 			: null,

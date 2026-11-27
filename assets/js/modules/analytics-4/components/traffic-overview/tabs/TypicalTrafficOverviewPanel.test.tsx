@@ -871,7 +871,15 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 							current: 180,
 							previous: 40,
 							sharePct: 61.2,
-							attributes: [],
+							attributes: [
+								{
+									kind: 'CAMPAIGN',
+									label: 'spring-sale',
+									current: 145,
+									previous: 40,
+									sharePct: 75,
+								},
+							],
 						},
 					],
 				} )
@@ -980,14 +988,15 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				)
 			).not.toBeInTheDocument();
 			// Only the attributes with a share, or larger than their card,
-			// say what their change is.
+			// say what their change is. The two sides of Direct's net are one
+			// row, whose line names the side that moved the other way.
 			expect(
 				Array.from(
 					direct.querySelectorAll(
 						'.googlesitekit-traffic-overview__key-factor-attribute-share'
 					)
 				).map( ( share ) => share.textContent )
-			).toEqual( [ 'More than the channel’s net change' ] );
+			).toEqual( [ 'Partly offset by -362 visits from mobile' ] );
 			expect(
 				email.querySelector(
 					'.googlesitekit-traffic-overview__key-factor-attribute-share'
@@ -1025,6 +1034,14 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 							sharePct: 61.2,
 							attributes: [],
 						},
+						{
+							kind: 'CHANNEL',
+							label: 'Direct',
+							current: 25,
+							previous: 26,
+							sharePct: 38.8,
+							attributes: [],
+						},
 					],
 					steadyTraffic: true,
 				} )
@@ -1058,6 +1075,14 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 							sharePct: 61.2,
 							attributes: [],
 						},
+						{
+							kind: 'CHANNEL',
+							label: 'Direct',
+							current: 25,
+							previous: 26,
+							sharePct: 38.8,
+							attributes: [],
+						},
 					],
 				} )
 			);
@@ -1076,6 +1101,38 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 			).not.toBeInTheDocument();
 			expect(
 				queryByText( '61.2% of all visits' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should leave out the key factors section when the benchmarking response’s only card has nothing under its title, and there is no insight', async () => {
+			provideBenchmarkingResponse(
+				registry,
+				createResponse( {
+					keyFactors: [
+						{
+							kind: 'CHANNEL',
+							label: 'Email',
+							current: 180,
+							previous: 40,
+							sharePct: 100,
+							shareBasis: 'GROSS_CHANGE',
+							attributes: [],
+						},
+					],
+				} )
+			);
+
+			const { container, queryByRole, waitForRegistry } = renderPanel();
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__key-factors'
+				)
+			).not.toBeInTheDocument();
+			expect(
+				queryByRole( 'heading', { name: 'Email' } )
 			).not.toBeInTheDocument();
 		} );
 
@@ -1212,8 +1269,8 @@ describe( 'TypicalTrafficOverviewPanel', () => {
 				}
 
 				// The key factors need every day of the previous period, and
-				// the typical traffic range 84 days of history before the
-				// range's first day, so a range of under 83 days has its key
+				// the typical traffic range 55 days of history before the
+				// range's first day, so a range of under 55 days has its key
 				// factors first.
 				const availability = {
 					...availabilityWithoutTraffic,

@@ -145,19 +145,14 @@ const AI_INSIGHT_MIN_WAIT = 1000;
 export const AI_INSIGHT_OPERATION_LIFETIME = 2 * 60 * 1000;
 
 /**
- * The shortest time the store holds back its requests for an insight after
- * the service refused one for the user's rate limit, in seconds.
+ * The time the store holds back its requests for every insight after the
+ * service refused one for the user's rate limit, in seconds, when the refusal
+ * doesn't say how long to wait. It is the `Retry-After` the service sends
+ * with a refusal for the rate limit.
  *
- * By default, the service refills a user's allowance at two generations an
- * hour, so the next one is at most 30 minutes away. Its `Retry-After` for the rate limit is
- * a minute, but the service charges the site's daily allowance before it
- * checks the user's, so each refused request still spends one of the site's
- * generations for the day, which every user of the site shares. Asking every
- * minute could spend them all, so the store waits until a request can succeed.
- *
- * @since 1.193.0
+ * @since n.e.x.t
  */
-export const AI_INSIGHT_RATE_LIMIT_HOLD = 30 * 60;
+export const AI_INSIGHT_RATE_LIMIT_HOLD = 60;
 
 /**
  * The codes of a refused request for an insight that the store sends again
@@ -535,17 +530,20 @@ export function getFailureLifetime( error: ErrorObject ): number | undefined {
 
 /**
  * Gets how long the store holds back its requests for every insight after the
- * service refused one for its quota.
+ * service refused one for its quota: for the refusal's `Retry-After`, rounded
+ * up to whole seconds.
  *
  * - The site's daily allowance (`DAILY_CAP`) is spent until the next UTC
  *   day, which the refusal's `Retry-After` reaches.
- * - The user's allowance (`RATE_LIMITED`) is refused for at least
- *   `AI_INSIGHT_RATE_LIMIT_HOLD`, and for longer when the refusal's
- *   `Retry-After` asks for it.
+ * - The user's allowance (`RATE_LIMITED`) refills over time, so the service
+ *   asks for a minute's wait. It checks the user's allowance before it counts
+ *   a request against the site's daily allowance, so a refused request
+ *   spends none of the site's generations, and asking again after each
+ *   `Retry-After` costs none either.
  *
- * A daily cap without a usable `Retry-After` is held for an hour, and the
- * user's allowance for `AI_INSIGHT_RATE_LIMIT_HOLD`. No refusal is held for
- * longer than a day.
+ * A `Retry-After` that isn't a finite number of seconds above 0 is ignored:
+ * the daily cap is then held for an hour, and the user's allowance for
+ * `AI_INSIGHT_RATE_LIMIT_HOLD`. No refusal is held for longer than a day.
  *
  * @since n.e.x.t
  *
@@ -560,23 +558,20 @@ export function getQuotaHoldLifetime( error: ErrorObject ): number {
 		retryAfter > 0
 			? Math.ceil( retryAfter )
 			: undefined;
+	const fallback =
+		getAIInsightErrorCode( error ) === AI_INSIGHT_ERROR_CODES.DAILY_CAP
+			? HOUR_IN_SECONDS
+			: AI_INSIGHT_RATE_LIMIT_HOLD;
 
-	if ( getAIInsightErrorCode( error ) === AI_INSIGHT_ERROR_CODES.DAILY_CAP ) {
-		return Math.min( DAY_IN_SECONDS, seconds ?? HOUR_IN_SECONDS );
-	}
-
-	return Math.min(
-		DAY_IN_SECONDS,
-		Math.max( AI_INSIGHT_RATE_LIMIT_HOLD, seconds ?? 0 )
-	);
+	return Math.min( DAY_IN_SECONDS, seconds ?? fallback );
 }
 
 /**
  * Reads the refusal that holds back the requests for every insight, if one
  * does.
  *
- * Every tab of the login session shares the entry, so a new tab doesn't spend
- * another of the site's generations on a refusal.
+ * Every tab of the login session shares the entry, so a new tab doesn't send
+ * a request that the service would only refuse.
  *
  * @since n.e.x.t
  *

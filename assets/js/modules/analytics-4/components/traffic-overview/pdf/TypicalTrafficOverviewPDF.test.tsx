@@ -496,6 +496,27 @@ describe( 'Typical Traffic Overview PDF', () => {
 			] );
 		} );
 
+		it( 'prints no key factors section with nothing under its heading, where the only card had nothing under its title', () => {
+			const texts = renderPDFText(
+				<TypicalTrafficOverviewPDF
+					data={ {
+						...DEFAULT_REPORTS,
+						typicalTraffic: {
+							...TYPICAL_TRAFFIC,
+							driver: null,
+							keyFactorsNotice: null,
+							keyFactors: [],
+						},
+					} }
+				/>
+			);
+
+			expect( texts ).toContain( 'Total visits' );
+			expect( texts ).not.toContain(
+				'Biggest traffic shifts vs. the previous 28 days'
+			);
+		} );
+
 		it( 'prints the AI disclosure at the end while it prints a generated insight', () => {
 			const texts = renderPDFText(
 				<TypicalTrafficOverviewPDF

@@ -41,11 +41,13 @@ class Benchmarking_Insight_Reader extends AI_Insight_Reader {
 	/**
 	 * The fields of an insight, keyed by their names in the service's response.
 	 *
+	 * A field the service sends that isn't listed, such as the `teaser` it no
+	 * longer writes, is left out of the insight.
+	 *
 	 * @since n.e.x.t
 	 */
 	const INSIGHT_FIELDS = array(
 		'scenario'       => 'scenario',
-		'teaser'         => 'teaser',
 		'analysis'       => 'analysis',
 		'driver'         => 'driver',
 		'interaction_id' => 'interactionID',
@@ -55,14 +57,14 @@ class Benchmarking_Insight_Reader extends AI_Insight_Reader {
 	/**
 	 * Reads the insight from the fields the service generated.
 	 *
-	 * A field the service left empty, such as a teaser it didn't write, is
+	 * A field the service left empty, such as an analysis it didn't write, is
 	 * null. The service always writes an analysis or a driver, so an insight
 	 * with neither is an answer the reader can't read.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $response The service's answer, or the response of a succeeded operation.
-	 * @return array|WP_Error The insight, with `scenario`, `teaser`, `analysis`, `driver`, `interactionID` and `modelVersion`, or an error with status 500 when it has neither an analysis nor a driver.
+	 * @return array|WP_Error The insight, with `scenario`, `analysis`, `driver`, `interactionID` and `modelVersion`, or an error with status 500 when it has neither an analysis nor a driver.
 	 */
 	public function read( array $response ) {
 		$insight = array();

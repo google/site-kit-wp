@@ -762,7 +762,7 @@ const baseSelectors = {
 	 * @param {Object} state     The data store's state.
 	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
 	 * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
-	 * @return {(Object|null|undefined)} The insight, with `scenario`, `teaser`, `analysis`, `driver`, `interactionID` and `modelVersion`; null when there is none to show, because the response has no insight to request or the request failed; or `undefined` while it loads.
+	 * @return {(Object|null|undefined)} The insight, with `scenario`, `analysis`, `driver`, `interactionID` and `modelVersion`; null when there is none to show, because the response has no insight to request or the request failed; or `undefined` while it loads.
 	 */
 	getBenchmarkingInsight(
 		state: BenchmarkingState,

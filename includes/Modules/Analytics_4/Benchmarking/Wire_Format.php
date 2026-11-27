@@ -124,10 +124,16 @@ final class Wire_Format {
 	 * The fields every key factor card and attribute travels with, in the
 	 * order `[ kind, label, current, previous, sharePct ]`. A card can follow
 	 * them with
-	 * `[ url, shareBasis, parentChannel, parentChannelChange, spreadAcrossPages ]`,
-	 * and an attribute with `[ oversized ]`. These trailing fields are left out
-	 * from the last one that has a value, so a browser that reads none of
-	 * them reads the row as it did before.
+	 * `[ url, shareBasis, parentChannel, parentChannelChange, spreadAcrossPages, otherPages ]`,
+	 * and an attribute with `[ oversized, title, noSearchClicks ]`. These
+	 * trailing fields are left out from the last one that has a value, so a
+	 * browser that reads none of them reads the row as it did before.
+	 *
+	 * `url`, `parentChannel` and `title` are positions in the string table,
+	 * `shareBasis` is the position its basis travels as, and
+	 * `spreadAcrossPages`, `otherPages`, `oversized` and `noSearchClicks` are
+	 * `true`. A field without a value travels as null when a later field has
+	 * one.
 	 *
 	 * @since n.e.x.t
 	 */

@@ -31,6 +31,11 @@ use DateTimeZone;
  * `decomposition`, so the insight's driver text describes those cards rather
  * than rows the service ranks itself.
  *
+ * The expected range of the period, its `baseline`, comes from the same fits
+ * as the band the chart draws, and so does the brief spike of one to three
+ * days the period may have had, its `in_period_spike`, so the analysis and
+ * the chart agree.
+ *
  * Building the request is deterministic: the same reports always give the same
  * request, since the service keys the insights it keeps for a day on the
  * request's values.
@@ -125,6 +130,11 @@ class Insight_Request_Builder {
 	 * the request has `history_days` instead, so the service can say when the
 	 * site will have a range.
 	 *
+	 * With a `baseline`, the request has `in_period_spike` when one to three
+	 * days in a row of the period rose above their band and carried most of
+	 * the period's gain, as `Period_Baseline::get_in_period_spike()` finds
+	 * them, so the service's analysis can say the period had a brief spike.
+	 *
 	 * The request carries the given `decomposition`, the key factor cards the
 	 * panel shows, as `Key_Factors::get_decomposition()` builds them. It has
 	 * one with no cards when the panel shows none, so the service doesn't name
@@ -132,6 +142,7 @@ class Insight_Request_Builder {
 	 *
 	 * @since n.e.x.t
 	 * @since n.e.x.t Added the `$decomposition` parameter, and sends the channel breakdowns, the search clicks and the most visited pages.
+	 * @since n.e.x.t Sends the period's brief spike as `in_period_spike`.
 	 *
 	 * @param string          $start_date      The first day of the selected period, as `YYYY-MM-DD`.
 	 * @param string          $end_date        The last day of the selected period, as `YYYY-MM-DD`.
@@ -139,7 +150,21 @@ class Insight_Request_Builder {
 	 * @param array           $visits          The visits of the selected period and of the period before it, as `current` and `previous`.
 	 * @param array           $contextual_data The rows of the benchmarking response, keyed by `contextualData` key, before they are ranked.
 	 * @param array|null      $decomposition   Optional. The key factor cards the panel shows, as `Key_Factors::get_decomposition()` returns them, or null without channels. Default null.
-	 * @return array|null The request, or null when there is no insight to request: the period is shorter than `MIN_PERIOD_DAYS` days or longer than `MAX_PERIOD_DAYS` days, or neither period has a visit.
+	 * @return array|null {
+	 *     The request, or null when there is no insight to request: the period
+	 *     is shorter than `MIN_PERIOD_DAYS` days or longer than
+	 *     `MAX_PERIOD_DAYS` days, or neither period has a visit. A field without
+	 *     data is left out.
+	 *
+	 *     @type string $end_date        The last day of the selected period, as `YYYY-MM-DD`.
+	 *     @type int    $days_in_period  The number of days in the selected period.
+	 *     @type array  $visits          The visits of the selected period and of the period before it, as `current_period` and `previous_period`, never below `0`, and last year's visits of the same two periods as `last_year`, as `Period_Baseline::get_last_year_visits()` returns them, when the daily series has every day of them.
+	 *     @type array  $baseline        The expected range of the selected period's visits, as `Period_Baseline::get_range()` returns it. Left out while the site has too little history for it.
+	 *     @type array  $in_period_spike Only with `baseline`: the brief spike of the selected period, with `peak_date`, `start_date`, `end_date`, `days` and `share_of_gain_pct`, as `Period_Baseline::get_in_period_spike()` returns it. Left out when the period had none.
+	 *     @type int    $history_days    Only without `baseline`: the days of recorded traffic up to and including `$end_date`.
+	 *     @type array  $contextual_data The rows the service narrates, keyed by its field names, without the fields that have no rows. Left out when no field has rows.
+	 *     @type array  $decomposition   The given decomposition, last. Left out without one.
+	 * }
 	 */
 	public function build( $start_date, $end_date, Period_Baseline $period_baseline, array $visits, array $contextual_data, $decomposition = null ) {
 		$days_in_period = $this->get_days_in_period( $start_date, $end_date );
@@ -176,6 +201,13 @@ class Insight_Request_Builder {
 
 		if ( null !== $baseline ) {
 			$request['baseline'] = $baseline;
+
+			// The spike is measured against the same fits as the range.
+			$in_period_spike = $period_baseline->get_in_period_spike( $end_date, $days_in_period, $baseline, $current_period - $previous_period );
+
+			if ( null !== $in_period_spike ) {
+				$request['in_period_spike'] = $in_period_spike;
+			}
 		} else {
 			$request['history_days'] = $period_baseline->get_history_days( $end_date );
 		}

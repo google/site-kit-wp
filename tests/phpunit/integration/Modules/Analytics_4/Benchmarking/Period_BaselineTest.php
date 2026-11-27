@@ -29,7 +29,7 @@ class Period_BaselineTest extends TestCase {
 	/**
 	 * The number of conformance fixtures the service has.
 	 */
-	const FIXTURE_COUNT = 33;
+	const FIXTURE_COUNT = 40;
 
 	/**
 	 * The tolerance of a model's intermediate values against a fixture.
@@ -209,6 +209,31 @@ class Period_BaselineTest extends TestCase {
 		}
 	}
 
+	/**
+	 * @dataProvider data_conformance_fixtures
+	 *
+	 * @param string $fixture_name The fixture's name, the base name of its file.
+	 */
+	public function test_get_daily_range__marks_the_early_band_of_the_conformance_fixture( $fixture_name ) {
+		$fixture     = $this->get_fixture( $fixture_name );
+		$daily_range = $this->get_fixture_period_baseline( $fixture )->get_daily_range( $fixture['target_date'], $fixture['days_in_period'] );
+
+		if ( null === $fixture['expected']['range'] ) {
+			$this->assertNull( $daily_range, "The $fixture_name fixture should have no band." );
+
+			return;
+		}
+
+		// The fixture's history ends on its target date, and the fit of its
+		// period's first day has two blocks of reference, 56 days, from
+		// `d + 83` days of history on.
+		$this->assertSame(
+			count( $fixture['daily_visits'] ) < $fixture['days_in_period'] + 83,
+			$daily_range['early_band'],
+			"The band of the $fixture_name fixture should be early only while the fit of its first day has less than two blocks of reference."
+		);
+	}
+
 	public function data_conformance_fixtures() {
 		$fixtures = array();
 
@@ -221,33 +246,86 @@ class Period_BaselineTest extends TestCase {
 		return $fixtures;
 	}
 
-	public function test_get_min_range_history_days__adds_two_blocks_to_the_period() {
-		$this->assertSame( 63, Period_Baseline::get_min_range_history_days( 7 ), 'A 7-day fit should need 63 days of history: the period and two 28-day blocks.' );
-		$this->assertSame( 84, Period_Baseline::get_min_range_history_days( 28 ), 'A 28-day fit should need 84 days of history: the period and two 28-day blocks.' );
-		$this->assertSame( 146, Period_Baseline::get_min_range_history_days( 90 ), 'A 90-day fit should need 146 days of history: the period and two 28-day blocks.' );
-		$this->assertSame( 84, Period_Baseline::get_min_range_history_days( 0 ), 'A period length that is not above 0 should be read as 28 days.' );
+	public function test_get_min_range_history_days__adds_one_block_to_the_period() {
+		$this->assertSame( 35, Period_Baseline::get_min_range_history_days( 7 ), 'A 7-day fit should need 35 days of history: the period and one 28-day block.' );
+		$this->assertSame( 56, Period_Baseline::get_min_range_history_days( 28 ), 'A 28-day fit should need 56 days of history: the period and one 28-day block.' );
+		$this->assertSame( 118, Period_Baseline::get_min_range_history_days( 90 ), 'A 90-day fit should need 118 days of history: the period and one 28-day block.' );
+		$this->assertSame( 56, Period_Baseline::get_min_range_history_days( 0 ), 'A period length that is not above 0 should be read as 28 days.' );
 	}
 
-	public function test_get_min_band_history_days__adds_83_days_to_the_period() {
-		// The period's first day needs the 84 days of its own 28-day fit.
-		$this->assertSame( 90, Period_Baseline::get_min_band_history_days( 7 ), 'A 7-day period should need 90 days of history for its band.' );
-		$this->assertSame( 97, Period_Baseline::get_min_band_history_days( 14 ), 'A 14-day period should need 97 days of history for its band.' );
-		$this->assertSame( 111, Period_Baseline::get_min_band_history_days( 28 ), 'A 28-day period should need 111 days of history for its band.' );
-		$this->assertSame( 173, Period_Baseline::get_min_band_history_days( 90 ), 'A 90-day period should need 173 days of history for its band.' );
-		$this->assertSame( 111, Period_Baseline::get_min_band_history_days( 0 ), 'A period length that is not above 0 should be read as 28 days.' );
+	public function test_get_min_band_history_days__adds_55_days_to_the_period() {
+		// The period's first day needs the 56 days of its own 28-day fit.
+		$this->assertSame( 62, Period_Baseline::get_min_band_history_days( 7 ), 'A 7-day period should need 62 days of history for its band.' );
+		$this->assertSame( 69, Period_Baseline::get_min_band_history_days( 14 ), 'A 14-day period should need 69 days of history for its band.' );
+		$this->assertSame( 83, Period_Baseline::get_min_band_history_days( 28 ), 'A 28-day period should need 83 days of history for its band.' );
+		$this->assertSame( 145, Period_Baseline::get_min_band_history_days( 90 ), 'A 90-day period should need 145 days of history for its band.' );
+		$this->assertSame( 83, Period_Baseline::get_min_band_history_days( 0 ), 'A period length that is not above 0 should be read as 28 days.' );
 	}
 
 	public function test_get_daily_range__needs_the_band_history_up_to_the_last_day() {
-		$daily_rows = $this->get_daily_rows( '2024-01-01', $this->get_daily_visits( 111 ) );
+		$daily_rows = $this->get_daily_rows( '2024-01-01', $this->get_daily_visits( 83 ) );
 
-		// `2024-04-20` is day 111 of the series.
+		// `2024-03-23` is day 83 of the series.
 		$period_baseline = new Period_Baseline( $daily_rows );
 
-		$this->assertNull( $period_baseline->get_daily_range( '2024-04-19', 28 ), 'A 28-day period with 110 days of history should have no band.' );
-		$this->assertNull( $period_baseline->get_range( '2024-04-19', 28 ), 'A 28-day period with 110 days of history should have no range.' );
-		$this->assertCount( 28, $period_baseline->get_daily_range( '2024-04-20', 28 )['days'], 'A 28-day period with 111 days of history should have a band on each of its days.' );
-		$this->assertNotNull( $period_baseline->get_range( '2024-04-20', 28 ), 'A 28-day period with 111 days of history should have a range.' );
-		$this->assertSame( 83, $period_baseline->get_daily_range( '2024-04-20', 28 )['reference_days'], 'The fit of the period\'s last day should be fitted on the 83 days before its own 28 days.' );
+		$this->assertNull( $period_baseline->get_daily_range( '2024-03-22', 28 ), 'A 28-day period with 82 days of history should have no band.' );
+		$this->assertNull( $period_baseline->get_range( '2024-03-22', 28 ), 'A 28-day period with 82 days of history should have no range.' );
+		$this->assertCount( 28, $period_baseline->get_daily_range( '2024-03-23', 28 )['days'], 'A 28-day period with 83 days of history should have a band on each of its days.' );
+		$this->assertNotNull( $period_baseline->get_range( '2024-03-23', 28 ), 'A 28-day period with 83 days of history should have a range.' );
+		$this->assertSame( 55, $period_baseline->get_daily_range( '2024-03-23', 28 )['reference_days'], 'The fit of the period\'s last day should be fitted on the 55 days before its own 28 days.' );
+	}
+
+	/**
+	 * @dataProvider data_period_lengths
+	 *
+	 * @param int $period_days The period's length in days.
+	 */
+	public function test_get_daily_range__is_early_while_the_first_day_has_one_block_of_reference( $period_days ) {
+		$band_history_days = $period_days + 55;
+		$get_daily_range   = function ( $history_days ) use ( $period_days ) {
+			$daily_rows = $this->get_daily_rows( '2025-01-01', $this->get_daily_visits( $history_days ) );
+
+			return ( new Period_Baseline( $daily_rows ) )->get_daily_range( $daily_rows[ $history_days - 1 ]['date'], $period_days );
+		};
+
+		$this->assertNull( $get_daily_range( $band_history_days - 1 ), "A $period_days-day period should have no band with one day less than its $band_history_days days of history." );
+		$this->assertTrue( $get_daily_range( $band_history_days )['early_band'], "A $period_days-day period should have an early band from $band_history_days days of history, when the fit of its first day has one block of reference." );
+		$this->assertTrue( $get_daily_range( $period_days + 82 )['early_band'], "A $period_days-day period should still have an early band with one day less than the two blocks of reference of its first day." );
+		$this->assertFalse( $get_daily_range( $period_days + 83 )['early_band'], "A $period_days-day period should have a band that is no longer early once the fit of its first day has two blocks of reference." );
+	}
+
+	public function data_period_lengths() {
+		return array(
+			'7 days'  => array( 7 ),
+			'28 days' => array( 28 ),
+			'90 days' => array( 90 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_band_reference_histories
+	 *
+	 * @param int $history_days   The days of history up to and including the period's last day.
+	 * @param int $reference_days The days the fit of the period's last day should be fitted on.
+	 */
+	public function test_get_daily_range__returns_the_days_the_fit_of_the_last_day_is_fitted_on( $history_days, $reference_days ) {
+		$daily_rows = $this->get_daily_rows( '2024-01-01', array_fill( 0, $history_days, 100 ) );
+
+		$this->assertSame(
+			$reference_days,
+			( new Period_Baseline( $daily_rows ) )->get_daily_range( $daily_rows[ $history_days - 1 ]['date'], 28 )['reference_days'],
+			"With $history_days days of history, the fit of a 28-day period's last day should be fitted on the days before its own 28 days, at most 365."
+		);
+	}
+
+	public function data_band_reference_histories() {
+		return array(
+			'83 days'  => array( 83, 55 ),
+			'111 days' => array( 111, 83 ),
+			'200 days' => array( 200, 172 ),
+			'393 days' => array( 393, 365 ),
+			'700 days' => array( 700, 365 ),
+		);
 	}
 
 	public function test_get_daily_range__forecasts_each_day_from_the_history_28_days_before_it() {
@@ -531,6 +609,316 @@ class Period_BaselineTest extends TestCase {
 			( new Period_Baseline( $zero_rows ) )->get_last_year_visits( $target_date, 28 ),
 			"A day of a window with a row of 0 visits should count as 0 in last year's visits."
 		);
+	}
+
+	public function test_get_in_period_spike__finds_a_brief_spike_that_carried_most_of_the_gain() {
+		// 28 days of 90 visits from `2026-05-01`, but 500 on `2026-05-20` and
+		// 400 on `2026-05-21`: 3,240 visits, 720 more than the period before.
+		// Without a band, each day's bound is the range's 2,800 visits over the
+		// 28 days, 100, so the two days had 700 visits above their bounds,
+		// 97.2% of the gain.
+		$this->assertSame(
+			array(
+				'peak_date'         => '2026-05-20',
+				'start_date'        => '2026-05-20',
+				'end_date'          => '2026-05-21',
+				'days'              => 2,
+				'share_of_gain_pct' => 97.2,
+			),
+			$this->get_brief_spike_period_baseline()->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2000, 2800 ), 720 ),
+			'The two days above their bounds, which carried 97.2% of the gain, should be the spike.'
+		);
+	}
+
+	public function test_get_in_period_spike__finds_no_spike_in_a_run_of_more_than_3_days() {
+		// Five days of 300 visits in a row, from `2026-05-11`, are a sustained
+		// rise rather than a brief spike.
+		$daily_visits = array_replace( array_fill( 0, 28, 90 ), array_fill( 10, 5, 300 ) );
+
+		$this->assertNull(
+			( new Period_Baseline( $this->get_daily_rows( '2026-05-01', $daily_visits ) ) )->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2000, 2800 ), 1000 ),
+			'Five days in a row above their bounds should not be a brief spike.'
+		);
+	}
+
+	public function test_get_in_period_spike__does_not_join_days_that_do_not_follow_each_other() {
+		// Days of 350 visits, each 250 above its bound of 100, which is 25% of
+		// the gain of 1,000, and no row for any other day.
+		$get_period_baseline = fn( ...$dates ) => new Period_Baseline(
+			array_map(
+				fn( $date ) => array(
+					'date'   => $date,
+					'visits' => 350,
+				),
+				$dates
+			)
+		);
+
+		$this->assertNull(
+			$get_period_baseline( '2026-05-05', '2026-05-20' )->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2000, 2800 ), 1000 ),
+			'Two days 15 days apart should not be joined into a run, though no day between them has a row.'
+		);
+		$this->assertSame(
+			array(
+				'peak_date'         => '2026-05-19',
+				'start_date'        => '2026-05-19',
+				'end_date'          => '2026-05-20',
+				'days'              => 2,
+				'share_of_gain_pct' => 50.0,
+			),
+			$get_period_baseline( '2026-05-19', '2026-05-20' )->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2000, 2800 ), 1000 ),
+			'Two days in a row, which carried half the gain together, should be a spike.'
+		);
+	}
+
+	public function test_get_in_period_spike__finds_no_spike_in_a_steady_period_with_a_tiny_gain() {
+		// 28 days of 100 visits, but 160 on `2026-05-11`, 40 above its bound of
+		// 120: 89% of a gain of 45 visits, 1.6%, but 1.4% of the period's
+		// 2,860 visits.
+		$daily_visits     = array_fill( 0, 28, 100 );
+		$daily_visits[10] = 160;
+
+		$this->assertNull(
+			( new Period_Baseline( $this->get_daily_rows( '2026-05-01', $daily_visits ) ) )->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2200, 3360 ), 45 ),
+			'A day above its bound should not be a spike in a period whose visits did not rise, for less than 5% of the period\'s visits.'
+		);
+	}
+
+	public function test_get_in_period_spike__finds_no_spike_in_the_weekly_cycle_of_the_band() {
+		// 120 days from `2026-01-29`, with 140 visits on a weekday and 30 on a
+		// weekend day, but 155 on each weekday of the last 28 days: above the
+		// period's even share of its range, 3,852 visits over 28 days, but
+		// within the band of each weekday.
+		$period_baseline = new Period_Baseline(
+			$this->get_dated_rows(
+				'2026-01-29',
+				120,
+				function ( $date ) {
+					if ( $this->is_weekend( $date ) ) {
+						return 30;
+					}
+
+					return $date >= '2026-05-01' ? 155 : 140;
+				}
+			)
+		);
+
+		$this->assertNull(
+			$period_baseline->get_in_period_spike( '2026-05-28', 28, $period_baseline->get_range( '2026-05-28', 28 ), 300 ),
+			'The usual weekdays of a site with fewer visits on a weekend should not be a spike.'
+		);
+	}
+
+	public function test_get_in_period_spike__finds_a_spike_above_the_band_of_its_weekday() {
+		// 400 days with 160 visits on a weekday and 40 on a weekend day, but 150
+		// on each day of the weekend of `2026-08-29`: 3,740 visits in the 28
+		// days to `2026-09-15`, 220 more than the period before. The band of
+		// each weekend day reaches 56.1 visits, so the two days had 187.8 visits
+		// above their bounds, 85.4% of the gain.
+		$daily_rows      = $this->get_dated_rows(
+			'2025-08-12',
+			400,
+			function ( $date ) {
+				if ( in_array( $date, array( '2026-08-29', '2026-08-30' ), true ) ) {
+					return 150;
+				}
+
+				return $this->is_weekend( $date ) ? 40 : 160;
+			}
+		);
+		$period_baseline = new Period_Baseline( $daily_rows );
+		$range           = $period_baseline->get_range( '2026-09-15', 28 );
+
+		$this->assertSame(
+			array(
+				'peak_date'         => '2026-08-29',
+				'start_date'        => '2026-08-29',
+				'end_date'          => '2026-08-30',
+				'days'              => 2,
+				'share_of_gain_pct' => 85.4,
+			),
+			$period_baseline->get_in_period_spike( '2026-09-15', 28, $range, 220 ),
+			'The two weekend days above the band of their weekday should be the spike.'
+		);
+
+		// With the last 56 days of history alone, the period has no band, and
+		// each day's bound is the period's even share of the same range, 4,071
+		// visits over 28 days, which the two days were 9.2 visits above.
+		$this->assertNull(
+			( new Period_Baseline( array_slice( $daily_rows, -56 ) ) )->get_in_period_spike( '2026-09-15', 28, $range, 220 ),
+			'Without a band, the two weekend days should be measured against the period\'s even share of its range.'
+		);
+	}
+
+	public function test_get_in_period_spike__finds_no_spike_in_a_period_above_its_range_throughout() {
+		// 28 days of 120 visits, but 95 on every fourth day and 200 on
+		// `2026-05-16`: 3,265 visits, 465 above the range. The run from
+		// `2026-05-14` to `2026-05-16` had 140 visits above its bounds of 100,
+		// 56% of the gain of 250, but less than 40% of the 465.
+		$daily_visits     = array_map( fn( $day ) => 0 === $day % 4 ? 95 : 120, range( 0, 27 ) );
+		$daily_visits[15] = 200;
+
+		$this->assertNull(
+			( new Period_Baseline( $this->get_daily_rows( '2026-05-01', $daily_visits ) ) )->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2000, 2800 ), 250 ),
+			'A run should not be a spike of a period above its range for less than 40% of the visits above the range.'
+		);
+	}
+
+	public function test_get_in_period_spike__keeps_the_run_with_the_largest_excess() {
+		// 28 days of 90 visits, but 500 on `2026-05-05` and 600 on `2026-05-20`:
+		// 400 and 500 visits above the bound of 100, 44% and 56% of the gain of
+		// 900.
+		$daily_visits     = array_fill( 0, 28, 90 );
+		$daily_visits[4]  = 500;
+		$daily_visits[19] = 600;
+
+		$this->assertSame(
+			array(
+				'peak_date'         => '2026-05-20',
+				'start_date'        => '2026-05-20',
+				'end_date'          => '2026-05-20',
+				'days'              => 1,
+				'share_of_gain_pct' => 55.6,
+			),
+			( new Period_Baseline( $this->get_daily_rows( '2026-05-01', $daily_visits ) ) )->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2000, 2800 ), 900 ),
+			'Of two runs that are each a spike, the one with the most visits above its bounds should be the spike.'
+		);
+
+		$daily_visits[19] = 500;
+
+		$this->assertSame(
+			'2026-05-05',
+			( new Period_Baseline( $this->get_daily_rows( '2026-05-01', $daily_visits ) ) )->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2000, 2800 ), 800 )['start_date'],
+			'Of two runs with as many visits above their bounds, the earlier should be the spike.'
+		);
+	}
+
+	public function test_get_in_period_spike__names_the_first_day_with_the_most_visits_as_its_peak() {
+		// 300, 500 and 500 visits from `2026-05-10`: 1,000 above the bound of
+		// 100, 83.3% of the gain of 1,200.
+		$daily_visits = array_replace(
+			array_fill( 0, 28, 90 ),
+			array(
+				9  => 300,
+				10 => 500,
+				11 => 500,
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'peak_date'         => '2026-05-11',
+				'start_date'        => '2026-05-10',
+				'end_date'          => '2026-05-12',
+				'days'              => 3,
+				'share_of_gain_pct' => 83.3,
+			),
+			( new Period_Baseline( $this->get_daily_rows( '2026-05-01', $daily_visits ) ) )->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2000, 2800 ), 1200 ),
+			'The peak should be the first of the run\'s days with the most visits.'
+		);
+	}
+
+	public function test_get_in_period_spike__caps_the_share_of_the_gain_at_100() {
+		// The two days of the brief spike had 700 visits above their bounds,
+		// more than a gain of 500.
+		$this->assertSame(
+			100.0,
+			$this->get_brief_spike_period_baseline()->get_in_period_spike( '2026-05-28', 28, $this->get_expected_range( 2000, 2800 ), 500 )['share_of_gain_pct'],
+			'The share of the gain should be at most 100%, which the service checks.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_ranges_and_gains_without_a_spike
+	 *
+	 * @param array $range        The expected range of the period's visits total.
+	 * @param int   $period_delta The period's gain.
+	 */
+	public function test_get_in_period_spike__needs_a_range_and_a_gain( array $range, $period_delta ) {
+		$this->assertNull(
+			$this->get_brief_spike_period_baseline()->get_in_period_spike( '2026-05-28', 28, $range, $period_delta ),
+			'A period should have no spike without both bounds of a range, the most visits of the range above 0, or a gain.'
+		);
+	}
+
+	public function data_ranges_and_gains_without_a_spike() {
+		$range = array(
+			'expected_range_min' => 2000,
+			'expected_range_max' => 2800,
+		);
+
+		return array(
+			'no range'                    => array( array(), 720 ),
+			'a range without its minimum' => array( array( 'expected_range_max' => 2800 ), 720 ),
+			'a range with a maximum of 0' => array(
+				array(
+					'expected_range_min' => 0,
+					'expected_range_max' => 0,
+				),
+				720,
+			),
+			'no change'                   => array( $range, 0 ),
+			'a drop'                      => array( $range, -720 ),
+		);
+	}
+
+	/**
+	 * Builds the model of the 28 days of the brief spike, from `2026-05-01`
+	 * to `2026-05-28`: 90 visits a day, but 500 on `2026-05-20` and 400 on
+	 * `2026-05-21`.
+	 *
+	 * @return Period_Baseline The model of the days.
+	 */
+	private function get_brief_spike_period_baseline() {
+		$daily_visits     = array_fill( 0, 28, 90 );
+		$daily_visits[19] = 500;
+		$daily_visits[20] = 400;
+
+		return new Period_Baseline( $this->get_daily_rows( '2026-05-01', $daily_visits ) );
+	}
+
+	/**
+	 * Builds the expected range of a period's visits total, as
+	 * `Period_Baseline::get_range()` returns it.
+	 *
+	 * @param int $expected_range_min The fewest visits of the range.
+	 * @param int $expected_range_max The most visits of the range.
+	 * @return array The range.
+	 */
+	private function get_expected_range( $expected_range_min, $expected_range_max ) {
+		return array(
+			'expected_range_min' => $expected_range_min,
+			'expected_range_max' => $expected_range_max,
+		);
+	}
+
+	/**
+	 * Builds daily rows for a number of days from a day on, with the visits of
+	 * each day from its date.
+	 *
+	 * @param string   $start_date The first day, as `YYYY-MM-DD`.
+	 * @param int      $days       The number of days.
+	 * @param callable $get_visits Gets the visits of a day from its date, as `YYYY-MM-DD`.
+	 * @return array List of rows, each with `date` and `visits`.
+	 */
+	private function get_dated_rows( $start_date, $days, callable $get_visits ) {
+		return array_map(
+			fn( $row ) => array(
+				'date'   => $row['date'],
+				'visits' => $get_visits( $row['date'] ),
+			),
+			$this->get_daily_rows( $start_date, array_fill( 0, $days, 0 ) )
+		);
+	}
+
+	/**
+	 * Checks whether a day is on a weekend.
+	 *
+	 * @param string $date The day, as `YYYY-MM-DD`.
+	 * @return bool True when the day is a Saturday or a Sunday, false otherwise.
+	 */
+	private function is_weekend( $date ) {
+		return in_array( ( new DateTimeImmutable( $date, new DateTimeZone( 'UTC' ) ) )->format( 'w' ), array( '0', '6' ), true );
 	}
 
 	/**

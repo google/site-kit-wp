@@ -42,6 +42,7 @@ import { KEY_FACTORS_MAX_CARDS } from '@/js/modules/analytics-4/components/traff
 import {
 	getKeyFactorShareText,
 	getKeyFactorsNoticeText,
+	getShownKeyFactors,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { BenchmarkingKeyFactor } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import KeyFactorCard from './KeyFactorCard';
@@ -95,12 +96,16 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 		} => !! keyFactor.label
 	);
 
-	const hasNoCards = loaded && cards.length === 0;
+	// A lone card with nothing under its title is left out too, as the Site
+	// Kit service's design asks. The notice below still counts it, so hiding
+	// the card never makes the notice say that no channel changed notably.
+	const shownCards = getShownKeyFactors( cards );
+	const hasNoCards = loaded && shownCards.length === 0;
 	// The response tells whether traffic was steady, by the rule the Site Kit
 	// service writes the summary by, so the notice, the cards and the summary
 	// describe the same period.
 	const isSteady = loaded && steady;
-	const showCards = loaded && cards.length > 0;
+	const showCards = loaded && shownCards.length > 0;
 	// The summary comes apart from the cards, so it can show above their
 	// placeholders, and it describes the change on its own where there are no
 	// cards.
@@ -112,6 +117,13 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 				daysInSelectedRange,
 		  } )
 		: null;
+
+	// Without a card, a notice or a summary, the section would be a heading
+	// with nothing under it. A section without cards has the notice unless it
+	// has the summary, so this happens only when a lone card was left out.
+	if ( hasNoCards && ! noticeText && ! showInsight ) {
+		return null;
+	}
 
 	const tooltipContent = createInterpolateElement(
 		__(
@@ -184,7 +196,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 			) }
 			{ showCards && (
 				<div className="googlesitekit-traffic-overview__key-factors-cards">
-					{ cards.map( ( keyFactor, index ) => (
+					{ shownCards.map( ( keyFactor, index ) => (
 						<KeyFactorCard
 							// Keyed by position: nothing here reorders, and
 							// two kinds of driver can share a name.
@@ -197,6 +209,7 @@ const KeyFactors: FC< KeyFactorsProps > = ( {
 							} ) }
 							attributes={ keyFactor.attributes }
 							spreadAcrossPages={ keyFactor.spreadAcrossPages }
+							otherPages={ keyFactor.otherPages }
 							url={ keyFactor.url }
 							referenceSiteURL={ referenceSiteURL }
 						/>

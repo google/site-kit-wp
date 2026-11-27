@@ -117,16 +117,25 @@ export const BENCHMARKING_KEY_FACTOR_SHARE_BASES = [
  * The positions of a key factor card's fields after the five it shares with
  * its attributes, `[ kind, label, current, previous, sharePct ]`. The encoder
  * leaves out the trailing fields that have no value.
+ *
+ * `url` and `parentChannel` are positions in the string table, and
+ * `spreadAcrossPages` and `otherPages` are `true`. A field without a value is
+ * null when a later field has one.
  */
 export const KEY_FACTOR_CARD_URL = 5;
 export const KEY_FACTOR_CARD_SHARE_BASIS = 6;
 export const KEY_FACTOR_CARD_PARENT_CHANNEL = 7;
 export const KEY_FACTOR_CARD_PARENT_CHANNEL_CHANGE = 8;
 export const KEY_FACTOR_CARD_SPREAD_ACROSS_PAGES = 9;
+export const KEY_FACTOR_CARD_OTHER_PAGES = 10;
 
 /**
- * The position of an attribute's field after the five it shares with its card:
- * `true` when the attribute moved further than its card, the same way. The
- * encoder leaves it out otherwise.
+ * The positions of an attribute's fields after the five it shares with its
+ * card: `true` when the attribute moved further than its card, the same way,
+ * the page's title of a landing page, as a position in the string table, and
+ * `true` when the site's search clicks of a search keyword are unknown. The
+ * encoder leaves out the trailing fields that have no value.
  */
 export const KEY_FACTOR_ATTRIBUTE_OVERSIZED = 5;
+export const KEY_FACTOR_ATTRIBUTE_TITLE = 6;
+export const KEY_FACTOR_ATTRIBUTE_NO_SEARCH_CLICKS = 7;

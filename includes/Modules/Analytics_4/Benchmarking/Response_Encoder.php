@@ -45,6 +45,7 @@ final class Response_Encoder {
 	 * @since n.e.x.t Encodes the days of traffic the band is fitted on.
 	 * @since n.e.x.t Encodes the path of a post's card.
 	 * @since n.e.x.t Encodes the basis of a card's share and the channel a card's share is of, and whether an attribute moved further than its card.
+	 * @since n.e.x.t Encodes the channel of a part of a channel on whatever basis its share is, whether a channel's card is for its other pages, and a landing page's title and whether a search keyword's site has no search clicks.
 	 *
 	 * @param array $response Assembled response, with `visits`, `dailyTraffic`, `availability`, `bandReferenceDays`, `keyFactors`, `steadyTraffic` and `contentMarkers`. `bandReferenceDays` is the number of days of traffic the band of the period's last day is fitted on, or null without a band. `steadyTraffic` is whether no channel changed notably, when the key factor cards are the channels with the most visits. Each `dailyTraffic` row has `date`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`, which are null on a day without one. `availability` is which parts of the typical traffic view show, as `Typical_Traffic_Availability::get()` returns it. Each `contentMarkers` item has a `date`, as `YYYY-MM-DD`, and its `posts`, each with `title` and `url`. With the `trafficInsights` feature, the response also has `insightLocale`, the locale the insight is written in, and `insightPayload`, the signed request the insight is generated from, or null when there is no insight to request.
 	 * @return array The encoded response.
@@ -157,23 +158,27 @@ final class Response_Encoder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $card    Card to encode, with `kind`, `label`, `current`, `previous`, `sharePct` and `shareBasis`, a post's card with its path as `url`, a card on `PARENT_CHANNEL` with `parentChannel` and `parentChannelChange`, and a card whose change was spread across many pages with `spreadAcrossPages`.
+	 * @param array $card    Card to encode, with `kind`, `label`, `current`, `previous`, `sharePct` and `shareBasis`, a post's card with its path as `url`, a part of a channel that took the channel's card with `parentChannel` and `parentChannelChange`, a card whose change was spread across many pages with `spreadAcrossPages`, and a channel's card for its other pages, after a page that brought visits from several channels took a card, with `otherPages`.
 	 * @param array $strings String table, added to as strings are seen.
-	 * @return array The encoded card, as the list `[ kind, label, current, previous, sharePct, url, shareBasis, parentChannel, parentChannelChange, spreadAcrossPages ]`, without the trailing fields that have no value. `url` and `parentChannel` are positions in the string table, `shareBasis` is the position its basis travels as, and `spreadAcrossPages` is `true`, or left out when the change wasn't spread.
+	 * @return array The encoded card, as the list `[ kind, label, current, previous, sharePct, url, shareBasis, parentChannel, parentChannelChange, spreadAcrossPages, otherPages ]`, without the trailing fields that have no value. `url` and `parentChannel` are positions in the string table, `shareBasis` is the position its basis travels as, and `spreadAcrossPages` and `otherPages` are `true`, or left out when the card has no such mark.
 	 */
 	private function encode_key_factor_card( array $card, array &$strings ) {
 		$encoded = $this->encode_key_factor_row( Wire_Format::KEY_FACTOR_KINDS[ $card['kind'] ], $card, $strings );
 
-		$url         = isset( $card['url'] ) && is_string( $card['url'] ) && '' !== $card['url'] ? $card['url'] : null;
+		$url         = $this->get_non_empty_string( $card, 'url' );
 		$share_basis = isset( $card['shareBasis'], Wire_Format::KEY_FACTOR_SHARE_BASES[ $card['shareBasis'] ] ) ? $card['shareBasis'] : null;
-		// Only a share of a channel's change names the channel.
-		$has_parent = 'PARENT_CHANNEL' === $share_basis && isset( $card['parentChannel'], $card['parentChannelChange'] );
+		// A part of a channel names the channel whatever its share is of: of
+		// the channel's change, or, for a part that moved further than the
+		// channel, of something else or of nothing.
+		$parent_channel = $this->get_non_empty_string( $card, 'parentChannel' );
+		$has_parent     = null !== $parent_channel && isset( $card['parentChannelChange'] );
 
 		$encoded[] = null === $url ? null : $this->encode_string( $url, $strings );
 		$encoded[] = null === $share_basis ? null : Wire_Format::KEY_FACTOR_SHARE_BASES[ $share_basis ];
-		$encoded[] = $has_parent ? $this->encode_string( $card['parentChannel'], $strings ) : null;
+		$encoded[] = $has_parent ? $this->encode_string( $parent_channel, $strings ) : null;
 		$encoded[] = $has_parent ? $this->encode_int( $card['parentChannelChange'] ) : null;
 		$encoded[] = ! empty( $card['spreadAcrossPages'] ) ? true : null;
+		$encoded[] = ! empty( $card['otherPages'] ) ? true : null;
 
 		return $this->trim_trailing_fields( $encoded );
 	}
@@ -183,16 +188,34 @@ final class Response_Encoder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $attribute Attribute to encode, with `kind`, `label`, `current`, `previous`, `sharePct` and `oversized`.
+	 * @param array $attribute Attribute to encode, with `kind`, `label`, `current`, `previous`, `sharePct` and `oversized`, a landing page with the page's `title` when it is known, and a search keyword with `noSearchClicks` when the site's search clicks are unknown.
 	 * @param array $strings   String table, added to as strings are seen.
-	 * @return array The encoded attribute, as the list `[ kind, label, current, previous, sharePct, oversized ]`, where `oversized` is `true`, or left out when the attribute isn't oversized.
+	 * @return array The encoded attribute, as the list `[ kind, label, current, previous, sharePct, oversized, title, noSearchClicks ]`, without the trailing fields that have no value. `title` is a position in the string table, and `oversized` and `noSearchClicks` are `true`, or left out when the attribute has no such mark.
 	 */
 	private function encode_key_factor_attribute( array $attribute, array &$strings ) {
 		$encoded = $this->encode_key_factor_row( Wire_Format::KEY_FACTOR_ATTRIBUTE_KINDS[ $attribute['kind'] ], $attribute, $strings );
 
+		$title = $this->get_non_empty_string( $attribute, 'title' );
+
 		$encoded[] = ! empty( $attribute['oversized'] ) ? true : null;
+		$encoded[] = null === $title ? null : $this->encode_string( $title, $strings );
+		$encoded[] = ! empty( $attribute['noSearchClicks'] ) ? true : null;
 
 		return $this->trim_trailing_fields( $encoded );
+	}
+
+	/**
+	 * Gets a field of a card or an attribute that is a string, when it is one
+	 * that isn't empty.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $row   The card or the attribute.
+	 * @param string $field The field's name, such as `url`.
+	 * @return string|null The field's value, or null when it is missing, not a string, or empty.
+	 */
+	private function get_non_empty_string( array $row, $field ) {
+		return isset( $row[ $field ] ) && is_string( $row[ $field ] ) && '' !== $row[ $field ] ? $row[ $field ] : null;
 	}
 
 	/**

@@ -61,6 +61,15 @@ class Response_Builder {
 	private $custom_dimensions_data_available;
 
 	/**
+	 * The titles of the published posts at the paths the key factor cards
+	 * name, each a title or null, keyed by path, once looked up.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $page_titles = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.190.0
@@ -144,7 +153,13 @@ class Response_Builder {
 			// The insight request carries the cards the panel shows as its
 			// decomposition, built in the same pass from the same figures, so
 			// the insight's text describes the cards.
-			$key_factors_builder = new Key_Factors( $contextual_data, $visits, $report_options->get_period_days(), self::get_home_path() );
+			$key_factors_builder = new Key_Factors(
+				$contextual_data,
+				$visits,
+				$report_options->get_period_days(),
+				self::get_home_path(),
+				fn( $path ) => $this->get_page_title( $path )
+			);
 			$key_factors         = $key_factors_builder->get_cards();
 			$steady_traffic      = $key_factors_builder->is_steady();
 			$decomposition       = $key_factors_builder->get_decomposition();
@@ -198,6 +213,50 @@ class Response_Builder {
 		$path = wp_parse_url( home_url(), PHP_URL_PATH );
 
 		return trailingslashit( is_string( $path ) ? $path : '' );
+	}
+
+	/**
+	 * Gets the title of the published post at a path, which a key factor card
+	 * names a landing page by.
+	 *
+	 * Each path is looked up once per request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $path The path of the page on the site's host, such as `/plant-garlic/`.
+	 * @return string|null The post's title, with its HTML characters decoded, or null when the page isn't a published post.
+	 */
+	private function get_page_title( $path ) {
+		if ( ! array_key_exists( $path, $this->page_titles ) ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.url_to_postid_url_to_postid -- A page that isn't a post simply has no title.
+			$post_id = url_to_postid( self::get_site_origin() . $path );
+
+			// A post's title is filtered for display, with its HTML characters
+			// escaped.
+			$this->page_titles[ $path ] = $post_id && 'publish' === get_post_status( $post_id )
+				? html_entity_decode( get_the_title( $post_id ), ENT_QUOTES | ENT_HTML5, 'UTF-8' )
+				: null;
+		}
+
+		return $this->page_titles[ $path ];
+	}
+
+	/**
+	 * Gets the scheme and host of the site's URL, which a landing page's path
+	 * is on.
+	 *
+	 * A landing page's path already has the folder a site lives under, so the
+	 * site's own path is left out.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The scheme and host, with the port when the URL has one, such as `https://example.com`.
+	 */
+	private static function get_site_origin() {
+		$home_url = wp_parse_url( home_url() );
+		$origin   = ( isset( $home_url['scheme'] ) ? $home_url['scheme'] : 'https' ) . '://' . ( isset( $home_url['host'] ) ? $home_url['host'] : '' );
+
+		return isset( $home_url['port'] ) ? "{$origin}:{$home_url['port']}" : $origin;
 	}
 
 	/**

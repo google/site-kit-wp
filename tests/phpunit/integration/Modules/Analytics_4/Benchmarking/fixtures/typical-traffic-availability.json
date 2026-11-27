@@ -20,7 +20,7 @@
     "expected": {
       "range_too_short": true,
       "band_available": false,
-      "band_available_from": "2026-09-16",
+      "band_available_from": "2026-08-19",
       "key_factors_available": false,
       "key_factors_available_from": "2026-07-01",
       "insight_request_allowed": false,
@@ -36,7 +36,7 @@
     "expected": {
       "range_too_short": true,
       "band_available": false,
-      "band_available_from": "2026-09-15",
+      "band_available_from": "2026-08-18",
       "key_factors_available": false,
       "key_factors_available_from": "2026-06-30",
       "insight_request_allowed": false,
@@ -46,15 +46,15 @@
   },
   {
     "range_days": 6,
-    "history_days": 88,
+    "history_days": 60,
     "end_date": "2026-06-30",
-    "first_date": "2026-04-04",
+    "first_date": "2026-05-02",
     "expected": {
       "range_too_short": true,
       "band_available": false,
       "band_available_from": "2026-07-01",
       "key_factors_available": false,
-      "key_factors_available_from": "2026-04-15",
+      "key_factors_available_from": "2026-05-13",
       "insight_request_allowed": false,
       "performance_insight_available": false,
       "last_year_available": false
@@ -62,15 +62,15 @@
   },
   {
     "range_days": 6,
-    "history_days": 89,
+    "history_days": 61,
     "end_date": "2026-06-30",
-    "first_date": "2026-04-03",
+    "first_date": "2026-05-01",
     "expected": {
       "range_too_short": true,
       "band_available": true,
       "band_available_from": "2026-06-30",
       "key_factors_available": false,
-      "key_factors_available_from": "2026-04-14",
+      "key_factors_available_from": "2026-05-12",
       "insight_request_allowed": false,
       "performance_insight_available": false,
       "last_year_available": false
@@ -84,7 +84,7 @@
     "expected": {
       "range_too_short": true,
       "band_available": true,
-      "band_available_from": "2025-09-16",
+      "band_available_from": "2025-08-19",
       "key_factors_available": false,
       "key_factors_available_from": "2025-07-01",
       "insight_request_allowed": false,
@@ -113,7 +113,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": false,
-      "band_available_from": "2026-09-15",
+      "band_available_from": "2026-08-18",
       "key_factors_available": false,
       "key_factors_available_from": "2026-07-01",
       "insight_request_allowed": false,
@@ -129,7 +129,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": false,
-      "band_available_from": "2026-09-14",
+      "band_available_from": "2026-08-17",
       "key_factors_available": true,
       "key_factors_available_from": "2026-06-30",
       "insight_request_allowed": true,
@@ -139,15 +139,15 @@
   },
   {
     "range_days": 7,
-    "history_days": 89,
+    "history_days": 61,
     "end_date": "2026-06-30",
-    "first_date": "2026-04-03",
+    "first_date": "2026-05-01",
     "expected": {
       "range_too_short": false,
       "band_available": false,
       "band_available_from": "2026-07-01",
       "key_factors_available": true,
-      "key_factors_available_from": "2026-04-16",
+      "key_factors_available_from": "2026-05-14",
       "insight_request_allowed": true,
       "performance_insight_available": false,
       "last_year_available": false
@@ -155,15 +155,15 @@
   },
   {
     "range_days": 7,
-    "history_days": 90,
+    "history_days": 62,
     "end_date": "2026-06-30",
-    "first_date": "2026-04-02",
+    "first_date": "2026-04-30",
     "expected": {
       "range_too_short": false,
       "band_available": true,
       "band_available_from": "2026-06-30",
       "key_factors_available": true,
-      "key_factors_available_from": "2026-04-15",
+      "key_factors_available_from": "2026-05-13",
       "insight_request_allowed": true,
       "performance_insight_available": true,
       "last_year_available": false
@@ -177,7 +177,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": true,
-      "band_available_from": "2025-09-15",
+      "band_available_from": "2025-08-18",
       "key_factors_available": true,
       "key_factors_available_from": "2025-07-01",
       "insight_request_allowed": true,
@@ -206,7 +206,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": false,
-      "band_available_from": "2026-09-08",
+      "band_available_from": "2026-08-11",
       "key_factors_available": false,
       "key_factors_available_from": "2026-07-01",
       "insight_request_allowed": false,
@@ -222,7 +222,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": false,
-      "band_available_from": "2026-09-07",
+      "band_available_from": "2026-08-10",
       "key_factors_available": true,
       "key_factors_available_from": "2026-06-30",
       "insight_request_allowed": true,
@@ -232,15 +232,15 @@
   },
   {
     "range_days": 14,
-    "history_days": 96,
+    "history_days": 68,
     "end_date": "2026-06-30",
-    "first_date": "2026-03-27",
+    "first_date": "2026-04-24",
     "expected": {
       "range_too_short": false,
       "band_available": false,
       "band_available_from": "2026-07-01",
       "key_factors_available": true,
-      "key_factors_available_from": "2026-04-23",
+      "key_factors_available_from": "2026-05-21",
       "insight_request_allowed": true,
       "performance_insight_available": false,
       "last_year_available": false
@@ -248,15 +248,15 @@
   },
   {
     "range_days": 14,
-    "history_days": 97,
+    "history_days": 69,
     "end_date": "2026-06-30",
-    "first_date": "2026-03-26",
+    "first_date": "2026-04-23",
     "expected": {
       "range_too_short": false,
       "band_available": true,
       "band_available_from": "2026-06-30",
       "key_factors_available": true,
-      "key_factors_available_from": "2026-04-22",
+      "key_factors_available_from": "2026-05-20",
       "insight_request_allowed": true,
       "performance_insight_available": true,
       "last_year_available": false
@@ -270,7 +270,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": true,
-      "band_available_from": "2025-09-08",
+      "band_available_from": "2025-08-11",
       "key_factors_available": true,
       "key_factors_available_from": "2025-07-01",
       "insight_request_allowed": true,
@@ -299,7 +299,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": false,
-      "band_available_from": "2026-08-25",
+      "band_available_from": "2026-07-28",
       "key_factors_available": false,
       "key_factors_available_from": "2026-07-01",
       "insight_request_allowed": false,
@@ -315,7 +315,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": false,
-      "band_available_from": "2026-08-24",
+      "band_available_from": "2026-07-27",
       "key_factors_available": true,
       "key_factors_available_from": "2026-06-30",
       "insight_request_allowed": true,
@@ -325,15 +325,15 @@
   },
   {
     "range_days": 28,
-    "history_days": 110,
+    "history_days": 82,
     "end_date": "2026-06-30",
-    "first_date": "2026-03-13",
+    "first_date": "2026-04-10",
     "expected": {
       "range_too_short": false,
       "band_available": false,
       "band_available_from": "2026-07-01",
       "key_factors_available": true,
-      "key_factors_available_from": "2026-05-07",
+      "key_factors_available_from": "2026-06-04",
       "insight_request_allowed": true,
       "performance_insight_available": false,
       "last_year_available": false
@@ -341,15 +341,15 @@
   },
   {
     "range_days": 28,
-    "history_days": 111,
+    "history_days": 83,
     "end_date": "2026-06-30",
-    "first_date": "2026-03-12",
+    "first_date": "2026-04-09",
     "expected": {
       "range_too_short": false,
       "band_available": true,
       "band_available_from": "2026-06-30",
       "key_factors_available": true,
-      "key_factors_available_from": "2026-05-06",
+      "key_factors_available_from": "2026-06-03",
       "insight_request_allowed": true,
       "performance_insight_available": true,
       "last_year_available": false
@@ -363,7 +363,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": true,
-      "band_available_from": "2025-08-25",
+      "band_available_from": "2025-07-28",
       "key_factors_available": true,
       "key_factors_available_from": "2025-07-01",
       "insight_request_allowed": true,
@@ -392,7 +392,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": true,
-      "band_available_from": "2026-06-24",
+      "band_available_from": "2026-05-27",
       "key_factors_available": false,
       "key_factors_available_from": "2026-07-01",
       "insight_request_allowed": false,
@@ -408,7 +408,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": true,
-      "band_available_from": "2026-06-23",
+      "band_available_from": "2026-05-26",
       "key_factors_available": true,
       "key_factors_available_from": "2026-06-30",
       "insight_request_allowed": true,
@@ -418,15 +418,15 @@
   },
   {
     "range_days": 90,
-    "history_days": 172,
+    "history_days": 144,
     "end_date": "2026-06-30",
-    "first_date": "2026-01-10",
+    "first_date": "2026-02-07",
     "expected": {
       "range_too_short": false,
       "band_available": false,
       "band_available_from": "2026-07-01",
       "key_factors_available": false,
-      "key_factors_available_from": "2026-07-08",
+      "key_factors_available_from": "2026-08-05",
       "insight_request_allowed": false,
       "performance_insight_available": false,
       "last_year_available": false
@@ -434,15 +434,15 @@
   },
   {
     "range_days": 90,
-    "history_days": 173,
+    "history_days": 145,
     "end_date": "2026-06-30",
-    "first_date": "2026-01-09",
+    "first_date": "2026-02-06",
     "expected": {
       "range_too_short": false,
       "band_available": true,
       "band_available_from": "2026-06-30",
       "key_factors_available": false,
-      "key_factors_available_from": "2026-07-07",
+      "key_factors_available_from": "2026-08-04",
       "insight_request_allowed": false,
       "performance_insight_available": false,
       "last_year_available": false
@@ -456,7 +456,7 @@
     "expected": {
       "range_too_short": false,
       "band_available": true,
-      "band_available_from": "2025-06-24",
+      "band_available_from": "2025-05-27",
       "key_factors_available": true,
       "key_factors_available_from": "2025-07-01",
       "insight_request_allowed": true,

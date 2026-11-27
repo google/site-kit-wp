@@ -24,7 +24,7 @@ use DateTimeZone;
  * history, counted from the site's first day of data through the period's
  * last day:
  *
- * - The band needs `d + 83` days, the history `Period_Baseline` fits it on.
+ * - The band needs `d + 55` days, the history `Period_Baseline` fits it on.
  * - The key factor cards need a period of at least 7 days, and every day of
  *   the period before it.
  * - The benchmarking insight is requested with the key factor cards, since

@@ -219,12 +219,8 @@ describe( 'modules/analytics-4 ai-insight utils', () => {
 				2 * 60 * 1000,
 				AI_INSIGHT_OPERATION_LIFETIME,
 			],
-			// In seconds: the rate limit refills two generations an hour.
-			[
-				'AI_INSIGHT_RATE_LIMIT_HOLD',
-				30 * 60,
-				AI_INSIGHT_RATE_LIMIT_HOLD,
-			],
+			// In seconds: the `Retry-After` of a refusal for the rate limit.
+			[ 'AI_INSIGHT_RATE_LIMIT_HOLD', 60, AI_INSIGHT_RATE_LIMIT_HOLD ],
 		] )( 'should set `%s` to %d', ( _, expected, value ) => {
 			expect( value ).toBe( expected );
 		} );
@@ -368,40 +364,40 @@ describe( 'modules/analytics-4 ai-insight utils', () => {
 	describe( 'getQuotaHoldLifetime', () => {
 		it.each< [ string, string, unknown, number ] >( [
 			[
-				'the rate limit for 30 minutes, though its Retry-After is a minute',
+				'the rate limit for its Retry-After of a minute',
 				'RATE_LIMITED',
 				60,
-				AI_INSIGHT_RATE_LIMIT_HOLD,
-			],
-			[
-				'the rate limit without a Retry-After for 30 minutes',
-				'RATE_LIMITED',
-				undefined,
-				AI_INSIGHT_RATE_LIMIT_HOLD,
-			],
-			[
-				'the rate limit with a Retry-After of 0 for 30 minutes',
-				'RATE_LIMITED',
-				0,
-				AI_INSIGHT_RATE_LIMIT_HOLD,
+				60,
 			],
 			[
 				'the rate limit for its Retry-After of 30 minutes',
 				'RATE_LIMITED',
-				AI_INSIGHT_RATE_LIMIT_HOLD,
-				AI_INSIGHT_RATE_LIMIT_HOLD,
+				30 * 60,
+				30 * 60,
 			],
 			[
-				'the rate limit for longer when its Retry-After asks for it',
+				'the rate limit for its Retry-After of two hours',
 				'RATE_LIMITED',
 				2 * HOUR_IN_SECONDS,
 				2 * HOUR_IN_SECONDS,
+			],
+			[
+				'the rate limit for its Retry-After, though that is under a minute',
+				'RATE_LIMITED',
+				10,
+				10,
 			],
 			[
 				'the rate limit for whole seconds, rounded up',
 				'RATE_LIMITED',
-				AI_INSIGHT_RATE_LIMIT_HOLD + 0.2,
-				AI_INSIGHT_RATE_LIMIT_HOLD + 1,
+				90.2,
+				91,
+			],
+			[
+				'the rate limit for a second with a Retry-After under a second',
+				'RATE_LIMITED',
+				0.2,
+				1,
 			],
 			[
 				'the rate limit for up to a day',
@@ -410,9 +406,45 @@ describe( 'modules/analytics-4 ai-insight utils', () => {
 				DAY_IN_SECONDS,
 			],
 			[
-				'a 429 with a code the store does not know as the rate limit',
+				'the rate limit without a Retry-After for a minute',
+				'RATE_LIMITED',
+				undefined,
+				AI_INSIGHT_RATE_LIMIT_HOLD,
+			],
+			[
+				'the rate limit with a Retry-After of 0 for a minute',
+				'RATE_LIMITED',
+				0,
+				AI_INSIGHT_RATE_LIMIT_HOLD,
+			],
+			[
+				'the rate limit with a negative Retry-After for a minute',
+				'RATE_LIMITED',
+				-1,
+				AI_INSIGHT_RATE_LIMIT_HOLD,
+			],
+			[
+				'the rate limit with a Retry-After that is not a number for a minute',
+				'RATE_LIMITED',
+				'600',
+				AI_INSIGHT_RATE_LIMIT_HOLD,
+			],
+			[
+				'the rate limit with a Retry-After that is not finite for a minute',
+				'RATE_LIMITED',
+				Infinity,
+				AI_INSIGHT_RATE_LIMIT_HOLD,
+			],
+			[
+				'a 429 with a code the store does not know for its Retry-After',
 				'A_NEW_CODE',
-				60,
+				120,
+				120,
+			],
+			[
+				'a 429 with a code the store does not know and no Retry-After for a minute, as the rate limit',
+				'A_NEW_CODE',
+				undefined,
 				AI_INSIGHT_RATE_LIMIT_HOLD,
 			],
 			[
@@ -422,7 +454,7 @@ describe( 'modules/analytics-4 ai-insight utils', () => {
 				2 * HOUR_IN_SECONDS,
 			],
 			[
-				'the daily cap until its Retry-After, though that is under 30 minutes',
+				'the daily cap until its Retry-After, though that is under an hour',
 				'DAILY_CAP',
 				600,
 				600,
@@ -1524,12 +1556,7 @@ describe( 'modules/analytics-4 ai-insight utils', () => {
 
 		describe( 'with a refusal for the quota', () => {
 			it.each< [ string, string, number, number ] >( [
-				[
-					'the rate limit (`RATE_LIMITED`)',
-					'RATE_LIMITED',
-					60,
-					AI_INSIGHT_RATE_LIMIT_HOLD,
-				],
+				[ 'the rate limit (`RATE_LIMITED`)', 'RATE_LIMITED', 60, 60 ],
 				[
 					'the daily cap (`DAILY_CAP`)',
 					'DAILY_CAP',
@@ -1540,7 +1567,7 @@ describe( 'modules/analytics-4 ai-insight utils', () => {
 					'a 429 with a code the store does not know',
 					'A_NEW_CODE',
 					60,
-					AI_INSIGHT_RATE_LIMIT_HOLD,
+					60,
 				],
 			] )(
 				'should hold back the requests for every insight after a refusal for %s',
@@ -1588,10 +1615,9 @@ describe( 'modules/analytics-4 ai-insight utils', () => {
 
 				await resolveWithTimers( request );
 
-				// The API cache counts in whole seconds.
-				jest.setSystemTime(
-					Date.now() + AI_INSIGHT_RATE_LIMIT_HOLD * 1000 - 1000
-				);
+				// The hold lasts for the refusal's `Retry-After`, and the API
+				// cache counts in whole seconds.
+				jest.setSystemTime( Date.now() + 60 * 1000 - 1000 );
 
 				const heldRequest = createRequest( {
 					cacheKey: otherCacheKey,

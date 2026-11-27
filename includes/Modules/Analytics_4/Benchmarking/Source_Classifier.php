@@ -58,11 +58,12 @@ final class Source_Classifier {
 	const SEARCH_ENGINE_NAMES = array( 'google', 'bing', 'yahoo', 'baidu', 'duckduckgo', 'ecosia', 'yandex', 'naver', 'seznam', 'qwant', 'startpage', 'ask', 'aol' );
 
 	/**
-	 * The search engines' own hosts, without `www.`.
+	 * The search engines' own hosts, without `www.`. Their regional and
+	 * mobile hosts are matched by pattern in `is_search_engine()`.
 	 *
 	 * @since n.e.x.t
 	 */
-	const SEARCH_ENGINE_HOSTS = array( 'google.com', 'bing.com', 'yahoo.com', 'search.yahoo.com', 'baidu.com', 'm.baidu.com', 'duckduckgo.com', 'ecosia.org', 'naver.com', 'seznam.cz', 'qwant.com', 'startpage.com', 'ask.com', 'aol.com' );
+	const SEARCH_ENGINE_HOSTS = array( 'google.com', 'bing.com', 'yahoo.com', 'search.yahoo.com', 'baidu.com', 'm.baidu.com', 'duckduckgo.com', 'ecosia.org', 'naver.com', 'search.naver.com', 'm.search.naver.com', 'seznam.cz', 'search.seznam.cz', 'qwant.com', 'startpage.com', 'ask.com', 'aol.com' );
 
 	/**
 	 * The patterns of the internal, staging, hosting, CDN, mail scanner and
@@ -205,9 +206,11 @@ final class Source_Classifier {
 			return $campaign;
 		}
 
-		// `Newsletter_October_2025` is "the October 2025 newsletter".
+		// `Newsletter_October_2025` is "October 2025 newsletter", without an
+		// English "the", so the insight's text in any language can give it the
+		// article its language needs.
 		if ( preg_match( '/^newsletter[_-]+(.+)$/i', $campaign, $matches ) ) {
-			return sprintf( 'the %s newsletter', self::replace_separators( $matches[1] ) );
+			return sprintf( '%s newsletter', self::replace_separators( $matches[1] ) );
 		}
 
 		return self::replace_separators( $campaign );
@@ -226,8 +229,12 @@ final class Source_Classifier {
 			return true;
 		}
 
-		// Google and Yandex on a country domain, such as `google.co.uk`, but
-		// not a host that only starts with their name, such as `googleblog.com`.
+		// Any host under Yahoo's search or under Bing, such as
+		// `uk.search.yahoo.com` or `cn.bing.com`, where the whole subtree is
+		// search, but not Yahoo's other hosts, such as `finance.yahoo.com`,
+		// which refer visits, or `mail.yahoo.com`, which is email. Google and
+		// Yandex on a country domain, such as `google.co.uk`, but not a host
+		// that only starts with their name, such as `googleblog.com`.
 		return (bool) preg_match( '/^(google|yandex)\.[a-z]{2,3}(\.[a-z]{2,3})?$/', $host )
 			|| (bool) preg_match( '/\.(search\.yahoo|bing)\.com$/', $host );
 	}

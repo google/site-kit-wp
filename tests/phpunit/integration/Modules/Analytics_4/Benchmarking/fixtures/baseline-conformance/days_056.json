@@ -1,0 +1,104 @@
+{
+  "name": "days_056",
+  "description": "56 days: the first day with a 28-day fit (one reference block, zero misses); the range's first day has none yet, so no baseline.",
+  "start_date": "2024-03-04",
+  "target_date": "2024-04-28",
+  "days_in_period": 28,
+  "daily_visits": [
+    103,
+    89,
+    105,
+    97,
+    113,
+    51,
+    62,
+    100,
+    102,
+    101,
+    114,
+    103,
+    48,
+    59,
+    93,
+    104,
+    108,
+    114,
+    108,
+    59,
+    62,
+    91,
+    90,
+    110,
+    100,
+    85,
+    63,
+    56,
+    111,
+    99,
+    113,
+    107,
+    96,
+    50,
+    62,
+    92,
+    111,
+    102,
+    99,
+    93,
+    51,
+    63,
+    111,
+    111,
+    114,
+    90,
+    104,
+    51,
+    53,
+    113,
+    104,
+    110,
+    114,
+    85,
+    54,
+    62
+  ],
+  "expected": {
+    "baseline": null,
+    "last_year": null,
+    "model": {
+      "center": 2490,
+      "margin": 810.4936380961512,
+      "block_center": 2490,
+      "period_weight": 28,
+      "filtered_days": [],
+      "block_totals": [
+        2490
+      ],
+      "cleaned_block_totals": [
+        2490
+      ],
+      "ratios": [],
+      "width_ratios": [],
+      "level": 2490,
+      "alignment_drifts": [
+        1
+      ],
+      "alignment_centers": [
+        2490
+      ],
+      "alignment_margins": [
+        810.4936380961512
+      ],
+      "dow_factors_sunday_first": [
+        0.7046987951807229,
+        1.0791566265060242,
+        1.0740963855421686,
+        1.1727710843373496,
+        1.1753012048192772,
+        1.1348192771084338,
+        0.659156626506024
+      ]
+    },
+    "range": null
+  }
+}

@@ -2,7 +2,7 @@
 
 **Sources**
 
-- **Service spec (source of truth):** [`benchmarking_feature_design.md` @ `2f22a63d`](./benchmarking_feature_design.md). "§" references below point to its sections.  
+- **Service spec (source of truth):** [`benchmarking_feature_design.md` @ `2f22a63d`](./benchmarking_feature_design.md). "§" references below point to its sections. *Update (Nov 26): the linked copy is now the service's spec at `9d3e7d69`, its v17, which the plugin follows since the ports in the Key factors updates. The section numbers are unchanged.*  
 - **Designs:** [Figma, Performance benchmarking → Iteration 3](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2905-60416)  
 - **Product decisions:** [Typical traffic: data scenarios](./typical-traffic-data-scenarios.md) (decision IDs like D13) and [Change drivers](./typical-traffic-change-drivers.md)
 
@@ -19,7 +19,7 @@ Since this is a POC, this review is about behaviour against the spec, the design
 - **The band matches the reference model.**  
   - `Period_Baseline` ports the service's `fitDailyRange()`: each day gets a 28-day fit on the ≤365 days up to `t − 28`, and the daily half-widths are scaled so the days add up to the total's margin.  
   - The band and the request `baseline` share one instance with per-day fit caching, so the chart and the verdict always agree.  
-  - All 33 baseline conformance fixtures are byte-identical to the service's.  
+  - All 33 baseline conformance fixtures are byte-identical to the service's. *Update (Nov 26): the service now has 40, with new ones at its v16's shorter history minimums, and all 40 still are.*  
 - **The availability rules match.** `Typical_Traffic_Availability` is a faithful port of `TypicalTrafficAvailabilityFor()` (§8 "When each part shows"), and its fixture is byte-identical to the service's. On the server:  
   - key factors are built only for ranges of 7+ days with a covered previous period  
   - `insightRequest` is built only when key factors exist  
@@ -71,6 +71,7 @@ The Traffic overview widget is registered without a flag, so it's live for every
 >   - Pages are `landingPage`, not `landingPagePlusQueryString`.
 >   - §5.9's screen for opaque or personal campaign names isn't ported; the service screens these itself.
 >   - `Insight_Payload::MAX_LENGTH` went from 256 KiB to 1 MiB for the longer lists.
+> - *Update (service port, Nov 26): the request also sends `in_period_spike` when one to three days in a row rose above their band and carried most of the period's gain, so the analysis can say the period had a brief spike. The service's other new fields, `range_transition`, `direct_surge_pattern` and `omit_lead_channel_delta`, are worked out on the endpoint from what the plugin already sends, including the `(not set)` rows of `channel_pages`.*
 
 `Insight_Request_Builder` sends contextual rows but no `decomposition` ([\#L102-L144](https://github.com/google/site-kit-wp/blob/d325a67e6decf70c1dd048240ad1718f56ce7391/includes/Modules/Analytics_4/Benchmarking/Insight_Request_Builder.php#L102-L144)). Nor does it send `search_clicks`, `top_pages`, `channel_pages`, `channel_breakdowns` or `channel_campaigns` (§5.2, §5.7).
 
@@ -120,6 +121,16 @@ The card logic in `Key_Factors.php` / `Row_Scorer.php` follows parts of the Chan
 >   The service never rejects a `decomposition` and never cites these rows in the driver, so the insight text is unaffected. Mariya should confirm, so the service's spec can follow (question 3).
 > - **Checked against** the §5.10 wire-format example, which the port reproduces exactly, and hand-worked cases for each rule. It isn't checked against the 242 checkpoint fixtures (§5.10 *Parity*), which aren't in this repo. Exporting them from Go as JSON fixtures would make that check possible.
 > - **Screenshot references need updating.** The `KeyFactors` `Long Labels` story now shows cards the algorithm can produce (no keyword card), and a keyword row now reads "+N clicks", which changes the `TrafficOverviewWidget` typical traffic stories too.
+>
+> **Update (Nov 26): the plugin follows the service again, up to its v16.** Between Nov 20 and 25, the service changed its card rules and the baseline (up to `7fa118fa`, spec at `f06ab9e9`), and the plugin now ports those changes. Items 3, 5–9, 13 and 16 below say what changed for each. Three points above no longer hold:
+>
+> - **The device and visitor type departure is gone.** The service now lists a device or visitor type that moved further than its card as the card's only row, when the card has no other. That covers the empty cards above, so the plugin follows the service's rule (round 2, item 2), and `get_breakdown_split()` is gone. Direct +1,280 can list desktop +1,643 that way, with "While other devices fell", but never mobile −362. Only a device keeps the 10-point margin, as in the service.
+> - **The sensitive-content screen is ported** (round 2, item 4).
+> - **The port is checked against the Go client** with a scratch harness: 90 of 90 targeted cases and 6,999 of 7,000 random ones gave the same cards (round 2, item 3). A test on the 242 checkpoints still needs their export from Go.
+>
+> The other differences by the plugin's reports stand, and one more belongs with them: a landing page's addresses that differ only in case or in a trailing slash are one page, where the Go client tells them apart. **Screenshot references need updating** for the `KeyFactors` stories (round 2, item 1).
+>
+> **Update (Nov 26, later): the plugin follows the service's v17 too** (`9d3e7d69`, which the linked spec now matches). v17 changed two card rules: a part no longer takes the period's only card when its card would have no rows (items 5 and 6), and a keyword that is the site's own name or domain is named like any other (item 7). The panel and the PDF also leave out a lone card with nothing under its title, as the spec now asks of clients (round 2, item 6). v17's changes to the prompt and its output checks are the service's own. The harness agrees with v17's Go client on 97 of 97 targeted cases, 7 of them new cases of the only card, and on 6,999 of 7,000 random ones, with the same tie as before. v17 changed Go's cards in 10 of the 90 earlier targeted cases and in 113 of the random ones, so the run tested the new rules.
 
 ### **5\. Page and homepage cards** ✅ Done
 
@@ -128,6 +139,13 @@ The card logic in `Key_Factors.php` / `Row_Scorer.php` follows parts of the Chan
 > - **A page takes its channel's card only by the service's rule.** A channel's page is the post published in the period at the channel's top landing page (§5.10 step 8a.1). The channel rose, its top page moved by 10–110% of its change, and the page is among the 10 most visited posts published in the period. The post takes the card when it carried at least half of the channel's rise, with its visits in the period as its change and its share of the channel's change (`PARENT_CHANNEL`). Otherwise the page is a "Target page" row of the channel's card. A site whose property has no post date dimension has no page cards.
 > - **The homepage is never a card or a Target page.** `Page_Classifier` ports the §5.8 rules. The root, `/home`, `/index.php` and the like, the folder the site lives under, and feed, admin, login, test, sample and paginated pages are never named. Direct lists its homepage as a "Homepage" row without an address when it carried at least 40% of Direct's change, and 10 points more than its share of Direct's visits. The plugin reads the single-segment paths the service puts to its model as content, as the spec says.
 > - **Still open:** whether page cards stay at all, for Mariya and Sigal (question 2). The designs show channel cards only.
+> - *Update (service port, Nov 26):*
+>   - A channel's top page no longer has the 110% limit, only the 10% floor. A page that moved further than its channel is a "Target page" row larger than the card, which says "While other pages fell".
+>   - Direct lists its homepage from 10% of its change, with no rule about its share of Direct's visits. Its landing page comes first when it moved further than the homepage.
+>   - A page row shows the page's title when the page is a published post or page of the site, and still links to it by its path.
+>   - Under a referring site or campaign that took its channel's card, the channel's landing page can be a row (item 6).
+>   - A page that brought visits through several channels can take the first card. It needs `round(20 × d / 28)` visits and 40% of the movement in the period's direction, through at least two channels that each brought 10% of its change. Its rows are those channels, and their own cards are for their other pages: "Direct (other pages)", for example. This is a second kind of page card for question 2.
+> - *Update (service v17, Nov 26): a post takes its channel's card only beside another card.* A post's card has no rows, and the period's only card is no longer a part's card without rows (item 6). The channel then keeps the card and lists the post as a "Target page" row.
 
 The designs show **channel cards only**. Pages, referring sites, platforms and keywords appear as rows inside a card, under "Top changes within *channel*" ([Traffic overview](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2905-60416)).
 
@@ -144,6 +162,12 @@ Please confirm with Mariya and Sigal whether page cards stay at all. If they do,
 > - **Offsets are surfaced.** `Row_Scorer` and its same-direction boost are gone. Nodes are ranked by the size of their change, then by their excess change (§5.10 step 6). A rise or a drop shows at most one card moving against it, as `OFFSET` with its share of the net change. A flat period whose channels moved against each other shows both sides (step 7).
 > - **Floors scale with the range.** A card needs `round(10 × d / 28)` visits (at least 1), 0.5% of the larger total and 5% of the gross movement. A row needs the same count and 10% of its card's change.
 > - **The paid channels are grouped** as "Paid traffic" when two or more moved materially, with a row for each (§5.10 step 2). The panel names the group in the site's language.
+> - *Update (service port, Nov 26):*
+>   - A part needs 10% of its channel's change to be a row, rather than 25%. Two parts that together carried more than the channel's change are both rows only when each carried from 30% to all of it, and neither then shows a share, so a card's shares never add up past 100%.
+>   - A part that carried up to 10% more than its channel still takes the card, and now names the channel: "More than Referral’s net change of +300 visits". When its share would then be of the site's traffic, the channel keeps its card, with the part as a row larger than it.
+>   - Under a referring site or campaign that took its channel's card, the channel's landing page is a row when at least half of the page's change must have come through that part. It shows its own change, without a share.
+>   - On a flat period whose channels moved against each other, the cards have no share, since a flat site has no change for a share to be of. A card that took its channel's place keeps its share of the channel, and a steady period's cards keep their share of all visits. On a rise or a drop, the movement a share is of counts the paid group by its net change, as the service now does.
+> - *Update (service v17, Nov 26): a part no longer takes the period's only card when its card would have no rows.* The channel keeps the card, with its rows, among them the part. A referring site or campaign still takes the only card when the channel's landing page is a row under it (above). Beside another card, a part takes its channel's card as before, and so it does after a page took the first card. A post's card never has rows, so a post now takes its channel's card only beside another card (item 5).
 
 - **No renormalizing.** A child (a page or site inside a channel) is measured against the site's overall change, not its own channel's. A page in a channel that dropped 30% therefore looks unusual even if it dropped with its channel. The Change drivers doc calls this "renormalize when drilling".  
 - **No concentration rule.** The Change drivers doc only names a child when it accounts for a meaningful share of its parent's change. Otherwise the channel is described as a whole.  
@@ -157,6 +181,11 @@ Please confirm with Mariya and Sigal whether page cards stay at all. If they do,
 > - **Keywords are never cards.** Organic Search's card lists the keyword behind its change as a "Search keyword" row (§5.10 step 8c.1). It shows only when the site's search clicks moved with the channel. The keyword must also carry 25–110% of that change, and clear the row floors in clicks against the channel's visits. A smaller keyword is never named in its place.
 > - **Clicks are shown as clicks.** The panel shows the row's change as "+N clicks". The request sends it as context, with its change as a share of all of the site's search clicks.
 > - **Search Console asks for 4 reports instead of 8.** Each keyword's pages and devices fed only the keyword cards, so the plugin no longer asks for them.
+> - *Update (service port, Nov 26): the keyword row follows the service's new rule.*
+>   - It names the keyword whose clicks moved most the way the channel moved, whatever the site's search clicks did. It needs `round(10 × d / 28)` clicks, and a change of at least 0.5% of the site's search clicks in the larger of the two periods. Without the site's search clicks, it needs 10% of the channel's change in visits instead.
+>   - A keyword that moved against the site's search clicks, further than them, or while they didn't move says what the other queries did: "A change equal to 3.6% of the site’s search clicks, while other queries fell". Without the site's search clicks, the row shows its change alone.
+>   - ~~A keyword that is the site's own name or domain is never named, since it says how much the site was searched for, not what it was found for.~~ *Update (service v17, Nov 26): such a keyword is now named like any other, as the service names it. The service dropped the filter from the row and from its `SEARCH_QUERY` subject, so the plugin no longer needs the site's URL to build the cards.*
+>   - A smaller keyword is still never named in place of the largest.
 
 The POC makes keywords their own cards. Their Search Console **clicks** are ranked and gated against GA4 session totals, and the card labels them "visits" ([KeyFactorChangeBadge.tsx\#L53](https://github.com/google/site-kit-wp/blob/d325a67e6decf70c1dd048240ad1718f56ce7391/assets/js/modules/analytics-4/components/traffic-overview/factors/KeyFactorChangeBadge.tsx#L53)).
 
@@ -170,6 +199,7 @@ The POC makes keywords their own cards. Their Search Console **clicks** are rank
 >
 > - **A part replaces its channel only by taking its card.** The suppression step is gone. A part that carried most of its channel's change takes the channel's own card after the top-3 cut, so a part never removes a channel without being shown. A part with 15% of the change never replaces a channel with 85%. What the channel moved beyond the part falls in the residual.
 > - **The same visits are never on two cards.** Every card is rooted in one channel, and a part that carried the change of two channels takes the card of the first only. A card's rows come from one cut of its visits and add up to no more than its change (§5.10 step 8c.4).
+> - *Update (service port, Nov 26): a page that brought visits through several channels can take the first card (item 5). Its visits are then taken out of each channel that brought at least 10% of the page's change or of the channel's own, and those channels' cards are for their other pages. A channel below both keeps its few visits to the page, which then count on both cards, as in the service.*
 
 When a child (page, site, campaign) qualifies as a card, the POC removes its parent channel's card to avoid counting the same visits twice.
 
@@ -189,6 +219,7 @@ When a child (page, site, campaign) qualifies as a card, the POC removes its par
 > - **AI assistant.** An `AI Assistant` channel's sources are "AI assistant" rows, which never take the card (§5.10 step 8a.3). GA4 reports such a channel only on properties that have one. Elsewhere, an assistant's visits stay under Referral as a referring site.
 > - **Direct traffic.** Direct lists its homepage as a row (item 5).
 > - **Not done: fbclid and other click ID markers.** They need `landingPagePlusQueryString`, which the plugin doesn't report.
+> - *Update (service port, Nov 26): channels and sources are named as the service now names them. Analytics' `Cross-network` and `Unassigned` channels are "Cross-network ads" and "Uncategorized traffic" on the cards and in their `decomposition`. `search.naver.com`, `m.search.naver.com` and `search.seznam.cz` are search engines, so they're left out like the others. A newsletter campaign reads "October 2025 newsletter", without "the", so the insight's text can give it the article its language needs.*
 
 - **Social sources.** Only Facebook variants collapse into one source. The service also collapses Instagram, t.co, lnkd.in etc., so the cards and the text can name the same platform differently.  
 - **AI assistant.** The AI channel has no "assistant" attribute; the Change drivers doc lists one.  
@@ -251,6 +282,7 @@ When a part is still waiting for history, nothing tells the user.
 > - **Still open:**
 >   - **The "Learn more" links** in this tooltip and in the key factors heading still go to `#`. They need a support page, or a documentation slug for `getDocumentationLinkURL()`.
 >   - **Copy and Figma need Sigal's sign-off.** The wording is a placeholder that keeps the spec's "Based on N weeks of your traffic", and the tooltip in Figma still says "last 18 months… accounting for seasonal patterns".
+> - *Update (service port, Nov 26): a band now needs `d + 55` days of history (83 at 28) rather than `d + 83`, since each day's fit needs one 28-day block of reference rather than two. So the tooltip says 7 weeks at the minimum for a 28-day range. While the first day's fit has under two blocks, the service calls the band early (`EarlyBand`). `Period_Baseline` works that out too, but nothing shows it yet.*
 
 The POC says "Site Kit analyzes the last 12 months of your traffic history…" ([TrafficChart.tsx\#L163](https://github.com/google/site-kit-wp/blob/d325a67e6decf70c1dd048240ad1718f56ce7391/assets/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart.tsx#L163)). The [design's tooltip](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2904-58734) says "last 18 months… accounting for seasonal patterns". Neither matches the model.
 
@@ -317,6 +349,7 @@ Nothing is cached across requests. The Change drivers doc warns that firing on e
 >   - **Not kept:** 503 (busy), 409 (already generating), 404 (lost operation) and network errors. None of them costs a generation.
 >   - Conversion insights keep their old rules: per tab, with only 429 and 403 kept.
 > - **`Retry-After` was already done** in d81eb3ffbf. Each wait follows the service's `Retry-After` (2 s while generating, 5 s on a 409 or 503), and the fixed 2 s and 5 s apply only when an answer has none.
+> - *Update (Nov 26): a quota refusal now holds back every insight request for its `Retry-After` (round 2, item 5): a minute for `RATE_LIMITED`, which since the service's fix no longer spends one of the site's daily generations, and until the next UTC day for `DAILY_CAP`.*
 
 - The browser keeps the insight for 24 h, keyed by date range \+ locale rather than by the payload. When `benchmarking-data` refreshes within that time, the cached analysis can contradict the new band and totals.  
 - 400 and 500 errors aren't cached, so every page load submits again.  
@@ -371,7 +404,7 @@ The existing widget moves from users to sessions ("Visits by…", "Total visits"
   > **Status: done.**
   >
   > - **A post card's title now links to the post's entity dashboard**, in the same tab, as the landing-page rows do.
-  >   - The card now carries the post's path. `Key_Factors` adds it as `url`, and the wire format sends it as a sixth position on a `CONTENT` card. Other cards and the attributes keep five positions.
+  >   - The card now carries the post's path. `Key_Factors` adds it as `url`, and the wire format sends it as a sixth position on a `CONTENT` card. Other cards and the attributes keep five positions. *Update: since round 2's item 1 and the service port, a card and an attribute can carry more trailing positions, such as `otherPages` and a page's `title`, each left out when it has no value (`Wire_Format::KEY_FACTOR_ROW_FIELD_COUNT`).*
   >   - The layout is unreleased, so `FORMAT_VERSION` stays 1.
   > - **Both kinds of link now record a click.**
   >   - The event is `<viewContext>_typical-traffic` / `click_page_link`, labelled with the card's kind, like the vote events: `CONTENT` for a post's title, the parent card's kind for a landing-page row.
@@ -381,7 +414,7 @@ The existing widget moves from users to sessions ("Visits by…", "Total visits"
 ## **Questions needing product alignment**
 
 1. **Steady and low-traffic rules.** The steady notice now follows the service's rule and shows the service's steady cards (item 4); confirm that with product. What should trigger the Low traffic state?  
-2. **Page cards.** The designs show channel cards only. Keep `[Content]` cards (with the service's elevation rule and no homepage card), or drop them? *The plugin now follows the service's rule (item 5).*  
-3. **Key factors spec.** This review treats service §5.10 as the source of truth, since it's the most recent and it's what the driver text is written against. Mariya should confirm that it supersedes the Change drivers hierarchy where they disagree: keyword cards, elevation rules and offsets. *The plugin now follows §5.10 (items 5–9), except for a card's device and visitor type rows, which follow the rules of a channel's parts (see the Key factors update).*  
+2. **Page cards.** The designs show channel cards only. Keep `[Content]` cards (with the service's elevation rule and no homepage card), or drop them? *The plugin now follows the service's rule (item 5). Since the service port, a page that brought visits through several channels can also take the first card, and those channels' cards then read "Direct (other pages)", for example.*  
+3. **Key factors spec.** This review treats service §5.10 as the source of truth, since it's the most recent and it's what the driver text is written against. Mariya should confirm that it supersedes the Change drivers hierarchy where they disagree: keyword cards, elevation rules and offsets. *The plugin now follows §5.10 (items 5–9), except for a card's device and visitor type rows, which follow the rules of a channel's parts (see the Key factors update). Since the service port, those rows follow §5.10 too.*  
 4. **Tooltip copy.** The design ("18 months, seasonal"), the POC ("12 months") and the spec ("Based on N weeks") all differ. Sigal should update the design copy.  
 5. **Insight freshness vs. generations.** The analysis now always matches the figures (item 16), so a range whose figures still change gets a new generation each time its response refreshes: at most hourly. The rate limit is 2 an hour per user and 20 a day per site, shared with conversion insights. If that's too many, keep a recent range's response longer (item 15). The trade-off is figures that are up to that much older than the rest of the dashboard.

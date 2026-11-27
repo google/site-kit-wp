@@ -935,6 +935,33 @@ class Response_BuilderTest extends TestCase {
 		);
 	}
 
+	public function test_build__sends_the_brief_spike_of_the_period_in_the_insight_request() {
+		$this->enable_feature( 'trafficInsights' );
+		// A year of 100 visits a day, but 1,000 on `2026-09-01` and
+		// `2026-09-02`, days 406 and 407 of the daily report.
+		$this->report_rows = array(
+			'date' => $this->get_daily_report_rows( '2025-07-23', '2026-09-15', fn( $position ) => in_array( $position, array( 405, 406 ), true ) ? 1000 : 100 ),
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		// The period gained 1,800 visits on the period before, and each day's
+		// band reaches 116.4 visits, so the two days had 1,767.2 visits above
+		// their bounds, 98.2% of the gain.
+		$this->assertSame( array( 83.6, 116.4 ), array( $response['dailyTraffic'][13]['expectedMin'], $response['dailyTraffic'][13]['expectedMax'] ), '`2026-09-01` should have the expected range of a site with 100 visits a day.' );
+		$this->assertSame(
+			array(
+				'peak_date'         => '2026-09-01',
+				'start_date'        => '2026-09-01',
+				'end_date'          => '2026-09-02',
+				'days'              => 2,
+				'share_of_gain_pct' => 98.2,
+			),
+			$response['insightRequest']['in_period_spike'],
+			'The insight request should carry the brief spike of the period, measured against the band of `dailyTraffic`.'
+		);
+	}
+
 	public function test_build__returns_a_null_insight_request_while_the_compare_period_has_a_day_before_the_first_day_with_traffic() {
 		$this->enable_feature( 'trafficInsights' );
 		// The site recorded its first visits on `2026-08-18`, the last day of
@@ -1184,7 +1211,7 @@ class Response_BuilderTest extends TestCase {
 	 * @param string $first_date The first day of the daily report with visits, as `YYYY-MM-DD`.
 	 * @param bool   $has_range  Whether the selected period should have an expected range.
 	 */
-	public function test_build__gives_the_period_an_expected_range_from_111_days_of_recorded_traffic( $first_date, $has_range ) {
+	public function test_build__gives_the_period_an_expected_range_from_83_days_of_recorded_traffic( $first_date, $has_range ) {
 		$this->report_rows = array(
 			'date' => $this->get_daily_report_rows( $first_date, '2026-09-15', fn() => 100 ),
 		);
@@ -1202,13 +1229,13 @@ class Response_BuilderTest extends TestCase {
 	}
 
 	public function data_recorded_traffic_histories() {
-		// The first day of a 28-day period needs the 84 days of its own 28-day
-		// fit, so the period needs 111 days.
+		// The first day of a 28-day period needs the 56 days of its own 28-day
+		// fit, so the period needs 83 days.
 		return array(
-			'111 days, from 2026-05-28' => array( '2026-05-28', true ),
-			'110 days, from 2026-05-29' => array( '2026-05-29', false ),
-			'84 days, from 2026-06-24'  => array( '2026-06-24', false ),
-			'46 days, from 2026-08-01'  => array( '2026-08-01', false ),
+			'83 days, from 2026-06-25' => array( '2026-06-25', true ),
+			'82 days, from 2026-06-26' => array( '2026-06-26', false ),
+			'56 days, from 2026-07-22' => array( '2026-07-22', false ),
+			'46 days, from 2026-08-01' => array( '2026-08-01', false ),
 		);
 	}
 
@@ -1234,7 +1261,8 @@ class Response_BuilderTest extends TestCase {
 		return array(
 			'420 days, from 2025-07-23' => array( '2025-07-23', 365 ),
 			'111 days, from 2026-05-28' => array( '2026-05-28', 83 ),
-			'110 days, from 2026-05-29' => array( '2026-05-29', null ),
+			'83 days, from 2026-06-25'  => array( '2026-06-25', 55 ),
+			'82 days, from 2026-06-26'  => array( '2026-06-26', null ),
 			'no visits'                 => array( null, null ),
 		);
 	}
@@ -1276,7 +1304,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			$expected,
 			array_intersect_key( $availability, $expected ),
-			'`availability` should count the history from the first day of the daily report with visits: the band needs 111 days of it, and the key factor cards 56.'
+			'`availability` should count the history from the first day of the daily report with visits: the band needs 83 days of it, and the key factor cards 56.'
 		);
 	}
 
@@ -1286,7 +1314,7 @@ class Response_BuilderTest extends TestCase {
 		// 46 days of history up to `2026-09-15`, too few for either part.
 		$from_2026_08_01 = array(
 			'band_available'             => false,
-			'band_available_from'        => '2026-11-19',
+			'band_available_from'        => '2026-10-22',
 			'key_factors_available'      => false,
 			'key_factors_available_from' => '2026-09-25',
 		);
@@ -1297,7 +1325,7 @@ class Response_BuilderTest extends TestCase {
 				$this->get_daily_report_rows( '2025-08-20', '2026-09-15', $get_visits ),
 				array(
 					'band_available'             => true,
-					'band_available_from'        => '2025-12-08',
+					'band_available_from'        => '2025-11-10',
 					'key_factors_available'      => true,
 					'key_factors_available_from' => '2025-10-14',
 				),
@@ -1866,11 +1894,20 @@ class Response_BuilderTest extends TestCase {
 					'previous'   => 300,
 					'sharePct'   => 28.6,
 					'shareBasis' => 'GROSS_CHANGE',
-					'attributes' => array(),
+					'attributes' => array(
+						array(
+							'kind'      => 'USER_TYPE',
+							'label'     => 'returning',
+							'current'   => 380,
+							'previous'  => 300,
+							'sharePct'  => 100.0,
+							'oversized' => false,
+						),
+					),
 				),
 			),
 			$response['keyFactors'],
-			'The cards should be the new `/plant-garlic/` post, whose 150 visits are 75% of the rise of `Organic Search`, and `Direct`, whose one device and one visitor type have all of its visits, so neither explains its rise.'
+			'The cards should be the new `/plant-garlic/` post, whose 150 visits are 75% of the rise of `Organic Search`, and `Direct`, whose returning visitors carried all of its rise. Its one device has all of its visits, so it explains none of the rise.'
 		);
 	}
 

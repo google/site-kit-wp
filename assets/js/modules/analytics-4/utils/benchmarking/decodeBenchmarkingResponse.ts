@@ -41,7 +41,10 @@ import {
 	BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS,
 	BENCHMARKING_KEY_FACTOR_KINDS,
 	BENCHMARKING_KEY_FACTOR_SHARE_BASES,
+	KEY_FACTOR_ATTRIBUTE_NO_SEARCH_CLICKS,
 	KEY_FACTOR_ATTRIBUTE_OVERSIZED,
+	KEY_FACTOR_ATTRIBUTE_TITLE,
+	KEY_FACTOR_CARD_OTHER_PAGES,
 	KEY_FACTOR_CARD_PARENT_CHANNEL,
 	KEY_FACTOR_CARD_PARENT_CHANNEL_CHANGE,
 	KEY_FACTOR_CARD_SHARE_BASIS,
@@ -69,6 +72,7 @@ import {
 	BenchmarkingDailyTrafficRow,
 	BenchmarkingKeyFactor,
 	BenchmarkingKeyFactorAttribute,
+	BenchmarkingKeyFactorKind,
 	BenchmarkingKeyFactorParentChannel,
 	DecodedBenchmarkingResponse,
 } from './types';
@@ -303,7 +307,17 @@ function decodeKeyFactorRow< Kind extends string >(
 }
 
 /**
- * Decodes the channel a card on `PARENT_CHANNEL` took the place of: its name,
+ * The kinds of a card that is a part of a channel, which names the channel it
+ * took the place of. A channel's card, and the paid channels', never does.
+ */
+const PARENT_CHANNEL_CARD_KINDS: BenchmarkingKeyFactorKind[] = [
+	'CONTENT',
+	'REFERRING_SITE',
+	'CAMPAIGN',
+];
+
+/**
+ * Decodes the channel a part of a channel took the place of: its name,
  * through the string table, and its change.
  *
  * @since n.e.x.t
@@ -319,7 +333,7 @@ function decodeParentChannel(
 	const label = readString( strings, card[ KEY_FACTOR_CARD_PARENT_CHANNEL ] );
 	const change = card[ KEY_FACTOR_CARD_PARENT_CHANNEL_CHANGE ];
 
-	return label !== null && Number.isInteger( change )
+	return label && Number.isInteger( change )
 		? { label, change: change as number }
 		: null;
 }
@@ -328,10 +342,11 @@ function decodeParentChannel(
  * Decodes an attribute of a key factor card.
  *
  * @since n.e.x.t
+ * @since n.e.x.t Reads the title of a landing page and whether the site's search clicks of a search keyword are unknown.
  *
  * @param {*}     attribute The encoded attribute.
  * @param {Array} strings   The response's string table.
- * @return {Object|null} The decoded attribute, with `oversized` only when it moved further than its card, or null when it cannot be read.
+ * @return {Object|null} The decoded attribute, with `oversized` only when it moved further than its card, `title` only for a landing page with a title, and `noSearchClicks` only for a search keyword without the site's search clicks, or null when it cannot be read.
  */
 function decodeKeyFactorAttribute(
 	attribute: unknown,
@@ -347,11 +362,27 @@ function decodeKeyFactorAttribute(
 		return null;
 	}
 
-	// Only `true` marks an oversized attribute, so a field that cannot be read
-	// shows the attribute with its share, as an attribute without one.
-	return ( attribute as unknown[] )[ KEY_FACTOR_ATTRIBUTE_OVERSIZED ] === true
-		? { ...decoded, oversized: true }
-		: decoded;
+	// `decodeKeyFactorRow` returns an attribute only for a list.
+	const row = attribute as unknown[];
+	// Only `true` sets a mark, so a field that cannot be read shows the
+	// attribute as one without the mark: with its share, if it has one.
+	const oversized = row[ KEY_FACTOR_ATTRIBUTE_OVERSIZED ] === true;
+	// Only a landing page carries a title, which it shows in place of its
+	// path. A title that cannot be read leaves the path.
+	const title =
+		decoded.kind === 'LANDING_PAGE'
+			? readString( strings, row[ KEY_FACTOR_ATTRIBUTE_TITLE ] )
+			: null;
+	const noSearchClicks =
+		decoded.kind === 'SEARCH_KEYWORD' &&
+		row[ KEY_FACTOR_ATTRIBUTE_NO_SEARCH_CLICKS ] === true;
+
+	return {
+		...decoded,
+		...( oversized ? { oversized } : {} ),
+		...( title ? { title } : {} ),
+		...( noSearchClicks ? { noSearchClicks } : {} ),
+	};
 }
 
 /**
@@ -365,6 +396,7 @@ function decodeKeyFactorAttribute(
  * @since n.e.x.t Reads the path of a post's card.
  * @since n.e.x.t Reads the basis of a card's share, the channel a card on `PARENT_CHANNEL` took the place of, and whether an attribute moved further than its card.
  * @since n.e.x.t Reads whether a card's change was spread across many pages.
+ * @since n.e.x.t Reads the channel of a part of a channel on whatever basis its share is, and whether a channel's card is for its other pages.
  *
  * @param {Array} cards      The encoded cards, in rank order.
  * @param {Array} attributes One list of encoded attributes per card, in the same order.
@@ -394,7 +426,7 @@ function decodeKeyFactors(
 
 		// `decodeKeyFactorRow` returns a card only for a list.
 		const row = card as unknown[];
-		// A post's card carries its path after its share.
+		// A page's card carries its path after its share.
 		const url =
 			keyFactor.kind === 'CONTENT'
 				? readString( strings, row[ KEY_FACTOR_CARD_URL ] )
@@ -403,15 +435,18 @@ function decodeKeyFactors(
 			row[ KEY_FACTOR_CARD_SHARE_BASIS ],
 			BENCHMARKING_KEY_FACTOR_SHARE_BASES
 		);
-		// Only a share of a channel's change names the channel.
-		const parentChannel =
-			shareBasis === 'PARENT_CHANNEL'
-				? decodeParentChannel( row, strings )
-				: null;
-		// Only `true` marks a change spread across many pages, so a field
-		// that cannot be read leaves the card as one without the mark.
+		// Only a part of a channel names the channel it took the place of,
+		// whatever its share is of.
+		const parentChannel = PARENT_CHANNEL_CARD_KINDS.includes(
+			keyFactor.kind
+		)
+			? decodeParentChannel( row, strings )
+			: null;
+		// Only `true` sets a mark, so a field that cannot be read leaves the
+		// card as one without the mark.
 		const spreadAcrossPages =
 			row[ KEY_FACTOR_CARD_SPREAD_ACROSS_PAGES ] === true;
+		const otherPages = row[ KEY_FACTOR_CARD_OTHER_PAGES ] === true;
 
 		return {
 			...keyFactor,
@@ -419,6 +454,7 @@ function decodeKeyFactors(
 			...( shareBasis ? { shareBasis } : {} ),
 			...( parentChannel ? { parentChannel } : {} ),
 			...( spreadAcrossPages ? { spreadAcrossPages } : {} ),
+			...( otherPages ? { otherPages } : {} ),
 			attributes: attributeRows.flatMap(
 				( attribute ) =>
 					decodeKeyFactorAttribute( attribute, strings ) ?? []
@@ -578,6 +614,7 @@ function readBandReferenceDays( value: unknown ): number | null {
  * @since n.e.x.t Decodes whether traffic was steady.
  * @since n.e.x.t Decodes the number of days of traffic the band is fitted on.
  * @since n.e.x.t Decodes the basis of each card's share, the channel a card on `PARENT_CHANNEL` took the place of, and whether an attribute moved further than its card.
+ * @since n.e.x.t Decodes the channel of a part of a channel on whatever basis its share is, whether a channel's card is for its other pages, the title of a landing page, and whether the site's search clicks of a search keyword are unknown.
  *
  * @param {*} encoded The encoded response.
  * @return {Object|null} The decoded response, or null when it cannot be read.

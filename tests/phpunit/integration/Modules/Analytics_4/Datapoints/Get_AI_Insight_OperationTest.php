@@ -729,7 +729,6 @@ class Get_AI_Insight_OperationTest extends TestCase {
 				'trafficInsights',
 				array(
 					'scenario'       => 'BELOW_EXPECTED',
-					'teaser'         => 'Your site is quieter than usual.',
 					'analysis'       => 'Your site had fewer visits than usual, mostly from Organic Search.',
 					'driver'         => 'Organic Search brought fewer visits.',
 					'interaction_id' => '01M4ZDVWTA3J4SBF8QX8NVXT93',
@@ -737,7 +736,6 @@ class Get_AI_Insight_OperationTest extends TestCase {
 				),
 				array(
 					'scenario'      => 'BELOW_EXPECTED',
-					'teaser'        => 'Your site is quieter than usual.',
 					'analysis'      => 'Your site had fewer visits than usual, mostly from Organic Search.',
 					'driver'        => 'Organic Search brought fewer visits.',
 					'interactionID' => '01M4ZDVWTA3J4SBF8QX8NVXT93',
