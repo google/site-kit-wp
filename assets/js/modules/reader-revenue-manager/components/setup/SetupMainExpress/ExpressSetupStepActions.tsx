@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import type { FC } from 'react';
 
 /**
@@ -34,6 +35,7 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 interface ExpressSetupStepActionsProps {
 	canGoForward?: boolean;
 	isBusy: boolean;
+	isSticky?: boolean;
 	label: string;
 	onGoBack?: () => void;
 }
@@ -41,10 +43,19 @@ interface ExpressSetupStepActionsProps {
 const ExpressSetupStepActions: FC< ExpressSetupStepActionsProps > = ( {
 	canGoForward = true,
 	isBusy,
+	isSticky = false,
 	label,
 	onGoBack,
 } ) => (
-	<div className="googlesitekit-rrm-express-setup-step-actions">
+	<div
+		className={ classnames(
+			'googlesitekit-rrm-express-setup-step-actions',
+			{
+				'googlesitekit-rrm-express-setup-step-actions--sticky':
+					isSticky,
+			}
+		) }
+	>
 		{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
 		<SpinnerButton
 			disabled={ isBusy || ! canGoForward }

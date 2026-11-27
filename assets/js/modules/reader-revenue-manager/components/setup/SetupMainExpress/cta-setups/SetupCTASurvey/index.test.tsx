@@ -20,11 +20,16 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
+	publications,
+	surveyQuestionCatalog,
+} from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import {
+	EXPRESS_SETUP_CTA_FORMS,
 	MODULES_READER_REVENUE_MANAGER,
 	SURVEY_CUSTOM_DIMENSIONS,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -41,7 +46,9 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import { SURVEY_FORM } from './constants';
 import SetupCTASurvey from './index';
+import { createPresetQuestionEntry } from './utils';
 
 jest.mock(
 	'@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/PoweredBy',
@@ -86,7 +93,7 @@ const STEP_CONTENT = {
 		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
 	'publication-policies':
 		'To set up a survey using Reader Revenue Manager, you will need to add URLs to your publication’s policies.',
-	'survey-questions': 'Survey questions placeholder',
+	'survey-questions': 'Select up to 3 questions for your survey',
 	'survey-cta': 'Survey CTA placeholder',
 	'setup-complete': 'Your survey is published!',
 };
@@ -131,7 +138,39 @@ function connectPublication( registry: Registry, publication: Publication ) {
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
 		.receiveGetPublicationCTAs( [], params );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetPublicationSurveyQuestionCatalog(
+			surveyQuestionCatalog,
+			params
+		);
 }
+
+/**
+ * Selects a question in the survey form, which completes the survey questions
+ * step.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Object} registry Registry to seed.
+ * @return {void}
+ */
+function selectQuestion( registry: Registry ) {
+	registry.dispatch( CORE_FORMS ).setValues( EXPRESS_SETUP_CTA_FORMS.SURVEY, {
+		[ SURVEY_FORM.SELECTED_QUESTIONS ]: [
+			createPresetQuestionEntry( surveyQuestionCatalog[ 0 ], [
+				'1',
+				'2',
+			] ),
+		],
+	} );
+}
+
+// The steps after the survey questions step open only once a question is
+// selected.
+const STEPS_AFTER_SURVEY_QUESTIONS = [ 'survey-cta', 'setup-complete' ];
 
 describe( 'SetupCTASurvey', () => {
 	mockLocation();
@@ -487,6 +526,10 @@ describe( 'SetupCTASurvey', () => {
 					connectPublication( registry, completePublication );
 				}
 
+				if ( STEPS_AFTER_SURVEY_QUESTIONS.includes( step ) ) {
+					selectQuestion( registry );
+				}
+
 				const { getByText, queryByRole } = render( <SetupCTASurvey />, {
 					registry,
 				} );
@@ -516,6 +559,7 @@ describe( 'SetupCTASurvey', () => {
 				'http://example.com/?cta=survey&step=survey-cta';
 
 			connectPublication( registry, completePublication );
+			selectQuestion( registry );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<SetupCTASurvey />,
@@ -593,6 +637,10 @@ describe( 'SetupCTASurvey', () => {
 				connectPublication( registry, completePublication );
 			}
 
+			if ( STEPS_AFTER_SURVEY_QUESTIONS.includes( step ) ) {
+				selectQuestion( registry );
+			}
+
 			const { getByText, queryByText } = render( <SetupCTASurvey />, {
 				registry,
 			} );
@@ -610,6 +658,27 @@ describe( 'SetupCTASurvey', () => {
 				} );
 		}
 	);
+
+	it( 'opens the survey questions step in place of the survey CTA step while no question is selected', async () => {
+		global.location.href = 'http://example.com/?cta=survey&step=survey-cta';
+
+		connectPublication( registry, completePublication );
+
+		const { getByText, queryByText } = render( <SetupCTASurvey />, {
+			registry,
+		} );
+
+		await waitFor( () => {
+			expect(
+				getByText( STEP_CONTENT[ 'survey-questions' ] )
+			).toBeInTheDocument();
+		} );
+
+		expect(
+			queryByText( STEP_CONTENT[ 'survey-cta' ] )
+		).not.toBeInTheDocument();
+		expect( global.location.href ).toContain( 'step=survey-questions' );
+	} );
 
 	it( 'redirects an unknown step to the first incomplete step', async () => {
 		global.location.href = 'http://example.com/?step=unknown-step';
@@ -639,6 +708,7 @@ describe( 'SetupCTASurvey', () => {
 			.receiveGetSettings( { snippetMode: 'sitewide', postTypes: [] } );
 
 		connectPublication( registry, completePublication );
+		selectQuestion( registry );
 
 		const { getByRole } = render( <SetupCTASurvey />, { registry } );
 

@@ -226,6 +226,23 @@ describe( 'SurveyQuestionRow', () => {
 		expect( onExpand ).toHaveBeenCalledWith( false );
 	} );
 
+	it( 'disables the checkbox of a disabled answer', () => {
+		renderRow( {
+			answers: [ answers[ 0 ], { ...answers[ 1 ], disabled: true } ],
+			isExpanded: true,
+			onChange: jest.fn(),
+			onExpand: jest.fn(),
+			value: [ answers[ 0 ].id ],
+		} );
+
+		expect(
+			screen.getByRole( 'checkbox', { name: answers[ 0 ].label } )
+		).toBeEnabled();
+		expect(
+			screen.getByRole( 'checkbox', { name: answers[ 1 ].label } )
+		).toBeDisabled();
+	} );
+
 	it( 'renders the leading element before the action button', () => {
 		renderRow( {
 			isAdded: true,

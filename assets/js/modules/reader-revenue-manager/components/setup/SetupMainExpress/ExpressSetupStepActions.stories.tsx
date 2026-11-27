@@ -73,6 +73,14 @@ BusyWithBack.args = {
 	onGoBack: () => {},
 };
 
+export const Sticky = Template.bind( {} ) as Story< Props >;
+Sticky.storyName = 'Sticky';
+Sticky.args = {
+	isSticky: true,
+	onGoBack: () => {},
+};
+Sticky.scenario = {};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/ExpressSetupStepActions',
 	component: ExpressSetupStepActions,

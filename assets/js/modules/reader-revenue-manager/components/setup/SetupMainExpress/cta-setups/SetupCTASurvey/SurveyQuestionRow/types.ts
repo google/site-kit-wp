@@ -19,4 +19,5 @@
 export interface SurveyQuestionAnswer {
 	id: string;
 	label: string;
+	disabled?: boolean;
 }

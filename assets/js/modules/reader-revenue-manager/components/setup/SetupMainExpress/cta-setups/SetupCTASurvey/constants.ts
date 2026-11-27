@@ -25,6 +25,7 @@ import { type IdentifiedSurveyQuestion } from '@/js/modules/reader-revenue-manag
 // setup steps share.
 export const SURVEY_FORM = {
 	SELECTED_QUESTIONS: 'selectedQuestions',
+	CUSTOM_QUESTIONS: 'customQuestions',
 	DISPLAY_NAME: 'displayName',
 	SURVEY_TEXT: 'surveyText',
 } as const;
@@ -32,8 +33,19 @@ export const SURVEY_FORM = {
 export interface SurveyFormValues {
 	// The selected questions, in the order they appear in the survey.
 	[ SURVEY_FORM.SELECTED_QUESTIONS ]?: IdentifiedSurveyQuestion[];
+	// The custom questions created during the setup, in the order they were
+	// created, including those no longer selected.
+	[ SURVEY_FORM.CUSTOM_QUESTIONS ]?: IdentifiedSurveyQuestion[];
 	// The CTA name, sent as the CTA's `displayName`.
 	[ SURVEY_FORM.DISPLAY_NAME ]?: string;
 	// The survey text, sent as `config.customMessage`.
 	[ SURVEY_FORM.SURVEY_TEXT ]?: string;
 }
+
+// The most questions a survey can have.
+export const MAX_SELECTED_QUESTIONS = 3;
+
+// The fewest and most answers a publisher can choose on a predefined question
+// with configurable answers.
+export const MIN_PRESET_ANSWERS = 2;
+export const MAX_PRESET_ANSWERS = 5;

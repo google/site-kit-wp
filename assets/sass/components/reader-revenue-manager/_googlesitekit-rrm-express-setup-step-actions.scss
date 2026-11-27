@@ -29,4 +29,20 @@
 			flex-direction: row-reverse;
 		}
 	}
+
+	// A panel that stays at the bottom of the screen while the step content
+	// scrolls under it. The space above the buttons leaves room for a notice.
+	.googlesitekit-rrm-express-setup-step-actions--sticky {
+
+		@media (min-width: $bp-desktop) {
+			background-color: $c-surfaces-surface;
+			border-block-start: 1px solid $c-utility-divider;
+			box-sizing: border-box;
+			inline-size: 100%;
+			inset-block-end: 0;
+			padding-block: $grid-gap-desktop;
+			position: sticky;
+			z-index: 2;
+		}
+	}
 }

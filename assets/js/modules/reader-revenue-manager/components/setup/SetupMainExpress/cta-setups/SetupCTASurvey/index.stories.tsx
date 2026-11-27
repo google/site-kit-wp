@@ -31,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	publicationPoliciesStep,
@@ -40,9 +41,13 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import {
+	publications,
+	surveyQuestionCatalog,
+} from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_CTAS,
+	EXPRESS_SETUP_CTA_FORMS,
 	MODULES_READER_REVENUE_MANAGER,
 	SURVEY_CUSTOM_DIMENSIONS,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -57,9 +62,11 @@ import {
 	provideUserInfo,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import { SURVEY_FORM } from './constants';
 import SetupCTASurvey from './index';
 import { surveyCTAStep } from './StepSurveyCTA';
 import { surveyQuestionsStep } from './StepSurveyQuestions';
+import { createPresetQuestionEntry } from './utils';
 
 const ORGANIZATION_ID = 'ABCD1234';
 const PROPERTY_ID = '123456';
@@ -140,6 +147,19 @@ function connectPublication(
 	providePublications( registry, [ ...publications, publication ] );
 }
 
+// The steps after the survey questions step open only once a question is
+// selected.
+function selectQuestion( registry: WPDataRegistry ) {
+	registry.dispatch( CORE_FORMS ).setValues( EXPRESS_SETUP_CTA_FORMS.SURVEY, {
+		[ SURVEY_FORM.SELECTED_QUESTIONS ]: [
+			createPresetQuestionEntry( surveyQuestionCatalog[ 0 ], [
+				'1',
+				'2',
+			] ),
+		],
+	} );
+}
+
 function Template() {
 	return <SetupCTASurvey />;
 }
@@ -198,8 +218,19 @@ SurveyQuestions.parameters = {
 	},
 };
 SurveyQuestions.args = {
-	setupRegistry: ( registry: WPDataRegistry ) =>
-		connectPublication( registry, COMPLETE_PUBLICATION ),
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		connectPublication( registry, COMPLETE_PUBLICATION );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublicationSurveyQuestionCatalog(
+				surveyQuestionCatalog,
+				{
+					organizationID: ORGANIZATION_ID,
+					publicationID: PUBLICATION_ID,
+				}
+			);
+	},
 };
 SurveyQuestions.scenario = {};
 
@@ -212,8 +243,10 @@ SurveyCTA.parameters = {
 	},
 };
 SurveyCTA.args = {
-	setupRegistry: ( registry: WPDataRegistry ) =>
-		connectPublication( registry, COMPLETE_PUBLICATION ),
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		connectPublication( registry, COMPLETE_PUBLICATION );
+		selectQuestion( registry );
+	},
 };
 SurveyCTA.scenario = {};
 
@@ -226,8 +259,10 @@ SetupComplete.parameters = {
 	},
 };
 SetupComplete.args = {
-	setupRegistry: ( registry: WPDataRegistry ) =>
-		connectPublication( registry, COMPLETE_PUBLICATION ),
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		connectPublication( registry, COMPLETE_PUBLICATION );
+		selectQuestion( registry );
+	},
 };
 SetupComplete.scenario = {};
 
