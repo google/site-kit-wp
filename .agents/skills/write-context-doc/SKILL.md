@@ -7,7 +7,7 @@ description: >
   (e.g. "document the new prompts system in docs/context", "rewrite the Notices section of
   admin-features.md", "update the context doc for this change") in the google/site-kit-wp repo.
 argument-hint: "[doc-path-or-system]"
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write
+allowed-tools: Read Grep Glob Edit Write Bash(git diff *)
 ---
 
 # Write a context doc
