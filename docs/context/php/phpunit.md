@@ -797,6 +797,55 @@ public function test_behavior_when_constant_not_defined() {
 -   Separate process tests are slower, so only use this annotation when necessary
 -   Group related constant tests together in the same test file for better organization
 
+### Testing Time-Dependent Code
+
+A test that reads the current time twice fails at random. The code under test reads the time
+once, and the expected value reads it again. If the clock moves to the next second between the
+two reads, an exact assertion fails, and the next run usually passes.
+
+The `SiteKit.PHPUnit.NoCurrentTimeInExactAssertion` sniff reports this mistake in `composer lint`.
+It checks the expected value, which is the first argument, of `assertEquals()`, `assertSame()`,
+`assertNotEquals()`, and `assertNotSame()`. It reports these calls:
+
+-   `time()`, `microtime()`, and `current_time()`.
+-   `date()` and `gmdate()` without a timestamp argument.
+-   `strtotime()` with a relative string such as `'now'`.
+
+Use one of these patterns, in order of preference.
+
+1. **Capture the time once and reuse it.** Read the time into a variable, and pass the same value
+   to the code under test and to the expected value.
+
+    ```php
+    $now = time();
+    $this->user_options->set( Dismissed_Items::OPTION, array( 'foo' => $now + 100 ) );
+
+    $this->assertSame( array( 'foo' => $now + 100 ), $this->user_options->get( Dismissed_Items::OPTION ), 'The stored expiration should not change.' );
+    ```
+
+2. **Assert a before/after range.** When the code under test reads the time itself, capture the
+   time before and after the call, and assert that the value is between the two.
+
+    ```php
+    $before = time();
+    $this->dismissed_items->add( 'foo', 100 );
+    $after = time();
+
+    $expiration = $this->user_options->get( Dismissed_Items::OPTION )['foo'];
+    $this->assertGreaterThanOrEqual( $before + 100, $expiration, 'The expiration should not be earlier than 100 seconds after the call.' );
+    $this->assertLessThanOrEqual( $after + 100, $expiration, 'The expiration should not be later than 100 seconds after the call.' );
+    ```
+
+3. **Use `assertEqualsWithDelta()` only as a last resort.** Use it when you cannot capture the
+   time around the call, for example inside a nested array. Keep the delta small.
+
+    ```php
+    $this->assertEqualsWithDelta( time() + 100, $expiration, 2, 'The expiration should be about 100 seconds from now.' );
+    ```
+
+A timestamp captured in a variable, `date()` or `gmdate()` with an explicit timestamp, and
+`strtotime()` with an absolute date such as `'2024-01-01'` are fine in an exact assertion.
+
 ## PHPUnit Groups
 
 Organize tests with `@group` annotations:
