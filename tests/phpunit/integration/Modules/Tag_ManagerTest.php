@@ -368,6 +368,71 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
+	public function test_render__tag_id_attribute() {
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager->get_settings()->merge(
+			array(
+				'useSnippet'  => true,
+				'containerID' => 'GTM-999999',
+			)
+		);
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'wp_footer' );
+
+		$tagmanager->register();
+
+		do_action( 'template_redirect' );
+
+		$header = $this->capture_action( 'wp_head' );
+		$footer = $this->capture_action( 'wp_footer' );
+
+		$this->assertMatchesRegularExpression( '/<script[^>]*\sdata-googlesitekit-tag="GTM-999999"/', $header, 'The inline script should have the container ID in its tag ID attribute.' );
+		$this->assertStringContainsString( '<!-- Google Tag Manager snippet added by Site Kit -->', $header, 'The inline script should keep its opening comment.' );
+		$this->assertStringContainsString( '<!-- End Google Tag Manager snippet added by Site Kit -->', $header, 'The inline script should keep its closing comment.' );
+		$this->assertMatchesRegularExpression( '/<iframe [^>]*data-googlesitekit-tag="GTM-999999"/', $footer, 'The no-script iframe should have the container ID in its tag ID attribute.' );
+		$this->assertStringContainsString( '<!-- Google Tag Manager (noscript) snippet added by Site Kit -->', $footer, 'The no-script iframe should keep its opening comment.' );
+		$this->assertStringContainsString( '<!-- End Google Tag Manager (noscript) snippet added by Site Kit -->', $footer, 'The no-script iframe should keep its closing comment.' );
+	}
+
+	/**
+	 * @dataProvider data_render_amp__tag_id_attribute
+	 *
+	 * @param string $amp_container_id   AMP container ID.
+	 * @param string $expected_attribute Expected tag ID attribute.
+	 */
+	public function test_render_amp__tag_id_attribute( $amp_container_id, $expected_attribute ) {
+		$tagmanager = new Tag_Manager( $this->get_amp_primary_context() );
+		$tagmanager->get_settings()->merge(
+			array(
+				'useSnippet'     => true,
+				'ampContainerID' => $amp_container_id,
+			)
+		);
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_footer' );
+
+		$tagmanager->register();
+
+		do_action( 'template_redirect' );
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$this->assertMatchesRegularExpression( '/<amp-analytics [^>]*' . preg_quote( $expected_attribute, '/' ) . '/', $output, 'The amp-analytics element should have the AMP container ID, escaped, in its tag ID attribute.' );
+		$this->assertStringNotContainsString( '<b>', $output, 'The container ID should add no element to the page.' );
+		$this->assertStringContainsString( '<!-- Google Tag Manager AMP snippet added by Site Kit -->', $output, 'The AMP snippet should keep its opening comment.' );
+		$this->assertStringContainsString( '<!-- End Google Tag Manager AMP snippet added by Site Kit -->', $output, 'The AMP snippet should keep its closing comment.' );
+	}
+
+	public function data_render_amp__tag_id_attribute() {
+		return array(
+			'a container ID'                   => array( 'GTM-888888', 'data-googlesitekit-tag="GTM-888888"' ),
+			'a container ID with markup in it' => array( 'GTM-1"><b>2', 'data-googlesitekit-tag="GTM-1&quot;&gt;&lt;b&gt;2"' ),
+		);
+	}
+
 	public function test_is_connected_web() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

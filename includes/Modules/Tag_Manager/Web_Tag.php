@@ -99,10 +99,13 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			esc_js( $this->tag_id )
 		);
 
-		$tag_manager_consent_attribute = $this->get_tag_blocked_on_consent_attribute_array();
+		$tag_manager_attributes = array_merge(
+			$this->get_tag_blocked_on_consent_attribute_array(),
+			array( self::TAG_ID_ATTRIBUTE => $this->tag_id )
+		);
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
-		BC_Functions::wp_print_inline_script_tag( $tag_manager_inline_script, $tag_manager_consent_attribute );
+		BC_Functions::wp_print_inline_script_tag( $tag_manager_inline_script, $tag_manager_attributes );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
@@ -127,7 +130,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		?>
 		<!-- <?php esc_html_e( 'Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<noscript>
-			<iframe src="<?php echo esc_url( $iframe_src ); ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+			<iframe src="<?php echo esc_url( $iframe_src ); ?>" height="0" width="0" style="display:none;visibility:hidden"<?php echo $this->get_tag_id_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_tag_id_attribute() escapes the tag ID. ?>></iframe>
 		</noscript>
 		<!-- <?php esc_html_e( 'End Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
@@ -171,7 +174,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			return $tag;
 		}
 
-		// Retain this comment for detection of Site Kit placed tag.
 		$snippet_comment = sprintf( "<!-- %s -->\n", esc_html__( 'Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
 
 		return $snippet_comment . $tag;

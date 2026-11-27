@@ -66,9 +66,10 @@ class AMP_Tag extends Module_AMP_Tag {
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google Tag Manager AMP snippet added by Site Kit', 'google-site-kit' ) );
 
 		printf(
-			'<amp-analytics config="%s" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
+			'<amp-analytics config="%s" data-credentials="include"%s%s><script type="application/json">%s</script></amp-analytics>',
 			esc_url( 'https://www.googletagmanager.com/amp.json?id=' . rawurlencode( $this->tag_id ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$this->get_tag_blocked_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$this->get_tag_id_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_tag_id_attribute() escapes the tag ID.
 			wp_json_encode( $gtm_amp_opt )
 		);
 
