@@ -28,7 +28,7 @@ import { WHATS_NEW_TAB_PATH } from '@/js/components/feature-discovery/constants'
 import EnableAutoUpdateBannerNotification, {
 	FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
 } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
-import { Registry } from '@/js/googlesitekit-data';
+import { Registry, Select } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
@@ -71,6 +71,10 @@ const TEST_OLDER_VERSION = '1.186.0';
 const TEST_NEWER_VERSION = '1.188.0';
 
 const EMPTY_STATE_SELECTOR = '.googlesitekit-whats-new__empty-state';
+
+// UI store key a test feature reads its connected state from, so the state
+// stays `undefined` until the test sets it.
+const LATE_STATE_KEY = 'test-late-connected-state';
 
 const AUTO_UPDATES_TITLE = 'Unlock the latest Site Kit features!';
 const SUCCESS_TITLE = 'Success! Set up feature is set up';
@@ -276,6 +280,46 @@ describe( 'WhatsNewTab', () => {
 		).not.toEqual( INITIAL_ORDER );
 
 		expect( getListedTitles( container ) ).toEqual( INITIAL_ORDER );
+	} );
+
+	it( 'should list a feature whose connected state loads after the user state, first when it is in progress', async () => {
+		fetchMock.post( TIMERS_ENDPOINT, { body: {}, status: 200 } );
+
+		provideFeatures( registry, [
+			...TEST_FEATURES,
+			{
+				slug: 'late-in-progress',
+				title: 'Late in-progress feature',
+				addedInVersion: TEST_OLDER_VERSION,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					// Stays `undefined` until the state is received.
+					isEnabled: ( select: Select ) =>
+						select( CORE_UI ).getValue( LATE_STATE_KEY ),
+					isInProgress: () => true,
+				},
+			} as Partial< Feature >,
+		] );
+
+		const { container, waitForRegistry } = render( <WhatsNewTab />, {
+			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+		} );
+
+		await waitForRegistry();
+
+		expect( getListedTitles( container ) ).toEqual( [] );
+
+		act( () => {
+			registry.dispatch( CORE_UI ).setValue( LATE_STATE_KEY, false );
+		} );
+
+		await waitForRegistry();
+
+		expect( getListedTitles( container ) ).toEqual( [
+			'Late in-progress feature',
+			...INITIAL_ORDER,
+		] );
 	} );
 
 	it( 'should render each listed feature with its dismiss control and without the New badge', async () => {
