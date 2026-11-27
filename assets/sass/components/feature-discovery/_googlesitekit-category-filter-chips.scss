@@ -19,7 +19,23 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-category-filter-chips {
-		margin-top: 32px;
+		background-color: $c-base;
+
+		// Padding gives the chips breathing room over the content scrolling
+		// beneath them while stuck; the margins offset it so the resting
+		// layout is unchanged.
+		margin-block: 24px -8px;
+		padding-block: 8px;
+		position: sticky;
+
+		// Sits directly below the sticky feature discovery tab bar.
+		top: calc(var(--googlesitekit-feature-discovery-sticky-top) + var(--googlesitekit-feature-discovery-tab-bar-height));
+		z-index: 10;
+
+		body.googlesitekit-showing-feature-tour &,
+		body.googlesitekit-showing-tooltip & {
+			position: static;
+		}
 
 		.googlesitekit-chip-multi-select {
 			gap: 10px;
