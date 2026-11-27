@@ -527,7 +527,7 @@ describe( 'WhatsNewTab', () => {
 		);
 
 		fireEvent.click(
-			getByRole( 'menuitem', { name: 'Setup seems complex' } )
+			getByRole( 'menuitem', { name: 'I’m already using another tool' } )
 		);
 
 		await waitFor( () =>
@@ -540,7 +540,7 @@ describe( 'WhatsNewTab', () => {
 			namespace: 'feature_hub',
 			group: 'feature_relevancy_unread-newer',
 			key: 'dismiss_reason',
-			value: 'too_complicated',
+			value: 'already_using',
 		} );
 	} );
 

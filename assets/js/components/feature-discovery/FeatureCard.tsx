@@ -123,11 +123,6 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 				),
 				value: FEATURE_RELEVANCY_REASONS.ALREADY_USING,
 			},
-			{
-				id: FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED,
-				label: __( 'Setup seems complex', 'google-site-kit' ),
-				value: FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED,
-			},
 		],
 		[]
 	);

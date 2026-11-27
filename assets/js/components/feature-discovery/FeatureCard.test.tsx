@@ -462,7 +462,6 @@ describe( 'FeatureCard', () => {
 		[ 'Just hide this suggestion', undefined ],
 		[ 'It’s not relevant to my site goals', 'not_relevant' ],
 		[ 'I’m already using another tool', 'already_using' ],
-		[ 'Setup seems complex', 'too_complicated' ],
 	] )(
 		'should dismiss the feature and send only the feedback and survey trigger chosen with "%s"',
 		async ( label, reason ) => {
