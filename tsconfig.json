@@ -62,6 +62,7 @@
   },
   "include": [
     "assets",
+    "design-doc/scripts",
     "storybook",
     "tests/e2e",
     "tests/js",

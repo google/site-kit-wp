@@ -88,3 +88,7 @@ tests/e2e/screenshots
 # Playwright
 tests/playwright/artifacts
 
+# Design doc work and sources, kept in its own local-only git repository (see the write-design-doc skill)
+/design-doc/workspace/
+# Per-machine Puppeteer config for the design doc scripts (see the write-design-doc skill)
+/design-doc/puppeteer-config.json
