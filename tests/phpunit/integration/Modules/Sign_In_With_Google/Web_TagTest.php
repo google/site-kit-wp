@@ -69,6 +69,22 @@ class Web_TagTest extends TestCase {
 		$_SERVER['SCRIPT_NAME'] = self::$initial_script_name;
 	}
 
+	public function test_render__tag_id_attribute() {
+		remove_all_actions( 'wp_footer' );
+
+		$this->web_tag->register();
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$this->assertSame(
+			2,
+			substr_count( $output, 'data-googlesitekit-tag="test-client-id.app.googleusercontent.com"' ),
+			'Both Sign in with Google scripts should have the client ID in their tag ID attribute.'
+		);
+		$this->assertStringContainsString( '<!-- Sign in with Google button added by Site Kit -->', $output, 'The output should keep its opening comment.' );
+		$this->assertStringContainsString( '<!-- End Sign in with Google button added by Site Kit -->', $output, 'The output should keep its closing comment.' );
+	}
+
 	public function test_render_on_wp_footer() {
 		remove_all_actions( 'wp_footer' );
 		$_SERVER['SCRIPT_NAME'] = wp_login_url();

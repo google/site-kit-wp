@@ -206,11 +206,17 @@ class Web_Tag extends Module_Web_Tag {
 		.interim-login #login>.googlesitekit-sign-in-with-google__frontend-output-button{margin-bottom:16px}
 		</style>
 		<?php
-		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
 		BC_Functions::wp_print_script_tag(
 			array(
-				'data-siwg-config' => wp_json_encode( $config ),
-				'src'              => plugins_url( "dist/assets/js/{$filename}", GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+				'src'                  => 'https://accounts.google.com/gsi/client',
+				self::TAG_ID_ATTRIBUTE => $this->tag_id,
+			)
+		);
+		BC_Functions::wp_print_script_tag(
+			array(
+				'data-siwg-config'     => wp_json_encode( $config ),
+				'src'                  => plugins_url( "dist/assets/js/{$filename}", GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+				self::TAG_ID_ATTRIBUTE => $this->tag_id,
 			)
 		);
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ) );
