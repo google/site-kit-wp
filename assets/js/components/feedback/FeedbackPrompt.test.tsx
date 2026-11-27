@@ -217,6 +217,59 @@ describe( 'FeedbackPrompt', () => {
 	);
 
 	describe( 'with feedback options', () => {
+		const originalWindowWidth = global.innerWidth;
+
+		afterEach( () => {
+			global.innerWidth = originalWindowWidth;
+		} );
+
+		it.each( [
+			[ 'top-end', 1280 ],
+			[ 'top-start', 600 ],
+		] )(
+			'should open the "Help us improve" menu with the `%s` placement on a %ipx wide screen',
+			async ( placement, width ) => {
+				global.innerWidth = width;
+
+				fetchMock.post( feedbackEndpoint, {
+					status: 200,
+					body: { success: true },
+				} );
+
+				const { getByRole, waitForRegistry } = render(
+					<FeedbackPrompt
+						feedbackNamespace="analytics"
+						feedbackGroup="test_vote"
+						gaTrackingEventArgs={ {
+							category: 'test-feedback-survey',
+						} }
+						feedbackOptions={ {
+							up: [
+								{
+									id: 'up-reason',
+									label: 'Up reason',
+									value: 'up_reason',
+								},
+							],
+						} }
+					/>,
+					{ registry }
+				);
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Yes, this was helpful' } )
+				);
+
+				expect(
+					getByRole( 'menu' ).closest(
+						'.googlesitekit-feedback-menu'
+					)
+				).toHaveClass( `googlesitekit-feedback-menu--${ placement }` );
+
+				await waitForRegistry();
+			}
+		);
+
 		it.each( [
 			[
 				'Yes, this was helpful',

@@ -181,11 +181,8 @@ describe( 'FeatureRelevancyFeedback', () => {
 				} )
 			);
 
-			const reasonCalls = sendFeedback.mock.calls.filter(
-				( [ feedback ] ) => feedback.key === 'vote_reason'
-			);
-
-			expect( reasonCalls ).toHaveLength( 1 );
+			// The vote and the reason.
+			expect( sendFeedback ).toHaveBeenCalledTimes( 2 );
 		}
 	);
 

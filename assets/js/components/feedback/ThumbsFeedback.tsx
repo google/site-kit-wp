@@ -58,7 +58,7 @@ import FeedbackMenu, {
 // Use a tighter gap for bottom-placed poppers. Top placement keeps the default (9px).
 const BOTTOM_POPPER_OFFSET = 4;
 
-interface ThumbsFeedbackProps {
+export interface ThumbsFeedbackProps {
 	feedbackNamespace: string;
 	feedbackGroup: string;
 	onVote?: ( direction: VoteDirection ) => void;

@@ -34,8 +34,7 @@ import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 import { trackEvent } from '@/js/util';
 import { VoteDirection } from './constants';
-import { FeedbackMenuOption } from './FeedbackMenu';
-import ThumbsFeedback from './ThumbsFeedback';
+import ThumbsFeedback, { ThumbsFeedbackProps } from './ThumbsFeedback';
 
 interface FeedbackPromptProps {
 	/** The product area the feedback is about. */
@@ -56,7 +55,7 @@ interface FeedbackPromptProps {
 	/** Called with the vote's direction, after the vote is tracked. */
 	onVote?: ( direction: VoteDirection ) => void;
 	/** The reasons offered in a "Help us improve" menu after each vote. */
-	feedbackOptions?: Partial< Record< VoteDirection, FeedbackMenuOption[] > >;
+	feedbackOptions?: ThumbsFeedbackProps[ 'feedbackOptions' ];
 }
 
 /**
