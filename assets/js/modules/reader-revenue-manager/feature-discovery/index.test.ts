@@ -84,6 +84,19 @@ describe( 'Reader Revenue Manager feature discovery', () => {
 			).toBeNull();
 		} );
 
+		it( 'should show a success notice once the sign-up form is set up', () => {
+			const { successNotice } = registry
+				.select( CORE_FEATURE_DISCOVERY )
+				.getFeature( 'newsletter-signup' );
+
+			expect( successNotice ).toMatchObject( {
+				title: 'Success! Your newsletter sign-up form by Reader Revenue Manager is set up',
+				description:
+					'You can always update your sign-up form settings in Publisher Center',
+				cta: { label: 'Go to Publisher Center' },
+			} );
+		} );
+
 		it( 'should be undefined while the settings are unresolved', () => {
 			provideRRM( true );
 			freezeFetch(

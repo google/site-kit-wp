@@ -338,7 +338,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			successNotice: {
 				title: __(
-					'Success! Your Newsletter sign-up form by Reader Revenue Manager is set up',
+					'Success! Your newsletter sign-up form by Reader Revenue Manager is set up',
 					'google-site-kit'
 				),
 				description: __(

@@ -55,7 +55,7 @@ export const WithCTA = Template.bind( {} ) as Story< StoryArgs >;
 WithCTA.storyName = 'With CTA';
 WithCTA.args = {
 	successNotice: {
-		title: 'Success! Your Newsletter sign-up form by Reader Revenue Manager is set up',
+		title: 'Success! Your newsletter sign-up form by Reader Revenue Manager is set up',
 		description:
 			'You can always update your sign-up form settings in Publisher Center',
 		cta: {
