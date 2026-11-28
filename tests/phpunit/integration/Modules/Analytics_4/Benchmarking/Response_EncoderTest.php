@@ -39,49 +39,78 @@ class Response_EncoderTest extends TestCase {
 	 */
 	private function get_fixture_response() {
 		return array(
-			'visits'       => array(
+			'visits'            => array(
 				'current'  => 412,
 				'previous' => 388,
 			),
-			'dailyTraffic' => array(
+			'dailyTraffic'      => array(
 				array(
-					'date'   => '2025-08-18',
-					'visits' => 132,
+					'date'        => '2025-08-18',
+					'visits'      => 132,
+					'expectedMin' => null,
+					'expectedMax' => null,
 				),
 				array(
-					'date'   => '2025-08-19',
-					'visits' => 0,
+					'date'        => '2025-08-19',
+					'visits'      => 0,
+					'expectedMin' => 118.4,
+					'expectedMax' => 183.1,
 				),
 				array(
-					'date'   => '2025-08-20',
-					'visits' => 147,
+					'date'        => '2025-08-20',
+					'visits'      => 147,
+					'expectedMin' => 124.3,
+					'expectedMax' => 191.5,
 				),
 				array(
-					'date'   => '2025-08-21',
-					'visits' => 96,
+					'date'        => '2025-08-21',
+					'visits'      => 96,
+					'expectedMin' => 117.9,
+					'expectedMax' => 182.6,
 				),
 			),
-			'keyFactors'   => array(
+			// `2025-08-18` has no expected range, so a period of these four
+			// days has no band. The first such period with one starts on
+			// `2025-08-19`, the first day with an expected range.
+			'availability'      => array(
+				'range_too_short'               => false,
+				'band_available'                => false,
+				'band_available_from'           => '2025-08-22',
+				'key_factors_available'         => true,
+				'key_factors_available_from'    => '2025-07-30',
+				'insight_request_allowed'       => true,
+				'performance_insight_available' => false,
+				'last_year_available'           => false,
+				'range_too_long'                => false,
+				'low_traffic'                   => false,
+			),
+			'bandReferenceDays' => null,
+			'keyFactors'        => array(
 				array(
 					'kind'       => 'REFERRING_SITE',
 					'label'      => 'Facebook',
 					'current'    => 96,
 					'previous'   => 31,
 					'sharePct'   => 21.4,
+					'shareBasis' => 'GROSS_CHANGE',
 					'attributes' => array(
 						array(
-							'kind'     => 'LANDING_PAGE',
-							'label'    => '/how-to-plant-garlic/',
-							'current'  => 58,
-							'previous' => 12,
-							'sharePct' => 15.1,
+							'kind'      => 'LANDING_PAGE',
+							'label'     => '/how-to-plant-garlic/',
+							'current'   => 58,
+							'previous'  => 12,
+							'sharePct'  => 15.1,
+							'oversized' => false,
 						),
+						// Mobile gained 71 visits, more than Facebook's 65,
+						// so it has no share.
 						array(
-							'kind'     => 'DEVICE',
-							'label'    => 'mobile',
-							'current'  => 71,
-							'previous' => 20,
-							'sharePct' => 16.8,
+							'kind'      => 'DEVICE',
+							'label'     => 'mobile',
+							'current'   => 71,
+							'previous'  => 0,
+							'sharePct'  => 0.0,
+							'oversized' => true,
 						),
 					),
 				),
@@ -91,21 +120,38 @@ class Response_EncoderTest extends TestCase {
 					'current'    => 210,
 					'previous'   => 222,
 					'sharePct'   => 40.3,
+					'shareBasis' => 'NET_CHANGE',
 					'attributes' => array(),
 				),
+				// The post carried 49 of the 389 visits `Organic Social` gained.
 				array(
-					'kind'       => 'CONTENT',
-					'label'      => '/how-to-plant-garlic/',
-					'current'    => 64,
-					'previous'   => 15,
-					'sharePct'   => 12.6,
-					'attributes' => array(
+					'kind'                => 'CONTENT',
+					'label'               => '/how-to-plant-garlic/',
+					'url'                 => '/how-to-plant-garlic/',
+					'current'             => 64,
+					'previous'            => 15,
+					'sharePct'            => 12.6,
+					'shareBasis'          => 'PARENT_CHANNEL',
+					'parentChannel'       => 'Organic Social',
+					'parentChannelChange' => 389,
+					'attributes'          => array(
 						array(
 							'kind'     => 'TRAFFIC_CHANNEL',
 							'label'    => 'Organic Social',
 							'current'  => 61,
 							'previous' => 13,
 							'sharePct' => 15.9,
+						),
+					),
+				),
+			),
+			'contentMarkers'    => array(
+				array(
+					'date'  => '2025-08-20',
+					'posts' => array(
+						array(
+							'title' => 'How to plant garlic',
+							'url'   => '/how-to-plant-garlic/',
 						),
 					),
 				),
@@ -149,6 +195,451 @@ class Response_EncoderTest extends TestCase {
 			array( '/how-to-plant-garlic/' ),
 			array_values( array_filter( $encoded[ Wire_Format::MEMBER_STRINGS ], fn( $value ) => '/how-to-plant-garlic/' === $value ) ),
 			'The shared label should be in the table once.'
+		);
+	}
+
+	public function test_encode__writes_the_path_of_a_post_card_after_its_share() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CONTENT',
+						'label'      => 'How to plant garlic',
+						'url'        => '/how-to-plant-garlic/',
+						'current'    => 64,
+						'previous'   => 0,
+						'sharePct'   => 86.7,
+						'attributes' => array(),
+					),
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Direct',
+						'current'    => 500,
+						'previous'   => 480,
+						'sharePct'   => 12.5,
+						'attributes' => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 1, 0, 64, 0, 86.7, 1 ),
+				array( 0, 2, 500, 480, 12.5 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'A post\'s card should carry its path as a sixth position, through the string table, and another card should keep five.'
+		);
+		$this->assertSame( array( 'How to plant garlic', '/how-to-plant-garlic/', 'Direct' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'The path should be in the string table.' );
+	}
+
+	public function test_encode__writes_the_basis_of_a_cards_share_after_its_path_and_null_for_a_card_without_a_path() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array_map(
+					fn( $share_basis ) => array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Direct',
+						'current'    => 500,
+						'previous'   => 480,
+						'sharePct'   => 12.5,
+						'shareBasis' => $share_basis,
+						'attributes' => array(),
+					),
+					array( 'GROSS_CHANGE', 'NET_CHANGE', 'SITE_TRAFFIC', 'VOLUME', 'PARENT_CHANNEL' )
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 0, 0, 500, 480, 12.5, null, 0 ),
+				array( 0, 0, 500, 480, 12.5, null, 1 ),
+				array( 0, 0, 500, 480, 12.5, null, 2 ),
+				array( 0, 0, 500, 480, 12.5, null, 3 ),
+				array( 0, 0, 500, 480, 12.5, null, 4 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'Each basis should travel as its position, `GROSS_CHANGE` 0, `NET_CHANGE` 1, `SITE_TRAFFIC` 2, `VOLUME` 3 and `PARENT_CHANNEL` 4, after a null in place of the path a channel\'s card has none of.'
+		);
+	}
+
+	public function test_encode__writes_the_channel_a_card_on_parent_channel_took_the_place_of_after_its_basis() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'                => 'REFERRING_SITE',
+						'label'               => 'news.example',
+						'current'             => 220,
+						'previous'            => 0,
+						'sharePct'            => 73.3,
+						'shareBasis'          => 'PARENT_CHANNEL',
+						'parentChannel'       => 'Referral',
+						'parentChannelChange' => 300,
+						'attributes'          => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( array( 3, 0, 220, 0, 73.3, null, 4, 1, 300 ) ),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'The channel should travel through the string table, followed by its change.'
+		);
+		$this->assertSame( array( 'news.example', 'Referral' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'The channel should be in the string table.' );
+	}
+
+	public function test_encode__writes_the_channel_of_a_card_on_another_basis_or_on_none_and_leaves_out_a_basis_the_format_does_not_list() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					// The referring site moved further than Referral, so its
+					// share is of the site's growth.
+					array(
+						'kind'                => 'REFERRING_SITE',
+						'label'               => 'news.example',
+						'current'             => 330,
+						'previous'            => 0,
+						'sharePct'            => 25.4,
+						'shareBasis'          => 'GROSS_CHANGE',
+						'parentChannel'       => 'Referral',
+						'parentChannelChange' => 310,
+						'attributes'          => array(),
+					),
+					// A post on a flat period has no share.
+					array(
+						'kind'                => 'CONTENT',
+						'label'               => 'How to plant garlic',
+						'url'                 => '/how-to-plant-garlic/',
+						'current'             => 64,
+						'previous'            => 0,
+						'sharePct'            => 0.0,
+						'parentChannel'       => 'Cross-network ads',
+						'parentChannelChange' => 60,
+						'attributes'          => array(),
+					),
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Email',
+						'current'    => 80,
+						'previous'   => 50,
+						'sharePct'   => 10.0,
+						'shareBasis' => 'CLICKS',
+						'attributes' => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 3, 0, 330, 0, 25.4, null, 0, 1, 310 ),
+				array( 1, 2, 64, 0, 0, 3, null, 4, 60 ),
+				array( 0, 5, 80, 50, 10 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'A card should carry its channel and the channel\'s change on any basis or on none, and a basis the format does not list should be left out with the null before it.'
+		);
+		$this->assertSame(
+			array( 'news.example', 'Referral', 'How to plant garlic', '/how-to-plant-garlic/', 'Cross-network ads', 'Email' ),
+			$encoded[ Wire_Format::MEMBER_STRINGS ],
+			'Each channel should be in the string table.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_unusable_parent_channels
+	 *
+	 * @param array $parent_fields The card's `parentChannel` and `parentChannelChange`.
+	 */
+	public function test_encode__leaves_out_a_channel_without_a_name_or_a_change( array $parent_fields ) {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array_merge(
+						array(
+							'kind'       => 'REFERRING_SITE',
+							'label'      => 'news.example',
+							'current'    => 220,
+							'previous'   => 0,
+							'sharePct'   => 73.3,
+							'shareBasis' => 'PARENT_CHANNEL',
+							'attributes' => array(),
+						),
+						$parent_fields
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( array( 3, 0, 220, 0, 73.3, null, 4 ) ),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'A channel without a name or a change should be left out, with its change or its name.'
+		);
+		$this->assertSame( array( 'news.example' ), $encoded[ Wire_Format::MEMBER_STRINGS ], 'A channel left out should add nothing to the string table.' );
+	}
+
+	public function data_unusable_parent_channels() {
+		return array(
+			'a channel without a change' => array( array( 'parentChannel' => 'Referral' ) ),
+			'a change without a channel' => array( array( 'parentChannelChange' => 300 ) ),
+			'an empty channel'           => array(
+				array(
+					'parentChannel'       => '',
+					'parentChannelChange' => 300,
+				),
+			),
+			'a channel that is no text'  => array(
+				array(
+					'parentChannel'       => array( 'Referral' ),
+					'parentChannelChange' => 300,
+				),
+			),
+		);
+	}
+
+	public function test_encode__marks_a_card_whose_change_was_spread_across_many_pages_after_its_parent_channel_and_leaves_the_mark_out_otherwise() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'              => 'CHANNEL',
+						'label'             => 'Organic Search',
+						'current'           => 1169,
+						'previous'          => 1000,
+						'sharePct'          => 100.0,
+						'shareBasis'        => 'GROSS_CHANGE',
+						'spreadAcrossPages' => true,
+						'attributes'        => array(),
+					),
+					array(
+						'kind'              => 'CHANNEL',
+						'label'             => 'Direct',
+						'current'           => 500,
+						'previous'          => 480,
+						'sharePct'          => 12.5,
+						'shareBasis'        => 'GROSS_CHANGE',
+						'spreadAcrossPages' => false,
+						'attributes'        => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 0, 0, 1169, 1000, 100, null, 0, null, null, true ),
+				array( 0, 1, 500, 480, 12.5, null, 0 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'Only the card whose change was spread across many pages should carry `true`, after nulls in place of the parent channel it has none of.'
+		);
+	}
+
+	public function test_encode__marks_a_card_for_its_channels_other_pages_after_its_spread_mark_and_leaves_the_mark_out_otherwise() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CONTENT',
+						'label'      => 'How to plant garlic',
+						'url'        => '/how-to-plant-garlic/',
+						'current'    => 400,
+						'previous'   => 100,
+						'sharePct'   => 60.0,
+						'shareBasis' => 'GROSS_CHANGE',
+						'attributes' => array(),
+					),
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Direct',
+						'current'    => 600,
+						'previous'   => 480,
+						'sharePct'   => 24.0,
+						'shareBasis' => 'GROSS_CHANGE',
+						'otherPages' => true,
+						'attributes' => array(),
+					),
+					array(
+						'kind'       => 'CHANNEL_GROUP',
+						'label'      => 'Paid traffic',
+						'current'    => 300,
+						'previous'   => 220,
+						'sharePct'   => 16.0,
+						'shareBasis' => 'GROSS_CHANGE',
+						'otherPages' => false,
+						'attributes' => array(),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 1, 0, 400, 100, 60, 1, 0 ),
+				array( 0, 2, 600, 480, 24, null, 0, null, null, null, true ),
+				array( 5, 3, 300, 220, 16, null, 0 ),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTORS ],
+			'Only the card for its channel\'s other pages should carry `true`, after nulls in place of the fields it has no value for, and its label should be the channel\'s own.'
+		);
+	}
+
+	public function test_encode__marks_an_oversized_attribute_after_its_share_and_leaves_the_mark_out_otherwise() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Direct',
+						'current'    => 3280,
+						'previous'   => 2000,
+						'sharePct'   => 64.5,
+						'shareBasis' => 'GROSS_CHANGE',
+						'attributes' => array(
+							array(
+								'kind'      => 'DEVICE',
+								'label'     => 'desktop',
+								'current'   => 2643,
+								'previous'  => 1000,
+								'sharePct'  => 0.0,
+								'oversized' => true,
+							),
+							array(
+								'kind'      => 'DEVICE',
+								'label'     => 'mobile',
+								'current'   => 638,
+								'previous'  => 1000,
+								'sharePct'  => 0.0,
+								'oversized' => false,
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					array( 6, 1, 2643, 1000, 0, true ),
+					array( 6, 2, 638, 1000, 0 ),
+				),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ],
+			'Only the attribute that moved further than its card should carry `true` after its share.'
+		);
+	}
+
+	public function test_encode__writes_the_title_of_a_landing_page_after_its_oversized_mark_through_the_string_table() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Referral',
+						'current'    => 545,
+						'previous'   => 180,
+						'sharePct'   => 52.4,
+						'shareBasis' => 'GROSS_CHANGE',
+						'attributes' => array(
+							array(
+								'kind'     => 'LANDING_PAGE',
+								'label'    => '/how-to-plant-garlic/',
+								'current'  => 300,
+								'previous' => 40,
+								'sharePct' => 71.2,
+								'title'    => 'How to plant garlic',
+							),
+							array(
+								'kind'      => 'LANDING_PAGE',
+								'label'     => '/garlic-varieties/',
+								'current'   => 500,
+								'previous'  => 100,
+								'sharePct'  => 0.0,
+								'oversized' => true,
+								'title'     => 'How to plant garlic',
+							),
+							array(
+								'kind'     => 'LANDING_PAGE',
+								'label'    => '/',
+								'current'  => 90,
+								'previous' => 50,
+								'sharePct' => 11.0,
+								'title'    => '',
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					array( 1, 1, 300, 40, 71.2, null, 2 ),
+					array( 1, 3, 500, 100, 0, true, 2 ),
+					array( 1, 4, 90, 50, 11 ),
+				),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ],
+			'A page\'s title should travel through the string table after the oversized mark, or a null in its place, and an empty title should be left out.'
+		);
+		$this->assertSame(
+			array( 'Referral', '/how-to-plant-garlic/', 'How to plant garlic', '/garlic-varieties/', '/' ),
+			$encoded[ Wire_Format::MEMBER_STRINGS ],
+			'A title should be stored once, like any other string.'
+		);
+	}
+
+	public function test_encode__marks_a_search_keyword_without_the_sites_search_clicks_after_its_title_and_leaves_the_mark_out_otherwise() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'keyFactors' => array(
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Organic Search',
+						'current'    => 1480,
+						'previous'   => 230,
+						'sharePct'   => 71.4,
+						'shareBasis' => 'GROSS_CHANGE',
+						'attributes' => array(
+							array(
+								'kind'           => 'SEARCH_KEYWORD',
+								'label'          => 'how to plant garlic',
+								'current'        => 310,
+								'previous'       => 90,
+								'sharePct'       => 0.0,
+								'noSearchClicks' => true,
+							),
+							array(
+								'kind'           => 'SEARCH_KEYWORD',
+								'label'          => 'garlic varieties',
+								'current'        => 120,
+								'previous'       => 60,
+								'sharePct'       => 3.6,
+								'oversized'      => true,
+								'noSearchClicks' => false,
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					array( 2, 1, 310, 90, 0, null, null, true ),
+					array( 2, 2, 120, 60, 3.6, true ),
+				),
+			),
+			$encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ],
+			'Only the keyword whose site has no search clicks should carry `true`, after nulls in place of the oversized mark and the title it has none of.'
 		);
 	}
 
@@ -246,23 +737,23 @@ class Response_EncoderTest extends TestCase {
 								'previous' => 1,
 								'sharePct' => 5.5,
 							),
-							array( 'TRAFFIC_CHANNEL', 'LANDING_PAGE', 'SEARCH_KEYWORD', 'REFERRING_SITE', 'PLATFORM', 'CAMPAIGN', 'DEVICE', 'USER_TYPE' )
+							array( 'TRAFFIC_CHANNEL', 'LANDING_PAGE', 'SEARCH_KEYWORD', 'REFERRING_SITE', 'PLATFORM', 'CAMPAIGN', 'DEVICE', 'USER_TYPE', 'ASSISTANT' )
 						),
 					),
-					array( 'CHANNEL', 'CONTENT', 'SEARCH_KEYWORD', 'REFERRING_SITE', 'CAMPAIGN' )
+					array( 'CHANNEL', 'CONTENT', 'SEARCH_KEYWORD', 'REFERRING_SITE', 'CAMPAIGN', 'CHANNEL_GROUP' )
 				),
 			)
 		);
 
 		$this->assertSame(
-			array( 0, 1, 2, 3, 4 ),
+			array( 0, 1, 2, 3, 4, 5 ),
 			array_column( $encoded[ Wire_Format::MEMBER_KEY_FACTORS ], 0 ),
-			'Each driver kind should travel as its position: `CHANNEL` 0, `CONTENT` 1, `SEARCH_KEYWORD` 2, `REFERRING_SITE` 3 and `CAMPAIGN` 4.'
+			'Each driver kind should travel as its position: `CHANNEL` 0, `CONTENT` 1, `SEARCH_KEYWORD` 2, `REFERRING_SITE` 3, `CAMPAIGN` 4 and `CHANNEL_GROUP` 5.'
 		);
 		$this->assertSame(
-			array( 0, 1, 2, 3, 4, 5, 6, 7 ),
+			array( 0, 1, 2, 3, 4, 5, 6, 7, 8 ),
 			array_column( $encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ][0], 0 ),
-			'Each attribute kind should travel as its position: `TRAFFIC_CHANNEL` 0, `LANDING_PAGE` 1, `SEARCH_KEYWORD` 2, `REFERRING_SITE` 3, `PLATFORM` 4, `CAMPAIGN` 5, `DEVICE` 6 and `USER_TYPE` 7.'
+			'Each attribute kind should travel as its position: `TRAFFIC_CHANNEL` 0, `LANDING_PAGE` 1, `SEARCH_KEYWORD` 2, `REFERRING_SITE` 3, `PLATFORM` 4, `CAMPAIGN` 5, `DEVICE` 6, `USER_TYPE` 7 and `ASSISTANT` 8.'
 		);
 	}
 
@@ -342,7 +833,7 @@ class Response_EncoderTest extends TestCase {
 		);
 	}
 
-	public function test_encode__rounds_shares_and_writes_every_other_number_as_an_integer() {
+	public function test_encode__rounds_shares_and_writes_every_count_as_an_integer() {
 		$encoded = $this->encoder->encode(
 			array(
 				'dailyTraffic' => array(
@@ -382,6 +873,168 @@ class Response_EncoderTest extends TestCase {
 		$this->assertSame( array( 412, 388 ), $encoded[ Wire_Format::MEMBER_VISIT_TOTALS ], 'The period totals should be integers.' );
 	}
 
+	public function test_encode__writes_the_expected_range_of_each_day_in_the_order_of_the_daily_counts() {
+		$encoded = $this->encoder->encode(
+			array(
+				'dailyTraffic' => array(
+					array(
+						'date'        => '2025-08-18',
+						'visits'      => 132,
+						'expectedMin' => 118.4,
+						'expectedMax' => 183.1,
+					),
+					array(
+						'date'        => '2025-08-19',
+						'visits'      => 0,
+						'expectedMin' => null,
+						'expectedMax' => null,
+					),
+					array(
+						'date'   => '2025-08-20',
+						'visits' => 147,
+					),
+					array(
+						'date'        => '2025-08-21',
+						'visits'      => 96,
+						'expectedMin' => 117.9,
+						'expectedMax' => 182.6,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 118.4, 183.1 ),
+				null,
+				null,
+				array( 117.9, 182.6 ),
+			),
+			$encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ],
+			'Each day should have its bounds at its own position, and a day whose bounds are null, or a day with no bounds, should have null.'
+		);
+	}
+
+	public function test_encode__rounds_the_bounds_of_the_expected_range_to_one_decimal() {
+		$encoded = $this->encoder->encode(
+			array(
+				'dailyTraffic' => array(
+					array(
+						'date'        => '2025-08-18',
+						'visits'      => 132,
+						'expectedMin' => 118.44,
+						'expectedMax' => 183.16,
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( array( 118.4, 183.2 ) ),
+			$encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ],
+			'The bounds `118.44` and `183.16` should be encoded as `118.4` and `183.2`.'
+		);
+	}
+
+	public function test_encode__writes_the_availability_as_its_fields_in_the_order_of_the_wire_format() {
+		$response                 = $this->get_fixture_response();
+		$response['availability'] = array(
+			'range_too_short'               => true,
+			'band_available'                => false,
+			'band_available_from'           => '2025-08-25',
+			'key_factors_available'         => false,
+			'key_factors_available_from'    => '2025-08-29',
+			'insight_request_allowed'       => false,
+			'performance_insight_available' => false,
+			'last_year_available'           => true,
+			'range_too_long'                => true,
+			'low_traffic'                   => true,
+		);
+
+		$availability = $this->encode_as_sent( $response )[ Wire_Format::MEMBER_AVAILABILITY ];
+
+		$this->assertSame(
+			array( true, false, 7, false, 11, false, false, true, true, true ),
+			$availability,
+			'The availability should be encoded as its flags, and its days as their offsets from `2025-08-18`.'
+		);
+		$this->assertTrue( $availability[ Wire_Format::AVAILABILITY_RANGE_TOO_SHORT ], '`range_too_short` should be encoded at its position.' );
+		$this->assertSame( 7, $availability[ Wire_Format::AVAILABILITY_BAND_AVAILABLE_FROM ], '`band_available_from` should be encoded at its position.' );
+		$this->assertSame( 11, $availability[ Wire_Format::AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ], '`key_factors_available_from` should be encoded at its position.' );
+		$this->assertTrue( $availability[ Wire_Format::AVAILABILITY_LAST_YEAR_AVAILABLE ], '`last_year_available` should be encoded at its position.' );
+		$this->assertTrue( $availability[ Wire_Format::AVAILABILITY_RANGE_TOO_LONG ], '`range_too_long` should be encoded at its position.' );
+		$this->assertTrue( $availability[ Wire_Format::AVAILABILITY_LOW_TRAFFIC ], '`low_traffic` should be encoded at its position.' );
+	}
+
+	/**
+	 * @dataProvider data_availability_days
+	 *
+	 * @param string $date       A day of the availability, as `YYYY-MM-DD`.
+	 * @param int    $day_offset The number of days from the first plotted day, `2025-08-18`, to that day.
+	 */
+	public function test_encode__writes_each_day_of_the_availability_as_its_offset_from_the_first_plotted_day( $date, $day_offset ) {
+		$response = $this->get_fixture_response();
+
+		$response['availability']['band_available_from']        = $date;
+		$response['availability']['key_factors_available_from'] = $date;
+
+		$availability = $this->encoder->encode( $response )[ Wire_Format::MEMBER_AVAILABILITY ];
+
+		$this->assertSame( $day_offset, $availability[ Wire_Format::AVAILABILITY_BAND_AVAILABLE_FROM ], "A `band_available_from` of `$date` should be encoded as $day_offset days from `2025-08-18`." );
+		$this->assertSame( $day_offset, $availability[ Wire_Format::AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ], "A `key_factors_available_from` of `$date` should be encoded as $day_offset days from `2025-08-18`." );
+	}
+
+	public function data_availability_days() {
+		return array(
+			'18 days before the first plotted day' => array( '2025-07-31', -18 ),
+			'on the first plotted day'             => array( '2025-08-18', 0 ),
+			'5 days after the first plotted day'   => array( '2025-08-23', 5 ),
+		);
+	}
+
+	public function test_encode__writes_null_as_a_day_of_the_availability_when_there_is_none() {
+		$response = $this->get_fixture_response();
+
+		$response['availability']['band_available_from']        = null;
+		$response['availability']['key_factors_available_from'] = null;
+
+		$availability = $this->encoder->encode( $response )[ Wire_Format::MEMBER_AVAILABILITY ];
+
+		$this->assertNull( $availability[ Wire_Format::AVAILABILITY_BAND_AVAILABLE_FROM ], 'A `band_available_from` of null should be encoded as null.' );
+		$this->assertNull( $availability[ Wire_Format::AVAILABILITY_KEY_FACTORS_AVAILABLE_FROM ], 'A `key_factors_available_from` of null should be encoded as null.' );
+	}
+
+	public function test_encode__writes_every_part_as_unavailable_when_the_response_has_no_availability() {
+		$response = $this->get_fixture_response();
+
+		unset( $response['availability'] );
+
+		$this->assertSame(
+			array( false, false, null, false, null, false, false, false, false, false ),
+			$this->encoder->encode( $response )[ Wire_Format::MEMBER_AVAILABILITY ],
+			'A response with no `availability` should encode every flag as false and every day as null.'
+		);
+	}
+
+	public function test_encode__writes_an_empty_expected_range_and_no_availability_day_for_an_empty_daily_series() {
+		$response = $this->get_fixture_response();
+
+		$encoded = $this->encode_as_sent(
+			array(
+				'dailyTraffic' => array(),
+				'availability' => $response['availability'],
+			)
+		);
+
+		$this->assertCount( 12, $encoded, 'The encoded response should have twelve members.' );
+		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_DAILY_EXPECTED_RANGES ], 'An empty `dailyTraffic` should give an empty list of expected ranges.' );
+		$this->assertSame(
+			array( false, false, null, true, null, true, false, false, false, false ),
+			$encoded[ Wire_Format::MEMBER_AVAILABILITY ],
+			'With no first plotted day to count from, the days of the availability should be encoded as null, and its flags as they are.'
+		);
+	}
+
 	public function test_encode__writes_no_date_but_the_first() {
 		$encoded = $this->encode_as_sent( $this->get_fixture_response() );
 
@@ -399,6 +1052,235 @@ class Response_EncoderTest extends TestCase {
 			'2025-08-18',
 			$encoded[ Wire_Format::MEMBER_FIRST_DATE ],
 			'The first plotted day should be the date of the first row of `dailyTraffic`.'
+		);
+	}
+
+	public function test_encode__writes_twelve_members_for_a_response_without_an_insight_payload() {
+		$response                  = $this->get_fixture_response();
+		$response['insightLocale'] = 'de_DE';
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 12, $encoded, 'A response without `insightPayload` should keep its twelve members, even with a locale.' );
+		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_LOCALE, $encoded, 'A response without `insightPayload` should have no insight locale member.' );
+		$this->assertArrayNotHasKey( Wire_Format::MEMBER_INSIGHT_PAYLOAD, $encoded, 'A response without `insightPayload` should have no insight payload member.' );
+	}
+
+	public function test_encode__writes_the_insight_locale_and_the_insight_payload_as_members_12_and_13() {
+		$response                   = $this->get_fixture_response();
+		$response['insightLocale']  = 'de_DE_formal';
+		$response['insightPayload'] = 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl';
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 14, $encoded, 'A response with `insightPayload` should have fourteen members.' );
+		// The browser reads the members by their positions, so the positions
+		// are named here rather than read from `Wire_Format`.
+		$this->assertSame( range( 0, 13 ), array_keys( $encoded ), 'The response should stay a list, so it is sent as a JSON array.' );
+		$this->assertSame( 'de_DE_formal', $encoded[12], 'The locale of the insight should be at position 12.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[13], 'The payload should be at position 13.' );
+		$this->assertSame( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the insight, as it is.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERV9mb3JtYWwifQ.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 13 should be the payload, as it is.' );
+		$this->assertSame(
+			$this->encode_as_sent( $this->get_fixture_response() ),
+			array_slice( $encoded, 0, 12 ),
+			'The first twelve members should be the same as those of the response without the insight members.'
+		);
+		$this->assertNotContains( 'de_DE_formal', $encoded[ Wire_Format::MEMBER_STRINGS ], 'The locale should not be added to the string table.' );
+	}
+
+	public function test_encode__writes_null_as_the_insight_payload_when_there_is_no_insight_to_request() {
+		$response                   = $this->get_fixture_response();
+		$response['insightLocale']  = 'de_DE';
+		$response['insightPayload'] = null;
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 14, $encoded, 'A response with a null `insightPayload` should still have fourteen members.' );
+		$this->assertSame( 'de_DE', $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be the locale of the insight.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 13 should be null when there is no insight to request.' );
+	}
+
+	public function test_encode__writes_null_as_the_insight_locale_when_the_response_has_none() {
+		$response                   = $this->get_fixture_response();
+		$response['insightPayload'] = 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl';
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'Member 12 should be null for a response without `insightLocale`.' );
+		$this->assertSame( 'eyJsb2NhbGUiOiJkZV9ERSJ9.c2lnbmF0dXJl', $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'Member 13 should be the payload.' );
+	}
+
+	public function test_encode__writes_each_content_marker_as_its_day_offset_followed_by_its_posts() {
+		$response                   = $this->get_fixture_response();
+		$response['contentMarkers'] = array(
+			array(
+				'date'  => '2025-08-18',
+				'posts' => array(
+					array(
+						'title' => 'Mulching in autumn',
+						'url'   => '/mulching-in-autumn/',
+					),
+				),
+			),
+			array(
+				'date'  => '2025-08-21',
+				'posts' => array(
+					array(
+						'title' => 'How to plant garlic',
+						'url'   => '/how-to-plant-garlic/',
+					),
+					array(
+						'title' => 'Storing garlic',
+						'url'   => '/storing-garlic/',
+					),
+				),
+			),
+		);
+
+		$encoded = $this->encode_as_sent( $response );
+		$strings = $encoded[ Wire_Format::MEMBER_STRINGS ];
+
+		$this->assertSame(
+			array(
+				array( 0, array( 'Mulching in autumn', '/mulching-in-autumn/' ) ),
+				array( 3, array( 'How to plant garlic', '/how-to-plant-garlic/' ), array( 'Storing garlic', '/storing-garlic/' ) ),
+			),
+			array_map(
+				fn( $marker ) => array_merge(
+					array( $marker[0] ),
+					array_map(
+						fn( $post ) => array( $strings[ $post[0] ], $strings[ $post[1] ] ),
+						array_slice( $marker, 1 )
+					)
+				),
+				$encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ]
+			),
+			'Each marker should be its day as an offset from `2025-08-18`, then each of its posts in order, with its title and its path from the string table.'
+		);
+		$this->assertSame(
+			array( 1, 1 ),
+			array( $encoded[ Wire_Format::MEMBER_KEY_FACTORS ][2][1], $encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ][1][1][1] ),
+			'The `CONTENT` card and the post with the same path should carry the same string index, which the cards kept before the markers added their strings.'
+		);
+	}
+
+	public function test_encode__leaves_out_a_content_marker_without_posts_or_without_a_day_to_count_from() {
+		$response                   = $this->get_fixture_response();
+		$response['contentMarkers'] = array(
+			array(
+				'date'  => '2025-08-19',
+				'posts' => array(),
+			),
+			array(
+				'posts' => array(
+					array(
+						'title' => 'Undated',
+						'url'   => '/undated/',
+					),
+				),
+			),
+		);
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ], 'A marker with no posts, and a marker with no date, should be left out.' );
+		$this->assertNotContains( 'Undated', $encoded[ Wire_Format::MEMBER_STRINGS ], 'The post of a marker that is left out should not be added to the string table.' );
+	}
+
+	public function test_encode__writes_no_content_markers_without_a_first_plotted_day() {
+		$encoded = $this->encode_as_sent(
+			array(
+				'dailyTraffic'   => array(),
+				'contentMarkers' => array(
+					array(
+						'date'  => '2025-08-20',
+						'posts' => array(
+							array(
+								'title' => 'How to plant garlic',
+								'url'   => '/how-to-plant-garlic/',
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ], 'With no first plotted day to count from, no marker should be written.' );
+	}
+
+	public function test_encode__writes_an_empty_content_markers_member_for_a_response_without_them() {
+		$response = $this->get_fixture_response();
+		unset( $response['contentMarkers'] );
+
+		$encoded = $this->encode_as_sent( $response );
+
+		$this->assertCount( 12, $encoded, 'A response without `contentMarkers` should still have twelve members.' );
+		$this->assertSame( array(), $encoded[ Wire_Format::MEMBER_CONTENT_MARKERS ], 'Member 9 should be an empty list.' );
+	}
+
+	public function test_encode__writes_whether_traffic_was_steady_as_member_10() {
+		$response                  = $this->get_fixture_response();
+		$response['steadyTraffic'] = true;
+
+		$encoded = $this->encode_as_sent( $response );
+
+		// The browser reads the members by their positions, so the position is
+		// named here rather than read from `Wire_Format`.
+		$this->assertTrue( $encoded[10], 'Member 10 should be true for a steady period.' );
+		$this->assertSame( 10, Wire_Format::MEMBER_STEADY_TRAFFIC, 'The steady traffic member should be member 10.' );
+
+		$response['steadyTraffic'] = false;
+
+		$this->assertFalse( $this->encode_as_sent( $response )[10], 'Member 10 should be false for a period that is not steady.' );
+
+		unset( $response['steadyTraffic'] );
+
+		$this->assertFalse( $this->encode_as_sent( $response )[10], 'Member 10 should be false for a response without `steadyTraffic`.' );
+	}
+
+	public function test_encode__writes_the_days_the_band_is_fitted_on_as_member_11() {
+		$response                      = $this->get_fixture_response();
+		$response['bandReferenceDays'] = 364;
+
+		$encoded = $this->encode_as_sent( $response );
+
+		// The browser reads the members by their positions, so the position is
+		// named here rather than read from `Wire_Format`.
+		$this->assertSame( 364, $encoded[11], 'Member 11 should be the number of days the band is fitted on.' );
+		$this->assertSame( 11, Wire_Format::MEMBER_BAND_REFERENCE_DAYS, 'The band reference days member should be member 11.' );
+
+		$response['bandReferenceDays'] = null;
+
+		$this->assertNull( $this->encode_as_sent( $response )[11], 'Member 11 should be null for a period without a band.' );
+
+		unset( $response['bandReferenceDays'] );
+
+		$this->assertNull( $this->encode_as_sent( $response )[11], 'Member 11 should be null for a response without `bandReferenceDays`.' );
+	}
+
+	/**
+	 * @dataProvider data_unusable_insight_strings
+	 *
+	 * @param mixed $value A value that is not a non-empty string.
+	 */
+	public function test_encode__writes_null_for_an_insight_member_that_is_not_a_non_empty_string( $value ) {
+		$response                   = $this->get_fixture_response();
+		$response['insightLocale']  = $value;
+		$response['insightPayload'] = $value;
+
+		$encoded = $this->encoder->encode( $response );
+
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_LOCALE ], 'An insight locale that is not a non-empty string should be encoded as null.' );
+		$this->assertNull( $encoded[ Wire_Format::MEMBER_INSIGHT_PAYLOAD ], 'An insight payload that is not a non-empty string should be encoded as null.' );
+	}
+
+	public function data_unusable_insight_strings() {
+		return array(
+			'an empty string' => array( '' ),
+			'a number'        => array( 123 ),
+			'a list'          => array( array( 'payload' ) ),
+			'false'           => array( false ),
 		);
 	}
 

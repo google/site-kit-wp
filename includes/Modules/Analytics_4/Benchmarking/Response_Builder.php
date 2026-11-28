@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse as Google_Service_AnalyticsData_RunReportResponse;
@@ -20,8 +21,8 @@ use WP_Error;
 /**
  * Assembles the benchmarking response for a pair of dates.
  *
- * Everything the Typical Traffic tab renders comes from here, so the tab makes
- * one request and has one loading state instead of eight.
+ * The Traffic overview tab reads all of its benchmarking data from here, so the
+ * tab makes one request and has one loading state instead of eight.
  *
  * @since 1.190.0
  * @access private
@@ -30,11 +31,18 @@ use WP_Error;
 class Response_Builder {
 
 	/**
-	 * The most rows a dimension keeps in the response.
+	 * The fields each row of a breakdown report gets its dimension values as,
+	 * in the order the report asks for the dimensions, keyed by contextual data
+	 * key.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 */
-	const MAX_ROWS_PER_DIMENSION = 5;
+	const BREAKDOWN_FIELDS = array(
+		'channelBreakdowns' => array( 'channel', 'device', 'userType' ),
+		'channelSources'    => array( 'channel', 'source' ),
+		'channelPages'      => array( 'channel', 'page' ),
+		'channelCampaigns'  => array( 'channel', 'campaign' ),
+	);
 
 	/**
 	 * Analytics 4 module instance.
@@ -51,6 +59,15 @@ class Response_Builder {
 	 * @var Custom_Dimensions_Data_Available
 	 */
 	private $custom_dimensions_data_available;
+
+	/**
+	 * The titles of the published posts at the paths the key factor cards
+	 * name, each a title or null, keyed by path, once looked up.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $page_titles = array();
 
 	/**
 	 * Constructor.
@@ -73,29 +90,40 @@ class Response_Builder {
 	 * @since 1.190.0
 	 * @since 1.191.0 Returns `visits` in place of `visitors`, and each day's count as `visits`.
 	 * @since 1.192.0 `dailyTraffic` changed from the 395 days that end on the end date to the days of the selected period.
+	 * @since n.e.x.t Gives each day of `dailyTraffic` its expected range, and returns `availability`.
+	 * @since n.e.x.t Returns `insightRequest` with the `trafficInsights` feature.
+	 * @since n.e.x.t Returns `contentMarkers`.
+	 * @since n.e.x.t Returns `keyFactors` in place of `dimensions` and `contextualData`.
+	 * @since n.e.x.t Returns `steadyTraffic`.
+	 * @since n.e.x.t Returns `bandReferenceDays`.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
 	 * @return array|WP_Error {
 	 *     The assembled response, or the error a failed report returned.
 	 *
-	 *     @type array $visits         Visit totals for the selected period and the one before it.
-	 *     @type array $dailyTraffic   List of the days of the selected period, oldest first, each as `array( 'date' => 'YYYY-MM-DD', 'visits' => int )`.
-	 *     @type array $dimensions     Dimension codes, in the order the Typical Traffic tab shows them.
-	 *     @type array $contextualData Ranked rows, keyed by the dimension they belong to.
+	 *     @type array       $visits            Visit totals for the selected period and the one before it.
+	 *     @type array       $dailyTraffic      List of the days of the selected period, oldest first, each with `date` as `YYYY-MM-DD`, `visits`, and the bounds of its expected range as `expectedMin` and `expectedMax`: the band `Period_Baseline::get_daily_ranges()` fits for the period. The bounds are null on every day when `availability` has no band for the period: it has fewer than `Period_Baseline::get_min_band_history_days()` days of recorded traffic up to and including its last day, or the site has low traffic.
+	 *     @type array       $availability      Which parts of the typical traffic view show for the period, as `Typical_Traffic_Availability::get()` returns them, so the panel reads them instead of working them out again.
+	 *     @type int|null    $bandReferenceDays The number of days of traffic the band of the period's last day is fitted on, at most 365, which the band's tooltip names in weeks. Null when the period has no band.
+	 *     @type array       $keyFactors        The key factor cards, as `Key_Factors::get_cards()` returns them. Empty when `availability` has no key factors for the period: it is shorter than 7 days, the compare period starts before the site's first day with visits, since a day before it wasn't measured yet, or the site has low traffic. Also empty when nothing moved enough for a card.
+	 *     @type bool        $steadyTraffic     Whether no channel changed notably, as `Key_Factors::is_steady()` tells. The key factor cards are then the channels with the most visits, each with its share of the site's visits as `sharePct`. False when the period has no key factors.
+	 *     @type array       $contentMarkers    The posts published in the selected period that the chart marks, as `Content_Markers::build()` returns them. Empty when the property has no post date custom dimension, since the content report doesn't run then, or when the dimension has no data yet.
+	 *     @type array|null  $insightRequest    Only with the `trafficInsights` feature: the request the generated insight is written from, as `Insight_Request_Builder::build()` returns it, or null when there is no insight to request, which includes a period without key factors.
 	 * }
 	 */
 	public function build( $start_date, $end_date ) {
 		$report_options = new Report_Options( $start_date, $end_date );
 		$requests       = $this->get_report_requests( $report_options );
 		$reports        = $this->run_reports( $requests );
-
 		if ( is_wp_error( $reports ) ) {
 			return $reports;
 		}
 
-		$daily_series  = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
-		$compare_range = $report_options->get_compare_range();
+		$daily_series    = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
+		$period_baseline = Period_Baseline::from_daily_series( $daily_series );
+		$compare_range   = $report_options->get_compare_range();
+		$availability    = Typical_Traffic_Availability::get( $period_baseline, $end_date, $report_options->get_period_days() );
 
 		$visits = array(
 			'current'  => $this->sum_visits( $daily_series, $start_date, $end_date ),
@@ -113,122 +141,226 @@ class Response_Builder {
 			)
 		);
 
-		$ranked_data = $this->rank_contextual_data( $contextual_data, $visits );
+		// Every card compares the selected period with the compare period, so a
+		// compare period with days before the site was measured would make
+		// every driver look like growth, and a period of fewer than 7 days is
+		// too short for a card.
+		$key_factors    = array();
+		$steady_traffic = false;
+		$decomposition  = null;
 
-		return array(
-			'visits'         => $visits,
-			'dailyTraffic'   => $this->get_daily_traffic( $daily_series, $start_date ),
-			'dimensions'     => $ranked_data['dimensions'],
-			'contextualData' => $ranked_data['contextualData'],
-		);
-	}
-
-	/**
-	 * Ranks each dimension's rows, and orders the dimensions.
-	 *
-	 * The rows `Row_Scorer` doesn't exclude are ranked by score, highest first,
-	 * and cut to `MAX_ROWS_PER_DIMENSION`. The dimensions are ordered by the sum
-	 * of their row scores, which counts the rows past the cut too. A dimension
-	 * with no row left is in neither `dimensions` nor `contextualData`.
-	 *
-	 * @since 1.190.0
-	 *
-	 * @param array $contextual_data The rows, keyed by `contextualData` key, such as `channels`. Every row has its `current` and `previous` visitors.
-	 * @param array $visitors        The site's visitors, with `current` and `previous`.
-	 * @return array {
-	 *     The two response fields the ranking decides.
-	 *
-	 *     @type array $dimensions     Dimension codes, the highest sum of row scores first.
-	 *     @type array $contextualData Rows each dimension keeps, keyed by `contextualData` key. A `CONTENT` row has `url`, `title`, `visitors`, and `publishedDaysAgo`. Every other row is unchanged.
-	 * }
-	 */
-	public function rank_contextual_data( array $contextual_data, array $visitors ) {
-		$row_scorer       = new Row_Scorer( $visitors['current'], $visitors['previous'] );
-		$dimension_codes  = array_flip( Wire_Format::CONTEXTUAL_DATA_KEYS );
-		$ranked_data      = array();
-		$dimension_scores = array();
-
-		foreach ( $contextual_data as $contextual_data_key => $rows ) {
-			$dimension_code = $dimension_codes[ $contextual_data_key ];
-			$label_key      = 'CONTENT' === $dimension_code ? 'url' : 'label';
-			$scored_rows    = array();
-
-			foreach ( $rows as $row ) {
-				if ( $row_scorer->is_excluded_row( $dimension_code, $row ) ) {
-					continue;
-				}
-
-				$scored_rows[] = array(
-					'row'   => $row,
-					'score' => $row_scorer->score_row( $dimension_code, $row ),
-				);
-			}
-
-			if ( empty( $scored_rows ) ) {
-				continue;
-			}
-
-			// `usort()` isn't stable on PHP 7.4. So the `strcmp()` orders rows with the
-			// same score by label, to come back in the same order on every run.
-			usort(
-				$scored_rows,
-				fn( $first_scored_row, $second_scored_row ) => ( $second_scored_row['score'] <=> $first_scored_row['score'] )
-					?: strcmp( $first_scored_row['row'][ $label_key ], $second_scored_row['row'][ $label_key ] )
+		if ( $availability['key_factors_available'] ) {
+			// The insight request carries the cards the panel shows as its
+			// decomposition, built in the same pass from the same figures, so
+			// the insight's text describes the cards.
+			$key_factors_builder = new Key_Factors(
+				$contextual_data,
+				$visits,
+				$report_options->get_period_days(),
+				self::get_home_path(),
+				fn( $path ) => $this->get_page_title( $path )
 			);
-
-			$dimension_scores[ $dimension_code ] = array_sum( array_column( $scored_rows, 'score' ) );
-			$ranked_data[ $contextual_data_key ] = array_map(
-				fn( $scored_row ) => $this->get_response_row( $dimension_code, $scored_row['row'] ),
-				array_slice( $scored_rows, 0, self::MAX_ROWS_PER_DIMENSION )
-			);
+			$key_factors         = $key_factors_builder->get_cards();
+			$steady_traffic      = $key_factors_builder->is_steady();
+			$decomposition       = $key_factors_builder->get_decomposition();
 		}
 
-		// `uksort()` isn't stable on PHP 7.4 either. So the index in
-		// `Wire_Format::DIMENSION_INDEXES` orders dimensions with the same sum, to
-		// come back in the same order on every run.
-		uksort(
-			$dimension_scores,
-			fn( $first_dimension_code, $second_dimension_code ) => ( $dimension_scores[ $second_dimension_code ] <=> $dimension_scores[ $first_dimension_code ] )
-				?: Wire_Format::DIMENSION_INDEXES[ $first_dimension_code ] - Wire_Format::DIMENSION_INDEXES[ $second_dimension_code ]
+		// The band's tooltip says how much traffic the band is based on: the
+		// days the fit of the period's last day reads, the longest of any day.
+		// A site with low traffic has no band, whatever its history.
+		$daily_range = $availability['band_available']
+			? $period_baseline->get_daily_range( $end_date, $report_options->get_period_days() )
+			: null;
+
+		$response = array(
+			'visits'            => $visits,
+			'dailyTraffic'      => $this->get_daily_traffic( $daily_series, $start_date, $end_date, $availability['band_available'] ? $period_baseline : null ),
+			'availability'      => $availability,
+			'bandReferenceDays' => null === $daily_range ? null : $daily_range['reference_days'],
+			'keyFactors'        => $key_factors,
+			'steadyTraffic'     => $steady_traffic,
+			'contentMarkers'    => ( new Content_Markers() )->build(
+				isset( $contextual_data['content'] ) ? $contextual_data['content'] : array(),
+				$start_date,
+				$end_date
+			),
 		);
 
-		return array(
-			'dimensions'     => array_keys( $dimension_scores ),
-			'contextualData' => $ranked_data,
+		if ( Feature_Flags::enabled( 'trafficInsights' ) ) {
+			// The insight's driver describes the change the key factor cards
+			// show, so the insight is requested only with them, whether the
+			// period has a band or not, and the request carries them. The
+			// request reads the same fits as the band of `dailyTraffic`, so the
+			// chart and the verdict agree.
+			$response['insightRequest'] = $availability['insight_request_allowed']
+				? ( new Insight_Request_Builder() )->build( $start_date, $end_date, $period_baseline, $visits, $this->get_insight_rows( $contextual_data ), $decomposition )
+				: null;
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Gets the path of the site's homepage, which a key factor card names the
+	 * homepage by, and which tells the homepage of a site that lives under a
+	 * folder.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The path, with a trailing slash, such as `/` or `/blog/`.
+	 */
+	private static function get_home_path() {
+		$path = wp_parse_url( home_url(), PHP_URL_PATH );
+
+		return trailingslashit( is_string( $path ) ? $path : '' );
+	}
+
+	/**
+	 * Gets the title of the published post at a path, which a key factor card
+	 * names a landing page by.
+	 *
+	 * Each path is looked up once per request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $path The path of the page on the site's host, such as `/plant-garlic/`.
+	 * @return string|null The post's title, with its HTML characters decoded, or null when the page isn't a published post.
+	 */
+	private function get_page_title( $path ) {
+		if ( ! array_key_exists( $path, $this->page_titles ) ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.url_to_postid_url_to_postid -- A page that isn't a post simply has no title.
+			$post_id = url_to_postid( self::get_site_origin() . $path );
+
+			// A post's title is filtered for display, with its HTML characters
+			// escaped.
+			$this->page_titles[ $path ] = $post_id && 'publish' === get_post_status( $post_id )
+				? html_entity_decode( get_the_title( $post_id ), ENT_QUOTES | ENT_HTML5, 'UTF-8' )
+				: null;
+		}
+
+		return $this->page_titles[ $path ];
+	}
+
+	/**
+	 * Gets the scheme and host of the site's URL, which a landing page's path
+	 * is on.
+	 *
+	 * A landing page's path already has the folder a site lives under, so the
+	 * site's own path is left out.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The scheme and host, with the port when the URL has one, such as `https://example.com`.
+	 */
+	private static function get_site_origin() {
+		$home_url = wp_parse_url( home_url() );
+		$origin   = ( isset( $home_url['scheme'] ) ? $home_url['scheme'] : 'https' ) . '://' . ( isset( $home_url['host'] ) ? $home_url['host'] : '' );
+
+		return isset( $home_url['port'] ) ? "{$origin}:{$home_url['port']}" : $origin;
+	}
+
+	/**
+	 * Gets the rows the insight request is written from.
+	 *
+	 * The channels, devices, visitor types and referring sources are the sums
+	 * of the breakdowns the key factor cards are picked from, so the insight
+	 * and the cards describe the same visits. The breakdowns themselves are
+	 * passed on too.
+	 *
+	 * @since n.e.x.t
+	 * @since n.e.x.t Also returns the `channelBreakdowns`, `channelPages`, `channelCampaigns` and `searchClicks` rows.
+	 *
+	 * @param array $contextual_data The rows, keyed by contextual data key.
+	 * @return array The rows, keyed by `channels`, `devices`, `visitorMix`, `referrers`, `searchQueries`, `content`, and by the contextual data keys passed on. Each `channels`, `devices`, `visitorMix` and `referrers` row has `label`, `current` and `previous`.
+	 */
+	private function get_insight_rows( array $contextual_data ) {
+		$breakdowns = isset( $contextual_data['channelBreakdowns'] ) ? $contextual_data['channelBreakdowns'] : array();
+		$sources    = isset( $contextual_data['channelSources'] ) ? $contextual_data['channelSources'] : array();
+
+		return array_merge(
+			array_intersect_key(
+				$contextual_data,
+				array_flip( array( 'channelBreakdowns', 'channelPages', 'channelCampaigns', 'searchClicks' ) )
+			),
+			array(
+				'channels'      => Key_Factors::sum_by( $breakdowns, 'channel' ),
+				'devices'       => Key_Factors::sum_by( $breakdowns, 'device' ),
+				'visitorMix'    => array_values(
+					array_filter(
+						Key_Factors::sum_by( $breakdowns, 'userType' ),
+						fn( $row ) => '' !== $row['label']
+					)
+				),
+				// Analytics reports `(direct)` for a visit that no site referred.
+				'referrers'     => array_values(
+					array_filter(
+						Key_Factors::sum_by( $sources, 'source' ),
+						fn( $row ) => '(direct)' !== $row['label']
+					)
+				),
+				'searchQueries' => isset( $contextual_data['searchQueries'] ) ? $contextual_data['searchQueries'] : array(),
+				'content'       => isset( $contextual_data['content'] ) ? $contextual_data['content'] : array(),
+			)
 		);
 	}
 
 	/**
-	 * Gets the options of every report the response needs.
+	 * Gets the options of every report the response needs before the key
+	 * factor cards are picked.
 	 *
-	 * The `CONTENT` and `CATEGORIES` reports count visitors by a custom dimension,
-	 * so each one runs only while its dimension has data.
+	 * The content report counts visits by the post date custom dimension, so it
+	 * runs only when the property has the dimension. See `has_custom_dimension()`.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Runs the content report when the property has the post date dimension, whether or not Site Kit has recorded that it has data.
+	 * @since n.e.x.t Runs the four channel breakdowns in place of the channel, device, visitor mix and referrer reports, and no categories report.
 	 *
 	 * @param Report_Options $report_options The report options for the selected period.
-	 * @return array Report request options, keyed by `dailyTraffic` or by dimension code, such as `CHANNELS`. The daily series is first.
+	 * @return array Report request options, keyed by `dailyTraffic` or by contextual data key, such as `channelBreakdowns`. The daily series is first.
 	 */
 	private function get_report_requests( Report_Options $report_options ) {
-		$data_availability = $this->custom_dimensions_data_available->get_data_availability();
-
 		$requests = array(
-			'dailyTraffic' => $report_options->get_daily_series_options(),
-			'CHANNELS'     => $report_options->get_channels_options(),
-			'DEVICES'      => $report_options->get_devices_options(),
-			'VISITOR_MIX'  => $report_options->get_visitor_mix_options(),
-			'REFERRERS'    => $report_options->get_referrers_options(),
+			'dailyTraffic'      => $report_options->get_daily_series_options(),
+			'channelBreakdowns' => $report_options->get_channel_breakdowns_options(),
+			'channelSources'    => $report_options->get_channel_sources_options(),
+			'channelPages'      => $report_options->get_channel_pages_options(),
+			'channelCampaigns'  => $report_options->get_channel_campaigns_options(),
 		);
 
-		if ( $data_availability[ Analytics_4::CUSTOM_DIMENSION_POST_DATE ] ) {
-			$requests['CONTENT'] = $report_options->get_content_options();
-		}
-
-		if ( $data_availability[ Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ] ) {
-			$requests['CATEGORIES'] = $report_options->get_categories_options();
+		if ( $this->has_custom_dimension( Analytics_4::CUSTOM_DIMENSION_POST_DATE ) ) {
+			$requests['content'] = $report_options->get_content_options();
 		}
 
 		return $requests;
+	}
+
+	/**
+	 * Checks whether the property has a custom dimension, so a report can ask
+	 * for it.
+	 *
+	 * The property has a dimension when the module's `availableCustomDimensions`
+	 * setting lists it, or when Site Kit has recorded that the dimension has
+	 * data. Site Kit records this only when a Key Metrics tile that needs the
+	 * dimension is shown, so the recorded state alone misses a dimension
+	 * that has data on a site without such a tile. A dimension that has no data
+	 * yet returns no rows.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $custom_dimension The custom dimension slug, such as `googlesitekit_post_date`.
+	 * @return bool True if the property has the custom dimension, otherwise false.
+	 */
+	private function has_custom_dimension( $custom_dimension ) {
+		$data_availability = $this->custom_dimensions_data_available->get_data_availability();
+
+		if ( ! empty( $data_availability[ $custom_dimension ] ) ) {
+			return true;
+		}
+
+		$settings = $this->analytics_4->get_settings()->get();
+
+		return is_array( $settings['availableCustomDimensions'] )
+			&& in_array( $custom_dimension, $settings['availableCustomDimensions'], true );
 	}
 
 	/**
@@ -237,7 +369,7 @@ class Response_Builder {
 	 *
 	 * @since 1.190.0
 	 *
-	 * @param array $requests The report request options, keyed by `dailyTraffic` or by dimension code.
+	 * @param array $requests The report request options, keyed by what each report is for, such as `dailyTraffic`.
 	 * @return array|WP_Error Report rows, keyed like the requests, or the error the first failed call returned.
 	 */
 	private function run_reports( array $requests ) {
@@ -269,9 +401,10 @@ class Response_Builder {
 	 * Gets the rows of a report, as plain arrays.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Each row has its `count` in place of its `visitors`, since the daily series counts visits.
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $report A report from a batch call.
-	 * @return array List of rows, each with its dimension `values` in the order the report asked for them, its `dateRange`, and its `visitors`.
+	 * @return array List of rows, each with its dimension `values` in the order the report asked for them, its `dateRange`, and its `count`, the value of the report's one metric: the visits of a day of the daily series, or of a dimension value.
 	 */
 	private function get_report_rows( Google_Service_AnalyticsData_RunReportResponse $report ) {
 		$dimension_names = array_map(
@@ -296,7 +429,7 @@ class Response_Builder {
 			$rows[] = array(
 				'values'    => array_values( $values ),
 				'dateRange' => $date_range,
-				'visitors'  => (int) $row->getMetricValues()[0]->getValue(),
+				'count'     => (int) $row->getMetricValues()[0]->getValue(),
 			);
 		}
 
@@ -320,10 +453,10 @@ class Response_Builder {
 	 * @return array List of days, each with `visits` and a `date` as `YYYY-MM-DD`.
 	 */
 	private function get_daily_series( array $report_rows, $first_date, $end_date ) {
-		$visitors_by_date = array();
+		$visits_by_date = array();
 
 		foreach ( $report_rows as $report_row ) {
-			$visitors_by_date[ $report_row['values'][0] ] = $report_row['visitors'];
+			$visits_by_date[ $report_row['values'][0] ] = $report_row['count'];
 		}
 
 		$utc          = new DateTimeZone( 'UTC' );
@@ -336,7 +469,7 @@ class Response_Builder {
 		while ( $date <= $end ) {
 			$daily_series[] = array(
 				'date'   => $date->format( 'Y-m-d' ),
-				'visits' => $visitors_by_date[ $date->format( 'Ymd' ) ] ?? 0,
+				'visits' => $visits_by_date[ $date->format( 'Ymd' ) ] ?? 0,
 			);
 
 			$date = $date->modify( '+1 day' );
@@ -346,23 +479,45 @@ class Response_Builder {
 	}
 
 	/**
-	 * Gets the days of the selected period from the daily series, oldest first.
+	 * Gets the days of the selected period from the daily series, oldest first,
+	 * each with the bounds of its expected range.
 	 *
-	 * The daily series starts with the compare period, which `dailyTraffic`
-	 * leaves out.
+	 * The daily series starts with the history the expected range is fitted on,
+	 * which `dailyTraffic` leaves out.
 	 *
 	 * @since 1.192.0
+	 * @since n.e.x.t Added the `$end_date` and `$period_baseline` parameters, and gives each day `expectedMin` and `expectedMax`.
 	 *
-	 * @param array  $daily_series The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
-	 * @param string $start_date   The first day of the selected period, as `YYYY-MM-DD`.
-	 * @return array List of days from `$start_date` on, keyed from `0`.
+	 * @param array                $daily_series    The days of the daily series, oldest first, each with `visits` and a `date` as `YYYY-MM-DD`.
+	 * @param string               $start_date      The first day of the selected period, as `YYYY-MM-DD`.
+	 * @param string               $end_date        The last day of the selected period, as `YYYY-MM-DD`.
+	 * @param Period_Baseline|null $period_baseline The model of the same daily series, or null when the period has no band.
+	 * @return array List of days from `$start_date` on, keyed from `0`, each with `date`, `visits`, `expectedMin` and `expectedMax`.
 	 */
-	private function get_daily_traffic( array $daily_series, $start_date ) {
-		return array_values(
+	private function get_daily_traffic( array $daily_series, $start_date, $end_date, ?Period_Baseline $period_baseline ) {
+		$period_days = array_values(
 			array_filter(
 				$daily_series,
 				fn( $day ) => $day['date'] >= $start_date
 			)
+		);
+
+		// The band comes from the same fits as the range the insight request
+		// sends as its `baseline`, and its days add up to that range.
+		$daily_ranges = $period_baseline ? $period_baseline->get_daily_ranges( $end_date, count( $period_days ) ) : null;
+
+		return array_map(
+			function ( $day ) use ( $daily_ranges ) {
+				$daily_range = isset( $daily_ranges[ $day['date'] ] ) ? $daily_ranges[ $day['date'] ] : null;
+
+				return array(
+					'date'        => $day['date'],
+					'visits'      => $day['visits'],
+					'expectedMin' => $daily_range ? $daily_range['expected_min'] : null,
+					'expectedMax' => $daily_range ? $daily_range['expected_max'] : null,
+				);
+			},
+			$period_days
 		);
 	}
 
@@ -391,40 +546,54 @@ class Response_Builder {
 	}
 
 	/**
-	 * Builds each dimension's rows from its report.
+	 * Builds the rows of each contextual data key from its report.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Builds the rows of the channel breakdowns, keyed by contextual data key.
 	 *
-	 * @param array  $reports  The report rows, keyed by `dailyTraffic` or by dimension code.
+	 * @param array  $reports  The report rows, keyed by `dailyTraffic` or by contextual data key.
 	 * @param string $end_date The end date, as `YYYY-MM-DD`.
-	 * @return array Rows, keyed by `contextualData` key. Every row has its `current` and `previous` visitors.
+	 * @return array Rows, keyed by contextual data key. Every row has its `current` and `previous` visits.
 	 */
 	private function build_contextual_data( array $reports, $end_date ) {
 		$contextual_data = array();
 
-		foreach ( Wire_Format::CONTEXTUAL_DATA_KEYS as $dimension_code => $contextual_data_key ) {
-			if ( ! isset( $reports[ $dimension_code ] ) ) {
-				continue;
+		foreach ( array_keys( self::BREAKDOWN_FIELDS ) as $contextual_data_key ) {
+			if ( isset( $reports[ $contextual_data_key ] ) ) {
+				$contextual_data[ $contextual_data_key ] = $this->build_breakdown_rows( $contextual_data_key, $reports[ $contextual_data_key ] );
 			}
+		}
 
-			$pairs = $this->pair_periods( $reports[ $dimension_code ] );
-
-			if ( 'CONTENT' === $dimension_code ) {
-				$contextual_data[ $contextual_data_key ] = $this->build_content_rows( $pairs, $end_date );
-				continue;
-			}
-
-			$contextual_data[ $contextual_data_key ] = array_map(
-				fn( $pair ) => array(
-					'label'    => $pair['values'][0],
-					'current'  => $pair['current'],
-					'previous' => $pair['previous'],
-				),
-				$pairs
-			);
+		if ( isset( $reports['content'] ) ) {
+			$contextual_data['content'] = $this->build_content_rows( $this->pair_periods( $reports['content'], 1 ), $end_date );
 		}
 
 		return $contextual_data;
+	}
+
+	/**
+	 * Builds the rows of a breakdown report, one per combination of its
+	 * dimension values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $breakdown   The key of the breakdown in `BREAKDOWN_FIELDS`, such as `channelPages`.
+	 * @param array  $report_rows The rows of the report.
+	 * @return array List of rows, each with its dimension values under the fields `BREAKDOWN_FIELDS` names, and its `current` and `previous` visits.
+	 */
+	private function build_breakdown_rows( $breakdown, array $report_rows ) {
+		$fields = self::BREAKDOWN_FIELDS[ $breakdown ];
+
+		return array_map(
+			fn( $pair ) => array_merge(
+				array_combine( $fields, array_slice( $pair['values'], 0, count( $fields ) ) ),
+				array(
+					'current'  => $pair['current'],
+					'previous' => $pair['previous'],
+				)
+			),
+			$this->pair_periods( $report_rows, count( $fields ) )
+		);
 	}
 
 	/**
@@ -441,9 +610,9 @@ class Response_Builder {
 	 *
 	 * @since 1.190.0
 	 *
-	 * @param array $contextual_data The rows built from Analytics reports, keyed by `contextualData` key.
+	 * @param array $contextual_data The rows built from Analytics reports, keyed by contextual data key.
 	 * @param array $args            The dates and the row limit the callbacks receive.
-	 * @return array The rows, keyed by `contextualData` key, validated after each callback that returned an array.
+	 * @return array The rows, keyed by contextual data key, validated after each callback that returned an array.
 	 */
 	private function filter_contextual_data( array $contextual_data, array $args ) {
 		global $wp_filter;
@@ -455,20 +624,23 @@ class Response_Builder {
 		$validator = new Contextual_Data_Validator();
 
 		/**
-		 * Filters the rows of the benchmarking response, before they are
-		 * ranked.
+		 * Filters the rows the key factor cards are picked from and the
+		 * insight request is written from.
 		 *
-		 * A callback adds the rows of a dimension under its
-		 * `contextualData` key. Each key has its own row fields:
-		 * - `channels`, `devices`, `visitorMix`, `referrers`, and
-		 *   `categories`: `label`, and the visitors of the selected and
-		 *   the compare period as `current` and `previous`.
-		 * - `searchQueries`: `label`, the clicks of each period as
-		 *   `current` and `previous`, and the average position of each
+		 * A callback adds rows under a contextual data key. Each key has its
+		 * own row fields, and every row has the visits (sessions) of the
+		 * selected and the compare period as `current` and `previous`, or
+		 * the clicks for a search query:
+		 * - `channelBreakdowns`: `channel`, `device` and `userType`.
+		 * - `channelSources`: `channel` and `source`.
+		 * - `channelPages`: `channel` and `page`, the landing page's path.
+		 * - `channelCampaigns`: `channel` and `campaign`.
+		 * - `searchQueries`: `label`, and the average position of each
 		 *   period as `positionCurrent` and `positionPrevious`, or `null`
 		 *   for a period the query isn't reported in.
-		 * - `content`: `url`, `title`, `publishedDaysAgo`, and the visitors of
-		 *   each period as `current` and `previous`.
+		 * - `searchClicks`: one row, with no field besides the clicks of
+		 *   every search query.
+		 * - `content`: `url`, `title` and `publishedDaysAgo`.
 		 *
 		 * What a callback returns is checked before the next callback receives
 		 * it. These are removed:
@@ -476,14 +648,15 @@ class Response_Builder {
 		 * - A key whose value isn't a list of rows.
 		 * - A row that misses a field or has a value of the wrong type.
 		 *
-		 * A numeric string is stored as a number. When the rows are ranked, a
-		 * row whose change explains too little of the site's change is left
-		 * out, each key keeps at most its 5 highest scoring rows, and a key
-		 * with no row left is left out of the response.
+		 * A numeric string is stored as a number. A row a callback adds counts
+		 * towards the key factor cards like any other row.
 		 *
 		 * @since 1.190.0
+		 * @since n.e.x.t The rows count visits in place of visitors.
+		 * @since n.e.x.t The channel breakdowns in place of the channel, device, visitor mix, referrer and category rows.
+		 * @since n.e.x.t Added `searchClicks`.
 		 *
-		 * @param array $contextual_data The rows, keyed by `contextualData` key.
+		 * @param array $contextual_data The rows, keyed by contextual data key.
 		 * @param array $args {
 		 *     The period the rows are for.
 		 *
@@ -517,18 +690,21 @@ class Response_Builder {
 	}
 
 	/**
-	 * Pairs a dimension report's two periods by the value of its first dimension.
+	 * Pairs a dimension report's two periods by the values of its first
+	 * dimensions.
 	 *
-	 * A value missing from one period has `0` visitors in that period. A pair
-	 * keeps the `values` of its first row, such as a page's title, and the rows
-	 * of the selected period are read first.
+	 * A combination of values missing from one period has `0` visits in that
+	 * period. A pair keeps the `values` of its first row, such as a page's
+	 * title, and the rows of the selected period are read first.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Added the `$key_count` parameter.
 	 *
 	 * @param array $report_rows The rows of a dimension report.
-	 * @return array List of pairs, one per value. Each pair has `current` and `previous`, and the `values` of the first row read for that value.
+	 * @param int   $key_count   The number of dimensions, from the first, whose values identify a pair.
+	 * @return array List of pairs, one per combination of values. Each pair has `current` and `previous`, and the `values` of the first row read for that combination.
 	 */
-	private function pair_periods( array $report_rows ) {
+	private function pair_periods( array $report_rows, $key_count ) {
 		$pairs = array();
 
 		foreach ( array(
@@ -540,7 +716,9 @@ class Response_Builder {
 					continue;
 				}
 
-				$value = $report_row['values'][0];
+				// A list of the values identifies a pair, since no separator can
+				// be told apart from a value with it in.
+				$value = wp_json_encode( array_slice( $report_row['values'], 0, $key_count ) );
 
 				if ( ! isset( $pairs[ $value ] ) ) {
 					$pairs[ $value ] = array(
@@ -550,7 +728,7 @@ class Response_Builder {
 					);
 				}
 
-				$pairs[ $value ][ $count_key ] += $report_row['visitors'];
+				$pairs[ $value ][ $count_key ] += $report_row['count'];
 			}
 		}
 
@@ -599,30 +777,5 @@ class Response_Builder {
 		}
 
 		return $rows;
-	}
-
-	/**
-	 * Gets the shape a row takes in the response.
-	 *
-	 * A `CONTENT` row reports the visitors of the selected period as
-	 * `visitors`, without the `previous` count that only its score used.
-	 *
-	 * @since 1.190.0
-	 *
-	 * @param string $dimension_code The dimension code the row belongs to, such as `CONTENT`.
-	 * @param array  $row            The row, with its `current` and `previous` visitors.
-	 * @return array The row as the response lists it.
-	 */
-	private function get_response_row( $dimension_code, array $row ) {
-		if ( 'CONTENT' !== $dimension_code ) {
-			return $row;
-		}
-
-		return array(
-			'url'              => $row['url'],
-			'title'            => $row['title'],
-			'visitors'         => $row['current'],
-			'publishedDaysAgo' => $row['publishedDaysAgo'],
-		);
 	}
 }

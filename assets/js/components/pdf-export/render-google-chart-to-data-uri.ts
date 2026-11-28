@@ -56,8 +56,26 @@ interface GoogleVisualizationEvents {
 	addListener( source: object, eventName: string, handler: () => void ): void;
 }
 
+/**
+ * A column that a `DataTable` takes as an object, such as a column with a
+ * role, like `{ type: 'number', role: 'interval' }`.
+ *
+ * @since n.e.x.t
+ */
+export interface GoogleVisualizationColumn {
+	/** The type of the column's values, such as `number`. */
+	type: string;
+	/** The column's label. */
+	label?: string;
+	/** The column's role, such as `interval` for a bound of an area behind a line. */
+	role?: string;
+}
+
 export interface GoogleVisualizationDataTable {
-	addColumn( type: string, label?: string ): number;
+	addColumn(
+		type: string | GoogleVisualizationColumn,
+		label?: string
+	): number;
 	addRows( rows: unknown[][] ): number;
 }
 

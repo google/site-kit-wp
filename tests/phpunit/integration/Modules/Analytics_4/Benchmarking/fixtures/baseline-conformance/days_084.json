@@ -1,0 +1,351 @@
+{
+  "name": "days_084",
+  "description": "84 days: two reference blocks on the end date (one miss, K = 1); baseline available.",
+  "start_date": "2024-03-04",
+  "target_date": "2024-05-26",
+  "days_in_period": 28,
+  "daily_visits": [
+    92,
+    88,
+    95,
+    113,
+    95,
+    54,
+    60,
+    102,
+    113,
+    105,
+    95,
+    107,
+    48,
+    48,
+    93,
+    111,
+    100,
+    98,
+    93,
+    47,
+    48,
+    109,
+    105,
+    100,
+    109,
+    106,
+    50,
+    52,
+    101,
+    87,
+    105,
+    98,
+    96,
+    63,
+    49,
+    103,
+    114,
+    99,
+    85,
+    92,
+    50,
+    58,
+    91,
+    114,
+    94,
+    107,
+    106,
+    47,
+    53,
+    95,
+    113,
+    88,
+    110,
+    90,
+    58,
+    51,
+    113,
+    95,
+    101,
+    90,
+    98,
+    55,
+    57,
+    110,
+    88,
+    98,
+    85,
+    100,
+    50,
+    52,
+    108,
+    103,
+    103,
+    89,
+    115,
+    58,
+    53,
+    99,
+    87,
+    111,
+    93,
+    115,
+    56,
+    57
+  ],
+  "expected": {
+    "baseline": {
+      "expected_range_min": 1640,
+      "expected_range_max": 3232
+    },
+    "last_year": null,
+    "model": {
+      "center": 2432.25,
+      "margin": 795.0599083231823,
+      "block_center": 2432.25,
+      "period_weight": 28,
+      "filtered_days": [],
+      "block_totals": [
+        2436,
+        2417
+      ],
+      "cleaned_block_totals": [
+        2436,
+        2417
+      ],
+      "ratios": [
+        0.9922003284072249
+      ],
+      "width_ratios": [
+        0.9922003284072249
+      ],
+      "level": 2426.5,
+      "alignment_drifts": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "alignment_centers": [
+        2426.5,
+        2443,
+        2421,
+        2438
+      ],
+      "alignment_margins": [
+        710.7106690054651,
+        798.5088250049206,
+        792.887858479411,
+        797.2319581669535
+      ],
+      "dow_factors_sunday_first": [
+        0.6439315887080156,
+        1.1203585411085926,
+        1.196950339995879,
+        1.1203585411085926,
+        1.158005357510818,
+        1.1190603750257573,
+        0.6413352565423449
+      ]
+    },
+    "range": {
+      "center": 2436.2042631513473,
+      "margin": 796.0691036827125,
+      "days": [
+        {
+          "date": "2024-04-29",
+          "center": 98.46372310000471,
+          "half_width": 32.150969736851316,
+          "expected_min": 66.3,
+          "expected_max": 130.6
+        },
+        {
+          "date": "2024-04-30",
+          "center": 100.20463380995605,
+          "half_width": 32.72235078924997,
+          "expected_min": 67.5,
+          "expected_max": 132.9
+        },
+        {
+          "date": "2024-05-01",
+          "center": 100.64524790227485,
+          "half_width": 32.83690413459414,
+          "expected_min": 67.8,
+          "expected_max": 133.5
+        },
+        {
+          "date": "2024-05-02",
+          "center": 101.6527991321983,
+          "half_width": 33.210137648391814,
+          "expected_min": 68.4,
+          "expected_max": 134.9
+        },
+        {
+          "date": "2024-05-03",
+          "center": 98.92107966419894,
+          "half_width": 32.31478062750173,
+          "expected_min": 66.6,
+          "expected_max": 131.2
+        },
+        {
+          "date": "2024-05-04",
+          "center": 56.26734693877551,
+          "half_width": 18.36618673318703,
+          "expected_min": 37.9,
+          "expected_max": 74.6
+        },
+        {
+          "date": "2024-05-05",
+          "center": 55.13504589315134,
+          "half_width": 18.01594595911778,
+          "expected_min": 37.1,
+          "expected_max": 73.2
+        },
+        {
+          "date": "2024-05-06",
+          "center": 99.1509874917709,
+          "half_width": 32.38407485690182,
+          "expected_min": 66.8,
+          "expected_max": 131.5
+        },
+        {
+          "date": "2024-05-07",
+          "center": 101.52784050976902,
+          "half_width": 33.16038923180916,
+          "expected_min": 68.4,
+          "expected_max": 134.7
+        },
+        {
+          "date": "2024-05-08",
+          "center": 99.55650842266468,
+          "half_width": 32.510672261161076,
+          "expected_min": 67,
+          "expected_max": 132.1
+        },
+        {
+          "date": "2024-05-09",
+          "center": 98.58234717991397,
+          "half_width": 32.22872957788089,
+          "expected_min": 66.4,
+          "expected_max": 130.8
+        },
+        {
+          "date": "2024-05-10",
+          "center": 97.12934613296832,
+          "half_width": 31.773729446865655,
+          "expected_min": 65.4,
+          "expected_max": 128.9
+        },
+        {
+          "date": "2024-05-11",
+          "center": 55.6797286446402,
+          "half_width": 18.205333449237436,
+          "expected_min": 37.5,
+          "expected_max": 73.9
+        },
+        {
+          "date": "2024-05-12",
+          "center": 56.18391089108911,
+          "half_width": 18.3603236102864,
+          "expected_min": 37.8,
+          "expected_max": 74.5
+        },
+        {
+          "date": "2024-05-13",
+          "center": 98.29340386757113,
+          "half_width": 32.11261765773682,
+          "expected_min": 66.2,
+          "expected_max": 130.4
+        },
+        {
+          "date": "2024-05-14",
+          "center": 103.40514339571833,
+          "half_width": 33.77960022202773,
+          "expected_min": 69.6,
+          "expected_max": 137.2
+        },
+        {
+          "date": "2024-05-15",
+          "center": 98.9051840780365,
+          "half_width": 32.327010482868964,
+          "expected_min": 66.6,
+          "expected_max": 131.2
+        },
+        {
+          "date": "2024-05-16",
+          "center": 99.2839964437165,
+          "half_width": 32.477180186721085,
+          "expected_min": 66.8,
+          "expected_max": 131.8
+        },
+        {
+          "date": "2024-05-17",
+          "center": 98.35846560846562,
+          "half_width": 32.136758468947725,
+          "expected_min": 66.2,
+          "expected_max": 130.5
+        },
+        {
+          "date": "2024-05-18",
+          "center": 55.07075674766669,
+          "half_width": 17.993322662707463,
+          "expected_min": 37.1,
+          "expected_max": 73.1
+        },
+        {
+          "date": "2024-05-19",
+          "center": 56.20441888619855,
+          "half_width": 18.365374634487242,
+          "expected_min": 37.8,
+          "expected_max": 74.6
+        },
+        {
+          "date": "2024-05-20",
+          "center": 97.42512347185179,
+          "half_width": 31.8432475442085,
+          "expected_min": 65.6,
+          "expected_max": 129.3
+        },
+        {
+          "date": "2024-05-21",
+          "center": 104.11236472100083,
+          "half_width": 34.01520775863065,
+          "expected_min": 70.1,
+          "expected_max": 138.1
+        },
+        {
+          "date": "2024-05-22",
+          "center": 97.30503162558674,
+          "half_width": 31.81689420464656,
+          "expected_min": 65.5,
+          "expected_max": 129.1
+        },
+        {
+          "date": "2024-05-23",
+          "center": 100.23404227941177,
+          "half_width": 32.78647126900737,
+          "expected_min": 67.4,
+          "expected_max": 133
+        },
+        {
+          "date": "2024-05-24",
+          "center": 96.97224525879308,
+          "half_width": 31.7237851564758,
+          "expected_min": 65.2,
+          "expected_max": 128.7
+        },
+        {
+          "date": "2024-05-25",
+          "center": 55.59773367412999,
+          "half_width": 18.18184865210869,
+          "expected_min": 37.4,
+          "expected_max": 73.8
+        },
+        {
+          "date": "2024-05-26",
+          "center": 55.93580737982396,
+          "half_width": 18.269256719101637,
+          "expected_min": 37.7,
+          "expected_max": 74.2
+        }
+      ]
+    }
+  }
+}

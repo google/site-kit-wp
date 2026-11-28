@@ -1,5 +1,5 @@
 /**
- * TypicalTrafficChart stories.
+ * Typical Traffic Overview chart stories.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -25,39 +25,89 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
-import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { addTypicalTrafficRange } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	PublishedPost,
+	getPlaceholderDailyTraffic,
+	getPlaceholderPublishedPosts,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { Story } from '@/js/types/Story';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import TypicalTrafficChart, {
-	TypicalTrafficChartProps,
-} from './TypicalTrafficChart';
+import TypicalTrafficChart from './TypicalTrafficChart';
+
+const dailyTraffic = getPlaceholderDailyTraffic( '2025-01-09', '2025-02-05' );
+
+// Each post has a URL, so its tooltip links to the Site Kit dashboard for it.
+const postsWithURLs = getPlaceholderPublishedPosts( dailyTraffic ).map(
+	( post, index ) => ( {
+		...post,
+		url: `http://example.com/post-${ index + 1 }/`,
+	} )
+);
 
 /**
- * Sets the reference date to `2026-09-15`, the last day each story plots.
+ * Connects Analytics and sets one date range, so every story shows the same
+ * days.
  *
- * The selected date range stays the default `last-28-days`, from `2026-08-19`
- * to `2026-09-15`, and `GoogleChart` draws a date marker only for a day of it.
- *
- * @since 1.192.0
+ * @since n.e.x.t
  *
  * @param {Object} registry The registry to set up.
  * @return {void}
  */
-function setupRegistry( registry: WPDataRegistry ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-15' );
+function commonSetup( registry: WPDataRegistry ) {
+	provideSiteInfo( registry );
+	provideModules( registry, [
+		{
+			slug: MODULE_SLUG_ANALYTICS_4,
+			active: true,
+			connected: true,
+		},
+	] );
+
+	// The typical traffic view ends its ranges on the day before the reference
+	// date, the last full day, so `last-28-days` covers the days of
+	// `dailyTraffic`, from `2025-01-09` to `2025-02-05`.
+	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-06' );
+	registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 }
 
-function Template( props: TypicalTrafficChartProps ) {
-	// The chart's styles apply only inside the widget and its panel, so the
-	// story renders inside both.
+interface TypicalTrafficChartStoryProps {
+	/** The visits on each day the chart shows, oldest first, each with the bounds of its typical range. */
+	dailyTraffic: BenchmarkingDailyTrafficRow[];
+	/** Sets the registry state before the story renders. */
+	setupRegistry: ( registry: WPDataRegistry ) => void;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
+	/** The posts published in the range. */
+	publishedPosts?: PublishedPost[];
+	/** The number of days of traffic the band is fitted on, which its tooltip names in weeks. */
+	bandReferenceDays?: number;
+}
+
+function Template( {
+	dailyTraffic: storyDailyTraffic,
+	setupRegistry,
+	gatheringData,
+	publishedPosts,
+	bandReferenceDays,
+}: TypicalTrafficChartStoryProps ) {
+	// The chart's styles are scoped to the widget and the panel, so the story
+	// renders inside both.
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<div className="googlesitekit-widget googlesitekit-widget--analyticsTrafficOverview googlesitekit-widget--no-padding">
-				<div className="googlesitekit-widget__body">
-					<div className="googlesitekit-traffic-overview__panel">
-						<TypicalTrafficChart { ...props } />
-					</div>
+			<div className="googlesitekit-widget--analyticsTrafficOverview">
+				<div className="googlesitekit-traffic-overview__panel googlesitekit-traffic-overview__panel--typical-traffic">
+					<TypicalTrafficChart
+						dailyTraffic={ storyDailyTraffic }
+						gatheringData={ gatheringData }
+						publishedPosts={ publishedPosts }
+						bandReferenceDays={ bandReferenceDays }
+					/>
 				</div>
 			</div>
 		</WithRegistrySetup>
@@ -65,59 +115,73 @@ function Template( props: TypicalTrafficChartProps ) {
 }
 
 /**
- * A 28-day range, with the daily visits of the design's line. The value axis
- * ends at `150`, a round number above the busiest day of `140`.
+ * This story runs no visual check, because the `TrafficOverviewWidget` Main
+ * Dashboard scenario already captures the chart with visits.
  */
-export const Last28Days = Template.bind(
+export const Ready = Template.bind(
 	{}
-) as Story< TypicalTrafficChartProps >;
-Last28Days.storyName = 'Last 28 Days';
-Last28Days.args = {
-	dailyTraffic: createDailyTrafficRows(
-		28,
-		'2026-09-15',
-		( dayIndex ) => DESIGN_DAILY_VISITS[ dayIndex ]
-	),
-	daysInSelectedRange: 28,
+) as Story< TypicalTrafficChartStoryProps >;
+Ready.storyName = 'Ready';
+Ready.args = {
+	dailyTraffic,
+	setupRegistry: commonSetup,
 };
-Last28Days.scenario = {
+
+/**
+ * The band behind the line is the typical range of visits for each day, and a
+ * dot on the line marks each day with a published post. This story runs no
+ * visual check, because the `TrafficOverviewWidget` Typical Traffic scenario
+ * already captures the chart with both.
+ */
+export const TypicalTrafficRangeAndPublishedPosts = Template.bind(
+	{}
+) as Story< TypicalTrafficChartStoryProps >;
+TypicalTrafficRangeAndPublishedPosts.storyName =
+	'Typical Traffic Range And Published Posts';
+TypicalTrafficRangeAndPublishedPosts.args = {
+	dailyTraffic: addTypicalTrafficRange( dailyTraffic ),
+	publishedPosts: postsWithURLs,
+	// A year of traffic before the range's 28 days.
+	bandReferenceDays: 364,
+	setupRegistry: commonSetup,
+};
+
+/**
+ * The pointer is on the day of a published post, so a tooltip over the post's
+ * dot shows its title, the day it was published, and a link to the Site Kit
+ * dashboard for it.
+ */
+export const PublishedPostTooltip = Template.bind(
+	{}
+) as Story< TypicalTrafficChartStoryProps >;
+PublishedPostTooltip.storyName = 'Published Post Tooltip';
+PublishedPostTooltip.args = {
+	dailyTraffic: addTypicalTrafficRange( dailyTraffic ),
+	publishedPosts: postsWithURLs,
+	bandReferenceDays: 364,
+	setupRegistry: commonSetup,
+};
+PublishedPostTooltip.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
+	// The first post's dot. The visual regression tests read the scenario from
+	// the source, so the selector must be a literal: the fill is
+	// `PUBLISHED_POST_COLOR`.
+	hoverSelector: '[id^="googlesitekit-chart-"] svg circle[fill="#a983e6"]',
+	postInteractionWait: 500,
 	viewport: 'large',
 };
 
 /**
- * A 90-day range. No frame of the design shows one, so the story repeats the
- * design's 28 days. The date labels sit more days apart than on a 28-day range.
- */
-export const Last90Days = Template.bind(
-	{}
-) as Story< TypicalTrafficChartProps >;
-Last90Days.storyName = 'Last 90 Days';
-Last90Days.args = {
-	dailyTraffic: createDailyTrafficRows(
-		90,
-		'2026-09-15',
-		( dayIndex ) =>
-			DESIGN_DAILY_VISITS[ dayIndex % DESIGN_DAILY_VISITS.length ]
-	),
-	daysInSelectedRange: 90,
-};
-Last90Days.scenario = {
-	readySelector: '[id^="googlesitekit-chart-"] svg',
-	viewport: 'large',
-};
-
-/**
- * A range with no visits on any day. The value axis ends at `100`, and the
- * line runs flat along the bottom.
+ * A range with no daily traffic. The value axis ends at `100`, and the line
+ * runs flat along the bottom.
  */
 export const NoVisitors = Template.bind(
 	{}
-) as Story< TypicalTrafficChartProps >;
+) as Story< TypicalTrafficChartStoryProps >;
 NoVisitors.storyName = 'No Visitors';
 NoVisitors.args = {
-	dailyTraffic: createDailyTrafficRows( 28, '2026-09-15', () => 0 ),
-	daysInSelectedRange: 28,
+	dailyTraffic: [],
+	setupRegistry: commonSetup,
 };
 NoVisitors.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
@@ -125,22 +189,49 @@ NoVisitors.scenario = {
 };
 
 /**
- * A 28-day range with the day the Analytics property was created inside it,
- * `2026-08-26`. The chart marks that day with a dashed line, whose icon shows
- * "Google Analytics property created", and the days before it have no visits.
+ * The Analytics property was created on a day inside the range. The chart marks
+ * that day, which explains the days at zero before it.
  */
 export const PropertyCreatedInRange = Template.bind(
 	{}
-) as Story< TypicalTrafficChartProps >;
+) as Story< TypicalTrafficChartStoryProps >;
 PropertyCreatedInRange.storyName = 'Property Created In Range';
 PropertyCreatedInRange.args = {
-	dailyTraffic: createDailyTrafficRows( 28, '2026-09-15', ( dayIndex ) =>
-		dayIndex < 7 ? 0 : DESIGN_DAILY_VISITS[ dayIndex ]
+	// The property was created on `2025-01-16`, so the seven days before it
+	// have no visits.
+	dailyTraffic: dailyTraffic.map( ( row, dayIndex ) =>
+		dayIndex < 7 ? { ...row, visits: 0 } : row
 	),
-	daysInSelectedRange: 28,
-	propertyCreateDate: '2026-08-26',
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyCreateTime( '2025-01-16T12:00:00' );
+	},
 };
 PropertyCreatedInRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	viewport: 'large',
+};
+
+/**
+ * The Analytics property is still gathering data, on the shortest range the
+ * chart offers. The line runs flat along the bottom, under one date label per
+ * day.
+ */
+export const GatheringData = Template.bind(
+	{}
+) as Story< TypicalTrafficChartStoryProps >;
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	dailyTraffic,
+	gatheringData: true,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		registry.dispatch( CORE_USER ).setDateRange( 'last-7-days' );
+	},
+};
+GatheringData.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 	viewport: 'large',
 };

@@ -64,8 +64,9 @@ trait Authenticated_Search_Console_Trait {
 
 	/**
 	 * Creates the response to a batch of search query reports, in which each
-	 * report has one `plant garlic` row: 300 clicks at position 3.4 for the
-	 * `current` report, and 210 clicks at position 4.8 for any other.
+	 * report has one `plant garlic` row: 300 clicks at position 3.4 for a report
+	 * of the selected period, whose identifier starts with `current`, and 210
+	 * clicks at position 4.8 for any other.
 	 *
 	 * @since 1.191.0
 	 *
@@ -75,21 +76,25 @@ trait Authenticated_Search_Console_Trait {
 	protected function create_plant_garlic_batch_response( RequestInterface $request ) {
 		return FakeHttp::create_batch_response(
 			$request,
-			fn( $identifier ) => new Response(
-				200,
-				array(),
-				wp_json_encode(
-					array(
-						'rows' => array(
-							array(
-								'keys'     => array( 'plant garlic' ),
-								'clicks'   => 'current' === $identifier ? 300 : 210,
-								'position' => 'current' === $identifier ? 3.4 : 4.8,
+			function ( $identifier ) {
+				$is_current = 0 === strpos( $identifier, 'current' );
+
+				return new Response(
+					200,
+					array(),
+					wp_json_encode(
+						array(
+							'rows' => array(
+								array(
+									'keys'     => array( 'plant garlic' ),
+									'clicks'   => $is_current ? 300 : 210,
+									'position' => $is_current ? 3.4 : 4.8,
+								),
 							),
-						),
+						)
 					)
-				)
-			)
+				);
+			}
 		);
 	}
 }

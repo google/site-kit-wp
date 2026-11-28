@@ -281,7 +281,7 @@ describe( 'googlesitekit.api', () => {
 			expect( setItemSpy ).toHaveBeenCalledWith(
 				createCacheKey( 'core', MODULE_SLUG_SEARCH_CONSOLE, 'users' ),
 				firstResponse,
-				{ ttl: 3600 }
+				{ ttl: 3600, shared: false }
 			);
 
 			// Ensure `fetch()` is not called a second time, because we have a cached
@@ -297,7 +297,8 @@ describe( 'googlesitekit.api', () => {
 
 			// Ensure cache functions were used.
 			expect( getItemSpy ).toHaveBeenCalledWith(
-				createCacheKey( 'core', MODULE_SLUG_SEARCH_CONSOLE, 'users' )
+				createCacheKey( 'core', MODULE_SLUG_SEARCH_CONSOLE, 'users' ),
+				{ shared: false }
 			);
 		} );
 
@@ -382,7 +383,7 @@ describe( 'googlesitekit.api', () => {
 			expect( setItemSpy ).toHaveBeenCalledWith(
 				createCacheKey( 'core', MODULE_SLUG_SEARCH_CONSOLE, 'cached' ),
 				{ foo: 'bar' },
-				{ ttl: 3600 }
+				{ ttl: 3600, shared: false }
 			);
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
@@ -714,6 +715,52 @@ describe( 'googlesitekit.api', () => {
 	/* eslint-enable consistent-return */
 
 	describe( 'invalidateCache', () => {
+		it( 'should remove the shared items of the scope', async () => {
+			const { setStorageOrder, resetDefaultStorageOrder } = CacheModule;
+
+			// In a browser, the rest of the cache is in `sessionStorage`.
+			setStorageOrder( [ 'sessionStorage', 'localStorage' ] );
+
+			try {
+				await setItem(
+					createCacheKey(
+						'modules',
+						MODULE_SLUG_ANALYTICS_4,
+						'benchmarking-data',
+						{ startDate: '2026-08-19' }
+					),
+					'shared data',
+					{ shared: true }
+				);
+				await setItem(
+					createCacheKey(
+						'core',
+						MODULE_SLUG_SEARCH_CONSOLE,
+						'users'
+					),
+					'shared data',
+					{ shared: true }
+				);
+
+				expect( Object.keys( localStorage.__STORE__ ) ).toHaveLength(
+					2
+				);
+
+				await invalidateCache( 'modules', MODULE_SLUG_ANALYTICS_4 );
+
+				expect( Object.keys( localStorage.__STORE__ ) ).toEqual( [
+					`${ CacheModule.STORAGE_KEY_PREFIX }${ createCacheKey(
+						'core',
+						MODULE_SLUG_SEARCH_CONSOLE,
+						'users'
+					) }`,
+				] );
+			} finally {
+				resetDefaultStorageOrder();
+				setSelectedStorageBackend( storageMechanism );
+			}
+		} );
+
 		it( 'should remove all cached items when called', async () => {
 			await setItem(
 				createCacheKey(

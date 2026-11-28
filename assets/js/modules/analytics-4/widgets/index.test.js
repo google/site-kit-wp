@@ -25,6 +25,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
+import { enabledFeatures } from '@/js/features';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createWidgets,
@@ -42,7 +43,9 @@ import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/component
 import LeadGenerationPerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/LeadGenerationPerformanceWidgetPDF';
 import OnlineStorePerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/OnlineStorePerformanceWidgetPDF';
 import getTrafficOverviewPDFData from '@/js/modules/analytics-4/components/traffic-overview/pdf/getPDFData';
+import getTypicalTrafficOverviewPDFData from '@/js/modules/analytics-4/components/traffic-overview/pdf/getTypicalTrafficOverviewPDFData';
 import TrafficOverviewPDF from '@/js/modules/analytics-4/components/traffic-overview/pdf/indexPDF';
+import TypicalTrafficOverviewPDF from '@/js/modules/analytics-4/components/traffic-overview/pdf/TypicalTrafficOverviewPDF';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
@@ -128,6 +131,24 @@ describe( 'Analytics 4 widget registrations', () => {
 			const loadedModule = await widget.pdf.Component.preload();
 
 			expect( loadedModule.default ).toBe( TrafficOverviewPDF );
+		} );
+
+		it( 'should print the typical traffic overview in the PDF export with the `typicalTraffic` feature', async () => {
+			enabledFeatures.add( 'typicalTraffic' );
+			registerWidgets( widgets );
+
+			const widget = registry
+				.select( CORE_WIDGETS )
+				.getWidget( 'analyticsTrafficOverview' );
+
+			expect( widget.pdf.label ).toBe( 'Site traffic over time' );
+			expect( widget.pdf.getData ).toBe(
+				getTypicalTrafficOverviewPDFData
+			);
+
+			const loadedModule = await widget.pdf.Component.preload();
+
+			expect( loadedModule.default ).toBe( TypicalTrafficOverviewPDF );
 		} );
 	} );
 

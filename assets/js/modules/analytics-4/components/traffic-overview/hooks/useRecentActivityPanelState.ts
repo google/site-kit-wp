@@ -38,7 +38,7 @@ import {
 	SearchConsoleHourRow,
 	aggregateSearchConsoleRows,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/aggregateSearchConsoleRows';
-import { getMetricCount } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { getMetricCount } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';

@@ -34,12 +34,7 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
-import {
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState,
-} from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -86,6 +81,8 @@ export default function GoogleChart( props ) {
 		width,
 		options,
 		gatheringData,
+		startDate: rangeStartDate,
+		endDate: rangeEndDate,
 		...otherProps
 	} = props;
 
@@ -98,9 +95,14 @@ export default function GoogleChart( props ) {
 
 	const breakpoint = useBreakpoint();
 
-	const { startDate, endDate } = useSelect( ( select ) =>
+	const selectedDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
 	);
+
+	// A chart that plots other dates than the selected date range passes its
+	// own, so its date markers follow them.
+	const startDate = rangeStartDate || selectedDates.startDate;
+	const endDate = rangeEndDate || selectedDates.endDate;
 
 	const viewContext = useViewContext();
 
@@ -181,39 +183,45 @@ export default function GoogleChart( props ) {
 		};
 	}, [] );
 
+	// The chart's mouse listeners call the latest `onMouseOver` and
+	// `onMouseOut`, so a new callback on a later render needs no new listener.
+	const mouseCallbacksRef = useRef();
+	mouseCallbacksRef.current = { onMouseOver, onMouseOut };
+	const mouseListenersRef = useRef( [] );
+
 	// These event listeners are added manually to the current chart because
 	// `react-google-charts` doesn't support `mouseOver` or `mouseOut` events
 	// in its `chartEvents` prop.
 	// See: https://github.com/google/site-kit-wp/pull/2805#discussion_r579172660
-	useLayoutEffect( () => {
-		if ( onMouseOver ) {
-			// eslint-disable-next-line no-unused-expressions
-			googleRef.current?.visualization.events.addListener(
-				chartWrapperRef.current.getChart(),
-				'onmouseover',
-				( event ) => {
-					onMouseOver( event, {
-						chartWrapper: chartWrapperRef.current,
-						google: googleRef.current,
-					} );
-				}
-			);
+	//
+	// The chart exists only once Google Charts has loaded and drawn it, so the
+	// listeners go on the chart each time it fires `ready`.
+	function addMouseListenersToChart() {
+		const chart = chartWrapperRef.current?.getChart();
+		const events = googleRef.current?.visualization.events;
+
+		if ( ! chart || ! events ) {
+			return;
 		}
 
-		if ( onMouseOut ) {
-			// eslint-disable-next-line no-unused-expressions
-			googleRef.current?.visualization.events.addListener(
-				chartWrapperRef.current.getChart(),
-				'onmouseout',
-				( event ) => {
-					onMouseOut( event, {
-						chartWrapper: chartWrapperRef.current,
-						google: googleRef.current,
-					} );
-				}
-			);
-		}
-	}, [ onMouseOver, onMouseOut ] );
+		// The chart fires `ready` after each draw, so the listeners from the
+		// previous draw go first.
+		mouseListenersRef.current.forEach( ( listener ) =>
+			events.removeListener( listener )
+		);
+
+		mouseListenersRef.current = [
+			[ 'onmouseover', 'onMouseOver' ],
+			[ 'onmouseout', 'onMouseOut' ],
+		].map( ( [ eventName, callbackName ] ) =>
+			events.addListener( chart, eventName, ( event ) => {
+				mouseCallbacksRef.current[ callbackName ]?.( event, {
+					chartWrapper: chartWrapperRef.current,
+					google: googleRef.current,
+				} );
+			} )
+		);
+	}
 
 	// Checks to see if the date is within the date range.
 	function isDateWithinRange( date ) {
@@ -374,6 +382,14 @@ export default function GoogleChart( props ) {
 				eventName: 'ready',
 				callback: addKeyDateLinesToChart,
 			},
+			...( onMouseOver || onMouseOut
+				? [
+						{
+							eventName: 'ready',
+							callback: addMouseListenersToChart,
+						},
+				  ]
+				: [] ),
 		],
 		onReady,
 		onSelect
@@ -505,6 +521,8 @@ GoogleChart.propTypes = {
 	width: PropTypes.string,
 	options: PropTypes.object,
 	gatheringData: PropTypes.bool,
+	startDate: PropTypes.string,
+	endDate: PropTypes.string,
 };
 
 GoogleChart.defaultProps = {

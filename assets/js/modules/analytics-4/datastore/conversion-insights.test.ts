@@ -33,7 +33,12 @@ import {
 import { conversionInsight } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '@/js/util';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
+import {
+	decodedBenchmarkingResponse,
+	provideBenchmarkingData,
+} from './__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { AI_INSIGHT_RATE_LIMIT_HOLD } from './utils/ai-insight';
 
 describe( 'modules/analytics-4 conversion-insights', () => {
 	const insightEndpoint = new RegExp(
@@ -497,12 +502,10 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 		} );
 
 		it.each( [ 409, 503 ] )(
-			'should submit again five seconds after the service answers a submit with a %d',
+			'should submit again after the `retryAfter` the service answers a submit with a %d with',
 			async ( status ) => {
 				fetchMock.postOnce(
 					insightEndpoint,
-					// The store waits five seconds whatever `retryAfter`
-					// the service sends.
 					errorResponse( status, { retryAfter: 1 } )
 				);
 				fetchMock.postOnce( insightEndpoint, {
@@ -513,7 +516,7 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getConversionInsight( 'lead', '', '2026-11-01' );
 
-				await jest.advanceTimersByTimeAsync( 4999 );
+				await jest.advanceTimersByTimeAsync( 999 );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
 
@@ -539,6 +542,160 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 				).toBeUndefined();
 			}
 		);
+
+		it.each( [ 409, 503 ] )(
+			'should submit again five seconds after the service answers a submit with a %d without a `retryAfter`',
+			async ( status ) => {
+				fetchMock.postOnce( insightEndpoint, errorResponse( status ) );
+				fetchMock.postOnce( insightEndpoint, {
+					body: { insight: conversionInsight },
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionInsight( 'lead', '', '2026-11-01' );
+
+				await jest.advanceTimersByTimeAsync( 4999 );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
+
+				await jest.advanceTimersByTimeAsync( 1 );
+
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).toHaveFetchedTimes( 2, insightEndpoint );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getConversionInsight( 'lead', '', '2026-11-01' )
+				).toEqual( conversionInsight );
+			}
+		);
+
+		it( 'should not submit again when the `retryAfter` of a 409 ends after its deadline', async () => {
+			const refusal = errorResponse( 409, {
+				reason: 'GENERATION_IN_PROGRESS',
+				retryAfter: 60,
+			} );
+
+			fetchMock.post( insightEndpoint, refusal );
+
+			expect( await resolveInsight() ).toBeNull();
+			expect( console ).toHaveErrored();
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint );
+			expect( getInsightError() ).toEqual( refusal.body );
+		} );
+
+		it( 'should read the operation after the `retryAfter` of the submit, and then after the `retryAfter` of each read', async () => {
+			fetchMock.postOnce( insightEndpoint, {
+				body: { operationID: 'operation-1', retryAfter: 3 },
+			} );
+			fetchMock.getOnce( insightEndpoint, {
+				body: { done: false, state: 'RUNNING', retryAfter: 1 },
+			} );
+			fetchMock.getOnce( insightEndpoint, {
+				body: {
+					done: true,
+					state: 'SUCCEEDED',
+					insight: conversionInsight,
+				},
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getConversionInsight( 'lead', '', '2026-11-01' );
+
+			await jest.advanceTimersByTimeAsync( 0 );
+			await jest.advanceTimersByTimeAsync( 2999 );
+
+			expect( fetchMock ).not.toHaveFetched( insightEndpoint, {
+				method: 'GET',
+			} );
+
+			await jest.advanceTimersByTimeAsync( 1 );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'GET',
+			} );
+
+			await jest.advanceTimersByTimeAsync( 999 );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'GET',
+			} );
+
+			await jest.advanceTimersByTimeAsync( 1 );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2, insightEndpoint, {
+				method: 'GET',
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionInsight( 'lead', '', '2026-11-01' )
+			).toEqual( conversionInsight );
+		} );
+
+		it.each( [
+			[ 'a second for a `retryAfter` of 0', 0, 1000 ],
+			[ 'two seconds for a negative `retryAfter`', -1, 2000 ],
+			[
+				'two seconds for a `retryAfter` that is not a number',
+				'1',
+				2000,
+			],
+		] )(
+			'should read the operation after %s',
+			async ( _, retryAfter, expectedDelay ) => {
+				fetchMock.postOnce( insightEndpoint, {
+					body: { operationID: 'operation-1', retryAfter },
+				} );
+				fetchMock.getOnce( insightEndpoint, {
+					body: {
+						done: true,
+						state: 'SUCCEEDED',
+						insight: conversionInsight,
+					},
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionInsight( 'lead', '', '2026-11-01' );
+
+				await jest.advanceTimersByTimeAsync( 0 );
+				await jest.advanceTimersByTimeAsync( expectedDelay - 1 );
+
+				expect( fetchMock ).not.toHaveFetched( insightEndpoint, {
+					method: 'GET',
+				} );
+
+				await jest.advanceTimersByTimeAsync( 1 );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+					method: 'GET',
+				} );
+			}
+		);
+
+		it( 'should stop waiting, and keep the operation, when the `retryAfter` of a read ends after its deadline', async () => {
+			fetchMock.postOnce( insightEndpoint, {
+				body: { operationID: 'operation-1' },
+			} );
+			fetchMock.getOnce( insightEndpoint, {
+				body: { done: false, state: 'RUNNING', retryAfter: 60 },
+			} );
+
+			expect( await resolveInsight() ).toBeNull();
+			expect( fetchMock ).toHaveFetchedTimes( 1, insightEndpoint, {
+				method: 'GET',
+			} );
+			expect( getInsightError() ).toMatchObject( {
+				code: 'conversion_insight_timeout',
+			} );
+			expect( await getItem( getCacheKey() ) ).toMatchObject( {
+				cacheHit: true,
+				value: { operationID: 'operation-1' },
+			} );
+		} );
 
 		it.each( [
 			[ 'has expired', 404, 'request_failed' ],
@@ -805,7 +962,13 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 
 		it.each( [
 			[ 'a 403, for an hour', 403, undefined, HOUR_IN_SECONDS ],
-			[ 'a 429, for an hour', 429, 60, HOUR_IN_SECONDS ],
+			[ 'a 429, for its retryAfter of a minute', 429, 60, 60 ],
+			[
+				'a 429 without a retryAfter, for a minute',
+				429,
+				undefined,
+				AI_INSIGHT_RATE_LIMIT_HOLD,
+			],
 			[
 				'a 429, for as long as its retryAfter asks',
 				429,
@@ -846,6 +1009,54 @@ describe( 'modules/analytics-4 conversion-insights', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			}
 		);
+
+		it( 'should hold back the request for the benchmarking insight after a refusal for the quota, which the two insights share', async () => {
+			const refusal = errorResponse( 429, {
+				reason: 'DAILY_CAP',
+				retryAfter: 7200,
+			} );
+			const benchmarkingInsightEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-insight'
+			);
+			const dates = {
+				startDate: '2026-10-05',
+				endDate: '2026-11-01',
+			};
+
+			fetchMock.postOnce( insightEndpoint, refusal );
+
+			expect( await resolveInsight() ).toBeNull();
+			expect( console ).toHaveErrored();
+
+			provideBenchmarkingData( registry, dates, {
+				...decodedBenchmarkingResponse,
+				insightLocale: 'en_US',
+				insightPayload: 'signed-payload',
+			} );
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingInsight( dates.startDate, dates.endDate );
+
+			await jest.advanceTimersByTimeAsync( 0 );
+			await jest.advanceTimersByTimeAsync( 100 );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getBenchmarkingInsight( dates.startDate, dates.endDate )
+			).toBeNull();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getBenchmarkingInsight', [
+						dates.startDate,
+						dates.endDate,
+					] )
+			).toEqual( refusal.body );
+			expect( fetchMock ).not.toHaveFetched(
+				benchmarkingInsightEndpoint
+			);
+		} );
 
 		it( 'should keep no other failure, so the next load submits again', async () => {
 			fetchMock.post( insightEndpoint, errorResponse( 500 ) );

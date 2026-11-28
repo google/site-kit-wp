@@ -15,8 +15,8 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
  * response defines.
  *
  * Any plugin can add a callback to the `googlesitekit_benchmarking_contextual_data`
- * filter, so what a callback returns is checked before it is ranked or sent
- * to the browser.
+ * filter, so what a callback returns is checked before the key factor cards
+ * and the insight request are built from it.
  *
  * @since 1.190.0
  * @access private
@@ -25,52 +25,55 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 class Contextual_Data_Validator {
 
 	/**
-	 * The fields of a row, and the type of each, keyed by dimension code.
-	 *
-	 * A `CONTENT` row has `current` and `previous` rather than `visitors`
-	 * because the rows are validated before they are scored.
+	 * The fields of a row, and the type of each, keyed by contextual data key.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Keyed by contextual data key, with the channel breakdowns in place of the channel, device, visitor mix and referrer rows, and without the categories.
+	 * @since n.e.x.t Added `searchClicks`, the site's clicks over every search query.
 	 */
 	const ROW_FIELDS = array(
-		'CHANNELS'       => array(
-			'label'    => 'string',
+		'channelBreakdowns' => array(
+			'channel'  => 'string',
+			'device'   => 'string',
+			'userType' => 'string',
 			'current'  => 'count',
 			'previous' => 'count',
 		),
-		'DEVICES'        => array(
-			'label'    => 'string',
+		'channelSources'    => array(
+			'channel'  => 'string',
+			'source'   => 'string',
 			'current'  => 'count',
 			'previous' => 'count',
 		),
-		'VISITOR_MIX'    => array(
-			'label'    => 'string',
+		'channelPages'      => array(
+			'channel'  => 'string',
+			'page'     => 'string',
 			'current'  => 'count',
 			'previous' => 'count',
 		),
-		'REFERRERS'      => array(
-			'label'    => 'string',
+		'channelCampaigns'  => array(
+			'channel'  => 'string',
+			'campaign' => 'string',
 			'current'  => 'count',
 			'previous' => 'count',
 		),
-		'SEARCH_QUERIES' => array(
+		'searchQueries'     => array(
 			'label'            => 'string',
 			'current'          => 'count',
 			'previous'         => 'count',
 			'positionCurrent'  => 'position',
 			'positionPrevious' => 'position',
 		),
-		'CONTENT'        => array(
+		'searchClicks'      => array(
+			'current'  => 'count',
+			'previous' => 'count',
+		),
+		'content'           => array(
 			'url'              => 'string',
 			'title'            => 'string',
 			'publishedDaysAgo' => 'count',
 			'current'          => 'count',
 			'previous'         => 'count',
-		),
-		'CATEGORIES'     => array(
-			'label'    => 'string',
-			'current'  => 'count',
-			'previous' => 'count',
 		),
 	);
 
@@ -83,13 +86,13 @@ class Contextual_Data_Validator {
 	 *
 	 * @since 1.190.0
 	 *
-	 * @param array $contextual_data The rows, keyed by `contextualData` key, such as `channels`.
-	 * @return array The valid rows, keyed by `contextualData` key. Each row has only the fields its key defines, with a count as an integer and an average position as a float or `null`.
+	 * @param array $contextual_data The rows, keyed by contextual data key, such as `channelBreakdowns`.
+	 * @return array The valid rows, keyed by contextual data key. Each row has only the fields its key defines, with a count as an integer and an average position as a float or `null`.
 	 */
 	public function validate( array $contextual_data ) {
 		$validated_data = array();
 
-		foreach ( Wire_Format::CONTEXTUAL_DATA_KEYS as $dimension_code => $contextual_data_key ) {
+		foreach ( self::ROW_FIELDS as $contextual_data_key => $fields ) {
 			if ( ! isset( $contextual_data[ $contextual_data_key ] ) || ! wp_is_numeric_array( $contextual_data[ $contextual_data_key ] ) ) {
 				continue;
 			}
@@ -97,7 +100,7 @@ class Contextual_Data_Validator {
 			$validated_rows = array();
 
 			foreach ( $contextual_data[ $contextual_data_key ] as $row ) {
-				$validated_row = $this->validate_row( self::ROW_FIELDS[ $dimension_code ], $row );
+				$validated_row = $this->validate_row( $fields, $row );
 
 				if ( null !== $validated_row ) {
 					$validated_rows[] = $validated_row;

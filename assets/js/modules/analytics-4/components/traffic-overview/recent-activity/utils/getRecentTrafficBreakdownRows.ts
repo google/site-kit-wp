@@ -29,7 +29,7 @@ import { RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/comp
 import {
 	formatRoundedShare,
 	getMetricCount,
-} from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
 

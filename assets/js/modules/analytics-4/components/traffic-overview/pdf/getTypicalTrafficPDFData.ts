@@ -1,0 +1,171 @@
+/**
+ * Traffic Overview `getTypicalTrafficPDFData` utility.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import {
+	getKeyFactorName,
+	getKeyFactorShareText,
+	getKeyFactorsNoticeText,
+	getShownKeyFactors,
+	getTypicalTrafficAvailability,
+	getTypicalTrafficAvailabilityText,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
+import {
+	BenchmarkingInsight,
+	BenchmarkingKeyFactor,
+	DecodedBenchmarkingResponse,
+} from '@/js/modules/analytics-4/utils/benchmarking/types';
+
+/** A key factor card, as the PDF prints it. */
+export interface TrafficOverviewPDFKeyFactor {
+	/** The card's name, as the dashboard's card shows it. */
+	name: string;
+	/** The change in visits, negative for a drop. */
+	change: number;
+	/**
+	 * What the card's change is a share of, as the dashboard's card shows it
+	 * under its title: its share of the site's visits on a steady period, or
+	 * the channel whose place it took, with its share of the channel's change
+	 * or as more than it. Null when the card shows its change alone.
+	 */
+	shareText?: string | null;
+}
+
+/** The parts of the typical traffic view the PDF prints. */
+export interface TrafficOverviewTypicalTrafficPDFData {
+	/** The number of days in the date range, which the key factors' heading names. */
+	daysInRange: number;
+	/** The generated sentence that compares the visits with their typical range, or null when the PDF prints none. */
+	analysis: string | null;
+	/** The text that says what the date range lacks, in the analysis's place, as the panel's notice says it, or null when it lacks nothing. */
+	availabilityNotice: string | null;
+	/** Whether the date range has the key factors, without which the PDF prints no key factors section, as the panel shows none. */
+	keyFactorsAvailable: boolean;
+	/** The generated summary of the key factors, or null when the PDF prints none. */
+	driver: string | null;
+	/** The notice under the key factors' heading, or null when the section has none. */
+	keyFactorsNotice: string | null;
+	/** The key factor cards, in the order to print them. */
+	keyFactors: TrafficOverviewPDFKeyFactor[];
+}
+
+export interface TypicalTrafficPDFDataOptions {
+	/** The benchmarking response for the date range. */
+	benchmarkingResponse: DecodedBenchmarkingResponse;
+	/** The generated insight the dashboard has for the date range, or null when it has none. */
+	insight: BenchmarkingInsight | null;
+	/** The last day of the date range, as `YYYY-MM-DD`. */
+	endDate: string;
+	/** The last day a date range of the PDF can end on, the day before today, as `YYYY-MM-DD`. */
+	latestSelectableDate: string;
+	/** The site's URL, which a landing page's path is resolved against. */
+	referenceSiteURL?: string;
+	/** The number of days in the date range. */
+	daysInRange: number;
+	/** Whether the dashboard shows the generated insights, with the `trafficInsights` feature. */
+	insightsEnabled: boolean;
+}
+
+/**
+ * Gets the parts of the typical traffic view that the PDF prints, the way the
+ * dashboard's panel shows them.
+ *
+ * The cards, their notice and the notice of what the date range lacks follow
+ * the availability of the benchmarking response, as `TrafficOverviewPanel`
+ * does: the analysis prints only where the chart draws the band, and the
+ * notice of what the range lacks in its place. The key factors print only for
+ * a range that has them. The insight prints only where the panel would ask for
+ * it, so a leftover insight never describes figures the PDF doesn't print.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}      options                      The response, the insight and the date range.
+ * @param {Object}      options.benchmarkingResponse The benchmarking response for the date range.
+ * @param {Object|null} options.insight              The generated insight the dashboard has for the date range, or null.
+ * @param {string}      options.endDate              The last day of the date range, as `YYYY-MM-DD`.
+ * @param {string}      options.latestSelectableDate The last day a date range of the PDF can end on, the day before today, as `YYYY-MM-DD`.
+ * @param {string}      [options.referenceSiteURL]   Optional. The site's URL, which a landing page's path is resolved against.
+ * @param {number}      options.daysInRange          The number of days in the date range.
+ * @param {boolean}     options.insightsEnabled      Whether the dashboard shows the generated insights.
+ * @return {Object} The parts of the typical traffic view to print.
+ */
+export function getTypicalTrafficPDFData( {
+	benchmarkingResponse,
+	insight,
+	endDate,
+	latestSelectableDate,
+	referenceSiteURL,
+	daysInRange,
+	insightsEnabled,
+}: TypicalTrafficPDFDataOptions ): TrafficOverviewTypicalTrafficPDFData {
+	const availability = getTypicalTrafficAvailability( benchmarkingResponse );
+	const {
+		keyFactorsAvailable,
+		insightRequestAllowed,
+		performanceInsightAvailable,
+	} = availability;
+
+	const { steadyTraffic } = benchmarkingResponse;
+
+	// A card without a name has nothing to name, so it is left out, as on the
+	// dashboard.
+	const namedKeyFactors = benchmarkingResponse.keyFactors.filter(
+		( keyFactor ): keyFactor is BenchmarkingKeyFactor & { label: string } =>
+			!! keyFactor.label
+	);
+	// As on the dashboard, a lone card with nothing under its title is left
+	// out too, though the PDF prints no rows under any card's title.
+	const keyFactors = getShownKeyFactors( namedKeyFactors ).map(
+		( keyFactor ) => ( {
+			name: getKeyFactorName( keyFactor, referenceSiteURL ),
+			change: keyFactor.current - keyFactor.previous,
+			shareText: getKeyFactorShareText( keyFactor, {
+				steady: steadyTraffic,
+			} ),
+		} )
+	);
+
+	const requestedInsight = insightRequestAllowed ? insight : null;
+	const driver = requestedInsight?.driver || null;
+
+	return {
+		daysInRange,
+		analysis:
+			( performanceInsightAvailable && requestedInsight?.analysis ) ||
+			null,
+		availabilityNotice: getTypicalTrafficAvailabilityText( availability, {
+			endDate,
+			latestSelectableDate,
+			insightsEnabled,
+		} ),
+		keyFactorsAvailable,
+		driver,
+		// The notice counts a card that was left out, as on the dashboard.
+		keyFactorsNotice: keyFactorsAvailable
+			? getKeyFactorsNoticeText( {
+					noChange:
+						steadyTraffic ||
+						( namedKeyFactors.length === 0 && ! driver ),
+					daysInSelectedRange: daysInRange,
+			  } )
+			: null,
+		keyFactors,
+	};
+}

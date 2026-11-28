@@ -22,10 +22,10 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 trait Fake_Benchmarking_Reports_Trait {
 
 	/**
-	 * Rows the fake Analytics API returns, keyed by the first dimension a report
-	 * asks for.
+	 * Rows the fake Analytics API returns, keyed by the dimensions a report asks
+	 * for, joined by commas, such as `sessionDefaultChannelGrouping,landingPage`.
 	 *
-	 * Each row lists its dimension values, then its visitors.
+	 * Each row lists its dimension values, then its visits.
 	 *
 	 * @var array
 	 */
@@ -58,15 +58,17 @@ trait Fake_Benchmarking_Reports_Trait {
 
 	/**
 	 * Builds the report the fake Analytics API returns for one report request,
-	 * from the rows in `$report_rows` for the report's first dimension.
+	 * from the rows in `$report_rows` for the report's dimensions.
 	 *
 	 * @since 1.191.0
+	 * @since n.e.x.t Keys the rows by every dimension of the report.
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return array The report, in the shape Analytics returns it.
 	 */
 	private function build_report( array $report_request ) {
 		$dimension_names = array_column( $report_request['dimensions'], 'name' );
+		$rows_key        = implode( ',', $dimension_names );
 
 		// Analytics adds a `dateRange` dimension to a report with two periods.
 		if ( count( $report_request['dateRanges'] ) > 1 ) {
@@ -78,9 +80,11 @@ trait Fake_Benchmarking_Reports_Trait {
 				fn( $dimension_name ) => array( 'name' => $dimension_name ),
 				$dimension_names
 			),
+			// The report counts the one metric it asked for, such as `sessions` for
+			// the daily series.
 			'metricHeaders'    => array(
 				array(
-					'name' => 'totalUsers',
+					'name' => $report_request['metrics'][0]['name'],
 					'type' => 'TYPE_INTEGER',
 				),
 			),
@@ -96,7 +100,7 @@ trait Fake_Benchmarking_Reports_Trait {
 					array( 'value' => (string) $row[ count( $row ) - 1 ] ),
 				),
 			),
-			$this->report_rows[ $dimension_names[0] ] ?? array()
+			$this->report_rows[ $rows_key ] ?? array()
 		);
 
 		// Analytics omits the `rows` key from a report with no rows.

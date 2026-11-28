@@ -1,0 +1,467 @@
+[
+  {
+    "range_days": 6,
+    "history_days": 0,
+    "end_date": "2026-06-30",
+    "expected": {
+      "range_too_short": true,
+      "band_available": false,
+      "key_factors_available": false,
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 6,
+    "history_days": 11,
+    "end_date": "2026-06-30",
+    "first_date": "2026-06-20",
+    "expected": {
+      "range_too_short": true,
+      "band_available": false,
+      "band_available_from": "2026-08-19",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-07-01",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 6,
+    "history_days": 12,
+    "end_date": "2026-06-30",
+    "first_date": "2026-06-19",
+    "expected": {
+      "range_too_short": true,
+      "band_available": false,
+      "band_available_from": "2026-08-18",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-06-30",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 6,
+    "history_days": 60,
+    "end_date": "2026-06-30",
+    "first_date": "2026-05-02",
+    "expected": {
+      "range_too_short": true,
+      "band_available": false,
+      "band_available_from": "2026-07-01",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-05-13",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 6,
+    "history_days": 61,
+    "end_date": "2026-06-30",
+    "first_date": "2026-05-01",
+    "expected": {
+      "range_too_short": true,
+      "band_available": true,
+      "band_available_from": "2026-06-30",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-05-12",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 6,
+    "history_days": 376,
+    "end_date": "2026-06-30",
+    "first_date": "2025-06-20",
+    "expected": {
+      "range_too_short": true,
+      "band_available": true,
+      "band_available_from": "2025-08-19",
+      "key_factors_available": false,
+      "key_factors_available_from": "2025-07-01",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": true
+    }
+  },
+  {
+    "range_days": 7,
+    "history_days": 0,
+    "end_date": "2026-06-30",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "key_factors_available": false,
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 7,
+    "history_days": 13,
+    "end_date": "2026-06-30",
+    "first_date": "2026-06-18",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-08-18",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-07-01",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 7,
+    "history_days": 14,
+    "end_date": "2026-06-30",
+    "first_date": "2026-06-17",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-08-17",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-06-30",
+      "insight_request_allowed": true,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 7,
+    "history_days": 61,
+    "end_date": "2026-06-30",
+    "first_date": "2026-05-01",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-07-01",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-05-14",
+      "insight_request_allowed": true,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 7,
+    "history_days": 62,
+    "end_date": "2026-06-30",
+    "first_date": "2026-04-30",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2026-06-30",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-05-13",
+      "insight_request_allowed": true,
+      "performance_insight_available": true,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 7,
+    "history_days": 378,
+    "end_date": "2026-06-30",
+    "first_date": "2025-06-18",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2025-08-18",
+      "key_factors_available": true,
+      "key_factors_available_from": "2025-07-01",
+      "insight_request_allowed": true,
+      "performance_insight_available": true,
+      "last_year_available": true
+    }
+  },
+  {
+    "range_days": 14,
+    "history_days": 0,
+    "end_date": "2026-06-30",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "key_factors_available": false,
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 14,
+    "history_days": 27,
+    "end_date": "2026-06-30",
+    "first_date": "2026-06-04",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-08-11",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-07-01",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 14,
+    "history_days": 28,
+    "end_date": "2026-06-30",
+    "first_date": "2026-06-03",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-08-10",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-06-30",
+      "insight_request_allowed": true,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 14,
+    "history_days": 68,
+    "end_date": "2026-06-30",
+    "first_date": "2026-04-24",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-07-01",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-05-21",
+      "insight_request_allowed": true,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 14,
+    "history_days": 69,
+    "end_date": "2026-06-30",
+    "first_date": "2026-04-23",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2026-06-30",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-05-20",
+      "insight_request_allowed": true,
+      "performance_insight_available": true,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 14,
+    "history_days": 392,
+    "end_date": "2026-06-30",
+    "first_date": "2025-06-04",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2025-08-11",
+      "key_factors_available": true,
+      "key_factors_available_from": "2025-07-01",
+      "insight_request_allowed": true,
+      "performance_insight_available": true,
+      "last_year_available": true
+    }
+  },
+  {
+    "range_days": 28,
+    "history_days": 0,
+    "end_date": "2026-06-30",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "key_factors_available": false,
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 28,
+    "history_days": 55,
+    "end_date": "2026-06-30",
+    "first_date": "2026-05-07",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-07-28",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-07-01",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 28,
+    "history_days": 56,
+    "end_date": "2026-06-30",
+    "first_date": "2026-05-06",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-07-27",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-06-30",
+      "insight_request_allowed": true,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 28,
+    "history_days": 82,
+    "end_date": "2026-06-30",
+    "first_date": "2026-04-10",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-07-01",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-06-04",
+      "insight_request_allowed": true,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 28,
+    "history_days": 83,
+    "end_date": "2026-06-30",
+    "first_date": "2026-04-09",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2026-06-30",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-06-03",
+      "insight_request_allowed": true,
+      "performance_insight_available": true,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 28,
+    "history_days": 420,
+    "end_date": "2026-06-30",
+    "first_date": "2025-05-07",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2025-07-28",
+      "key_factors_available": true,
+      "key_factors_available_from": "2025-07-01",
+      "insight_request_allowed": true,
+      "performance_insight_available": true,
+      "last_year_available": true
+    }
+  },
+  {
+    "range_days": 90,
+    "history_days": 0,
+    "end_date": "2026-06-30",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "key_factors_available": false,
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 90,
+    "history_days": 179,
+    "end_date": "2026-06-30",
+    "first_date": "2026-01-03",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2026-05-27",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-07-01",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 90,
+    "history_days": 180,
+    "end_date": "2026-06-30",
+    "first_date": "2026-01-02",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2026-05-26",
+      "key_factors_available": true,
+      "key_factors_available_from": "2026-06-30",
+      "insight_request_allowed": true,
+      "performance_insight_available": true,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 90,
+    "history_days": 144,
+    "end_date": "2026-06-30",
+    "first_date": "2026-02-07",
+    "expected": {
+      "range_too_short": false,
+      "band_available": false,
+      "band_available_from": "2026-07-01",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-08-05",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 90,
+    "history_days": 145,
+    "end_date": "2026-06-30",
+    "first_date": "2026-02-06",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2026-06-30",
+      "key_factors_available": false,
+      "key_factors_available_from": "2026-08-04",
+      "insight_request_allowed": false,
+      "performance_insight_available": false,
+      "last_year_available": false
+    }
+  },
+  {
+    "range_days": 90,
+    "history_days": 544,
+    "end_date": "2026-06-30",
+    "first_date": "2025-01-03",
+    "expected": {
+      "range_too_short": false,
+      "band_available": true,
+      "band_available_from": "2025-05-27",
+      "key_factors_available": true,
+      "key_factors_available_from": "2025-07-01",
+      "insight_request_allowed": true,
+      "performance_insight_available": true,
+      "last_year_available": true
+    }
+  }
+]

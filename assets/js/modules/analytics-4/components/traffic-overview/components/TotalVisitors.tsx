@@ -44,7 +44,7 @@ import {
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
+import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { calculateChange, numFmt } from '@/js/util';
 

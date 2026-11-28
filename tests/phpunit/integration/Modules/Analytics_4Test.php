@@ -39,6 +39,8 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Benchmarking_Insight;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_AI_Insight_Operation;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Measurement_Protocol_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Measurement_Protocol\Server_Events_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -2194,6 +2196,7 @@ class Analytics_4Test extends TestCase {
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
+				'benchmarking-data',
 				'plain-permalink-top-posts',
 			),
 			$this->analytics->get_datapoints(),
@@ -2201,21 +2204,34 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_datapoints__typicalTraffic() {
-		$this->enable_feature( 'typicalTraffic' );
+	public function test_get_datapoints__trafficInsights() {
+		$this->enable_feature( 'trafficInsights' );
 
+		$this->assertContains(
+			'benchmarking-insight',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should expose the benchmarking insight datapoint with traffic insights enabled'
+		);
 		$this->assertContains(
 			'benchmarking-data',
 			$this->analytics->get_datapoints(),
-			'Analytics 4 module should expose the benchmarking data datapoint with typical traffic enabled'
+			'Analytics 4 module should still expose the benchmarking data datapoint with traffic insights enabled'
 		);
+
+		$create_datapoint = $this->analytics->get_datapoint_definition( 'POST:benchmarking-insight' );
+		$get_datapoint    = $this->analytics->get_datapoint_definition( 'GET:benchmarking-insight' );
+
+		$this->assertInstanceOf( Create_Benchmarking_Insight::class, $create_datapoint, 'The POST datapoint should ask the service for a benchmarking insight' );
+		$this->assertInstanceOf( Get_AI_Insight_Operation::class, $get_datapoint, 'The GET datapoint should read the operation that generates the benchmarking insight' );
+		$this->assertTrue( $create_datapoint->is_shareable(), 'The POST datapoint should be shareable, so a view-only user can ask for the insight' );
+		$this->assertTrue( $get_datapoint->is_shareable(), 'The GET datapoint should be shareable, so a view-only user can read the insight' );
 	}
 
-	public function test_get_datapoints__typicalTraffic_disabled() {
+	public function test_get_datapoints__trafficInsights_disabled() {
 		$this->assertNotContains(
-			'benchmarking-data',
+			'benchmarking-insight',
 			$this->analytics->get_datapoints(),
-			'Analytics 4 module should not expose the benchmarking data datapoint with typical traffic disabled'
+			'Analytics 4 module should not expose the benchmarking insight datapoint with traffic insights disabled'
 		);
 	}
 
@@ -2286,6 +2302,7 @@ class Analytics_4Test extends TestCase {
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
+				'benchmarking-data',
 				'plain-permalink-top-posts',
 			),
 			$this->analytics->get_datapoints(),

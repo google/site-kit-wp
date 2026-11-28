@@ -36,9 +36,9 @@ import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
 import { useReportPageTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportPageTitles';
 import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
+import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 import { getTopPostsReportOptions } from './reportOptions';
-import { getPageURL } from './utils/getPageURL';
 
 const TopPostsColumn: FC = () => {
 	const trackPostLinkClick = useTrackPostLinkClick( 'top-posts' );

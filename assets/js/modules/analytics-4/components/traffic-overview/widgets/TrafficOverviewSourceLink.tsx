@@ -38,7 +38,23 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getURLPath } from '@/js/util';
 
-const TrafficOverviewSourceLink: FC = () => {
+export interface TrafficOverviewSourceLinkProps {
+	/**
+	 * The dates the link opens the report for, with those of the range to
+	 * compare with. Default is the selected date range, as the dashboard
+	 * reads it.
+	 */
+	dates?: {
+		startDate: string;
+		endDate: string;
+		compareStartDate: string;
+		compareEndDate: string;
+	};
+}
+
+const TrafficOverviewSourceLink: FC< TrafficOverviewSourceLinkProps > = ( {
+	dates,
+} ) => {
 	const viewOnly = useViewOnly();
 
 	const serviceReportURL = useSelect(
@@ -50,6 +66,7 @@ const TrafficOverviewSourceLink: FC = () => {
 			const entityURL = select( CORE_SITE ).getCurrentEntityURL();
 
 			const { startDate, endDate, compareStartDate, compareEndDate } =
+				dates ||
 				select( CORE_USER ).getDateRangeDates( { compare: true } );
 
 			const reportArgs = {
@@ -79,7 +96,13 @@ const TrafficOverviewSourceLink: FC = () => {
 				reportArgs
 			);
 		},
-		[ viewOnly ]
+		[
+			viewOnly,
+			dates?.startDate,
+			dates?.endDate,
+			dates?.compareStartDate,
+			dates?.compareEndDate,
+		]
 	);
 
 	return (

@@ -40,13 +40,16 @@ import {
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	getExpiryFromNow,
+	getSectionClassNames,
+	getTypicalTrafficDateRange,
+	provideBenchmarkingResponse,
 	provideFreshMetricsReports,
 	provideRecentActivitySurveyState,
 	requestedTimerSlugs,
 	setExpirableItemTimersEndpoint,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { provideBenchmarkingInsight } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util/dates';
@@ -88,6 +91,10 @@ describe( 'TrafficOverviewWidget', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
+	const benchmarkingEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+	);
+
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
 
 	const expirableItemsEndpoint = new RegExp(
@@ -124,8 +131,7 @@ describe( 'TrafficOverviewWidget', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
 		// Storing the creation time stops a request for the Analytics property.
 		// `2024-01-01` sits before the selected range, so the chart draws no
-		// marker, and more than thirteen months before the reference date, so
-		// the widget shows the Typical Traffic tab when `typicalTraffic` is on.
+		// marker.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
@@ -469,6 +475,76 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic overview' );
 	} );
 
+	it( 'should head the visitor figures of the "Traffic overview" panel with "Traffic over time" on the entity dashboard when the `typicalTraffic` feature flag is enabled', async () => {
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			within(
+				screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
+			).getByRole( 'heading', { name: 'Traffic over time' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render the "Traffic overview" panel of the main dashboard, with no "Traffic over time" heading, on the entity dashboard when the `typicalTraffic` feature flag is disabled', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			within(
+				screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
+			).queryByRole( 'heading', { name: 'Traffic over time' } )
+		).not.toBeInTheDocument();
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__total-visitors',
+			'googlesitekit-traffic-overview__chart',
+			'googlesitekit-traffic-overview__breakdown',
+		] );
+		expect(
+			container.querySelector( '.googlesitekit-widget__footer' )
+		).toHaveTextContent( 'Source: Analytics' );
+	} );
+
+	it( 'should not head the visitor figures of the "Traffic overview" panel with "Traffic over time" on the main dashboard when the `typicalTraffic` feature flag is enabled', async () => {
+		// With the key factors, the footer links to Search Console too.
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
+		provideBenchmarkingResponse( registry );
+
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			within(
+				screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
+			).queryByRole( 'heading', { name: 'Traffic over time' } )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'should render nothing when Analytics is not connected and the widget is on the entity dashboard', async () => {
 		provideModules( registry, [
 			{
@@ -659,31 +735,34 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render the "Traffic overview" tab, then the "Typical traffic" tab with its icon, with "Traffic overview" selected, when the `typicalTraffic` feature flag is enabled and the property is at least thirteen months old', async () => {
-		const { waitForRegistry } = render(
+	it( 'should render the visitor figures, the chart, and the breakdown of the Analytics reports in the "Traffic overview" panel, and send no benchmarking request, when the `typicalTraffic` feature flag is disabled', async () => {
+		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'typicalTraffic' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
 		await waitForRegistry();
 
-		const tabs = screen.getAllByRole( 'tab' );
-
-		expect( tabs[ 0 ] ).toHaveAccessibleName( 'Traffic overview' );
-		expect( tabs[ 1 ] ).toHaveAccessibleName( 'Typical traffic Beta' );
-		expect( tabs[ 0 ].querySelector( 'svg' ) ).toBeNull();
-		expect( tabs[ 1 ].querySelector( 'svg' ) ).toBeInTheDocument();
-		expect(
-			screen.getByRole( 'tab', { selected: true } )
-		).toHaveAccessibleName( 'Traffic overview' );
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__total-visitors',
+			'googlesitekit-traffic-overview__chart',
+			'googlesitekit-traffic-overview__breakdown',
+		] );
+		expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint );
+		expect( fetchMock ).not.toHaveFetched( benchmarkingEndpoint );
 	} );
 
-	it( 'should render "Typical traffic" between "Traffic overview" and "Recent activity" when the `typicalTraffic` feature flag is enabled', async () => {
-		const { waitForRegistry } = render(
+	it( 'should render the key factors of the benchmarking response in the "Traffic overview" panel when the `typicalTraffic` feature flag is enabled', async () => {
+		// With the key factors, the footer links to Search Console too.
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
+		provideBenchmarkingResponse( registry );
+
+		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
@@ -694,121 +773,49 @@ describe( 'TrafficOverviewWidget', () => {
 
 		await waitForRegistry();
 
-		expect(
-			screen.getAllByRole( 'tab' ).map( ( tab ) => tab.textContent )
-		).toEqual( [
-			'Traffic overview',
-			'Typical trafficBeta',
-			'Recent activityBeta',
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__summary',
+			'googlesitekit-traffic-overview__chart',
+			'googlesitekit-traffic-overview__key-factors',
+			'googlesitekit-traffic-overview__breakdown',
 		] );
 	} );
 
-	it( 'should render the "Traffic overview" tab alone, with its panel and the "Source: Analytics" footer, on the entity dashboard when the `typicalTraffic` feature flag is enabled', async () => {
-		const { container, waitForRegistry } = render(
-			<TrafficOverviewWidget { ...widgetComponentProps } />,
-			{
-				registry,
-				features: [ 'typicalTraffic' ],
-				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		const tabs = screen.getAllByRole( 'tab' );
-
-		expect( tabs ).toHaveLength( 1 );
-		expect( tabs[ 0 ] ).toHaveAccessibleName( 'Traffic overview' );
-		expect(
-			screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
-		).toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-widget__footer' )
-		).toHaveTextContent( 'Source: Analytics' );
-	} );
-
-	it( 'should send the benchmarking request only once the user selects "Typical traffic" when the `typicalTraffic` feature flag is enabled', async () => {
-		fetchMock.get(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
-			),
-			{ body: benchmarkingData, status: 200 }
-		);
-
-		const { waitForRegistry } = render(
-			<TrafficOverviewWidget { ...widgetComponentProps } />,
-			{
-				registry,
-				features: [ 'typicalTraffic' ],
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( fetchMock ).not.toHaveFetched(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
-			)
-		);
-
-		fireEvent.click(
-			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
-		);
-
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetchedTimes(
-				1,
-				new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
-				)
-			)
-		);
-	} );
-
-	it( 'should swap in the Typical Traffic panel and keep the "Source: Analytics" footer when the user selects "Typical traffic", and swap it back for "Traffic overview", when the `typicalTraffic` feature flag is enabled', async () => {
-		fetchMock.get(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
-			),
-			{ body: benchmarkingData, status: 200 }
+	it( 'should render the AI disclosure and the "Sources: Analytics Search Console" footer on the Traffic overview tab when the `typicalTraffic` and `trafficInsights` feature flags are enabled', async () => {
+		// With the `typicalTraffic` feature, the panel reads the benchmarking
+		// response, and with the `trafficInsights` feature, the insight
+		// generated from it, which the footer discloses. The key factors'
+		// search keywords come from Search Console, which the footer names.
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
+		provideBenchmarkingResponse( registry );
+		provideBenchmarkingInsight(
+			registry,
+			getTypicalTrafficDateRange( registry )
 		);
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'typicalTraffic' ],
+				features: [ 'typicalTraffic', 'trafficInsights' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
 		await waitForRegistry();
 
-		fireEvent.click(
-			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
+		const footer = container.querySelector(
+			'.googlesitekit-widget__footer'
 		);
 
-		expect(
-			screen.getByRole( 'tabpanel', { name: 'Typical traffic Beta' } )
-		).toBeInTheDocument();
-		expect(
-			screen.queryByRole( 'tabpanel', { name: 'Traffic overview' } )
-		).not.toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-widget__footer' )
-		).toHaveTextContent( 'Source: Analytics' );
-
-		fireEvent.click(
-			screen.getByRole( 'tab', { name: 'Traffic overview' } )
+		expect( footer ).toHaveTextContent(
+			'Some insights on this page are created using AI and may contain mistakes. Learn more'
 		);
-
-		expect(
-			screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
-		).toBeInTheDocument();
-		expect(
-			screen.queryByRole( 'tabpanel', { name: 'Typical traffic Beta' } )
-		).not.toBeInTheDocument();
+		expect( footer ).toHaveTextContent(
+			/Learn more\s*Sources: Analytics Search Console$/
+		);
 	} );
 
 	it( 'should track `view_widget` labeled `googlesitekit-traffic-overview-tab` once when the card first enters the viewport, and not again on a re-render or a second entry', async () => {
@@ -853,19 +860,21 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should not track `view_widget` again when the user selects another tab', async () => {
-		fetchMock.get(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
-			),
-			{ body: benchmarkingData, status: 200 }
-		);
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 157,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
+		// Once the card is in view, the survey triggers read the latest post.
 		fetchMock.get( postsEndpoint, { body: [], status: 200 } );
+		fetchMock.get( searchAnalyticsEndpoint, { body: [], status: 200 } );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'typicalTraffic' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -882,15 +891,18 @@ describe( 'TrafficOverviewWidget', () => {
 		} );
 
 		fireEvent.click(
-			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
+			screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
 		);
 
+		// `RecentActivityPanel` starts requests of its own. A response that
+		// comes back during the next test fails that test on an `act()`
+		// warning, so this waits for them too.
 		await waitForRegistry();
 
 		expect( mockTrackEvent ).not.toHaveBeenCalledWith(
 			'mainDashboard_traffic-insights',
 			'view_widget',
-			'googlesitekit-typical-traffic-tab'
+			'googlesitekit-recent-activity-tab'
 		);
 	} );
 
@@ -1022,18 +1034,16 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'should track `change_tab` under `mainDashboardViewOnly_traffic-insights` for a view-only user', async () => {
-		fetchMock.get(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
-			),
-			{ body: benchmarkingData, status: 200 }
-		);
+		// On the view-only dashboard, the Recent activity panel checks whether
+		// the user can view the shared Search Console data, which needs the
+		// user's capabilities.
+		provideUserCapabilities( registry );
+		fetchMock.get( postsEndpoint, { body: [], status: 200 } );
 
 		const { waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'typicalTraffic' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
@@ -1041,7 +1051,7 @@ describe( 'TrafficOverviewWidget', () => {
 		await waitForRegistry();
 
 		fireEvent.click(
-			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
+			screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
 		);
 
 		await waitForRegistry();
@@ -1049,7 +1059,7 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'mainDashboardViewOnly_traffic-insights',
 			'change_tab',
-			'googlesitekit-typical-traffic-tab'
+			'googlesitekit-recent-activity-tab'
 		);
 	} );
 
@@ -1075,37 +1085,6 @@ describe( 'TrafficOverviewWidget', () => {
 		);
 	} );
 
-	it( 'should track `change_tab` labeled `googlesitekit-typical-traffic-tab` when the `typicalTraffic` feature flag is enabled', async () => {
-		fetchMock.get(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
-			),
-			{ body: benchmarkingData, status: 200 }
-		);
-
-		const { waitForRegistry } = render(
-			<TrafficOverviewWidget { ...widgetComponentProps } />,
-			{
-				registry,
-				features: [ 'typicalTraffic' ],
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		fireEvent.click(
-			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
-		);
-
-		await waitForRegistry();
-
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_traffic-insights',
-			'change_tab',
-			'googlesitekit-typical-traffic-tab'
-		);
-	} );
 	describe( 'the Recent activity survey', () => {
 		const recentPost = {
 			id: 12,
@@ -1218,24 +1197,6 @@ describe( 'TrafficOverviewWidget', () => {
 					RECENT_ACTIVITY_INTERACTION_TIMER.slug,
 				] )
 			);
-		} );
-
-		it( 'should record nothing when the user selects another tab', async () => {
-			fetchMock.get(
-				new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
-				),
-				{ body: benchmarkingData, status: 200 }
-			);
-
-			const { waitForRegistry } = renderWidget( [ 'typicalTraffic' ] );
-
-			await waitForRegistry();
-
-			clickTab( 'Typical traffic Beta' );
-			await waitForRegistry();
-
-			expect( requestedTimerSlugs() ).toEqual( [] );
 		} );
 
 		it( 'should record nothing when the user clicks the tab already shown', async () => {

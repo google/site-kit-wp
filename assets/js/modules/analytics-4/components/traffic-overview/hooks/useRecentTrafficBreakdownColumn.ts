@@ -27,7 +27,7 @@ import { useMemo } from '@wordpress/element';
 import { TableTileRow } from '@/js/modules/analytics-4/components/common/tiles';
 import { getTopChannelsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
-import { getMetricCount } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { getMetricCount } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { ExcludedProducts } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { ErrorObject } from '@/js/util/errors';

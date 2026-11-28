@@ -39,26 +39,26 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '@/js/hooks/useDashboardType';
+import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
 	RECENT_ACTIVITY_TAB_ID,
 	TRAFFIC_OVERVIEW_TAB_ID,
-	TYPICAL_TRAFFIC_TAB_ID,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { useHasTypicalTrafficTab } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useHasTypicalTrafficTab';
 import { useRecentActivitySurveyTriggers } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentActivitySurveyTriggers';
 import { useRecordRecentActivityTabOpen } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecordRecentActivityTabOpen';
 import RecentActivityFooter from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityFooter';
+import EntityTypicalTrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/EntityTypicalTrafficOverviewPanel';
 import RecentActivityPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/RecentActivityPanel';
 import TrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TrafficOverviewPanel';
-import TypicalTrafficPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficPanel';
+import TypicalTrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficOverviewPanel';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import SparkleIcon from '@/svg/icons/sparkle.svg';
 import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
+import TypicalTrafficOverviewFooter from './TypicalTrafficOverviewFooter';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -88,6 +88,7 @@ const TrafficOverviewWidget = forwardRef<
 
 	const viewContext = useViewContext();
 	const dashboardType = useDashboardType();
+	const typicalTrafficEnabled = useFeature( 'typicalTraffic' );
 
 	const isAnalyticsConnected = useSelect(
 		( select: Select ) =>
@@ -129,8 +130,6 @@ const TrafficOverviewWidget = forwardRef<
 		[ dashboardType, isAnalyticsConnected ]
 	);
 
-	const hasTypicalTrafficTab = useHasTypicalTrafficTab();
-
 	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );
 	const [ hasTrackedView, setHasTrackedView ] = useState( false );
 	const recordRecentActivityTabOpen = useRecordRecentActivityTabOpen();
@@ -149,24 +148,30 @@ const TrafficOverviewWidget = forwardRef<
 
 	const tabs: TrafficOverviewTabDescriptor[] = [];
 
+	// Without the `typicalTraffic` feature, the Traffic overview tab shows the
+	// same Analytics reports on every dashboard, and links to their source.
+	// With it, the tab adds the typical traffic view, which describes the whole
+	// site, so the entity dashboard, which shows one page, has a panel that
+	// leaves it out.
+	let TrafficOverviewPanelComponent: ComponentType = TrafficOverviewPanel;
+	let TrafficOverviewFooterComponent: ComponentType =
+		TrafficOverviewSourceLink;
+
+	if ( typicalTrafficEnabled ) {
+		TrafficOverviewPanelComponent =
+			dashboardType === DASHBOARD_TYPE_ENTITY
+				? EntityTypicalTrafficOverviewPanel
+				: TypicalTrafficOverviewPanel;
+		TrafficOverviewFooterComponent = TypicalTrafficOverviewFooter;
+	}
+
 	// The Traffic overview tab shows Analytics reports only.
 	if ( isAnalyticsConnected ) {
 		tabs.push( {
 			id: TRAFFIC_OVERVIEW_TAB_ID,
 			label: __( 'Traffic overview', 'google-site-kit' ),
-			PanelComponent: TrafficOverviewPanel,
-			FooterComponent: TrafficOverviewSourceLink,
-		} );
-	}
-
-	if ( hasTypicalTrafficTab ) {
-		tabs.push( {
-			id: TYPICAL_TRAFFIC_TAB_ID,
-			label: __( 'Typical traffic', 'google-site-kit' ),
-			Icon: SparkleIcon,
-			isBeta: true,
-			PanelComponent: TypicalTrafficPanel,
-			FooterComponent: TrafficOverviewSourceLink,
+			PanelComponent: TrafficOverviewPanelComponent,
+			FooterComponent: TrafficOverviewFooterComponent,
 		} );
 	}
 
@@ -214,8 +219,6 @@ const TrafficOverviewWidget = forwardRef<
 		return <WidgetNull />;
 	}
 
-	// Only the selected tab's panel mounts, so the Typical Traffic request is
-	// not sent until a reader selects its tab.
 	const { PanelComponent, FooterComponent } = shownTab;
 
 	// When Analytics is not connected, the widget shows no report, so it has

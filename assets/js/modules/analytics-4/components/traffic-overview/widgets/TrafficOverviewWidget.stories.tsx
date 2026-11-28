@@ -33,8 +33,8 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
-import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+import { PLACEHOLDER_TRAFFIC_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/components/placeholderTrafficInsight';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
@@ -54,9 +54,11 @@ import {
 	INSUFFICIENT_PERMISSIONS_ERROR,
 	INTERNAL_SERVER_ERROR,
 	LATEST_POST,
+	createBenchmarkingResponse,
 	createBreakdownReport,
-	createDailyTrafficRows,
 	getRecentTrafficBreakdownReportOptions,
+	getTypicalTrafficDateRange,
+	provideBenchmarkingResponse,
 	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
@@ -65,11 +67,15 @@ import {
 	provideRecentActivitySurveyState,
 	provideRecentTrafficBreakdownReports,
 	provideSiteVisitorsReport,
+	provideTypicalTrafficBreakdownReports,
+	provideTypicalTrafficDailyVisitsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { getDailyVisitsReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/typicalReportOptions';
+import { PLACEHOLDER_KEY_FACTORS_INSIGHT } from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	decodedBenchmarkingResponse,
-	provideBenchmarkingData,
+	benchmarkingInsight,
+	provideBenchmarkingInsight,
 } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
@@ -116,9 +122,7 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
 	// Storing the creation time stops a request for the Analytics property.
-	// `2024-01-01` sits before the selected range, so the chart draws no marker,
-	// and more than thirteen months before the reference date, so the widget
-	// shows the Typical Traffic tab when `typicalTraffic` is on.
+	// `2024-01-01` sits before the selected range, so the chart draws no marker.
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
@@ -184,6 +188,81 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 	getTrafficOverviewReportArgs( registry ).forEach( ( options ) =>
 		provideAnalytics4MockReport( registry, options )
 	);
+}
+
+/**
+ * Sets up the registry as `commonSetup()` does, and gives Search Console a
+ * property. With the `typicalTraffic` feature, the Traffic overview tab's
+ * footer links to Search Console when the tab shows the key factors, and the
+ * link needs the property.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to set up.
+ * @return {void}
+ */
+function typicalTrafficSetup( registry: WPDataRegistry ) {
+	commonSetup( registry );
+	registry
+		.dispatch( MODULES_SEARCH_CONSOLE )
+		.setPropertyID( 'https://example.com/' );
+}
+
+/**
+ * Puts the reports the Typical Traffic Overview panel reads on the main
+ * dashboard in the store, so a story renders without sending a report
+ * request.
+ *
+ * The daily visits report has the design's figures. The panel reads them only
+ * when the benchmarking request fails.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the reports in.
+ * @return {void}
+ */
+function provideTypicalTrafficOverviewReports( registry: WPDataRegistry ) {
+	// The typical traffic view ends its ranges on the last full day.
+	const { startDate, endDate, compareStartDate, compareEndDate } =
+		getTypicalTrafficDateRange( registry );
+
+	provideAnalytics4MockReport(
+		registry,
+		getTotalsReportArgs( {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+		} )
+	);
+	provideTypicalTrafficDailyVisitsReport( registry );
+	provideTypicalTrafficBreakdownReports( registry );
+}
+
+/**
+ * Puts the reports the Typical Traffic Overview panel reads on the entity
+ * dashboard in the store, for the current entity URL, so a story renders
+ * without sending a report request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the reports in.
+ * @return {void}
+ */
+function provideEntityTypicalTrafficReports( registry: WPDataRegistry ) {
+	// The typical traffic view ends its ranges on the last full day.
+	const { startDate, endDate } = getTypicalTrafficDateRange( registry );
+	const url = registry.select( CORE_SITE ).getCurrentEntityURL();
+
+	provideAnalytics4MockReport(
+		registry,
+		getTotalsReportArgs( { startDate, endDate, url } )
+	);
+	provideAnalytics4MockReport(
+		registry,
+		getDailyVisitsReportArgs( { startDate, endDate, url } )
+	);
+	provideTypicalTrafficBreakdownReports( registry );
 }
 
 /**
@@ -302,7 +381,13 @@ export const TypicalTraffic = Template.bind(
 ) as Story< TrafficOverviewWidgetStoryProps >;
 TypicalTraffic.storyName = 'Typical Traffic (typicalTraffic enabled)';
 TypicalTraffic.args = {
-	...MainDashboard.args,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		typicalTrafficSetup( registry );
+		provideTypicalTrafficOverviewReports( registry );
+		// With the `typicalTraffic` feature, the Traffic overview tab reads the
+		// benchmarking response.
+		provideBenchmarkingResponse( registry );
+	},
 };
 TypicalTraffic.parameters = {
 	features: [ 'typicalTraffic' ],
@@ -311,40 +396,126 @@ TypicalTraffic.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
-export const TypicalTrafficSelected = Template.bind(
+export const TypicalTrafficWithInsights = Template.bind(
 	{}
 ) as Story< TrafficOverviewWidgetStoryProps >;
-TypicalTrafficSelected.storyName =
-	'Typical Traffic Selected (typicalTraffic enabled)';
-TypicalTrafficSelected.args = {
+TypicalTrafficWithInsights.storyName =
+	'Typical Traffic With Insights (typicalTraffic and trafficInsights enabled)';
+TypicalTrafficWithInsights.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		provideTrafficOverviewReports( registry );
+		TypicalTraffic.args?.setupRegistry?.( registry );
+		// With the `trafficInsights` feature, the panel shows the insight
+		// generated from the benchmarking response, here with the sentences
+		// of the design.
+		provideBenchmarkingInsight(
+			registry,
+			getTypicalTrafficDateRange( registry ),
+			{
+				...benchmarkingInsight,
+				analysis: PLACEHOLDER_TRAFFIC_INSIGHT,
+				driver: PLACEHOLDER_KEY_FACTORS_INSIGHT,
+			}
+		);
+	},
+};
+TypicalTrafficWithInsights.parameters = {
+	features: [ 'typicalTraffic', 'trafficInsights' ],
+};
+TypicalTrafficWithInsights.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+};
 
-		const dates = registry.select( CORE_USER ).getDateRangeDates();
+export const TypicalTrafficShortHistory = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+TypicalTrafficShortHistory.storyName =
+	'Typical Traffic, Short History (typicalTraffic enabled)';
+TypicalTrafficShortHistory.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		typicalTrafficSetup( registry );
+		provideTypicalTrafficOverviewReports( registry );
 
-		// The checked-in response has only four days. So the chart gets the 28
-		// days of `DESIGN_DAILY_VISITS` times 100, which puts labels in the
-		// thousands on the value axis, and the reference images show each label
-		// in full.
-		provideBenchmarkingData( registry, dates, {
-			...decodedBenchmarkingResponse,
-			dailyTraffic: createDailyTrafficRows(
-				28,
-				dates.endDate,
-				( dayIndex ) => DESIGN_DAILY_VISITS[ dayIndex ] * 100
-			),
+		const { startDate, endDate } = getTypicalTrafficDateRange( registry );
+		const response = createBenchmarkingResponse( startDate, endDate );
+
+		// The site recorded its first visits on `2025-01-01`, 36 days before
+		// today. A 28-day range has the key factors once every day of the
+		// period before it has recorded traffic, from the one that ends on
+		// `2025-02-25`, and the typical traffic range once its first day has
+		// 56 days of history, from the one that ends on `2025-03-24`. Until
+		// then, one notice above the visitor figures says when each will
+		// show, and the panel leaves out the key factors section.
+		provideBenchmarkingResponse( registry, {
+			...response,
+			dailyTraffic: response.dailyTraffic.map( ( day ) => ( {
+				...day,
+				expectedMin: null,
+				expectedMax: null,
+			} ) ),
+			availability: {
+				...response.availability,
+				bandAvailable: false,
+				bandAvailableFrom: '2025-03-24',
+				keyFactorsAvailable: false,
+				keyFactorsAvailableFrom: '2025-02-25',
+				insightRequestAllowed: false,
+				performanceInsightAvailable: false,
+			},
+			bandReferenceDays: null,
+			keyFactors: [],
 		} );
 	},
 };
-TypicalTrafficSelected.parameters = {
+TypicalTrafficShortHistory.parameters = {
 	features: [ 'typicalTraffic' ],
 };
-TypicalTrafficSelected.scenario = {
+TypicalTrafficShortHistory.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	// The mouse stays over the tab after the click, so the snapshot shows the
-	// tab's hover background.
-	clickSelector: '#googlesitekit-typical-traffic-tab',
+};
+
+export const TypicalTrafficLowTraffic = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+TypicalTrafficLowTraffic.storyName =
+	'Typical Traffic, Low Traffic (typicalTraffic and trafficInsights enabled)';
+TypicalTrafficLowTraffic.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		typicalTrafficSetup( registry );
+		provideTypicalTrafficOverviewReports( registry );
+
+		const { startDate, endDate } = getTypicalTrafficDateRange( registry );
+		const response = createBenchmarkingResponse( startDate, endDate );
+
+		// The site's history is long enough for every part, but it had under
+		// 100 visits per 28 days over the last 8 weeks. The response has no
+		// band, no key factors and no insight request, and a warning above
+		// the visitor figures says why. The chart keeps the line and the
+		// published posts, as the design's Low traffic state has them.
+		provideBenchmarkingResponse( registry, {
+			...response,
+			dailyTraffic: response.dailyTraffic.map( ( day ) => ( {
+				...day,
+				expectedMin: null,
+				expectedMax: null,
+			} ) ),
+			availability: {
+				...response.availability,
+				bandAvailable: false,
+				keyFactorsAvailable: false,
+				insightRequestAllowed: false,
+				performanceInsightAvailable: false,
+				lowTraffic: true,
+			},
+			bandReferenceDays: null,
+			keyFactors: [],
+		} );
+	},
+};
+TypicalTrafficLowTraffic.parameters = {
+	features: [ 'typicalTraffic', 'trafficInsights' ],
+};
+TypicalTrafficLowTraffic.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
 /**
@@ -366,6 +537,32 @@ EntityDashboard.args = {
 		} );
 		provideTrafficOverviewReports( registry );
 	},
+};
+
+export const TypicalTrafficEntityDashboard = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+TypicalTrafficEntityDashboard.storyName =
+	'Typical Traffic, Entity Dashboard (typicalTraffic enabled)';
+TypicalTrafficEntityDashboard.args = {
+	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		typicalTrafficSetup( registry );
+		provideSiteInfo( registry, {
+			currentEntityURL: 'https://example.com/about/',
+		} );
+		provideEntityTypicalTrafficReports( registry );
+	},
+};
+// With the `typicalTraffic` feature, the entity dashboard, which shows one
+// page, has a panel of its own. It reads no benchmarking response, so it
+// leaves out the typical traffic range, the published posts, and the key
+// factors.
+TypicalTrafficEntityDashboard.parameters = {
+	features: [ 'typicalTraffic' ],
+};
+TypicalTrafficEntityDashboard.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
 export const Loading = Template.bind(
@@ -452,6 +649,36 @@ ReportFailure.args = {
 				.finishResolution( 'getReport', [ options ] );
 		} );
 	},
+};
+
+export const TypicalTrafficFailure = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+TypicalTrafficFailure.storyName =
+	'Typical Traffic, Benchmarking Failure (typicalTraffic enabled)';
+TypicalTrafficFailure.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		typicalTrafficSetup( registry );
+		// When the benchmarking request fails, the panel draws and adds up
+		// the visits of the daily visits report, against the range before.
+		provideTypicalTrafficOverviewReports( registry );
+
+		const { startDate, endDate } = getTypicalTrafficDateRange( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setErrorForSelector(
+				INTERNAL_SERVER_ERROR,
+				'getBenchmarkingData',
+				[ startDate, endDate ]
+			);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getBenchmarkingData', [ startDate, endDate ] );
+	},
+};
+TypicalTrafficFailure.parameters = {
+	features: [ 'typicalTraffic' ],
 };
 
 export const RecentActivity = Template.bind(

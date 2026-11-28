@@ -33,17 +33,19 @@ import { Select, useSelect } from 'googlesitekit-data';
 import GoogleChart from '@/js/components/GoogleChart';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	TRAFFIC_CHART_OPTIONS,
+	getPropertyCreatedDateMarkers,
+	getPropertyCreatedMarkerDate,
+	getTrafficChartData,
+	getTrafficLegendItem,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
 import ChartLegend from './ChartLegend';
-import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
-import { getPropertyCreatedMarkerDate } from './getPropertyCreatedMarkerDate';
-import { getTrafficChartData } from './getTrafficChartData';
-import { getTrafficLegendItem } from './getTrafficLegendItem';
 import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
-import { TRAFFIC_CHART_OPTIONS } from './trafficChartOptions';
 
 export interface TrafficChartProps {
 	/** The daily-visitors report for the selected range. */

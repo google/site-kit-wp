@@ -1,5 +1,5 @@
 /**
- * Typical Traffic chart.
+ * Typical Traffic Overview chart.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,100 +19,291 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
-import { FC } from 'react';
+import { FC, useMemo, useRef } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
 import GoogleChart from '@/js/components/GoogleChart';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
+import { useTypicalTrafficDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTypicalTrafficDateRange';
+import {
+	PUBLISHED_POST_COLOR,
+	PublishedPost,
+	TYPICAL_TRAFFIC_CHART_OPTIONS,
+	getPropertyCreatedDateMarkers,
+	getPropertyCreatedMarkerDate,
+	getTrafficLegendItem,
+	getTypicalTrafficChartData,
+	getTypicalTrafficLegendItem,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
-import ChartLegend from './ChartLegend';
-import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
-import { getPropertyCreatedMarkerDate } from './getPropertyCreatedMarkerDate';
-import { getTrafficLegendItem } from './getTrafficLegendItem';
-import { getTypicalTrafficChartData } from './getTypicalTrafficChartData';
+import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
+import { getDateString, getLocale, numFmt } from '@/js/util';
 import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
-import { TRAFFIC_CHART_OPTIONS } from './trafficChartOptions';
-import TypicalTrafficChartHeader from './TypicalTrafficChartHeader';
+import PublishedPostTooltip, {
+	PublishedPostTooltipHandle,
+} from './PublishedPostTooltip';
+import TypicalChartLegend, {
+	TypicalChartLegendItem,
+} from './TypicalChartLegend';
+
+/** What Google Charts reports when the pointer moves onto or off a day. */
+interface ChartMouseEvent {
+	/** The day's row in the chart table, which has one row for each day the chart plots. */
+	row: number | null;
+}
+
+/** The chart that reported a mouse event, as `GoogleChart` passes it. */
+interface ChartMouseEventContext {
+	chartWrapper: {
+		getChart: () => {
+			getChartLayoutInterface: () => {
+				getXLocation: ( value: Date ) => number;
+				getYLocation: ( value: number, axisIndex?: number ) => number;
+			};
+		};
+	};
+}
 
 export interface TypicalTrafficChartProps {
-	/** The daily rows of the benchmarking response, one for each day of the selected date range, oldest first. The chart draws one point for each row. */
-	dailyTraffic: BenchmarkingDailyTrafficRow[];
-	/** The number of days in the selected date range, which the legend's label names, such as "Last 28 days traffic". */
-	daysInSelectedRange: number;
-	/** The day the Analytics property was created, as `YYYY-MM-DD`. The chart marks it, and reads it to a screen reader, when it is one of the plotted days. */
-	propertyCreateDate?: string;
+	/** The visits on each day of the selected range, oldest first. The bounds on each day's row are its typical range, which the chart draws as a band behind the line. The band covers the whole range or none of it, so the chart leaves it out when a day has null bounds. */
+	dailyTraffic?: BenchmarkingDailyTrafficRow[];
+	/** Whether the daily traffic has arrived. */
+	loaded?: boolean;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
+	/** The posts published in the selected range. The chart marks the day of each with a dot on the line. */
+	publishedPosts?: PublishedPost[];
+	/** The number of days of traffic the band of the range's last day is fitted on, which the band's tooltip names in weeks. Without it, the band has no tooltip. */
+	bandReferenceDays?: number | null;
+	/** Whether the site's history reaches the same time last year, which the band's tooltip then mentions. */
+	lastYearAvailable?: boolean;
 }
 
 const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 	dailyTraffic,
-	daysInSelectedRange,
-	propertyCreateDate,
+	loaded = true,
+	gatheringData = false,
+	publishedPosts,
+	bandReferenceDays,
+	lastYearAvailable,
 } ) => {
-	const { chartData, ticks, hasVisits } = getTypicalTrafficChartData( {
+	// The typical traffic view ends its ranges on the last full day.
+	const {
+		startDate,
+		endDate,
+		days: daysInRange,
+	} = useTypicalTrafficDateRange();
+
+	const propertyCreateTime = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getPropertyCreateTime(),
+		[]
+	);
+
+	const {
+		chartData,
+		days,
+		ticks,
+		hasVisits,
+		hasTypicalTrafficRange,
+		hasPublishedPosts,
+	} = getTypicalTrafficChartData( {
 		dailyTraffic,
+		startDate,
+		endDate,
+		gatheringData,
+		publishedPosts,
 	} );
 
-	const [ , ...points ] = chartData;
-
 	const options = {
-		...TRAFFIC_CHART_OPTIONS,
+		...TYPICAL_TRAFFIC_CHART_OPTIONS,
 		hAxis: {
-			...TRAFFIC_CHART_OPTIONS.hAxis,
+			...TYPICAL_TRAFFIC_CHART_OPTIONS.hAxis,
 			ticks,
-			// Draws the gray line along the right edge of the chart area.
-			baseline: points[ points.length - 1 ]?.[ 0 ],
+			// A baseline on the last day draws the gray line along the right edge
+			// of the chart area.
+			baseline: days[ days.length - 1 ]?.date,
+			// Without a view window, Google Charts pads the axis past the first
+			// and the last day, so the line and the band would stop short of
+			// the chart area's edges. The window runs from the first day the
+			// chart plots to the last, so they reach both edges. It also keeps
+			// the ticks while the property is gathering data, which
+			// `getChartOptions()` otherwise drops.
+			viewWindow: {
+				min: days[ 0 ]?.date,
+				max: days[ days.length - 1 ]?.date,
+			},
 		},
 		vAxis: {
-			...TRAFFIC_CHART_OPTIONS.vAxis,
-			// Google Charts ends the axis on a round number at or above the
-			// busiest day. When every day is `0`, it draws the line of zeros
-			// across the middle of the chart area. So the axis runs to 100 then,
-			// as in `TrafficChart`.
+			...TYPICAL_TRAFFIC_CHART_OPTIONS.vAxis,
+			// With nothing above zero and no maximum, Google Charts draws a line
+			// of zeros across the middle of the chart area. Otherwise, it ends
+			// the axis above both the line and the typical range.
 			viewWindow: {
-				...TRAFFIC_CHART_OPTIONS.vAxis.viewWindow,
-				...( hasVisits ? {} : { max: 100 } ),
+				...TYPICAL_TRAFFIC_CHART_OPTIONS.vAxis.viewWindow,
+				...( hasVisits || hasTypicalTrafficRange ? {} : { max: 100 } ),
 			},
 		},
 	};
 
-	// The rows are the days of the selected date range, so the first and the
-	// last row's day bound the creation day the chart marks.
-	const firstDate = dailyTraffic[ 0 ]?.date;
-	const lastDate = dailyTraffic[ dailyTraffic.length - 1 ]?.date;
+	const legendItems: TypicalChartLegendItem[] = [
+		getTrafficLegendItem( daysInRange ),
+	];
+
+	if ( hasTypicalTrafficRange ) {
+		legendItems.push(
+			getTypicalTrafficLegendItem( {
+				referenceDays: bandReferenceDays,
+				lastYearAvailable,
+			} )
+		);
+	}
+
+	if ( hasPublishedPosts ) {
+		legendItems.push( {
+			label: __( 'Published post', 'google-site-kit' ),
+			color: PUBLISHED_POST_COLOR,
+			swatch: 'dot',
+		} );
+	}
+
+	const propertyCreateDate = getPropertyCreateDate( propertyCreateTime );
+
+	// `GoogleChart` draws a marker only for a day inside the selected range.
+	// The screen-reader sentence about that day follows the same rule.
 	const markerDate = getPropertyCreatedMarkerDate(
 		propertyCreateDate,
-		firstDate,
-		lastDate
+		startDate,
+		endDate
 	);
 
-	// No `gatheringData`, so `GoogleChart` doesn't show its gathering data
-	// notice over the chart or change the axes.
+	const dayFormatter = useMemo(
+		() =>
+			new Intl.DateTimeFormat( getLocale(), {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+			} ),
+		[]
+	);
+
+	// The tooltip keeps the hovered day in its own state: a render of the
+	// chart here would make Google Charts draw it again.
+	const postTooltipRef = useRef< PublishedPostTooltipHandle >( null );
+
+	function handleChartMouseOver(
+		{ row }: ChartMouseEvent,
+		{ chartWrapper }: ChartMouseEventContext
+	) {
+		const day = row === null ? undefined : days[ row ];
+
+		if ( ! day?.posts.length ) {
+			postTooltipRef.current?.hide();
+			return;
+		}
+
+		const chartLayout = chartWrapper.getChart().getChartLayoutInterface();
+
+		postTooltipRef.current?.show( {
+			date: day.date,
+			posts: day.posts,
+			x: chartLayout.getXLocation( day.date ),
+			// The line plots against the second value axis.
+			y: chartLayout.getYLocation( day.visits, 1 ),
+		} );
+	}
+
+	function handleChartMouseOut() {
+		postTooltipRef.current?.hide();
+	}
+
 	return (
-		<div
-			className={ classnames(
-				'googlesitekit-traffic-overview__chart',
-				'googlesitekit-traffic-overview__chart--typical-traffic',
-				{
-					'googlesitekit-traffic-overview__chart--has-date-marker':
-						!! markerDate,
-				}
-			) }
-		>
-			<TypicalTrafficChartHeader />
+		<div className="googlesitekit-traffic-overview__chart">
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
 				dateMarkers={ getPropertyCreatedDateMarkers( markerDate ) }
+				// The chart plots the typical traffic view's range, which
+				// ends on the last full day.
+				startDate={ startDate }
+				endDate={ endDate }
+				gatheringData={ gatheringData }
 				height="256px"
+				loaded={ loaded }
+				loadingHeight="276px"
+				onMouseOver={
+					hasPublishedPosts ? handleChartMouseOver : undefined
+				}
+				onMouseOut={
+					hasPublishedPosts ? handleChartMouseOut : undefined
+				}
 				options={ options }
 				width="100%"
-			/>
-			<ChartLegend
-				items={ [ getTrafficLegendItem( daysInSelectedRange ) ] }
-			/>
-			{ markerDate && (
+			>
+				{ hasPublishedPosts && (
+					<PublishedPostTooltip ref={ postTooltipRef } />
+				) }
+			</GoogleChart>
+			{ loaded && <TypicalChartLegend items={ legendItems } /> }
+			{ loaded &&
+				! gatheringData &&
+				days.map( ( { date, visits, typicalRange, posts } ) => (
+					<Fragment key={ getDateString( date ) }>
+						<VisuallyHidden>
+							{ typicalRange
+								? sprintf(
+										/* translators: 1: a day, such as "January 15, 2025". 2: the visits on that day, such as "1.2K". 3: the fewest visits that are typical for that day. 4: the most visits that are typical for that day */
+										_n(
+											'%1$s: %2$s visit, typical range %3$s to %4$s',
+											'%1$s: %2$s visits, typical range %3$s to %4$s',
+											visits,
+											'google-site-kit'
+										),
+										dayFormatter.format( date ),
+										numFmt( visits ),
+										numFmt( typicalRange.min ),
+										numFmt( typicalRange.max )
+								  )
+								: sprintf(
+										/* translators: 1: a day, such as "January 15, 2025". 2: the visits on that day, such as "1.2K" */
+										_n(
+											'%1$s: %2$s visit',
+											'%1$s: %2$s visits',
+											visits,
+											'google-site-kit'
+										),
+										dayFormatter.format( date ),
+										numFmt( visits )
+								  ) }
+						</VisuallyHidden>
+						{ posts.map( ( { title }, index ) => (
+							// Keyed by position: two posts on one day can share a
+							// title, and nothing here reorders them.
+							<VisuallyHidden key={ index }>
+								{ sprintf(
+									/* translators: 1: a day, such as "January 15, 2025". 2: the title of the post published on that day */
+									__(
+										'Post published on %1$s: %2$s',
+										'google-site-kit'
+									),
+									dayFormatter.format( date ),
+									title
+								) }
+							</VisuallyHidden>
+						) ) }
+					</Fragment>
+				) ) }
+			{ loaded && markerDate && (
 				<PropertyCreatedScreenReaderText date={ markerDate } />
 			) }
 		</div>
