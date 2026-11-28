@@ -285,7 +285,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'google-site-kit'
 					),
 					__(
-						'Enable enhanced measurements (optional)',
+						'Enable enhanced measurement (optional)',
 						'google-site-kit'
 					),
 					__(
@@ -591,7 +591,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		addedInVersion: '1.113.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-			ctaLabel: __( 'Enable enhanced measurements', 'google-site-kit' ),
+			ctaLabel: __( 'Enable enhanced measurement', 'google-site-kit' ),
 			isEnabled: isEnhancedMeasurementEnabled,
 			activate: activateEnhancedMeasurement,
 		},
