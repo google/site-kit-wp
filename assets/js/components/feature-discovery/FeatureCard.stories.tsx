@@ -47,7 +47,7 @@ const TEST_FEATURE: Feature = {
 	slug: 'dashboard-sharing',
 	title: 'Collaborate with other team members by sharing dashboard access',
 	shortDescription:
-		'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials.',
+		'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials',
 	effort: FEATURE_EFFORTS.LOW,
 	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 	addedInVersion: TEST_OLD_VERSION,

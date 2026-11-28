@@ -179,6 +179,16 @@ describe( 'registerDefaults', () => {
 				expect( setup.isEnabled ).toBeUndefined();
 				expect( isFeatureConnected( 'pdf-report' ) ).toBe( false );
 			} );
+
+			it( 'should describe what the feature is', () => {
+				const { detail } = registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeature( 'pdf-report' );
+
+				expect( detail?.description?.whatIs ).toBe(
+					'In just a couple of clicks, you can export a snapshot of the Site Kit dashboard, selecting what you wish to be included, into a PDF document. By generating PDF reports, you can easily share, print, or review how your site is performing, similar to how it appears on the Site Kit dashboard.'
+				);
+			} );
 		} );
 	} );
 } );
