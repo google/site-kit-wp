@@ -63,7 +63,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			'google-site-kit'
 		),
 		shortDescription: __(
-			'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials.',
+			'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials',
 			'google-site-kit'
 		),
 		detail: {

@@ -58,7 +58,7 @@ export const sampleFeatures: Partial< Feature >[] = [
 		name: 'Key metrics',
 		title: 'Get personalized suggestions for user interaction metrics based on your goals',
 		shortDescription:
-			'Tell us your site’s main goal, and we’ll suggest a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals.',
+			'Tell us your site’s main goal, and we’ll suggest a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals',
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		addedInVersion: OLD_VERSION,
@@ -87,7 +87,7 @@ export const sampleFeatures: Partial< Feature >[] = [
 		slug: 'sign-in-with-google',
 		title: 'Boost onboarding, security, and trust on your site using Sign in with Google',
 		shortDescription:
-			'Provide your site visitors with a simple, secure, and personalized experience by adding a Sign in with Google button to your login page.',
+			'Provide your site visitors with a simple, secure, and personalized experience by adding a Sign in with Google button to your login page',
 		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [ FEATURE_CATEGORIES.ENGAGEMENT ],
 		moduleSlug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,

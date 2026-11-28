@@ -55,7 +55,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		moduleSlug: MODULE_SLUG_ADSENSE,
 		title: __( 'Place ads on your site', 'google-site-kit' ),
 		shortDescription: __(
-			'Monetize your content with relevant ads displayed on your website by earning revenue based on clicks or impressions.',
+			'Monetize your content with relevant ads displayed on your website by earning revenue based on clicks or impressions',
 			'google-site-kit'
 		),
 		detail: {

@@ -70,7 +70,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			'google-site-kit'
 		),
 		shortDescription: __(
-			'Add easy-to-implement subscription and contribution prompts to your site, or non-monetized prompts such as newsletter sign-ups, surveys, subscriptions, and more.',
+			'Add easy-to-implement subscription and contribution prompts to your site, or non-monetized prompts such as newsletter sign-ups, surveys, subscriptions, and more',
 			'google-site-kit'
 		),
 		detail: {
@@ -338,7 +338,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			successNotice: {
 				title: __(
-					'Success! Your Newsletter sign-up form by Reader Revenue Manager is set up',
+					'Success! Your newsletter sign-up form by Reader Revenue Manager is set up',
 					'google-site-kit'
 				),
 				description: __(

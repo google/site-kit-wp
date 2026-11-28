@@ -72,7 +72,7 @@ export const WHATS_NEW_FEATURES: Partial< Feature >[] = [
 		name: 'Dashboard sharing',
 		title: 'Collaborate with other team members by sharing dashboard access',
 		shortDescription:
-			'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials.',
+			'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials',
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
 		addedInVersion: OLDER_VERSION,
@@ -95,7 +95,7 @@ export const WHATS_NEW_FEATURES: Partial< Feature >[] = [
 		slug: 'key-metrics',
 		title: 'See the metrics that matter most to your goals',
 		shortDescription:
-			'Pick the metrics that match what you want to achieve, and Site Kit shows them at the top of your dashboard.',
+			'Pick the metrics that match what you want to achieve, and Site Kit shows them at the top of your dashboard',
 		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		addedInVersion: OLDER_VERSION,

@@ -48,6 +48,26 @@ import {
 import { registerFeatures } from './index';
 
 describe( 'Analytics feature discovery', () => {
+	describe( 'analytics', () => {
+		let registry: Registry;
+
+		beforeEach( () => {
+			registry = createTestRegistry() as Registry;
+
+			registerFeatures( createFeatureDiscovery( registry ) );
+		} );
+
+		it( 'should list enhanced measurement as an optional setup step', () => {
+			const { detail } = registry
+				.select( CORE_FEATURE_DISCOVERY )
+				.getFeature( 'analytics' );
+
+			expect( detail?.requirements?.setupList ).toContain(
+				'Enable enhanced measurement (optional)'
+			);
+		} );
+	} );
+
 	describe( 'key-metrics', () => {
 		let registry: Registry;
 
@@ -180,6 +200,12 @@ describe( 'Analytics feature discovery', () => {
 		it( 'should register the enhanced measurement setup effect', () => {
 			expect( getFeature().EffectComponent ).toBe(
 				EnhancedMeasurementSetupEffect
+			);
+		} );
+
+		it( 'should label the setup button', () => {
+			expect( getFeature().setup.ctaLabel ).toBe(
+				'Enable enhanced measurement'
 			);
 		} );
 
@@ -428,6 +454,26 @@ describe( 'Analytics feature discovery', () => {
 					} );
 				} );
 			} );
+		} );
+	} );
+
+	describe( 'visitor-groups', () => {
+		let registry: Registry;
+
+		beforeEach( () => {
+			registry = createTestRegistry() as Registry;
+
+			registerFeatures( createFeatureDiscovery( registry ) );
+		} );
+
+		it( 'should describe the feature', () => {
+			const { shortDescription } = registry
+				.select( CORE_FEATURE_DISCOVERY )
+				.getFeature( 'visitor-groups' );
+
+			expect( shortDescription ).toBe(
+				'Segment your visitors into categories that help you understand site behavior for demographics of subsets of visitors that you define'
+			);
 		} );
 	} );
 } );
